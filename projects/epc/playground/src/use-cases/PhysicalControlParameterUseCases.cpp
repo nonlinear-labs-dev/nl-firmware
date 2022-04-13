@@ -20,3 +20,9 @@ void PhysicalControlParameterUseCases::changeFromAudioEngine(double value, HWCha
     send->setCPFromHwui(trans, value);
   }
 }
+
+void PhysicalControlParameterUseCases::setIndirect(tControlPositionValue position)
+{
+  auto scope = UNDO::Scope::startTrashTransaction();
+  m_physicalParam->setIndirect(scope->getTransaction(), position);
+}

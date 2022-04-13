@@ -7,5 +7,7 @@ enum MidiChannelModeMessages
   LocalControllersOn,
   LocalControllersOff,
   AllNotesOff,
+  PollStart,
+  PollEnd,
   NOOP
 };

@@ -582,6 +582,16 @@ namespace nltools
       HWChangeSource source;
     };
 
+    struct HardwareSourcePollState
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::HardwarePollState;
+      }
+
+      bool pollState = false;
+    };
+
     namespace detail
     {
       template <> inline PlaycontrollerMessage deserialize<PlaycontrollerMessage>(const SerializedMessage& s)

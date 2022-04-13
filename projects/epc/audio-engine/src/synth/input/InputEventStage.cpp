@@ -90,6 +90,8 @@ void InputEventStage::onMIDIMessage(const MidiEvent &midiEvent)
   }
 }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "bugprone-branch-clone"
 void InputEventStage::onTCDEvent()
 {
   auto decoder = &m_tcdDecoder;
@@ -179,14 +181,12 @@ void InputEventStage::onTCDEvent()
     }
     case DecoderEventType::PollStart:
     {
-      // todo: disable midi send?
-      // todo: notify playground (hw poll ack/start)?
+      m_channelModeMessageCB(MidiChannelModeMessages::PollStart);
       break;
     }
     case DecoderEventType::PollStop:
     {
-      // todo: re-enable midi send?
-      // todo: notify playground (all hw sources were polled, initial sound can be loaded)
+      m_channelModeMessageCB(MidiChannelModeMessages::PollEnd);
       break;
     }
     case DecoderEventType::UNKNOWN:

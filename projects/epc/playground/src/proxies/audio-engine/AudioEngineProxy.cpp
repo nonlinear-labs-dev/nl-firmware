@@ -1,4 +1,5 @@
 #include "AudioEngineProxy.h"
+#include "parameters/PedalParameter.h"
 #include <presets/PresetManager.h>
 #include <presets/Bank.h>
 #include <presets/EditBuffer.h>
@@ -43,6 +44,16 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
   onConnectionEstablished(EndPoint::AudioEngine,
                           sigc::mem_fun(this, &AudioEngineProxy::connectSettingsToAudioEngineMessage));
 
+  receive<HardwareSourcePollState>(EndPoint::Playground, [this](auto &msg) {
+    auto oldState = m_isPolling;
+    m_isPolling = msg.pollState;
+    if(m_isPolling == false && oldState == true)
+    {
+      nltools::Log::info("sending Editbuffer after PollEnd has been received!");
+      sendEditBuffer();
+    }
+  });
+
   receive<HardwareSourceChangedNotification>(
       EndPoint::Playground,
       [this](auto &msg)
@@ -52,8 +63,25 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
           if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
           {
             PhysicalControlParameterUseCases useCase(p);
-            useCase.changeFromAudioEngine(msg.position, msg.source);
-            m_playcontrollerProxy.notifyRibbonTouch(p->getID().getNumber());
+            if(!isPolling())
+            {
+              nltools::Log::info("HardwareSourceChangedNotification after PollEnd has been received!");
+              useCase.changeFromAudioEngine(msg.position, msg.source);
+              m_playcontrollerProxy.notifyRibbonTouch(p->getID().getNumber());
+            }
+            else
+            {
+              nltools::Log::info("HardwareSourceChangedNotification between PollStart and PollEnd has been received!");
+              if(auto pedal = dynamic_cast<PedalParameter*>(p))
+              {
+                if(pedal->getReturnMode() == ReturnMode::None)
+                {
+                  useCase.setIndirect(msg.position);
+                  return;
+                }
+              }
+              useCase.changeFromAudioEngine(msg.position, msg.source);
+            }
           }
         }
       });
@@ -530,4 +558,9 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
 void AudioEngineProxy::setLastKnownMIDIProgramChangeNumber(int pc)
 {
   m_lastMIDIKnownProgramNumber = pc;
+}
+
+bool AudioEngineProxy::isPolling() const
+{
+  return m_isPolling;
 }
