@@ -93,8 +93,6 @@ void InputEventStage::onMIDIMessage(const MidiEvent &midiEvent)
   }
 }
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "bugprone-branch-clone"
 void InputEventStage::onTCDEvent()
 {
   auto decoder = &m_tcdDecoder;
@@ -191,13 +189,11 @@ void InputEventStage::onTCDEvent()
     }
     case DecoderEventType::PollStart:
     {
-      nltools::Log::error("got PollStart!");
       m_isPolling = true;
       break;
     }
     case DecoderEventType::PollStop:
     {
-      nltools::Log::error("got PollStop!");
       m_isPolling = false;
       m_channelModeMessageCB(MidiChannelModeMessages::PollEnd);
       break;

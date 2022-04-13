@@ -50,7 +50,6 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
       for(auto value: msg.m_data)
       {
         auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(index);
-        nltools::Log::error(__PRETTY_FUNCTION__, index, param->getLongName(), value);
         index++;
         if(auto p = dynamic_cast<PhysicalControlParameter*>(param))
         {
@@ -70,14 +69,10 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
 
             useCases.changeFromAudioEngine(dValue, HWChangeSource::TCD);
           }
-          else
-          {
-            nltools::Log::error(__PRETTY_FUNCTION__, "received hw source with max float (no poll data available)", p->getLongName(), p->getDisplayString());
-          }
         }
       }
 
-      nltools::Log::info("sending Editbuffer after PollEnd has been received!");
+      nltools::Log::info("sending EditBuffer after PollEnd has been received!");
       sendEditBuffer();
   });
 
@@ -90,7 +85,6 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
           if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
           {
             PhysicalControlParameterUseCases useCase(p);
-            nltools::Log::info("HardwareSourceChangedNotification after PollEnd has been received!");
             useCase.changeFromAudioEngine(msg.position, msg.source);
             m_playcontrollerProxy.notifyRibbonTouch(p->getID().getNumber());
           }

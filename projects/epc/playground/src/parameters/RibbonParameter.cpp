@@ -249,13 +249,6 @@ void RibbonParameter::sendModeToPlaycontroller() const
   }
 }
 
-void RibbonParameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
-                                 bool dosendToPlaycontroller)
-{
-  nltools::Log::error(__PRETTY_FUNCTION__, toString(initiator), getLongName(), value);
-  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
-}
-
 void RibbonParameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *other)
 {
   if(!isLocked())
@@ -378,17 +371,6 @@ void RibbonParameter::sendToPlaycontroller() const
 
 void RibbonParameter::onLocalEnableChanged(bool localEnableState)
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, localEnableState);
-
-  if(auto eb = getParentEditBuffer())
-  {
-    if(eb->getSettings().isLoading())
-    {
-      nltools::Log::error(__PRETTY_FUNCTION__, "prevented!!");
-      return;
-    }
-  }
-
   auto scope = UNDO::Scope::startTrashTransaction();
 
   if(localEnableState)  //Off -> On

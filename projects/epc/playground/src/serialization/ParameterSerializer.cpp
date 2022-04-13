@@ -81,12 +81,6 @@ void ParameterSerializer::readTagContent(Reader &reader) const
       auto type = static_cast<EditBuffer *>(m_param->getParentGroup()->getParent())->getType();
       auto converted
           = ParameterImportConversions::get().convert(m_param->getID(), v, reader.getFileVersion(), type);
-
-      if(m_param->getID().getNumber() == C15::PID::Ribbon_1 || m_param->getID().getNumber() == C15::PID::Pedal_1 || m_param->getID().getNumber() == C15::PID::MC_A)
-      {
-        nltools::Log::error(__PRETTY_FUNCTION__, "loading", m_param->getLongName(), "with value", converted);
-      }
-
       m_param->loadFromPreset(reader.getTransaction(), converted);
     });
 
