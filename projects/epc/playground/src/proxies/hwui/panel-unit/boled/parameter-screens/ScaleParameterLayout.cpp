@@ -18,13 +18,8 @@ void ScaleParameterSelectLayout::init()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   eb->getParameterGroupByID({ "Scale", VoiceGroup::Global })
       ->onGroupChanged(sigc::mem_fun(this, &ScaleParameterSelectLayout::updateResetButton));
-}
 
-void ScaleParameterSelectLayout::addButtons()
-{
   m_resetButton = addControl(new Button("", Buttons::BUTTON_A));
-  addControl(new Button("<", Buttons::BUTTON_B));
-  addControl(new Button(">", Buttons::BUTTON_C));
   updateResetButton();
 }
 
@@ -49,22 +44,6 @@ bool ScaleParameterSelectLayout::onButton(Buttons i, bool down, ButtonModifiers 
           toggleHightlight(m_resetButton);
         }
         return true;
-
-      case Buttons::BUTTON_B:
-        selectParameter(-1);
-        return true;
-
-      case Buttons::BUTTON_C:
-        selectParameter(+1);
-        return true;
-
-      case Buttons::BUTTON_ENTER:
-        if(m_resetButton->isHighlight())
-        {
-          reset();
-          m_resetButton->setHighlight(false);
-          return true;
-        }
     }
   }
   return false;
@@ -81,6 +60,11 @@ bool ScaleParameterSelectLayout::resetEnabled() const
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto scaleGroup = dynamic_cast<ScaleGroup*>(eb->getParameterGroupByID({ "Scale", VoiceGroup::Global }));
   return scaleGroup->isAnyOffsetChanged();
+}
+
+Carousel* ScaleParameterSelectLayout::createCarousel(const Rect& rect)
+{
+  return ParameterSelectLayout2::createCarousel(rect);
 }
 
 void ScaleParameterSelectLayout::selectParameter(int inc)

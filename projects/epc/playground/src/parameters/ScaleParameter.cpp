@@ -70,7 +70,20 @@ BaseScaleParameter::BaseScaleParameter(ParameterGroup *group, const ParameterId 
 
 Layout *BaseScaleParameter::createLayout(FocusAndMode fam) const
 {
-  return ScaleParameterIMPL::createLayout(fam);
+  switch(fam.mode)
+  {
+    case UIMode::Info:
+      return new ParameterInfoLayout();
+
+    case UIMode::Edit:
+      return new BaseScaleParameterEditLayout(); //TODO fix UI after design-doc is done
+
+    case UIMode::Select:
+    default:
+      return new BaseScaleParameterSelectLayout();
+  }
+
+  g_return_val_if_reached(nullptr);
 }
 
 Glib::ustring BaseScaleParameter::getMiniParameterEditorName() const

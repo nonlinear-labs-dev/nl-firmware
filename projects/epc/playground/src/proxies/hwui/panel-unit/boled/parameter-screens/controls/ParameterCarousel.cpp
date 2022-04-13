@@ -12,6 +12,7 @@
 #include "proxies/hwui/controls/Button.h"
 #include "NeverHighlitButton.h"
 #include "use-cases/EditBufferUseCases.h"
+#include "parameter_declarations.h"
 
 ParameterCarousel::ParameterCarousel(const Rect& pos)
     : super(pos)
@@ -170,7 +171,7 @@ void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Param
   {
     setupChildControls(selectedParameter, { 247, 248, 312 });
   }
-  else if(paramID == 249 || paramID == 250 || paramID == 252 || paramID == 253)
+  else if(paramID == C15::PID::Unison_Voices || paramID == C15::PID::Unison_Detune || paramID == C15::PID::Unison_Phase || paramID == C15::PID::Unison_Pan)
   {
     setupChildControls(selectedParameter, { 249, 250, 252, 253 });
   }
