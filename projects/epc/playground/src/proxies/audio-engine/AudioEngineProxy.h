@@ -53,7 +53,6 @@ class AudioEngineProxy : public sigc::trackable
   static nltools::msg::SinglePresetMessage createSingleEditBufferMessage(const EditBuffer& eb);
 
  private:
-  bool isPolling() const;
   static void fillMonoPart(nltools::msg::ParameterGroups::MonoGroup& monoGroup, ParameterGroup* const& g);
   static void fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup& unisonGroup, ParameterGroup* const& g);
 
@@ -79,5 +78,4 @@ class AudioEngineProxy : public sigc::trackable
   PresetManager& m_presetManager;
   Settings& m_settings;
   PlaycontrollerProxy& m_playcontrollerProxy;
-  bool m_isPolling = false;
 };

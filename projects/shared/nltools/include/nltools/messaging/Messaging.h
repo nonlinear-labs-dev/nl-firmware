@@ -44,7 +44,7 @@ namespace nltools
          MidiSimpleMessage, MidiAck, MidiProgramChange, MidiBridgeSettings, MidiSettings, MidiHardwareChange,
 
          SyncFS, UpdateUploaded, AutoStartRecorderMessage, AEPanic, GlobalLocalSetting, WifiDevBBBEnable,
-         BufferUnderrunsChanged, SetFramesPerPeriod, FlacRecorderStateChanged, HardwarePollState);
+         BufferUnderrunsChanged, SetFramesPerPeriod, FlacRecorderStateChanged, HardwarePollEnded);
 
     namespace detail
     {

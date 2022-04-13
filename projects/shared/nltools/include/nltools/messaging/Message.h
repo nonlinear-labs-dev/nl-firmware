@@ -582,14 +582,14 @@ namespace nltools
       HWChangeSource source;
     };
 
-    struct HardwareSourcePollState
+    struct HardwareSourcePollEnd
     {
       constexpr static MessageType getType()
       {
-        return MessageType::HardwarePollState;
+        return MessageType::HardwarePollEnded;
       }
 
-      bool pollState = false;
+      std::array<float, 8> m_data;
     };
 
     namespace detail
