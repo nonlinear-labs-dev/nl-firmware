@@ -391,6 +391,13 @@ void MacroControlParameter::setCPFromMCView(UNDO::Transaction *transaction, cons
   setCpValue(transaction, Initiator::EXPLICIT_MCVIEW, cpValue, true);
 }
 
+void MacroControlParameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
+                                       bool dosendToPlaycontroller)
+{
+  nltools::Log::error(__PRETTY_FUNCTION__, getLongName(), toString(initiator), value);
+  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
+}
+
 void MacroControlParameter::sendParameterMessage() const
 {
   Application::get().getAudioEngineProxy()->createAndSendParameterMessage<MacroControlParameter>(this);
