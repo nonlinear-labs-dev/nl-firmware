@@ -181,11 +181,13 @@ void InputEventStage::onTCDEvent()
     }
     case DecoderEventType::PollStart:
     {
+      nltools::Log::error("got PollStart!");
       m_channelModeMessageCB(MidiChannelModeMessages::PollStart);
       break;
     }
     case DecoderEventType::PollStop:
     {
+      nltools::Log::error("got PollStop!");
       m_channelModeMessageCB(MidiChannelModeMessages::PollEnd);
       break;
     }
