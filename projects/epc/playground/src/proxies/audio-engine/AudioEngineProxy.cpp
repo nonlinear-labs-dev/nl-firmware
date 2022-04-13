@@ -49,6 +49,8 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
       for(auto value: msg.m_data)
       {
         auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(index);
+        nltools::Log::error(__PRETTY_FUNCTION__, index, param->getLongName(), value);
+        index++;
         if(auto p = dynamic_cast<PhysicalControlParameter*>(param))
         {
           if(value != std::numeric_limits<float>::max())
@@ -67,7 +69,6 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
             useCases.changeFromAudioEngine(dValue, HWChangeSource::TCD);
           }
         }
-        index++;
       }
 
       nltools::Log::info("sending Editbuffer after PollEnd has been received!");
