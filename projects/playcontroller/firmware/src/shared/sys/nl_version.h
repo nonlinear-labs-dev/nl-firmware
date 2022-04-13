@@ -29,7 +29,7 @@
 // added "Enable HW Source messages to UI" feature (default: disabled)
 
 // ==== V 209 ====
-// new/better ranging for Aftertouch
+// new Aftertouch processing (with calibration), optional
 #define SW_VERSION 209
 
 #define STR_IMPL_(x) #x            //stringify argument

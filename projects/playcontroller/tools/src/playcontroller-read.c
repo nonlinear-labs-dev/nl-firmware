@@ -168,7 +168,7 @@ void Usage(char const *const string, int const exitCode)
   puts("  @filename : specify input file rather than using /dev/lpc_bb_driver");
   puts("  <options> is a white-space seperated list of letters, preceeded");
   puts("            by either a + or -, turning the display on or off");
-  puts("  default is +a -d -i -q -r");
+  puts("  default is +a -d -i -q -o");
   puts(" a   All options");
   puts(" c   diagnostiC status data");
   puts(" d   additional hex Dump, forces -r");
@@ -178,10 +178,10 @@ void Usage(char const *const string, int const exitCode)
   puts(" k   Key logging and key counters");
   puts(" m   Mute status");
   puts(" n   Notificiation");
-  puts(" o   reduced Output (entity value only)");
+  puts(" o   Overlay messages of same type");
   puts(" p   Parameter");
   puts(" q   print single message, then Quit");
-  puts(" r   oveRlay messages of same type");
+  puts(" r   Reduced output (entity value only, or shorted list)");
   puts(" s   Sensors raw data");
   puts(" to  afterTouch min. Ohms value data");
   puts(" ta  afterTouch max. ADC value data");
@@ -237,9 +237,9 @@ int main(int argc, char *argv[])
     else if (strncmp(argv[1], "+a", 2) == 0)
       displayFlags &= ~NO_ALL;
 
-    else if (strncmp(argv[1], "-r", 2) == 0)
+    else if (strncmp(argv[1], "-o", 2) == 0)
       displayFlags |= NO_OVERLAY;
-    else if (strncmp(argv[1], "+r", 2) == 0)
+    else if (strncmp(argv[1], "+o", 2) == 0)
       displayFlags &= ~NO_OVERLAY;
 
     else if (strncmp(argv[1], "-c", 2) == 0)
@@ -282,9 +282,9 @@ int main(int argc, char *argv[])
     else if (strncmp(argv[1], "+n", 2) == 0)
       displayFlags &= ~NO_NOTIFICATION;
 
-    else if (strncmp(argv[1], "-o", 2) == 0)
+    else if (strncmp(argv[1], "-r", 2) == 0)
       displayFlags |= NO_REDUCED;
-    else if (strncmp(argv[1], "+o", 2) == 0)
+    else if (strncmp(argv[1], "+r", 2) == 0)
       displayFlags &= ~NO_REDUCED;
 
     else if (strncmp(argv[1], "-p", 2) == 0)
