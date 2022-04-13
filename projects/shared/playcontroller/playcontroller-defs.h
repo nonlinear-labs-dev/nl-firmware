@@ -71,6 +71,7 @@ enum PLAYCONTROLLER_SETTING_IDS
   PLAYCONTROLLER_SETTING_ID_ENABLE_KEY_MAPPING               = 0xFF07,  // direction: input; arguments(uint16): 1, flag (!= 0)
   PLAYCONTROLLER_SETTING_ID_ENABLE_UI_PARAMETER_MSGS         = 0xFF08,  // direction: input; arguments(uint16): 1, flag (!= 0)
   PLAYCONTROLLER_SETTING_ID_ENABLE_AT_DATA_COLLECT           = 0xFF09,  // direction: input; arguments(uint16): 1, flag (!= 0)
+  PLAYCONTROLLER_SETTING_ID_ENABLE_LEGACY_AT                 = 0xFF0A,  // direction: input; arguments(uint16): 1, flag (!= 0) (boot default is "disabled")
 };
 
 enum PLAYCONTROLLER_REQUEST_IDS

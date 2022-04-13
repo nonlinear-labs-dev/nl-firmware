@@ -19,8 +19,8 @@ uint32_t        AT_GetLastAftertouch()
 {
   return AT_lastAftertouch;
 }
-
-static int legacyMode;
+#define AT_LEGACY_DEFAULT (1)
+static int legacyMode = AT_LEGACY_DEFAULT;
 void       AT_SetLegacyMode(int const on)
 {
   legacyMode = (on != 0);
@@ -398,6 +398,11 @@ void AT_Init(void)
   SIZECHECK(AT_calibration_T, 32 * sizeof(uint32_t))
 
   AT_lastAftertouch = 0;
+  collectATtestData = 0;  // 0:off; 1:on
+  AT_eepromHandle   = 0;  // EEPROM access handle
+  AT_updateEeprom   = 0;  // flag / step chain variable
+  legacyMode        = AT_LEGACY_DEFAULT;
+
   // Legacy
   Generate_AftertouchTable(0);
   Generate_AftertouchTable(1);

@@ -109,6 +109,7 @@ Retry:
 #define SSPECIAL_RESETHB    "hb-reset"
 #define SSPECIAL_ENABLEMIDI "enable-midi"
 #define AT_TEST_DATA        "at-test-data"
+#define AT_LEGACY           "legacy-at"
 
 #define KEY_EMUL "key"
 
@@ -156,6 +157,7 @@ void Usage(void)
   puts("     key-logging: on|off            : turn key-logging messages on/off");
   puts("     hws-to-ui: on|off              : turn hardware-source to UI messages on/off");
   puts("     at-test-data: on|off           : turn collecting aftertouch test data on/off");
+  puts("     legacy-at: on|off              : turn legacy aftertouch mode on/off");
   puts("     ae-cmd: tton|ttoff|def-snd     : Audio Engine Special, test-tone on/off, load default sound");
   puts("     system: reboot|hb-reset|enable-midi");
   puts("                  : System Special; reboot system, reset heartbeat counter, enable midi");
@@ -432,6 +434,26 @@ int main(int argc, char const *argv[])
     if (strncmp(argv[2], AT_TEST_DATA, sizeof AT_TEST_DATA) == 0)
     {
       SET_DATA[2] = PLAYCONTROLLER_SETTING_ID_ENABLE_AT_DATA_COLLECT;
+      if (strncmp(argv[3], OFF, sizeof OFF) == 0)
+      {
+        SET_DATA[3] = 0;
+        writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
+        return 0;
+      }
+      if (strncmp(argv[3], ON, sizeof ON) == 0)
+      {
+        SET_DATA[3] = 1;
+        writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
+        return 0;
+      }
+      puts("set at-test-data : illegal parameter");
+      Usage();
+    }
+
+    // legacy AT
+    if (strncmp(argv[2], AT_LEGACY, sizeof AT_LEGACY) == 0)
+    {
+      SET_DATA[2] = PLAYCONTROLLER_SETTING_ID_ENABLE_LEGACY_AT;
       if (strncmp(argv[3], OFF, sizeof OFF) == 0)
       {
         SET_DATA[3] = 0;
