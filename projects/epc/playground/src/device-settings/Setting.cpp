@@ -26,8 +26,11 @@ sigc::connection Setting::onChange(sigc::slot<void, const Setting *> slot)
 
 void Setting::notify()
 {
-  m_signal.send(this);
-  super::onChange();
+  if(!static_cast<Settings*>(getParent())->isLoading())
+  {
+    m_signal.send(this);
+    super::onChange();
+  }
 
   if(static_cast<Settings *>(getParent())->isLoading())
     syncExternals(SendReason::SettingsLoaded);

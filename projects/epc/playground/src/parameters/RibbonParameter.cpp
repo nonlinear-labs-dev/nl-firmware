@@ -139,13 +139,16 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
           auto oldMode = m_returnMode;
           swapData->swapWith(m_returnMode);
           auto oldPos = getControlPositionValue();
-          setupScalingAndDefaultValue(initiator == Initiator::EXPLICIT_USECASE && getRibbonReturnMode() == RibbonReturnMode::RETURN);
-          if(initiator == Initiator::EXPLICIT_USECASE && oldMode == RibbonReturnMode::RETURN && getRibbonReturnMode() == RibbonReturnMode::STAY)
+          setupScalingAndDefaultValue(initiator == Initiator::EXPLICIT_USECASE
+                                      && getRibbonReturnMode() == RibbonReturnMode::RETURN);
+          if(initiator == Initiator::EXPLICIT_USECASE && oldMode == RibbonReturnMode::RETURN
+             && getRibbonReturnMode() == RibbonReturnMode::STAY)
           {
             auto newPos = (oldPos * 0.5) + 0.5;
             getValue().setRawValue(initiator, newPos);
           }
-          else if(initiator == Initiator::EXPLICIT_LOAD && oldMode == RibbonReturnMode::STAY && getRibbonReturnMode() == RibbonReturnMode::RETURN)
+          else if(initiator == Initiator::EXPLICIT_LOAD && oldMode == RibbonReturnMode::STAY
+                  && getRibbonReturnMode() == RibbonReturnMode::RETURN)
           {
             setupScalingAndDefaultValue(true);
           }
@@ -376,9 +379,19 @@ void RibbonParameter::sendToPlaycontroller() const
 void RibbonParameter::onLocalEnableChanged(bool localEnableState)
 {
   nltools::Log::error(__PRETTY_FUNCTION__, localEnableState);
+
+  if(auto eb = getParentEditBuffer())
+  {
+    if(eb->getSettings().isLoading())
+    {
+      nltools::Log::error(__PRETTY_FUNCTION__, "prevented!!");
+      return;
+    }
+  }
+
   auto scope = UNDO::Scope::startTrashTransaction();
 
-  if(localEnableState) //Off -> On
+  if(localEnableState)  //Off -> On
   {
     if(getReturnMode() != ReturnMode::None)
     {
@@ -388,10 +401,11 @@ void RibbonParameter::onLocalEnableChanged(bool localEnableState)
     }
     else
     {
-      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getSendParameter()->getControlPositionValue());
+      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(),
+                                                 getSendParameter()->getControlPositionValue());
     }
   }
-  else // On -> Off
+  else  // On -> Off
   {
     if(getReturnMode() != ReturnMode::None)
     {
