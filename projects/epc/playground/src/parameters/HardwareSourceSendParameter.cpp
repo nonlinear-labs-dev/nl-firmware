@@ -179,7 +179,12 @@ size_t HardwareSourceSendParameter::getHash() const
 
 bool HardwareSourceSendParameter::isLocalEnabled() const
 {
-  return m_isEnabled;
+  if(!m_isEnabled.has_value())
+  {
+    nltools::Log::error(__PRETTY_FUNCTION__, getLongName(), "not valid yet!!!");
+  }
+
+  return m_isEnabled.value_or(false);
 }
 
 bool HardwareSourceSendParameter::lockingEnabled() const
@@ -204,10 +209,13 @@ PhysicalControlParameter* HardwareSourceSendParameter::getSiblingParameter() con
 
 void HardwareSourceSendParameter::updateAndNotifyLocalEnableStateAndSelectSiblingParameterIfApplicable()
 {
-  auto oldState = m_isEnabled;
-  m_isEnabled = m_routingIsEnabled && m_localIsEnabled;
+  if(!m_routingIsEnabled.has_value() || !m_localIsEnabled.has_value())
+    return;
 
-  if(oldState != m_isEnabled)
+  auto oldState = m_isEnabled;
+  m_isEnabled = m_routingIsEnabled.value() && m_localIsEnabled.value();
+
+  if(oldState != m_isEnabled && oldState != std::nullopt)
   {
     if(m_isEnabled)
     {
@@ -221,7 +229,7 @@ void HardwareSourceSendParameter::updateAndNotifyLocalEnableStateAndSelectSiblin
       }
     }
 
-    m_sibling.onLocalEnableChanged(m_isEnabled);
+    m_sibling.onLocalEnableChanged(m_isEnabled.value());
     invalidate();
   }
 }
