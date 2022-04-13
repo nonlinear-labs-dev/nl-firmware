@@ -46,6 +46,8 @@ class RibbonParameter : public PhysicalControlParameter
   void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
   size_t getHash() const override;
   void sendToPlaycontroller() const override;
+  void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
+                  bool dosendToPlaycontroller) override;
 
  private:
   void ensureExclusiveRoutingIfNeeded();
