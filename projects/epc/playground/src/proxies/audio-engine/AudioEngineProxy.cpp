@@ -1,5 +1,6 @@
 #include "AudioEngineProxy.h"
 #include "parameters/PedalParameter.h"
+#include "parameters/RibbonParameter.h"
 #include <presets/PresetManager.h>
 #include <presets/Bank.h>
 #include <presets/EditBuffer.h>
@@ -53,10 +54,11 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
         index++;
         if(auto p = dynamic_cast<PhysicalControlParameter*>(param))
         {
+          PhysicalControlParameterUseCases useCases(p);
+
           if(value != std::numeric_limits<float>::max())
           {
             auto dValue = static_cast<double>(value);
-            PhysicalControlParameterUseCases useCases(p);
             if(auto pedal = dynamic_cast<PedalParameter*>(p))
             {
               if(pedal->getReturnMode() == ReturnMode::None)
@@ -67,6 +69,10 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
             }
 
             useCases.changeFromAudioEngine(dValue, HWChangeSource::TCD);
+          }
+          else
+          {
+            nltools::Log::error(__PRETTY_FUNCTION__, "received hw source with max float (no poll data available)", p->getLongName(), p->getDisplayString());
           }
         }
       }
