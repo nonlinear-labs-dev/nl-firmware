@@ -228,7 +228,7 @@ void ADC_WORK_Init1(void)
   if (NL_EEPROM_ReadBlock(rib_eepromHandle, tmp, EEPROM_READ_BOTH))
     memcpy(&ribbonCalibrationData, tmp, sizeof(ribbonCalibrationData));
 
-  AT_Init();
+  AT_Init();  // will use EEPROM, this position makes sure that EHC EEPROM Data remains valid
 
   ClearHWValuesForUI();
   ClearHWValuesForAE();

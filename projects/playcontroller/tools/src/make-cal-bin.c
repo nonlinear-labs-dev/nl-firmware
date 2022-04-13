@@ -30,7 +30,7 @@ static LIB_interpol_data_T AT_forceToAdc = { 16, AT_adcToForceTableY, AT_adcToFo
 
 int main(int const argc, char const* const argv[])
 {
-  SIZECHECK(AT_calibration_T, 32 * sizeof(uint32_t))
+  SIZECHECK(AT_calibration_T, 32 * sizeof(uint32_t));
 
   ribbon[0].valid = 0;
   ribbon[1].valid = 0;

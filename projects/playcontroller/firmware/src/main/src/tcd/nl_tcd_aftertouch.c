@@ -9,6 +9,7 @@
 #include "playcontroller/playcontroller-data.h"
 #include "sys/nl_eeprom.h"
 #include "sys/nl_stdlib.h"
+#include "playcontroller/lpc_lib.h"
 
 #define AT_RAMP_TIME  (3000ul)                 // ramp time in ms (maximum)
 #define AT_RAMP_COUNT (2 * AT_RAMP_TIME / 25)  // ramp count, based on a 12.5ms time-slice, make sure it is not zero
@@ -395,7 +396,7 @@ static void Generate_AftertouchTable(uint16_t const curve)
 
 void AT_Init(void)
 {
-  SIZECHECK(AT_calibration_T, 32 * sizeof(uint32_t))
+  SIZECHECK(AT_calibration_T, 32 * sizeof(uint32_t));
 
   AT_lastAftertouch = 0;
   collectATtestData = 0;  // 0:off; 1:on
