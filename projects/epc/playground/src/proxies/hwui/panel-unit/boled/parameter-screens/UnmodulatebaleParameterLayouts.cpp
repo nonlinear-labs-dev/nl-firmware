@@ -1,5 +1,6 @@
 #include "UnmodulatebaleParameterLayouts.h"
 #include "groups/ScaleGroup.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterBarSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
@@ -8,6 +9,9 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 #include <proxies/hwui/HWUI.h>
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 UnmodulateableParameterLayout2::UnmodulateableParameterLayout2()
     : super()
@@ -18,21 +22,11 @@ void UnmodulateableParameterLayout2::init()
 {
   super::init();
   addButtons();
-
-  if(0)
-  m_signalScaleGroup =
 }
 
 void UnmodulateableParameterLayout2::addButtons()
 {
-  if(ScaleGroup::isScaleParameter(getCurrentParameter()))
-  {
-    addControl(new Button("", Buttons::BUTTON_A));
-  }
-  else
-  {
-    addControl(new SwitchVoiceGroupButton(Buttons::BUTTON_A));
-  }
+  addControl(new SwitchVoiceGroupButton(Buttons::BUTTON_A));
   addControl(new Button("", Buttons::BUTTON_B));
   addControl(new Button("", Buttons::BUTTON_C));
 }
@@ -42,6 +36,9 @@ UnmodulateableParameterSelectLayout2::UnmodulateableParameterSelectLayout2()
     , super1()
     , super2()
 {
+  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  m_signalParameterSelectionChanged = Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      sigc::mem_fun(this, &UnmodulateableParameterSelectLayout2::onParameterSelectionChanged), currentVG);
 }
 
 void UnmodulateableParameterSelectLayout2::init()
@@ -61,6 +58,17 @@ void UnmodulateableParameterSelectLayout2::init()
         addControl(new SelectedParameterKnubbelSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
         break;
     }
+
+    m_isScaleParameter = ScaleGroup::isScaleParameter(p);
+    if(m_isScaleParameter)
+    {
+      {
+        auto bA = findControlOfType<SwitchVoiceGroupButton>();
+        remove(bA.get());
+      }
+
+      m_resetButton = addControl(new Button("", Buttons::BUTTON_A));
+    }
   }
 
   addControl(createParameterValueControl());
@@ -68,6 +76,87 @@ void UnmodulateableParameterSelectLayout2::init()
   highlight<SelectedParameterBarSlider>();
   highlight<SelectedParameterValue>();
   highlight<ParameterNameLabel>();
+}
+
+namespace detail
+{
+  void toggleHighlight(Control *c)
+  {
+    if(c)
+      c->setHighlight(!c->isHighlight());
+  }
+}
+
+bool UnmodulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
+{
+  if(m_isScaleParameter)
+  {
+    if(down)
+    {
+      switch(i)
+      {
+        case Buttons::BUTTON_A:
+          if(m_resetButton)
+          {
+            detail::toggleHighlight(m_resetButton);
+            return true;
+          }
+          break;
+        case Buttons::BUTTON_ENTER:
+          if(m_resetButton && m_resetButton->isHighlight())
+          {
+            resetScaleGroup();
+            m_resetButton->setHighlight(false);
+            return true;
+          }
+          break;
+      }
+    }
+  }
+
+  return ParameterSelectLayout2::onButton(i, down, modifiers);
+}
+
+void UnmodulateableParameterSelectLayout2::onParameterSelectionChanged(Parameter *oldP, Parameter *newP)
+{
+  m_signalScaleChanged.disconnect();
+
+  if(newP)
+  {
+    m_isScaleParameter = ScaleGroup::isScaleParameter(newP);
+
+    if(m_isScaleParameter)
+    {
+      m_signalScaleChanged = newP->getParentGroup()->onGroupChanged(
+          sigc::mem_fun(this, &UnmodulateableParameterSelectLayout2::onScaleGroupChanged));
+    }
+  }
+}
+
+void UnmodulateableParameterSelectLayout2::onScaleGroupChanged()
+{
+  updateResetButton();
+}
+
+void UnmodulateableParameterSelectLayout2::updateResetButton()
+{
+  if(m_resetButton)
+  {
+    m_resetButton->setText(StringAndSuffix { resetEnabled() ? "Reset" : "" });
+  }
+}
+
+bool UnmodulateableParameterSelectLayout2::resetEnabled()
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto scaleGroup = dynamic_cast<ScaleGroup *>(eb->getParameterGroupByID({ "Scale", VoiceGroup::Global }));
+  return scaleGroup->isAnyOffsetChanged();
+}
+
+void UnmodulateableParameterSelectLayout2::resetScaleGroup()
+{
+  EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
+  ebUseCases.resetCustomScale();
 }
 
 UnmodulateableParameterEditLayout2::UnmodulateableParameterEditLayout2()

@@ -562,6 +562,8 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
       setCarousel(new ModulationCarousel(ModulationCarousel::Mode::LowerBound, Rect(195, 1, 58, 62)));
       break;
   }
+
+  updateResetButton();
 }
 
 bool ModulateableParameterSelectLayout2::isCurrentParameterDisabled() const
@@ -657,7 +659,8 @@ ModulateableParameterSelectLayout2::Mode ModulateableParameterSelectLayout2::get
 
 void ModulateableParameterSelectLayout2::updateResetButton()
 {
-  m_buttonA->setText(StringAndSuffix { resetEnabled() ? "Reset" : "" });
+  if(m_isScaleParameter)
+    m_buttonA->setText(StringAndSuffix { resetEnabled() ? "Reset" : "" });
 }
 
 bool ModulateableParameterSelectLayout2::resetEnabled() const
