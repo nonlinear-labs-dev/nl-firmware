@@ -18,6 +18,8 @@ class MiniParameterLabel : public LabelRegular8
 
   void setSelected(bool selected);
   bool isSelected() const;
+  void setInfix(Glib::ustring infix);
+  Glib::ustring getInfix() const;
 
  private:
   void onParameterChanged(const Parameter* p);
@@ -27,4 +29,5 @@ class MiniParameterLabel : public LabelRegular8
   void setFontColor(FrameBuffer& fb) const override;
 
   bool m_selected;
+  std::optional<Glib::ustring> m_infix;
 };

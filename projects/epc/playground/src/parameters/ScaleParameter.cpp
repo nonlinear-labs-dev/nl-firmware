@@ -16,11 +16,6 @@ ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId& id, con
 {
 }
 
-Glib::ustring ScaleParameter::getMiniParameterEditorName() const
-{
-  return "Scale...";
-}
-
 void ScaleParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
 {
   ModulateableParameterWithUnusualModUnit::writeDocProperties(writer, knownRevision);
@@ -61,11 +56,6 @@ BaseScaleParameter::BaseScaleParameter(ParameterGroup *group, const ParameterId 
                                        tControlPositionValue fineDenom)
 : super(group, id, scaling, def, coarseDenom, fineDenom)
 {
-}
-
-Glib::ustring BaseScaleParameter::getMiniParameterEditorName() const
-{
-  return "Scale...";
 }
 
 void BaseScaleParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
