@@ -101,6 +101,9 @@ void PhysicalControlParameter::loadFromPreset(UNDO::Transaction *transaction, co
   m_returnModeBeforeLastLoad = getReturnMode();
   m_valueBeforeLastLoad = getControlPositionValue();
   setIndirect(transaction, value);
+  transaction->addPostfixCommand([this](auto){
+    sendToPlaycontroller();
+  });
 }
 
 void PhysicalControlParameter::registerTarget(ModulationRoutingParameter *target)
