@@ -1,4 +1,5 @@
 #include "UnmodulatebaleParameterLayouts.h"
+#include "groups/ScaleGroup.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterBarSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
@@ -17,11 +18,21 @@ void UnmodulateableParameterLayout2::init()
 {
   super::init();
   addButtons();
+
+  if(0)
+  m_signalScaleGroup =
 }
 
 void UnmodulateableParameterLayout2::addButtons()
 {
-  addControl(new SwitchVoiceGroupButton(Buttons::BUTTON_A));
+  if(ScaleGroup::isScaleParameter(getCurrentParameter()))
+  {
+    addControl(new Button("", Buttons::BUTTON_A));
+  }
+  else
+  {
+    addControl(new SwitchVoiceGroupButton(Buttons::BUTTON_A));
+  }
   addControl(new Button("", Buttons::BUTTON_B));
   addControl(new Button("", Buttons::BUTTON_C));
 }
