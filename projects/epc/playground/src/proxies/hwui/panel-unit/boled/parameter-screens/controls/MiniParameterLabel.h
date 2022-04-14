@@ -18,6 +18,7 @@ class MiniParameterLabel : public LabelRegular8
 
   void setSelected(bool selected);
   bool isSelected() const;
+  void setParameterNameTransformer(std::function<Glib::ustring(Glib::ustring)> transformer);
   void setInfix(Glib::ustring infix);
   Glib::ustring getInfix() const;
 
@@ -27,7 +28,9 @@ class MiniParameterLabel : public LabelRegular8
 
   bool redraw(FrameBuffer& fb) override;
   void setFontColor(FrameBuffer& fb) const override;
+  Glib::ustring cleanupName(Glib::ustring in) const;
 
   bool m_selected;
-  std::optional<Glib::ustring> m_infix;
+  std::optional<Glib::ustring> m_infix = std::nullopt;
+  std::function<Glib::ustring(Glib::ustring)> m_nameTransformer;
 };

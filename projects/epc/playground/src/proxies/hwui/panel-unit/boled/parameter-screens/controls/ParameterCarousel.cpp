@@ -247,5 +247,11 @@ void ParameterCarousel::setupChildControlsForScaleParameterCarousel(Parameter* s
       auto label = miniParam->getLabel();
       label->setInfix("...");
     }
+    else
+    {
+      miniParam->getLabel()->setParameterNameTransformer([](auto in){
+        return StringTools::removeSpaces(in);
+      });
+    }
   }
 }

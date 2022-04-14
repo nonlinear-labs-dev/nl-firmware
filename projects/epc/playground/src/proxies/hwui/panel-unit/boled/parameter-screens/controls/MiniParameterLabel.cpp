@@ -68,7 +68,9 @@ void MiniParameterLabel::setFontColor(FrameBuffer &fb) const
 const std::pair<Glib::ustring, size_t> MiniParameterLabel::prepareDisplayString(const Parameter *p) const
 {
   auto changed = p->isChangedFromLoaded();
-  auto text = p->getMiniParameterEditorName() + getInfix() + (changed ? "*" : "");
+  auto editorName = p->getMiniParameterEditorName();
+  auto converted = cleanupName(editorName);
+  auto text = converted + getInfix() + (changed ? "*" : "");
   size_t suffixLen = changed ? 1 : 0;
   return std::make_pair(text, suffixLen);
 }
@@ -81,4 +83,18 @@ void MiniParameterLabel::setInfix(Glib::ustring infix)
 Glib::ustring MiniParameterLabel::getInfix() const
 {
   return m_infix.value_or("");
+}
+
+Glib::ustring MiniParameterLabel::cleanupName(Glib::ustring in) const
+{
+  if(m_nameTransformer)
+    return m_nameTransformer(in);
+
+  return in;
+}
+
+void MiniParameterLabel::setParameterNameTransformer(std::function<Glib::ustring(Glib::ustring)> transformer)
+{
+  m_nameTransformer = transformer;
+  setDirty();
 }
