@@ -363,7 +363,6 @@ size_t RibbonParameter::getHash() const
 
 void RibbonParameter::sendToPlaycontroller() const
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, getLongName(), getValue().getQuantizedClipped());
   PhysicalControlParameter::sendToPlaycontroller();
   auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
                                                                          : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
