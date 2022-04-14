@@ -183,7 +183,7 @@ bool HardwareSourceSendParameter::isLocalEnabled() const
     nltools::Log::error(__PRETTY_FUNCTION__, getLongName(), "not valid yet!!!");
   }
 
-  return m_isEnabled.value_or(false);
+  return m_isEnabled.value_or(true);
 }
 
 bool HardwareSourceSendParameter::lockingEnabled() const
