@@ -32,7 +32,7 @@ void ParameterCarousel::setup(Parameter* selectedParameter)
 
   if(std::shared_ptr<PanelUnitParameterEditMode> edit = std::dynamic_pointer_cast<PanelUnitParameterEditMode>(um))
   {
-    if(selectedParameter && paramAvailable)
+    if(paramAvailable)
     {
       auto button = edit->findButtonForParameter(selectedParameter);
 
@@ -167,12 +167,19 @@ void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Param
 {
   const auto paramID = selectedParameter->getID().getNumber();
 
-  if(ScaleGroup::isScaleParameter(selectedParameter) || paramID == 247 || paramID == 248)
+  if(paramID == C15::PID::Master_Volume || paramID == C15::PID::Master_Tune)
   {
-    setupChildControls(selectedParameter, { 247, 248, 312 });
+    setupChildControls(selectedParameter, { C15::PID::Master_Volume, C15::PID::Master_Volume, C15::PID::Scale_Base_Key });
+  }
+  else if(paramID == C15::PID::Scale_Base_Key || ScaleGroup::isScaleParameter(selectedParameter))
+  {
+    setupChildControls(selectedParameter, {C15::PID::Scale_Base_Key, C15::PID::Scale_Offset_0, C15::PID::Scale_Offset_1, C15::PID::Scale_Offset_2,
+                                            C15::PID::Scale_Offset_3, C15::PID::Scale_Offset_4, C15::PID::Scale_Offset_5, C15::PID::Scale_Offset_6,
+                                            C15::PID::Scale_Offset_7, C15::PID::Scale_Offset_8, C15::PID::Scale_Offset_9, C15::PID::Scale_Offset_10,
+                                            C15::PID::Scale_Offset_11});
   }
   else if(paramID == C15::PID::Unison_Voices || paramID == C15::PID::Unison_Detune || paramID == C15::PID::Unison_Phase || paramID == C15::PID::Unison_Pan)
   {
-    setupChildControls(selectedParameter, { 249, 250, 252, 253 });
+    setupChildControls(selectedParameter, { C15::PID::Unison_Voices, C15::PID::Unison_Detune, C15::PID::Unison_Phase, C15::PID::Unison_Pan });
   }
 }
