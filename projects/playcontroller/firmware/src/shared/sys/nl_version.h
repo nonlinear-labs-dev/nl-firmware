@@ -29,8 +29,11 @@
 // added "Enable HW Source messages to UI" feature (default: disabled)
 
 // ==== V 209 ====
-// new Aftertouch processing (with calibration), optional
-#define SW_VERSION 209
+// restructured to allow smaller chips than the LPC4337
+
+// ==== V 210 ====
+// new Aftertouch processing, with calibration
+#define SW_VERSION 210
 
 #define STR_IMPL_(x) #x            //stringify argument
 #define STR(x)       STR_IMPL_(x)  //indirection to expand argument macros
