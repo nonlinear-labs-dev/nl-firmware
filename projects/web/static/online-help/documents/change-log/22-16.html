@@ -52,19 +52,17 @@
                 <p>We recommend to leave returning Sources in their return positions when changing their Return Behavior. Otherwise, the modulation to associated Macro Controls may be compromised due to offsets and clipping Macro Controls.</p>
             </div>
             <div data-highlight="note">
-                <p>If a Pedal changes <code>[ReturnToCenter &#x2192; NonReturn/ReturnToZero]</code>, the position will be clipped (negative values will be set to zero).</p>
+                <p>If a Pedal's behavior changes <code>[ReturnToCenter &#x2192; NonReturn/ReturnToZero]</code>, the position will be clipped (negative values will be set to zero).</p>
             </div>
         </div>
         <div class="section">
             <h4>Recalling a Preset with differing Return Behavior</h4>
-            <p>Should the Return Behavior of a particular Hardware Source change when recalling a Preset, our general aim is to leave the position intact. However, there is an exception: If a Ribbon changes <code>[NonReturn &#x2192; ReturnToCenter]</code>, the position will drop to the return position.</p>
-            <p>When only using physical Sources or MIDI messages, the system works reliably. However, interfering changes from the Hardware UI or Web UI not always produce expected behavior.</p>
+            <p>In case the return behavior of a particular Hardware Source changes when a preset is recalled, our general aim is to leave the position intact. However, there is an exception: If a Ribbon changes <code>[NonReturn &#x2192; ReturnToCenter]</code>, the position will drop to the return position.</p>
         </div>
     </section>
     <section>
         <h3>Boot Sound</h3>
         <p>As Hardware Source positions are not part of a Preset anymore, loading the first Sound after booting the C15 depends on how the Hardware Sources are placed physically. Returning Hardware Sources may not be in their return positions, which will affect the Preset. Non-returning untouched Pedals and Ribbons are dominated by associated Macro Controls and will not affect the Preset.</p>
-        <p>When the Hardware Sources remain untouched during booting, no MIDI messages will be sent.</p>
     </section>
     <section>
         <h3>User Manual</h3>
@@ -85,9 +83,9 @@
         <div class="section">
             <h4 data-detail="Hardware UI, WebUI">User Interfaces</h4>
             <ul>
-                <li>reworked the appearance of Hardware Sources according to MIDI Settings - Local On/Off,<br>the <code>Send/Receive</code> representations in the Panel Unit Display can now be navigated,<br>Send representations will indicate their associated MIDI assignment</li>
+                <li>reworked the appearance of Hardware Sources according to MIDI Settings - Local On/Off,<br>navigation between the <code>Send/Receive</code> representations in the Panel Unit Display,<br><code>Send</code> representations will indicate their associated MIDI assignment</li>
                 <li>reworked animated screens in the Panel Unit Display</li>
-                <li>introduced a Shutdown Screen (uring the User to not cut the power supply until the C15 is properly shut down)</li>
+                <li>introduced a Shutdown Screen (urging the User to not cut the power supply until the C15 is properly shut down)</li>
             </ul>
         </div>
         <div class="section">
