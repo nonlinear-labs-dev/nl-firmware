@@ -32,18 +32,21 @@ bool PhysicalControlParameterUseCases::applyPolledHWPosition(float value)
 {
     if(value != std::numeric_limits<float>::max())
     {
-      auto oldPos = m_physicalParam->getValue().getRawValue();
       auto dValue = static_cast<double>(value);
-      if(auto pedal = dynamic_cast<PedalParameter*>(m_physicalParam))
+
+      if(m_physicalParam->getValue().differs(dValue))
       {
-        if(pedal->getReturnMode() == ReturnMode::None)
+        if(auto pedal = dynamic_cast<PedalParameter*>(m_physicalParam))
         {
-          setIndirect(dValue);
-          return oldPos != dValue;
+          if(pedal->getReturnMode() == ReturnMode::None)
+          {
+            setIndirect(dValue);
+            return true;
+          }
         }
+        changeFromAudioEngine(dValue, HWChangeSource::TCD);
+        return true;
       }
-      changeFromAudioEngine(dValue, HWChangeSource::TCD);
-      return oldPos != dValue;
     }
     return false;
 }
