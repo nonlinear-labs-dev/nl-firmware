@@ -193,7 +193,7 @@ public class GlobalMenu extends OverlayLayout {
 			@Override
 			public Control mouseDown(Position eventPoint) {
 				getParent().toggle();
-				Window.open("/online-help/index.html?theme=dark", "", "");
+				Window.open("/online-help/index.html?theme=light", "", "");
 				return this;
 			}
 
