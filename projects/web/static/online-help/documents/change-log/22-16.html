@@ -46,6 +46,25 @@
         <p>The Positions of Hardware Sources are now separated from Presets. This allows for more reliable Preset recall and store behavior, even when returning Sources are not in their return positions.</p>
         <p>However, the Return Behavior of Pedals and Ribbons remains a part of a Preset and may differ when recalling another Preset.</p>
         <div class="section">
+            <h4 data-detail="Hardware UI, Graphical UI">MIDI Assignments</h4>
+            <p>When a Hardware Source has a MIDI assignment, it will be indicated on the parameter <i>(for example, the CC number)</i>.</p>
+        </div>
+        <div class="section">
+            <h4>Local On/Off Enhancements</h4>
+            <p>Decoupling a Hardware Source from the synth by setting Local Enable to <code>Off</code>, changes their representation in the UI.</p>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Local On/Off on Hardware Sources">
+                    <picture class="content" data-src="./images/web-ui/parameter/webui-hw-local.png"></picture>
+                </figure>
+                <div>
+                    <p>The Hardware Source is now shown differentiated into <q>Send</q> and <q>Receive</q>.</p>
+                </div>
+            </div>
+            <p><q>Send</q> shows the physical status of the respective Hardware Source, for example the current position of a Ribbon and relates to all communication with external devices. This value is sent via MIDI.</p>
+                    <p><q>Receive</q> assigns the value that is passed internally to the synth. This is either a value received via MIDI or, in the case of the bidirectional Ribbons, a value received via an adjusted Macro Control. This allows the audio engine of the C15 to be triggered by an external device and at the same time the Hardware Sources can be used to control other external devices without conflict.</p>
+            <p></p>
+        </div>
+        <div class="section">
             <h4>Changing a Hardware Source Return Behavior</h4>
             <p>When <code>[ReturnToZero/ReturnToCenter]</code> is chosen, the position of the Hardware Source will drop to the return position.</p>
             <div data-highlight="warn">
@@ -81,16 +100,10 @@
             <p>The Auto Start option will default to <code>Off</code>, until it is explicitly changed.</p>
         </div>
         <div class="section">
-            <h4 data-detail="Hardware UI, WebUI">User Interfaces</h4>
-            <ul>
-                <li>reworked the appearance of Hardware Sources according to MIDI Settings - Local On/Off,<br>navigation between the <code>Send/Receive</code> representations in the Panel Unit Display,<br><code>Send</code> representations will indicate their associated MIDI assignment</li>
-                <li>reworked animated screens in the Panel Unit Display</li>
-                <li>introduced a Shutdown Screen (urging the User to not cut the power supply until the C15 is properly shut down)</li>
-            </ul>
-        </div>
-        <div class="section">
             <h4>General Fixes</h4>
             <ul>
+                <li>reworked animated screens in the Panel Unit Display</li>
+                <li>introduced a Shutdown Screen (urging the User to not cut the power supply until the C15 is properly shut down)</li>
                 <li>fixed Bank Import from USB Stick</li>
                 <li>fixed Bank sorting</li>
             </ul>
