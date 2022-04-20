@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Sound Generation Tutorial - 05. The Output Mixer</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/tut-sound-generation/05-output-mixer">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/index.html">Sound Generation Tutorial</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/05-output-mixer.html" data-number="5">The Output Mixer</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+<div class="tutorial">
+
+    <section>
+        <h2 data-number="5">The Output Mixer</h2>
+        <p>You have already laid your hands on the Output Mixer. Here you will find some more info on that module.<br />If you are only popping in at this point, we should first set the oscillator section to produce a sawtooth waveform:</li>
+        <ul>
+            <li>First, please load the Init sound – do not forget to crank up <q>A</q> on the Output Mixer!</li>
+            <li>Set Oscillator A’s <em>PM Self</em> to <em>[90 %|</em> for a nice-sounding sawtooth-wave.</li>
+            <li>Set Envelope A’s <em>Sustain</em> to <em>[60 %|</em> in order to produce a steady tone.</li>
+        </ul>
+        <p>Now carry on, please:</li>
+        
+        <h3 class="heading secondary">Using the Output Mixer:</h3>
+        <ul>
+            <li>Press <em>S.V. Filter</em> (Output Mixer).</li>
+            <li>Set the <em>Encoder</em> to approx. <em>[50.0 %]</em>.</li>
+            <li>Press <em>A</em> (Output Mixer).</li>
+            <li>Set the <em>Encoder</em> to approx. <em>[50.0 %]</em>.</li>
+            <li class="indent-b">You have just combined the output signal of the S.V. Filter with the direct (unfiltered) signal of Oscillator A.</li>
+            <li>Sweep the <em>Encoder</em> across the entire value range and back to [50.0 %].</li>
+        </ul>
+
+            <p>Positive Level values add signals. Negative Level values subtract the signal from the others.<br />&#xE172;&ensp;Because of phase cancellation, positive and negative values may produce different timbral results here and there. It is worth trying out both polarities of the Levels.<br />&#xE172;&ensp;Please note that high input levels can produce audible saturation effects that make the sound edgier and/or more aggressive. To avoid unwanted distortion in the subsequent stages (e.g. effect section), please compensate for the gain boost by reducing the output level of the mixer by using Level (Output Mixer).</p>
+    
+        <h3 class="heading secondary">The Drive Parameter:</h3>
+        <ul>
+            <li>Press <em>Drive</em> (Output Mixer).</li>
+            <li>Sweep the <em>Encoder</em> across the entire value range.</li>
+            <li class="indent-b">Now the output signal of the mixer is passing through a flexible distortion circuit that produces everything from mild fuzzy distortion up to wildest sound mangling.<br />Check out the Drive parameters <em><i>Fold</i></em> and <em><i>Asymmetry</i></em> as well. To avoid unwanted distortion in the subsequent stages (e.g. effect section), please compensate for the gain boost by reducing the output level of the mixer by using <em>Level</em> (Output Mixer).</li>
+            <li>Reset all <em>Drive</em> parameters to their default values.</li>
+        </ul>
+    </section>
+    
+</div><!-- Ende Tutorial (Listen) -->
+</main>
+</div>
+</body>
+</html>

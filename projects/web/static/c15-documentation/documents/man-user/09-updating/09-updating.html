@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 09. Updating the C15</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/09-updating">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/09-updating/09-updating.html" data-number="9">Updating the C15</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="9">Updating the C15</h2>
+    </section>
+    <section>
+        <h3 class="heading">Before starting an Update</h3>
+        <div data-highlight="warn">
+            <p>Please save your preset banks before installing the update!</p>
+        </div>
+        <p>The most convenient way is to use the menu entry <q>Save all Banks as Backup File...</q> in the <span data-keyword="Graphical">UI</span> or with <q>Backup</q> and <q>Save all Banks...</q> in the Setup menu in the <span data-keyword="Panel Unit">Display</span>. For more information, see <a href="./documents/man-user/04-user-interfaces/04-14-backups.html" data-number="4.14">Backups</a>.</p>
+    </section>
+    <section>
+        <h3 class="heading">Steps to proceed</h3>
+        <ul>
+            <li>The latest installer is offered on <a href="https://www.nonlinear-labs.de/support/updates/updates.html" class="label" target="_blank">www.nonlinear-labs.de/support/updates/updates.html</a><br />By clicking its button you download the file <q>nonlinear-c15-update.tar</q> to your computer.</li>
+            <li>Your computer might offer to unpack this type of file. Please make sure that the file is NOT unpacked or changed in any way.</li>
+            <li>
+                <u>When using the C15 USB Stick:</u>
+                <ul>
+                    <li>Copy the file (<q>nonlinear-c15-update.tar</q>) to the root folder of the USB memory stick that was delivered with the C15. (Other memory sticks will only work if they have the FAT32 format.)</li>
+                    <li>Switch off the C15 and plug the memory stick into the USB connector at the backside of the C15.</li>
+                    <li>Switch on the C15. The update process will start automatically.</li>
+                </ul>
+            </li>
+            <li>
+                <u>When using the Graphical User Interface:</u>
+                <ul>
+                    <li>Open the Setup Window in the Graphical User Interface and navigate to the Symstem Info tab.</li>
+                    <li>The file (<q>nonlinear-c15-update.tar</q>) can be directly uploaded from your computer by clicking on the corresponding button next to the <q>Upload Software Update</q> option. Once the file was successfully uploaded, the C15 will automatically restart and start the update process.</li>
+                </ul>
+            </li>
+            <li>The update process may take several minutes. The <span class="keyword" data-keyword="Panel Unit">Display</span> will indicate different phases of the process by showing <q>Updating...</q> messages.</li>
+        </ul>
+        <div data-highlight="warn">
+            <p>Do not power off the C15 during the update installation!<br />An interruption of the power in this phase can cause irreversible damage.</p>
+        </div>
+        <ul>
+            <li>When the update is finished, the display will show: <q>Updating C15 DONE! Please restart!</q> Please switch off the instrument, (remove the memory stick) and switch it on again.</li>
+        </ul>
+    </section>
+    <section>
+        <h3 class="heading">Further Notes on Updates</h3>
+        <div data-highlight="warn">
+            <p>If you update from version 21-02 you might get the error message <q>Updating C15 FAILED</q> during the installation. In this case the installer needs to be run a second time. Please restart the C15 without removing the USB stick. Now the update should be successful.</p>
+        </div>
+        <div data-highlight="note">
+            <p>After a successful update the file on the memory stick is automatically renamed to <q>nonlinear-c15- update.tar-copied</q>. Please delete this file before using the stick for another update.</p>
+        </div>
+        <p>All downloaded update files have identical names (<q>nonlinear-c15-update.tar</q>). This is the file name required by the C15 to detect an update on the memory stick. If there is an earlier update file with this name in the download folder of your browser, the name of the new update will be modified (e.g. by adding <q>-1</q>). Therefore please check if the file has been renamed and restore the original name. It is recommended to remove all C15 update files from the download folder.</p>
+        <p>If you want to store different updates on your computer, please keep them in separate folders or rename them, so that you can identify them later.</p>
+        <p>You can check the current software versions in the <q>System Info</q> section of the <span class="keyword" data-keyword="Setup">Menu</span>. For this press the<span class="keyword" data-keyword="Setup">Button</span> on the <span class="keyword" data-keyword="Edit">Panel</span> or the <q>Setup</q> entry in the <span class="keyword" data-keyword="View">Menu</span> of the <span class="keyword" data-keyword="Graphical">User Interface</span> and select <q>System Info</q>. Here you find the <q>Software Version</q>. It shows the release date as well as year and week in the format YY-WW (e.g. 20-40 - week 40 in year 2020).</p>
+        <div data-highlight="note">
+            <p>If a <q>FAILED</q> message appears in the display, the update was not successful. In this case please repeat the installation. Rename the installer file to the original name <q>nonlinear-c15-update.tar</q>, plug in the USB stick and start the C15 again. If this is without success please contact us. On the USB stick you will find a log file (<q>nonlinear-c15-update.log.txt</q>) which you can send us to help us analyzing the problem.</p>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

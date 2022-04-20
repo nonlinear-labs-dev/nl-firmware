@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 03.1. Sound Types</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/03-basic-concepts/03-01-sound-types">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/03-basic-concepts/03-00-0-basic-concepts.html" data-number="3">Basic Concepts</a>
+        <span>/</span>
+        <a href="./documents/man-user/03-basic-concepts/03-01-sound-types.html" data-number="3.1">Sound Types</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="3.1">Sound Types</h2>
+    </section>
+    <section>
+        <div class="section" data-columns="2">
+            <div>
+                <figure class="border maximize" data-label="Single Sounds">
+                    <picture class="content" data-src="./images/hardware-ui/boled/sound/boled-snd-single.png"></picture>
+                    <picture class="content" data-src="./images/web-ui/sound/webui-sound-single.png"></picture>
+
+                </figure>
+            </div>
+            <div class="section">
+                <p>Originally, the C15 only supported <span data-keyword="Single"> Sounds</span>, where all voices are controlled by the same set of parameters. Since version <span class="sw-version">20-28</span>, <span data-keyword="Split"> Sounds</span> and <span data-keyword="Layer"> Sounds</span> are available consisting of two <span data-keyword="Parts"></span> (<span data-utf="ind-part-1"></span>, <span data-utf="ind-part-2"></span>). Each Part can use up to 12 voices based on its own parameter set - so most parameters will be available twice, per Part.</p>
+            </div>
+            <div>
+                <figure class="border maximize" data-label="Split Sounds">
+                    <picture class="content" data-src="./images/hardware-ui/boled/sound/boled-snd-split.png"></picture>
+                    <picture class="content" data-src="./images/web-ui/sound/webui-sound-split.png"></picture>
+                </figure>
+            </div>
+            <div class="section">
+                <p>In <span data-keyword="Split"> Sounds</span> (&#xE0F2;) the Parts are assigned to two separate keyboard ranges. Part I can be played between the lowest key (C0) and the Split Point, Part II between the Split Point and the highest key (C6). The Parts have separate voice allocations, which means that they can have different settings for Mono and Unison. The Split Point is not affected by the <span data-keyword="Note"> Shift</span> function, the Master Tune or the Part Tune.</p>
+            </div>
+            <div>
+                <figure class="border maximize" data-label="Layer Sounds">
+                    <picture class="content" data-src="./images/hardware-ui/boled/sound/boled-snd-layer.png"></picture>
+                    <picture class="content" data-src="./images/web-ui/sound/webui-sound-layer.png"></picture>
+                </figure>
+            </div>
+            <div class="section">
+                <p>In <span data-keyword="Layer"> Sounds</span> (&#xE0F5;) each voice of Part I will be played simultaneously with the corresponding voice of Part II. Both Parts share the same voice allocation, which means that they have identical settings for Mono and Unison.</p>
+            </div>
+        </div>
+        <div data-highlight="note">
+            <p>Note that held Keys will reset when loading whole Presets or Parts of different types. </p>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

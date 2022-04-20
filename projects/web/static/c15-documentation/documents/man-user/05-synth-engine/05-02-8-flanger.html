@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 05.2.8. Flanger</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/05-synth-engine/05-02-sig-flow-components/05-02-8-flanger">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-synth-engine.html" data-number="5">The Synthesis Engine</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-0-sig-flow-components.html" data-number="5.2">Signal Flow and Components</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-8-flanger.html" data-number="5.2.8">Flanger</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="5.2.8">Flanger</h2>
+        <p>The first effect is a dynamic stereo delay capable of producing chorus-, phaser- or flanger-like sounds. Its basic mechanism can be compared to the Comb Filter, although the Flanger is not sensitive to Key Tracking. The usual sweeping effect arises when the delay time is changing (due to modulations), as the delayed signal is combined with the input signal and changing harmonics are created.</p>
+        <p>As the delay times are relatively short, this effect is not able to create wide spatial effects, but a certain perception of depth will emerge nevertheless. The delay time can be spread for both channels with a <q>Stereo</q> parameter.</p>
+        <p>The local delay feedback bus consists of two filters, the first of which is an allpass filter with a tunable frequency, affecting the phases of the signal’s frequency components. The second filter is a one-pole lowpass filter with tunable frequency, damping the feedback signal. The feedback level can be determined by an amount parameter and as this is a stereo effect, cross feedback can be applied as well, feeding some amount of a signal from one channel to the other (and vice versa).</p>
+        <p>Modulation sources for the Flanger are provided by a stereo LFO (with adjustable Rate and stereo Phase offset) and a simple (monophonic) envelope signal (immediately jumping to the velocity when a key is pressed and then exponentially approaching zero within a time corresponding to the Rate parameter). A crossfade of the two sources can be applied as modulation for the delay time and for the allpass filter frequency independantly.</p>
+        <p>Finally, the Flanger signal can be blended into the mix by a bipolar Mix parameter, as the signal polarity can have a strong effect when using the global feedback signal.</p>
+        <figure class="border maximize" data-label="Flanger">
+            <picture class="content" data-src="./images/diagrams/flanger-*.png"></picture>
+        </figure>
+    </section>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Pedal Manual - 06. Usage</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-pedals/06-usage">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-pedals/index.html">Pedal Manual</a>
+        <span>/</span>
+        <a href="./documents/man-pedals/06-usage.html" data-number="6">Usage</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="6">Usage</h2>
+    </section>
+    <section>
+        <h3 class="heading primary" data-number="6.1">Auto-Ranging of the pedal travel</h3>
+    </section>
+    <section>
+        <p>After a pedal has been plugged in while the C15 is running, or after selecting a different pedal preset, most pedal presets require an Auto-Ranging cycle where the available electrical travel produced by the pedal is measured and used for the corner points. Note that until a reasonable range of movement has been detected the pedal will not produce any output signals. The procedure is simple:</p>
+        <ul>
+            <li>move the pedal to one mechanical end stop, then wait about one second.</li>
+            <li>move the pedal to the other mechanical end stop and again wait a second.</li>
+        </ul>
+    </section>
+    <section>
+        <h3 class="heading primary" data-number="6.2">Checking the Auto-Ranging and general pedal characteristic</h3>
+    </section>
+    <section>
+        <p>After the Auto-Ranging procedure, you might want to check if all is well, that is a) the pedal output spans the whole 0%...100% range and b) that the output characteristic is reasonable, producing about 50% output when the pedal is at around the mechanical middle position. Both checks can be done by watching the pedal’s position bar graph and the corresponding numerical display in the Pedal Editor.</p>
+        <p>Should you find that the output value at the approximate mechanical center position is way off from the 50% mark, something like 80...90% <em>*</em> or so, then the pedal likely requires a different setup with tip and ring connections swapped. That is, if you see this behavior and have currently selected <q>Pot, Tip-Active</q>, then select <q>Pot, Ring-Active</q>, and vice versa. On the other hand, a unique feature of the C15 is that a pedal generally keeps working even when selecting the wrong pin-out, you just get a somewhat skewed characteristic of output values vs. mechanical travel.</p>
+        <p><small>* When you are using the reverse readout presets like <q>Pot, Tip-Active, Rev.</q>, <q>Pot, Ring-Active, Rev.</q> etc, you will instead get a 10...20% reading for the mechanical center position in case you have accidentally selected the swapped pin-out.</small></p>
+    </section>    
+    <section>
+        <h3 class="heading primary" data-number="6.3">Resetting the Auto-Ranging</h3>
+    </section>
+    <section>
+        <p>The current internal settings for the Auto-Ranging of a pedal are stored and kept in non-volatile memory so there is no need to run the Auto-Ranging procedure each time the C15 is powered up.</p>
+        <p>There are several cases, though, when a pedal might not reach the complete 0%...100% span and a reset of the Auto-Ranging will be required:</p>
+        <ul>
+            <li>The pedal has a <q>minimum</q> or <q>range</q> control that has been touched, reducing the effective electrical travel.</li>
+            <li>The pedal has been replaced with another, different pedal while the C15 was off,notably when changing between compatible types. The C15 has no way of knowing that you changed the pedal and will continue to use the internal settings it had found and stored for the original pedal.</li>
+            <li>in rare cases, both the pedal hardware and/or the electronics may have developed significant drift and the full 0%...100% range isn’t reached anymore, for continuous output pedal presets types.</li>
+        </ul>
+        <p>There are two ways to reset the Auto-Ranging:</p>
+        <ul>
+            <li>unplug and re-plug the pedal, at the C15 side (and note the need for the re-plugging procedure be finished in less than one second), while the C15 is running.</li>
+            <li>or simply select a different pedal preset temporarily, then select the original pedal preset again.</li>
+        </ul>
+    </section>    
+</main>
+</div>
+</body>
+</html>

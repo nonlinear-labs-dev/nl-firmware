@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.16.1. Presets</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-16-graphical-ui-functionality/04-16-1-presets">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-16-0-graphical-ui-functionality.html" data-number="4.16">Graphical UI Functionality</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-16-1-gui-presets.html" data-number="4.16.1">Presets</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.16.1">Presets</h2>
+    </section>
+    <section>
+        <h3 class="heading primary">Preset Search</h3>
+        <div data-columns="2">
+            <div>
+                <figure class="border maximize" data-label="Preset Search icon (Preset Tab)">
+                <picture class="content" data-src="images/web-ui/txt/webui-preset-search-button.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Preset Search windo">
+                    <picture class="content" data-src="images/web-ui/txt/webui-dia-preset-search.png"></picture>
+                </figure>
+            </div>
+            <div class="section">
+                <p>All available presets can be searched for keywords, the search results will be highlighted until the search is canceled. Search keywords can be logically combined by setting the logical operator (<code><b>AND</b></code>: every keyword has to match, <code><b>OR</b></code>: any keyword that matches). The search algorithm can further be specified to include preset names, preset comments and the device names where presets originated from (as the selectable options show in the Search window).</p>
+                <p>The <code><b>Zoom to all matches</b></code> option will set the zoom level of the main area, so that every match is instantly visible. The <code><b>Load Highlighted Preset</b></code> option enables the <code><b>Previous</b></code> and <code><b>Next</b></code> buttons to cycle through each Preset of the search result. The currently loaded Preset has a strong highlighting.</p>
+                <p>The success of a search strongly depends on the level of documentation (meaningful preset names and descriptive comments). Bank information (comments) are not included in the search. Using hashtags for specific keywords can be a sophisticated method of preset search and documentation.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Preset Drag and Drop</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Preset Drag and Drop">
+                <picture class="content" data-src="images/web-ui/txt/webui-preset-dnd.png"></picture>
+            </figure>
+            <div>
+                <p>A selected preset can be dragged on other positions in a bank, into other banks or on the background. When it is dropped, it will move to the new position (if the bank remains the same), or it will be copied to the new position (creating a new bank if it was dropped on the background). If a preset is dropped directly on another preset (as indicated by a red background), the other preset will be replaced. In a similar manner, banks can be dragged as well in order to change their position in the main area, or to copy their contents into other banks.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Multiple Preset Selection</h3>
+        <div data-columns="2">
+            <div>
+                <figure class="border maximize" data-label="Multiple Preset Selection menus">
+                <picture class="content" data-src="images/web-ui/txt/webui-ctx-multi-select.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Shift key">
+                    <picture class="content" data-src="images/info-gfk/gfk-tast-shift.png"></picture>
+                </figure>
+            </div>
+            <div>
+                <p>Bank context menus (invoked by a right-click or long touch gesture on a bank in the main area) provide an option to start and finish the selection of multiple presets. Alternatively, the Shift key can be used to hold the multiple selection mode. During multiple selection, presets of any bank can be added or removed from the selection (but they will not be loaded). All selected presets can then be deleted or copied (see context menu), or dragged into any bank at any position or on the background, creating a new bank containing copies of the selected presets. The selection of multiple presets can be finished in the context menu or by a click on the background.</p>
+            </div>
+        </div>
+        <div data-highlight="note">
+            <p>Note that Preset Drag and Drop and Multiple Preset Selection are only available, if the GUI Settings (explained below) allow for context menus and drag and drop.</p>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Preset Compare</h3>
+        <p>Two presets can be compared against each other, examining their individual differences. This may be useful for distinguishing several versions of a preset that are only slightly different. Two compare methods are available, as shown in the following:</p>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Preset Compare - selected presets">
+                <picture class="content" data-src="images/web-ui/txt/webui-ctx-preset-compare.png"></picture>
+            </figure>
+            <div>
+                <p>Using the multiple preset selection mechanism and selecting two presets, a context menu entry <code><b>Compare ...</b></code> will be available when right-clicking on the selection. The two presets will be compared against each other.</p>
+            </div>
+            <figure class="border maximize" data-label="Preset Compare - compare to Editbuffer">
+                <picture class="content" data-src="images/web-ui/txt/webui-ctx-preset-buff-comp.png"></picture>
+            </figure>
+            <div>
+                <p>A right-click on any preset will provide a <code><b>Compare to Editbuffer ...</b></code> option. The preset will be compared to a copy of the <span data-keyword="Edit">Buffer</span> (the current parameter settings).</p>
+            </div>
+            <figure class="border maximize" data-label="Preset Compare window">
+                <picture class="content" data-src="images/web-ui/txt/webui-dia-preset-comp.png"></picture>
+            </figure>
+            <div>
+                <p>When starting the compare mechanism by either method, the Compare window will appear, showing every parameter or aspect that differs between the two presets. Equal parameters or aspects are not visible. Any of the two presets can be loaded, as provided by a Load icon in the header section of the window (so, both presets can be tested and played without closing the Compare window). When comparing a preset to the <span data-keyword="Edit">Buffer</span>, subsequent adjustments to parameters that change the Editbuffer will not be recognized by the Compare window automatically. The <code><b>Refresh</b></code> button can be used in order to get a new copy of the current Editbuffer, ensuring that the comparison is up-to-date.</p>
+            </div>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

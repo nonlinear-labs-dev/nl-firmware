@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 03.6. Presets</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/03-basic-concepts/03-06-presets">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/03-basic-concepts/03-00-0-basic-concepts.html" data-number="3">Basic Concepts</a>
+        <span>/</span>
+        <a href="./documents/man-user/03-basic-concepts/03-06-presets.html" data-number="3.6">Presets</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="3.6">Presets</h2>
+    </section>
+    <section>
+        <p>The current sound can be stored as a preset at any time for later use. Presets are organized into banks, so that each preset has a unique path (bank number/preset number). Some other aspects of presets are explained as follows:</p>
+        <table>
+            <tr>
+                <th>Preset Name</th>
+                <td>
+                    <p>Each preset can be given a unique user-definable name. When you store a preset, you will be prompted to name it. You can change the name of the preset at any time.</p>
+                </td>
+            </tr>
+            <tr>
+                <th>Preset Number</th>
+                <td>
+                    <p>Each preset has a certain position in its bank. This position and the bank number are combined to define a unique number for the preset, which displays on each user interface. For example, the unique number <q>1-001</q> refers to the first preset in the first bank.</p>
+                </td>
+            </tr>
+            <tr>
+                <th>Preset Type<br><i style="font-weight: normal;">(since <span class="sw-version">20-28</span>)</i></th>
+                <td>
+                    <p>The <span data-keyword="Sound"> Type</span> (Single, Split, Layer) will be stored and associated with the preset. It will be indicated for Split (&#xE0F2;) and Layer (&#xE0F5;) types.</p>
+                </td>
+            </tr>
+            <tr>
+                <th>Preset Info</th>
+                <td>
+                    <p>Each preset contains a small set of metadata, most of which are defined automatiocally when you store the preset. Besides the device name, the software version and the time stamp, some elements can be defined by the user: You can edit the name of a preset, set its position in its bank, assign it a color tag and set a comment text. The comment text can be used to describe the sound and give performance instructions.</p>
+                    <p>In addition, the preset comment text will be checked when you search for presets using keywords. This works especially well when keywords are defined as tags with the hashtag symbol <q><code>#</code></q>.</p>
+                </td>
+            </tr>
+        </table>
+    </section>
+    <section>
+        <h3>Change Recognition</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Change Recognition">
+                <picture class="content" data-src="./images/hardware-ui/boled/preset/boled-pre-change-rec.png"></picture>
+            </figure>
+            <div>
+                <p>When you change a loaded preset, the system recognizes the change and indicates this by appending an asterisk (<code>*</code>) to the unique preset number. When you store a preset after making changes to it, the system considers it to be a new preset, unless you force it to overwrite an existing preset.</p>
+            </div>
+        </div>
+        <p>More information about dealing with changes to loaded presets can be found in chapter <a href="./documents/man-user/04-user-interfaces/04-10-overviews.html" data-number="4.10">Overviews</a>.</p>
+        <div data-highlight="note">
+            <p>Note that modulations, which change parameters, are considered to be preset changes.</p>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

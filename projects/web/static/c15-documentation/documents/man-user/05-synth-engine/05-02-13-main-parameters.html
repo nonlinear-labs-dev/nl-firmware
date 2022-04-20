@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 05.2.13. Main Parameter Groups and Post Processing</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/05-synth-engine/05-02-sig-flow-components/05-02-13-main-parameters">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-synth-engine.html" data-number="5">The Synthesis Engine</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-0-sig-flow-components.html" data-number="5.2">Signal Flow and Components</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-13-main-parameters.html" data-number="5.2.13">Main Parameter Groups and Post Processing</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="5.2.13">Main Parameter Groups and Post Processing</h2>
+    </section>
+    <section>
+        <h3 class="heading primary">Master Group</h3>
+        <h4 class="heading secondary">Volume and Tune</h4>
+        <p>Besides the Master Volume, the Master group also contains a Master Tune parameter which can shift the whole tuning of the instrument by up to 48 semitones in both directions.</p>
+        <h4 class="heading secondary">Scale</h4>
+        <p>The Scale group allows for redefining the scale of the instrument, which is the equal temperament by default. The Base Key of a scale can be defined and all 12 keys of the corresponding octave can have an individual offset (up to 800.0 cents - eight semitones - in both directions) to the equal temperament. So a variety of different scales is achievable, including historical and traditional settings, pentatonic scalings or exotic and experimental types.</p>	
+        <figure class="border maximize" data-label="Scale (equal tuning/temperament)">
+            <picture class="content" data-src="./images/diagrams/scale-equal-*.png"></picture>
+        </figure>
+        <figure class="border maximize" data-label="Scale (individual tuning/temperament)">
+            <picture class="content" data-src="./images/diagrams/scale-micro-offset-*.png"></picture>
+        </figure>
+    </section>
+    <section>
+        <h3 class="heading primary">Voices Group</h3>
+        <p>The voicing behavior of a preset is defined by the Mono and Unison parameter groups.</p>
+        <p>In <span data-keyword="Single">Sounds</span>, these groups are present once and apply for all available 24 voices. In <span data-keyword="Split">Sounds</span>, these groups are present twice (per <span data-keyword="Part"></span>) and apply for all 12 voices of that Part. In <span data-keyword="Layer">Sounds</span>, these groups are present once and apply for all 12 voices of both <span data-keyword="Parts"></span> simultaneously.</p>
+        <h4 class="heading secondary">Mono</h4>
+        <p>When Mono is enabled, played keys will affect only one voice (or voice cluster, when using Unison). The behavior is defined by four parameters:</p>
+        <div data-columns="1">
+            <table>
+                <tr>
+                    <th>
+                        <p><span data-keyword="Enable"></span></p>
+                        <p><i style="font-weight: normal;">(On, Off)</i></p>
+                    </th>
+                    <td>
+                        <div class="section">
+                            <p>When on, only one note (containing the defined number of Unison Voices) will be playable, even when multiple keys are pressed. As long as one key stays pressed, the release of a key will not stop the envelopes.</p>
+                            <div data-highlight="note">
+                                <p>Note that changes to Mono Enable will reset held keys.</p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <p><span data-keyword="Priority"></span></p>
+                        <p><i style="font-weight: normal;">(Lowest, Latest, Highest)</i></p>
+                    </th>
+                    <td>When hitting multiple keys, they are sorted by the chosen priority. Keys matching the chosen priority determine the pitch of the Mono voice. When releasing the priorized key, the pitch will be determined by the key with second closest priority match.</td>
+                </tr>
+                <tr>
+                    <th>
+                        <p><span data-keyword="Glide Time"></span></p>
+                        <p><i style="font-weight: normal;">(0.0 ms ... 16000 ms)</i></p>
+                    </th>
+                    <td>This time can be used to create a portamento by smoothing the transitions of the pitches. Depending on the Legato options the smoothing is applied to each pitch change or only when the keys are played in <q>legato</q> style (in an overlapping manner).</td>
+                </tr>
+                <tr>
+                    <th>
+                        <p><span data-keyword="Legato"></span></p>
+                        <p><i style="font-weight: normal;">(None, Envelopes, Glide, Env & Glide)</i></p>
+                    </th>
+                    <td>
+                        <dl class="info">
+                            <dt><span data-keyword>None</span></dt>
+                            <dd>No difference between legato and non-legato playing. The envelopes will be retriggered by every key-down and the Glide parameter will be applied to every pitch step.</dd>
+                            <dt><span data-keyword>Env</span></dt>
+                            <dd>The envelopes will be retriggered only by key-downs that are played non-legato. The Glide parameter will be applied to every pitch step.</dd>
+                            <dt><span data-keyword>Glide</span></dt>
+                            <dd>The Glide parameter will be applied only to keys that are played legato. The envelopes will be retriggered by every key-down.</dd>
+                            <dt><span data-keyword>Env & Glide</span></dt>
+                            <dd>The envelopes will be retriggered only by key-downs that are played non-legato. The Glide parameter will be applied only to keys that are played legato.</dd>
+                        </dl>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div data-highlight="note">
+            <p>The new <q>Reset</q> parameter of the Oscillators (accessed via the <q>Phase</q> <span data-keyword="Parameter Selection">Button</span>) can be set to Off to avoid glitches caused by the oscillator phases being reset at a key-down. They become noticeable if the Release phase of the Envelopes is longer than the time between two notes. Without the phase reset the Oscillators are <q>free-running</q> and the Phase parameter has no influence on the start phase. This will also affect the sound of unison voice stacks and will effectively disable the Unison Phase parameter.</p>
+        </div>
+        <h4 class="heading secondary">Unison</h4>
+        <p>The Unison group provides additional control and allows for unison voices (more than one sounding voice per pressed key). The number of unison voices can be adjusted (one by default). Three spread parameters can determine, how each unison voice is spread against the others: Detune can spread the pitches, Phase can spread the oscillator start phases and Pan can spread the panning of individual unison voices.</p>
+    </section>
+    <section>
+        <h3 class="heading">Post Processing</h3>
+        <p>The resulting signal (a mixture of the Output Mix and the Effects section) can be amplified or attenuated by the Master Volume parameter, before it passes through a soft clipper, preventing the signal from being clipped at the D/A converter.</p>
+        <!-- recorder, test tone ? -->
+    </section>
+</main>
+</div>
+</body>
+</html>

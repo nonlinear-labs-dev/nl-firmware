@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>MIDI Bridge Manual - 02. Indicators</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/utils.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-midi-bridge/02-indicators">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-midi-bridge/index.html">MIDI Bridge Manual</a>
+        <span>/</span>
+        <a href="./documents/man-midi-bridge/02-indicators.html" data-number="2">Indicators</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="2">Indicators</h2>
+        <p>Each port side has a RGB (true color) LED indicator which shows both the <i>port status</i> and the <i>packet status</i> while a packet is running through. Each port LED is referring to the incoming data on that port.</p>
+        <p>The LED color basically indicates the port status, which is the largest latency range measured in recent packet delivery (ranging some seconds back).</p>
+        <p>The LED is temporarily flashing brighter when an actual packet is running through the device and the color indicates the current latency.</p>
+    </section>
+    <section>
+        <h3 class="heading primary" data-number="2.1">Continuous Port Status Display (dim colors)</h3>
+        <p>The dim color of the LED represents the current status of the port:</p>
+        <table>
+            <tr>
+                <th>
+                    <p>Pulsing blue</p>
+                    <p>(slowly blinking, <i>3s</i> period)</p>
+                </th>
+                <th style="max-width: 8.5em;">
+                    <span class="led blue"></span>
+                    <span class="led off"></span>
+                    <span class="led blue"></span>
+                    <span class="led off"></span>
+                    <span class="led blue"></span>
+                </th>
+                <td>port is not connected.</td>
+            </tr>
+            <tr>
+                <th>
+                    <p>Pulsing cyan</p>
+                    <p>(slowly blinking, <i>3s</i> period)</p>
+                </th>
+                <th>
+                    <span class="led cyan"></span>
+                    <span class="led off"></span>
+                    <span class="led cyan"></span>
+                    <span class="led off"></span>
+                    <span class="led cyan"></span>
+                </th>
+                <td>port is connected and receives USB power, but no USB communication is present.</td>
+            </tr>
+            <tr>
+                <th>Green</th>
+                <th>
+                    <span class="led green"></span>
+                </th>
+                <td>port is connected and USB communication is ready to go.</td>
+            </tr>
+            <tr>
+                <th>Yellow</th>
+                <th>
+                    <span class="led yellow"></span>
+                </th>
+                <td>port is connected and USB communication is ready to go, but there were LATE packets within the last <i>two</i> seconds.</td>
+            </tr>
+            <tr>
+                <th>Red</th>
+                <th><span class="led red"></span></th>
+                <td>port is connected and USB communication is ready to go, but there were STALE packets within the last <i>four</i> seconds</td>
+            </tr>
+            <tr>
+                <th>Magenta</th>
+                <th><span class="led magenta"></span></th>
+                <td>port is connected and USB communication is ready to go, but there were DROPPED packets (with data loss) within the last <i>six</i> seconds.</td>
+            </tr>
+        </table>
+    </section>
+    <section>
+        <h3 class="heading primary" data-number="2.2">Flashing Packet Status Display (bright colors)</h3>
+        <p>On top of the steady-state port status display above, the MIDI Bridge independently indicates the status of the current packet while it runs through the device. This again is color-coded but can be distinguished from the port status in that the LEDs go full brightness.</p>
+        <table>
+            <tr>
+                <th>Green</th>
+                <th>
+                    <span class="led green"></span>
+                </th>
+                <td>packet is running for less than <i>300μs</i> (REALTIME).</td>
+            </tr>
+            <tr>
+                <th>Yellow</th>
+                <th>
+                    <span class="led yellow"></span>
+                </th>
+                <td>packet is running for less than <i>2ms</i> (LATE).</td>
+            </tr>
+            <tr>
+                <th>Red</th>
+                <th>
+                    <span class="led red"></span>
+                </th>
+                <td>packet is running for more than <i>2ms</i> (STALE).</td>
+            </tr>
+            <tr>
+                <th>Magenta</th>
+                <th>
+                    <span class="led magenta"></span>
+                </th>
+                <td>packet had to be dropped (data loss).</td>
+            </tr>
+        </table>
+        <div data-highlight="note">
+            <p>Because the actual transfer times are normally very short (&lt; <i>100μs</i>) they are lengthened for display. Still the short true transfer time is directly indicated with even brighter colors, and notably the normal green color gets brighter and more cyan’ish when very dense traffic is present. In normal MIDI operation the traffic is very sparse, though.</p>
+        </div>
+        <div data-highlight="note">
+            <p>As long as you see any LED indicator activity (steady-state on or blinking) the device is powered up and consumes electrical current. Therefore, to save power, you may want to unplug the device from computers while those are in standby, hybernate or power-down modes but still apply supply voltage to their USB sockets.</p>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

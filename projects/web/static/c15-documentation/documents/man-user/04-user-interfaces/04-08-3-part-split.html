@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.8.3. Split Sound Details</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-08-part-manipulation/04-08-3-split">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-08-0-part-manipulation.html" data-number="4.8">Part Manipulation</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-08-3-part-split.html" data-number="4.8.3">Split Sound Details</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.8.3">Split Sound Details</h2>
+    </section>
+    <section>
+        <h3 class="heading primary">Adjusting the Split Point</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Sound screen - Split sound">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-split-preset.png"></picture>
+            </figure>
+            <div>
+                <p>On the Split <span data-keyword="Sound">Screen</span> the Split Point is shown in the center. It can be edited directly by the <span data-keyword="Encoder"></span> and <span data-keyword="Dec"></span>/<span data-keyword="Inc"></span>. If <span data-keyword="Part">I</span> is selected it shows the highest key of the lower key range. If <span data-keyword="Part">II</span> is selected it shows the lowest key of the upper key range. The Split Point is also available as a parameter in the <span data-keyword="Part">Screen</span>. Use <span data-keyword="Soft Button">2</span> (<code><b>Part..</b></code>) to open it.</p>
+            </div>
+            <div>
+                <figure class="border maximize" data-label="Parameter screen - Split Point">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-split-adjust-split-point.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Split mechanism">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-split-adjust-split-point-gfk.png"></picture>
+                </figure>
+            </div>
+
+            <div>
+                <p>On the <span data-keyword="Part">Screen</span>, navigate with <span data-keyword="Soft Button">4</span> to the third parameter. The Split Point parameter can be controlled by a <span data-keyword="Macro">Control</span>. As Hardware Source, a ribbon will make a lot of sense. The part association of individual voices happens only when a key is pressed, according to the current value of the Split Point.</p>
+            </div>
+        </div>
+        <p>By default, the Split Point is <i>linked</i> - meaning that both <span data-keyword="Parts"></span> don't overlap <i>(see <q>Overlapping Split Points</q> below in order to produce intersections).</i></p>
+        <h3 class="heading secondary" data-detail="Graphical UI">Adjusting the Split Point</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Part group (Graphical UI)">
+                <picture class="content" data-src="images/web-ui/sound/webui-snd-split-split-point.png"></picture>
+            </figure>
+            <div>
+                <p>In the <span data-keyword="Graphical">User Interface</span>, the <span data-keyword="Sound">Tab</span> provides the Split Point between the two parts. Use drag gestures in order to change it. In addition, the <span data-keyword="Part"></span> group (left to the Master group) provides the Split Point as a regular parameter, which can be manipulated further in the <span data-keyword="Parameter">Tab</span> when selected.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Overlapping Split Points</h3>
+        <p>In earlier versions, the C15 only provided one Split Point parameter in a <span data-keyword="Split"></span> sound, determining the inner edges of both fully separated <span data-keyword="Parts"></span>, so no overlap was possible.The described behavior is still available by default and referred to as <i>linked</i> Split Points. Now, <i>unlinked</i> Split Points are available as well, providing separate Split Points for each part (but still sharing one unique <span data-keyword="Macro">Control</span> assignment).</p>
+        <p>When <i>unlinked</i>, an overlapping range of shared keys can be defined, in which both <span data-keyword="Parts"></span> will sound. The two Split Point parameters are still sticked to one another, preventing a negative overlap with a key range with no part association. The linking behavior can be changed by the <span data-keyword="Edit">Button</span>:</p>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Parameter Edit screen - linked Split Point">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-unlink-split-point.png"></picture>
+            </figure>
+            <div>
+                <p>When in the <span data-keyword="Parameter">Screen</span>, pressing <span data-keyword="Edit"></span> will provide a menu with the option to <code><b>Unlink/Link</b></code>. Navigate with <span data-keyword="Soft Button">4</span> for the entry before pressing <span data-keyword="Enter"></span>.</p>
+            </div>
+            <figure class="border maximize" data-label="Parameter Screen - unlinked Split Point">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-edit-unlinked-split-point.png"></picture>
+            </figure>
+            <div>
+                <p>When <i>unlinked</i>, the key positions of both <span data-keyword="Parts"></span> are shown. Overlap can be achieved by raising the Split Point of <span data-keyword="Part">I</span> or by lowering the Split Point of <span data-keyword="Part">II</span> - using <span data-keyword="Dec"></span>/<span data-keyword="Inc"></span> or the <span data-keyword="Encoder"></span>.</p>
+            </div>
+            <div>
+                <figure class="border maximize" data-label="Sound screen - linked Split Point">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-split.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Sound Edit screen - Link Splitpoints">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-link-split-point-option.png"></picture>
+                </figure>
+            </div>
+            <div>
+                <p>When in the <span data-keyword="Sound">Screen</span>, pressing <span data-keyword="Edit"></span> will provide a menu screen. Navigate with <span data-keyword="Dec"></span>/<span data-keyword="Inc"></span> or the <span data-keyword="Encoder"></span> to the <code><b>Link Splitpoints</b></code> option and press <span data-keyword="Enter"></span> to toggle between the two behaviors.</p>
+            </div>
+            <figure class="border maximize" data-label="Sound screen - unlinked Split Points">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-split-split-point-unlinked.png"></picture>
+            </figure>
+            <div>
+                <p>When <i>unlinked</i>, the key positions of both <span data-keyword="Parts"></span> are shown.</p>
+            </div>
+        </div>
+        <div data-highlight="note">
+            <p>Enabling a <i>linked</i> Split Point will collapse any prior overlapping range. </p>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Overlapping Split Points</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Split Point - link icon (Parameter Tab)">
+                <picture class="content" data-src="images/web-ui/sound/webui-snd-split-unlinked.png"></picture>
+            </figure>
+            <div>
+                <p>In the <span data-keyword="Parameter">Tab</span>, an icon on the right of the shown key position indicates the <code><b>linked</b></code>/<code><b>unlinked</b></code> Split Point behavior. Clicking on it will toggle inbetween.</p>
+            </div>
+            <figure class="border maximize" data-label="Sound menu - link options (Sound Tab)">
+                <picture class="content" data-src="images/web-ui/sound/webui-snd-ctx-link-behav.png"></picture>
+            </figure>
+            <div>
+                <p>In the <span data-keyword="Sound">Tab</span>, clicking on the <q>...</q> icon on the right invokes a menu in which the linking behavior can be set.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI only">Split Point Editor</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Split Point Editor icon (Sound Tab)">
+                <picture class="content" data-src="images/web-ui/sound/webui-snd-split-split-edit.png"></picture>
+            </figure>
+            <div>
+                <p>In the <span data-keyword="Sound">Tab</span>, the rightmost icon redirects to the <span data-keyword="Split Point">Editor</span>, providing the two parameters and an interactive visual representation.</p>
+            </div>
+            <figure class="border maximize" data-label="Split Point Editor">
+                <picture class="content" data-src="images/web-ui/sound/webui-sound-split-edit.png"></picture>
+            </figure>
+            <div>
+                <p>Split Points can be set by clicking or dragging on the corresponding values or by dragging the indicators on the shown keybed. The linking behavior can be set as well.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Signal Flow Indicators in a Split Sound</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Sound screen - Split Sound FX signal flow indicator">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-split-crossfx-indicator.png"></picture>
+            </figure>
+            <div>
+                <p>In <span data-keyword="Split"></span> sounds, the <q>ToFX</q> parameter is available in the Output Mixer, allowing the mixed signal to be sent to the Effects section of the other <span data-keyword="Part"></span>. When active, the flow across parts will be indicated in the <span data-keyword="Sound">Screen</span>/<span data-keyword>Tab</span> by labeled <q>FX</q> arrows.</p>
+            </div>
+        </div>
+        <figure class="border maximize" data-label="Sound Tab - Split Sound FX signal flow indicator">
+            <picture class="content" data-src="images/web-ui/sound/webui-snd-split-crossfx-indicator.png"></picture>
+        </figure>
+    </section>
+</main>
+</div>
+</body>
+</html>

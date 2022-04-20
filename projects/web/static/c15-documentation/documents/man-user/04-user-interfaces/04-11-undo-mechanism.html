@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.11. The Undo Mechanism</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-11-undo-mechanism">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-11-undo-mechanism.html" data-number="4.11">The Undo Mechanism</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.11">The Undo Mechanism</h2>
+    </section>
+    <section>
+        <h3 class="heading primary">Simple Undo/Redo</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Undo/Redo Buttons (Edit Panel)">
+                <picture class="content" data-src="images/hardware-ui/panels/mp-undo-redo.png"></picture>
+            </figure>
+            <div>
+                <p>The current, active branch can be navigated by using the <span data-keyword="Undo"></span>/<span data-keyword="Redo">Buttons</span> in the <span data-keyword="Edit">Panel</span>, recalling the corresponding state immediately.</p>
+            </div>
+            <figure class="border maximize" data-label="Preset screen - Undo indicator">
+                <picture class="content" data-src="images/hardware-ui/boled/preset/boled-pre-undo-indi.png"></picture>
+            </figure>
+            <div>
+                <p>When the <span data-keyword="Undo">Button</span> was pressed, an Undo indicator will appear in the <span data-keyword="Preset">Screen</span>, showing that the <code><b>Redo</b></code> option is available. The <span data-keyword="Parameter">Screen</span> also shows the Undo indicator, as long as no other parameter is selected.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Simple Undo/Redo</h3>
+        <div data-columns="2">
+            <div>
+                <figure class="border maximize" data-label="Undo/Redo icons">
+                    <picture class="content" data-src="images/web-ui/parameter/webui-undo-redo-buttons.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Undo/Redo keys">
+                    <picture class="content" data-src="images/info-gfk/gfk-tast-undo-redo.png"></picture>
+                </figure>
+            </div>
+            <div>
+                <p>The current, active branch can be navigated by using the <span data-keyword="Undo"></span>/<span data-keyword="Redo">Icons</span> above the tab area, recalling the corresponding state immediately. The icons indicate which <code><b>Undo</b></code> options are available, as shown by their color. Alternatively, the usual keyboard shortcuts for undo and redo can be used.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Focus on Undo History</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Undo screen">
+                <picture class="content" data-src="images/hardware-ui/boled/txt/boled-undo-focus.png"></picture>
+            </figure>
+            <div>
+                <p>Pressing both <span data-keyword="Undo"></span>/<span data-keyword="Redo">Buttons</span> at once will invoke the <span data-keyword="Undo">Screen</span>, providing full navigation of the undo history.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Focus on Undo History</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="View menu - Undo">
+                <picture class="content" data-src="images/web-ui/txt/webui-menu-show-undo.png"></picture>
+            </figure>
+            <div>
+                <p>In the <span data-keyword="View"></span> menu, the Undo History window can be shown or hidden. It provides full access on undo-related aspects.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Navigate Current Branch</h3>
+        <div data-columns="2">
+            <div>
+                <figure class="border maximize" data-label="Undo screen">
+                    <picture class="content" data-src="images/hardware-ui/boled/txt/boled-undo-nav-current.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Undo navigation (Encoder, Dec/Inc Buttons)">
+                    <picture class="content" data-src="images/hardware-ui/panels/mp-enc-dec-inc.png"></picture>
+                </figure>
+            </div>
+            <div>
+                <p>The <span data-keyword="Undo">Screen</span> can only show one branch of the undo tree. It can be scrolled by using the <span data-keyword="Encoder"></span> or <span data-keyword="Dec"></span>/<span data-keyword="Inc"></span>. The current position will be indicated by a rectangle and can be recalled by pressing <span data-keyword="Enter"></span>.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Navigate Branches</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Undo branch navigation (Soft Buttons 1/3)">
+                <picture class="content" data-src="images/hardware-ui/panels/mp-sb1-sb3-undo.png"></picture>
+            </figure>
+            <div>
+                <p>If a branch splits at the current position, pointy brackets are visible on the entry. Use <span data-keyword="Soft Buttons">1</span>/<span data-keyword>3</span> to switch between branches. Recalling an entry of an inactive branch will make it active.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Navigate Branches</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Undo window">
+                <picture class="content" data-src="images/web-ui/txt/webui-dia-undo-hist-window.png"></picture>
+            </figure>
+            <div>
+                <p>The Undo History window can be scrolled by drag gestures on the background or the scrollbar, or by using the mouse wheel. A simple click on an element will recall the corresponding state. As all branches of the tree are visible in this window, the branch navigation is fully integrated. A right-click (or long touch gesture) on an element provides a context menu for further options. The <code><b>hide</b></code> option will hide the selected branch, the other options follow below.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Delete (inactive) Branch</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Undo Edit screen - delete (Soft Button 4)">
+                <picture class="content" data-src="images/hardware-ui/boled/txt/boled-undo-del-inactive.png"></picture>
+            </figure>
+            <div>
+                <p>When navigating an inactive branch, press <span data-keyword="Edit"></span> in order to get the <code><b>delete</b></code> option. Pressing <span data-keyword="Soft Button">4</span> will delete the whole branch.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Delete (inactive) Branch</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Undo window - entry option delete">
+                <picture class="content" data-src="images/web-ui/txt/webui-dia-undo-hist-delete.png"></picture>
+            </figure>
+            <div>
+                <p>When the selected element is on an inactive branch, the <code><b>delete from here</b></code> option will be provided by a right-click. Confirming this option will delete the whole branch.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Make Element the new Root</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Undo Edit screen - make root (Soft Button 4)">
+                <picture class="content" data-src="images/hardware-ui/boled/txt/boled-undo-make-root.png"></picture>
+            </figure>
+            <div>
+                <p>When navigating the current, active branch, press <span data-keyword="Edit"></span> in order to get the <code><b>Make Root</b></code> option. All entries and branches prior to the current position will be deleted by pressing <span data-keyword="Soft Button">4</span>.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Make Element the new Root</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Undo window - entry option make root">
+                <picture class="content" data-src="images/web-ui/txt/webui-dia-undo-hist-makeroot.png"></picture>
+            </figure>
+            <div>
+                <p>When the selected element is on the current, active branch, the <code><b>Make this the new root</b></code> option will be provided by a right-click. Confirming this option will delete all elements and branches prior to the selected element.</p>
+            </div>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

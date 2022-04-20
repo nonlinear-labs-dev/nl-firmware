@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.8.5. Loading from/into Parts</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-08-part-manipulation/04-08-5-loading">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-08-0-part-manipulation.html" data-number="4.8">Part Manipulation</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-08-5-part-loading.html" data-number="4.8.5">Loading from/into Parts</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.8.5">Loading from/into Parts</h2>
+    </section>
+    <section>
+        <p>In the following, a step by step guide leads through every stage of the <q>Load to Part</q> process. Although this process can be shortened, we recommend following the guide until being familiar with the stages.</p>
+        <div data-highlight="note">
+            <p>We also recommend to not change the <span data-keyword="Hardware">Sources</span> or <span data-keyword="Macro">Controls</span> during the <q>Load to Part</q> process, as they will affect both <span data-keyword="Parts"></span>. Changes on the modulation will be reflected when a part is loaded and can easily lead to unexpected assignments to modulateable parameters.</p>
+        </div>
+        <h3 class="heading secondary" data-detail="Panel Unit"></h3>
+        <div data-columns="2">
+            <div>
+                <figure class="border maximize" data-label="Sound Edit screen - convert">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/snd-layer-pre-screen.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Sound Edit screen - convert">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-single-edit.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Split Sound screen">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-split-split-point.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Convert menu (Sound Tab)">
+                    <picture class="content" data-src="images/web-ui/sound/webui-sound-tab-convert.png"></picture>
+                </figure>
+            </div>
+            <div>
+                <p>At first, a <span data-keyword="Split"></span>/<span data-keyword="Layer"></span> preset has to be loaded, let's refer to it as the <q>Target</q> preset. It is worth mentioning that the <span data-keyword="Preset">Screen</span> will display Dual (Split/Layer) presets different to the already familiar <span data-keyword="Single"></span> presets, providing more functionality. Also, let's keep in mind we also have another Preset somewhere, from which to load data into a part, referred to as the <q>Source</q> Preset in the following.</p>
+            </div>
+            <figure class="border maximize" data-label="Preset screen - Part options (Soft Buttons 1/4)">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-pre-load-part-03.png"></picture>
+            </figure>
+            <div>
+                <p>When a Dual preset has been loaded, <span data-keyword="Soft Buttons">1</span>/<span data-keyword>4</span> will now each serve two purposes. In order to explain each individual step of the Load process, the <code><b>Direct Load</b></code> option should be disabled at first. Press and hold <span data-keyword="Soft Button">4</span> for around a second in order to do so.</p>
+            </div>
+            <figure class="border maximize" data-label="Preset screen - To Part (Soft Button 4)">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-pre-load-part-04.png"></picture>
+            </figure>
+            <div>
+                <p>Then press <span data-keyword="Soft Button">4</span> again (shortly this time) in order to enable the <code><b>To Part</b></code> mode, starting the Load process.</p>
+            </div>
+            <figure class="border maximize" data-label="Preset screen - Part selector (Soft Button 1)">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-pre-load-part-05.png"></picture>
+            </figure>
+            <div>
+                <p>Likewise, pressing <span data-keyword="Soft Button">1</span> shortly will select between the two parts of the Target preset, specifying exactly where to load new data.</p>
+            </div>
+        </div>
+        <p>Press and hold <span data-keyword="Soft Button">4</span> for around a second in order to switch to the already familiar <span data-keyword="Bank">Screen</span>. If multiple banks are present, <span data-keyword="Dec"></span>/<span data-keyword="Inc"></span> as well as the <span data-keyword="Encoder"></span> will provide bank navigation.</p>
+        <p>When in the <span data-keyword="Preset">Screen</span>, use the <span data-keyword="Encoder"></span> or <span data-keyword="Dec"></span>/<span data-keyword="Inc"></span> in order to select a Source preset within the currently selected bank. <span data-keyword="Soft Buttons">2</span>/<span data-keyword>3</span> can be used in order to select another bank. <i>(In the <span data-keyword="Bank">Screen</span>, preset/bank selection roles are reversed.)</i></p>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Preset screen - To Part, Single Preset">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-pre-load-part-07.png"></picture>
+            </figure>
+            <div>
+                <p>Of course, <span data-keyword="Single"></span> presets can be selected in order to serve as the Source preset, they are shown with a square.</p>
+            </div>
+            <div>
+                <figure class="border maximize" data-label="Bank screen - To Part">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-pre-load-part-06.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Preset screen - To Part, Layer Preset">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-pre-load-part-08.png"></picture>
+            </figure>
+            </div>
+            <div>
+                <p>Dual presets can be selected as well, as each individual <span data-keyword="Part"></span> is available for the selection. Dual presets are indicated by two rectangles instead of a square.</p>
+            </div>
+            <div>
+                <figure class="border maximize" data-label="Preset screen - load To Part (Enter Button)">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-pre-load-part-09.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Preset screen - load To Part (Enter Button)">
+                    <picture class="content" data-src="images/hardware-ui/panels/mp-enter.png"></picture>
+                </figure>
+            </div>
+            <div>
+                <p>When the right preset (or part) has been selected, <span data-keyword="Enter"></span> will complete the Load process, loading the selected Source preset into the specified <span data-keyword="Part"></span> of the Target preset.</p>
+            </div>
+        </div>
+        <div data-highlight="note">
+            <p>Note that the <q>Load to Part</q> process distinguishes and remembers different aspects of selection: </p>
+            <dl class="info">
+                <dt>selected Target</dt>
+                <dd>referring to the currently loaded preset's selected part</dd>
+                <dt>selected Source</dt>
+                <dd>referring to the currently selected preset (if the preset is of Type <span data-keyword="Single"></span>) or the currently selected preset's part (if the preset is of Type <span data-keyword="Split"></span>/<span data-keyword="Layer"></span>)</dd>
+            </dl>
+            <p>This means, that any time the Load to Part process is invoked, all Source selection aspects are restored as they were the last time.</p>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI"></h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="To Part Button (Sound Tab)">
+                <picture class="content" data-src="images/web-ui/sound/webui-snd-preset-load-part.png"></picture>
+            </figure>
+            <div class="section">
+                <p>In the <span data-keyword="Graphical">User Interface</span>, the Load process is comparable. The <span data-keyword="Preset">Tab</span> provides a <code><b>To Part</b></code> button when a Dual preset has been loaded. Preset and bank navigation in the tab will behave similarly to the screens of the <span data-keyword="Hardware">User Interface</span>. </p>
+                <p>Furthermore, individual presets of visible banks in the main area can be selected by clicking, shortening the whole process, especially when <code>Direct Load</code> is enabled.</p>
+            </div>
+            <figure class="border maximize" data-label="Preset Drag & Drop to Part (Sound Tab)">
+                <picture class="content" data-src="images/web-ui/sound/webui-snd-preset-drag-part.png"></picture>
+            </figure>
+            <div>
+                <p>Presets can even directly be dragged and dropped onto a <span data-keyword="Part"></span> of the <span data-keyword="Sound">Tab</span>, further simplifying the whole process.</p>
+            </div>
+        </div>
+        <div data-highlight="note">
+            <p>When combining presets of different types, there are some limitations that should be considered. <i>(See <a href="./documents/man-user/04-user-interfaces/04-01-parameter-organization.html" data-number="4.1">Parameter Organization</a>.)</i></p>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

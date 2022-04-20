@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.8.1. Main Parameters of a Part</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-08-part-manipulation/04-08-1-main">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-08-0-part-manipulation.html" data-number="4.8">Part Manipulation</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-08-1-part-main.html" data-number="4.8.1">Main Parameters of a Part</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.8.1">Main Parameters of a Part</h2>
+    </section>
+    <section>
+        <h3 class="heading primary">Part Volume and Tune</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Part screen">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-part-vol-tune.png"></picture>
+            </figure>
+            <div>
+                <p>In <span data-keyword="Split"></span>/<span data-keyword="Layer"></span> sounds, the Volume and Tune of a Part can be adjusted by its Part Volume and Part Tune parameters.</p>
+            </div>
+        </div>
+        <p>The stereo signals of both <span data-keyword="Parts"></span> are mixed before the Master Volume control. The Master Tune is added to the two Part Tunes.</p>
+        <p>When a <span data-keyword="Single"></span> Sound is converted to <span data-keyword="Split"></span>/<span data-keyword="Layer"></span>, its former Master Volume and Master Tune will be copied to its Part Volume and Part Tune while Master Volume and Master Tune are set to zero. When a <span data-keyword="Single"></span> Sound is loaded into a <span data-keyword="Split"></span> or <span data-keyword="Layer"></span> Sound, its former Master Volume and Master Tune will also be copied to its Part Volume and Part Tune but Master Volume and Master Tune stay unchanged.</p>
+        <p>When a <span data-keyword="Part"></span> of a <span data-keyword="Split"></span>/<span data-keyword="Layer"></span> sound is converted to <span data-keyword="Single"></span>, the Master Volume and Master Tune values are summed up with Part Volume and Part Tune to create the Master Volume and Master Tune of the Single Sound. Furthermore, the delegation of the Master Volume/Tune to the Part Volume/Tune parameters also includes potential assignments to <span data-keyword="Macro">Controls</span>.</p>
+        <p>In Dual (<span data-keyword="Split"></span>/<span data-keyword="Layer"></span>) sounds, the Part Volume/Tune is designed to serve as the potential Master, should the Part get converted to <span data-keyword="Single"></span> again. In order for this to work properly, we recommend not to create <span data-keyword="Macro">Control</span> assignments to Master Volume/Tune within Dual Presets. Or to be more precise: these assignments will be discarded, when converting a Dual Preset back to Single.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

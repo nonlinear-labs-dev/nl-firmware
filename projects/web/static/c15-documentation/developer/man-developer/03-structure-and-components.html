@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Developer Manual - 3. Structure and Components</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-developer/03-structure-and-components">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./developer/man-developer/index.html">Developer Manual</a>
+        <span>/</span>
+        <a href="./developer/man-developer/03-structure-and-components.html" data-number="3">Structure and Components</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="3">Structure and Components</h2>
+    </section>
+    <section>
+        <h3>Structure</h3>
+        <p>The overall project structure looks something like this:</p>
+        <div data-columns="2">
+            <ul class="toc">
+                <li class="folder open">
+                    <a>C15 Documentation</a>
+                    <ul class="toc">
+                        <li class="folder"><a>css</a></li>
+                        <li class="folder"><a>developer</a></li>
+                        <li class="folder open">
+                            <a>documents</a>
+                            <ul class="toc">
+                                <li class="folder open">
+                                    <a>man-user</a>
+                                    <ul class="toc">
+                                        <li class="folder open">
+                                            <a>00-preface</a>
+                                            <ul class="toc">
+                                                <li><a>00-1-safety.html</a></li>
+                                                <li>(...)</li>
+                                            </ul>
+                                        </li>
+                                        <li>(...)</li>
+                                        <li><a>index.html</a></li>
+                                    </ul>
+                                </li>
+                                <li>(...)</li>
+                                <li><a>_content.html</a></li>
+                            </ul>
+                        </li>
+                        <li class="folder"><a>favicon</a></li>
+                        <li class="folder"><a>fonts</a></li>
+                        <li class="folder open">
+                            <a>images</a>
+                            <ul class="toc">
+                                <li class="folder"><a>diagrams</a></li>
+                                <li class="folder"><a>hardware-ui</a></li>
+                                <li class="folder"><a>package</a></li>
+                                <li class="folder"><a>symbols</a></li>
+                                <li class="folder"><a>web-ui</a></li>
+                            </ul>
+                        </li>
+                        <li class="folder"><a>js</a></li>
+                        <li><a>_menu.html</a></li>
+                        <li><a>_noscript.html</a></li>
+                        <li><a>index.html</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <div>
+                <p>The main folder contains:</p>
+                <br>
+                <p><b>css</b>: four css files (for iframe and primary content) within a folder.</p>
+                <br>
+                <p><b>developer</b>: content that is only visible in developer mode.</p>
+                <br>
+                <p><b>documents</b>: actual user-relevant documents.</p>
+                <p>They can contain subfolders for chapters in case there are too many files. They also have an index page (the document title page).</p>
+                <p>One single file (_content.html) holds all navigational links to documents, chapters and subchapters.</p>
+                <br>
+                <p><b>favicon, fonts</b>: shared resources</p>
+                <br>
+                <p><b>images</b>: images are shared resources and as a proposal, they are organized thematically - with no association to a specific document or chapter.</p>
+                <br>
+                <p><b>js</b>: four javascript files (organized similar to css files)</p>
+                <br>
+                <p>In the <b>main</b> folder, there is the main index landing page, the noscript fallback and a subpage for displaying the menu content (Documents, Settings).</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3>Creating Documents</h3>
+        <p>The procedure requires the author to create a new "document" folder and corresponding html pages in the ./documents folder. To got startet fast and easy, just clone the ./developer/template folder (<a href="./developer/template/index.html">Template Document</a>). The minimal required HTML for the title and chapter pages and an overview of usable components is provided.</p>
+        <p>The next necessary step is to provide links in the ./documents/_content.html file, following the given hirarchy. In order for this to work, path attributes are used. The path of this page is <code>root/man-developer/03-structure-and-components</code>. Sections in the _content.html file will translate this path step by step. Javascript resolves that path and determines, which document and chapter links will be shown. The path size is arbitrary, but should not be too big. It has to be unique between all documents, chapters and subchapters.</p>
+        <p>Once the document and it's first chapter exists, the process of adding more chapters is more or less copy-paste action. The inner organization does not follow a specific rule. It mainly depends on the document size and number of files. Long single pages are possible (but not always practical) as well as large amounts of files (possibly within subfolders).</p>
+        <p>File- and folder names should not contain spaces.</p>
+        <p>Other possible resources like images may be added to the shared ./images folder or fitting subfolder.</p>
+    </section>
+    <section>
+        <h3>Components</h3>
+        <p>[tbc]</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

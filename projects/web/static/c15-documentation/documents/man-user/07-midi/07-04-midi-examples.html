@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 07.4. Practical Studio Examples</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/07-midi/07-04-midi-examples">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/07-midi/07-00-midi.html" data-number="7">MIDI</a>
+        <span>/</span>
+        <a href="./documents/man-user/07-midi/07-04-midi-examples.html" data-number="7.4">Practical Studio Examples</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h3 class="heading primary" data-number="7.4">Practical Studio Examples</h3>
+        <p>With the C15's MIDI features, it can be used as a master keyboard and production tool in the center of your studio or live performance set. In the following we want to show you exemplary scenarios, which will help you to understand the MIDI settings better and give you some orientation and helpful tips when using the C15 as a production tool.</p>
+        <div class="section">
+            <h3 class="heading secondary">Scenario 1: Studio Setup</h3>
+            <figure class="border maximize" data-label="C15 - Studio Setup">
+                <picture class="content" data-src="./images/info-gfk/gfk-midi-setup-example-1-*.png"></picture>
+            </figure>
+            <p>A Digital Audio Workstation (DAW) is the heart of almost every modern music studio. Therefore, this first scenario will focus on using your C15 with the benefits of a DAW, but also as a controller for other instruments within the DAW. So, on the one hand, we will use the C15 as a sound generator, and on the other hand, to control a Plug-In.</p>
+            <div data-highlight="note">Please note that this setup is not entirely applicable to a live situation as any change to the MIDI settings while a note is active can lead to a reset of C15's envelopes and voice allocation and an All Notes Off MIDI message. As a consequence internal and external audio will stop for a brief moment.</div>
+            <figure class="border maximize" data-label="C15 - Local Off Setup">
+                <picture class="content" data-src="./images/info-gfk/gfk-midi-setup-example-2-*.png"></picture>
+            </figure>
+            <p>First, we want to record a MIDI track, that triggers a C15 bass sound. This MIDI track receives MIDI notes and CC values by the C15. As we send MIDI data to the DAW and back to the C15, we can benefit from the MIDI processing features of the DAW (arpeggiator, chord generator, etc.).</p>
+            <p>For the bass track, we want to record MIDI-Notes and the ribbon's CC values.</p>
+            <figure class="border maximize" data-label="Local Off - Routings">
+                <picture class="content" data-src="./images/web-ui/setup/webui-setup-midi-routing-scen-1a.png"></picture>
+            </figure>
+            <p>For this purpose, we have to change some of the routing settings: turn on <q>Send</q> and <q>Receive</q> for both Notes and Ribbon 1 & 2 for Primary Channel. As we don't want MIDI Echo issues to appear, we turn off Local for them. The direct connection between the keys and both ribbons and the C15 is now interrupted and completely controlled via MIDI. MIDI-Monitoring of your DAW should be activated. You can now record the track.</p> 
+            <figure class="border maximize" data-label="C15 - DAW perspective">
+                <picture class="content" data-src="./images/web-ui/setup/webui-setup-midi-routing-daw.png"></picture>
+            </figure>
+            <p>The track <q>C15 Bass</q> of the DAW now controls the C15 and the ribbon's LEDs reflect the incoming CC values. You can now use the keys and the remaining Hardware Sources to control a Plug-In in the DAW. In this example we use Arturia's Mini V3. Therefore, we want to turn off track 1's MIDI monitoring and choose track 2 for recording. The C15 keeps on playing, run by the recorded Bass track.</p>         
+            <figure class="border maximize" data-label="C15 - selective Setup">
+                <picture class="content" data-src="./images/info-gfk/gfk-midi-setup-example-3-*.png"></picture>
+            </figure>
+            <figure class="border maximize" data-label="selective Setup - Routings">
+                <picture class="content" data-src="./images/web-ui/setup/webui-setup-midi-routing-scen-1b.png"></picture>
+            </figure>
+            <p>As the C15 is still hearable, we do have to make some adaptions to the Routings settings. We want to turn off Local and Receive for all other Hardware Sources as they would interfere with the playing bass sound otherwise. You can now turn on Local for the Ribbons again, as this allows you a direct impact on the bass sound. Further, turn on <q>Send</q> for Pedals 1-4, Bender as well as Aftertouch and Notes, as we want to use these to control the Plug-In.</p>
+            <p>We can now control the Plug-In without changing the bass sound unintentionally.</p>
+        </div>
+        <div class="section">
+            <h3 class="heading secondary">Scenario 2: Controlling two Plug-Ins at the same time</h3>
+            <figure class="border maximize" data-label="C15 - Dual Setup (PlugIns)">
+                <picture class="content" data-src="./images/info-gfk/gfk-midi-setup-example-4-*.png"></picture>
+            </figure>
+            <p>Thanks to C15's Split Mode, we can use MIDI to control and play two Plug-Ins at the same time. For this scenario, we need to load an existing Split-Preset or create a new one, as only then MIDI data is sent and received on the Split Channel as well. Next, we have to set the <q>Send</q> and <q>Receive</q> channels according to our settings in the DAW. In this case, we have two Plug-In tracks set to MIDI Channel 1 and 2. Therefore, we set Primary Channel to 1 and Split Channel to 2 for both <q>Send</q> and <q>Receive</q>. We can now control Plug-In 1 with the left and Plug-In 2 with the right Split Part.</p>
+            <p>In the Routing settings, you can distribute the Hardware Sources on the channels or use them on both simultaneously - there are reasonable scenarios for both use cases.</p>
+            <p>As you wish, you can turn off Local, so you don't hear the C15 and the MIDI-CCs will pop up on the small base unit display.</p>
+            <p>As this setup is just about sending MIDI, all <q>Receive</q> entries were deactivated for the sake of clarity.</p>
+            <figure class="border maximize" data-label="Dual Setup - parallel Routings">
+                <picture class="content" data-src="./images/web-ui/setup/webui-setup-midi-routing-scen-2a.png"></picture>
+            </figure>
+            <figure class="border maximize" data-label="Dual Setup - selective Routings">
+                <picture class="content" data-src="./images/web-ui/setup/webui-setup-midi-routing-scen-2b.png"></picture>
+            </figure>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

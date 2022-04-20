@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>MIDI Bridge Manual - 01. General</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-midi-bridge/01-general">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-midi-bridge/index.html">MIDI Bridge Manual</a>
+        <span>/</span>
+        <a href="./documents/man-midi-bridge/01-general.html" data-number="1">General</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="1">General</h2>
+    </section>
+    <section>
+        <h3 class="heading primary" data-number="1.1">Usage and Operation</h3>
+        <h3 class="heading secondary">Usage</h3>
+        <p>The MIDI Bridge is intended to connect two MIDI systems together when both systems are USB Hosts. A typical example is a Digital Audio Workstation (DAW) running on a PC and a NonlinearLabs C15 Synthesizer.</p>
+        <figure class="border maximize" data-label="MIDI Bridge connection">
+            <picture class="content" data-src="images/package/c15-bridge-laptop.jpg"></picture>
+        </figure>
+        <p>As the C15 only offers a USB host-type socket (USB Type A) it cannot be connected to the PC directly, therefore a data bridge is needed which has USB device-type sockets on both ends (USB Type B) so that the device can be connected to both hosts.</p>
+        <p>The applications on both hosts then can communicate with each other in any direction through a USB MIDI Device which appears as <q>NLL-MIDI-Bridge</q>. The bridge does not change orinterpret the data in any way and is fully transparent.</p>
+        <h3 class="heading secondary">Operation</h3>
+        <p>he device waits for a MIDI data packet to be received on <i>one port</i> and when this happens, the packet is send out on the <i>other port</i>.</p>
+        <p>This happens for both directions independently and simultaneously.</p>
+        <p>The transfer process can be monitored with the two LED indicator lights on the top, one for each port, showing incoming data and its delivery status.</p>
+        <p>The bottom plate of the MIDI Bridge is internally equipped with magnets so that you can attach the device to magnetically responsive surfaces, notably the steel chassis of a  NonlinearLabs C15 Synthesizer.</p>
+        <div data-highlight="warn">
+            <p>Those magnets have considerable strengths so keep the Bridge away (<i>&gt; 0.5m</i>) from mechanical watches, cathode ray displays/monitors, credit cards etc with magnet strips, audio or video magnetic tapes and recorders/players, and especially from body-implanted medical devices like pacemakers.</p>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary" data-number="1.2">Packet Latency</h3>
+        <p>The typical transfer time for the usual short MIDI packet is about <i>100μs</i> (μs is <q>micro-seconds</q>;one-millionth of a second) of in either direction, assuming very little other traffic loads on the two USB busses.</p>
+        <p>When a packet could be sent within less than <i>300μs</i>, the transfer is considered REALTIME.</p>
+        <p>When a packet could be sent within <i>300μs</i> and <i>2ms</i>, the transfer is considered LATE.</p>
+        <p>When a packet could be sent only after more than <i>2ms</i>, the transfer is considered STALE.</p>
+        <p>All these considerations are for information, they do not represent error conditions.</p>
+    </section>
+    <section>
+        <h3 class="heading primary" data-number="1.3">Dropped Packet Errors</h3>
+        <p>When a packet cannot be sent out in due time, the transfer is considered DROPPED and will be aborted. This is an error condition and may happen either when the outgoing port is not connected/ready or the host computer is currently not reading data within due time, stalling the transfer.</p>
+        <div data-highlight="note">
+            <p>Windows will always accept MIDI data over USB and will never stall whereas on Linux and MacOs a running application that <i>actually reads</i> MIDI data is required to avoid the stalling condition</p>
+        </div>
+        <p>When the outgoing port is not ready (not connected or not detected by the USB-host) the packet is dropped immediately.</p>
+        <p>When the port is ready and a first stalling condition occurs, a timeout of <i>100ms</i> is used and the packet is dropped. For subsequent stalling packets, the timeout is reduced to <i>5ms</i>. It then takes one successful packet delivery to reset the timeout to <i>100ms</i> again.</p>
+        <div data-highlight="comment">
+            <h5>Technical detail</h5>
+            <p>Until a transfer has finished (or was aborted), receiving of further packets is blocked temporarily. There is no internal buffering, rather the transfers are in real-time, one at a time.</p>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

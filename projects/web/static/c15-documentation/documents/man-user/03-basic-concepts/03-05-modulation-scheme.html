@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 03.5. Modulation Scheme</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/03-basic-concepts/03-05-modulation-scheme">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/03-basic-concepts/03-00-0-basic-concepts.html" data-number="3">Basic Concepts</a>
+        <span>/</span>
+        <a href="./documents/man-user/03-basic-concepts/03-05-modulation-scheme.html" data-number="3.5">Modulation Scheme</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="3.5">Modulation Scheme</h2>
+    </section>
+    <section>
+        <figure class="border maximize" data-label="Modulation Scheme">
+            <picture class="content" data-src="./images/info-gfk/gfk-mod-scheme-*.png"></picture>
+        </figure>
+        <p>The modulation mechanism translates the movements made by the performer (using the Hardware Sources) into movements of the parameters, thus increasing the variation and expression of the preset being used.</p>
+        <p>The C15 does not have automatic modulation processes (like LFOs - with the exception of the <span data-keyword="Flanger"></span>): all modulating movements are made by the performer.</p>
+        <p>In the sound engine, almost all parameters operate as smoothers. The <span data-keyword="Smoothing"> Time</span> depends on the instrument's settings and the operational context. The <span data-keyword="Edit"> Smoothing Time</span> applies for adjusting parameters, the <span data-keyword="Transition"> Time</span> for preset recalls and the <span data-keyword="Macro Control"> Smoothing Time</span> for modulations.</p>
+        <p>In a given preset, the flow of movements is defined by several <span data-keyword="Amount"></span> parameters, which weight the amount and direction of a particular movement. Each <span data-keyword="Hardware"> Source</span> features a separate amount for each <span data-keyword="Macro"> Control</span>. Multiple Hardware Sources can be used to control any given Macro Control. The <span data-keyword="Target"> parameters</span> have an MC selector and modulation amount, thus completing the routing of modulations. Any given Target parameter can only be affected by one Macro Control.</p>
+        <p>How Hardware Sources affect Macro Controls essentially depends on the type and settings of the source in question, so it is hard to make any general statement. But how Macro Controls affect target parameters is governed by general rules. The modulation aspects of a parameter are defined in relation to both the Macro Control in question and the parameter, as neither of them changes when modulation amounts are edited.</p>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Parameter Modulation">
+                <picture class="content" data-src="./images/info-gfk/gfk-mod-unclipped-*.png"></picture>
+                <figcaption>fig. 1</figcaption>
+            </figure>
+            <figure class="border maximize" data-label="Parameter Clipping">
+                <picture class="content" data-src="./images/info-gfk/gfk-mod-clipped-*.png"></picture>
+                <figcaption>fig. 2</figcaption>
+            </figure>
+        </div>
+        <p>The modulation amounts define the range within which target parameters move when the corresponding Macro Controls are moved. As neither the Macro Controls nor the target parameters change in position, the amounts always reflect the positions of the Macro Controls within the modulation range <i>(fig. 1)</i>.</p>
+        <p>There may be cases in which the modulation range exceeds the parameter range: this is also known as virtual overdrive. When a modulation moves a parameter out of its operational range, it remains at the corresponding limit (clipped) until the modulation returns to within the parameter range again <i>(fig. 2)</i>.</p>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Parameter Polarity">
+                <picture class="content" data-src="./images/info-gfk/gfk-mod-polarity-*.png"></picture>
+                <figcaption>fig. 3</figcaption>
+            </figure>
+            <figure class="border maximize" data-label="Parameter Scaling">
+                <picture class="content" data-src="./images/info-gfk/gfk-mod-scaling-*.png"></picture>
+                <figcaption>fig. 4</figcaption>
+            </figure>
+        </div>
+        <p>If we compare unipolar and bipolar target parameters <i>(fig. 3)</i>, it is clear that the full modulation range (-100% ... 100%) of bipolar parameters is effectively twice the modulation range (0% ... 100%) of unipolar parameters.</p>
+        <p>When a target parameter has linear scaling, the modulation amount can be displayed in the same format as the parameter's unit of measurement. Target parameters with nonlinear scaling display the modulation amount as a percentage <i>(fig. 4)</i>.</p>
+        <p>Use this interactive <a href="./documents/illustrations/parameter-modulation.html">Modulation Scheme</a> for a better understanding of the modulation mechanism.</p>
+        <p>More information about Hardware Sources and the modulation mechanism can be found in chapter <a href="./documents/man-user/05-synth-engine/05-04-hw-sources.html" data-number="5.4">Using Hardware Sources</a>. The section <q>Modulation Aspects</q> explains the current standard setting, which is commonly used in the factory presets.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

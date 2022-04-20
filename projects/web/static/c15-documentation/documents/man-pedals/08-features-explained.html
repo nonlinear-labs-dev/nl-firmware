@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Pedal Manual - 08. Features explained</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-pedals/08-features-explained">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-pedals/index.html">Pedal Manual</a>
+        <span>/</span>
+        <a href="./documents/man-pedals/08-features-explained.html" data-number="8">Features explained</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="8">Features explained</h2>
+    </section>
+    <section>
+        <h3 class="heading primary" data-number="8.1">Auto-Ranging</h3>
+    </section>
+    <section>
+        <p>Many pedals don’t have their electrical output fully follow the mechanical position over the complete travel, there are mechanical <q>dead zones</q> where the electrical output does not follow the mechanical position anymore. There is nothing we can do about this.</p>
+        <p>But many pedals also have the additional effect that the internal element (potentiometer or variable-resistor) in the first place is not used over the full range that it does have electrically, this is depending on the construction of the pedal. We have found pedals that don’t go any further than 70% or so, for example.</p>
+        <p>Further, some pedals have additional control knobs to intentionally limit the output range in some way, very common is a minimum control that introduces a sort-of base value that is added to the actual setting. For example, the minimum control on Roland and Boss pedals can be dialed in to give a base value of 80% at the pedal’s <q>zero</q> position and the output value will increase to 100% when moving the pedal to the <q>full</q> position, spanning only 20% of the possible range.</p>
+        <p>Finally, the already restricted obtainable electrical output range often is not very stable at the range ends, this is mostly for mechanical slack and other mechanical issues, notably on pedals with a construction that is not extremely rigid, mechanically.</p>
+        <p>The C15 is designed so that all pedals will always actually reach the full value output from 0% to %100 regardless of the above short-comings and almost regardless of any setting of additional minimum and range control knobs found on the pedal. By this, you can change pedals and that won’t alter the playing experience at all just because the raw pedal behaves differently.</p>
+        <p>In the Auto-Ranging process running continuously in the background, the C15 measures the maximum electrical range the pedal has produced so far and sets marker points for the conversion (scaling) to the final 0%...%100 range (black area in below drawing).</p>
+    
+    
+        <figure class="border maximize" data-label="Auto-Ranging">
+            <picture class="content" data-src="images/pedal-manual/autorange-*.png"></picture>
+        </figure>
+
+
+        <p>The measured electrical range can only increase over time of usage and once it is large enough for a successful scaling -- larger than about 1/4th of maximum range -- the pedal actually starts to produce output values. The only way to make the used electrical range smaller again is to reset the pedal.</p>
+        <p>Once the pedal has been operated over the full range of mechanical travel the pedal will work with best resolution and stability.</p>
+        <p>The marker point values actually used for the computation are slightly backed off from the measured min and max values. These <q>electrical dead-zones</q> (gray) allow that unstable electrical end point outputs will still give stable 0% or 100% output at the end stops but they also slightly reduce the effective range of pedal travel, so this is a trade-off. Ranging and stability characteristics for pedals of known make and model are stored in pedal-specific presets, for best results.</p>
+        <p>The Auto-Ranging is reset when the pedal is (re-)plugged into a running C15 or when the pedal type is changed in the Pedal Settings.</p>
+    </section>
+    <section>
+        <h3 class="heading primary" data-number="8.2">Auto-Hold</h3>
+    </section>
+    <section>
+        <p>When using several hardware sources like two pedals or a pedal and ribbon feeding the same Macro Control, we do not want to always update the Macro Control with the source that produced the last change following every minute amount of change. Value updates shall only happen when the user is apparently moving the hardware source’s position intentionally, whereas small variations from general electric noise but also from mechanical vibration etc. shall have no effect. As long as the input is only noise and random fluctuation the final output value shall not change.</p>
+        <p>On the other hand, when the user really operates the pedal the value should track what the user <q>meant</q> no matter how minute the changes are as long as they look reasonable.</p>
+        <p>Therefore, a compromise solution is needed and this is the C15’s intelligent automated track-and-hold.</p>
+
+
+        <figure class="border maximize" data-label="Auto-Hold">
+            <picture class="content" data-src="images/pedal-manual/autohold-*.png"></picture>
+        </figure>
+
+
+        <p>Normally, for fast and wide enough value changes, the track-and-hold mechanism is in <q>track</q> mode and the output strictly follows the momentary input (black).</p>
+        <p>At point A, a window detector (dotted rectangle) decided that the momentary values are considered stable now for long enough, then a new output value (blue) is set up to reach an averaged level after a short time (at point 2), using a ramp (red).</p>
+        <p>This output value is then frozen, held constant until the current margins of tolerance are hit, marked by point B in time, from where <q>track</q> mode is used again. A ramp (red) is used again to steer the output back to the train of momentary values. The system is in <q>hold</q> state between points A and B and the output value is frozen as denoted by the blue horizontal line.</p>
+        <p>The <q>values-are-stable</q> window can be different than the <q>tolerance</q> window, and some specific settings are used for known pedals. Further, these windows partly adapt to the signal situation dynamically.</p>
+        
+        <p>As can be seen, ramps are not necessarily linear (straight lines). Actually, a ramp creates a cross-fade between two value trains, neither of which needs to be a constant value over time. Technically, the ramps are generated by ramping down a factor from 1.0 to 0.0. This factor is newly calculated for every point in time along the ramp and applied to deter- mine the contribution of the two value trains. For example, the ramp starting at point A is a cross-fade from the momentary input values to the sequence of the average values of the sliding window. The last value from this train of averages (dashed line) is calculated from the input values between points 1 and 2, and this determines the final value of the cross-fade at point 2 from where on the value is held constant.</p>
+        <p>Not shown here, when the momentary values change very slowly but eventually drift beyond margins another ramp is generated but the <q>hold</q> state remains active with the tolerance window shifted up or down one window height.<br />Also, the detector always scans for fast and wide <q>shock</q> changes where <q>hold</q> mode is left and any active ramp speeds are tightened up to very quickly follow the momentary output again.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

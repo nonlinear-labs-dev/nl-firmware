@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 07.3. MIDI Settings</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/07-midi/07-03-midi-settings">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/07-midi/07-00-midi.html" data-number="7">MIDI</a>
+        <span>/</span>
+        <a href="./documents/man-user/07-midi/07-03-midi-settings.html" data-number="7.3">MIDI Settings</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h3 class="heading primary" data-number="7.3">MIDI Settings</h3>
+        <div data-columns="2">
+            <div class="section">
+                <figure class="border maximize" data-label="Setup window - MIDI Settings">
+                    <picture class="content" data-src="./images/web-ui/setup/webui-setup-midi-settings.png"></picture>
+                </figure>
+            </div>
+            <div class="section">
+                <p>In the Setup (both in the <span data-keyword="Graphical"></span> and <span data-keyword="Hardware">UI</span>) you find a new page for <q>MIDI Settings</q>. It is divided into the sections <q>Channels</q>, <q>Assignments</q> and <q>Routings</q>. Furthermore, you find direct access to <q>Panic</q>, <q>Local Enable</q> and <q>Program Change Bank</q> at the very top of the settings page.</p>
+                <figure class="border maximize" data-label="Setup screen - MIDI Settings">
+                    <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-settings.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Setup screen - MIDI - Local enable">
+                    <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-local.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Setup screen - MIDI - Channels">
+                    <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-channels.png"></picture>
+                </figure>
+            </div>
+        </div>
+        <div class="section">
+            <h4>Panic</h4>
+            <p>When triggered, the C15's Voice Allocation, Envelopes and Buffer will be reset and an <q>All Notes Off</q> MIDI message will be send on the respective channel(s). As a result, all internal audio and external gear will stop playing. A common method to face stuck MIDI notes, but it also can be helpful, when you lost control of the sound, e.g. through a feedback loop.</p>
+            <p>Panic can also be triggered by pressing all four soft buttons on the base unit at the same time.</p>
+            
+            <h4>Local Enable</h4>
+            <p>When set to <q>Off</q>, both the C15's keyboard and the eight Hardware Sources are disconnected from the synth engine but still can be used to send MIDI note and Control Change, Pitchbend or Channel Pressure messages.</p>
+            <p>In this mode the base unit display is not showing the associated Macro Control, but the MIDI-CC number assigned to the Ribbons instead.</p>
+            
+            <div data-highlight="note">Please note that changing this setting while a note is active resets the voice allocation, the envelopes and the buffer of the C15, so that the audio playback is interrupted for a brief moment. In this case, a MIDI All Notes Off message is also sent on the respective channel(s).</div>
+            
+            <h4>Program Change Bank</h4>
+            <figure class="border maximize" data-label="Setup Window - MIDI - Program Change Bank">
+                <picture class="content" data-src="images/web-ui/setup/webui-setup-midi-pc-bank.png"></picture>
+            </figure>
+            <figure class="border maximize" data-label="Setup screen - MIDI - Program Change Bank">
+                <picture class="content" data-src="images/hardware-ui/boled/setup/boled-setup-midi-pc-bank.png"></picture>
+            </figure>
+            <p>Here you can assign the Preset Bank that is used for sending and receiving MIDI Program Change messages. By selecting <q>None</q>, no MIDI Program Change messages will be received or sent. Please see the next subchapter <q>Choosing a Bank for MIDI Program Change</q> for choosing a Preset Bank directly from the preset view.</p> 
+            <div data-highlight="note">Please note, that every time you change the Program Change Bank, a corresponding MIDI message is sent.</div>
+            
+            <h4>Choosing a Bank for MIDI Program Change</h4>
+            <p>To make use of MIDI Program Change messages one of the C15's preset banks has to be assigned as the source and target of Program Changes. A received Program Change would select the preset with the referring number in this bank and the selection of a new preset in the bank will send a MIDI Program Change with its number. Selecting a preset that has a higher number than 128 will not send a Program Change.</p>
+            <p>The <q>Direct Load</q> switch decides if the C15 only sends a MIDI Program Change when you select a preset, or if the preset is also loaded into the sound engine. Therefore it has a similar effect like a <q>Local Off</q> for Program Changes.</p>
+            <figure class="border maximize" data-label="Bank Program Change Indicators (Graphical UI)">
+                <picture class="content" data-src="./images/web-ui/preset/webui-pre-bank-midi-pc.png"></picture>
+            </figure>
+            <figure class="border maximize" data-label="Bank Program Change Indocators (Hardware UI)">
+                <picture class="content" data-src="images/hardware-ui/boled/preset/boled-soled-pre-bank-midi-pc.png"></picture>
+            </figure>
+            <p>The header of the MIDI-assigned bank is marked by a symbol that looks like a 5-pole MIDI connector. The bank can be connected or disconnected in the following ways:</p>
+            <ul>
+                <li>In the graphical UI you find the entry <q>Connect Bank to MIDI PC</q> or <q>Disconnect Bank from MIDI PC</q> in the context menu of the bank header.</li>
+                <li>In the Preset Screen of the Hardware UI activate the <q>Bank</q> focus by pressing the <span data-keyword="Soft Button">1</span> (with a dual preset hold the button for a second). In the <q>Edit</q> menu you find the entry <q>MIDI PC: On</q> or <q>MIDI PC: Off</q>, that can be toggled by the <span data-keyword="Enter">Button</span>.</li>
+            </ul>
+            <p>By connecting a bank to MIDI PC the previously connected bank will be disconnected. After disconnecting the currently connected bank, none of the banks will be connected. The currently assigned bank can also be found and changed in the <q>Program Change Bank</q> menu in the MIDI Settings.</p>
+        </div>
+        <div class="section">
+            <h3 class="heading secondary" data-number="7.3.1">MIDI Settings: Channels</h3>
+            <div data-columns="2">
+                <div class="section">
+                    <figure class="border maximize" data-label="Setup window - MIDI - Channels">
+                        <picture class="content" data-src="./images/web-ui/setup/webui-setup-midi-channels-send-rec.png"></picture>
+                    </figure>
+                    <figure class="border maximize" data-label="Setup screen - MIDI - Channels">
+                        <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-channels-send-rec.png"></picture>
+                    </figure>
+                </div>
+                <div class="section">
+                    <p>Here you can select the MIDI channel that is used to send and receive MIDI messages for both Primary and Split Channel. The Split Channel is relevant only if a Split Sound is loaded. If you select <q>Omni</q>, messages from all 16 MIDI channels will be applied. <q>None</q> will block all incoming and/or outgoing MIDI messages. When <q>Split Channel</q> is set to <q>Common</q>, it will use the same MIDI channel as the Primary Channel.</p>
+                    <p>Settings for Split Channels apply to Split Sounds only. It controls the MIDI channel for MIDI messages sent and/or received by Part II. If the Split Channel is not set to <q>Common</q>, the Split Point(s) are not applied to the received MIDI notes and both Parts can be played over the full MIDI note range.</p>
+                </div>
+            </div>
+
+            <div data-highlight="note">Please note that changing this setting while a note is active resets the voice allocation, the envelopes and the buffer of the C15, so that the audio playback is interrupted for a brief moment. In this case, a MIDI All Notes Off message is also sent on the respective channel(s).</div>
+        </div>
+        
+        <div class="section">
+            <h3 class="heading secondary" data-number="7.3.2">MIDI Settings: Assignments</h3>
+            <div data-columns="2">
+                <div class="section">
+                    <figure class="border maximize" data-label="Setup Window - MIDI - Assignments">
+                        <picture class="content" data-src="./images/web-ui/setup/webui-setup-midi-assign.png"></picture>
+                    </figure>
+                    <figure class="border maximize" data-label="Setup screen - MIDI - Assignments (Pedal 1)">
+                        <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-assign-p1.png"></picture>
+                    </figure>
+                </div>
+                <div class="section">
+                    <figure class="border maximize" data-label="Setup screen - MIDI - Assignments (Pedal 4)">
+                        <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-assign-p4.png"></picture>
+                    </figure>
+            
+                    <figure class="border maximize" data-label="Setup screen - MIDI - Assignments (Bender)">
+                        <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-assign-bender.png"></picture>
+                    </figure>
+                    <figure class="border maximize" data-label="Setup screen - MIDI - Assignments (Defaults)">
+                        <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-assign-classic.png"></picture>
+                    </figure>
+                </div>
+            </div>
+            <p>These settings determine which types and numbers of MIDI messages are assigned to the Hardware Sources. High Resolution options for Velocities and Hardware Sources as well as a Bank selector for Program Changes are also provided. The Assignments apply to both MIDI Send and MIDI Receive.</p>
+        
+            <h4>Pedal 1, 2, 3, 4</h4>
+            <p>Each pedal can be assigned to a MIDI Control Change. The CC numbers 1 to 31 are available for continuous operation in 7-bit and 14-bit (High-Res.) mode. In 14-bit mode a second CC with a number between 33 and 63 is automatically assigned for the LSB.</p>
+            <p>In addition, the CC numbers 64 to 69 are available. They work as 2-state switches, as it is typical for e.g. a MIDI sustain pedal. When the C15's pedal position rises above 50 %, a MIDI CC value of 127 is sent, when it falls below 50% a value of 0 is sent. A received MIDI CC value smaller than 64 sets the pedal position to 0 %. Values of 64 or larger set the pedal position to 100 %.</p>
+            <p>By selecting <q>None</q> the pedal is disconnected from MIDI.</p>
+            
+            <h4>Ribbon 1, 2</h4>
+            <p>Each ribbon can be assigned to a MIDI Control Change. The CC numbers 1 to 31 are available in 7-bit and 14-bit (High-Res) mode. In 14-bit mode a second CC with a number between 33 and 63 is automatically assigned for the LSB.</p>
+            <p>By selecting <q>None</q> the ribbon is disconnected from MIDI.</p>
+            
+            <h4>Bender</h4>
+            <p>In the typical application as a pitch bender the Bender can be assigned to MIDI Pitchbend. This has 14 bits resolution by definition.</p>
+            <p>The Bender can also be assigned to a MIDI Control Change. The CC numbers 1 to 31 are available in 7-bit and 14-bit (High-Res) mode. In 14-bit mode a second CC with a number between 33 and 63 is automatically assigned for the LSB.</p>
+            <p>By selecting <q>None</q> the Bender is disconnected from MIDI.</p>
+            
+            <h4>Aftertouch</h4>
+            <p>The most common assignment would be MIDI Channel Pressure. This has only 7 bits of resolution.</p>
+            <p>Aftertouch can also be assigned to a MIDI Control Change. The CC numbers 1 to 31 are available in 7-bit and 14-bit (High-Res) mode. In 14-bit mode a second CC with a number between 33 and 63 is automatically assigned for the LSB</p>
+            <p>Two additional options are available to assign Aftertouch to one half of the MIDI Pitchbend. <q>Pitchbend up</q> has a range from the center to the maximum while <q>Pitchbend down</q> goes from the center to the minimum. These ranges have 13 bits of resolution.</p>
+            <p>By selecting <q>None</q>, Aftertouch is disconnected from MIDI.</p>
+            
+            <h4>High-Res. CCs (use LSB)</h4>
+            <p>Control Changes can be transmitted with a resolution of 14 bit by using two CCs, one for coarse (MSB) values and one for fine (LSB) values. The LSB message has to be sent before the MSB message. The number of the CC for the LSB is derived from the number of the CC for the MSB by adding 32.</p>
+            <p>To avoid conflicts with other applications of the LSB CCs, their use can be disabled (q
+                Off). This setting applies to all assigned MIDI Control Changes.</p>
+            
+            <h4>High-Res. Velocity (CC 88)</h4>
+            <p>Note On and Note Off velocities can be transmitted with a resolution of 14 bit by sending a CC 88 message before each Note On or Note Off message. The value of the CC 88 represents the LSB that is providing additional 7 bits of resolution.</p>
+            <p>To avoid conflicts with other applications of CC 88, its use as velocity LSB can be disabled (<q>Off</q>).</p>
+        
+            <h4>Default Mappings</h4>
+            <div data-columns="1">
+                <table>
+                    <tr>
+                        <th><span data-keyword="Source"></span></th>
+                        <th>Classic MIDI</th>
+                        <th>High Resolution</th>
+                    </tr>
+                    <tr>
+                        <th><span data-keyword="Pedal">1</span></th>
+                        <td>CC20</td>
+                        <td>CC20 + CC52 <i>(MSB + LSB)</i></td>
+                    </tr>
+                    <tr>
+                        <th><span data-keyword="Pedal">2</span></th>
+                        <td>CC21</td>
+                        <td>CC21 + CC53 <i>(MSB + LSB)</i></td>
+                    </tr>
+                    <tr>
+                        <th><span data-keyword="Pedal">3</span></th>
+                        <td>CC22</td>
+                        <td>CC22 + CC54 <i>(MSB + LSB)</i></td>
+                    </tr>
+                    <tr>
+                        <th><span data-keyword="Pedal">4</span></th>
+                        <td>CC23</td>
+                        <td>CC23 + CC55 <i>(MSB + LSB)</i></td>
+                    </tr>
+                    <tr>
+                        <th><span data-keyword="Ribbon">1</span></th>
+                        <td>CC24</td>
+                        <td>CC24 + CC56 <i>(MSB + LSB)</i></td>
+                    </tr>
+                    <tr>
+                        <th><span data-keyword="Ribbon">2</span></th>
+                        <td>CC25</td>
+                        <td>CC25 + CC57 <i>(MSB + LSB)</i></td>
+                    </tr>
+                    <tr>
+                        <th><span data-keyword="Bender"></span></th>
+                        <td>Pitchbend</td>
+                        <td>Pitchbend</td>
+                    </tr>
+                    <tr>
+                        <th><span data-keyword="Aftertouch"></span></th>
+                        <td>Channel Pressure</td>
+                        <td>CC26 + CC58 <i>(MSB + LSB)</i></td>
+                    </tr>
+                    <tr>
+                        <th><span data-keyword="High-Res.">Velocity</span></th>
+                        <td>Off</td>
+                        <td>On <i>(LSB CC88)</i></td>
+                    </tr>
+                    <tr>
+                        <th><span data-keyword="High-Res.">CCs</span></th>
+                        <td>Off <i>(MSB only)</i></td>
+                        <td>On <i>(MSB + LSB)</i></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="heading secondary" data-number="7.3.3">MIDI Settings: Routings</h3>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Setup Window - MIDI - Routings (all on)">
+                    <picture class="content" data-src="./images/web-ui/setup/webui-setup-midi-routing-all-on.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Setup Window - MIDI - Routings (all off)">
+                    <picture class="content" data-src="./images/web-ui/setup/webui-setup-midi-routing-all-off.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Setup screen - MIDI - Routings (Notes)">
+                    <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-routing-notes.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Setup screen - MIDI - Routings (Pedal 2)">
+                    <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-routing-p2.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Setup screen - MIDI - Routings (Bender)">
+                    <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-routing-bender.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Setup screen - MIDI - Routings (Ribbon 2)">
+                    <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-routing-rib2.png"></picture>
+                </figure>
+            </div>
+            <p>These settings allow to set individual and specific MIDI routings. The matrix consists of five columns: <q>Send Primary</q> (SP), <q>Receive Primary</q> (RP), <q>Send Split</q> (SS), <q>Receive Split</q> (RS)  and <q>Local</q> (L). The rows list <q>Notes</q>, <q>Program Change</q> and the eight <span data-keyword="Hardware">Sources</span> (Pedal 1-4,  Bender, Aftertouch and Ribbon 1-2. In the Web UI, a check mark at the respective matrix position sets the entry to <q>On</q>, removing the check mark sets it to <q>Off</q>.</p>
+            <p>On the hardware, a highlighted entry represents <q>On</q>, a dark one <q>Off</q>. Also, the access to the matrix is different on the hardware. When you choose one of the rows and press <span data-keyword="Enter"></span>, you reach a dedicated settings dialog for this row. In the center, the display shows you the name of the respective component, e.g. <q>Notes</q>. Use <span data-keyword="Soft Buttons">2</span> and <span data-keyword>3</span> to change between the rows. With <span data-keyword="Soft Button">4</span>, you can switch between the columns. The name of the actual column is also displayed below the chosen row, e.g. <q>Send Primary</q>. By turning the dial, you can set the entry to <q>On</q> or <q>Off</q>. When holding the <span data-keyword="Shift">Button</span> while turning the dial, you can set the whole row to <q>On</q> or <q>Off</q>. The status is also displayed by the check marks on the right side. By pressing <span data-keyword="Soft Button">1</span>, you get back to the matrix overview.</p>
+            <div class="section" data-columns="2">
+                <figure class="border maximize" data-label="MIDI Routing screen - Notes (Send Primary on)">
+                    <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-routing-notes-prim-on.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="MIDI Routing screen - Pedal 1 (Send Primary on)">
+                    <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-routing-p1-prim-on.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="MIDI Routing screen - Notes (Send Primary off)">
+                    <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-routing-notes-prim-off.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="MIDI Routing screen - Pedal 1 (Send Primary off)">
+                    <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-midi-routing-rib-prim-on.png"></picture>
+                </figure>
+                <div>
+                    <h4>Send (Primary/Split)</h4>
+                    <p>When set to <q>Off</q> the respective C15 component will not send MIDI messages on the respective channel.</p>
+                </div>
+                <div>
+                    <h4>Receive (Primary/Split)</h4>
+                    <p>When set to <q>Off</q> the respective C15 component will not receive MIDI messages on the respective channel.</p>
+                </div>
+            </div>
+
+            <h4>Local</h4>
+            <p>When set to <q>Off</q> the respective component is disconnected from the synth engine, but still can be used to send MIDI note and Control Change, Pitchbend or Channel Pressure messages.</p>
+            <p>In this mode the base unit display is not showing the associated Macro Control, but the MIDI-CC number assigned to the Ribbons instead.</p>
+            
+            <h4>Set all Routings to On/Off</h4>
+            <p>Below the Routings Matrix, you find the options to enable or disable all routings by pressing <q>Set all Routings to On</q> or <q>Set all Routings to Off</q> (respectively <q>All On</q>/<q>All Off</q> in the <span data-keyword="Graphical">UI</span>).</p>
+        </div>
+
+        <div data-highlight="note">Please note that changing the routings setting while a note is active resets the voice allocation and the envelopes of the C15, so that the audio playback is interrupted for a brief moment. In this case, a MIDI All Notes Off message is also sent on the respective channel(s). </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

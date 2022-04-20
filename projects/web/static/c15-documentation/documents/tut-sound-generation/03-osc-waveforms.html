@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Sound Generation Tutorial - 03. Oscillator Section / Creating Waveforms</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/tut-sound-generation/03-osc-waveforms">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/index.html">Sound Generation Tutorial</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/03-osc-waveforms.html" data-number="3">Oscillator Section / Creating Waveforms</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+<div class="tutorial">
+
+    <section>
+        <h2>Oscillator Section / Creating Waveforms</h2>
+        <p>A typical parameter screen of the Panel Unit display looks like this:</li>
+    
+        <figure class="border maximize" data-label="Typical Parameter Screen">
+            <picture class="content" data-src="images/tutorials/sound-generation/boled-typic.png"></picture>
+            <figcaption data-columns="2">
+                <ol start="1">
+                    <li><span data-keyword="Group Header"></span></li>
+                    <li><span data-keyword="Parameter"> Name</span></li>
+                    <li><span data-keyword="Graphical"> Indicator</span></li>
+                </ol>
+                <ol start="4">
+                    <li><span data-keyword="Parameter"> Value</span></li>
+                    <li><span data-keyword="Soft Button"> Labels</span></li>
+                    <li><span data-keyword="Main and Sub"> Parameters</span></li>
+                </ol>
+            </figcaption>
+        </figure>
+    </section>
+    <section>
+        <h3 class="heading primary">Oscillator Basics</h3>
+        
+        <h3 class="heading secondary">Let’s (de)tune Oscillator A:</h3>
+        <ul>
+            <li>Press <em>Pitch</em> (Oscillator A)</li> 
+            <li><em>A–B</em> (Comb Filter) <em>A–B</em> (State Variable Filter) and <em>A</em> (Output Mixer) are flashing to show you that both filters and the Output Mixer are receiving a signal from the selected Oscillator A (even though you are not hearing much filtering right now).</li>
+            <li>Turn the <em>Encoder</em> and detune Oscillator A by semitones.</pclass="indent-a">
+            <li class="indent-b">The pitch is displayed in MIDI-note numbers: <q>60</q> is MIDI note 60 and equal to note <q>C3</q>. It is the pitch that you hear when playing the third <q>C</q> of the keyboard.</li>
+        </ul>
+    
+        <h3 class="heading secondary">Now let’s play around with Key Tracking:</h3>
+        <ul>
+            <li>Press <em>Pitch</em> (Oscillator A) two times. Its light stays on. Now watch the display. It shows the highlighted parameter <em><i>Key Trk</i></em>.</li>
+            <li class="indent-b">Note that multiple hitting of a parameter button toggles between the upper <q>main</q> parameter (here <q>Pitch</q>) and several <q>sub</q> parameters (here <em><i>Env C</i></em> and <em><i>Key Trk</i></em>) that are related to the main parameter.</li>
+            <li>Turn the Encoder to <em>[50.00 %]</em>. Oscillator A’s keyboard tracking is now halved which equals playing quarter-tones on the keyboard.</li>
+            <li>Turn the Encoder to <em>[0.00 %]</em>. Each key is playing at the same pitch now.</li>
+            <li class="indent-b">A key tracking close to 0.00% can be very useful when an oscillator is used as LFO-like modulation source or slow PM-carrier. More on this later…</li>
+            <li>Turn the Encoder back to <em>[100.00 %]</em> (the usual semi-tone scaling).</li>
+            <li class="indent-b">Reset every parameter to its default value by hitting <em>Default</em> (Edit Panel).</li>
+        </ul>
+    
+        <h3 class="heading secondary">Let’s introduce some envelope parameters:</h3>
+        <ul>
+            <p>(please consult the User Manual for all details of the envelope parameters or use the Info button on the Edit Panel).</p>
+            <li>Press <em>Attack</em> (Envelope A).</li>
+            <li>Turn the <em>Encoder</em> and play some notes.</li>
+            <li>Press <em>Release</em> (Envelope A).</li>
+            <li>Turn the <em>Encoder</em> and play some notes.</li>
+            <li class="indent-b">Envelope A is always connected to Oscillator A and controls its volume.</li>
+            <li>Press <em>Sustain</em> (Envelope A).</li>
+            <li>Turn the <em>Encoder</em> to approx. <em>[60,0 %]</em>.</li>
+            <li class="indent-b">Oscillator A is now providing a static signal level.</li>
+        </ul>
+    </section>
+    <section>
+        <h3 class="heading primary">Oscillator Self-Modulation</h3>
+        <ul>
+            <li>Press <em>PM Self</em> (Oscillator A).</li>
+            <li>Turn the <em>Encoder</em> back and forth.</li>
+            <li class="indent-b">Oscillator A’s output is fed back into its input. At higher rates, the output wave gets increasingly warped and generates a sawtooth wave with rich harmonic content. Sweeping the Encoder will produce a filter-like effect.</li>
+        </ul>
+        <div data-highlight="excursion">
+            <h3>Excursion: bipolar parameter values</h3>
+            <p>PM Self works at positive as well as negative parameter values. You will find many more parameters with positive and negative values, not only modulation depth settings (as you might know from other synthesizers) but also mixing levels etc. In many cases, a negative value represents a phase-shifted signal. Only when mixing such a signal with other signals, phase cancellations will generate audible effects.</p>
+            <p>With Self PM active, a positive value will generate a sawtooth-wave with rising edge, negative values generate a falling edge.</p>
+            
+            <h3>Let’s make Oscillator self-modulation dynamic and control Self-PM of Oscillator A by Envelope A:</h3>
+            <ul>
+                <li>Set the <em>Encoder</em> to approx. <em>[70,0 %]</em> self modulation amount.</li>
+                <li>Press <em>PM Self</em> (Oscillator A) again. Watch the Display: <em><i>Env A</i></em> is highlighted</li>
+                <li class="indent-b">You have just accessed the first sub-parameter <q>behind</q> PM-Self (<q>Env A</q>). It is the amount of Envelope A modulating PM-Self of Oscillator A.</li>
+                <figure class="border maximize" data-label="Screen PM Self">
+                    <picture class="content" data-src="images/tutorials/sound-generation/boled-pm-self.png"></picture>
+                </figure>            
+                <li class="indent-b">Alternatively, you can toggle through the sub-parameters behind the currently active button with the rightmost soft button at any time.</li>
+                <li>Turn the <em>Encoder</em> to <em>[100,0 %]</em>.</li>
+                <li class="indent-b">Envelope A now provides a dynamic modulation depth for PM Self of Osc A. As a result, you will hear a transition from bright to soft or the other way round, depending on the settings of Env A.</li>
+                <li>Now tweak the different Envelope A parameters a bit (see above): Depending on the settings, you will hear some simple brassy or percussive sounds.</li>
+                <li class="indent-b">Since Envelope A is influenced by keyboard velocity, the sound will also depend on how hard you are hitting the keys.</li>
+            </ul>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Introducing the Shaper</h3>
+        <ul>
+            <li>First, please reset Oscillator A to a simple sine-wave by selecting <em>PM Self</em> and <em>PM Self - Env A (Env A)</em> and hitting <em>Default</em>. Envelope A should be providing a simple organ-like setting.</li>
+            <li>Press <em>Mix</em> (Shaper A).</li>
+            <li>Turn the <em>Encoder</em> slowly to <em>[100.0 %]</em> and play some notes.</li>
+            <li class="indent-b">At increasing Mix values, you will hear the sound getting brighter. Note that the sound is somewhat different from the results of <q>PM Self</q>. Now the Oscillator A signal is being routed through Shaper A. <q>Mix</q> blends between the pure oscillator signal (0 %) and the output of the Shaper (100 %).</li>
+            <li>Press <em>Drive</em> (Shaper A).</li>
+            <li>Turn the <em>Encoder</em> slowly and play some notes.</li>
+            <li>Then set the Drive to <em>[20.0 dB]</em>.</li>
+            <li>Press <em>Fold</em> (Shaper A).</li>
+            <li>Turn the <em>Encoder</em> slowly and play some notes.</li>
+            <li>Press <em>Asym</em> (Shaper A).</li>
+            <li>Turn the <em>Encoder</em> slowly and play some notes.</li>
+            <li class="indent-b">Fold, Drive and Asym(metry) warp the signal to generate various waveshapes with very different harmonic content and timbral results.</li>
+            <li>Press <em>PM Self</em> (Oscillator A) again.</li>
+            <li>Turn the <em>Encoder</em> to <em>[50.0 %]</em> and play some notes.</li>
+            <li>Press <em>PM Self</em> (Oscillator A) again.</li>
+            <li>Turn the <em>Encoder</em> slowly and play some notes.</li>
+            <li class="indent-b">Now you have just fed the Shaper with the self-modulated (resp. sawtooth wave) signal instead of a sine wave.</li>
+        </ul>
+        <div data-highlight="excursion">
+            <h3>Excursion: what’s that Shaper doing?</h3>
+            <p>In simple words, the Shaper distorts the oscillator signal in various ways. It maps the input signal to a shaping curve to produce a more complex waveform. Depending on the settings, a vast range of different harmonic spectra can be created.</p> 
+            <figure class="border maximize" data-label="Shaper Diagram">
+                <picture class="content" data-src="images/tutorials/sound-generation/shaper-drive-*.png"></picture>
+            </figure>
+            <p>The <em>Drive</em> parameter controls the intensity of distortion induced by the Shaper and can produce a vaguely filter-like effect.</p>
+            <p>The <em>Fold</em> parameter controls the amount of ripples in the waveform. It emphases some odd harmonics while the fundamental is attenuated. The sound gets some characteristic <q>nasal</q> quality, not unlike a resonating filter.</p>
+            <p><em>Asymmetry</em> treats the upper and the lower part of the input signal differently and generates even harmonics (2nd, 4th, 6th etc) that way. At high values, the signal is pitched one octave higher while the fundamental is eliminated.</p>
+            <p>All three parameters interact with each other, producing countless variations of distortion curves and resulting waveforms.</p>
+        </div>
+        <div data-highlight="excursion">
+            <h3>Excursion: the C15’s signal routing / blending</h3>
+            <p>As with all signal routings in the C15, the Shaper is not switched in or out of the signal path but continuously blended with another (usually the dry) signal. This makes sense since it provides great morphing capabilities without any steps or clicks in the sound. More on this later.</li>
+        </div>
+        <div data-highlight="excursion">
+            <h3>Excursion: parameter value fine resolution</h3>
+            <p>Some parameters need a very fine resolution to fine-tune a sound the way you desire. In order to do this, the resolution of every parameter can be multiplied by a factor of 10 (sometimes even 100). Simply hit the <em>Fine</em> button to toggle fine resolution on and off. To get an impression of that effect, try out <q><em>Drive</em> (Shaper A)</q> in fine resolution mode.</p>
+            <p>By selecting a new parameter, the fine <q>mode</q> will automatically be disabled. To enable fine resolution permanently, press <em>Shift + Fine</em>.</p>
+        </div>
+        <ul>
+            <li>Now set <em>PM Self</em> to <em>[75 %]</em>.</li>
+            <li>Press <em>PM Self</em> (Oscillator A) another two times (or use the <em>rightmost soft button</em>) to access the sub-parameter <em>Shaper</em>. It is highlighted in the display.</li>
+            <li>Turn the <em>Encoder</em> slowly and play some notes.</li>
+            <li class="indent-b">Now the signal for the phase-modulation of Oscillator A is fed back post Shaper: Instead of a sine-wave, a complex waveform is now used as modulator. This generates even more overtones and, beyond a certain degree, it can produce increasingly chaotic results, noisy or <q>chirpy</q> sounds in particular. You will hear the effect of the shaper even when you set the shaper’s Mix parameter to zero.</li>
+        </ul>
+    </section>
+    <section>
+        <h3 class="heading primary">Both Oscillators together</h3>
+        <h3 class="heading secondary">Mixing both Oscillators:</h3>
+        <ul>
+            <li>First, please reload the Init Sound. Both Oscillators are now generating simple sine-waves again.</li>
+            <li>Press <em>A</em> (Output Mixer).</li>
+            <li>Turn the <em>Encoder</em> to approx. <em>[60.0 %]</em>.</li>
+            <li>Press <em>B</em> (Output Mixer).</li>
+            <li>Turn the <em>Encoder</em> to approx. <em>[60.0 %]</em>.</li>
+            <li class="indent-b">Now, both oscillators are sending their signals through the Output Mixer.</li>
+            <li>Press <em>Level</em> (Output Mixer).</li>
+            <li>Turn the <em>Encoder</em> to approx. <em>[-10.0 dB]</em>.</li>
+            <li class="indent-b">You have just reduced the mixer’s output signal enough to avoid unwanted distortion.</li>
+            <li>Press <em>Sustain</em> (Envelope A).</li>
+            <li>Turn the <em>Encoder</em> to <em>[50 %]</em>.</li>
+            <li class="indent-b">Oscillator A is now providing a sine-wave at a constant level whereas Oscillator B is still fading out over time.</li>
+        </ul>
+        
+        <h3 class="heading secondary">Creating intervals:</h3>
+        <ul>
+            <li>Press <em>Pitch</em> (Oscillator B).</li>
+            <li>Turn the <em>Encoder</em> to <em>[67.00 st]</em>. Play some notes.</li>
+            <li class="indent-b">Now Oscillator B is tuned seven semitones (a fifth) above Oscillator A. You may also try out different intervals like e. g. an octave (<q>72</q>) or an octave plus an additional fifth (<q>79</q>).</li>
+            <li>Turn the <em>Encoder</em> back to <em>[60.00 st]</em> or use the Default button.</li>
+            <li>Press <em>PM Self</em> (Oscillator B).</li>
+            <li>Turn the <em>Encoder</em> to approx. <em>[60.0 %]</em>. Play some notes.</li>
+            <li class="indent-b">Oscillator B is modulating itself now, sounding brighter than Oscillator A.</li>
+            <li>Press <em>Decay 2</em> (Envelope B).</li>
+            <li>Turn the <em>Encoder</em> to approx. <em>[300 ms]</em>.</li>
+            <li class="indent-b">Oscillator B is now fading out at a medium decay rate. The resulting sound is vaguely reminiscent of a piano of sorts.</li>
+            <li>Press <em>Sustain</em> (Envelope B).</li>
+            <li>Turn the <em>Encoder</em> to <em>[50%]</em>.</li>
+            <li class="indent-b">Now, both Oscillators are producing steady tones. The resulting sound is vaguely reminiscent of an organ.</li>
+        </ul>
+        <p>You have just created some sounds that are made up of two components: A basic sine-wave from Oscillator A and some sustained / decaying overtones from Oscillator B. Very simple still, but with lots of creative options to choose from …</p>
+        
+        <h3 class="heading secondary">Detuning Oscillator B:</h3>
+        <ul>
+            <li>Press <em>PM Self</em> (Oscillator A).</li>
+            <li>Turn the <em>Encoder</em> to <em>[60.00 %]</em>.</li>
+            <li class="indent-b">We simply wanted to make the entire sound somewhat brighter, to improve the audibility of the following example.</li>
+            <li>Press <em>Pitch</em> (Oscillator B).</li>
+            <li>Press <em>Fine</em> (Edit Panel).</li>
+            <li>Sweep the <em>Encoder</em> slowly up and down and dial in <em>[60.07 st]</em>.</li>
+            <li class="indent-b">Oscillator B has now been detuned by 7 Cents above Oscillator A. Detuning generates a beat frequency that we all love so much because it makes the sound so <q>fat</q> and <q>vibrant</q>.</li>
+        </ul>
+        
+        <h3 class="heading secondary">Tweaking the sound a bit more:</h3>
+        <ul>
+            <li>Press <em>Attack</em> (Envelope A and B).</li>
+            <li>Turn the <em>Encoder</em>.</li>
+            <li>Press <em>Release</em> (Envelope A and B).</li>
+            <li>Turn the <em>Encoder</em>.</li>
+            <li class="indent-b">Adjust PM Self level and Envelope parameters as you please. Depending on the settings, the results will vary between string and brass-like sounds.</li>
+        </ul>
+        
+        <h3 class="heading secondary">The same beat frequency at all pitch ranges with Key Tracking</h3>
+        <p>As you may have noticed, the beat frequency changes across the range of the keyboard. Higher up the keyboard, the effect can grow too strong and sound a bit <q>unnatural</q>. To achieve a steady beat frequency at all pitch ranges:</p>
+        <ul>
+            <li>Press <em>Pitch</em> (Oscillator B) three times. <em>Key Trk</em> is highlighted in the display.</li>
+            <li>Press <em>Fine</em> (Edit Panel).</li>
+            <li>Turn the <em>Encoder</em> slowly to <em>[99.80 %]</em>.</li>
+            <li class="indent-b">At a Key Tracking below 100%, the pitch of higher notes will be increasingly reduced resp. not proportional to their position on the keyboard. This detunes high notes a bit less than low notes and keeps the beat frequency lower in high ranges, resp. steady across a wide pitch range.</li>
+        </ul>
+        
+        <h3 class="heading secondary">One oscillator modulating the other:</h3>
+        <ul>
+            <li>First, please reload the Init-Sound. Don’t forget to turn up <em>Level A</em> on the Output Mixer to <em>[60.0 %]</em>. Both Oscillators are now generating simple sine-waves. What you are hearing right now is Oscillator A.</li>
+            <li>Press <em>PM B</em> (Oscillator A).</li>
+            <li>Turn the <em>Encoder</em> and dial in approx. <em>[75.00 %]</em>.</li>
+            <li class="indent-b">Oscillator B is not added to the output mixer but used to modulate the phase of Oscillator A instead. Since Oscillator B is currently generating a sine-wave at the same pitch as Oscillator A, the audible effect is similar to self-modulation of Oscillator A. But here comes the fun part, we are now detuning Oscillator B:</li>
+            <li>Press <em>Pitch</em> (Oscillator B).</li>
+            <li>Sweep the <em>Encoder</em> and play some notes. Then dial in <em>[53.00 st]</em>.</li>
+            <li class="indent-b">You will now be hearing some soft <q>metallic</q> timbres that sound quite promising (but that’s only us, of course...).</li>
+        </ul>
+        <div data-highlight="excursion">
+            <h3>Excursion – The Secrets of Phase Modulation (PM) – Oscillator Pitches and Modulation Index</h3>
+            <p>When modulating the phase of one oscillator by another one at a different frequency, lots of sidebands or new overtones respectively are generated. Those were not present in the source signals. The frequency ratio of both oscillator signals defines the harmonic content resp. the overtone structure of the resulting signal. The resulting sound remains harmonic as long as the ratio between the modulated oscillator (called <q>carrier</q> – here Oscillator A) and the modulating oscillator (called <q>modulator</q> – here Oscillator B) is a proper multiple (1:1, 1:2, 1:3 etc).</p> 
+            <p>If not, the resulting sound will become increasingly inharmonic and dissonant. Depending on the frequency ratio, the sonic character is reminiscent of <q>wood</q>, <q>metal</q> or <q>glass</q>. This is because the frequencies in a vibrating piece of wood, metal or glass are very similar to the frequencies generated by PM. Obviously, PM is a very good tool to generate sounds that feature this type of timbral character.</p>
+            <p>A second crucial parameter is the intensity of the phase modulation or <q>modulation index</q>. In the C15, the appropriate parameters are called <q>PM A</q> and <q>PM B</q>. Different values will produce radically different timbral results. The interaction between the pitch of the respective oscillators and their modulation depth settings (<q>PM A / B</q>) is also crucial to the sonic results.</p>
+        </div>
+        
+        <h3 class="heading secondary">Controlling the Modulator by an Envelope:</h3>
+        <p>As you have learned in the meantime, frequency and mod depth of the modulator (here Oscillator B) are crucial for shaping sound using PM. Unlike classic subtractive synthesis, it is very easy to generate a wide range of noisy and <q>metallic</q> timbres that offer lots of potential when emulating acoustic instruments, like e.g. mallets or plucked strings. To explore this, we will now add some sort of percussive <q>stroke</q> to a simple sound:</p>
+        <ul>
+            <li>Load the Init sound and turn up Oscillator A (the carrier): <em>A</em> (Output Mixer) = <em>[75.0 %]</em>
+            <li>Press <em>Pitch</em> (Oscillator B).</li>
+            <li>Set the <em>Encoder</em> to <em>[96.00 st]</em>.</li>
+            <li>Press <em>PM B</em> (Oscillator A).</li>
+            <li>Set the <em>Encoder</em> to approx <em>[60.00 %]</em>.</li>
+            <li class="indent-b">Now you are hearing Oscillator A being phase-modulated by Oscillator B. The sound is bright and slowly decaying.</li>
+            <li>Press <em>Pitch</em> (Oscillator B) until <em>Key Trk</em> is highlighted in the display.</li>
+            <li>Turn the <em>Encoder</em> and dial in <em>[0.00 %]</em>.</li>
+            <li class="indent-b">The Key Tracking of Oscillator B is off now, providing a steady modulator-pitch for all keys. In some key ranges, the sound is now becoming somewhat odd.</li>
+            <li>Press <em>PM B</em> (Oscillator A) until <em>Env B</em> is highlighted in the display. 
+                Set the <em>Encoder</em> to <em>[100.0 %]</em>.</li>
+            <li class="indent-b">Now Envelope B is controlling the phase-modulation depth (PM B) over time.</li>
+            <li>Press <em>Decay 1</em> (Envelope B).</li>
+            <li>Turn the <em>Encoder</em> to <em>[10.0 ms]</em>.</li>
+            <li>Press <em>Decay 2</em> (Envelope B).</li>
+            <li>Turn the <em>Encoder</em> to approx. <em>[40.0 ms]</em> and play some notes. Keep Breakpoint (BP Level) at default value 50%.</li>
+            <li class="indent-b">Envelope B is now producing a short percussive <q>stroke</q> that quickly fades out. In every key range, the percussive <q>stroke</q> sounds slightly different since the pitch ratio between carrier and modulator is a bit different for every key. This helps to make emulations of natural sounds pretty realistic.</li>
+    </ul>
+    
+        <h3 class="heading secondary">Using Key Tracking as a sound parameter:</h3>
+        <ul>
+            <li>Press <em>Pitch</em> (Oscillator B) until <em>Key Trk</em> is highlighted in the display.</li>
+            <li>Turn the <em>Encoder</em> and dial in <em>[50.00 %]</em> while playing some notes.</li>
+            <li class="indent-b">The Key Tracking of Oscillator B has been enabled again which forces Oscillator B to change its pitch depending on the note played. As you remember, pitch ratios between oscillators are altered and hence the harmonic structure of the resulting sound will also be altered across the entire note range. Enjoy trying out some timbral results.</li>
+        </ul>
+        
+        <h3 class="heading secondary">Using the Modulator Pitch to change the sonic character:</h3>
+        <ul>
+            <li>Now change <em>Pitch</em> (Oscillator B).</li>
+            <li class="indent-b">You will notice the timbral transition from <q>wooden</q> (medium pitch ranges) through <q>metallic</q> to <q>glassy</q> (high pitch ranges). Re-adjust <em>Decay 2</em> (Envelope B) a bit also and you will hear some simple but amazing <q>tuned percussion</q> sounds. As a pretty nice-sounding example, dial in e.g. Pitch (Oscillator B) 105.00 st and <em>Decay 2</em> (Envelope B) 500 ms. Have fun and get carried away (but not too much) …</li>
+        </ul>
+        
+        <h3 class="heading secondary">Cross modulation:</h3>
+        <ul>
+            <li>Press <em>PM A</em> (Oscillator B).
+            <li>Turn the <em>Encoder</em> slowly up and dial in approx. <em>[50.00 %]</em>.</li>
+            <li class="indent-b">The phase of Oscillator B is now being modulated by Oscillator A. That means, both oscillators are now modulating each other’s phase. This is called cross- or x-modulation. That way, lots of inharmonic overtones are produced and, accordingly, the sonic results can be quite odd and often noisy. They depend very much on the frequency/pitch ratios of either oscillators (please see above). Please feel free to explore some nice Pitch B values and Envelope B settings as well as variations of PM A and PM B and the modulation of PM A by Envelope A. At proper parameter value ratios, you may create some nice <q>plucked strings</q> – nylon and steel strings included.</li>
+        </ul>
+        <div data-highlight="excursion">
+            <h3>Excursion – Adjusting velocity sensitivity</h3>
+            <p>You certainly want to explore a lot of expressive potential when enjoying your sounds. The C15 provides a lot of capabilities to do so (Ribbon Controllers, Pedals etc). For starters, we would like to introduce Keyboard Velocity. Its default setting is 30.0 dB which works pretty well in many cases.</li>
+        </div>
+        <ul>
+            <li>Press <em>Level Vel</em> (Envelope A).
+            <li>Turn the <em>Encoder</em> and dial in <em>[0.0 dB]</em> first, then increase the value slowly to <em>[60.0 dB]</em> while playing some notes.
+            <li>Repeat the process with Envelope B.</li>
+            <li class="indent-b">Since Envelope A controls the level of Oscillator A, a change of its velocity value affects the loudness of the current sound. Oscillator B level (the Modulator) is controlled by Envelope B. Since Oscillator B determines the timbral character of the current setting to some extent, its level has a huge effect on the current sound.</li>
+        </ul>
+        
+        <h3 class="heading secondary">Oscillator as LFO (Low Frequency Oscillator):</h3>
+        <p>Now set up your C15 so that:</li>
+        <p>Oscillator A produces a steady sine-wave (no Self-PM, no Envelope modulation)</li>
+        <p>Oscillator A is constantly phase-modulated by Oscillator B (again no Self-PM, no Envelope modulation here). <em>PM B</em> (Oscillator A) should have a value around <em>[90.0 %]</em> to make all the following sonic results easily audible. Oscillator B should not be part of the audible output signal, i. e. B (Output Mixer) is <em>[0.0 %]</em>.</li>
+        <ul>
+            <li>Press <em>Pitch</em> (Oscillator B).</li>
+            <li>Sweep the <em>Encoder</em> up and down while playing some notes. 
+            Then dial in <em>[0.00 st]</em>.</li>
+            <li class="indent-b">You will hear a fast pitch vibrato. Its frequency is depending on the note played.</li>
+            <li>Press <em>Pitch</em> (Oscillator B) until <em>Key Trk</em> is highlighted in the display.</li>
+            <li>Turn the <em>Encoder</em> and dial in <em>[0.00 %]</em>.</li>
+            <li class="indent-b">The Key Tracking of Oscillator B is set to Off now which results in a constant pitch (and vibrato speed) across the entire note range. <br />Now Oscillator B is behaving like an (almost) ordinary LFO and can be used as a source for periodic modulation in the sub-audio range. Please note that, in contrast to most other (analog) synthesizers with a dedicated LFO, the C15 sports an oscillator/LFO per voice. They are not phase-synced which helps to animate many sounds in a natural way.</li>
+        </ul>
+        <div data-highlight="recap">
+            <p>Recap: Oscillator section</li>
+            <p>The C15’s combination of two oscillators and two shapers, controlled by two 
+            envelopes, allows the generation of many different kinds of waveshapes from simple to complex:</li>
+            <ul class="nontutorial">
+                <li>Initially, both Oscillators produce sine-waves (without any overtones)</li>
+                <li>With Self PM active, each Oscillator generates a variable sawtooth wave (with all overtones)</li>
+                <li>When routed through the Shaper, depending on the settings of Drive and Fold, various rectangle and pulse-like waveforms can be generated (with odd- numbered overtones).</li>
+                <li>The Shaper’s Asym(metry) parameter adds even harmonics.<br />
+                &#xE172;&ensp;Interaction of the parameters mentioned above produces a wide timbral scope and dramatic timbral shifts.</li>
+                <li>Mixing both Oscillator/Shaper outputs in the Output Mixer produces sounds with two sonic components, as well as intervals and out-of-tune effects.</li>
+                <li>Phase Modulation (PM A / PM B) of one Oscillator by the other as well as cross-modulation can produce inharmonic sounds. The pitch ratios of the Oscillators and the modulation settings mainly determine the timbral results.<br />
+                &#xE172;&ensp;Careful adjustment of pitch, Key Tracking and mod depth settings is important for timbre as well as for making pitched sounds playable! Use Fine resolution to adjust the crucial parameters.</li>
+                <li>Introduction of Envelope A and B produces dynamic control over level and timbre.</li>
+                <li>Oscillators can be used as LFOs when key tracking is disabled.</li>
+            </ul>
+        </div>
+    </section>
+
+</div><!-- Ende Tutorial (Listen) -->
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Change Log - [20-52] Dual Mode Improvements and new Features</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/change-log/20-52">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/change-log/index.html">Change Log</a>
+        <span>/</span>
+        <a href="./documents/change-log/20-52.html">Dual Mode Improvements and new Features</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 class="heading secondary"><span class="sw-version">20-52</span> Dual Mode Improvements and new Features</h2>
+        <div data-highlight="note">
+            <p>The big update in the Summer of 2020 was followed by a number of bugfix updates. Now in version <span class="sw-version">20-52</span> we bring some new features and functional improvements especially for the <span class="keyword" data-keyword="Split"></span> and <span class="keyword" data-keyword="Layer"></span> modes. Therefore please check this list of changes, and also see the full description in the <a href="./documents/man-user/index.html" class="label">User Manual</a>.</p>
+        </div>
+        <h3>Split Sounds: Key Ranges Can Overlap</h3>
+        <p>In earlier versions, the C15 only provided one Split Point parameter in a <span class="keyword" data-keyword="Split">Sound</span>, determining the inner edges of both fully separated <span class="keyword" data-keyword="Parts"></span>, so no overlap was possible.</p>
+        <p>The described behavior is still available by default and referred to as <q>linked</q> Split Points. Now, <q>unlinked</q> Split Points are avialable as well, providing separate Split Points for each <span class="keyword" data-keyword="Part"></span> <i>(but still sharing one unique <span class="keyword" data-keyword="Macro">Control</span> assignment)</i>.</p>
+        <p>When unlinked, an overlapping range of shared keys can be defined, in which both <span class="keyword" data-keyword="Parts"></span> will sound. A negative overlap (a key range with no Part association) will be prevented.</p>
+        <h3 data-detail="Graphical UI only">Editors</h3>
+        <div data-columns="2">
+            <div class="section">
+                <h4>Split Point Editor (Split Sounds)</h4>
+                <p>In the <span class="keyword" data-keyword="Sound">Tab</span>, the righmost icon redirects to the Split Point Editor, providing the two parameters and an interactive visual representation. Split Points can be set by clicking or dragging on the corresponding values or by dragging the indicators on the shown keybed. The linking behavior can be set as well.</p>
+            </div>
+            <div class="section">
+                <h4>Key Fade Editor (Layer Sounds)</h4>
+                <p>In the <span class="keyword" data-keyword="Sound">Tab</span>, the righmost icon redirects to the Key Fade Editor, providing all related aspects and an interactive visual representation. For each <span class="keyword" data-keyword="Part"></span>, Fade From and Fade Range can be adjusted by clicking or dragging on the corresponding values or by dragging the indicators shown on the keybed.</p>
+            </div>
+        </div>
+        <h3 data-detail="Hardware UI, Graphical UI">Indicators</h3>
+        <div data-columns="2">
+            <ul>
+                <li><u>Cross-Feedback</u>: <q>FB</q> arrows are shown in the <span class="keyword" data-keyword="Sound">Screen/Tab</span> of <span class="keyword" data-keyword="Layer">Sounds</span>, when the <q>A/B I/II</q> and <q>From I/II</q> parameters of the Feedback Mixer create a connection between a voice of <span class="keyword" data-keyword="Part"></span> <span data-utf="ind-part-1"></span> and a voice of <span class="keyword" data-keyword="Part"></span> <span data-utf="ind-part-2"></span>.</li>
+                <li><u>Cross-Send</u>: <q>FX</q> arrows are shown in the <span class="keyword" data-keyword="Sound">Screen/Tab</span> of <span class="keyword" data-keyword="Split"></span> and <span class="keyword" data-keyword="Layer">Sounds</span>, when the <q>To FX I/II</q> parameters create a signal flow to the effects of the other <span class="keyword" data-keyword="Part"></span>.</li>
+            </ul>
+            <ul>
+                <li><u>Macro Control Targets</u>: In the <span class="keyword" data-keyword="Macro Control">Screen</span> of the Hardware UI up to four literal symbols are shown to indicate target parameters that cannot be indicated by Selection Panel LEDs. (<b>M</b> - Master Volume/Tune, <b>u</b> - Unison Detune, <b>m</b> - Mono Glide, <b>P</b> - Part Volume/Tune or Split Point)</li>
+                <li><u>Key Fades</u>: When a <span class="keyword" data-keyword="Part"></span> of a <span class="keyword" data-keyword="Layer">Sound</span> is affected by a Key Fade, this will be indicated in the <span class="keyword" data-keyword="Sound">Screen/Tab</span> by a small fade graph next to the Part Volume.</li>
+            </ul>
+        </div>
+        <h3 data-detail="Setup Menu">Settings</h3>
+        <ul>
+            <li><u>Device Settings / Sync Parts across UIs</u>: For <span class="keyword" data-keyword="Split"></span> and <span class="keyword" data-keyword="Layer">Sounds</span>, different <span class="keyword" data-keyword="Parts"></span> can be shown on the C15's <span class="keyword" data-keyword="Panel Unit">Display</span> and on one or multiple instances of the <span class="keyword" data-keyword="Graphical">UI</span>. This can be useful but in many cases it was confusing. Therefore the normal behaviour is now that the Part selection is applied once to all UIs, corresponding to <q>Sync Parts across UIs</q> being on. When the option is set off the Parts can be selected separately.</li>
+            <li><u>Hardware UI / Screensaver Timeout</u>: An optional timeout setting has been added in order to prevent possible pixel deterioration in the two displays, which can occur when the C15 is running for longer periods of time without any interaction.</li>
+        </ul>
+        <h3>Part Mute Will Not Mute Additional Signal Paths</h3>
+        <p>Unlike in earlier versions, the muting of a <span class="keyword" data-keyword="Part"></span> of a <span class="keyword" data-keyword="Layer">Sound</span>, will only affect the final Part Volume stage. So any signal flow across Parts will be maintained regardless.</p>
+        <h3>Extended Internal Key Range</h3>
+        <p>In earlier versions, the C15 only operated on its physical key range of 61 keys (C1 ... C6). In this version, a virtual key range of 128 keys (C-2 ... G8) was added. The physical key range of 61 keys is now projected onto the virtual key range, depending on the Note Shift, which is now a real key shift and not a tuning anymore.</p>
+        <h3 data-detail="Graphical UI">Shortcuts for Part Selection</h3>
+        <p>The keys <q>1</q> and <q>2</q> of the computer keyboard can be used to select Part <span data-utf="ind-part-1"></span> or <span data-utf="ind-part-2"></span>.</p>
+        <h3>Bug Fixes and Performance Improvements</h3>
+        <p>We constantly strive to improve the quality and efficiency of the C15's software.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

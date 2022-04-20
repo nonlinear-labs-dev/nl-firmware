@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Pedal Manual - 04. Connection</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-pedals/04-connection">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-pedals/index.html">Pedal Manual</a>
+        <span>/</span>
+        <a href="./documents/man-pedals/04-connection.html" data-number="4">Connection</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4">Connection</h2>
+    </section>
+    <section>
+        <p>Some expression and damper pedals have detachable cables. Typically, a 3-wire TRS cable should be used with TRS plugs on both ends.</p>
+        <p>But there are certain battery- or mains-powered switching pedals that use the ring contact of their TRS jack to close an electric circuit to power up the pedal, for those only use a 2-wire cable with TS-plugs on both ends and the cable must first be connected to the switch before plugging into the C15, otherwise the function might not work properly and the input might even be damaged.</p>
+        <p>In general, always connect the cable to the pedal first before plugging it into the C15.</p>
+        <p>When connecting a Control Voltage source provided by, for example, a CV output from an analog synth, it is recommended to follow these steps:</p>
+        <ul>
+            <li>Check that the CV output does produce <em>output voltages only within the 0V...+5V range</em>, eg. do NOT connect to sources that range from -5V to +5V or 0V to +10V etc.</li>
+            <li>Switch off both the source and the C15 before making the cable connection. CV input is recognized only on the tip of a TRS or TS plug, with the sleeve being the <q>ground reference</q>. The ring contact is not used.</li>
+            <li>Switch on the C15 first, then the CV source. For switch-off, reverse that order, that is, switch off the source first, then the C15.</li>
+            <li>You may need to do a <q>pedal reset</q> and restart Auto-Ranging for the <q>CV, 0..5V(Au- to-Range)</q> pedal presets after the C15 is fully up and running by selecting a different pedal preset temporarily.</li>
+        </ul>   
+        <p>It is important that the cable, no matter what type of source, is plugged in quickly into a running C15 (in less than one second). Otherwise, the Auto-Ranging function may not work properly because of wrong initial values being detected.</p>
+        <p>For the same reason, sources with detachable cables must first be connected to the cable before plugging the cable into a running C15.</p>
+        <div data-highlight="note">
+            <p>When a pedal or other source is unplugged during operation of the C15, the last readouts sent to a connected Macro Control may have arbitrary values not related to the actual pedal setting.</p>
+            <p>Do NOT connect anything else to the C15 than passive expression and damper pedals, passive mechanical switches, and, with some care, control voltage sources and powered switch pedals, otherwise damage may occur.<br />
+            <em>Please consult Nonlinear Labs (info@nonlinear-labs.de) if there are any questions.</em></p>
+        </div>
+        <p>Also make sure that you never mistakenly connect any audio TRS cables for the audio signal chain (mixer, amp) to the pedal jacks as that may produce very loud and dangerous <q>thump</q>-sounds from the speakers or the main PA.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

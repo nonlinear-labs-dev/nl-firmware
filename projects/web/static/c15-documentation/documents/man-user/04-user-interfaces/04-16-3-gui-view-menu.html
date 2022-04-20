@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.16.3. The View Menu</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-16-graphical-ui-functionality/04-16-3-view-menu">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-16-0-graphical-ui-functionality.html" data-number="4.16">Graphical UI Functionality</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-16-3-gui-view-menu.html" data-number="4.16.3">The View Menu</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.16.3">The View Menu</h2>
+    </section>
+    <section>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="View Menu">
+                <picture class="content" data-src="images/web-ui/txt/webui-view-menu.png"></picture>
+            </figure>
+            <div>
+                <p>The View menu (available in the top-right corner, indicated by a menu icon) provides quick access to crucial components of the <span data-keyword="Graphical">User Interface</span>. The following components can be made visible or invisible (GUI shortcuts to the components are shown as well).</p>
+            </div>
+        </div>
+        <div data-columns="1">
+            <table>
+                <tr>
+                    <th>Setup</th>
+                    <td>When clicking this option, the Setup menu opens in a new window. For more information about the Setup menu, refer to chapter <a href="./documents/man-user/08-setup/08-setup.html" data-number="8">Setup (C15 System Settings)</a>.</td>
+                </tr>
+                <tr>
+                    <th>Preset Search</th>
+                    <td>As described, presets can be searched for keywords. Click on this option to start a search task, opening the Search window.</td>
+                </tr>
+                <tr>
+                    <th>Undo History</th>
+                    <td>All user actions are tracked and can be undone, as provided by <span data-keyword="Undo"></span>/<span data-keyword="Redo">Icons</span> above the tab area. In order to have a complete overview or browse through the history, the Undo History window can be used, showing all tracked actions in a tree-like structure.</td>
+                </tr>
+                <tr>
+                    <th>Preset Info</th>
+                    <td>Every preset contains metadata, such as a comment text or the creation date, for example. All the preset-relevant information is provided by the Preset Info window.</td>
+                </tr>
+                <tr>
+                    <th>Bank Info</th>
+                    <td>Similarly, banks also contain metadata which will be provided by the Bank Info window.</td>
+                </tr>
+                <tr>
+                    <th>Parameter Info</th>
+                    <td>In addition, specific parameter information will be provided by the Parameter Info window.</td>
+                </tr>
+                <tr>
+                    <th>Presets</th>
+                    <td>All the floating banks in the main area can also be shown or hidden, shifting the focus to the parameters. Nevertheless, all banks still are available in the <span data-keyword="Preset">Tab</span>.</td>
+                </tr>
+                <tr>
+                    <th>Parameter Editor</th>
+                    <td>All parameters in the main area can also be shown or hidden, shifting the focus to presets and banks. The <span data-keyword="Parameter">Tab</span> still provides the opportunity to edit a selected parameter. However, parameters cannot be selected anymore (the <span data-keyword="Hardware">User Interface</span> still provides complete access).</td>
+                </tr>
+                <tr>
+                    <th>Open Manual</th>
+                    <td>The <a href="./index.html" target="_blank">C15 Documentation</a> is also available as a separate HTML document, which will open in a new browser tab.</td>
+                </tr>
+                <tr>
+                    <th>
+                        <p>Open <span data-keyword="MC">View</span>,</p>
+                        <p>Open <span data-keyword="Recorder"></span></p>
+                    </th>
+                    <td>Open the <span data-keyword="MC">View</span> or <span data-keyword="Recorder"></span> <i>(see below)</i> in a new browser tab.</td>
+                </tr>
+            </table>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Open MC View</h3>
+        <figure class="border maximize" data-label="MC View">
+            <picture class="content" data-src="images/web-ui/txt/webui-mc-view.png"></picture>
+        </figure>
+        <p>The <span data-keyword="MC">View</span> is an experimental feature which allows for a more dynamic, screen-based interaction with <span data-keyword="Macro">Controls</span>. By clicking on this menu option, a separate browser tab will be opened, providing two XY controls and two large sliders, representing the Macro Controls. Their positions are following mouse or touch gestures with a smoothed speed. At the left edge, the settings can be accessed. They contain:</p>
+        <ul>
+            <li>the amount of additional smoothing</li>
+            <li>an option to assign <span data-keyword="Macro">Control</span> &#xE102; and &#xE103; to the second XY field or to the two horizontal sliders</li>
+        </ul>
+        <div data-highlight="note">
+            <p>Note that the provided smoothing times are completely separate of the <code><b>Edit Smoothing Time</b></code> (found in the <span data-keyword="Device Settings"></span> of the <span data-keyword="Setup">Menu</span>) as well as the Macro Control Smoothing Times (found below each Macro Control slider in the <span data-keyword="Graphical">User Interface</span>).</p>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Open Recorder</h3>
+        <figure class="border maximize" data-label="Recorder">
+            <picture class="content" data-src="images/web-ui/recorder/webui-recorder.png"></picture>
+        </figure>
+        <p>The <span data-keyword="Recorder"></span> is a new feature which allows for recording audio material, see chapter <a href="./documents/man-user/06-recorder/06-recorder.html" data-number="6">Recorder</a>.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Sound Generation Tutorial - 01. About these Tutorials</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/tut-sound-generation/01-about">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/index.html">Sound Generation Tutorial</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/01-about.html" data-number="1">About these Tutorials</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+<div class="tutorial">
+    
+    <section>
+        <h2 data-number="1">About these tutorials</h2>
+    </section>
+    <section>
+        <p>These tutorials were written to make you find your way into the secrets of your C15 synthesizer quickly and easily. Please consult the Quickstart Guide or the User Manual to learn everything about the basic concept and setup of your C15 before using these tutorials. Please also consult the User Manual any time to delve deeper into the capabilities of the C15 synthesis engine, and to learn about all the details of any of the parameters of the instrument.</p>
+        <p>A tutorial will teach you basic aspects of the C15’s concepts as well as the various components of the sound engine, and how they interact with each other, in a hands-on manner. It is an easy way to familiarize yourself with your C15, and a starting point for your sound design work on the instrument it is, too.</p>
+        <p>If you feel like learning more about the details of a specific parameter (e.g. value ranges, scaling, modulation capabilities etc), please refer to chapter 8.4. <q>Parameter Reference</q> of the User Manual at any time. You can use the tutorials and the User Manual in parallel.</p>
+        <p>The tutorials use the front panel of the instrument. In case you would rather like to work with the Graphic User Interface, please refer to the Quickstart Guide or chapter 7 <q>User Interfaces</q> of the User Manual first to learn about the basic concepts of the GUI. After this, you will be able to easily apply the programming steps described and transfer them from the hardware panel to the GUI.</p> 
+    </section>    
+    <section>
+        <h3 class="heading primary" >Formats</h3>
+    </section>
+    <section>
+        <p>These tutorials describe fairly simple programming examples you can follow step by step. You will find lists boasting programming steps and figures that show the C15’s user interface state. To make things perfectly clear, we make use of specific formatting throughout the entire tutorial.</p>
+        <p>Buttons (Section) that need to be pressed are formatted in yellow. The name of the section follows in (brackets). The Encoder is labelled the same way:</p>
+        <p><em>Sustain</em> (Envelope A) … <em>Encoder</em> … </p>
+        <p>Secondary parameters that can be accessed by repeatedly hitting a button are labelled in yellow italic:  <em><i>Asym</i></em></p>
+        <p>Data values are yellow and in square brackets: <em>[60.0 %]</em></p>
+        <p>Controllers, as the Ribbons and Pedals, are labelled in yellow Capitals: <em>PEDAL 1</em></p>
+        <p>Programming steps to be performed are indented to the right and marked with a triangle, like this: &#xE01A;</p>
+        <p>Notes on the previous programming step are even more indented to the right and marked with a double slash:  //</p>
+        <p>This will look e.g. like this:</p>
+    
+    <h3 class="heading secondary">Applying modulation to the PM self modulation of Oscillator A:</h3>
+    <ul>
+        <li>Press <em>PM A</em> (Oscillator B) two times. <em>Env A</em> is highlighted in the display.</p> 
+        <li>Turn the <em>Encoder</em> to <em>[30.0 %]</em>.</p>
+        <li class="indent-b">Oscillator B is now being phase-modulated by the signal of Oscillator A. The modulation depth is controlled by Envelope A at a value of 30.0%.</p>
+    </ul>
+    
+    <p>Every once in a while, you will find some notes of particular importance (at least we believe so...). They are marked by an exclamation mark (which looks like this:</p> 
+    
+        <p>&#xE172;&ensp;Please note that there is …</p>
+
+    <p>Sometimes, you will find some explanations within a list of programming steps. They provide a little more in-depth knowledge and are called <q>Excursions</q>. They look like this:</p>
+
+    <div data-highlight="excursion">
+        <h3>Excursion: Parameter Value Resolution</h3>
+        <p>Some parameters need a ... Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    </div>
+    
+    <p>Here and there, you will find short recaps – they look like this:</p>
+
+    <div data-highlight="recap">
+        <h3>Recap: Oscillator section</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    </div>
+    
+    </section> 
+    <section>
+        <h3 class="heading primary" >Basic Conventions</h3>
+        <p>Before starting, it is crucial to understand some basic conventions of the front panel – more on this in the Quickstart Guide:</p>
+        <ul class="nontutorial">
+            <li>When a button on a Selection Panel is pressed, the parameter is selected and its value can be edited. Its LED will light up permanently. Additional <q>Sub Parameters</q> can be accessed by pressing the button multiple times.</li>
+            <li>There can be some flashing LEDs to show the targets of the signal that is generated in the selected Parameter Group.</li> 
+            <li>When a Macro Control is selected, flashing LEDs dislay the parameters it is modulating.</li>
+            <li>When the Preset screen is on, the currently active signal flow or active parameters respectively are indicated by LEDs lighting up permanently.</li>
+        </ul>
+    </section>
+    <section>
+        <h3 class="heading primary" >Hardware User Interface</h3>
+        <p>The images on the next page show the Edit Panel and one of the Selection Panels of the Panel Unit, and the Control Panel of the Base Unit.</p>
+    </section>
+    <section>
+        <figure class="border maximize" data-label="Edit Panel">
+            <picture class="content" data-src="images/tutorials/sound-generation/edit-panel-index.png"></picture>
+            <figcaption data-columns="2">
+                <ol start="1">
+                    <li><span data-keyword="Setup"> Button</span></li>
+                    <li><span data-keyword="Panel Unit"> Display</span></li>
+                    <li><span data-keyword="Preset"> Button</span></li>
+                    <li><span data-keyword="Sound"> Button</span></li>
+                    <li><span data-keyword="Soft Buttons"> 1 to 4</span></li>
+                    <li><span data-keyword="Store"> Button</span></li>
+                    <li><span data-keyword="Info"> Button</span></li>
+                    <li><span data-keyword="Fine"> Button</span></li>
+                </ol>
+                <ol start="9">
+                    <li><span data-keyword="Encoder"></span></li>
+                    <li><span data-keyword="Enter"> Button</span></li>
+                    <li><span data-keyword="Edit"> Button</span></li>
+                    <li><span data-keyword="Shift">Button</span></li>
+                    <li><span data-keyword="Default"> Button</span></li>
+                    <li><span data-keyword="Dec / Inc"> Buttons</span></li>
+                    <li><span data-keyword="Undo / Redo">Buttons</span></li>
+                </ol>
+            </figcaption>
+        </figure>
+        <figure class="border maximize" data-label="Selection Panel">
+            <picture class="content" data-src="images/tutorials/sound-generation/selection-panel-index.png"></picture>
+            <figcaption data-columns="2">
+                <ol start="16">
+                    <li><span data-keyword="Parameter"> Group</span></li>
+                    <li><span data-keyword="Parameter"> Indicator</span></li>
+                </ol>
+                <ol start="18">
+                    <li><span data-keyword="Parameter"> Selection Button</span></li>
+                    <li><span data-keyword="Indicator"> for Sub Parameters</span></li>
+                </ol>
+            </figcaption>
+        </figure>
+        <figure class="border maximize" data-label="Base Unit Control Panel">
+            <picture class="content" data-src="images/tutorials/sound-generation/bu-panel-index.png"></picture>
+            <figcaption data-columns="2">
+                <ol start="20">
+                    <li><span data-keyword="+ / –"> Buttons</span></li>
+                    <li><span data-keyword="Base Unit"> Display</span></li>
+                </ol>
+                <ol start="22">
+                    <li><span data-keyword="Funct/Mode"> Buttons</span></li>
+                </ol>
+            </figcaption>
+        </figure>
+
+    </section>
+
+</div><!-- Ende Tutorial (Listen) -->
+</main>
+</div>
+</body>
+</html>

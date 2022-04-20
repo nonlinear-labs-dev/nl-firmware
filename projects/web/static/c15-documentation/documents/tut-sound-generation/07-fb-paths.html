@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Sound Generation Tutorial - 07. Using Feedback Paths</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/tut-sound-generation/07-fb-paths">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/index.html">Sound Generation Tutorial</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/07-fb-paths.html" data-number="7">Using Feedback Paths</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+<div class="tutorial">
+
+    <section>
+        <h2 data-number="7">Using Feedback Paths</h2>
+        <p>As you already know (at least we are confident you do), the C15’s signal path provides various ways of feeding back signals which means that certain amounts of signals can be tapped at a specific point in the signal flow and reinserted at an earlier stage. We will now explore how to create sounds by using these feedback structures.</p>
+        <p>First, please reload the well known Init sound. If necessary, please find a detailed description on page 10.</p>
+        <p>Second, dial in a typical Comb Filter sound with the character of a plucked string. This will require:</p>
+        <ul class="nontutorial">
+            <li>the Comb Filter being mixed to the output (<em>Comb</em> (Output Mixer) around 50 %)</li>
+            <li>a short exciter signal, resp. a very fast decaying oscillator sound (Envelope A: <em>Decay 1</em> around 1 ms, <em>Decay 2</em> around 5 ms) with plenty of overtones (high value for <em>PM Self</em>). It provides the <q>plucked</q> signal part which stimulates the comb filter.</li>
+            <li>a comb filter setting with medium <em>Decay</em> time (around 1200 ms) and <em>Hi Cut</em> setting (e.g. 120.00 st). Set the Decay <em>Gate</em> to approx. <em>[40.0 %]</em>.</li>
+        </ul>
+        <p>If necessary, tailor the parameters a bit to your liking until the C15 sounds somewhat like a harpsichord. Now we are ready to proceed.</p>
+        
+        <h3 class="heading secondary">Setting up a feedback path:</h3>
+        <p>As mentioned earlier, sustained comb filter sounds can be achieved by continuous excitation of the comb filter (resonator). This can be done by using sustained oscillator signals. Another way to continuously excite the resonator is feeding a certain amount of its output signal back to its input. On the C15, this can be done by using the Feedback Mixer, which will be introduced right now:</p>
+        <ul>
+            <li>Press <em>Comb</em> (Feedback Mixer).</li>
+            <li>Turn the <em>Encoder</em> to <em>[40.0 %]</em>.</li>
+            <li class="indent-b">By doing so, a certain amount of the Comb Filter’s output signal is routed back to the Feedback bus. It could also be combined with the output signals of the State Variable Filter and the effects section.<br />To fully enable the feedback path, the destination of the feedback signal needs to be determined. Available destinations can be found in the Oscillator and Shaper sections. We will use the <q>FB Mix</q> insert point located after the Shaper in the signal path. Please refer to the synth engine overview when you feel lost at this point.</li>
+        </ul>
+        <figure class="border maximize" data-label="Feedback Path">
+            <picture class="content" data-src="images/tutorials/sound-generation/block-fb-*.png"></picture>
+        </figure>
+        <ul>
+            <li>Press <em>FB Mix</em> (Shaper A).</li>
+            <li>Turn the <em>Encoder</em> to <em>[20.0 %]</em>. Now you can hear sustained notes.
+            <li class="indent-b">The Comb Filter signal is tapped and routed back to the Comb Filter input as an exciter signal  through the Feedback Mixer and feedback bus. If the loop gain is greater than 1, it will keep the filter constantly <q>ringing</q> with self-oscillation.</li>
+        </ul>
+        
+        <h3 class="heading secondary">Shaping the feedback sound:</h3>
+        <h4>… by using negative feedback level settings:</h4>
+        <ul>
+            <li>Press <em>Comb</em> (Feedback Mixer).</li>
+            <li>Turn the <em>Encoder</em> to <em>[–40.0 %]</em>.</li>
+            <li class="indent-b">At negative settings, the feedback signal is inverted. This will typically have a <q>damping</q> effect and shortens the sound produced. If you are operating the Comb Filter at negative Decay values, the negative values in the Feedback Mixer will drive it into self-oscillation.</li>
+            <li>Press <em>Decay</em> (Comb Filter).</li>
+            <li>Turn the Encoder to <em>[–1260.0 ms]</em>.</li>
+        </ul>
+        
+        <h4>… by applying the signal-shaping parameters of the Feedback Mixer:</h4>
+        <ul>
+            <li>Press <em>Drive</em> (Feedback Mixer).</li>
+            <li>Sweep the <em>Encoder</em> across the entire range.</li>
+            <li>Press <em>Drive</em> (Feedback Mixer) again to access the parameters <em><i>Fold</i></em> and <em><i>Asymmetry</i></em>.</li>
+            <li>Again sweep the <em>Encoder</em> across the entire range.</li>
+            <li class="indent-b">As with the Output Mixer, the Feedback Mixer has a shaper stage that can distort the signal. The saturation of this stage limits the feedback level to avoid uncontrolled nastiness. Shaper curves allow a certain sonic control over the self-oscillating signal. Try out the effects of <q>Drive</q>, <q>Fold</q>, and <q>Asymmetry</q> and listen closely to the sonic results. Feedback level and polarity as well as the Drive parameters interact with each other.</li>
+        </ul>
+        
+        <h4>… by modifying the Envelope / Oscillator A settings (exciter):</h4>
+        <p>Still, the entire audible sound is generated by the comb filter only. Oscillator A is producing nothing but a short exciter signal which influences the resulting waveforms at the output of the Comb Filter – but is not audible itself. A lot of timbral variations can be achieved by adjusting the parameters of Oscillator A and its Envelope A.</p>
+        <ul>
+            <li>Reset the Parameters of <em>Drive</em> (Feedback Mixer) by using the Default button</li>
+            <li>Press <em>Pitch</em> (Oscillator A).</li>
+            <li>Sweep the <em>Encoder</em> across its entire range while playing notes and dial in <em>[72.00 st]</em>.</li>
+            <li>Press <em>Sustain</em> (Envelope A).</li>
+            <li>Try different Sustain levels while playing notes and dial in approx. <em>[5 %]</em>.</li>
+            <li>Press <em>Fluct</em> (Oscillator A).</li>
+            <li>Try different Fluctuation levels while playing notes.</li>
+            <li class="indent-b">By changing the envelope, pitch, and signal spectrum of Oscillator A, the self-oscillating Comb-Filter will generate a plethora of different timbres. Please try longer Attack and Decay times as well as different settings of PM, Self, and the Feedback Mixer and FB Mix parameters.</li>
+        </ul>
+        
+        <h4>… by filtering the feedback signal using the State Variable Filter:</h4>
+        <p>First, let’s return to a well-defined (and well-known) setting:</p>
+        <ul>
+            <li>Recall the <em>Init</em> sound.</li>
+            <li>Set <em>Comb</em> (Output Mixer) to <em>[50 %]</em>.</li>
+            <li>Set <em>Decay 1</em> (Envelope A) to 1 ms and Decay 2 (Envelope A) to <em>[5 ms]</em>.</li>
+            <li>Set <em>PM Self</em> to <em>[75 %]</em>.</li>
+            <li>Set <em>Decay</em> (Comb Filter) to <em>[1260 ms]</em> and Hi Cut  to <em>[120.00 st]</em>.</li>
+        </ul>
+        <p>Now we are creating a special feedback routing:</p>
+        <ul>
+            <li>Press <em>Comb Mix</em> (State Variable Filter).</li>
+            <li>Turn the <em>Encoder</em> to <em>[100.0 %]</em>.</li>
+            <li>Press <em>S.V. Filter</em> (Feedback Mixer).</li>
+            <li>Turn the <em>Encoder</em> to <em>[50.0 %]</em>.</li>
+            <li>Press <em>FB Mix</em> (Oscillator A).</li>
+            <li>Turn the <em>Encoder</em> to <em>[25.0 %]</em>.</li>
+            <li class="indent-b">The State Variable Filter is now placed within the feedback path and is processing the signal arriving from the Comb Filter.</li>
+            <li>Press <em>Spread</em> (State Variable Filter) until [L - B - H] is enabled.</li>
+            <li>Turn the <em>Encoder</em> to <em>[50.0 %]</em> to enable the bandpass setting.</li>
+            <li>Press <em>Reson</em> (State Variable Filter).</li>
+            <li>Turn the <em>Encoder</em> to <em>[75.0 %]</em>.</li>
+            <li class="indent-b">The S.V. Filter is now working as a narrow band-pass, selecting a frequency band for the feedback loop.</li>
+            <li>Press <em>Cutoff</em> (State Variable Filter).</li>
+            <li>Sweep the <em>Encoder</em> slowly across the entire range and dial in a value that pleases your ear, let’s say <em>[80.0 st]</em>.</li>
+            <li class="indent-b">Shaping the feedback response using the S.V. Filter produces stunning timbral results. By shifting the bandpass, self-oscillation appears only when the band is matching one of the overtones that the Comb Filter can produce. Sweeping the S.V. Filter Cutoff will generate a pattern of overtones. Please keep in mind that all you are hearing is the output signal of the Comb Filter – the S.V. Filter is just part of the feedback path (between Comb Filter and Feedback Mixer) and provides a selective feedback signal. Oscillator A excites the Comb Filter and is not audible as such either.</li>
+        </ul>
+        
+        <h4>… by using the effects output as feedback signal:</h4>
+        <p>Another interesting way to shape comb filter / physical modeling sounds of the C15 is using the feedback path of the effects section.<br />First, disable the S.V. Filter in the feedback path of the Comb Filter (of course, the Feedback Mixer provides several feedback paths in parallel but, for the time being, we want to keep things simple):</p>
+        <ul>
+            <li>Press <em>S.V. Filter</em> (Feedback Mixer).</li>
+            <li>Turn the <em>Encoder</em> to <em>[0.0 %]</em>.</li>
+        </ul>
+        
+        <h3 class="heading secondary">Feeding back signals from the Effects section to the Comb Filter:</h3>
+        <ul>
+            <li>Press <em>Effects</em> (Feedback Mixer).</li>
+            <li>Turn the <em>Encoder</em> slowly up and dial in a value that generates a mild feedback sound. Values around [50.0 %] should work fine.</li>
+            <li>Press the <em>Mix</em> parameter of every effect and dial in a high mix value.</li>
+            <li class="indent-b">Now you are hearing the feedback signal of the effects chain exciting the comb filter. While doing so, you will (hopefully) be surprised by some staggering soundscapes. Each of the effects individually provides a different treatment of the feedback signal and thus contributes a different result to the audible sound. Cabinet may be used to alter the harmonic content while the Gap Filter (which is a band reject filter that cuts out a certain frequency range) is useful to control the frequency response of the feedback signal. Flanger, Echo, and Reverb generally add different spatial components and motion to the sound. Please note that the amount of reverb in the feedback path can be adjusted separately by the <em>Rev Mix</em> parameter of the Feedback Mixer.</li>
+        </ul>
+        <div data-highlight="recap">
+            <h3>Recap: The Feedback Paths</h3>
+            <ul class="nontutorial">
+                <li>Together with the Oscillator / Shaper sections and the Comb Filter, the feedback paths of the C15 provide interesting physical modelling capabilities.</li>
+                <li>Using feedback paths produces sustained tones without using sustaining oscillator (exciter) settings – great for sounds with woodwind, brass, and bowed-strings-like character.</li>
+                <li>To set up a feedback path, select and enable a source signal within the Feedback Mixer and a FB Mix point in the Shaper sections. The polarity of the feedback amounts can be crucial to the sound.</li>
+                <li>The Drive parameters of the Feedback Mixer can shape the feedback sound.</li>
+                <li>Altering exciter settings (Oscillator A and its Envelope A) also has an influence on the resulting sound.</li>
+                <li>The State Variable Filter can be used to select overtones for self-oscillation.</li>
+                <li>The output signals of the effects can also be fed back via the Feedback Mixer.</li>
+            </ul>
+        </div>
+    </section>
+
+</div><!-- Ende Tutorial (Listen) -->
+</main>
+</div>
+</body>
+</html>

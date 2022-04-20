@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>MIDI Bridge Manual - 05. Firmware Update</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/utils.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-midi-bridge/05-firmware-update">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-midi-bridge/index.html">MIDI Bridge Manual</a>
+        <span>/</span>
+        <a href="./documents/man-midi-bridge/05-firmware-update.html" data-number="5">Firmware Update</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="5">Firmware Update</h2>
+        <div data-highlight="warn">
+            <h4>Important note</h4>
+            <p>The MIDI Bridge only accepts a firmware update when *no* MIDI traffic has occurred since power-up, otherwise it will simply try to deliver the MIDI data on the other port as in normal operation.</p>
+        </div>
+        <ul style="list-style: none;">
+            <li data-number="1">Fully disconnect the MIDI Bridge.</li>
+            <li data-number="2">Connect MIDI Bridge to PC only (which port used on the MIDI Bridge does not matter).</li>
+            <li data-number="3a">
+                <span>For Linux Users, using <code><b>amidi</b></code> (<a href="https://www.systutorials.com/docs/linux/man/1-amidi/" target="_blank" class="label">www.systutorials.com/docs/linux/man/1-amidi/</a>):</span>
+                <ul>
+                    <li>find hardware port ID with <code><b>amidi -l</b></code>, say it was <code><b>hw:1,0,0</b></code> for example</li>
+                    <li> send SysEx with <code><b>amidi -p hw:1,0,0 -s nlmb-fw-update-VX.YZ.syx</b></code><br/><i>(X.YZ must be replaced with the actual firmware number)</i></li>
+                </ul>
+            </li>
+            <li data-number="3b">
+                <span>For Windows/Mac users:</span>
+                <ul>
+                    <li> use an application like <q>MIDI Tools</q> (<a href="https://mountainutilities.eu/miditools" target="_blank" class="label">mountainutilities.eu/miditools</a>)</li>
+                    <li>load the Firmware SysEx file</li>
+                    <li>send it to MIDI Bridge</li>
+                </ul>
+            </li>
+        </ul>
+        <p>If the firmware update was successful, the MIDI Bridge will show that by both LEDs blinking fast in bright GREEN color <span class="led green"></span><span class="led off"></span><span class="led green"></span><span class="led off"></span><span class="led green"></span><span class="led off"></span> and then will reset itself after 5 seconds, afterwards showing the new Firmware Version during startup.</p>
+        <p>If the update failed, try again the full cycle from step 1 (<i>note: try using also the other port of the MIDI bridge</i>).</p>
+        <ul style="list-style: none;">
+            <li data-number="4">
+                <span>Optional Firmware Version Check (besides the visual Firmware Version Display):</span>
+                <ul>
+                    <li>Software like <q>MIDI Tools</q> must be restarted and then will show the new firmware version of a connected Bridge in the setup screen.</li>
+                    <li>on Linux, use the command <code><b>usb-devices | grep -C 6 -i nonlinear</b></code></li>
+                </ul>
+            </li>
+        </ul>
+        <div data-highlight="note">
+            <h4>Windows hint</h4>
+            <p>To remove stale entries potentially causing wrong display of the device name, go to device manager, select <q>show hidden devices</q>, then delete all <q>NLL-Bridge</q> entries. Do this while the MIDI Bridge is *not* plugged in, of course.</p>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

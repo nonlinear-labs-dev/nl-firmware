@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.6.5. Locking</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-06-presets/04-06-5-locking">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-06-0-presets.html" data-number="4.6">Presets</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-06-5-preset-locking.html" data-number="4.6.5">Locking</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.6.5">Locking</h2>
+    </section>
+    <section>
+        <p>In some situations, it may be useful to load only specific parts of a preset while leaving other parts as they are. This can be achieved by using the <span data-keyword="Lock">Mechanism</span>, which can lock particular parameter groups and prevent the contained parameters from being overwritten by a preset recall or sound manipulations. Parameters of locked groups can still be edited, though.</p>
+        <div data-highlight="note">
+            <p>Currently, only whole groups can be locked, but a parameter-specific Lock Mechanism is intended for the future.</p>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Locking a Parameter Group</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Parameter Lock screen - options (Soft Button 4)">
+                <picture class="content" data-src="images/hardware-ui/boled/parameter/boled-param-lock-menu.png"></picture>
+            </figure>
+            <div>
+                <p>In the <span data-keyword="Parameter">Screen</span> showing the currently selected parameter, the <span data-keyword="Edit">Button</span> provides the lock menu. Individual lock options can be selected by pressing <span data-keyword="Soft Button">4</span> and applied by pressing the <span data-keyword="Enter">Button</span>.</p>
+            </div>
+            <div>
+                <figure class="border maximize" data-label="Parameter screen - Lock symbol">
+                <picture class="content" data-src="images/hardware-ui/boled/parameter/boled-param-lock-symbol.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Preset screen - Lock symbol">
+                    <picture class="content" data-src="images/hardware-ui/boled/preset/boled-pre-lock-symbol.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Sound screen - Lock symbol">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-lock-symbol.png"></picture>
+                </figure>
+            </div>      
+            <div>
+                <p>Depending on the lock status of the associated group, the lock options provide locking the specific group/all groups, or unlocking the specific group/all groups. When one or more groups are locked, the lock symbol is also shown in the <span data-keyword="Preset">Screen</span> and <span data-keyword="Sound">Screen</span>.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-details="Graphical UI">Locking a Parameter Group</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Parameter Group - menu">
+                <picture class="content" data-src="images/web-ui/txt/webui-ctx-group.png"></picture>
+            </figure>
+            <div>
+                <p>A right click or long touch gesture on a particular group header invokes the lock menu. Depending on the lock status of the associated group, the lock options provide locking the specific group/all groups, or unlocking the specific group/all groups.</p>
+            </div>
+            <figure class="border maximize" data-label="Parameter Group , Preset Tab - Lock symbol">
+                <picture class="content" data-src="images/web-ui/parameter/webui-group-lock.png"></picture>
+            </figure>
+            <div>
+                <p>When one or more groups are locked, the lock symbol is also shown in the <span data-keyword="Preset">Tab</span> and <span data-keyword="Sound">Tab</span>.</p>
+            </div>
+        </div>
+        <figure class="border maximize" data-label="Modulation Matrix - Lock symbol">
+            <picture class="content" data-src="images/web-ui/parameter/webui-hw-amt-src-lock.png"></picture>
+        </figure>
+        <div data-highlight="note">
+            <p>Note that <span data-keyword="Hardware">Sources</span> and <span data-keyword="Hardware">Amounts</span> are two separate lockable groups. In the <span data-keyword="Graphical User Interface"></span>, the header of the <q>Hardware Sources and Amounts</q> group shows two separate lock symbols.</p>
+        </div>
+    </section>
+    <section>
+        <h3><i>Locking - a practical example</i></h3>
+        <p>Let’s consider a situation where the user wants to use certain groups of preset <span class="round">A</span> as a template for other presets (<span class="round">B</span>, <span class="round">C</span>, ...), which shall have those group settings as well.</p>
+        <p>Useful scenarios may be the <span data-keyword="Hardware">Sources</span> and their Amounts on <span data-keyword="Macro">Controls</span>, or the whole effect chain. In a few steps, the particular groups of preset <span class="round">A</span> can be copied to the other presets:</p>
+        <ol>
+            <li>Load preset <span class="round">A</span> (the template preset).</li>
+            <li>Activate lock on the desired groups (that shall be transferred to the other presets).</li>
+            <li>Load preset <span class="round">B</span> (the locked groups still remain as defined by preset A).</li>
+            <li>Save preset <span class="round">B</span> (making the template transfer persistent).</li>
+            <li>Load and then save preset <span class="round">C</span> (repeating the process, the locked groups still remain as defined by preset <span class="round">A</span>), et cetera.</li>
+        </ol>
+    </section>
+</main>
+</div>
+</body>
+</html>

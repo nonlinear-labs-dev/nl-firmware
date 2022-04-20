@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Developer Manual - 2. Layout and Implementation</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-developer/02-layout-and-implementation">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./developer/man-developer/index.html">Developer Manual</a>
+        <span>/</span>
+        <a href="./developer/man-developer/02-layout-and-implementation.html" data-number="2">Layout and Implementation</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="2">Layout and Implementation</h2>
+    </section>
+    <section>
+        <h3>Noscript Fallback</h3>
+        <p>As Javascript is required, a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript" _target="_blank">noscript</a> fallback is implemented on every page. If the used browser does not provide enabled Javascript, the user will be automatically redirected to a central <a href="./_noscript.html" _target="_blank">error</a> page when trying to open a file.</p>
+    </section>
+    <section>
+        <h3>Responsive Page Layout</h3>
+        <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries" _target="_blank">CSS Media Queries</a> are used to support narrow screens on mobile devices (phone, tablet).</p>
+        <p>On narrow screens, there is still a header present, providing the current location (<code>root/which_document/which_chapter</code>). Also, a menu icon ( <button class="menu"><div mask="menu"></div></button> ) will be available, opening the navigation and settings section as an overlay on the whole screen.</p>
+        <p>Should the user want to print a page, a separate print layout will become effective. For example, the navigation and settings section will not be avaibale here and a light and grayscale coloring applies (regardless of the currently active color theme).</p>
+    </section>
+    <section>
+        <h3>Automatic Generation</h3>
+        <p>The declared goal of avoiding redundancies, especially in the HTML part, is realized in several ways.</p>
+        <p>Javascript will automatically create the menu section (Documents, Settings) for a particular page. Also, the current document and chapter is determined and will be shown in the list of available documents and chapters (Documents). Subchapters will become available as well. In order for this to work, Javascript uses <a href="https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams" _target="_blank">URLSearchParams</a> and passes them to iframe elements. The Color Theme setting and Developer Mode is also implemented via those params. (They also would "survive" bookmarking a specific page)</p>
+        <p>Javascript also ensures that images will switch their content following the active <b>color theme</b>. This also requires the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/matchMedia" _target="_blank">matchMedia</a> object. Usually, color-scheme-aware pictures require much HTML, as compared to mere images. Javascript will also take care of that, so the author just needs to use a simple <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/picture" _target="_blank">picture</a> element and can specify image variations with a wildcard pattern:</p>
+        <table>
+            <tr>
+                <td>
+                    <code>
+                        <p><b>&lt;picture&gt;</b></p>
+                        <p style="text-indent: 2ch;"><b>&lt;source</b> srcset="image-dark.jpg" media="(prefers-color-scheme: dark)"<b>&gt;</b></p>
+                        <p style="text-indent: 2ch;"><b>&lt;source</b> srcset="image-light.jpg" media="(prefers-color-scheme: light)"<b>&gt;</b></p>
+                        <p style="text-indent: 2ch;"><b>&lt;img</b> src="image-print.jpg"<b>&gt;</b></p>
+                        <p><b>&lt;/picture&gt;</b></p>
+                    </code>
+                </td>
+                <td>
+                    <p>This is the usual HTML code for defining color-scheme-aware pictures.</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <code>
+                        <p><b>&lt;picture</b> data-src="image-*.jpg"<b>&gt;</b><b>&lt;/picture&gt;</b></p>
+                    </code>
+                </td>
+                <td>
+                    <p>Javascript reduces the HTML drastically by exploiting a wildcard pattern. </p>
+                </td>
+            </tr>
+        </table>
+        <p>In addition, Javascript also realizes and reduces HTML for:</p>
+        <ul>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figure" taret="blank">figure</a> elements that can be maximized <i>(shown in an overlay over the whole screen when clicking on the maximize <button class="menu"><div mask="maximize"></div></button> icon)</i></li>
+            <li>highlighted elements/sections (warnings, notes, developer comments, keywords)</li>
+        </ul>
+    </section>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Sound Generation Tutorial - 06. The Comb Filter</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/tut-sound-generation/06-comb-filter">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/index.html">Sound Generation Tutorial</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/06-comb-filter.html" data-number="6">The Comb Filter</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+<div class="tutorial">
+
+    <section>
+        <h2 data-number="5">The Comb Filter</h2>
+        <p>The Comb Filter can shape an incoming sound by imposing specific characteristics on it. The Comb Filter can also work as a resonator and it can produce periodic waveforms like an oscillator this way. It is an integral part of the C15’s sound generation, and it can be useful when achieving imbral characteristics of e.g. plucked or bowed strings, blown reeds, horns, and many strange things in between and far beyond that.</p>
+        <div data-highlight="excursion">
+            <h3>Excursion – Comb Filter Basics</h3>
+            <p>Let’s have a brief look at the C15’s Comb Filter structure:</p>
+            <figure class="border maximize" data-label="Comb Filter Signal Flow">
+                <picture class="content" data-src="images/diagrams/comb-*.png"></picture>
+            </figure>
+            <p>Basically, a comb filter is a delay with a feedback path. Incoming signals pass the delay section and a certain amount of the signal is then being fed back into the input. The signals making their rounds in this feedback loop generate a tone that can be controlled by various parameters to achieve specific sonic characteristics and a dedicated pitch – the comb filter is turned into a resonator / sound source.</p>
+        </div>
+        
+        <h3 class="heading secondary">Enabling the Comb Filter:</h3>
+            <p>To explore the Comb Filter, dial in a simple sawtooth-wave sound – we have absolutely no reason to believe you don’t already know how to do this. Okay, here comes a brief reminder for your convenience:</p>
+        <ul>
+            <li>Load the Init sound and set the Output Mixer level <em>A</em> to <em>[50.0 %]</em>.</li>
+            <li>Press <em>Sustain</em> (Envelope A).</li>
+            <li>Set the Encoder to approx. <em>[80.0 %]</em>.</li>
+            <li>Press <em>PM Self</em> (Oscillator A).</li>
+            <li>Set the <em>Encoder</em> to <em>[90.0 %]</em>.</li>
+            Oscillator A is now generating a sustained sawtooth-wave.</li>
+            <li>Press <em>Comb</em> (Output Mixer).</li>
+            <li>Set the <em>Encoder</em> to approx. [50.0 %].</li>
+            The Comb Filter signal is now blended with the oscillator signal.</li>
+            <li>Press <em>A – B</em> (Comb Filter).</li>
+            <li class="indent-b">This parameter determines the ratio between the Oscillator/Shaper signals A and B, fed into the Comb Filter input. For the time being, please keep it at its default setting <q>A</q>, i. e. 0.0 %.</li>
+        </ul>
+        
+        <h3 class="heading primary">The very basic Parameters</h3>
+        <h3 class="heading secondary">Pitch:</h3>
+        <ul>
+            <li>Press <em>Pitch</em> (Comb Filter).</li>
+            <li>Sweep the <em>Encoder</em> slowly across the entire range and dial in <em>[90.00 st]</em>. Please also try to control it by <em>RIBBON 1</em>in Edit Mode (please refer to page 25).</li>
+            <li class="indent-b">You will hear the sound change while turning the Encoder. The Pitch parameter is actually the delay time which is converted and displayed in semitones. The shifting sound coloration is a result of boosting or eliminating specific frequencies when the delayed signal is combined with the non-delayed signal. Please also try a negative value for one of the mixing levels.</li>
+        </ul>
+        <figure class="border maximize" data-label="Comb Filter Mix">
+            <picture class="content" data-src="images/tutorials/sound-generation/comb-filter-a-*.png"></picture>
+        </figure>
+        
+        <h3 class="heading secondary">Decay:</h3>
+        <ul>
+            <li>Press <em>Decay</em> (Comb Filter).</li>
+            <li>Sweep the <em>Encoder</em> slowly across the entire range.</li>
+            <li>Change both Pitch and Decay and try out the various timbral effects.</li>
+            <li class="indent-b">Decay controls the feedback of the delay. It determines the amount of the signal making its rounds in the feedback loop, and thus the time it takes for the oscillating feedback loop to fade out. This depends very much on the delay time dialed in (<q>Pitch</q>). When changing Pitch slowly, you can hear the <q>peaks</q> and <q>troughs</q> in the frequency spectrum, i. e. boosted and attenuated frequencies.<br />&#xE172;&ensp;Please note there are positive and negative Decay values. Negative values invert the phase of the signal (negative feedback) and provide different sonic results with a certain <q>hollow</q> character – good for e.g. bell-like timbres …</li>
+        </ul>
+        
+        <h3 class="heading secondary">Exciting the Comb Filter:</h3>
+            <p>So far, we have been working with a sustained / static input signal. Even more interesting is the use of an impulse to stimulate the feedback loop of the Comb Filter:</p>
+        <ul>
+            <li>Turn the output signal of Oscillator/Shaper A into a short and sharp <q>click</q> by dialing in suitable parameter values for Envelope A:</li>
+            <table style="margin: 1em auto; width: 90%;">
+                <tr>
+                    <th>Attack:</th>
+                    <td>0.000 ms</td>
+                    <th>Decay 1:</th>
+                    <td>2.0 ms</td>
+                </tr>
+                <tr>
+                    <th>Breakpoint:</th>
+                    <td>100%</td>
+                    <th>Decay 2:</th>
+                    <td>4.0 ms</td>
+                </tr>
+                <tr>
+                    <th>Sustain:</th>
+                    <td>0.0 %</td>
+                    <th>Release:</th>
+                    <td>4.0 ms</td>
+                </tr>
+            </table>
+            <li>Set <em>Decay</em> (Comb Filter) to <em>[1000 ms]</em></li>
+            <li>Set <em>Pitch</em> (Comb Filter) to <em>[0.00 st]</em> and slowly turn up the Encoder value while playing some notes. Then dial in <em>[60.00 st]</em>.</li>
+            <li class="indent-b">At the lower end of the Pitch range, you will notice audible <q>reflections</q> of the delay line. Their number depends on the Decay setting (resp. the feedback level). At higher pitches, resp. shorter delay times, the reflections grow increasingly dense until they sound like a static tone that has a dedicated pitch.</li>
+        </ul>
+        <div data-highlight="excursion">
+            <p>Excursion – Some Nuts and Bolts of Physical Modelling</p>
+            <p>What you have just programmed into your C15 is a very simple example of a sound-generation type usually referred to as <q>Physical Modelling</q>. It comprises a dedicated signal source – the exciter – and a resonator, in our case the Comb Filter. The exciter signal stimulates the resonator, generating a <q>ringing tone</q>. Matching sympathetic frequencies of exciter and resonator are boosted, others attenuated. Depending on the pitch of the exciter (Oscillator pitch) and the resonator (delay time of the Comb Filter), these frequencies can vary a lot. The audible pitch is determined by the resonator. This method is characteristic of many acoustic instruments, e.g. a plucked string or a blown flute stimulating a resonating body of sorts.</p>
+        </div>
+        
+        <h3 class="heading primary">More advanced Parameters / Refining the Sound</h3>
+        <h3 class="heading secondary">Key Tracking:</h3>
+        <ul>
+            <li>Press <em>Decay</em> (Comb Filter) until <em><i>Key Trk</i></em> is highlighted in the display.</li>
+            <li>Sweep the <em>Encoder</em> across the entire range and dial in approx. <em>[50.0 %]</em>.</li>
+            <li class="indent-b">Now, the Decay at higher note ranges is reduced, compared to lower note ranges. This produces a more <q>natural feel</q>, useful for many sounds which are to resemble specific acoustic qualities.</li>
+        </ul>
+        
+        <h3 class="heading secondary">Hi Cut:</h3>
+        <ul>
+            <li>Press <em>Hi Cut</em> (Comb Filter).</li>
+            <li>Sweep the <em>Encoder</em> across the entire range and play notes. Then dial in a value of <em>[110.00 st]</em>.</li>
+            <li class="indent-b">The signal path of the Comb Filter features a lowpass filter that attenuates high frequencies. At maximum value (140.00 st), the lowpass will be opened completely with no frequencies attenuated, yielding a very bright sound. Decreasing the value gradually, the lowpass is producing an increasingly muffled sound with quickly decaying treble frequencies. These settings are very useful for emulating e.g. plucked strings.</li>
+        </ul>
+        
+        <h3 class="heading secondary">Gate:</h3>
+        <ul>
+            <li>Press <em>Decay</em> (Comb Filter) until <em><i>Gate</i></em> is highlighted in the display.</li>
+            <li>Sweep the Encoder across the entire range. Play some notes and dial in
+            <em>[60.0 %]</em>.</li>
+            <li class="indent-b">This parameter controls to what extent a gate signal reduces the Decay time of the Comb Filter as soon as a key is released. When disabled (0.0 %), the Decay will be the same throughout, no matter whether a key is depressed or released. Particularly in combination with Key Tracking, this also allows for very natural-sounding results, e. g. think of the behaviour of a piano keyboard.</li>
+        </ul>
+        
+        <h3 class="heading secondary">AP Tune:</h3>
+        <ul>
+            <li>Press <em>AP Tune</em> (Comb Filter).</li>
+            <li>Slowly sweep the <em>Encoder</em> from its maximum to its minimum value while repeating the middle <q>C</q> on the keyboard. Then dial in <em>[100.0 st]</em>.</li>
+            <li class="indent-b">This parameter enables an allpass filter in the signal path of the Comb Filter. Usually (without the allpass filter), the delay time is the same for all passing frequencies. All the overtones generated (resp. their multiples) fit perfectly into the delay time range dialled in. But within resonant bodies of acoustic instruments, things are a bit more complex since the delay times change with frequency. This effect is emulated by the allpass filter. The overtones generated by the feedback loop are detuned against each other by the allpass which produces specific inharmonic sonic components. The lower the allpass filter is tuned, the more overtones are affected, and the timbral variations increase. This effect is audible e. g. in the lowest octave of a piano, which sounds quite metallic. This is because the physical qualities of those heavy-gauge piano strings, found in the lowest octave, are quite similar to those of metal tines or plates.</li>
+            <li>Press <em>AP Tune</em> (Comb Filter) until <em><i>AP Reson</i></em> is highlighted in the display.</li>
+            <li>Sweep the <em>Encoder</em> across the entire range while playing some notes. Then dial in approx. <em>[50.0 %]</em>.</li>
+            <li class="indent-b">The resonance parameter of the allpass filter adds a lot of sound-sculpting potential. Explore the interaction between <em>AP Tune</em> and <em>AP Reson</em> carefully. They produce approximations of sonic characteristics that are similar to metal tines, plates, and more.</li>
+            <li>Reset all <em>AP Tune</em> parameters to their default values.</li>
+        </ul>
+        
+        <h3 class="heading primary">Varying the Exciter Settings (Oscillator A)</h3>
+        <p>Even when the Oscillator signal is not audible, its qualities are crucial to the resulting sound. Envelope shape, pitch, and overtone structure of the exciter have a profound impact on the resonator (Comb Filter).</p>
+        
+        <h3 class="heading secondary">Envelope shape:</h3>
+        <ul>
+            <li>Press <em>Sustain</em> (Envelope A).</li>
+            <li>Set the <em>Encoder</em> to approx. [30.0 %]</li>
+            <li>Press <em>Attack</em> (Envelope A).</li>
+            <li>Set the <em>Encoder</em> to <em>[100 ms]</em></li>
+            <li>Press <em>Decay 2</em> (Envelope A).</li>
+            <li>Set the value to <em>[100 ms]</em> (default).</li>
+            <li class="indent-b">Oscillator A – the exciter of the Comb Filter – will no longer provide a short ping but a steady tone.</li>
+            <li>Press <em>Pitch</em> (Oscillator A).</li>
+            <li>Sweep the <em>Encoder</em> slowly across the entire range and play notes. Then dial in <em>[48.00 st]</em>. Enjoy...</li>
+            <li class="indent-b">Depending on Oscillator 1 Pitch, you will find interesting resonating frequencies as well as frequency cancellations. The sonic character is sometimes reminiscent of (over)blown reeds or bowed strings.</li>
+        </ul>
+        
+        <h3 class="heading secondary">Using <q>Fluctuation</q>:</h3>
+        <ul>
+            <li>Press <em>Fluct</em> (Oscillator A).</li>
+            <li>Sweep the <em>Encoder</em> slowly across the entire range while playing some notes. Then dial in approx. <em>[60.0 %]</em>.</li>
+            <li class="indent-b">At various pitch ratios between Oscillator A (exciter) and Comb Filter (resonator), the frequency boosts and attenuations are very strong and limited to narrow frequency bands. Consequently, the peaks and notches are quite difficult to handle, and often it is difficult to achieve musically useful results, e. g. a steady tonal quality across a wide key range.<br />The Fluctuation parameter is a welcome aid at this point: It randomly varies the oscillator pitch and thus produces broader frequency bands with matching ratios. The peaks and notches are evened out, and the sound is becoming more consistent. The sonic character also changes – in our example, it is shifting from a reed instrument towards a string orchestra.</li>
+        </ul>
+        <div data-highlight="recap">
+            <h3>Recap: Using the Comb Filter as a resonator</h3>
+            <ul class="nontutorial">
+                <li>The Comb Filter is a delay line with feedback loop, driven into oscillation and thus generating a tone.</li>
+                <li>The Pitch parameter of the Comb Filter determines the delay time and thus the pitch of the generated tone.</li>
+                <li>Frequency boosts and cancellations in the feedback loop create a complex frequency response that determines the timbral character.</li>
+                <li>The Decay parameter controls the feedback amount and, by that, the number of repetitions of the input signal. This determines the decay time of the tone generated by the resonator.</li>
+                <li>An oscillator signal (exciter) stimulates a response of the comb filter (resonator).</li>
+                <li>The qualities of the exciter determine the timbral character of the resulting sound to a large extent.</li>
+                <li>Short, percussive exciter signals produce sounds like plucked strings. Sustained exciter signals produce sounds like bowed strings or (over)blown woodwinds.
+                Key Tracking and a Gate (on Decay) as well as a lowpass filter (<q>Hi Cut</q>) produce natural sounding characteristics of <q>plucked strings</q>.</li>
+                <li>An allpass filter (<q>AP Tune</q>) can shift the overtones and provide sonic characteristics of <q>metal tines</q> or <q>metal plates</q>.</li>
+            </ul>
+            <p>Listen to Oscillator A (the exciter) and the Comb Filter (the resonator) separately by changing the Output Mixer settings. The oscillator is currently producing a steady noise with a very broad frequency range. The Comb Filter <q>picks</q> its resonant frequencies and boosts them. Hence, the frequency ratio between exciter and resonator is crucial to the resulting sound. Parameters like the exciter’s volume envelope settings and all Comb Filter parameters also shape the sound and interact with each other. That way, the C15’s physical-modelling features will provide you with a vast field for timbral exploration.</p>
+        </div>
+    </section>
+
+</div><!-- Ende Tutorial (Listen) -->
+</main>
+</div>
+</body>
+</html>

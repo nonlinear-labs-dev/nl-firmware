@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 05.2.3. Shapers</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/05-synth-engine/05-02-sig-flow-components/05-02-3-shapers">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-synth-engine.html" data-number="5">The Synthesis Engine</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-0-sig-flow-components.html" data-number="5.2">Signal Flow and Components</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-3-shapers.html" data-number="5.2.3">Shapers</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="5.2.3">Shapers</h2>
+        <p>Each of the two branches is completed by a sine shaper unit, which can further manipulate the oscillator signal and enhance its spectrum. It also allows for the integration of the global feedback and a ring modulation signal.</p>
+        <p>The sine shaping mechanism can be compared to the computation of an oscillator signal, which is derived from a continuously growing phase that is folded over and over again, thus becoming periodical. From the periodical, wrapped phase signal, a sine approximation can be calculated.</p>
+        <p>Within a sine shaper, the input signal is first amplified by a Drive parameter, which can be sensitive to the corresponding branch envelope. Afterwards, it will be interpreted as a phase signal that will be folded. The resulting signal could be broadly described as the <q>sine of a sine</q>.</p>
+        <p>Certain overtones will emerge in proportion to the Drive level. The folding characteristic can be blended from a soft clipping behavior by a Fold parameter. With no fold present, the shaper effect resembles more a distortion or saturation effect, producing different harmonics.</p>
+        <p>Furthermore, an Asymmetry parameter can shift the fundamental frequency by one octave. The resulting shaped signal can be crossfaded with the input signal by a bipolar Mix amount (as previously mentioned, the bipolar nature of lots of signal components can raise the complexity when using phase modulations or feedback).</p>
+        <p>Two more signals can be blended into the mix. The feedback signal can be fed into a branch, the amount can be sensitive to Envelope C (blendable with the Gate signal). With the application of feedback, the global Feedback loop will be closed to some extent (depending on further settings).</p>
+        <p>Finally, the two branch signals are multiplied and each branch can blend to the <q>Ring Modulation</q> signal by a certain amount. Ring modulation produces interesting patterns in the resulting spectrum, depending on the two incoming signals. Symmetrical frequency components emerge (one with the difference of the incoming frequencies, one with the sum of the incoming frequencies).</p>
+        <p>Concludingly, the Shaper is another versatile module providing different ways to manipulate an oscillator signal. Distortion effects are as possible as sine shaping, and feedback and ring modulation can be applied. The shaper not only affects the signal of a branch, but can also be blended onto phase modulation sources for the oscillators.</p>
+        <p class="developer">For a better understanding, have a look at the interactive <a class="label">Shaper Basics Page</a>.</p>
+        <h4>1. The first set of diagrams shows how the <q>Drive</q> parameter is influencing the audio signal (0 dB &hellip; 16 dB)</h4>
+        <figure class="border maximize" data-label="Shapers (Drive)">
+            <picture class="content" data-src="./images/diagrams/shaper_drive-*.png"></picture>
+        </figure>
+        <h4>2. The second set of diagrams shows how the <q>Fold</q> parameter is influencing the audio signal (0 % &hellip; 100 %)</h4>
+        <figure class="border maximize" data-label="Shapers (Fold)">
+            <picture class="content" data-src="./images/diagrams/shaper_fold-*.png"></picture>
+        </figure>
+        <h4>3. The third set of diagrams shows how the <q>Asymmetry</q> parameter is influencing the audio signal (0 % &hellip; 100 %)</h4>
+        <figure class="border maximize" data-label="Shapers (Asymmetry)">
+            <picture class="content" data-src="./images/diagrams/shaper_asym-*.png"></picture>
+        </figure>
+
+    </section>
+</main>
+</div>
+</body>
+</html>

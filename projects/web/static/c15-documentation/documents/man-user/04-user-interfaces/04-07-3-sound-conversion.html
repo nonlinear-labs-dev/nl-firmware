@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.7.3. Converting Sound Types</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-07-sound-manipulation/04-07-3-conversion">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-07-0-sound-manipulation.html" data-number="4.7">Sound Manipulation</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-07-3-sound-conversion.html" data-number="4.7.3">Converting Sound Types</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.7.3">Converting Sound Types</h2>
+    </section>
+    <section>
+        <p>Since version <span class="sw-version">20-28</span>, <span data-keyword="Single"></span>, <span data-keyword="Split"></span> and <span data-keyword="Layer"></span> sounds can be converted inbetween. In general, most parameters will be available twice in <span data-keyword="Split"></span>/<span data-keyword="Layer"></span> sounds, although the details are a little more subtle. <i>(In order to explore the part structure in more detail, refer to the next chapter <a href="./documents/man-user/04-user-interfaces/04-08-0-part-manipulation.html" data-number="4.8">Part Manipulation</a>)</i>. In this section, the individual conversion methods are explained.</p>
+    </section>
+    <section>
+        <h3 class="heading primary">Creating a Split or Layer Sound</h3>
+        <div data-columns="2">
+            <div>
+                <figure class="border maximize" data-label="Sound Edit screen - convert">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-single-edit.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Sound screen - Split sound">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-split-preset.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Sound convert menu (Sound Tab)">
+                    <picture class="content" data-src="images/web-ui/sound/webui-sound-tab-convert.png"></picture>
+                </figure>
+            </div>
+            <div>
+                <p>First, load a <span data-keyword="Single"></span> preset. On the <span data-keyword="Sound">Screen</span> press <span data-keyword="Edit"></span> to open the <span data-keyword="Sound Edit">Screen</span>. Select <code>Convert to Split</code> or <code>Convert to Layer</code> by navigating with <span data-keyword="Dec"></span>/<span data-keyword="Inc"></span> or the <span data-keyword="Encoder"></span>, then press <span data-keyword="Enter"></span>. On the Sound Screen you now see two identical <span data-keyword="Parts"></span>. In the <span data-keyword="Graphical">User Interface</span>, the <span data-keyword="Sound">Tab</span> provides a menu on the left, allowing for a conversion between different sound types.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Storing a Split or Layer Sound as a Preset</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Preset screen - Sound type symbols">
+                <picture class="content" data-src="images/hardware-ui/boled/preset/boled-pre-split-layer-symbol.png"></picture>
+            </figure>
+            <div>
+                <p>A <span data-keyword="Split"></span> or <span data-keyword="Layer"></span> sound can be stored in the same way as a <span data-keyword="Single"></span> sound. The C15 banks can hold presets of all three types. Split presets are marked with a &#xE0F2; symbol. Layer presets have a &#xE0F5; symbol.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Converting a Part of a Split or Layer Sound to a Single Sound</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Sound Edit screen - convert (part) to single">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-part-to-single.png"></picture>
+            </figure>
+            <div>
+                <p>While in a <span data-keyword="Paremter"></span>, <span data-keyword="Part"></span> or <span data-keyword="Sound"></span> <span data-keyword>Screen</span>, select the part to be converted by <span data-keyword="Soft Button">1</span> (<code>I/II</code>). Then press <span data-keyword="Edit"></span> and navigate to the <code>Convert to Single</code> entry by using <span data-keyword="Dec"></span>/<span data-keyword="Inc"></span> or the <span data-keyword="Encoder"></span>, then press <span data-keyword="Enter"></span>.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Converting a Split (Layer) Sound to a Layer (Split) Sound</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Sound Edit screen - convert to Split/Layer sound">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-conv-split-layer.png"></picture>
+            </figure>
+            <div>
+                <p>While in a <span data-keyword="Paremter"></span>, <span data-keyword="Part"></span> or <span data-keyword="Sound"></span> <span data-keyword>Screen</span>, press <span data-keyword="Edit"></span> and navigate to the <code>Convert to Layer</code> (<code>Convert to Split</code>) entry by using <span data-keyword="Dec"></span>/<span data-keyword="Inc"></span> or the <span data-keyword="Encoder"></span>, then press <span data-keyword="Enter"></span>.</p>
+            </div>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

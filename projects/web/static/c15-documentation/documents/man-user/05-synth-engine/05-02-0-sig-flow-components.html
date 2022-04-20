@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 05.2. Signal Flow and Components</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/05-synth-engine/05-02-sig-flow-components">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-00-synth-engine.html" data-number="5">Synthesis Engine</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-0-sig-flow-components.html" data-number="5.2">Signal Flow and Components</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="5.2">Signal Flow and Components</h2>
+            <p>The overall signal flow of the synthesis engine is illustrated in the following diagram. For a more detailed version <a href="./documents/illustrations/synth-engine-simplified.html">click here</a>.</p>
+
+            <p>The links below provide further information about particular components. (You can access the same subpages by clicking in the blue frames in the diagram).</p>
+            <p>
+                <a href="./documents/man-user/05-synth-engine/05-02-1-envelopes.html">Envelopes</a> |
+                <a href="./documents/man-user/05-synth-engine/05-02-2-oscillators.html">Oscillators</a> | 
+                <a href="./documents/man-user/05-synth-engine/05-02-3-shapers.html">Shapers</a> | 
+                <a href="./documents/man-user/05-synth-engine/05-02-4-comb-filter.html">Comb Filter</a> | 
+                <a href="./documents/man-user/05-synth-engine/05-02-5-state-variable-filter.html">State Variable Filter</a> | 
+                <a href="./documents/man-user/05-synth-engine/05-02-6-feedback-mixer.html">Feedback Mixer</a> | 
+                <a href="./documents/man-user/05-synth-engine/05-02-7-output-mixer.html">Output Mixer</a> | 
+                <a href="./documents/man-user/05-synth-engine/05-02-8-flanger.html">Flanger</a> | 
+                <a href="./documents/man-user/05-synth-engine/05-02-9-cabinet.html">Cabinet</a> | 
+                <a href="./documents/man-user/05-synth-engine/05-02-10-gap-filter.html">Gap Filter</a> | 
+                <a href="./documents/man-user/05-synth-engine/05-02-11-echo.html">Echo</a> | 
+                <a href="./documents/man-user/05-synth-engine/05-02-12-reverb.html">Reverb</a> | 
+                <a href="./documents/man-user/05-synth-engine/05-02-13-main-parameters.html">Main Parameter Groups and Post Processing</a>
+            </p>
+            <figure class="border maximize" data-label="C15 Signal Flow (simple)">
+                <picture class="content">
+                    <svg class="image-container" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 318 164" >
+                        <foreignObject width="318" height="164">
+                            <picture data-src="./images/diagrams/block-simple-tmb-*.svg"></picture>
+                        </foreignObject>
+                        <g class="noprint">
+                            <foreignObject x="11" y="33" width="30" height="74">
+                                <div class="link">
+                                    <a href="./documents/man-user/05-synth-engine/05-02-1-envelopes.html" title="Envelopes"></a>
+                                </div>
+                            </foreignObject>
+                            <foreignObject x="67" y="41" width="30" height="58">
+                                <div class="link">
+                                    <a href="./documents/man-user/05-synth-engine/05-02-2-oscillators.html" title="Oscillators"></a>
+                                </div>
+                            </foreignObject>
+                            <foreignObject x="101" y="41" width="88" height="58">
+                                <div class="link">
+                                    <a href="./documents/man-user/05-synth-engine/05-02-3-shapers.html" title="Shapers"></a>
+                                </div>
+                            </foreignObject>
+                            <foreignObject x="205" y="59" width="30" height="22">
+                                <div class="link">
+                                    <a href="./documents/man-user/05-synth-engine/05-02-4-comb-filter.html" title="Comb Filter"></a>
+                                </div>
+                            </foreignObject>
+                            <foreignObject x="251" y="59" width="30" height="22">
+                                <div class="link">
+                                    <a href="./documents/man-user/05-synth-engine/05-02-5-state-variable-filter.html" title="State Variable Filter"></a>
+                                </div>
+                            </foreignObject>
+                            <foreignObject x="233" y="19" width="64" height="22">
+                                <div class="link">
+                                    <a href="./documents/man-user/05-synth-engine/05-02-6-feedback-mixer.html" title="Feedback Mixer"></a>
+                                </div>
+                            </foreignObject>
+                            <foreignObject x="207" y="97" width="78" height="22">
+                                <div class="link">
+                                    <a href="./documents/man-user/05-synth-engine/05-02-7-output-mixer.html" title="Output Mixer"></a>
+                                </div>
+                            </foreignObject>
+                            <foreignObject x="177" y="133" width="22" height="18">
+                                <div class="link">
+                                    <a href="./documents/man-user/05-synth-engine/05-02-8-flanger.html" title="Flanger"></a>
+                                </div>
+                            </foreignObject>
+                            <foreignObject x="203" y="133" width="22" height="18">
+                                <div class="link">
+                                    <a href="./documents/man-user/05-synth-engine/05-02-9-cabinet.html" title="Cabinet"></a>
+                                </div>
+                            </foreignObject>
+                            <foreignObject x="229" y="133" width="22" height="18">
+                                <div class="link">
+                                    <a href="./documents/man-user/05-synth-engine/05-02-10-gap-filter.html" title="Gap Filter"></a>
+                                </div>
+                            </foreignObject>
+                            <foreignObject x="255" y="133" width="22" height="18">
+                                <div class="link">
+                                    <a href="./documents/man-user/05-synth-engine/05-02-11-echo.html" title="Echo"></a>
+                                </div>
+                            </foreignObject>
+                            <foreignObject x="281" y="133" width="22" height="18">
+                                <div class="link">
+                                    <a href="./documents/man-user/05-synth-engine/05-02-12-reverb.html" title="Reverb"></a>
+                                </div>
+                            </foreignObject>
+                            <foreignObject x="46" y="131" width="60" height="22">
+                                <div class="link">
+                                    <a href="./documents/man-user/05-synth-engine/05-02-13-main-parameters.html" title="Post Processing and other Paramter Groups"></a>
+                                </div>
+                            </foreignObject>
+                        </g>
+                    </svg>
+                </picture>
+            </figure>
+            
+            <p>Two Oscillators and Shapers produce signals which are passed to the Comb Filter, to the State Variable Filter, and to the Output Mixer. The filter output signals are also connected to this mixer. The resulting mix is passed to the effect section and finally to the output. A second mix from the filters and effects is defined for the Feedback bus.</p>
+            <p>There is a symmetric approach for the Oscillators, Shapers and Envelopes. Envelope A, Oscillator A and Shaper A (also called <q>branch A</q>) are quasi-identical to Envelope B, Oscillator B and Shaper B (<q>branch B</q>). Envelope C can be mapped to the filters, pitches, and feedback amounts.</p>
+</section>
+</main>
+</div>
+</body>
+</html>

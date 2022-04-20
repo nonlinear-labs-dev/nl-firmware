@@ -1,0 +1,608 @@
+/***********************************************************************************************************************
+ *  shared.css
+ *  includes stylings and components shared by all resources (any page and _menu/_content embedded pages)
+ ***********************************************************************************************************************/
+
+/*******************************************************************************
+ *  variables, resets
+ *******************************************************************************/
+
+:root {
+    --content-maxwidth: 90ch; /* defines the maximal width of the <main> element */
+    --paragraph-maxwidth: 70ch; /* further defines the maximal width of <p> elements within <section> elements  */
+    --unit-menu: 2rem;
+    --grid-menu-width: min(var(--content-maxwidth), 30vw);
+    --grid-main-columns: var(--grid-menu-width) auto var(--unit-menu);
+    --grid-main-rows: var(--unit-menu) auto var(--unit-menu);
+}
+
+* {
+    outline: none;
+    margin: 0;
+    border: none;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/*******************************************************************************
+ *  developer
+ *******************************************************************************/
+
+.developer {
+    display: none !important;
+}
+
+/*******************************************************************************
+ *  colors and themes (dark, light, print)
+ *******************************************************************************/
+
+ @media screen {
+
+    /*dark theme */
+
+    /*dark theme */
+
+    body[data-color-theme="dark"] {
+        --theme-main-color: rgb(221, 221, 221);
+        --theme-main-background: rgb(9, 9, 9);
+        --theme-main-background-overlay: rgba(9, 9, 9, 0.2);
+        --theme-main-border: rgb(50, 50, 50);
+        --theme-link-color: rgb(158, 202, 255);
+        --theme-link-background: rgba(158, 202, 255, 0.2);
+        --theme-figure-background: rgb(24, 24, 24);
+        --theme-heading-color: rgb(212, 201, 165);
+        --theme-heading-background: rgb(58, 58, 58);
+        --theme-subheading-color: rgb(91, 172, 224);
+        --theme-subheading-background: rgb(38, 38, 38);
+        --theme-subheading-text: rgba(221, 221, 221, 0.75);
+        --theme-note-color: rgb(225, 231, 243);
+        --theme-note-symbol-color: rgb(91, 172, 224);
+        --theme-note-background: rgb(31, 36, 47);
+        --theme-note-border: rgb(72, 80, 94);
+        --theme-warn-color: rgb(243, 231, 225);
+        --theme-warn-symbol-color: rgb(224, 58, 11);
+        --theme-warn-background: rgb(47, 36, 31);
+        --theme-warn-border: rgb(106, 66, 56);
+        --theme-comment-color: rgb(225, 243, 231);
+        --theme-comment-symbol-color: rgb(98, 193, 98);
+        --theme-comment-background: rgb(32, 47, 36);
+        --theme-comment-border: rgb(138, 164, 147);
+        --theme-table-background-primary: rgb(85, 85, 85);
+        --theme-table-background-secondary: rgb(62, 62, 62);
+        --theme-table-inner-border: rgb(32, 32, 32);
+        --theme-version-color: rgb(128, 20, 96);
+    }
+
+    /* light theme */
+
+    body[data-color-theme="light"] {
+        --theme-main-color: rgb(40, 40, 40);
+        --theme-main-background: rgb(255, 255, 255);
+        --theme-main-background-overlay: rgba(255, 255, 255, 0.2);
+        --theme-main-border: rgb(200, 200, 200);
+        --theme-link-color: rgb(0, 128, 255);
+        --theme-link-background: rgba(0, 128, 255, 0.1);
+        --theme-figure-background: rgb(240, 240, 240);
+        --theme-heading-color: rgb(130, 107, 32);
+        --theme-heading-background: rgb(197, 197, 197);
+        --theme-subheading-color: rgb(41, 122, 174);
+        --theme-subheading-background: rgb(217, 217, 217);
+        --theme-subheading-text: rgba(0, 0, 0, 0.75);
+        --theme-note-color: rgb(56, 56, 72);
+        --theme-note-symbol-color: rgb(27, 79, 131); /* please specify */
+        --theme-note-background: rgb(216, 216, 232);
+        --theme-note-border: rgb(128, 128, 144);
+        --theme-warn-color: rgb(72, 56, 56);
+        --theme-warn-symbol-color: rgb(184, 44, 3); /* please specify */
+        --theme-warn-background: rgb(232, 216, 216);
+        --theme-warn-border: rgb(144, 128, 128);
+        --theme-comment-color: rgb(56, 72, 56);
+        --theme-comment-symbol-color: rgb(18, 104, 18); /* please specify */
+        --theme-comment-background: rgb(216, 232, 216);
+        --theme-comment-border: rgb(128, 144, 128);
+        --theme-table-background-primary: rgb(240, 240, 240);
+        --theme-table-background-secondary: rgb(232, 232, 232);
+        --theme-table-inner-border: rgb(208, 208, 208);
+        --theme-version-color: rgb(128, 20, 96);
+    }
+
+}
+
+@media print {
+
+    /* print theme */
+
+    body {
+        --theme-main-background: rgb(255, 255, 255);
+        --theme-main-background-overlay: rgba(255, 255, 255, 0.2);
+        --theme-main-foreground: rgb(0, 0, 0);
+        --theme-main-border: rgb(128, 128, 128);
+        --theme-link-color: rgb(32, 32, 32);
+        --theme-link-background: transparent;
+        --theme-figure-background: rgb(224, 224, 224);
+        --theme-heading-color: rgb(64, 64, 64);
+        --theme-heading-background: rgb(224, 224, 224);
+        --theme-subheading-color: rgb(48, 48, 48);
+        --theme-subheading-background: rgb(244, 244, 244);
+        --theme-subheading-text: rgba(0, 0, 0, 0.75);
+        --theme-note-color: rgb(56, 56, 56);
+        --theme-note-symbol-color: grey; /* please specify */
+        --theme-note-background: rgb(216, 216, 216);
+        --theme-note-border: rgb(32, 32, 32);
+        --theme-warn-color: var(--theme-note-color);
+        --theme-warn-symbol-color: grey; /* please specify */
+        --theme-warn-background: var(--theme-note-background);
+        --theme-warn-border: var(--theme-note-border);
+        --theme-comment-color: var(--theme-note-color);
+        --theme-comment-symbol-color: grey; /* please specify */
+        --theme-comment-background: var(--theme-note-background);
+        --theme-comment-border: var(--theme-note-border);
+        --theme-table-background-primary: rgb(240, 240, 240);
+        --theme-table-background-secondary: rgb(224, 224, 224);
+        --theme-table-inner-border: rgb(208, 208, 208);
+        --theme-version-color: rgb(128, 20, 96);
+    }
+
+}
+
+/* C15 colors */
+
+body {
+    --c15-branch-a: rgb(242, 184, 136);
+    --c15-branch-b: rgb(227, 212, 154);
+    --c15-comb: rgb(186, 230, 189);
+    --c15-svf: rgb(171, 216, 222);
+    --c15-effects: rgb(191, 202, 255);
+    --c15-other: rgb(195, 199, 203);
+}
+
+/*******************************************************************************
+ *  fonts
+ *******************************************************************************/
+
+/* -- LW00 -- */
+
+@font-face {
+    font-family: 'SSP-LW00';
+    font-weight: 300;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('../fonts/SW_SSP/SSP-LW00-Light.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'SSP-LW00';
+    font-weight: 300;
+    font-style: italic;
+    font-stretch: normal;
+    src: url('../fonts/SW_SSP/SSP-LW00-Light-Italic.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'SSP-LW00';
+    font-weight: 400;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('../fonts/SW_SSP/SSP-LW00-Regular.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'SSP-LW00';
+    font-weight: 400;
+    font-style: italic;
+    font-stretch: normal;
+    src: url('../fonts/SW_SSP/SSP-LW00-Regular-Italic.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'SSP-LW00';
+    font-weight: 600;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('../fonts/SW_SSP/SSP-LW00-Semibold.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'SSP-LW00';
+    font-weight: 600;
+    font-style: italic;
+    font-stretch: normal;
+    src: url('../fonts/SW_SSP/SSP-LW00-Semibold-Italic.otf') format('opentype');
+}
+
+/* -- LW25 -- */
+
+@font-face {
+    font-family: 'SSP-LW25';
+    font-weight: 300;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('../fonts/SW_SSP/SSP-LW25-Light.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'SSP-LW25';
+    font-weight: 400;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('../fonts/SW_SSP/SSP-LW25-Regular.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'SSP-LW25';
+    font-weight: 600;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('../fonts/SW_SSP/SSP-LW25-Semibold.otf') format('opentype');
+}
+
+
+/*******************************************************************************
+ *  basic elements
+ *******************************************************************************/
+
+/* body */
+
+body {
+    font-family: "SSP-LW00";
+    color: var(--theme-main-color);
+    background-color: var(--theme-main-background);
+}
+
+/* anchors */
+
+a, a:active, a:focus, a:hover, a:visited {
+    color: var(--theme-link-color);
+    text-decoration: none;
+    /* font-weight: normal; */
+}
+
+a[href]:focus, a[href]:hover {
+    background-color: var(--theme-link-background);
+    text-decoration: underline;
+}
+
+/* */
+blockquote
+{
+    color: var(--theme-comment-color);
+    border-left: 4px solid var(--theme-comment-border);
+    padding-left: 1em;
+}
+
+/* menu: buttons */
+
+button.menu {
+    cursor: pointer;
+    background-color: transparent;
+}
+
+/* label decoration (one-liner with text overflow) */
+
+.label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.label.reverse {
+    direction: rtl;
+    text-align: end;
+}
+
+.hidden {
+    display: none;
+}
+
+/* numbered elements (chapters, anchors) */
+
+[data-number]::before {
+    content: attr(data-number) ". ";
+    font-weight: bold;
+}
+
+/* info */
+
+dl.info {
+    display: grid;
+    grid-template-columns: max-content auto;
+    /* font-size: 90%; */
+    font-style: initial;
+}
+
+dl.info > dt {
+    font-weight: bold;
+    margin-right: 1ch;
+}
+
+dl.info > dd {
+    font-style: italic;
+}
+
+/* toc */
+
+/* nl-dir, nl-doc {
+    display: grid;
+    color: var(--theme-link-color);
+}
+
+nl-dir > label, nl-doc > label {
+    display: grid;
+    grid-template-columns: min-content auto;
+}
+
+nl-dir > :not(:first-child),
+nl-doc > :not(:first-child) {
+    margin-left: 1rem;
+} */
+
+/* nl-dir::before {
+    content: "\E301";
+    font-size: 80%;
+    padding: 0 0.25em 0.25em 0;
+}
+
+nl-dir[open]::before {
+    content: "\E302";
+} */
+
+ul.toc {
+    list-style: none;
+}
+
+ul.toc > li {
+    display: grid;
+    position: relative;
+    padding-left: 0.9em;
+}
+
+ul.toc > li.folder > a::after {
+    position: absolute;
+    left: 0;
+    top: 0.45em;
+    content: "";
+    width: 0.75em;
+    height: 0.75em;
+    background-color: var(--theme-link-color);
+    -webkit-mask-image: var(--background-mask);
+    mask-image: var(--background-mask);
+    /* --background-mask: url(
+        'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100"><path d="M -42 -42 L 42 0 L -42 42 Z" fill="none" stroke-width="7.5" stroke-linecap="round" stroke="rgb(0,0,0)"/></svg>'
+    ); */
+    
+    /* --- start tm --- */
+        
+    --background-mask: url(
+        'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><title>Zeichenfläche 1</title><polygon points="40 25 0 2 0 48 40 25"/></svg>'
+    );
+    /* --- ende tm --- */
+}
+
+ul.toc.child {
+    display: none;
+}
+
+ul.toc.hidden.current {
+    display: block;
+}
+
+ul.toc > li.folder.current,
+ul.toc > li.folder.open {
+    --folder-track: var(--theme-table-inner-border);
+    background-image: linear-gradient(90deg, var(--folder-track) 1px, transparent 0);
+    background-repeat: no-repeat;
+    background-position: calc(0.37em - 0.5px) 1.25em;
+}
+
+ul.toc > li.current > a {
+    font-weight: bold;
+}
+
+/*
+ul.toc > li.folder.current > a::after,
+ul.toc > li.folder.open > a::after {
+    --background-mask: url(
+        'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100"><path d="M -42 -42 L 0 42 L 42 -42 Z" fill="none" stroke-width="7.5" stroke-linecap="round" stroke="rgb(0,0,0)"/></svg>'
+    );
+}
+*/
+
+/* --- start tm --- */
+
+ul.toc > li.folder.current > a::after,
+ul.toc > li.folder.open > a::after {
+    --background-mask: url(
+        'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><title>Zeichenfläche 1 Kopie</title><polygon points="23 46 46 6 0 6 23 46"/></svg>'
+    );
+}
+
+/* --- ende tm --- */
+
+ul.toc > li.current > ul.toc.child {
+    display: block;
+}
+
+ul.toc > li.target > a {
+    background-color: var(--theme-link-background);
+}
+
+/*******************************************************************************
+ *  masks (theme-aware, usable for icons)
+ *******************************************************************************/
+
+[mask] {
+    display: inline-grid;
+    line-height: inherit;
+    width: var(--mask-size, 1rem);
+    height: var(--mask-size, 1rem);
+    overflow: hidden;
+}
+
+[mask]::before, [mask]::after {
+    display: block;
+    content: "";
+    grid-row: 1;
+    grid-column: 1;
+    width: 100%;
+    height: 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    opacity: 0.75;
+}
+
+[mask]::before {
+    background-color: var(--background-color, transparent);
+    -webkit-mask-image: var(--background-mask);
+    mask-image: var(--background-mask);
+}
+
+[mask]::after {
+    background-color: var(--color, transparent);
+    -webkit-mask-image: var(--mask);
+    mask-image: var(--mask);
+}
+
+/* specific, predefined masks */
+/* (inline svg guarantees successul loading despite file protocol, avoiding CORS policy issues) */
+
+[mask="close"] {
+    --color: var(--theme-main-color);
+    /*--mask: url(
+         'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100"><path d="M -42 -42 L 42 42 M -42 42 L 42 -42" fill="none" stroke-width="25" stroke-linecap="round" stroke="rgb(0,0,0)"/></svg>'
+    ); */
+    --mask: url(
+        'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -60 120 120"><path d="M -42 -42 L 42 42 M -42 42 L 42 -42" fill="none" stroke-width="25" stroke-linecap="square" stroke="rgb(0,0,0)"/></svg>'
+    );
+}
+
+[mask="maximize"] {
+    --color: var(--theme-main-color);
+    --mask: url(
+        'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100"><path d="M -40 -10 v -30 h 30 M -40 10 v 30 h 30 M 10 -40 h 30 v 30 M 10 40 h 30 v -30" fill="none" stroke-width="15" stroke="rgb(0,0,0)"/></svg>'
+    );
+}
+
+[mask="menu"] {
+    --color: var(--theme-main-color);
+    --mask: url(
+        'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100"><path d="M -50 -50 h 100 v 20 h -100 Z M -50 -10 h 100 v 20 h -100 Z M -50 30 h 100 v 20 h -100 Z"/></svg>'
+    );
+}
+
+[mask="totop"] {
+    --color: var(--theme-main-color);
+    --mask: url(
+        'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100"><path d="M -50 50 h 100 L 0 -50 Z" fill="rgb(0,0,0)"/></svg>'
+    );
+}
+
+/* removed masks note, warn, comment (now using Font Symbols instead) */
+
+/*******************************************************************************
+ *  tabs
+ *******************************************************************************/
+
+dl.tabs {
+    display: grid;
+    overflow: hidden;
+}
+
+dl.tabs > dt {
+    display: flex;
+    align-items: stretch;
+    overflow-x: hidden;
+    flex-wrap: wrap;
+}
+
+dl.tabs > dt > * {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom-style: solid;
+    cursor: pointer;
+    flex: 1;
+    color: var(--theme-subheading-text);
+    border-color: var(--theme-main-border);
+}
+
+dl.tabs > dt > [selected] {
+    color: var(--theme-link-color);
+    border-color: var(--theme-link-color);
+}
+
+dl.tabs > dd {
+    display: grid;
+    grid-template-columns: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin: 0 !important;
+}
+
+dl.tabs > dd > * {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+}
+
+dl.tabs > dd > [selected] {
+    visibility: visible;
+}
+
+/* horizontal orientation */
+
+dl.tabs.h {
+    grid-template-rows: max-content auto;
+}
+
+dl.tabs.h > dd > * {
+    grid-row: 1;
+}
+
+/* vertical orientation */
+
+dl.tabs.v {
+    grid-template-columns: max-content auto;
+}
+
+dl.tabs.v > dt {
+    flex-direction: column;
+}
+
+dl.tabs.v > dt > * {
+    border-right-style: solid;
+    padding-right: 6px;
+    justify-content: center;
+}
+
+/* versioning */
+
+.sw-version {
+    display: inline-block;
+    background-color: var(--theme-version-color);
+    color: #fff;
+    font-style: italic;
+    border-radius: 6px;
+    transform: scale(0.75);
+    padding: 0 4px;
+    margin: 0 -6px;
+}
+
+.heading > .sw-version {
+    transform: scale(0.625);
+}
+
+/* footnotes */
+
+.footnote {
+    display: block;
+    border-top: 1px dashed var(--theme-main-color);
+    padding-top: 0.5rem;
+    font-style: italic;
+}
+
+.footnote::before {
+    font-style: normal;
+    font-weight: normal;
+}

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>MIDI Bridge Manual - 03. Special Error/Blink Codes</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/utils.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-midi-bridge/03-special-error-codes">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-midi-bridge/index.html">MIDI Bridge Manual</a>
+        <span>/</span>
+        <a href="./documents/man-midi-bridge/03-special-error-codes.html" data-number="3">Special Error/Blink Codes</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="3">Special Error/Blink Codes</h2>
+        <div data-highlight="note">
+            <p>In normal operation, including a firmware update via MIDI SysEx message, none of the below errors will ever occur (except for <q>Programming Finished</q>)... but things might go wrong on very very seldom occasions.</p>
+        </div>
+        <p>These are unrecoverable but mostly non-persistent errors in general, the device is temporarily not operational after an incident. The device must be fully unplugged to reset and return to normal operation.</p>
+        <p>The LED indicator patterns are meant for post-mortem diagnosis, so please write down the colors and blink states should you ever run into such an error. The blink rate is very fast.</p>
+        <table>
+            <tr>
+                <th colspan="2">First LED</th>
+                <th colspan="2">Second LED</th>
+                <th>Meaning</th>
+            </tr>
+            <tr>
+                <td>GREEN blinking</td>
+                <td style="max-width: 8.5em;">
+                    <span class="leed green-b"></span>
+                    <!-- <span class="led green"></span>
+                    <span class="led off"></span>
+                    <span class="led green"></span>
+                    <span class="led off"></span>
+                    <span class="led green"></span> -->
+                </td>
+                <td>GREEN blinking</td>
+                <td style="max-width: 8.5em;">
+                    <span class="leed green-b"></span>
+                    <!-- <span class="led green"></span>
+                    <span class="led off"></span>
+                    <span class="led green"></span>
+                    <span class="led off"></span>
+                    <span class="led green"></span> -->
+                </td>
+                <td>Programming Finished Successfully (NO ERROR)</td>
+            </tr>
+            <tr>
+                <td>WHITE</td>
+                <td>
+                    <span class="led white"></span>
+                </td>
+                <td>WHITE (blinking or not)</td>
+                <td>
+                    <span class="leed white-b"></span>
+                    <!-- <span class="led white"></span> -->
+                </td>
+                <td>Severe Code Error (Lock-Up) <sup>*)</sup></td>
+            </tr>
+            <tr>
+                <td>RED</td>
+                <td>
+                    <span class="led red"></span>
+                </td>
+                <td>RED blinking</td>
+                <td>
+                    <span class="leed red-b"></span>
+                    <!-- <span class="led red"></span>
+                    <span class="led off"></span>
+                    <span class="led red"></span>
+                    <span class="led off"></span>
+                    <span class="led red"></span> -->
+                </td>
+                <td>USB Packet incorrect size</td>
+            </tr>
+            <tr>
+                <td>RED</td>
+                <td>
+                    <span class="led red"></span>
+                </td>
+                <td>YELLOW blinking</td>
+                <td>
+                    <span class="leed yellow-b"></span>
+                    <!-- <span class="led yellow"></span>
+                    <span class="led off"></span>
+                    <span class="led yellow"></span>
+                    <span class="led off"></span>
+                    <span class="led yellow"></span> -->
+                </td>
+                <td>Unexpected USB Packet</td>
+            </tr>
+            <tr>
+                <td>YELLOW</td>
+                <td>
+                    <span class="led yellow"></span>
+                </td>
+                <td>RED blinking</td>
+                <td>
+                    <span class="leed red-b"></span>
+                    <!-- <span class="led red"></span>
+                    <span class="led off"></span>
+                    <span class="led red"></span>
+                    <span class="led off"></span>
+                    <span class="led red"></span> -->
+                </td>
+                <td>SysEx Data Error</td>
+            </tr>
+            <tr>
+                <td>YELLOW</td>
+                <td>
+                    <span class="led yellow"></span>
+                </td>
+                <td>YELLOW</td>
+                <td>
+                    <span class="led yellow"></span>
+                </td>
+                <td>Waiting for SysEx End Marker</td>
+            </tr>
+            <tr>
+                <td>Magenta</td>
+                <td>
+                    <span class="led magenta"></span>
+                </td>
+                <td>RED blinking</td>
+                <td>
+                    <span class="leed red-b"></span>
+                    <!-- <span class="led red"></span>
+                    <span class="led off"></span>
+                    <span class="led red"></span>
+                    <span class="led off"></span>
+                    <span class="led red"></span> -->
+                </td>
+                <td>Programming: Data is too large</td>
+            </tr>
+            <tr>
+                <td>Magenta</td>
+                <td>
+                    <span class="led magenta"></span>
+                </td>
+                <td>GREEN blinking</td>
+                <td>
+                    <span class="leed green-b"></span>
+                    <!-- <span class="led green"></span>
+                    <span class="led off"></span>
+                    <span class="led green"></span>
+                    <span class="led off"></span>
+                    <span class="led green"></span> -->
+                </td>
+                <td>Programming: Data Length is zero</td>
+            </tr>
+            <tr>
+                <td>Magenta</td>
+                <td>
+                    <span class="led magenta"></span>
+                </td>
+                <td>BLUE blinking</td>
+                <td>
+                    <span class="leed blue-b"></span>
+                    <!-- <span class="led blue"></span>
+                    <span class="led off"></span>
+                    <span class="led blue"></span>
+                    <span class="led off"></span>
+                    <span class="led blue"></span> -->
+                </td>
+                <td>Programming: Erase failed <sup>**)</sup></td>
+            </tr>
+            <tr>
+                <td>Magenta</td>
+                <td>
+                    <span class="led magenta"></span>
+                </td>
+                <td>MAGENTA blinking</td>
+                <td>
+                    <span class="leed magenta-b"></span>
+                    <!-- <span class="led magenta"></span>
+                    <span class="led off"></span>
+                    <span class="led magenta"></span>
+                    <span class="led off"></span>
+                    <span class="led magenta"></span> -->
+                </td>
+                <td>Programming: WritePrepare failed <sup>**)</sup></td>
+            </tr>
+            <tr>
+                <td>Magenta</td>
+                <td>
+                    <span class="led magenta"></span>
+                </td>
+                <td>WHITE blinking</td>
+                <td>
+                    <span class="leed white-b"></span>
+                    <!-- <span class="led white"></span>
+                    <span class="led off"></span>
+                    <span class="led white"></span>
+                    <span class="led off"></span>
+                    <span class="led white"></span> -->
+                </td>
+                <td>Programming: Write failed <sup>**)</sup></td>
+            </tr>
+        </table>
+        <p><b>*)</b> Software Bugs as well as Broken Code (for example from an update gone wrong) will often, but not always, end up with the WHITE-WHITE <q>code error</q> pattern.</p>
+        <p><b>**)</b> Should one of these severe failures ever happen during a firmware update, it is very likely that the device is now <q>bricked</q>, containing a partial or broken code update and thus rendered inoperable and refusing to take further updates. It then should be returned to factory for servicing.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

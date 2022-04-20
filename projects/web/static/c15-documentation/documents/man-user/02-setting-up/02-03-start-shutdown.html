@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 02.3. Start and Shutdown</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/02-setting-up/02-03-start-shutdown">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/02-setting-up/02-00-setting-up.html" data-number="2">Setting up the C15</a>
+        <span>/</span>
+        <a href="./documents/man-user/02-setting-up/02-03-start-shutdown.html" data-number="2.3">Start and Shutdown</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h3 id="ch-2-3" class="heading" data-number="2.3">Start and Shutdown</h3>
+        <div class="section" data-columns="2">
+            <div>
+                <figure class="border maximize" data-label="Start and Shutdown">
+                    <picture class="content" data-src="./images/package/hw-setup/start-shutdown.jpg"></picture>
+                </figure>
+            </div>
+            <div>
+                <p>To turn on the C15, press the power button for around one second. It will take several seconds for the device to boot up and be ready to use. The most recent settings are loaded on startup. To shut down the C15, press the power button again for around a second. The shutdown process takes several seconds, during which it stores the current settings for the next startup, before the device turns off. A small LED next to the power inlet indicates the C15's status as follows:</p>
+            </div>
+        </div>
+        <div data-columns="1">
+            <table>
+                <tr>
+                    <th>steady on</th>
+                    <td>on/normal operation</td>
+                </tr>
+                <tr>
+                    <th>slow flashing</th>
+                    <td>booting up</td>
+                </tr>
+                <tr>
+                    <th>fast flashing</th>
+                    <td>shutting down</td>
+                </tr>
+                <tr>
+                    <th>one flash every 2 seconds</th>
+                    <td>standby</td>
+                </tr>
+            </table>
+        </div>
+        <p>A flickering LED indicates abnormal operation. For instance, it may mean that the supply voltage is too low.</p>
+        <div data-highlight="warn">
+            <p>Make sure not to disconnect the power supply while you are using the C15 (booting up, performance, shutdown), otherwise its data may be lost.</p>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.7.2. Manipulating Sounds</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js" defer></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-07-sound-manipulation/04-07-2-manipulation">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-07-0-sound-manipulation.html" data-number="4.7">Sound Manipulation</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-07-2-sound-manipulation.html" data-number="4.7.2">Manipulating Sounds</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.7.2">Manipulating Sounds</h2>
+    </section>
+    <section>
+        <h3 class="heading primary">Init Sound</h3>
+        <p>When initializing, every parameter of the sound (or part) will start a transition to its default value, as defined by the <span data-keyword="Edit">Smoothing Time</span> in the system settings.</p>
+        <div data-columns="2">
+            <div>
+                <figure class="border maximize" data-label="Sound Screen - Init (Soft Button 1)">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-init.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Sound Screen - Init (Soft Button 1)">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-init-snd-menu.png"></picture>
+                </figure>
+            </div>
+            <div>
+                <p>In <span data-keyword="Single"></span> sounds, press <span data-keyword="Soft Button">1</span> to select and then the <span data-keyword="Enter">Button</span> to recall the Init sound. In <span data-keyword="Split"></span> or <span data-keyword="Layer"></span> sounds, press the <span data-keyword="Edit">Button</span>, navigate to the Init Sound option using the <span data-keyword="Encoder"></span> or <span data-keyword="Inc"></span>/<span data-keyword="Dec"></span> and press the <span data-keyword="Enter">Button</span>. <i>(There is also an Init Part option in order to only initialize the selected Part.)</i></p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Init Sound</h3>
+        <div data-columns="2">
+            <div>
+                <figure class="border maximize" data-label="Sound menu - init (Sound Tab)">
+                    <picture class="content" data-src="images/web-ui/sound/webui-sound-tab-ctx-more.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Sound menu - init (Sound Tab)">
+                    <picture class="content" data-src="images/web-ui/sound/webui-sound-tab-ctx-more-dual.png"></picture>
+                </figure>
+            </div>
+            <div>
+                <p>The <span data-keyword="Sound">Tab</span> contains a menu icon (<q>...</q>) which provides an Init option for <span data-keyword="Single"></span> sounds. The menu will instead contain the Init Sound and Init Part options, when the current sound type is <span data-keyword="Split"></span> or <span data-keyword="Layer"></span>.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Store/Reset Init Sound</h3>
+        <p>The Init Sound represents every parameter with it's default value. The default values were carefully chosen to form a meaningful initial state (in which no sound will play, as all channels of the Output Mixer are disabled). Nevertheless, custom defaults are also possible.</p>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Store/Reset Init Sound (Setup Screen)">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-store-init-snd-menu.png"></picture>
+            </figure>
+            <div>
+                <p>In order to store the current sound as the Init Sound, press the <span data-keyword="Setup">Button</span> and navigate to <code>Device Settings > Store Init Sound</code>, then press the <span data-keyword="Enter">Button</span> to confirm. The default Sound Type and the parameter values will be overwritten. In order to restore the factory defaults, chosse <code>Reset Init Sound</code> instead.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Store/Reset Init Sound</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Store/Reset Init Sound (Setup window)">
+                <picture class="content" data-src="images/web-ui/sound/webui-sound-store-reset-init.png"></picture>
+            </figure>
+            <div>
+                <p>Click on the <span data-keyword="View">Menu</span> in the top-right corner and choose Setup in order to open the <span data-keyword="Setup">Window</span>. In the first tab (Device Settings), the Store and Reset options can be found on the bottom.</p>
+            </div>
+        </div>
+        <div data-highlight="note">
+            <p>If you encounter problems navigating the <span data-keyword="Setup">Menu</span> intuitively, please refer to chapters <a href="./documents/man-user/04-user-interfaces/04-13-setup-navigation.html" data-number="4.13">Setup Navigation</a> and <a href="./documents/man-user/08-setup/08-setup.html" data-number="8">Setup (C15 System Settings)</a>.</p>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Randomize</h3>
+        <p>When randomizing, every parameter of the sound (or selected part) will start a transition to a randomized value, as defined by the <span data-keyword="Edit">Smoothing Time</span> in the system settings. The randomization amount is adjustable.</p>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Sound Edit screen - randomize">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-rand-snd-menu.png"></picture>
+            </figure>
+            <div>
+                <p>Press <span data-keyword="Edit"></span> and use the <span data-keyword="Encoder"></span> or<span data-keyword="Inc"></span>/<span data-keyword="Dec"></span> to navigate to <code>Randomize</code> (when in a <span data-keyword="Single"></span> sound) or <code>Randomize Part</code> (when in a <span data-keyword="Split"></span> or <span data-keyword="Layer"></span> sound), then press <span data-keyword="Enter"></span>. Now, the amount of randomization can be adjusted. To escape randomization, press <span data-keyword="Soft Buttons">1</span> or <span data-keyword>2</span>. To apply randomization, press Enter.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Randomize</h3>
+        <div data-columns="2">
+            <div>
+                <figure class="border maximize" data-label="Sound menu - init (Sound Tab)">
+                    <picture class="content" data-src="images/web-ui/sound/webui-sound-tab-ctx-more.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Sound menu - init (Sound Tab)">
+                    <picture class="content" data-src="images/web-ui/sound/webui-sound-tab-ctx-more-dual.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Sound menu - init (Sound Tab)">
+                    <picture class="content" data-src="images/web-ui/sound/webui-sound-rand-dia.png"></picture>
+                </figure>
+            </div>
+            <div>
+                <p>In the <span data-keyword="Sound">Tab</span>, press the menu icon (<q>...</q>) and choose <code>Randomize</code> (when in a <span data-keyword="Single"></span> sound) or <code>Randomize Part</code> (when in a <span data-keyword="Split"></span> or <span data-keyword="Layer"></span> sound). A dialog will appear, providing the adjustable randomization amount and an <q>Apply</q> button to complete the process.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Sound Manipulation and Locking</h3>
+        <figure class="border maximize" data-label="Parameter screen - Lock symbol">
+            <picture class="content" data-src="images/hardware-ui/boled/parameter/boled-param-lock-symbol.png"></picture>
+        </figure>
+        <figure class="border maximize" data-label="Sound Tab - Lock symbol">
+            <picture class="content" data-src="images/web-ui/sound/webui-sound-tab-lock.png"></picture>
+        </figure>
+        <p>As described in chapter <a href="./documents/man-user/04-user-interfaces/04-06-5-preset-locking.html" data-number="4.6.5">Locking</a>, parameters of locked groups are not affected by sound manipulations. For example, randomizing all parameters may not be a good idea when considering the Master, Unison and Scale groups, as the random change can have too much of an impact, leading to unwanted, bad sounding or even harmful results (should the Master Volume increase considerably). So we recommend to lock these three groups before using the randomize function.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>
