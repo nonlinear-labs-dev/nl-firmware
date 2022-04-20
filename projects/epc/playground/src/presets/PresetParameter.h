@@ -48,6 +48,7 @@ class PresetParameter
   // transactions
   void setValue(UNDO::Transaction *transaction, tControlPositionValue v);
   void setField(UNDO::Transaction *transaction, Fields field, const std::string &value);
+  void copyFrom(UNDO::Transaction *transaction, const std::unique_ptr<PresetParameter> &other);
   void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other);
   void copyFrom(UNDO::Transaction *transaction, const ::Parameter *other);
 

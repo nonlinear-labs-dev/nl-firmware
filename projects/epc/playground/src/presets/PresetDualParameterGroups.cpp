@@ -52,11 +52,11 @@ void PresetDualParameterGroups::copyFrom(UNDO::Transaction *transaction, const P
   for(auto &vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
   {
     auto index = static_cast<size_t>(vg);
-    for(auto &group : other->m_parameterGroups[index])
+    for(auto &otherGroup : other->m_parameterGroups[index])
     {
-      auto groupId = group.first;
+      auto groupId = otherGroup.first;
       auto &myGroup = m_parameterGroups[index][groupId];
-      myGroup->copyFrom(transaction, group.second.get());
+      myGroup->copyFrom(transaction, otherGroup.second.get());
     }
   }
 }
@@ -68,8 +68,36 @@ void PresetDualParameterGroups::copyFrom(UNDO::Transaction *transaction, const E
   transaction->addUndoSwap(m_type, other->getType());
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
-    for(auto g : other->getParameterGroups(vg))
-      m_parameterGroups[static_cast<size_t>(vg)][g->getID()] = std::make_unique<PresetParameterGroup>(*g);
+  {
+    auto vgIdx = static_cast<size_t>(vg);
+
+    for(const auto &g : other->getParameterGroups(vg))
+    {
+      auto groupId = g->getID();
+
+      if(auto &old = m_parameterGroups[vgIdx][groupId])
+      {
+        old->copyFrom(transaction, g);
+      }
+      else
+      {
+        auto swap = UNDO::createSwapData(std::make_unique<PresetParameterGroup>(*g));
+
+        auto doAndRedo = [=](auto) {
+          auto &place = m_parameterGroups[vgIdx][groupId];
+          assert(place == nullptr);
+          swap->swapWith(place);
+        };
+        auto undo = [=](auto) {
+          auto &place = m_parameterGroups[vgIdx][groupId];
+          assert(place != nullptr);
+          swap->swapWith(place);
+          m_parameterGroups[vgIdx].erase(groupId);
+        };
+        transaction->addSimpleCommand(doAndRedo, undo);
+      }
+    }
+  }
 }
 
 void PresetDualParameterGroups::copyVoiceGroup1IntoVoiceGroup2(UNDO::Transaction *transaction,
@@ -82,10 +110,31 @@ void PresetDualParameterGroups::copyVoiceGroup1IntoVoiceGroup2(UNDO::Transaction
   {
     if(!whiteList || whiteList.value().count(g.first))
     {
-      auto ptr = g.second.get();
+      auto sourceGroup = g.second.get();
       GroupId id { g.first.getName(), VoiceGroup::II };
-      m_parameterGroups[vgII][id] = std::make_unique<PresetParameterGroup>(*ptr);
-      m_parameterGroups[vgII][id]->assignVoiceGroup(transaction, VoiceGroup::II);
+      if(auto &old = m_parameterGroups[vgII][id])
+      {
+        old->copyFrom(transaction, sourceGroup);
+        old->assignVoiceGroup(transaction, VoiceGroup::II);
+      }
+      else
+      {
+        auto swap = UNDO::createSwapData(std::make_unique<PresetParameterGroup>(*sourceGroup));
+
+        auto doAndRedo = [=](auto) {
+          auto &place = m_parameterGroups[vgII][id];
+          assert(place == nullptr);
+          swap->swapWith(place);
+        };
+        auto undo = [=](auto) {
+          auto &place = m_parameterGroups[vgII][id];
+          assert(place != nullptr);
+          swap->swapWith(place);
+          m_parameterGroups[vgII].erase(id);
+        };
+        transaction->addSimpleCommand(doAndRedo, undo);
+        m_parameterGroups[vgII][id]->assignVoiceGroup(transaction, VoiceGroup::II);
+      }
     }
   }
 }
@@ -184,8 +233,8 @@ PresetParameter *PresetDualParameterGroups::findParameterByID(ParameterId id, bo
 PresetParameterGroup *PresetDualParameterGroups::findParameterGroup(const GroupId &id) const
 {
   const auto &groups = m_parameterGroups.at(static_cast<size_t>(id.getVoiceGroup()));
-  auto it = groups.find(id);
-  if(it != groups.end())
+
+  if(auto it = groups.find(id); it != groups.end())
     return it->second.get();
 
   return nullptr;
@@ -238,9 +287,18 @@ ParameterGroupSet &PresetDualParameterGroups::getDataScheme()
 {
   static auto isInitialized = false;
   static ParameterGroupSet sDataScheme(&SyncMasterMockRoot::get());
-  if(!isInitialized) {
+  if(!isInitialized)
+  {
     sDataScheme.init(nullptr);
     isInitialized = true;
   }
   return sDataScheme;
+}
+
+void PresetDualParameterGroups::TEST_deleteGroup(const GroupId &id)
+{
+  auto &groups = m_parameterGroups[static_cast<size_t>(id.getVoiceGroup())];
+  auto it = groups.find(id);
+  if(it != groups.end())
+    groups.erase(it);
 }
