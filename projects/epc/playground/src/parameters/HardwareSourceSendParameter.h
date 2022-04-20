@@ -44,8 +44,8 @@ class HardwareSourceSendParameter : public Parameter
   Settings* m_settings = nullptr;
 
   ReturnMode m_returnMode;
-  bool m_localIsEnabled = false;
-  bool m_routingIsEnabled = false;
+  bool m_localIsEnabled;
+  bool m_routingIsEnabled;
   bool m_lastChangedFromHWUI = false;
-  bool m_isEnabled = false;
+  bool m_isEnabled;
 };
