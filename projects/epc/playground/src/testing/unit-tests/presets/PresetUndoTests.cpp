@@ -2,13 +2,19 @@
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
+<<<<<<< HEAD
 #include <groups/ParameterGroup.h>
+=======
+>>>>>>> 81a49a481 (issue-3117: Fix undo when Overwriting presets)
 #include <libundo/undo/TrashTransaction.h>
 #include <parameter-db/generated/parameter_list.h>
 #include <use-cases/PresetManagerUseCases.h>
 #include <use-cases/BankUseCases.h>
 #include <use-cases/PresetUseCases.h>
+<<<<<<< HEAD
 #include <parameters/scale-converters/Linear100PercentScaleConverter.h>
+=======
+>>>>>>> 81a49a481 (issue-3117: Fix undo when Overwriting presets)
 
 TEST_CASE("Undo copyFrom")
 {
@@ -145,6 +151,7 @@ TEST_CASE("Undo copyFrom")
     }
   }
 }
+<<<<<<< HEAD
 
 TEST_CASE("PresetParameterGroup")
 {
@@ -210,3 +217,5 @@ TEST_CASE("PresetParameterGroup")
     }
   }
 }
+=======
+>>>>>>> 81a49a481 (issue-3117: Fix undo when Overwriting presets)

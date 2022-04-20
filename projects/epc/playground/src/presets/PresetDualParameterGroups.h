@@ -55,6 +55,8 @@ class PresetDualParameterGroups : public AttributesOwner
 
   [[nodiscard]] tParameterGroups getGroups(const VoiceGroup& vg) const;
 
+  void TEST_deleteGroup(const GroupId& id);
+
  protected:
   void copyFrom(UNDO::Transaction* transaction, const PresetDualParameterGroups* other);
   void copyFrom(UNDO::Transaction* transaction, const EditBuffer* other);
