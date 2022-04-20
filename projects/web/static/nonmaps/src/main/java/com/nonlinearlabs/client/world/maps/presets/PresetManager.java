@@ -701,7 +701,7 @@ public class PresetManager extends MapsLayout {
 			ParameterInfoDialog.toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_H
 				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
-			Window.open("/online-help/index.html", "", "");
+			Window.open("/online-help/index.html?theme=dark", "", "");
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_ESCAPE) {
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().removeExistingContextMenus();
 			NonMaps.get().getNonLinearWorld().getViewport().getOverlay().collapseGlobalMenu();
