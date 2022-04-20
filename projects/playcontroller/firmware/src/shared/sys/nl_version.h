@@ -32,7 +32,7 @@
 #define SW_VERSION 209
 
 // ==== V 210 ====
-// new Aftertouch procesing
+// new Aftertouch processing, with calibration
 
 #define STR_IMPL_(x) #x            //stringify argument
 #define STR(x)       STR_IMPL_(x)  //indirection to expand argument macros
