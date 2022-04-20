@@ -23,6 +23,7 @@ enum PLAYCONTROLLER_BB_MESSAGE_TYPES
   PLAYCONTROLLER_BB_MSG_TYPE_KEYMAP_DATA   = 0x1300,  // direction: input; arguments  (uint16): 32 (for 61 keys)
   PLAYCONTROLLER_BB_MSG_TYPE_KEYCNTR_DATA  = 0x1400,  // direction: output; arguments  (uint16): 64+128 key counters (64 low-level, 128 midi-level)
   PLAYCONTROLLER_BB_MSG_TYPE_UHID64        = 0x1500,  // direction: output; arguments  (uint16): 4 words, comprising an uint64_t;
+  PLAYCONTROLLER_BB_MSG_TYPE_AT_MAX_DATA   = 0x1600,  // direction: output; arguments  (uint16): 61 uint16, max aftertouch values for all 61 keys
   PLAYCONTROLLER_BB_MSG_TYPE_TEST_MSG      = 0xFFFF,  // direction in/out
 };
 
@@ -60,6 +61,7 @@ enum PLAYCONTROLLER_SETTING_IDS
   PLAYCONTROLLER_SETTING_ID_AUDIO_ENGINE_CMD                 = 0xFF05,  // direction: input; arguments(uint16): 1, command (1:testtone OFF; 2:testtone ON; 3:default sound)
   PLAYCONTROLLER_SETTING_ID_SYSTEM_SPECIAL                   = 0xFF06,  // direction: input; arguments(uint16): 1, command (1:reset heartbeat: 2: system reset: 3:Enable MIDI)
   PLAYCONTROLLER_SETTING_ID_ENABLE_KEY_MAPPING               = 0xFF07,  // direction: input; arguments(uint16): 1, flag (!= 0)
+  PLAYCONTROLLER_SETTING_ID_ENABLE_UI_PARAMETER_MSGS         = 0xFF08,  // direction: input; arguments(uint16): 1, flag (!= 0)
 };
 
 enum PLAYCONTROLLER_REQUEST_IDS
@@ -73,6 +75,8 @@ enum PLAYCONTROLLER_REQUEST_IDS
   PLAYCONTROLLER_REQUEST_ID_KEYCNTR_DATA   = 0x0006,
   PLAYCONTROLLER_REQUEST_ID_CLEAR_STAT     = 0x0007,
   PLAYCONTROLLER_REQUEST_ID_UHID64         = 0x0008,
+  PLAYCONTROLLER_REQUEST_ID_POLLHWS        = 0x0009,
+  PLAYCONTROLLER_REQUEST_ID_AT_MAX_DATA    = 0x000A,
 };
 
 enum PLAYCONTROLLER_NOTIFICATION_IDS
@@ -86,6 +90,8 @@ enum PLAYCONTROLLER_NOTIFICATION_IDS
   PLAYCONTROLLER_NOTIFICATION_ID_KEYCNTR_DATA   = 0x0006,
   PLAYCONTROLLER_NOTIFICATION_ID_CLEAR_STAT     = 0x0007,
   PLAYCONTROLLER_NOTIFICATION_ID_UHID64         = 0x0008,
+  PLAYCONTROLLER_NOTIFICATION_ID_POLLHWS        = 0x0009,
+  PLAYCONTROLLER_NOTIFICATION_ID_AT_MAX_DATA    = 0x000A,
   PLAYCONTROLLER_NOTIFICATION_ID_TEST_MSG       = 0xFFFF,
 };
 
@@ -120,21 +126,24 @@ enum HW_SOURCE_IDS
 #define NUM_HW_REAL_SOURCES (HW_SOURCE_ID_PEDAL_8 + 1)  // all but LAST_KEY
 #define NUM_HW_SOURCES      (HW_SOURCE_ID_LAST_KEY + 1)
 
-enum AE_TCD_OVER_MIDI_IDS
+enum AE_PROTOCOL_MSG_IDS
 {
-  AE_TCD_WRAPPER        = 0x0E,       // USB MIDI packet header "Cable #0, packet type:PitchBend"
-  AE_TCD_HW_POS         = 0xE0,       // MIDI command "Pitch Bender" + MIDI channel=HW_SOURCE_ID
-  AE_TCD_DEVELOPPER_CMD = 0xE0 + 12,  // MIDI command "Pitch Bender", MIDI channel 12
-  AE_TCD_KEY_POS        = 0xE0 + 13,  // MIDI command "Pitch Bender", MIDI channel 13
-  AE_TCD_KEY_DOWN       = 0xE0 + 14,  // MIDI command "Pitch Bender", MIDI channel 14
-  AE_TCD_KEY_UP         = 0xE0 + 15,  // MIDI command "Pitch Bender", MIDI channel 15
+  AE_PROTOCOL_WRAPPER  = 0x0E,       // USB MIDI packet header "Cable #0, packet type:PitchBend"
+  AE_PROTOCOL_HW_POS   = 0xE0,       // MIDI command "Pitch Bender" + MIDI channel=HW_SOURCE_ID
+  AE_PROTOCOL_CMD      = 0xE0 + 12,  // MIDI command "Pitch Bender", MIDI channel 12
+  AE_PROTOCOL_KEY_POS  = 0xE0 + 13,  // MIDI command "Pitch Bender", MIDI channel 13
+  AE_PROTOCOL_KEY_DOWN = 0xE0 + 14,  // MIDI command "Pitch Bender", MIDI channel 14
+  AE_PROTOCOL_KEY_UP   = 0xE0 + 15,  // MIDI command "Pitch Bender", MIDI channel 15
 };
 
-enum AE_DEVELOPPER_CMDS
+enum AE_PROTOCOL_CMD_IDS
 {
-  AE_CMD_TONE_OFF      = 1,  // turn off the test tone
-  AE_CMD_TONE_ON       = 2,  // turn on the test tone
-  AE_CMD_DEFAULT_SOUND = 3,  // set up a simple default sound that is guaranteed to give output
+  AE_PROTOCOL_CMD_TONE_OFF        = 1,  // turn off the test tone
+  AE_PROTOCOL_CMD_TONE_ON         = 2,  // turn on the test tone (synth remains active)
+  AE_PROTOCOL_CMD_DEFAULT_SOUND   = 3,  // set up a simple default sound that is guaranteed to give output
+  AE_PROTOCOL_CMD_TONE_ONLY       = 4,  // turn on the test tone (synth disabled)
+  AE_PROTOCOL_CMD_POLL_DATA_START = 5,  // start of polled data
+  AE_PROTOCOL_CMD_POLL_DATA_STOP  = 6,  // end of polled data
 };
 
 enum PLAYCONTROLLER_SYSTEM_SPECIAL_COMMANDS

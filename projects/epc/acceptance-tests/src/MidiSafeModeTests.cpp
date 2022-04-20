@@ -23,25 +23,25 @@ TEST_CASE("Midi Safe Mode disabled")
   auto synth = std::make_unique<C15Synth>(options.get());
 
   //Prepare Midi Settings
-  DspHostDualTester tester{ synth->getDsp() };
-  MockSettingsObject settings(&SyncMasterMockRoot::get());
+  DspHostDualTester tester { synth->getDsp() };
+  MockSettingsObject settings("", &SyncMasterMockRoot::get());
 
   // prepare Scenario
   constexpr int MeasureTimeMs = 100;
   constexpr int NumberOfNotes = 3;
   constexpr int Notes[NumberOfNotes] = { 48, 52, 55 };
 
-  // prepare Midi Settings
-  using tMSG = nltools::msg::Setting::MidiSettingsMessage;
-  tMSG msg;
-  TestHelper::updateMappingForHW(msg.routings, tMSG::RoutingIndex::Notes, tMSG::RoutingAspect::LOCAL, true);
-  msg.localEnable = false;
-  synth->onMidiSettingsMessage(msg);
-
-  // Prepare Preset
+  //load preset
   auto settingBasePtr = static_cast<Settings*>(&settings);
   XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "SplitPlateau", *settingBasePtr);
   synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
+
+  // prepare Midi Settings
+  using tMSG = nltools::msg::Setting::MidiSettingsMessage;
+  tMSG msg;
+  msg.routings = TestHelper::createFullMappings(true);
+  msg.localEnable = false;
+  synth->onMidiSettingsMessage(msg);
 
   // play TCD Notes
   for(auto note : Notes)

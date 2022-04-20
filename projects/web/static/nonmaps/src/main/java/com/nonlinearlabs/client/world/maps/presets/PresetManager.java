@@ -710,7 +710,7 @@ public class PresetManager extends MapsLayout {
 			closeMultiSelection();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_M
 				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
-			Window.open("/MCView/index.html", "", "");
+			Window.open("/mc-view/index.html", "", "");
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_R
 				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			Window.open("/recorder/index.html", "", "");

@@ -25,8 +25,10 @@ void ADC_WORK_Process4(void);
 //void ADC_WORK_Resume(void);
 
 void ADC_WORK_WriteHWValueForUI(uint16_t const hwSourceId, uint16_t const value);
-void ADC_WORK_SendUIMessages(void);
 void ADC_WORK_WriteHWValueForAE(uint16_t const hwSourceId, uint16_t const value);
+void ADC_WORK_SendUIMessages(void);
+void ADC_WORK_EnableSendUIMessages(uint16_t const flag);
+void ADC_WORK_PollRequestHWValues(void);
 
 void ADC_WORK_SetRibbon1EditMode(uint16_t const mode);
 void ADC_WORK_SetRibbon1EditBehaviour(uint16_t const behaviour);
@@ -43,3 +45,6 @@ uint32_t ADC_WORK_GetRibbon2Behaviour(void);
 
 void ADC_WORK_Select_BenderTable(uint16_t const curve);
 void ADC_WORK_Select_AftertouchTable(uint16_t const curve);
+
+uint16_t  ADC_WORK_GetATAdcDataSize(void);
+uint16_t* ADC_WORK_GetATAdcData(void);

@@ -2,8 +2,10 @@
 #include <iostream>
 #include <mutex>
 #include <malloc.h>
+#include <execinfo.h>
 
 nltools::Log::Level nltools::Log::s_level = nltools::Log::Level::Debug;
+bool nltools::Log::s_flush = false;
 
 void nltools::Log::memUsage(nltools::Log::Level l, const char *location)
 {

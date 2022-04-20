@@ -62,10 +62,22 @@ IF(DSL_LAYOUTS)
 ENDIF(DSL_LAYOUTS)
 
 # CONFIGURED FILES
-configure_file(src/device-info/BuildVersion.cpp.in src/device-info/BuildVersion.cpp)
 configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
 configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
+
+add_custom_command(
+  COMMENT "Generate BuildVersion.cpp"
+  DEPENDS ${PROJECT_SOURCE_DIR}/src/device-info/BuildVersion.cpp.in
+  DEPENDS ${CMAKE_SOURCE_DIR}/cmake/generate-version.cmake
+  DEPENDS ${CMAKE_SOURCE_DIR}/.git/index
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  COMMAND ${CMAKE_COMMAND}
+    -D INPUT_FILE=${PROJECT_SOURCE_DIR}/src/device-info/BuildVersion.cpp.in
+    -D OUTPUT_FILE=${PROJECT_BINARY_DIR}/src/device-info/BuildVersion.cpp
+    -P ${CMAKE_SOURCE_DIR}/cmake/generate-version.cmake
+  OUTPUT ${PROJECT_BINARY_DIR}/src/device-info/BuildVersion.cpp
+)
 
 # SOURCE FILE COLLECTIONS
 SET(GENERATED_SOURCES 
@@ -129,7 +141,9 @@ install(TARGETS ${BINARY_NAME} DESTINATION ${C15_INSTALL_PATH}/${BINARY_NAME})
 
 install(FILES ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 install(FILES ${PROJECT_SOURCE_DIR}/systemd/persistent.mount DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
+install(FILES ${PROJECT_SOURCE_DIR}/systemd/wait-for-bbb-ssh.service DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR} COMPONENT init)
 
 install(DIRECTORY DESTINATION ${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants)
 install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ../${BINARY_NAME}.service $ENV{DESTDIR}/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/${BINARY_NAME}.service)")
 install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ../persistent.mount $ENV{DESTDIR}/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/persistent.mount)")
+install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ../wait-for-bbb-ssh.service $ENV{DESTDIR}/${SYSTEMD_SERVICES_INSTALL_DIR}/multi-user.target.wants/wait-for-bbb-ssh.service)")

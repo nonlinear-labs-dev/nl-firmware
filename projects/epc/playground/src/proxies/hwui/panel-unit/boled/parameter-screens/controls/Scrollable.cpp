@@ -1,5 +1,6 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/Scrollable.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ScrollArea.h>
+#include <limits>
 
 void Scrollable::notifyDirty(bool b)
 {

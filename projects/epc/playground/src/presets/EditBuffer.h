@@ -52,7 +52,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to);
 
   void fakeParameterSelectionSignal(VoiceGroup oldGroup, VoiceGroup group);
-  void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset);
+  void undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, const Preset *preset, bool resetRecall = true);
   void undoableUpdateLoadedPresetInfo(UNDO::Transaction *transaction);
 
   void undoableSetDefaultValues(UNDO::Transaction *transaction, Preset *values);
@@ -77,6 +77,9 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void copyFrom(UNDO::Transaction *transaction, const Preset *preset) override;
 
   tUpdateID onChange(uint64_t flags = UpdateDocumentContributor::ChangeFlags::Generic) override;
+
+  std::vector<double> setHWSourcesToDefaultValues(UNDO::Transaction *transaction);
+  void setHWSourcesToOldPositions(UNDO::Transaction *transaction, const std::vector<double>& oldPositions);
 
   bool hasLocks(VoiceGroup vg) const;
   bool findAnyParameterChanged() const;
@@ -132,6 +135,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
 
   std::shared_ptr<ScopedGuard::Lock> getParameterFocusLockGuard();
   bool isParameterFocusLocked() const;
+  void init(Settings* settings) override;
 
  private:
   friend class PresetManager;
@@ -207,12 +211,13 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
                                             VoiceGroup copyTo);
   void undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup copyFrom,
                                              VoiceGroup copyTo);
-  void cleanupParameterSelection(UNDO::Transaction *transaction, SoundType oldType, SoundType newType);
+  void cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *transaction, SoundType oldType, SoundType newType);
   bool isMonoEnabled(const VoiceGroup &vg) const;
   bool hasMoreThanOneUnisonVoice(const VoiceGroup &vg) const;
 
   bool isPartLabelChanged(VoiceGroup group) const;
   void setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *transaction);
+  void setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *transaction);
 
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
   Signal<void, Parameter *> m_signalReselectParameter;

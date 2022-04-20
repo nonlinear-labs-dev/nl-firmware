@@ -353,6 +353,9 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
       case PLAYCONTROLLER_SETTING_ID_ENABLE_KEY_MAPPING:
         POLY_EnableKeyMapping(data[1]);
         break;
+      case PLAYCONTROLLER_SETTING_ID_ENABLE_UI_PARAMETER_MSGS:
+        ADC_WORK_EnableSendUIMessages(data[1]);
+        break;
       case PLAYCONTROLLER_SETTING_ID_AUDIO_ENGINE_CMD:
         MSG_SendAEDevelopperCmd(data[1]);
         break;
@@ -404,10 +407,26 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         BB_MSG_SendTheBuffer();
         break;
       }
+      case PLAYCONTROLLER_REQUEST_ID_AT_MAX_DATA:
+      {
+        uint16_t  words  = ADC_WORK_GetATAdcDataSize();
+        uint16_t* buffer = ADC_WORK_GetATAdcData();
+        BB_MSG_WriteMessage(PLAYCONTROLLER_BB_MSG_TYPE_AT_MAX_DATA, words, buffer);
+        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_AT_MAX_DATA, 1);
+        BB_MSG_SendTheBuffer();
+        break;
+      }
       case PLAYCONTROLLER_REQUEST_ID_UHID64:
       {
         BB_MSG_WriteMessage(PLAYCONTROLLER_BB_MSG_TYPE_UHID64, 4, (uint16_t*) &NL_uhid64);
         BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_UHID64, 1);
+        BB_MSG_SendTheBuffer();
+        break;
+      }
+      case PLAYCONTROLLER_REQUEST_ID_POLLHWS:
+      {
+        ADC_WORK_PollRequestHWValues();
+        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_POLLHWS, 1);
         BB_MSG_SendTheBuffer();
         break;
       }

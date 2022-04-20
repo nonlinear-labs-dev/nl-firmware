@@ -209,6 +209,19 @@ namespace nltools
 
     }
 
+    namespace Recorder
+    {
+      struct State
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::FlacRecorderStateChanged;
+        }
+
+        bool recording = false;
+      };
+    }
+
     struct PanicAudioEngine
     {
       constexpr static MessageType getType()
@@ -386,6 +399,21 @@ namespace nltools
       tID parameterId;
       tControlPosition controlPosition;
       ReturnMode returnMode;
+      bool isLocalEnabled;
+    };
+
+    struct HWSourceSendChangedMessage
+    {
+      constexpr static MessageType getType()
+      {
+        return MessageType::HWSourceSendParameter;
+      }
+
+      tID parameterId;
+      tID siblingId;
+      tControlPosition controlPosition;
+      ReturnMode returnMode;
+      bool localEnabled;
     };
 
     struct HWAmountChangedMessage

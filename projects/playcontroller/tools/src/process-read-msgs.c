@@ -127,7 +127,7 @@ void displayCounter(void)
 }
 
 // ==================================================================================, uint16_t const flags
-int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data, uint16_t flags)
+int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data, uint32_t flags)
 {
   int       i;
   uint16_t *p;
@@ -256,6 +256,12 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
         case PLAYCONTROLLER_NOTIFICATION_ID_UHID64:
           printf("NOTIFICATION : UHID64 sent\n");
           break;
+        case PLAYCONTROLLER_NOTIFICATION_ID_POLLHWS:
+          printf("NOTIFICATION : Initiated Poll of Hardware-Sources\n");
+          break;
+        case PLAYCONTROLLER_NOTIFICATION_ID_AT_MAX_DATA:
+          printf("NOTIFICATION : Aftertouch Data sent\n");
+          break;
         case PLAYCONTROLLER_NOTIFICATION_ID_CLEAR_STAT:
           printf("NOTIFICATION : Status Data cleared\n");
           break;
@@ -381,6 +387,136 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
       printf("HEARTBEAT : %8llu\n", heartbeat);
       lastMessage = cmd << 16;
       return 1;
+
+    case PLAYCONTROLLER_BB_MSG_TYPE_AT_MAX_DATA:
+      if ((flags & NO_AT_DATA_OHMS) == 0)
+      {
+        dump(cmd, len, data, flags);
+        if (len != 62)
+        {
+          printf("AT-DATA : wrong length of %d\n", len);
+          return 3;
+        }
+        if (flags & NO_REDUCED)
+        {
+          if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
+            cursorUp(8);
+          displayCounter();
+          printf("Aftertouch Sensor Minimum Ohms per Key\n");
+          printf(" Oct  C   "
+                 " C#  "
+                 " D   "
+                 " D#  "
+                 " E   "
+                 " F   "
+                 " F#  "
+                 " G   "
+                 " G#  "
+                 " A   "
+                 " Bb  "
+                 " B   "
+                 "\n");
+          p = data;
+          i = 0;
+          for (int octave = 0; octave < 5; octave++)
+          {
+            printf("%2d ", octave);
+            for (int note = 0; note < 12; note++)
+            {
+              double ohms = 0;
+              if (*p)
+                ohms = 1000.0 / (*p / 4095.0) - 1000.0;
+              if (i == data[61])
+                setColor(GREEN);
+              printf("%5.0lf", ohms);
+              setColor(DEFAULT);
+              p++;
+              i++;
+            }
+            printf("\n");
+          }
+          printf("%2d ", 6);
+          double ohms = 0;
+          if (*p)
+            ohms = 1000.0 / (*p / 4095.0) - 1000.0;
+          if (i == data[61])
+            setColor(GREEN);
+          printf("%5.0lf\n", ohms);
+          setColor(DEFAULT);
+        }
+        else
+        {
+          if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
+            cursorUp(61);
+          for (int i = 0; i < 61; i++)
+            if (data[i])
+              printf("%.0lf\n", 1000.0 / (data[i] / 4095.0) - 1000.0);
+            else
+              printf("0\n");
+        }
+        lastMessage = cmd << 16;
+        return 1;
+      }
+      else if ((flags & NO_AT_DATA) == 0)
+      {
+        dump(cmd, len, data, flags);
+        if (len != 62)
+        {
+          printf("AT-DATA : wrong length of %d\n", len);
+          return 3;
+        }
+        if (flags & NO_REDUCED)
+        {
+          if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
+            cursorUp(8);
+          displayCounter();
+          printf("Aftertouch Sensor Maximum ADC value per Key\n");
+          printf(" Oct  C   "
+                 " C#  "
+                 " D   "
+                 " D#  "
+                 " E   "
+                 " F   "
+                 " F#  "
+                 " G   "
+                 " G#  "
+                 " A   "
+                 " Bb  "
+                 " B   "
+                 "\n");
+          p = data;
+          i = 0;
+          for (int octave = 0; octave < 5; octave++)
+          {
+            printf("%2d ", octave);
+            for (int note = 0; note < 12; note++)
+            {
+              if (i == data[61])
+                setColor(GREEN);
+              printf("%5d", *p);
+              setColor(DEFAULT);
+              p++;
+              i++;
+            }
+            printf("\n");
+          }
+          printf("%2d ", 6);
+          if (i == data[61])
+            setColor(GREEN);
+          printf("%5d\n", *p);
+          setColor(DEFAULT);
+        }
+        else
+        {
+          if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
+            cursorUp(61);
+          for (int i = 0; i < 61; i++)
+            printf("%d\n", data[i]);
+        }
+        lastMessage = cmd << 16;
+        return 1;
+      }
+      return 0;
 
     case PLAYCONTROLLER_BB_MSG_TYPE_SENSORS_RAW:
       if ((flags & NO_SENSORSRAW) && (flags & NO_RIBBONS))

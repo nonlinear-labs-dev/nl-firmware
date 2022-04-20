@@ -30,19 +30,16 @@ template <typename tSetting> class EnumSettingEditor : public MenuEditor
     return static_cast<size_t>(getSetting()->getEnumIndex());
   }
 
-  auto getSetting() const
+  tSetting* getSetting() const
   {
     if(Application::exists())
-    {
       return Application::get().getSettings()->getSetting<tSetting>();
-    }
 
-    return std::shared_ptr<tSetting>(nullptr);
+    return nullptr;
   }
 };
 
-template<typename tSetting>
-class OnOffOrderChangedEnumSettingEditor : public EnumSettingEditor<tSetting>
+template <typename tSetting> class OnOffOrderChangedEnumSettingEditor : public EnumSettingEditor<tSetting>
 {
   typedef EnumSettingEditor<tSetting> super;
 

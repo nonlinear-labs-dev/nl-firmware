@@ -1,5 +1,6 @@
 #!/bin/sh
 # version : 2.0
+set -x
 
 EPC_IP=192.168.10.10
 BBB_IP=192.168.10.11
@@ -17,6 +18,8 @@ MSG_FAILED_WITH_ERROR_CODE="FAILED! Error code:"
 MSG_CHECK_LOG="Please check update log!"
 MSG_RESTART_MAN="Please restart!"
 MSG_RESTART_AUT="Will restart now!"
+MSG_UPDATE_PREVENTED_1="Update aborted! E89"
+MSG_UPDATE_PREVENTED_2="Please use USB update!"
 
 ASPECTS="TO_BE_REPLACED_BY_CREATE_C15_UPDATE"
 
@@ -121,10 +124,10 @@ check_preconditions() {
     rm /update/EPC/update.tar
 
     if [[ "$(executeAsRoot "uname -r")" == "4.9.9-rt6-1-rt" ]]; then
-        [ -f /update/EPC/update_5-7i3.tar ] && { ln -s /update/EPC/update_5-7i3.tar /update/EPC/update.tar; FIX_EPC=true; } ||
+        [ -f /update/EPC/update_5-7i3.tar ] && { ln -s /update/EPC/update_5-7i3.tar /update/EPC/update.tar; FIX_EPC_1=true; FIX_EPC_2=false; } ||
             { report "" "E86: ePC update missing" "Please retry download!"; return 1; }
     else
-        [ -f /update/EPC/update_10i3.tar ] && { ln -s /update/EPC/update_10i3.tar /update/EPC/update.tar; FIX_EPC=false; } ||
+        [ -f /update/EPC/update_10-11i3.tar ] && { ln -s /update/EPC/update_10-11i3.tar /update/EPC/update.tar; FIX_EPC_1=false; FIX_EPC_2=true; } ||
             { report "" "E86: ePC update missing" "Please retry download!"; return 1; }
     fi
 
@@ -152,9 +155,14 @@ epc_pull_update() {
 }
 
 epc_fix() {
-    /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_fix.sh sscl@192.168.10.10:/tmp
-    executeAsRoot "cd /tmp && chmod +x epc_fix.sh && ./epc_fix.sh"
-    return $?
+    if [[ "$FIX_EPC_1" == "true" ]]; then
+        /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_1_fix.sh sscl@192.168.10.10:/tmp/epc_fix.sh
+    elif [[ "$FIX_EPC_2" == "true" ]]; then
+        /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_2_fix.sh sscl@192.168.10.10:/tmp/epc_fix.sh
+    fi
+
+    executeAsRoot "cd /tmp && chmod +x epc_fix.sh && ./epc_fix.sh" || return $?
+    return 0
 }
 
 epc_update() {
@@ -170,18 +178,16 @@ epc_update() {
         fi
     fi
 
-    if [[ "$FIX_EPC" == "true" ]]; then
-        epc_fix
-        return_code=$?
-        if [ $return_code -ne 0 ]; then
-            /update/utilities/sshpass -p "sscl" scp -r sscl@192.168.10.10:/tmp/fix_error.log /dev/stdout | cat - >> /update/errors.log
-            pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
-            sleep 2
-            return 1
-        fi
-        executeAsRoot "reboot"
-        wait4epc 60
+    epc_fix
+    return_code=$?
+    if [ $return_code -ne 0 ]; then
+        /update/utilities/sshpass -p "sscl" scp -r sscl@$EPC_IP:/tmp/fix_error.log /dev/stdout | cat - >> /update/errors.log
+        pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
+        sleep 2
+        return 1
     fi
+    executeAsRoot "reboot"
+    wait4epc 60
 
     pretty "" "$MSG_UPDATING_EPC" "$MSG_DONE" "$MSG_UPDATING_EPC" "$MSG_DONE"
     sleep 2
@@ -239,7 +245,44 @@ stop_services() {
     return 0
 }
 
+does_update_exist_on_epc_tmp() {
+  executeAsRoot "ls /tmp/nonlinear-c15-update.tar"
+  return $?
+}
+
+is_any_install_from_epc_service_oneshot() {
+  serviceFile='/usr/lib/systemd/system/install-update-from-epc.service'
+  serviceFileOneshot='/usr/lib/systemd/system/install-update-from-epc-oneshot.service'
+
+  if [[ -f $serviceFile ]]; then
+    cat $serviceFile | grep oneshot
+    ret=$?
+    if ret -eq 0; then
+      return ret
+    fi
+  fi
+
+  if [[ -f $serviceFileOneshot ]]; then
+      cat $serviceFileOneshot | grep oneshot
+      return $?
+  fi
+
+  return 1
+}
+
+abort_if_started_from_dangerous_webui_service() {
+  if does_update_exist_on_epc_tmp -eq 0; then
+    if is_any_install_from_epc_service_oneshot -eq 0; then
+      pretty "" "$MSG_UPDATE_PREVENTED_1" "$MSG_UPDATE_PREVENTED_2" "$MSG_UPDATE_PREVENTED_1" "$MSG_UPDATE_PREVENTED_2"
+      sleep 5
+      determine_termination
+    fi
+  fi
+}
+
 main() {
+    abort_if_started_from_dangerous_webui_service
+
     rm -f /mnt/usb-stick/nonlinear-c15-update.log.txt
     rm -f /update/errors.log
     touch /update/errors.log

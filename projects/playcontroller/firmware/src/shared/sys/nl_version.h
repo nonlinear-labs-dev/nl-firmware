@@ -24,9 +24,15 @@
 // added "recall Unique Hardware ID" feature
 
 // ==== V 208 ====
-// restructured to allow smaller chips than the LPC4337
+// added "Poll Hardware Sources" feature
+// added "Enable HW Source messages to UI" feature (default: disabled)
 
-#define SW_VERSION 208
+// ==== V 209 ====
+// restructured to allow smaller chips than the LPC4337
+#define SW_VERSION 209
+
+// ==== V 210 ====
+// new Aftertouch procesing
 
 #define STR_IMPL_(x) #x            //stringify argument
 #define STR(x)       STR_IMPL_(x)  //indirection to expand argument macros

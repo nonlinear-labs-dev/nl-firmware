@@ -9,9 +9,12 @@ UISoftwareVersionEditor::UISoftwareVersionEditor()
   addEntry("branch", "Branch:", getBranch());
   addEntry("commits", "Commits:", getCommitCount());
   addEntry("head", "HEAD:", getHead());
+  addEntry("date", "Date:", getCommitDate());
 
   auto rtSoftwareValue = Application::get().getDeviceInformation()->getItem<RTSoftwareVersion>()->get();
   addEntry("rt", "RT Version:", rtSoftwareValue);
+  m_ogOrder = m_order;
+  sortOrder();
   doLayout();
 }
 
@@ -38,4 +41,26 @@ const char* UISoftwareVersionEditor::getCommitCount()
 const char* UISoftwareVersionEditor::getCommitDate()
 {
   return "@COMMIT_DATE@";
+}
+
+bool UISoftwareVersionEditor::onRotary(int inc, ButtonModifiers modifiers)
+{
+  m_showLast = inc > 0;
+  sortOrder();
+  doLayout();
+  return true;
+}
+
+void UISoftwareVersionEditor::sortOrder()
+{
+  if(m_showLast)
+  {
+    auto cp = m_ogOrder;
+    std::rotate(cp.begin(), cp.begin() + 1, cp.end());
+    m_order = cp;
+  }
+  else
+  {
+    m_order = m_ogOrder;
+  }
 }

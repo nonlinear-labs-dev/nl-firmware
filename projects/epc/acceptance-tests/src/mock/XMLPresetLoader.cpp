@@ -10,6 +10,7 @@
 #include <presets/Preset.h>
 #include <synth/C15Synth.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
+#include <proxies/playcontroller/PlaycontrollerProxy.h>
 #include <fstream>
 #include <use-cases/PresetManagerUseCases.h>
 #include <presets/Bank.h>
@@ -17,8 +18,10 @@
 #include <device-settings/Settings.h>
 #include <sync/SyncMasterMockRoot.h>
 #include <use-cases/EditBufferUseCases.h>
+#include <presets/PresetParameter.h>
+#include <testing/TestHelper.h>
 
-void XMLPresetLoader::loadTestPreset(C15Synth *synth, const std::string &subDir, const std::string &uuid)
+void XMLPresetLoader::loadTestPreset(C15Synth* synth, const std::string& subDir, const std::string& uuid)
 {
   UNDO::Scope undoScope(&SyncMasterMockRoot::get());
 
@@ -32,7 +35,7 @@ void XMLPresetLoader::loadTestPreset(C15Synth *synth, const std::string &subDir,
   auto transaction = transactionScope->getTransaction();
 
   Options opt;
-  MockSettingsObject settings(&SyncMasterMockRoot::get());
+  MockSettingsObject settings("", &SyncMasterMockRoot::get());
   std::unique_ptr<AudioEngineProxy> proxy;
   PresetManager pm(&SyncMasterMockRoot::get(), true, opt, settings, proxy);
   auto& editBuffer = *pm.getEditBuffer();
@@ -73,11 +76,18 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth* synth, const std::string&
   auto file = Gio::File::create_for_path(presetData);
 
   Options opt;
+  auto oldPath = opt.getPresetManagerPath();
+  opt.setPresetManagerPath(presetData);
+  auto pproxy = std::make_unique<PlaycontrollerProxy>();
+
   std::unique_ptr<AudioEngineProxy> proxy;
-  PresetManager pm(&SyncMasterMockRoot::get(), true, opt, settings, proxy);
+  PresetManager pm(&SyncMasterMockRoot::get(), false, opt, settings, proxy);
+  proxy = std::make_unique<AudioEngineProxy>(pm, settings, *pproxy);
+  pm.init(proxy.get(), settings, Serializer::MockProgress);
   PresetManagerUseCases useCase(pm, settings);
 
-  useCase.importBankFromPath(std::filesystem::directory_entry { presetData }, Serializer::Progress{});
+  useCase.clear();
+  useCase.importBankFromPath(std::filesystem::directory_entry { presetData }, Serializer::MockProgress);
 
   auto bank = pm.getBankAt(0);
   auto preset = bank->getPresetAt(0);
@@ -88,7 +98,11 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth* synth, const std::string&
   EditBufferUseCases ebUseCase(*pm.getEditBuffer());
   ebUseCase.load(preset);
 
+  TestHelper::doMainLoopFor(std::chrono::milliseconds(50));
+
   auto& eb = *pm.getEditBuffer();
+  auto p = eb.findParameterByID({ C15::PID::Out_Mix_A_Lvl, VoiceGroup::I });
+  auto pp = preset->findParameterByID({ C15::PID::Out_Mix_A_Lvl, VoiceGroup::I }, true);
 
   switch(eb.getType())
   {
@@ -104,6 +118,47 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth* synth, const std::string&
       synth->onLayerPresetMessage(AudioEngineProxy::createLayerEditBufferMessage(eb));
       break;
 
+    default:
+      break;
+  }
+
+  opt.setPresetManagerPath(oldPath);
+}
+
+void XMLPresetLoader::convertSoundTo(C15Synth* synth, Settings* settings, SoundType type)
+{
+  Options opt;
+  std::unique_ptr<AudioEngineProxy> proxy;
+  PresetManager pm(&SyncMasterMockRoot::get(), true, opt, *settings, proxy);
+  auto& eb = *pm.getEditBuffer();
+  EditBufferUseCases ebUseCase(eb);
+
+  switch(type)
+  {
+    case SoundType::Single:
+      ebUseCase.convertToSingle(VoiceGroup::I);
+      break;
+    case SoundType::Split:
+      ebUseCase.convertToSplit(VoiceGroup::I);
+      break;
+    case SoundType::Layer:
+      ebUseCase.convertToLayer(VoiceGroup::I);
+      break;
+  }
+
+  switch(eb.getType())
+  {
+    case SoundType::Single:
+      synth->onSinglePresetMessage(AudioEngineProxy::createSingleEditBufferMessage(eb));
+      break;
+
+    case SoundType::Split:
+      synth->onSplitPresetMessage(AudioEngineProxy::createSplitEditBufferMessage(eb));
+      break;
+
+    case SoundType::Layer:
+      synth->onLayerPresetMessage(AudioEngineProxy::createLayerEditBufferMessage(eb));
+      break;
     default:
       break;
   }

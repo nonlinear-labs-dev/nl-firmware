@@ -2,6 +2,7 @@
 #include <nltools/threading/ContextBoundMessageQueue.h>
 #include <glibmm.h>
 #include <future>
+#include <thread>
 
 TEST_CASE("ContextBoundMessageQueue - happy path")
 {

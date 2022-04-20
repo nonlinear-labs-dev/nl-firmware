@@ -32,15 +32,18 @@ PlaycontrollerProxy::PlaycontrollerProxy()
 {
   m_msgParser.reset(new MessageParser());
 
-  nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playcontroller,
-                                        sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerConnected));
+  if(Application::exists())
+  {
+      nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playcontroller,
+                                            sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerConnected));
 
-  nltools::msg::receive<nltools::msg::PlaycontrollerMessage>(
-      nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerMessage));
+      nltools::msg::receive<nltools::msg::PlaycontrollerMessage>(
+              nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerMessage));
 
-  nltools::msg::receive<nltools::msg::Keyboard::NoteEventHappened>(
-      nltools::msg::EndPoint::Playground,
-      sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
+      nltools::msg::receive<nltools::msg::Keyboard::NoteEventHappened>(
+              nltools::msg::EndPoint::Playground,
+              sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
+  }
 }
 
 PlaycontrollerProxy::~PlaycontrollerProxy()
@@ -166,6 +169,7 @@ void PlaycontrollerProxy::onPlaycontrollerConnected()
   sendCalibrationData();
   requestPlaycontrollerSoftwareVersion();
   requestPlaycontrollerUHID();
+  requestHWPositions();
 }
 
 void PlaycontrollerProxy::sendCalibrationData()
@@ -374,6 +378,7 @@ void PlaycontrollerProxy::onHeartbeatStumbled()
   sendCalibrationData();
   requestPlaycontrollerSoftwareVersion();
   requestPlaycontrollerUHID();
+  requestHWPositions();
 }
 
 sigc::connection PlaycontrollerProxy::onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s)
@@ -396,6 +401,12 @@ void PlaycontrollerProxy::requestPlaycontrollerUHID()
 {
   sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_UHID64);
   nltools::Log::info("sending request UHID64 to LPC");
+}
+
+void PlaycontrollerProxy::requestHWPositions()
+{
+  nltools::Log::info("sending request POLLHWS to LPC");
+  sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_POLLHWS);
 }
 
 std::string PlaycontrollerProxy::getPlaycontrollerSoftwareVersion() const

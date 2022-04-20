@@ -121,4 +121,5 @@ class PlaycontrollerProxy
   void sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes type);
   void notifyKeyBedActionHappened();
   void onUHIDReceived(const MessageParser::NLMessage &message);
+  void requestHWPositions();
 };

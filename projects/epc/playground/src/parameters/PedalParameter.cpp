@@ -32,7 +32,7 @@ void PedalParameter::writeDocProperties(Writer &writer, UpdateDocumentContributo
   writer.writeTextElement("pedal-mode", to_string(m_mode));
 }
 
-void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode)
+void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode, Initiator initiator)
 {
   if(mode != PedalModes::STAY && mode != PedalModes::RETURN_TO_ZERO && mode != PedalModes::RETURN_TO_CENTER)
     mode = PedalModes::STAY;
@@ -44,9 +44,9 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
     transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
       swapData->swapWith(m_mode);
       getValue().setScaleConverter(createScaleConverter());
-      auto defValue = getDefValueAccordingToMode();
-      getValue().setDefaultValue(defValue);
-      getValue().setToDefault(Initiator::INDIRECT);
+      getValue().setDefaultValue(getDefValueAccordingToMode());
+      if(m_mode != PedalModes::STAY && initiator == Initiator::EXPLICIT_USECASE)
+        getValue().setToDefault(Initiator::INDIRECT);
 
       setRoutersModeAccordingToReturnMode();
 
@@ -105,25 +105,14 @@ const ScaleConverter *PedalParameter::createScaleConverter() const
   return ScaleConverter::get<Linear100PercentScaleConverter>();
 }
 
-void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode)
+void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode, Initiator initiator)
 {
   if(mode == "stay")
-    undoableSetPedalMode(transaction, PedalModes::STAY);
+    undoableSetPedalMode(transaction, PedalModes::STAY, initiator);
   else if(mode == "return-to-zero")
-    undoableSetPedalMode(transaction, PedalModes::RETURN_TO_ZERO);
+    undoableSetPedalMode(transaction, PedalModes::RETURN_TO_ZERO, initiator);
   else if(mode == "return-to-center")
-    undoableSetPedalMode(transaction, PedalModes::RETURN_TO_CENTER);
-}
-
-void PedalParameter::undoableIncPedalMode(UNDO::Transaction *transaction)
-{
-  int e = (int) m_mode;
-  e++;
-
-  if(e >= static_cast<int>(PedalModes::NUM_PEDAL_MODES))
-    e = 0;
-
-  undoableSetPedalMode(transaction, static_cast<PedalModes>(e));
+    undoableSetPedalMode(transaction, PedalModes::RETURN_TO_CENTER, initiator);
 }
 
 void PedalParameter::sendModeToPlaycontroller() const
@@ -146,9 +135,11 @@ ReturnMode PedalParameter::getReturnMode() const
 
     case PedalModes::RETURN_TO_ZERO:
       return ReturnMode::Zero;
-  }
 
-  return ReturnMode::None;
+    case PedalModes::NUM_PEDAL_MODES:
+    default:
+      return ReturnMode::None;
+  }
 }
 
 PedalModes PedalParameter::getPedalMode() const
@@ -160,8 +151,9 @@ void PedalParameter::copyFrom(UNDO::Transaction *transaction, const PresetParame
 {
   if(!isLocked())
   {
-    super::copyFrom(transaction, other);
-    undoableSetPedalMode(transaction, other->getPedalMode());
+    resetWasDefaulted(transaction);
+    loadFromPreset(transaction, other->getValue());
+    undoableSetPedalMode(transaction, other->getPedalMode(), Initiator::EXPLICIT_LOAD);
   }
 }
 
@@ -203,7 +195,7 @@ void PedalParameter::undoableStepBehavior(UNDO::Transaction *transaction, int di
   else if(e < 0)
     e = static_cast<int>(PedalModes::RETURN_TO_CENTER);
 
-  undoableSetPedalMode(transaction, static_cast<PedalModes>(e));
+  undoableSetPedalMode(transaction, static_cast<PedalModes>(e), Initiator::EXPLICIT_USECASE);
 }
 
 Layout *PedalParameter::createLayout(FocusAndMode focusAndMode) const
@@ -212,10 +204,8 @@ Layout *PedalParameter::createLayout(FocusAndMode focusAndMode) const
   {
     case UIMode::Info:
       return new ParameterInfoLayout();
-
     case UIMode::Edit:
       return new PedalParameterEditLayout2();
-
     case UIMode::Select:
     default:
       return new PedalParameterSelectLayout2();
@@ -224,7 +214,7 @@ Layout *PedalParameter::createLayout(FocusAndMode focusAndMode) const
   return super::createLayout(focusAndMode);
 }
 
-std::shared_ptr<PedalType> PedalParameter::getAssociatedPedalTypeSetting() const
+PedalType *PedalParameter::getAssociatedPedalTypeSetting() const
 {
   int key = 1;
 
@@ -236,13 +226,13 @@ std::shared_ptr<PedalType> PedalParameter::getAssociatedPedalTypeSetting() const
     key = 4;
 
   auto str = Glib::ustring::format("Pedal", key, "Type");
-  return std::dynamic_pointer_cast<PedalType>(Application::get().getSettings()->getSetting(str));
+  return static_cast<PedalType *>(Application::get().getSettings()->getSetting(str));
 }
 
 void PedalParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
   super::loadDefault(transaction, mode);
-  undoableSetPedalMode(transaction, PedalModes::STAY);
+  undoableSetPedalMode(transaction, PedalModes::STAY, Initiator::EXPLICIT_USECASE);
 }
 
 size_t PedalParameter::getHash() const
@@ -287,4 +277,22 @@ bool PedalParameter::isLocalEnabled() const
     }
   }
   return false;
+}
+
+void PedalParameter::onLocalEnableChanged(bool localEnableState)
+{
+  auto scope = UNDO::Scope::startTrashTransaction();
+  const auto isReturning = getReturnMode() != ReturnMode::None;
+
+  if(localEnableState)
+  {
+    auto oldSendPos = getSendParameter()->getControlPositionValue();
+    PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), oldSendPos);
+  }
+  else
+  {
+    getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
+    if(isReturning)
+      PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
+  }
 }

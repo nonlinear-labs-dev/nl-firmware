@@ -17,6 +17,7 @@ class RecorderInput
   ~RecorderInput();
 
   void setPaused(bool p);
+  bool isRecording() const;
   void process(SampleFrame *frames, size_t numFrames);
   void togglePause();
 
