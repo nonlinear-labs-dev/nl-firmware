@@ -182,6 +182,13 @@ void C15Synth::doChannelModeMessageFunctions()
       case AllNotesOff:
         m_dsp->fadeOutResetVoiceAllocAndEnvelopes();  // NOTE: currently resets all (internal AND external) notes
         break;
+      case PollEnd:
+      {
+        nltools::msg::HardwareSourcePollEnd msg;
+        msg.m_data = m_inputEventStage.getPolledHWSourcePositions();
+        nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
+        break;
+      }
       default:
       case NOOP:
         break;
