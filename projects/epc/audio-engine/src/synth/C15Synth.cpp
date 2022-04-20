@@ -187,9 +187,9 @@ void C15Synth::doChannelModeMessageFunctions()
         nltools::msg::HardwareSourcePollEnd msg;
         msg.m_data = m_inputEventStage.getPolledHWSourcePositions();
         nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
+        break;
       }
       default:
-      case PollStart:
       case NOOP:
         break;
     }

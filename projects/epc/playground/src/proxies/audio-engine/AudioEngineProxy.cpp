@@ -47,6 +47,7 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
 
   receive<HardwareSourcePollEnd>(EndPoint::Playground, [this](auto &msg) {
       int index = 0;
+      bool didChange = false;
       for(auto value: msg.m_data)
       {
         auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(index);
@@ -54,26 +55,15 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
         if(auto p = dynamic_cast<PhysicalControlParameter*>(param))
         {
           PhysicalControlParameterUseCases useCases(p);
-
-          if(value != std::numeric_limits<float>::max())
-          {
-            auto dValue = static_cast<double>(value);
-            if(auto pedal = dynamic_cast<PedalParameter*>(p))
-            {
-              if(pedal->getReturnMode() == ReturnMode::None)
-              {
-                useCases.setIndirect(dValue);
-                continue;
-              }
-            }
-
-            useCases.changeFromAudioEngine(dValue, HWChangeSource::TCD);
-          }
+          didChange |= useCases.applyPolledHWPosition(value);
         }
       }
 
-      nltools::Log::info("sending EditBuffer after PollEnd has been received!");
-      sendEditBuffer();
+      if(didChange)
+      {
+        nltools::Log::info("sending EditBuffer after PollEnd has been received!");
+        sendEditBuffer();
+      }
   });
 
   receive<HardwareSourceChangedNotification>(

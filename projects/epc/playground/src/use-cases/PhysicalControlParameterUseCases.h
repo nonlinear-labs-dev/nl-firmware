@@ -9,7 +9,7 @@ class PhysicalControlParameterUseCases : public ParameterUseCases
   void changeFromAudioEngine(double value, HWChangeSource src);
 
   void setIndirect(tControlPositionValue position);
-
+  bool applyPolledHWPosition(float value);
  private:
   PhysicalControlParameter* m_physicalParam;
 };

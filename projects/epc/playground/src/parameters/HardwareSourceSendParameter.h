@@ -44,8 +44,8 @@ class HardwareSourceSendParameter : public Parameter
   Settings* m_settings = nullptr;
 
   ReturnMode m_returnMode;
-  std::optional<bool> m_localIsEnabled = std::nullopt;
-  std::optional<bool> m_routingIsEnabled = std::nullopt;
+  bool m_localIsEnabled;
+  bool m_routingIsEnabled;
   bool m_lastChangedFromHWUI = false;
-  std::optional<bool> m_isEnabled = std::nullopt;
+  bool m_isEnabled;
 };

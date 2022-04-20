@@ -176,7 +176,7 @@ void InputEventStage::onTCDEvent()
 
     case DecoderEventType::HardwareChange:
     {
-      if(m_isPolling == false)
+      if(!m_isPolling)
       {
         onHWChanged(static_cast<HardwareSource>(decoder->getKeyOrController()), decoder->getValue(), HWChangeSource::TCD,
                     false, false, false);

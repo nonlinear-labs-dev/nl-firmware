@@ -24,8 +24,13 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
   if(m_settings)
   {
     auto local = settings->getSetting<GlobalLocalEnableSetting>();
-    local->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onLocalChanged));
     auto routings = settings->getSetting<RoutingSettings>();
+    m_localIsEnabled = local->get();
+    const auto state = routings->getState(getIndex(getID()), RoutingSettings::tAspectIndex::LOCAL);
+    m_routingIsEnabled = state;
+    m_isEnabled = m_localIsEnabled && m_routingIsEnabled;
+
+    local->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onLocalChanged));
     routings->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onRoutingsChanged));
   }
 
@@ -178,12 +183,7 @@ size_t HardwareSourceSendParameter::getHash() const
 
 bool HardwareSourceSendParameter::isLocalEnabled() const
 {
-  if(!m_isEnabled.has_value())
-  {
-    nltools::Log::error(__PRETTY_FUNCTION__, getLongName(), "not valid yet!!!");
-  }
-
-  return m_isEnabled.value_or(true);
+  return m_isEnabled;
 }
 
 bool HardwareSourceSendParameter::lockingEnabled() const
@@ -208,13 +208,10 @@ PhysicalControlParameter* HardwareSourceSendParameter::getSiblingParameter() con
 
 void HardwareSourceSendParameter::updateAndNotifyLocalEnableStateAndSelectSiblingParameterIfApplicable()
 {
-  if(!m_routingIsEnabled.has_value() || !m_localIsEnabled.has_value())
-    return;
-
   auto oldState = m_isEnabled;
-  m_isEnabled = m_routingIsEnabled.value() && m_localIsEnabled.value();
+  m_isEnabled = m_routingIsEnabled && m_localIsEnabled;
 
-  if(oldState != m_isEnabled && oldState != std::nullopt)
+  if(oldState != m_isEnabled)
   {
     if(m_isEnabled)
     {
@@ -228,7 +225,7 @@ void HardwareSourceSendParameter::updateAndNotifyLocalEnableStateAndSelectSiblin
       }
     }
 
-    m_sibling.onLocalEnableChanged(m_isEnabled.value());
+    m_sibling.onLocalEnableChanged(m_isEnabled);
     invalidate();
   }
 }
