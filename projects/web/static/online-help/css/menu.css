@@ -1,0 +1,129 @@
+/***********************************************************************************************************************
+ *  menu.css
+ *  includes stylings and components for embedded menu pages
+ ***********************************************************************************************************************/
+
+/*******************************************************************************
+ *  basic elements
+ *******************************************************************************/
+
+body {
+    display: grid;
+    grid-template-rows: auto min-content;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* radio */
+
+.radio {
+    position: relative;
+    display: inline-grid;
+    grid-template-columns: max-content 1em;
+    grid-template-rows: 100%;
+    gap: 1ch;
+    padding: 0 0.5ch;
+    margin: 0 0.5ch;
+}
+
+.radio::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    grid-column: 2;
+    border-radius: 0.5em;
+    border: 1px solid var(--theme-link-color);
+    background-color: var(--theme-main-background);
+}
+
+.radio.selected::after {
+    box-shadow: inset 0 0 0 0.35em var(--theme-main-background), inset 0 0 0 1em var(--theme-link-color);
+}
+
+/* footer */
+
+footer {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 1ch;
+    padding: 1ch;
+}
+
+footer > .logo {
+    font-size: 1.5rem;
+    margin: auto;
+}
+
+
+/*******************************************************************************
+ *  menu layout
+ *******************************************************************************/
+
+#menu-tabs > dt {
+    line-height: var(--unit-menu);
+}
+
+#documents-frame, #search-frame {
+    width: 100%;
+    height: 100%;
+}
+
+#tab-settings {
+    padding: 0.5rem;
+}
+
+#tab-documents {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: min-content auto;
+}
+
+input#search {
+    all: unset;
+    display: block;
+    padding: 2px 4px;
+    --border-color: var(--theme-main-border);
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+}
+
+input#search:focus {
+    --border-color: var(--theme-main-color);
+}
+
+.menu-settings {
+    display: grid;
+    gap: 1ch;
+}
+
+.menu-settings .selected {
+    font-weight: bold;
+}
+
+.menu-settings dt {
+    font-weight: bold;
+}
+
+.menu-settings dt > * {
+    margin-bottom: 1rem;
+}
+
+.menu-settings dd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1ch;
+    margin-bottom: 3ch;
+    padding: 0.5rem;
+}
+
+/*******************************************************************************
+ *  print: hide tabs
+ *******************************************************************************/
+
+@media print {
+    #menu-tabs {
+        display: none;
+    }
+}

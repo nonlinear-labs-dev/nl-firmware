@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- url base -->
+    <base href="../" target="_top">
+    <!-- content styling -->
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/content.css">
+    <!-- content scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/content.js" defer></script>
+</head>
+<body>
+<!-- content -->
+<div id="toc-wrapper">
+<!-- simplify ul.toc stuff ??? -->
+<!-- <nl-dir class="toc" label="C15 Documentation" open href="./index.html">
+    <nl-dir label="Manuals" open>
+        <nl-doc label="User Manual" path="man-user" href="./documents/man-user/index.html">
+            <nl-doc label="Safety Instructions, Precautions" path="00-1-safety" number="I" href="./documents/man-user/00-preface/00-1-safety.html"/>
+        </nl-doc>
+    </nl-dir>
+</nl-dir> -->
+    <!--  -->
+    <ul class="toc">
+        <!-- root folder -->
+        <li class="folder" data-pathname="root">
+
+<a href="./index.html" class="label">C15 Documentation</a>
+
+            <!-- user content -->
+            <ul class="toc">
+                <!-- quick start -->
+                <li class="folder" data-pathname="quick-start" style="display: none;">
+
+<a href="./documents/quick-start/index.html" class="label">Quick Start</a>
+
+                </li>
+                <!-- change log -->
+                <li class="folder" data-pathname="change-log">
+
+<a href="./documents/change-log/index.html" class="label">Change Log</a>
+                
+                    <ul class="toc child">
+
+                        <li data-pathname="22-16">
+                        
+<a href="./documents/change-log/22-16.html" class="label"><span class="sw-version normal">22-16</span> Studio Package Improvements 2</a>
+                        
+                        </li>
+
+                        <li data-pathname="21-49">
+                        
+<a href="./documents/change-log/21-49.html" class="label"><span class="sw-version normal">21-49</span> Studio Package Improvements 1</a>
+                        
+                        </li>
+
+                        <li data-pathname="21-26">
+                        
+<a href="./documents/change-log/21-26.html" class="label"><span class="sw-version normal">21-26</span> Studio Package Update 2021</a>
+                        
+                        </li>
+
+                        <li data-pathname="21-07">
+
+<a href="./documents/change-log/21-07.html" class="label"><span class="sw-version normal">21-07</span> Bugfixes and UI Improvements</a>
+
+                        </li>
+
+                        <li data-pathname="20-52">
+                        
+<a href="./documents/change-log/20-52.html" class="label"><span class="sw-version normal">20-52</span> Dual Mode Improvements and new Features</a>
+                        
+                        </li>
+
+                        <li data-pathname="20-28">
+
+<a href="./documents/change-log/20-28.html" class="label"><span class="sw-version normal">20-28</span> C15 Software Update 2020</a>
+
+                        </li>
+
+                    </ul>
+                </li>
+                <!-- folder for manuals -->
+                <li class="folder open">
+
+<a><b>Manuals</b></a>
+
+                    <ul class="toc">
+                        <!-- c15 user manual -->
+                        <li class="folder" data-pathname="man-user">
+
+<a href="./documents/man-user/index.html" class="label">User Manual</a>
+
+                            <ul class="toc child">
+                                <!-- 00 - preface -->
+                                <li data-pathname="00-1-safety">
+
+<a href="./documents/man-user/00-preface/00-1-safety.html" data-number="I" class="label">Safety Instructions, Precautions</a>
+
+                                </li>
+                                <li data-pathname="00-2-package">
+
+<a href="./documents/man-user/00-preface/00-2-package.html" data-number="II" class="label">Package Contents</a>
+
+                                </li>
+                                <li data-pathname="00-3-overview">
+
+<a href="./documents/man-user/00-preface/00-3-overview.html" data-number="III" class="label">Device Overview</a>
+
+                                </li>
+                                <!-- 01 - introduction -->
+                                <li data-pathname="01-introduction">
+
+<a href="./documents/man-user/01-introduction/01-introduction.html" data-number="1" class="label">Introduction</a>
+
+                                </li>
+                                <!-- 02 - setting up -->
+                                <li class="folder" data-pathname="02-setting-up">
+
+<a href="./documents/man-user/02-setting-up/02-00-setting-up.html" data-number="2" class="label">Setting up the C15</a>
+
+                                <ul class="toc child">
+
+                                    <li data-pathname="02-01-panel-unit">
+
+<a href="./documents/man-user/02-setting-up/02-01-panel-unit.html" data-number="2.1" class="label">Installing the Panel Unit</a>
+
+                                    </li>
+                                    <li data-pathname="02-02-connections">
+
+<a href="./documents/man-user/02-setting-up/02-02-connections.html" data-number="2.2" class="label">Connections</a>
+
+                                    </li>
+                                    <li data-pathname="02-03-start-shutdown">
+
+<a href="./documents/man-user/02-setting-up/02-03-start-shutdown.html" data-number="2.3" class="label">Start and Shutdown</a>
+
+                                    </li>
+                                    <li data-pathname="02-04-graphical-ui">
+
+<a href="./documents/man-user/02-setting-up/02-04-graphical-ui.html" data-number="2.4" class="label">Setting up a device for the Graphical User Interface</a>
+
+                                    </li>
+                                    <li data-pathname="02-05-pedal-integration">
+
+<a href="./documents/man-user/02-setting-up/02-05-pedal-integration.html" data-number="2.5" class="label">Pedal Integration</a>
+
+                                    </li>
+
+                                </ul>
+
+                                </li>
+                                <!-- 03 - basic concepts -->
+                                <li class="folder" data-pathname="03-basic-concepts">
+
+<a href="./documents/man-user/03-basic-concepts/03-00-0-basic-concepts.html" data-number="3" class="label">Basic Concepts</a>
+
+                                    <!-- (base unit details) -->
+                                    <ul class="toc hidden" data-pathname="base-unit">
+                                        <li class="folder open">
+
+<a><b>Base Unit</b> Details</a>
+
+                                            <ul class="toc">
+                                                <li data-pathname="bender-ribbons">
+
+<a href="./documents/man-user/03-basic-concepts/03-00-1-base-unit-bender-ribbons.html" class="label">Bender and Ribbons</a>
+
+                                                </li>
+                                                <li data-pathname="headphones">
+
+<a href="./documents/man-user/03-basic-concepts/03-00-1-base-unit-headphones.html" class="label">Headphone Connectors and Volume</a>
+
+                                                </li>
+                                                <li data-pathname="control-panel">
+
+<a href="./documents/man-user/03-basic-concepts/03-00-1-base-unit-control-panel.html" class="label">Base Unit Control Panel</a>
+
+                                                </li>
+                                                <li data-pathname="output-volume">
+
+<a href="./documents/man-user/03-basic-concepts/03-00-1-base-unit-output-volume.html" class="label">Output Volume</a>
+
+                                                </li>
+                                                <li data-pathname="power">
+
+<a href="./documents/man-user/03-basic-concepts/03-00-2-base-unit-power.html" class="label">Power Connector, LED and Button</a>
+
+                                                </li>
+                                                <li data-pathname="audio-outputs">
+
+<a href="./documents/man-user/03-basic-concepts/03-00-2-base-unit-audio-outputs.html" class="label">Audio Outputs</a>
+
+                                                </li>
+                                                <li data-pathname="pedal-connectors">
+
+<a href="./documents/man-user/03-basic-concepts/03-00-2-base-unit-pedal-connectors.html" class="label">Pedal Connectors</a>
+
+                                                </li>
+                                                <li data-pathname="usb">
+
+<a href="./documents/man-user/03-basic-concepts/03-00-2-base-unit-usb.html" class="label">USB Connector</a>
+
+                                                </li>
+                                                <li data-pathname="connector-cable">
+
+<a href="./documents/man-user/03-basic-concepts/03-00-2-base-unit-connector-cable.html" class="label">Connector Cable</a>
+
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                    <!-- (panel unit details) -->
+                                    <ul class="toc hidden" data-pathname="panel-unit">
+                                        <li class="folder open">
+
+<a><b>Panel Unit</b> Details</a>
+                                    
+                                            <ul class="toc">
+                                                <li data-pathname="left-panels">
+
+<a href="./documents/man-user/03-basic-concepts/03-00-3-panel-unit-left-panels.html" class="label">(left) Parameter Panels</a>
+
+                                                </li>
+                                                <li data-pathname="edit-panel">
+
+<a href="./documents/man-user/03-basic-concepts/03-00-3-panel-unit-edit-panel.html" class="label">Edit Panel</a>
+                                    
+                                                </li>
+                                                <li data-pathname="right-panels">
+
+<a href="./documents/man-user/03-basic-concepts/03-00-3-panel-unit-right-panels.html" class="label">(right) Parameter Panels</a>
+
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                    <!-- (proper chapters) -->
+                                    <ul class="toc child">
+                                        <li data-pathname="03-01-sound-types">
+
+<a href="./documents/man-user/03-basic-concepts/03-01-sound-types.html" data-number="3.1" class="label">Sound Types</a>
+                                
+                                        </li>
+                                        <li data-pathname="03-02-performance">
+
+<a href="./documents/man-user/03-basic-concepts/03-02-performance.html" data-number="3.2" class="label">Performance (Keybed and Hardware Sources)</a>
+
+                                        </li>
+                                        <li data-pathname="03-03-macro-controls">
+
+<a href="./documents/man-user/03-basic-concepts/03-03-macro-controls.html" data-number="3.3" class="label">Macro Controls</a>
+                                
+                                        </li>
+                                        <li data-pathname="03-04-parameters">
+
+<a href="./documents/man-user/03-basic-concepts/03-04-parameters.html" data-number="3.4" class="label">Parameters</a>
+
+                                        </li>
+                                        <li data-pathname="03-05-modulation-scheme">
+
+<a href="./documents/man-user/03-basic-concepts/03-05-modulation-scheme.html" data-number="3.5" class="label">Modulation Scheme</a>
+
+                                        </li>
+                                        <li data-pathname="03-06-presets">
+
+<a href="./documents/man-user/03-basic-concepts/03-06-presets.html" data-number="3.6" class="label">Presets</a>
+
+                                        </li>
+                                        <li data-pathname="03-07-organization">
+
+<a href="./documents/man-user/03-basic-concepts/03-07-organization.html" data-number="3.7" class="label">Organization</a>
+
+                                        </li>
+                                        <li data-pathname="03-08-undo">
+
+<a href="./documents/man-user/03-basic-concepts/03-08-undo.html" data-number="3.8" class="label">The Undo Tree</a>
+
+                                        </li>
+                                    </ul>
+                                </li>
+                                <!-- 04 - user interfaces -->
+                                <li class="folder" data-pathname="04-user-interfaces">
+
+<a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4" class="label">User Interfaces</a>
+
+                                    <ul class="toc child">
+                                        <li data-pathname="04-01-parameter-organization">
+
+<a href="./documents/man-user/04-user-interfaces/04-01-parameter-organization.html" data-number="4.1" class="label">Parameter Organization</a>
+
+                                        </li>
+                                        <li data-pathname="04-02-selection">
+
+<a href="./documents/man-user/04-user-interfaces/04-02-selection.html" data-number="4.2" class="label">Selection</a>
+
+                                        </li>
+                                        <li class="folder" data-pathname="04-03-parameters">
+
+<a href="./documents/man-user/04-user-interfaces/04-03-0-parameters.html" data-number="4.3" class="label">Parameters</a>
+
+                                            <ul class="toc child">
+                                                <li data-pathname="04-03-1-parameter-editing">
+
+<a href="./documents/man-user/04-user-interfaces/04-03-1-parameter-editing.html" data-number="4.3.1" class="label">Editing a Parameter</a>
+
+                                                </li>
+                                                <li data-pathname="04-03-2-parameter-modulation">
+
+<a href="./documents/man-user/04-user-interfaces/04-03-2-parameter-modulation.html" data-number="4.3.2" class="label">Editing the Modulation of a Parameter</a>
+
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="folder" data-pathname="04-04-macro-controls">
+
+<a href="./documents/man-user/04-user-interfaces/04-04-0-macro-controls.html" data-number="4.4" class="label">Macro Controls</a>
+
+                                            <ul class="toc child">
+                                                <li data-pathname="04-04-1-editing">
+
+<a href="./documents/man-user/04-user-interfaces/04-04-1-macro-editing.html" data-number="4.4.1" class="label">Editing a Macro Control</a>
+
+                                                </li>
+                                                <li data-pathname="04-04-2-properties">
+
+<a href="./documents/man-user/04-user-interfaces/04-04-2-macro-properties.html" data-number="4.4.2" class="label">Macro Control Properties</a>
+
+                                                </li>
+                                                <li data-pathname="04-04-3-assigning-hw-sources">
+
+<a href="./documents/man-user/04-user-interfaces/04-04-3-macro-assigning.html" data-number="4.4.3" class="label">Assigning a Macro Control to Hardware Sources</a>
+
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="folder" data-pathname="04-05-hardware-sources">
+                                    
+<a href="./documents/man-user/04-user-interfaces/04-05-0-hardware-sources.html" data-number="4.5" class="label">Hardware Sources</a>
+
+                                            <ul class="toc child">
+                                                <li data-pathname="04-05-1-editing">
+
+<a href="./documents/man-user/04-user-interfaces/04-05-1-hw-editing.html" data-number="4.5.1" class="label">Editing a Hardware Source</a>
+
+                                                </li>
+                                                <li data-pathname="04-05-2-properties">
+
+<a href="./documents/man-user/04-user-interfaces/04-05-2-hw-properties.html" data-number="4.5.2" class="label">Hardware Source Properties</a>
+
+                                                </li>
+                                                <li data-pathname="04-05-3-mapping">
+
+<a href="./documents/man-user/04-user-interfaces/04-05-3-hw-mapping.html" data-number="4.5.3" class="label">Mapping a Hardware Source to Macro Controls</a>
+
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="folder" data-pathname="04-06-presets">
+
+<a href="./documents/man-user/04-user-interfaces/04-06-0-presets.html" data-number="4.6" class="label">Presets</a>
+
+                                            <ul class="toc child">
+                                                <li data-pathname="04-06-1-loading">
+
+<a href="./documents/man-user/04-user-interfaces/04-06-1-preset-loading.html" data-number="4.6.1" class="label">Loading a Preset</a>
+
+                                                </li>
+                                                <li data-pathname="04-06-2-storing">
+
+<a href="./documents/man-user/04-user-interfaces/04-06-2-preset-storing.html" data-number="4.6.2" class="label">Storing a Preset</a>
+
+                                                </li>
+                                                <li data-pathname="04-06-3-editing">
+
+<a href="./documents/man-user/04-user-interfaces/04-06-3-preset-bank-editing.html" data-number="4.6.3" class="label">Editing Presets and Banks</a>
+
+                                                </li>
+                                                <li data-pathname="04-06-4-importing-exporting">
+
+<a href="./documents/man-user/04-user-interfaces/04-06-4-bank-importing-exporting.html" data-number="4.6.4" class="label">Importing/Exporting Banks</a>
+
+                                                </li>
+                                                <li data-pathname="04-06-5-locking">
+
+<a href="./documents/man-user/04-user-interfaces/04-06-5-preset-locking.html" data-number="4.6.5" class="label">Locking</a>
+
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="folder" data-pathname="04-07-sound-manipulation">
+
+<a href="./documents/man-user/04-user-interfaces/04-07-0-sound-manipulation.html" data-number="4.7" class="label">Sound Manipulation</a>
+
+                                            <ul class="toc child">
+                                                <li data-pathname="04-07-1-main-parameters">
+
+<a href="./documents/man-user/04-user-interfaces/04-07-1-sound-main-parameters.html" data-number="4.7.1" class="label">Main Parameters of a Sound</a>
+
+                                                </li>
+                                                <li data-pathname="04-07-2-manipulation">
+
+<a href="./documents/man-user/04-user-interfaces/04-07-2-sound-manipulation.html" data-number="4.7.2" class="label">Manipulating Sounds</a>
+
+                                                </li>
+                                                <li data-pathname="04-07-3-conversion">
+
+<a href="./documents/man-user/04-user-interfaces/04-07-3-sound-conversion.html" data-number="4.7.3" class="label">Converting Sound Types</a>
+
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="folder" data-pathname="04-08-part-manipulation">
+
+<a href="./documents/man-user/04-user-interfaces/04-08-0-part-manipulation.html" data-number="4.8" class="label">Part Manipulation</a>
+
+                                            <ul class="toc child">
+                                                <li data-pathname="04-08-1-main">
+
+<a href="./documents/man-user/04-user-interfaces/04-08-1-part-main.html" data-number="4.8.1" class="label">Main Parameters of a Part</a>
+
+                                                </li>
+                                                <li data-pathname="04-08-2-parameters">
+
+<a href="./documents/man-user/04-user-interfaces/04-08-2-part-parameters.html" data-number="4.8.2" class="label">Working with Parameters of Split or Layer Sounds</a>
+                                                    
+                                                </li>
+                                                <li data-pathname="04-08-3-split">
+
+<a href="./documents/man-user/04-user-interfaces/04-08-3-part-split.html" data-number="4.8.3" class="label">Split Sound Details</a>
+                                                    
+                                                </li>
+                                                <li data-pathname="04-08-4-layer">
+
+<a href="./documents/man-user/04-user-interfaces/04-08-4-part-layer.html" data-number="4.8.4" class="label">Layer Sound Details</a>
+                                                    
+                                                </li>
+                                                <li data-pathname="04-08-5-loading">
+
+<a href="./documents/man-user/04-user-interfaces/04-08-5-part-loading.html" data-number="4.8.5" class="label">Loading from/into Parts</a>
+                                                    
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li data-pathname="04-09-contextual-info">
+
+<a href="./documents/man-user/04-user-interfaces/04-09-contextual-info.html" data-number="4.9" class="label">Contextual Info</a>
+
+                                        </li>
+                                        <li data-pathname="04-10-overviews">
+
+<a href="./documents/man-user/04-user-interfaces/04-10-overviews.html" data-number="4.10" class="label">Overviews</a>
+
+                                        </li>
+                                        <li data-pathname="04-11-undo-mechanism">
+
+<a href="./documents/man-user/04-user-interfaces/04-11-undo-mechanism.html" data-number="4.11" class="label">The Undo Mechanism</a>
+
+                                        </li>
+                                        <li data-pathname="04-12-rename-mechanism">
+
+<a href="./documents/man-user/04-user-interfaces/04-12-rename-mechanism.html" data-number="4.12" class="label">The Rename Mechanism</a>
+
+                                        </li>
+                                        <li data-pathname="04-13-setup-navigation">
+
+<a href="./documents/man-user/04-user-interfaces/04-13-setup-navigation.html" data-number="4.13" class="label">Setup Navigation</a>
+
+                                        </li>
+                                        <li data-pathname="04-14-backups">
+
+<a href="./documents/man-user/04-user-interfaces/04-14-backups.html" data-number="4.14" class="label">Backups</a>
+
+                                        </li>
+                                        <li data-pathname="04-15-base-unit-functionality">
+
+<a href="./documents/man-user/04-user-interfaces/04-15-base-unit-functionality.html" data-number="4.15" class="label">Base Unit Functionality</a>
+
+                                        </li>
+                                        <li class="folder" data-pathname="04-16-graphical-ui-functionality">
+
+<a href="./documents/man-user/04-user-interfaces/04-16-0-graphical-ui-functionality.html" data-number="4.16" class="label">Graphical UI Functionality</a>
+
+                                            <ul class="toc child">
+                                                <li data-pathname="04-16-1-presets">
+
+<a href="./documents/man-user/04-user-interfaces/04-16-1-gui-presets.html" data-number="4.16.1" class="label">Presets</a>
+                                                
+                                                </li>
+                                                <li data-pathname="04-16-2-banks">
+
+<a href="./documents/man-user/04-user-interfaces/04-16-2-gui-banks.html" data-number="4.16.2" class="label">Banks</a>
+                                                
+                                                </li>
+                                                <li data-pathname="04-16-3-view-menu">
+
+<a href="./documents/man-user/04-user-interfaces/04-16-3-gui-view-menu.html" data-number="4.16.3" class="label">The View Menu</a>
+                                                
+                                                </li>
+                                                <li data-pathname="04-16-4-context-menus">
+
+<a href="./documents/man-user/04-user-interfaces/04-16-4-gui-context-menus.html" data-number="4.16.4" class="label">Context Menus</a>
+                                                
+                                                </li>
+                                                <li data-pathname="04-16-5-gui-settings">
+
+    <a href="./documents/man-user/04-user-interfaces/04-16-5-gui-settings.html" data-number="4.16.5" class="label">GUI Settings</a>
+                                                    
+                                                    </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <!-- 05 - synth engine -->
+                                <li class="folder" data-pathname="05-synth-engine">
+
+<a href="./documents/man-user/05-synth-engine/05-00-synth-engine.html" data-number="5" class="label">The Synthesis Engine</a>
+                                    
+                                    <ul class="toc child">
+                                        <li data-pathname="05-01-concept">
+
+<a href="./documents/man-user/05-synth-engine/05-01-concept.html" data-number="5.1" class="label">Concept</a>
+                                        
+                                    </li>
+                                        <li class="folder" data-pathname="05-02-sig-flow-components">
+
+<a href="./documents/man-user/05-synth-engine/05-02-0-sig-flow-components.html" data-number="5.2" class="label">Signal Flow and Components</a>
+
+                                            <ul class="toc child">
+                                                <li data-pathname="05-02-1-envelopes">
+
+<a href="./documents/man-user/05-synth-engine/05-02-1-envelopes.html" data-number="5.2.1" class="label">Envelopes</a>
+
+                                                </li>
+                                                <li data-pathname="05-02-2-oscillators">
+
+<a href="./documents/man-user/05-synth-engine/05-02-2-oscillators.html" data-number="5.2.2" class="label">Oscillators</a>
+
+                                                </li>
+                                                <li data-pathname="05-02-3-shapers">
+
+<a href="./documents/man-user/05-synth-engine/05-02-3-shapers.html" data-number="5.2.3" class="label">Shapers</a>
+                                                
+                                                </li>
+                                                <li data-pathname="05-02-4-comb-filter">
+
+<a href="./documents/man-user/05-synth-engine/05-02-4-comb-filter.html" data-number="5.2.4" class="label">Comb Filter</a>
+
+                                                </li>
+                                                <li data-pathname="05-02-5-state-variable-filter">
+
+<a href="./documents/man-user/05-synth-engine/05-02-5-state-variable-filter.html" data-number="5.2.5" class="label">State Variable Filter</a>
+
+                                                </li>
+                                                <li data-pathname="05-02-6-feedback-mixer">
+
+<a href="./documents/man-user/05-synth-engine/05-02-6-feedback-mixer.html" data-number="5.2.6" class="label">Feedback Mixer</a>
+
+                                                </li>
+                                                <li data-pathname="05-02-7-output-mixer">
+
+<a href="./documents/man-user/05-synth-engine/05-02-7-output-mixer.html" data-number="5.2.7" class="label">Output Mixer</a>
+
+                                                </li>
+                                                <li data-pathname="05-02-8-flanger">
+
+<a href="./documents/man-user/05-synth-engine/05-02-8-flanger.html" data-number="5.2.8" class="label">Flanger</a>
+                                                
+                                                </li>
+                                                <li data-pathname="05-02-9-cabinet">
+
+<a href="./documents/man-user/05-synth-engine/05-02-9-cabinet.html" data-number="5.2.9" class="label">Cabinet</a>
+                                                
+                                                </li>
+                                                <li data-pathname="05-02-10-gap-filter">
+
+<a href="./documents/man-user/05-synth-engine/05-02-10-gap-filter.html" data-number="5.2.10" class="label">Gap Filter</a>
+
+                                                </li>
+                                                <li data-pathname="05-02-11-echo">
+
+<a href="./documents/man-user/05-synth-engine/05-02-11-echo.html" data-number="5.2.11" class="label">Echo</a>
+                                                
+                                                </li>
+                                                <li data-pathname="05-02-12-reverb">
+
+<a href="./documents/man-user/05-synth-engine/05-02-12-reverb.html" data-number="5.2.12" class="label">Reverb</a>
+                                                
+                                                </li>
+                                                <li data-pathname="05-02-13-main-parameters">
+
+<a href="./documents/man-user/05-synth-engine/05-02-13-main-parameters.html" data-number="5.2.13" class="label">Main Parameter Groups and Post Processing</a>
+                                                
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li data-pathname="05-03-dual-mode-sig-flow">
+
+<a href="./documents/man-user/05-synth-engine/05-03-dual-mode-sig-flow.html" data-number="5.3" class="label">Dual Mode Signal Flow</a>
+
+                                        </li>
+                                        <li data-pathname="05-04-using-hw-sources">
+
+<a href="./documents/man-user/05-synth-engine/05-04-hw-sources.html" data-number="5.4" class="label">Using Hardware Sources</a>
+
+                                        </li>
+                                    </ul>
+                                </li>
+                                <!-- 06 - recorder -->
+                                <li data-pathname="06-recorder">
+
+<a href="./documents/man-user/06-recorder/06-recorder.html" data-number="6" class="label">Recorder</a>
+
+                                </li>
+                                <!-- 07 - midi -->
+                                <li class="folder" data-pathname="07-midi">
+
+<a href="./documents/man-user/07-midi/07-00-midi.html" data-number="7" class="label">MIDI</a>
+
+                                    <ul class="toc child">
+                                        <li data-pathname="07-01-midi-events">
+
+<a href="./documents/man-user/07-midi/07-01-midi-events.html" data-number="7.1" class="label">MIDI Events</a>
+
+                                        </li>
+                                        <li data-pathname="07-02-midi-usb">
+
+<a href="./documents/man-user/07-midi/07-02-midi-usb.html" data-number="7.2" class="label">Connecting the C15 to a USB Device</a>
+                                            
+                                        </li>
+                                        <li data-pathname="07-03-midi-settings">
+
+<a href="./documents/man-user/07-midi/07-03-midi-settings.html" data-number="7.3" class="label">MIDI Settings</a>
+
+                                        </li>
+                                        <li data-pathname="07-04-midi-examples">
+
+<a href="./documents/man-user/07-midi/07-04-midi-examples.html" data-number="7.4" class="label">Practical Studio Examples</a>
+
+                                        </li>
+                                    </ul>
+
+                                </li>
+                                <!-- 08 - setup -->
+                                <li data-pathname="08-setup">
+
+<a href="./documents/man-user/08-setup/08-setup.html" data-number="8" class="label">Setup (C15 System Settings)</a>
+
+                                </li>
+                                <!-- 09 - updating the c15 -->
+                                <li data-pathname="09-updating">
+
+<a href="./documents/man-user/09-updating/09-updating.html" data-number="9" class="label">Updating the C15</a>
+
+                                </li>
+                                <!-- 10 - specifications -->
+                                <li data-pathname="10-specifications">
+
+<a href="./documents/man-user/10-specifications/10-specifications.html" data-number="10" class="label">Specifications</a>
+
+                                </li>
+                                <!-- 11 - parameter reference -->
+                                <li class="folder" data-pathname="11-parameter-reference">
+
+<a href="./documents/man-user/11-parameter-reference/11-00-parameter-reference.html" data-number="11" class="label">Parameter Reference</a>
+
+                                </li>
+                                <!-- 12 - license documents -->
+                                <li data-pathname="12-license">
+
+<a href="./documents/man-user/12-license/12-license.html" data-number="12" class="label">License Documents</a>
+
+                                </li>
+                                <!-- 13 - keyboard shortcuts -->
+                                <li data-pathname="13-kb-shortcuts">
+
+<a href="./documents/man-user/13-kb-shortcuts/13-kb-shortcuts.html" data-number="13" class="label">Keyboard Shortcuts</a>
+
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="folder" data-pathname="man-pedals">
+
+<a href="./documents/man-pedals/index.html" class="label">Pedal Manual</a>
+
+                            <ul class="toc child">
+                                <li data-pathname="01-features">
+                                    
+<a href="./documents/man-pedals/01-features.html" class="label" data-number="1">Features</a>
+
+                                </li>
+                                <li data-pathname="02-quick-start">
+                                    
+<a href="./documents/man-pedals/02-quick-start.html" class="label" data-number="2">Quick Start</a>
+
+                                </li>
+                                <li data-pathname="03-pedal-presets">
+                                    
+<a href="./documents/man-pedals/03-pedal-presets.html" class="label" data-number="3">List of Pedal Presets</a>
+
+                                </li>
+                                <li data-pathname="04-connection">
+                                    
+<a href="./documents/man-pedals/04-connection.html" class="label" data-number="4">Connection</a>
+
+                                </li>
+                                <li data-pathname="05-setup">
+                                    
+<a href="./documents/man-pedals/05-setup.html" class="label" data-number="5">Setup</a>
+
+                                </li>
+                                <li data-pathname="06-usage">
+                                    
+<a href="./documents/man-pedals/06-usage.html" class="label" data-number="6">Usage</a>
+
+                                </li>
+                                <li data-pathname="07-pedal-types">
+                                    
+<a href="./documents/man-pedals/07-pedal-types.html" class="label" data-number="7">Pedal / Source Types</a>
+
+                                </li>
+                                <li data-pathname="08-features-explained">
+                                    
+<a href="./documents/man-pedals/08-features-explained.html" class="label" data-number="8">Features explained</a>
+
+                                </li>
+                                <li data-pathname="09-troubleshooting">
+                                    
+<a href="./documents/man-pedals/09-troubleshooting.html" class="label" data-number="9">Troubleshooting and Tips</a>
+
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="folder" data-pathname="man-midi-bridge">
+
+<a href="./documents/man-midi-bridge/index.html" class="label">MIDI Bridge Manual</a>
+                            
+                            <ul class="toc child">
+                                <li data-pathname="01-general">
+
+<a href="./documents/man-midi-bridge/01-general.html" class="label" data-number="1">General</a>
+
+                                </li>
+                                <li data-pathname="02-indicators">
+
+<a href="./documents/man-midi-bridge/02-indicators.html" class="label" data-number="2">Indicators</a>
+
+                                </li>
+                                <li data-pathname="03-special-error-codes">
+
+<a href="./documents/man-midi-bridge/03-special-error-codes.html" class="label" data-number="3">Special Error/Blink Codes</a>
+
+                                </li>
+                                <li data-pathname="04-firmware-version">
+
+<a href="./documents/man-midi-bridge/04-firmware-version.html" class="label" data-number="4">Firmware Version Identification (Blink Pattern after Power Up)</a>
+
+                                </li>
+                                <li data-pathname="05-firmware-update">
+
+<a href="./documents/man-midi-bridge/05-firmware-update.html" class="label" data-number="5">Firmware Update</a>
+
+                                </li>
+                                <li data-pathname="06-hardware-port">
+
+<a href="./documents/man-midi-bridge/06-hardware-port.html" class="label" data-number="6">Hardware Port Speed Identification</a>
+
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="folder" data-pathname="illustrations">
+
+<a href="./documents/illustrations/index.html" class="label">Illustrations</a>
+
+                    <ul class="toc child">
+                        <li data-pathname="param-mod-scheme">
+
+<a href="./documents/illustrations/parameter-modulation.html" class="label">Parameter Modulation</a>
+
+                        </li>
+                        <li data-pathname="synth-engine-simplified">
+
+<a href="./documents/illustrations/synth-engine-simplified.html" class="label">Synth Engine (simplified)</a>
+
+                        </li>
+                        <li data-pathname="synth-engine-detailed">
+
+<a href="./documents/illustrations/synth-engine-detailed.html" class="label">Synth Engine (detailed)</a>
+                
+                        </li>
+                    </ul>
+                </li>
+                <li class="folder open">
+
+<a><b>Tutorials</b></a>
+
+                    <ul class="toc">
+                        <li class="folder" data-pathname="tut-sound-generation">
+
+<a href="./documents/tut-sound-generation/index.html" class="label">Sound Generation Tutorial</a>
+
+                            <ul class="toc child">
+                                <li data-pathname="01-about">
+
+<a href="./documents/tut-sound-generation/01-about.html" class="label" data-number="1">About these tutorials</a>
+
+                                </li>
+                                <li data-pathname="02-init-sound">
+
+<a href="./documents/tut-sound-generation/02-init-sound.html" class="label" data-number="2">Init Sound</a>
+
+                                </li>
+                                <li data-pathname="03-osc-waveforms">
+
+<a href="./documents/tut-sound-generation/03-osc-waveforms.html" class="label" data-number="3">Oscillator Section / Creating Waveforms</a>
+
+                                </li>
+                                <li data-pathname="04-state-variable-filter">
+
+<a href="./documents/tut-sound-generation/04-state-variable-filter.html" class="label" data-number="4">The State Variable Filter</a>
+
+                                </li>
+                                <li data-pathname="05-output-mixer">
+
+<a href="./documents/tut-sound-generation/05-output-mixer.html" class="label" data-number="5">The Output Mixer</a>
+
+                                </li>
+                                <li data-pathname="06-comb-filter">
+
+<a href="./documents/tut-sound-generation/06-comb-filter.html" class="label" data-number="6">The Comb Filter</a>
+
+                                </li>
+                                <li data-pathname="07-fb-paths">
+
+<a href="./documents/tut-sound-generation/07-fb-paths.html" class="label" data-number="7">Using Feedback Paths</a>
+
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="folder" data-pathname="known-issues" style="display: none;">
+
+<a href="./documents/known-issues/index.html" class="label">Known Issues</a>
+
+                </li>
+            </ul>
+            <!-- developer content -->
+            <ul class="toc developer" style="display: none;">
+                <li class="folder open">
+
+<a><b>Developer</b></a>
+
+                    <ul class="toc">
+                        <!-- template document -->
+                        <li class="folder" data-pathname="template">
+
+<a href="./developer/template/index.html" class="label">Template Document</a>
+
+                            <ul class="toc child">
+                                <li data-pathname="chapter">
+
+<a href="./developer/template/chapter.html" data-number="1" class="label">Chapter</a>
+
+                                    <ul class="toc hidden" data-pathname="subchapter">
+                                        <li data-pathname="subchapter">
+
+<a href="./developer/template/subchapter.html" class="label">Subchapter</a>
+
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li data-pathname="components">
+
+<a href="./developer/template/components.html" data-number="2" class="label">Components</a>
+
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- developer manual -->
+                        <li class="folder" data-pathname="man-developer">
+
+<a href="./developer/man-developer/index.html" class="label">Developer Manual</a>
+
+                            <ul class="toc child">
+                                <li data-pathname="01-goals-and-requirements">
+
+<a href="./developer/man-developer/01-goals-and-requirements.html" data-number="1" class="label">Goals and Requriements</a>
+
+                                </li>
+                                <li data-pathname="02-layout-and-implementation">
+
+<a href="./developer/man-developer/02-layout-and-implementation.html" data-number="2" class="label">Layount and Implementation</a>
+
+                                </li>
+                                <li data-pathname="03-structure-and-components">
+
+<a href="./developer/man-developer/03-structure-and-components.html" data-number="3" class="label">Structure and Components</a>
+
+                                </li>
+                                <li data-pathname="04-todo">
+
+<a href="./developer/man-developer/04-todo.html" data-number="4" class="label">Things left to do</a>
+
+                                </li>
+                                <li data-pathname="05-potential-enhancements">
+
+<a href="./developer/man-developer/05-potential-enhancements.html" data-number="5" class="label">Potential Enhancements</a>
+
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<!-- footer -->
+<footer id="toc-footer">
+    <button id="toc-totop-button" class="menu" onclick="scrollToTop()">
+        <div mask="totop"></div>
+    </button>
+</footer>
+</body>
+</html>

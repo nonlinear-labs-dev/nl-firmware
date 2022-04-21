@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 07.2. Connecting the C15 to a USB Device</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/07-midi/07-02-midi-usb">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/07-midi/07-00-midi.html" data-number="7">MIDI</a>
+        <span>/</span>
+        <a href="./documents/man-user/07-midi/07-02-midi-usb.html" data-number="7.2">Connecting the C15 to a USB Device</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h3 class="heading primary" data-number="7.2">Connecting the C15 to a USB Device</h3>
+        <p>The C15 has a Type A connector for USB, and its embedded computer system works as a <q>USB host</q> for <q>USB devices</q> connected to this port. This means that you only need a standard USB cable to set up a MIDI communication with an instrument, a hardware sequencer, or a MIDI interface that has a USB Type B connector. You can connect the C15 to multiple USB MIDI devices via a USB hub.</p>
+        
+        <div data-highlight="warn">Important: The USB port of the C15 can only supply a limited current to bus-powered devices. Devices that have a higher power consumption need to be run with their own power supply, or through a powered hub.</div>
+
+        <figure class="border maximize" data-label="Connecting C15 with USB Device">
+            <picture class="content" data-src="./images/info-gfk/gfk-midi-connect-usb-*.png"></picture>
+        </figure>
+        
+        <h3 class="heading secondary">Connecting the C15 via 5-pole DIN Connectors</h3>
+        <p>To use the classical MIDI cables and 5-pin DIN Ins and Outs a MIDI interface can be connected as an USB device directly to the USB port of the C15. The most convenient and cost effective solution are cables with integrated USB-MIDI interface.</p>
+        <figure class="border maximize" data-label="Connecting 5-pole DIN Connectors">
+            <picture class="content" data-src="./images/info-gfk/gfk-midi-connect-5pin-*.png"></picture>
+        </figure>
+        
+        <h3 class="heading secondary">Connecting the C15 to a Computer</h3>
+        <p>A computer running a DAW or similar is the center of many setups. It functions as a USB host and can only be connected to USB devices. Since the C15 is also a USB host we provide the <q>MIDI Bridge</q> that functions as a double-sided USB device with two Type B connectors. One of the ports is connected to the C15 and the second to your computer.</p>
+        <p>Our adapter will appear as <q>NLL-MIDI-Bridge</q> in the list of USB MIDI devices. The two LEDs on top of the box show the operation of the two USB Ports. If both are lit in green color the box is working normal. If one of the LEDs ist not green, the connection to its side is interrupted. More information about the operation of the MIDI Bridge can be found in the <a href="./documents/man-midi-bridge/index.html" class="label">MIDI Bridge Manual</a>.</p>
+        <p>Besides its function for the C15 the MIDI bridge can also be used for the MIDI connection between other USB hosts, like two computers.</p>
+        <figure class="border maximize" data-label="C15 - MIDI Bridge - Computer">
+            <picture class="content" data-src="./images/info-gfk/gfk-midi-connect-daw-*.png"></picture>
+        </figure>
+    </section>
+</main>
+</div>
+</body>
+</html>

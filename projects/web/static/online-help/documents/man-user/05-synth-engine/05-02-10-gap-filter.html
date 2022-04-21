@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 05.2.10. Gap Filter</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/05-synth-engine/05-02-sig-flow-components/05-02-10-gap-filter">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-synth-engine.html" data-number="5">The Synthesis Engine</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-0-sig-flow-components.html" data-number="5.2">Signal Flow and Components</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-10-gap-filter.html" data-number="5.2.10">Gap Filter</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="5.2.10">Gap Filter</h2>
+        <p>The Gap Filter marks the third effect and provides further filtering of the signal. It consists of two four-pole filters (with a damping slope of 24 dB per octave) which can run in parallel or in series. The filter types are static, as the first filter is a highpass, followed by the second (lowpass) filter.</p>
+        <p>The filter frequencies can be determined by a <q>Center</q> frequency, which can be spread in the stereo field and shifted by the <q>Gap</q> parameter, creating an offset between the high- and lowpass filters. The filter resonance can be adjusted as well, creating two resonance peaks in the signal spectrum.</p>
+        <p>Both filter outputs can be blended by a Balance parameter, defining a crossfade mix of the two components.</p>
+        <p>The bipolar Mix parameter determines the amount of filtering in the resulting signal, crossfading the input signal with the filtered signal. Positive mix values mean that the filter components run in parallel, resulting in a band-reject behavior. Negative values produce a bandpass effect, as the filter components are running in series.</p>
+        <figure class="border maximize" data-label="Gap Filter">
+            <picture class="content" data-src="./images/diagrams/gapfilter-*.png"></picture>
+        </figure>
+        <figure class="border maximize" data-label="Gap Filter (Details)">
+            <picture class="content" data-src="./images/diagrams/gapfilter-dia-*.png"></picture>
+        </figure>
+    </section>
+</main>
+</div>
+</body>
+</html>

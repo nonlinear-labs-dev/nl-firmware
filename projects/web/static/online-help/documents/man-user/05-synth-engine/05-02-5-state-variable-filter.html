@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 05.2.5. State Variable Filter</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/05-synth-engine/05-02-sig-flow-components/05-02-5-state-variable-filter">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-synth-engine.html" data-number="5">The Synthesis Engine</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-0-sig-flow-components.html" data-number="5.2">Signal Flow and Components</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-5-state-variable-filter.html" data-number="5.2.5">State Variable Filter</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="5.2.5">State Variable Filter</h2>
+        <figure class="border maximize" data-label="State Variable Filter">
+            <picture class="content" data-src="./images/diagrams/svf-*.png"></picture>
+        </figure>
+        <p>The second applyable filter to the branches is called the <q>State Variable Filter</q>, a tool for multifunctional subtractive filtering that is fed by an adjustable crossfade mix of both branch signals. The Comb Filter can be faded into the input mix as well.</p>
+        <p>The State Variable Filter consists of two two-pole filters with blendable characteristics (lowpass, bandpass, highpass) which can operate in parallel or in series by a continuously adjustable amount. In serial mode, the damping slope can be raised from 12 to 24 dB per octave (becoming a four-pole filter effectively). In parallel applications, the filters can also be used to create two formants (useful for vowel-like sounds).</p>
+        <p>The filter frequencies are determined by a tunable center frequency which can be sensitive to Key Tracking and the influence of Envelope C. A Spread parameter determines how much the individual filter frequencies are shifted apart from the center frequency. With no spreading, one peak emerges at the center frequency. The strength of the peak depends on the filter resonance, which also can be sensitive to Key Tracking and the influence of Envelope C. When spreading is applied, the peak splits into two peaks, weakening strong resonances and creating formants.</p>
+        <p>The filter type can be continuously blended between an overall lowpass, bandpass and highpass behavior. In serial mode with a negative spreading, a band-rejecting (notch) behavior can be achieved as well.</p>
+        <p>A crossfade mix of both branches can also be applied for frequency modulation. Parallel behavior can be produced in two ways, by either adding or subtracting the second filter to/from the first. Subtraction will lead to phase cancellations.</p>
+        <p>In conclusion, the State Variable Filter is a versatile subtractive filter capable of creating formants and different characteristics.</p>
+        <figure class="border maximize" data-label="State Variable Filter (Details 1)">
+            <picture class="content" data-src="./images/diagrams/svf-dia-1-p1-*.png"></picture>
+        </figure>
+        <figure class="border maximize" data-label="State Variable Filter (Details 2)">
+            <picture class="content" data-src="./images/diagrams/svf-dia-1-p2-*.png"></picture>
+        </figure>
+
+    </section>
+</main>
+</div>
+</body>
+</html>

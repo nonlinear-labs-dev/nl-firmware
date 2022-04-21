@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Change Log - [21-49] Studio Package Improvements 1</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/change-log/21-49">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/change-log/index.html">Change Log</a>
+        <span>/</span>
+        <a href="./documents/change-log/21-49.html">Studio Package Improvements 1</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 class="heading secondary"><span class="sw-version">21-49</span> Studio Package Improvements 1</h2>
+        <div data-highlight="note">
+            <p>This update addresses the newly introduced MIDI features and provides bug fixes, refinements and further enhancements.</p>
+        </div>
+    </section>
+    <section>
+        <h3 data-detail="Setup Menu">MIDI Settings</h3>
+        <div data-columns="2">
+            <ul>
+                <li>The layout and some of the labels of the MIDI Settings have been revised.</li>
+                <li>In the new <q>Channels</q> section the MIDI Channels for both Send and Receive can be set.</li>
+                <li>The <q>Mappings</q> section has been renamed to <q>Assignments</q>.</li>
+                <li>The <q>Set to Defaults</q> entries have been moved to the <q>Assignments</q> section.</li>
+                <li>The new <q>Routings</q> section cointains a matrix editor that determines for Notes, Program Changes and each of the 8 <span class="keyword" data-keyword="Hardware">Sources</span> separately, if MIDI messages are sent or received via the Primary MIDI channel or the Split channel. In the matrix you can also enable and disable the <q>Local</q> connections between the elements of the C15's play interface and the C15's sound engine.</li>
+            </ul>
+            <ul>
+                <li>There is a global <q>Local Enable</q> in the second line of the MIDI Settings. When it is set to <q>Off</q> the Local connections of all elements are interrupted.</li>
+                <li>The <q>Panic</q> entry has been moved to the first line.</li>
+                <li>The former <q>Receive</q>, <q>Send</q> and <q>Local</q> sections have been removed in favor of the new approach.</li>
+                <li>Correct display of CC numbers for 7-bit and 14-bit resolution in the Assignments and in the <span class="keyword" data-keyword="Ribbon"></span> labels.</li>
+            </ul>
+        </div>
+    </section>
+    <section>
+        <h3><q>Local Off</q> for Ribbons</h3>
+        <p>If a <span class="keyword" data-keyword="Ribbon"></span> is set to <q>Local Off</q> the <span class="keyword" data-keyword="Base Unit">Display</span> shows the MIDI CC that is assigned. The Ribbon LEDs show the position that is sent via MIDI.</p>
+    </section>
+    <section>
+        <h3>MIDI Program Change Bank</h3>
+        <p>Selecting a Preset in the PC Bank will send a Program Change message also when the bank is not selected (Direct Load = Off).</p>
+    </section>
+    <section>
+        <h3>All Notes Off, Internal Voice Reset</h3>
+        <p>More consistent behaviour when resetting the internal voices and sending a <q>All Notes Off</q> message via MIDI. This is used to avoid stuck notes when the MIDI routings or Local connections are changed.</p>
+    </section>
+    <section>
+        <h3 data-detail="Base Unit">Panic Function</h3>
+        <p>Pressing all four buttons of the <span class="keyword" data-keyword="Base">Unit</span> (<q>-</q>, <q>+</q>, <q>Funct</q>, <q>Mode</q>) at the same time will reset all internal voices and send <q>All Notes Off</q> via MIDI.</p>
+    </section>
+    <section>
+        <h3>WIFI Passphrase</h3>
+        <p>The passphrase can now be edited and reset to the default (88888888). A <q>Randomize</q> (<q>Dice</q>) function is still available, too.</p>
+    </section>
+    <section>
+        <h3>Fixes and Improvements</h3>
+        <div data-columns="2">
+            <ul>
+                <li>in some Preset Store functions</li>
+                <li>in the Backup Restore function</li>
+                <li>in the New Bank function</li>
+                <li>in the Bank Collapse function</li>
+            </ul>
+            <ul>
+                <li>in the Bank Import function</li>
+                <li>in the Preset screen</li>
+                <li>in the Preset/Bank file format to fix a problem with Split Sound parameters</li>
+            </ul>
+        </div>
+        <div data-highlight="warn">
+            <h4>Please note</h4>
+            <p>The Bank and Backup files stored with this software version cannot be loaded with earlier versions.</p>
+        </div>
+    </section>
+    <section>
+        <h3>Known Issues</h3>
+        <ul>
+            <li>When Local is disabled, not every necessary <q>All Notes Off</q> message is sent to stop stuck notes.</li>
+            <li>The button combination for <q>Panic</q> can lead to unintended changes on the base unit settings.</li>
+        </ul>
+    </section>
+</main>
+</div>
+</body>
+</html>

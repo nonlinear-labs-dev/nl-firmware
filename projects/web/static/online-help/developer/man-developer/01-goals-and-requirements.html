@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Developer Manual - 1. Goals and Requirements</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-developer/01-goals-and-requirements">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./developer/man-developer/index.html">Developer Manual</a>
+        <span>/</span>
+        <a href="./developer/man-developer/01-goals-and-requirements.html" data-number="1">Goals and Requirements</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="1">Goals and Requirements</h2>
+    </section>
+    <section>
+        <h3>Bundled Documentation</h3>
+        <p>The <a href="./index.html">C15 Documentation</a> aims to bundle all available documentation (manuals, info sheets, tutorials, ...) in one single static HTML project.</p>
+        <p>By that premise, the whole documentation is organized within a single directory, servable via the official website and/or the embedded NUC. The project structure also aims for github integration in the future.</p>
+        <p>Required resources (images, css, javascript, fonts) are contained within the project and are available for all pages. Most resources are structured in a modular fashion.</p>
+    </section>
+    <section>
+        <h3>Static (but reduced) HTML</h3>
+        <p>The project does not use any precompilers, it is plain HTML in combination with (modern) CSS and Javascript.</p>
+        <p>The project aims for the support of <b>http</b> (web) and <b>file</b> (local) protocols, so it can also be placed on the USB stick. This however means, that many modern features are not available due to browser restrictions (CORS policies and alike).</p>
+        <p>The effort of producing content should be as reduced as possible (avoiding any redundancies if possible). For example, the menu and navigation of documents (or their chapters) is realized by <b>iframe</b> elements, so they effectively are another shared resource. The Table of Contents for all documents and chapters is contained within this single file: <a href="./documents/_content.html" target="_blank">./documents/_content.html</a>.</p>
+        <p>Developer information is separated (./developer folder) and hidden by default. When using the Developer Option, those documents (and hidden comments) will become visible/available.</p>
+        <p>Specific pages can be printed. The printing format is rather primitie at the moment, but should suffice to print on A4 pages.</p>
+    </section>
+    <section>
+        <h3>Constant access to Navigation, Responsive design</h3>
+        <p>The user should always be able to quickly navigate between documents or chapters. This should not be affected by circumstances like the page scroll position or screen/window dimensions.</p>
+        <p>A Menu section provides different means of navigation and access to settings. Using a wide screen, it will be available on the left of the window. On narrow screens, it is available as an overlay and accessable via a menu button on the top-right.</p>
+        <p>At any moment, the user should be able to quickly browse different pages.</p>
+        <p>The legacy scroll-to-top mechanism is also available.</p>
+        <p>Besides, three Color Themes are supported: dark (ignoring system/browser preference), auto (using system/browser preference), light (ignoring system/browser preference). Images are intended to be present in three variations: -dark, -light, -print. (The attribute has to be present in the file name, f.e. image-dark.png) As -print variations are not present at the moment, the -light variation will be taken when printing a page. (Feature is optional and can be set in shared.js)</p>
+    </section>
+    <section>
+        <h3>Requirements</h3>
+        <p>We aim for modern browsers and do not support "historical" pre Web 2.0 stuff. So, CSS3 and Javascript are required.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

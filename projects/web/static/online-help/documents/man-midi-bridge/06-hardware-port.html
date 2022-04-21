@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>MIDI Bridge Manual - 06. Hardware Port Speed Identification</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-midi-bridge/06-hardware-port">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-midi-bridge/index.html">MIDI Bridge Manual</a>
+        <span>/</span>
+        <a href="./documents/man-midi-bridge/06-hardware-port.html" data-number="6">Hardware Port Speed Identification</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="6">Hardware Port Speed Identification</h2>
+        <p>Technically, both ports of the Bridge are USB2.0 compatible but only one port offers the maximum speed of <i>480Mpbs</i> (<q>High-Speed</q>), the other runs at <i>12Mbps</i> (<q>Full-Speed</q>). Both speeds are way beyond the data rates that will normally ever be used or needed by MIDI, though. Only when an USB bus is almost saturated by other than MIDI traffic there could be cases where one wants to connect the High-Speed port of the Bridge to a specific bus.</p>
+        <p>The High-Speed port side of the Bridge can by identified during the LED pattern display of Firmware Version, it is located at the side where the first blink pulse is seen, in yellow (see chapter <a href="./documents/man-midi-bridge/04-firmware-version.html" class="label" data-number="4">Firmware Version Identification</a>).</p>
+    </section>
+</main>
+</div>
+</body>
+</html>
