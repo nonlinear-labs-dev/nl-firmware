@@ -68,6 +68,8 @@
             <p>In this mode the base unit display is not showing the associated Macro Control, but the MIDI-CC number assigned to the Ribbons instead.</p>
             
             <div data-highlight="note">Please note that changing this setting while a note is active resets the voice allocation, the envelopes and the buffer of the C15, so that the audio playback is interrupted for a brief moment. In this case, a MIDI All Notes Off message is also sent on the respective channel(s).</div>
+
+            <p><i>Next to this shorthand option, Local Enable modes are individually available for Notes and all eight Hardware Sources, see below (7.3.3 MIDI Settings: Routings).</i></p>
             
             <h4>Program Change Bank</h4>
             <figure class="border maximize" data-label="Setup Window - MIDI - Program Change Bank">
@@ -282,6 +284,18 @@
             <h4>Local</h4>
             <p>When set to <q>Off</q> the respective component is disconnected from the synth engine, but still can be used to send MIDI note and Control Change, Pitchbend or Channel Pressure messages.</p>
             <p>In this mode the base unit display is not showing the associated Macro Control, but the MIDI-CC number assigned to the Ribbons instead.</p>
+
+            <p>Decoupling a Hardware Source from the synth by setting Local Enable to <code>Off</code>, changes their representation in the UI.</p>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Local On/Off on Hardware Sources">
+                    <picture class="content" data-src="./images/web-ui/parameter/webui-hw-local.png"></picture>
+                </figure>
+                <div>
+                    <p>The Hardware Source is now shown differentiated into <q>Send</q> and <q>Receive</q>.</p>
+                </div>
+            </div>
+            <p><q>Send</q> shows the physical status of the respective Hardware Source, for example the current position of a Ribbon and relates to all communication with external devices. This value is sent via MIDI.</p>
+                    <p><q>Receive</q> assigns the value that is passed internally to the synth. This is either a value received via MIDI or, in the case of the bidirectional Ribbons, a value received via an adjusted Macro Control. This allows the audio engine of the C15 to be triggered by an external device and at the same time the Hardware Sources can be used to control other external devices without conflict.</p>
             
             <h4>Set all Routings to On/Off</h4>
             <p>Below the Routings Matrix, you find the options to enable or disable all routings by pressing <q>Set all Routings to On</q> or <q>Set all Routings to Off</q> (respectively <q>All On</q>/<q>All Off</q> in the <span data-keyword="Graphical">UI</span>).</p>
