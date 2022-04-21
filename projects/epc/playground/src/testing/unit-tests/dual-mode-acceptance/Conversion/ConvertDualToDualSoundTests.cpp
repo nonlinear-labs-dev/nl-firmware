@@ -206,6 +206,37 @@ TEST_CASE("Convert Layer I to Split")
     TestHelper::randomizeCrossFBAndToFX(transaction);
   }
 
+  WHEN("Layer to Split Cross FX is not reset")
+  {
+    auto eb = TestHelper::getEditBuffer();
+    auto fxI = eb->findAndCastParameterByID<ModulateableParameter>({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
+    auto fxII = eb->findAndCastParameterByID<ModulateableParameter>({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+
+    ModParameterUseCases fxIUsecase(fxI);
+    ModParameterUseCases fxIIUsecase(fxII);
+
+    fxIUsecase.selectModSource(MacroControls::MC2);
+    fxIIUsecase.selectModSource(MacroControls::MC1);
+    fxIUsecase.setModulationAmount(1);
+    fxIIUsecase.setModulationAmount(1);
+
+    fxIUsecase.setControlPosition(0.420);
+    fxIIUsecase.setControlPosition(0.187);
+
+    WHEN("Converted")
+    {
+      EditBufferUseCases ebUseCases(*eb);
+      ebUseCases.convertToSplit(VoiceGroup::I);
+
+      CHECK(fxI->getModulationSource() == MacroControls::MC2);
+      CHECK(fxII->getModulationSource() == MacroControls::MC1);
+      CHECK(fxI->getModulationAmount() == 1);
+      CHECK(fxII->getModulationAmount() == 1);
+      CHECK(fxI->getControlPositionValue() == 0.420);
+      CHECK(fxII->getControlPositionValue() == 0.187);
+    }
+  }
+
   WHEN("Converted")
   {
     const auto mcmHash = EBL::createHashOfVector(EBL::getModMatrix());
@@ -242,10 +273,12 @@ TEST_CASE("Convert Layer I to Split")
       CHECK(EBL::getMonoEnable<VoiceGroup::II>()->getDisplayString() == "On");
     }
 
-    THEN("CrossFB Params are default")
+    THEN("CrossFB Params (except From FX I/II) are default")
     {
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
+      auto withoutCrossFX_I = EBL::removeElements(EBL::getCrossFB<VoiceGroup::I>(), {C15::PID::FB_Mix_FX_Src});
+      auto withoutCrossFX_II = EBL::removeElements(EBL::getCrossFB<VoiceGroup::II>(), {C15::PID::FB_Mix_FX_Src});
+      CHECK(EBL::isFactoryDefaultLoaded(withoutCrossFX_I));
+      CHECK(EBL::isFactoryDefaultLoaded(withoutCrossFX_II));
     }
 
     THEN("To FX Unchanged")
