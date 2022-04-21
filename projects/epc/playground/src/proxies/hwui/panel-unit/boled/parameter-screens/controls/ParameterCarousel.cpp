@@ -206,7 +206,9 @@ void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Param
 
 void ParameterCarousel::setupChildControlsForScaleParameterCarousel(Parameter* selectedParameter, const std::list<int>& buttonAssignments)
 {
-  const auto maxNumParameters = 4;
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+
   const int ySpaceing = 3;
   const int miniParamHeight = 12;
   const int miniParamWidth = 56;
@@ -223,9 +225,6 @@ void ParameterCarousel::setupChildControlsForScaleParameterCarousel(Parameter* s
   for(auto it = itOfElementBefore; it != itOfLastShownElement; it++)
   {
     auto i = *it;
-    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-    auto eb = Application::get().getPresetManager()->getEditBuffer();
-
     auto param = eb->findParameterByID({ i, vg });
 
     if(!param)
@@ -235,23 +234,27 @@ void ParameterCarousel::setupChildControlsForScaleParameterCarousel(Parameter* s
       continue;
 
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
-
     addControl(miniParam);
+    miniParam->setSelected(it == itOfSelectedParameter);
+    decorateMiniParameterControlForScaleParameterCarousel(param, miniParam);
+
     yPos += ySpaceing;
     yPos += miniParamHeight;
-    miniParam->setSelected(it == itOfSelectedParameter);
+  }
+}
 
-    //Assuming this whole function is only called for scale parameters
-    if(!ScaleGroup::isScaleParameter(param))
-    {
-      auto label = miniParam->getLabel();
-      label->setInfix("...");
-    }
-    else
-    {
-      miniParam->getLabel()->setParameterNameTransformer([](auto in){
-        return StringTools::removeSpaces(in);
-      });
-    }
+void ParameterCarousel::decorateMiniParameterControlForScaleParameterCarousel(const Parameter* param,
+                                                                              MiniParameter* miniParam) const
+{
+  if(!ScaleGroup::isScaleParameter(param))
+  {
+    auto label = miniParam->getLabel();
+    label->setInfix("...");
+  }
+  else
+  {
+    miniParam->getLabel()->setParameterNameTransformer([](auto in){
+      return StringTools::removeSpaces(in);
+    });
   }
 }

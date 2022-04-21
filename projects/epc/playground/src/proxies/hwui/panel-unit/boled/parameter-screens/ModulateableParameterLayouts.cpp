@@ -199,11 +199,6 @@ void ModulateableParameterSelectLayout2::init()
   super2::init();
 }
 
-void toggleHighlight(Control* c)
-{
-  c->setHighlight(!c->isHighlight());
-}
-
 bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   if(auto m = dynamic_cast<ModulationCarousel *>(getCarousel()))
@@ -237,9 +232,9 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
       case Buttons::BUTTON_A:
         if(m_mode == Mode::ParameterValue && !isCurrentParameterDisabled())
         {
-          if(m_isScaleParameter && resetEnabled())
+          if(m_isScaleParameter && resetEnabled() && m_buttonA)
           {
-            toggleHighlight(m_buttonA);
+            m_buttonA->toggleHighlight();
           }
           else
           {

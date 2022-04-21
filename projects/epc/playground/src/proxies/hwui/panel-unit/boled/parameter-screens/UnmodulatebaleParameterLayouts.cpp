@@ -62,10 +62,8 @@ void UnmodulateableParameterSelectLayout2::init()
     m_isScaleParameter = ScaleGroup::isScaleParameter(p);
     if(m_isScaleParameter)
     {
-      {
-        auto bA = findControlOfType<SwitchVoiceGroupButton>();
+      if(auto bA = findControlOfType<SwitchVoiceGroupButton>())
         remove(bA.get());
-      }
 
       m_resetButton = addControl(new Button("", Buttons::BUTTON_A));
     }
@@ -76,15 +74,6 @@ void UnmodulateableParameterSelectLayout2::init()
   highlight<SelectedParameterBarSlider>();
   highlight<SelectedParameterValue>();
   highlight<ParameterNameLabel>();
-}
-
-namespace detail
-{
-  void toggleHighlight(Control *c)
-  {
-    if(c)
-      c->setHighlight(!c->isHighlight());
-  }
 }
 
 bool UnmodulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
@@ -98,7 +87,7 @@ bool UnmodulateableParameterSelectLayout2::onButton(Buttons i, bool down, Button
         case Buttons::BUTTON_A:
           if(m_resetButton)
           {
-            detail::toggleHighlight(m_resetButton);
+            m_resetButton->toggleHighlight();
             return true;
           }
           break;
