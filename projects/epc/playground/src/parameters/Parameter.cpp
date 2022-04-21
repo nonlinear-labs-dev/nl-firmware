@@ -10,6 +10,7 @@
 #include "http/UpdateDocumentMaster.h"
 #include "proxies/playcontroller/PlaycontrollerProxy.h"
 #include "proxies/audio-engine/AudioEngineProxy.h"
+#include "parameter_list.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/UnmodulatebaleParameterLayouts.h>
 #include <presets/EditBuffer.h>
@@ -31,14 +32,14 @@ static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionV
 
 bool wasDefaultedAndNotUnselected();
 const tControlPositionValue &getPriorDefaultValue();
-Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tControlPositionValue def,
-                     tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator)
+
+Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling)
     : UpdateDocumentContributor(group)
     , SyncedItem(group->getRoot()->getSyncMaster(), "/parameter/" + id.toString())
     , m_id(id)
-    , m_value(this, scaling, def, coarseDenominator, fineDenominator)
-    , m_lastSnapshotedValue(c_invalidSnapshotValue)
+    , m_value(this, scaling)
     , m_voiceGroup { group->getVoiceGroup() }
+    , m_lastSnapshotedValue(c_invalidSnapshotValue)
 {
 }
 

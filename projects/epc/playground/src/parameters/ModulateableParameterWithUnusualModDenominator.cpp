@@ -4,7 +4,7 @@ ModulateableParameterWithUnusualModDenominator::ModulateableParameterWithUnusual
     ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tDisplayValue def,
     tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator,
     tControlPositionValue modAmountCoarseDenom, tControlPositionValue modAmountFineDenom)
-    : ModulateableParameter(group, id, scaling, def, coarseDenominator, fineDenominator)
+    : ModulateableParameter(group, id, scaling)
     , m_fineModAmountDenominator(modAmountFineDenom)
     , m_coarseModAmountDenominator(modAmountCoarseDenom)
 {

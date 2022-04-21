@@ -4,16 +4,16 @@
 #include <device-settings/DebugLevel.h>
 #include <parameters/scale-converters/ScaleConverter.h>
 
-ModulateableParameterWithUnusualModUnit::ModulateableParameterWithUnusualModUnit(
-    ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, const ScaleConverter *modAmountScaling,
-    tDisplayValue def, int coarseDenominator, int fineDenominator)
-    : ModulateableParameter(group, id, scaling, def, coarseDenominator, fineDenominator)
+ModulateableParameterWithUnusualModUnit::ModulateableParameterWithUnusualModUnit(ParameterGroup* group, ParameterId id,
+                                                                                 const ScaleConverter* scaling,
+                                                                                 const ScaleConverter* modAmountScaling)
+    : ModulateableParameter(group, id, scaling)
     , m_modAmountScaling(modAmountScaling)
 {
 }
 
 void ModulateableParameterWithUnusualModUnit::writeDocProperties(
-    Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
+    Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   ModulateableParameter::writeDocProperties(writer, knownRevision);
   writer.writeTextElement("mod-amount-stringizer", m_modAmountScaling->controlPositionToDisplayJS());

@@ -19,11 +19,11 @@ MasterGroup::~MasterGroup()
 void MasterGroup::init()
 {
   appendParameter(new ModulateableParameter(this, { 247, VoiceGroup::Global },
-                                            ScaleConverter::get<ParabolicGainDbScaleConverter>(), 0.5, 100, 1000));
+                                            ScaleConverter::get<ParabolicGainDbScaleConverter>()));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
       this, { 248, VoiceGroup::Global }, ScaleConverter::get<LinearBipolar48StScaleConverter>(),
-      ScaleConverter::get<LinearBipolar96StScaleConverterFine>(), 0, 48, 4800));
+      ScaleConverter::get<LinearBipolar96StScaleConverterFine>()));
 }
 
 void MasterGroup::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)

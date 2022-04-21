@@ -14,12 +14,12 @@ MonoGroup::MonoGroup(ParameterGroupSet* parent, VoiceGroup vg)
 
 void MonoGroup::init()
 {
-  appendParameter(new UnmodulateableMonoParameter(this, { 364, getVoiceGroup() },
-                                                  ScaleConverter::get<OnOffScaleConverter>(), 0, 1, 1));
+  appendParameter(
+      new UnmodulateableMonoParameter(this, { 364, getVoiceGroup() }, ScaleConverter::get<OnOffScaleConverter>()));
   appendParameter(new UnmodulateableMonoParameter(this, { 365, getVoiceGroup() },
-                                                  ScaleConverter::get<MonoPriorityScaleConverter>(), 0.5, 2, 2));
-  appendParameter(new UnmodulateableMonoParameter(this, { 366, getVoiceGroup() },
-                                                  ScaleConverter::get<LegatoScaleConverter>(), 1, 3, 3));
+                                                  ScaleConverter::get<MonoPriorityScaleConverter>()));
+  appendParameter(
+      new UnmodulateableMonoParameter(this, { 366, getVoiceGroup() }, ScaleConverter::get<LegatoScaleConverter>()));
   appendParameter(new MonoGlideTimeParameter(this, { 367, getVoiceGroup() }));
 }
 

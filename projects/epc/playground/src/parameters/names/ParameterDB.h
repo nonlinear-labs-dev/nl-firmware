@@ -21,10 +21,12 @@ class ParameterDB
   [[nodiscard]] Glib::ustring getDescription(int parameterNumber) const;
   [[nodiscard]] tControlPositionValue getSignalPathIndication(int id) const;
 
-  static constexpr tControlPositionValue getInvalidSignalPathIndication()
-  {
-    return std::numeric_limits<tControlPositionValue>::max();
-  }
+  static constexpr tControlPositionValue getInvalidSignalPathIndication();
+  static tControlPositionValue getCourseDenominator(const ParameterId& id);
+  static tControlPositionValue getFineDenominator(const ParameterId& id);
+  static tControlPositionValue getCourseModulationDenominator(const ParameterId& id);
+  static tControlPositionValue getFineModulationDenominator(const ParameterId& id);
+  static double getDefaultValue(const ParameterId& id);
 
  private:
   [[nodiscard]] Glib::ustring replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const;

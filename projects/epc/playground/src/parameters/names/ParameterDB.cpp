@@ -128,3 +128,37 @@ Glib::ustring ParameterDB::replaceVoiceGroupInDynamicLabels(Glib::ustring name, 
 
   return name;
 }
+
+tControlPositionValue ParameterDB::getCourseDenominator(const ParameterId &id)
+{
+  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  return desc.m_coarse_cp;
+}
+
+tControlPositionValue ParameterDB::getFineDenominator(const ParameterId &id)
+{
+  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  return desc.m_fine_cp;
+}
+
+tControlPositionValue ParameterDB::getCourseModulationDenominator(const ParameterId &id)
+{
+  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  return desc.m_coarse_amt;
+}
+
+tControlPositionValue ParameterDB::getFineModulationDenominator(const ParameterId &id)
+{
+  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  return desc.m_fine_amt;
+}
+
+double ParameterDB::getDefaultValue(const ParameterId &id)
+{
+  return static_cast<double>(C15::ParameterList[id.getNumber()].m_initial);
+}
+
+constexpr tControlPositionValue ParameterDB::getInvalidSignalPathIndication()
+{
+  return std::numeric_limits<tControlPositionValue>::max();
+}

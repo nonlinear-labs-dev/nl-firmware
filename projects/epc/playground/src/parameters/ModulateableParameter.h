@@ -9,8 +9,7 @@ class ModulateableParameter : public Parameter
   typedef Parameter super;
 
  public:
-  ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tDisplayValue def,
-                        tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator);
+  ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling);
   ~ModulateableParameter() override;
 
   void writeToPlaycontroller(MessageComposer &cmp) const override;

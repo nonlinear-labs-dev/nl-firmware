@@ -19,5 +19,9 @@ class VoiceGroupMasterUnmodulateableParameter : public Parameter
  public:
   using Parameter::Parameter;
 
+  VoiceGroupMasterUnmodulateableParameter()
+      : Parameter(nullptr,ParameterId(0,VoiceGroup::Invalid),nullptr)
+  {
+  }
   Layout *createLayout(FocusAndMode focusAndMode) const override;
 };

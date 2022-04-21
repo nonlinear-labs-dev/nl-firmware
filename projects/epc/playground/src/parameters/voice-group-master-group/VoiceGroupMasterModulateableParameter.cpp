@@ -7,7 +7,7 @@
 VoiceGroupMasterModulateableParameter::VoiceGroupMasterModulateableParameter(
     ParameterGroup *group, const ParameterId &id, const ScaleConverter *scaling, tControlPositionValue def,
     tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator)
-    : ModulateableParameter(group, id, scaling, def, coarseDenominator, fineDenominator)
+    : ModulateableParameter(group, id, scaling)
 {
 }
 
