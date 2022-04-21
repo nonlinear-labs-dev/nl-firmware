@@ -144,13 +144,13 @@ TEST_CASE("FROM Layer")
     THEN("Split Preset Loaded")
     {
       ebUseCases.load(presets.getSplitPreset());
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 160, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 354, VoiceGroup::II });
     }
 
     THEN("Split converted")
     {
       ebUseCases.convertToSplit(VoiceGroup::I);
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 160, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 354, VoiceGroup::II });
     }
 
     THEN("Single converted")

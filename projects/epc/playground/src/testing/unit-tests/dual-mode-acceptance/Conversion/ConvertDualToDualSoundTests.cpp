@@ -206,6 +206,23 @@ TEST_CASE("Convert Layer I to Split")
     TestHelper::randomizeCrossFBAndToFX(transaction);
   }
 
+  WHEN("Layer From FX I/II was selected")
+  {
+    auto eb = TestHelper::getEditBuffer();
+    EditBufferUseCases ebUseCases(*eb);
+    ebUseCases.selectParameter({C15::PID::FB_Mix_FX_Src, VoiceGroup::I}, true);
+
+    WHEN("Layer converted to Split")
+    {
+      ebUseCases.convertToSplit(VoiceGroup::I);
+
+      THEN("selection is kept")
+      {
+        CHECK(eb->getSelectedParameterNumber() == C15::PID::FB_Mix_FX_Src);
+      }
+    }
+  }
+
   WHEN("Layer to Split Cross FX is not reset")
   {
     auto eb = TestHelper::getEditBuffer();

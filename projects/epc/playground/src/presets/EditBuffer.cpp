@@ -1512,7 +1512,6 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
                                          { C15::PID::FB_Mix_Osc_Src, C15::PID::FB_Mix_Osc },
                                          { C15::PID::FB_Mix_Comb_Src, C15::PID::FB_Mix_Comb },
                                          { C15::PID::FB_Mix_SVF_Src, C15::PID::FB_Mix_SVF },
-                                         { C15::PID::FB_Mix_FX_Src, C15::PID::FB_Mix_FX },
                                          { C15::PID::Voice_Grp_Fade_From, C15::PID::Voice_Grp_Volume },
                                          { C15::PID::Voice_Grp_Fade_Range, C15::PID::Voice_Grp_Volume } } },
                                      { { From::Layer, To::Single },
