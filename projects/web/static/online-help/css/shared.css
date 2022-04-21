@@ -42,7 +42,7 @@
 
     /*dark theme */
 
-    body[data-color-theme="dark"] {
+    html[data-color-theme="dark"] {
         --theme-main-color: rgb(221, 221, 221);
         --theme-main-background: rgb(9, 9, 9);
         --theme-main-background-overlay: rgba(9, 9, 9, 0.2);
@@ -75,7 +75,7 @@
 
     /* light theme */
 
-    body[data-color-theme="light"] {
+    html[data-color-theme="light"] {
         --theme-main-color: rgb(40, 40, 40);
         --theme-main-background: rgb(255, 255, 255);
         --theme-main-background-overlay: rgba(255, 255, 255, 0.2);
@@ -112,7 +112,7 @@
 
     /* print theme */
 
-    body {
+    html {
         --theme-main-background: rgb(255, 255, 255);
         --theme-main-background-overlay: rgba(255, 255, 255, 0.2);
         --theme-main-foreground: rgb(0, 0, 0);
@@ -147,7 +147,7 @@
 
 /* C15 colors */
 
-body {
+html {
     --c15-branch-a: rgb(242, 184, 136);
     --c15-branch-b: rgb(227, 212, 154);
     --c15-comb: rgb(186, 230, 189);
