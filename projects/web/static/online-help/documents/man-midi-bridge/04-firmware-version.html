@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>MIDI Bridge Manual - 04. Firmware Version Identification</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/utils.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-midi-bridge/04-firmware-version">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-midi-bridge/index.html">MIDI Bridge Manual</a>
+        <span>/</span>
+        <a href="./documents/man-midi-bridge/04-firmware-version.html" data-number="4">Firmware Version Identification (Blink Pattern after Power Up)</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4">Firmware Version Identification (Blink Pattern after Power Up)</h2>
+        <p>To identify the current firmware version in the device, a specific blink pattern is displayed after power has been applied via one of the USB ports:</p>
+        <p>The first LED blinking YELLOW <span class="led yellow"></span> <span class="led off"></span> for N times, like, say, two times:<br/>Major Revision Number is N = 2</p>
+        <p>Then, second LED blinking CYAN <span class="led cyan"></span> <span class="led off"></span> for K times, say, three times:<br/>Minor Revision Number is K = 3</p>
+        <p>Effective firmware Version is N.K, with K displayed with two digits. For the example:<br/>Version = 2.03</p>
+        <p>There might be additional blink patterns following after the firmware version, like both LEDs blinking RED <span class="led red"></span><span class="led off"></span> three times which indicates the used firmware is a special beta/test version.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

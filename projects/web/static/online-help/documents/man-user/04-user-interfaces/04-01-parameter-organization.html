@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.1. Parameter Organization</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-01-parameter-organization">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-01-parameter-organization.html" data-number="4.1">Parameter Organization</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.1">Parameter Organization</h2>
+    </section>
+    <section>
+        <!-- <p>This chapter describes new features that where introduced on version <span class="sw-version">20-28</span>.</p> -->
+        <figure class="border maximize" data-label="Parameter Organization">
+            <picture class="content" data-src="images/info-gfk/gfk-param-orga-*.png"></picture>
+        </figure>
+        <p><span class="round">1</span> The <span data-keyword="Hardware"> Sources</span>, their Amounts, <span data-keyword="Macro"> Controls</span>, Master and Scale parameters are considered global and are present only once within a Preset, regardless of the <span data-keyword="Sound"> Type</span> (Single, Split, Layer).</p>
+        <p><span class="round">2</span> Most parameters (from Envelope A up to Reverb) are considered local and are present once for <span data-keyword="Single"></span> Presets or twice within a <span data-keyword="Split"></span> or <span data-keyword="Layer"></span> Preset.</p>
+        <p>A few new parameters of the <span class="round">3</span> Feedback and <span class="round">4</span> Output Mixer are special, as they only are present, if the current Sound type is not Single (the new <span class="round">3</span> Feedback parameters are only available if the Sound type is Layer).</p>
+        <p><span class="round">5</span> The Voices group consists of the Unison and new Mono parameters. The Voices group is present once within a Single or Layer Preset and twice within a Split Preset.</p>
+        <p><span class="round">6</span> The Part group consists of the Part Volume/Tune parameters as well as the Split Point (Split Presets) or the Fade From and Fade Range (Layer Presets) parameters. The group is only available, when the Sound type is not Single.</p>
+        <p>When a Single Sound (referred to as <q>Source</q>) is converted to a Split or Layer Sound (referred to as <q>Target</q>), global Parameters are copied entirely. The Source’s Master Volume and Tune will be delegated to Target’s Part Volume and Tune. The Source’s local Parameters will be transferred to both Parts of the Target. The Source’s Voices Parameters will be transferred globally if the Target is of type Layer. If the Target is of type Split, the Source’s Voices Parameters will be transferred to both Target Parts. Should the Source possess Unison Voices greater than 12, they will be clipped to 12.</p>
+        <p>In general, any Sound type can be converted to any other type. In addition, Single Presets and selected Parts of Split or Layer Presets can be loaded to selected Parts of Split or Layer Sounds. The particular transfer of Parameters strongly depends on the specific scenario and will be described in more detail in the future.</p>
+        <p>When a Preset is loaded into one of the Parts this will not change global parameters like the mapping of the Hardware Sources or the positions or names of the Macro Controls. Parameters assigned to Macro Controls of the new Preset will be connected to the existing Macro Controls. You need to check if this assignment works for both Parts. It may be necessary to reassign the parameters to other Macro Controls.</p>
+        <div data-highlight="note">
+            <p>Note, that when you select a Macro Control, only the modulation targets in the currently selected Part are highlighted.</p>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

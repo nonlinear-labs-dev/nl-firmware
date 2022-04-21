@@ -36,6 +36,7 @@ class InputEventStage
 
   [[nodiscard]] float getHWSourcePositionIfLocalDisabled(HardwareSource hwid) const;
   [[nodiscard]] HWChangeSource getHWSourcePositionSource(HardwareSource hwid) const;
+  [[nodiscard]] std::array<float, 8> getPolledHWSourcePositions() const;
 
   void onMidiSettingsMessageWasReceived(const tMSG& msg, const tMSG& oldmsg);
   void requestExternalReset(DSPInterface::OutputResetEventSource resetTarget);
@@ -139,4 +140,7 @@ class InputEventStage
   void doExternalReset(const tMSG newMessage, const tMSG oldMessage);
 
   template <typename tChannelEnum> void doSendAllNotesOff(tChannelEnum tEnum);
+
+  bool m_isPolling = false;
+  std::array<float, 8> m_polledHWPositions;
 };

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Sound Generation Tutorial - 02. Init Sound</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/tut-sound-generation/02-init-sound">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/index.html">Sound Generation Tutorial</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/02-init-sound.html" data-number="2">Init Sound</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+<div class="tutorial">
+
+    <section>
+        <h2 data-number="2">Init Sound</h2>
+    </section>
+    <section>
+        <p>The first tutorial describes the basic functions of the sound generation modules, their interaction (resp. modulation capabilities), and the signal path. You will learn how to create specific waveforms using the oscillators, blend them, and feed them into subsequent modules like filters and effects. We will be dealing with the filters as sound-processing devices as well as with the sound-generating capabilities of the Comb Filter. The tutorial will be topped off by an insight into the feedback capabilities (which is another very interesting way of creating sounds).</p>
+        <p>As you certainly know already, the C15’s oscillators initially generate sine-waves. The real fun starts when these sine-waves are warped to generate complex waveforms with amazing sonic results. We will start right there:</p>
+        
+        <h3 class="heading primary" >Init Sound</h3>
+        <p>Starting with the Init Sound is the best thing to do. When loading the Init Sound, parameters are set to their default values (same thing happens when using the default button). The Init Sound uses the most basic signal path with no modulations at all. Most of the mix parameters are set to zero value.</p>
+        
+        <h3 class="heading secondary">Initializing all parameters (resp. the edit buffer):</h3>
+        <ul>
+            <li>Press <em>Sound</em> (Edit Panel).</li>
+            <li>Press <em>Init</em> (Edit Panel / Soft Button 1).</li>
+            <li>Press <em>Enter</em> (Edit Panel).</li>
+            <li class="indent-b">Now the edit buffer has been initialized. You will hear – nothing. Don’t worry, you are not the one to blame. Please proceed:</li>
+            <li>Press <em>A</em> (Output Mixer).</li>
+            <li>Turn the <em>Encoder</em> to approx. <em>[60.0 %]</em>.</li>
+            <li>Play some notes.</li>
+            <li>You will hear the typical Init sound – a simple, slowly decaying one-oscillator sine-wave sound.</li>
+    </ul>
+    </section>
+    <section>
+        <div data-highlight="excursion">
+            <h3>Excursion: A Short Glimpse at the Signal Path</h3>
+            <figure class="border maximize" data-label="Signal Path">
+                <picture class="content" data-src="./images/diagrams/block-simple-tmb-*.svg"></picture>
+            </figure>
+            <p>Starting point are the two oscillators. They produce sine-waves for a start but these sine-waves can be warped in various ways to produce complex waveshapes. This is done by phase modulation (PM) and by using the Shaper sections.</p> 
+            <p>Each oscillator can be phase-modulated by three sources: itself, the other oscillator, and the feedback signal. All three sources can be used at the same time in variable proportions.</p>
+            <p>Three Envelopes control both Oscillators and Shapers (Env A → Osc/Shaper A, 
+            Env B → Osc/Shaper B, while Env C can be routed pretty flexibly, e.g. for controlling the filters).</p>
+            <p>To process the oscillator signals even further, there is a State Variable Filter as well as a Comb Filter. When operating at high resonance settings and being pinged by an oscillator signal, both filters can work as signal generators in their own right.</p>
+            <p>Oscillator/Shaper outputs and filter outputs are fed into the Output Mixer. This section allows you to blend and balance various sonic components with each other. To avoid undesired distortion at the output stage, keep an eye on the Output Mixers Level parameter. Values around – 4.5 or – 5 dB are mostly on the safe side. If you want to use distortion deliberately to produce timbral variations, please consider using the Drive parameter of the Output Mixer or the Cabinet effect instead.</p>
+            <p>The final stage of the signal path is the effects Section. It is fed from the Output Mixer where all voices are combined into a monophonic signal. When using the Init sound, all five effects will be bypassed.</p>
+        </div>
+    </section>
+    
+</div><!-- Ende Tutorial (Listen) -->
+</main>
+</div>
+</body>
+</html>

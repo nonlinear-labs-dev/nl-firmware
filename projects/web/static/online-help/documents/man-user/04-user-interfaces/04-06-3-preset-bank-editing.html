@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.6.3. Editing Presets and Banks</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-06-presets/04-06-3-editing">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-06-0-presets.html" data-number="4.6">Presets</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-06-3-preset-bank-editing.html" data-number="4.6.3">Editing Presets and Banks</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.6.3">Editing Presets and Banks</h2>
+    </section>
+    <section>
+        <p>Common <b>Preset editing</b> actions are listed in the table below:</p>
+        <div data-columns="">
+            <table>
+                <tr>
+                    <th>Rename</th>
+                    <td>The selected preset can be renamed (see chapter <a href="./documents/man-user/04-user-interfaces/04-12-rename-mechanism.html" data-number="4.12">The Rename Mechanism</a> for details).</td>
+                </tr>
+                <tr>
+                    <th>Cut</th>
+                    <td>The selected preset will be moved into the clipboard (being deleted at the current position).</td>
+                </tr>
+                <tr>
+                    <th>Copy</th>
+                    <td>The selected preset(s) will be copied into the clipboard, ready to be pasted at any time.</td>
+                </tr>
+                <tr>
+                    <th>Paste</th>
+                    <td>Once a preset was copied or cut into the clipboard, this option will become available. The copied preset(s) will be inserted behind the currently selected preset.</td>
+                </tr>
+                <tr>
+                    <th>Delete</th>
+                    <td>The selected preset(s) will be deleted from the bank.</td>
+                </tr>
+            </table>
+        </div>
+        <div data-highlight="note">
+            <p>When deleting all presets of a bank at once from the Graphical User Interface, a Dialog window will appear, asking if the bank should be deleted as well.</p>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Preset Edit Mode</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Preset Edit screen - options (Soft Button 4)">
+                <picture class="content" data-src="images/hardware-ui/boled/preset/boled-pre-edit-mode.png"></picture>
+            </figure>
+            <div>
+                <p>When the <span data-keyword="Preset">Screen</span> is in focus, pressing the <span data-keyword="Edit">Button</span> invokes a menu, represented in the rightmost stack. Cycle the stack by pressing <span data-keyword="Soft Button">4</span> in order to select a menu entry and press the <span data-keyword="Enter">Button</span> in order to focus on an aspect. Press the Edit Button again to return to the Preset Screen.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Preset Edit Mode</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Preset Edit menus">
+                <picture class="content" data-src="images/web-ui/preset/webui-pre-ctx-menus.png"></picture>
+            </figure>
+            <div>
+                <p>In the <span data-keyword="Preset">Tab</span>, a Preset menu button is provided. Clicking on this button or right-clicking (or long touch gesture) on a preset element in a (floating) bank invokes the context menu, providing access to all aspects.</p>
+            </div>
+        </div>
+        <p>Common <b>Bank editing</b> actions are listed in the table below:</p>
+        <div data-columns="1">
+            <table>
+                <tr>
+                    <th>New</th>
+                    <td>A new bank will be created.</td>
+                </tr>
+                <tr>
+                    <th>Rename</th>
+                    <td>The selected bank can be renamed (see chapter <a href="./documents/man-user/04-user-interfaces/04-12-rename-mechanism.html" data-number="4.12">The Rename Mechanism</a> for details).</td>
+                </tr>
+                <tr>
+                    <th>Copy</th>
+                    <td>The selected bank will be copied into a temporary buffer, ready to be pasted.</td>
+                </tr>
+                <tr>
+                    <th>Paste</th>
+                    <td>
+                        <div class="section">
+                            <p>Once a bank was copied into the clipboard, this option will become available.</p>
+                            <div data-highlight="warn">
+                                <p>The copied bank will be appended as a new bank. This mechanism is not fully developed yet.</p>
+                                <!-- <p>For more information, refer to the separate <a href="./documents/known-issues/index.html" class="label">Known Issues</a> document.</p> -->
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Delete</th>
+                    <td>The selected bank will be deleted.</td>
+                </tr>
+                <tr>
+                    <th>Move left/right</th>
+                    <td>The bank number (position in the bank list, visible in the <span data-keyword="Preset">Screen</span> and <span data-keyword="Preset">Tab</span>) can be altered by moving it left (decreasing the position) or right (increasing the position).</td>
+                </tr>
+                <tr>
+                    <th>Import/Export</th>
+                    <td>Single Banks can be transferred from and to external devices <i>(see chapter <a href="./documents/man-user/04-user-interfaces/04-06-4-bank-importing-exporting.html" data-number="4.6.4">Importing/Exporting Banks</a> for more details)</i>.</td>
+                </tr>
+            </table>
+        </div>
+        <div data-highlight="note">
+            <p>The <span data-keyword="Graphical">User Interface</span> provides another way of moving a bank via the <span data-keyword="Bank Info">Window</span>, where the bank number (position in the bank list) can be adjusted directly <i>(see chapter <a href="./documents/man-user/04-user-interfaces/04-09-contextual-info.html" data-number="4.9">Contextual Info</a> for more details)</i>.</p>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Bank Edit Mode</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Bank Edit screen - options (Soft Button 4)">
+                <picture class="content" data-src="images/hardware-ui/boled/preset/boled-pre-edit-mode-bnk.png"></picture>
+            </figure>
+            <div>
+                <p>When the <span data-keyword="Bank">Screen</span> is in focus, pressing the <span data-keyword="Edit">Button</span> invokes a menu, represented in the rightmost stack. Cycle the stack by pressing <span data-keyword="Soft Button">4</span> in order to select a menu entry and press the <span data-keyword="Enter">Button</span> in order to focus on an aspect. Press the <span data-keyword="Edit">Button</span> again to return to the Bank screen.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Bank Edit Mode</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Bank Edit menus">
+                <picture class="content" data-src="images/web-ui/preset/webui-pre-ctx-bank-menus.png"></picture>
+            </figure>
+            <div>
+                <p>The <span data-keyword="Graphical">User Interface</span> provides two menus for editing banks. There is a global menu (invoked by a right-click / long touch gesture on the background) and a local menu for banks (provided by a bank menu icon in the <span data-keyword="Preset">Tab</span> or by a right-click / long touch gesture on any bank header).</p>
+            </div>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

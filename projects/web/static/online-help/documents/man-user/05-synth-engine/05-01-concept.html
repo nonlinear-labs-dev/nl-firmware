@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 05.1. Concept</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/05-synth-engine/05-01-concept">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-00-synth-engine.html" data-number="5">Synthesis Engine</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-01-concept.html" data-number="5.1">Concept</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="5.1">Concept</h2>
+        <p>The main design goal for the <q>Phase 22</q> project is to exploit digital synthesis algorithms in order to build a highly responsive and expressively playable instrument with a strong individual character. At the same time, the set of parameters should be small enough to be easily accessible. It is intended to harness complexity by a reduced, minimalistic engine architecture, avoiding multi-mode switches for multiple waveforms or selectable filter and effect types. Furthermore, (almost) all parameters of the synth engine are designed to be continuous and time-variant in order to produce smooth transitions between sounds and increasing the overall sensitivity of the instrument.</p>
+        <p>The core structure is a phase modulation synth that is based on two sine oscillators and two sine shapers only (phase modulation is closely related to frequency modulation aka <q>FM</q>). The combination of an Oscillator and its Envelope can be understood as a classical FM operator. Together with a Shaper and a Feedback injection point it forms one of the two <q>branches</q>. The signals from Branch A and B can be passed through the Comb Filter, the State Variable Filter or directly to the Output Mixer.</p>
+        <p>The Comb Filter is a tool for complex spectral shaping and also works as a resonator, the State Variable Filter can be applied for subtractive filtering. Signal routing is determined by both the Output Mixer (defining the mix being passed to the effect section) and the Feedback Mixer (defining the mix for flexibly applicable feedback loops).</p>
+        <p>Both filters and the effects have a profound impact on the feedback behavior, their amplitude and phase responses determine the frequencies where the feedback can result in self oscillation. In fact, the feedback bus is a unique and versatile feature of the synth engine, raising the perceived acoustic complexity of a sound (if taken use of).</p>
+        <p>On the other hand, the engine is also capable of producing classical subtractive and FM sounds, so a wide spectrum and variety of sounds can be produced.</p>
+        <p>The combination of the components can also be understood in a physical modeling sense, as the branches can function as exciters for the Comb Filter as a resonator, while the State Variable Filter and the effect chain work as an acoustic body, amplifier and spatial setting at once.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

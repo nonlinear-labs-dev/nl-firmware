@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 10. Specifications</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/10-specifications">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/10-specifications/10-specifications.html" data-number="10">Specifications</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="10">Specifications</h2>
+        
+        <h3>Synthesis Engine</h3>
+        <ul>
+            <li>2 Oscillators (sine wave, adjustable jitter/noise)</li>
+            <li>Phase modulation: Self, A > B, B > A, via the Shapers, and by the feedback signal</li>
+            <li>2 Shapers (sine curve, adjustable folding and asymmetry)</li>
+            <li>Ring Modulator</li>
+            <li>Comb Filter (tunable, with allpass and lowpass)</li>
+            <li>State Variable Filter (2 - 4 poles, multi-mode, spread cutoffs, FM)</li>
+            <li>Feedback Mixer (4 inputs, shaper for the sum)</li>
+            <li>Feedback bus with 4 destinations</li>
+            <li>Output Mixer (4 inputs, stereo output, shaper for the sum)</li>
+            <li>3 ADBDSR Envelopes, adjustable Attack Curve</li>
+            <li>Velocity amounts for envelope levels and all times</li>
+            <li>Note-off velocity can be applied to the release times</li>
+            <li>24-voice polyphony</li>
+            <li>Split and Layer modes for two Parts of 12 voices</li>
+            <li>Unison: 2 - 24 voices, adjustable detune, phase and pan spreading</li>
+            <li>Monophonic mode, adjustable priority, legato modes, and glide time</li>
+            <li>Micro-tuning for the 12 steps of the octave</li>
+            <li>5 Stereo Effects:
+                <ul>
+                    <li>Flanger/Chorus/Phaser/Tremolo</li>
+                    <li>Cabinet (amp simulation)</li>
+                    <li>8-pol Gap/Band Filter</li>
+                    <li>Echo</li>
+                    <li>Reverb</li>
+                </ul>
+            </li>
+            <li>Parameter resolution: typically 1000 steps (250-15000 steps)</li>
+            <li>6 Macro Controls, each can be routed to up to 106 target parameters</li>
+        </ul>
+
+        <h3>Keys and Controls</h3>
+            <ul>
+                <li>61-key Fatar TP/8S keybed with semi-weighted long-arm keys</li>
+                <li>Two 800 mm ribbons (touch strips), each with 33 LEDs</li>
+                <li>Ribbon modes: absolute, relative, combinable with return-to-center</li>
+                <li>Lever (magnetic force loaded) for pitchbending and similar applications</li>
+                <li>Aftertouch (global)</li>
+                <li>Resolution of velocity, ribbons, bender, aftertouch, pedals: 4000 steps</li>
+                <li>Free mapping of pedals, ribbons, bender and aftertouch to the 6 Macro Controls</li>
+            </ul>
+    
+        <h3>User Interface</h3>
+            <ul>
+                <li>96 high-quality buttons for quick access to all parameters</li>
+                <li>Magnetic front panel foils are replaceable to support future synthesis engines</li>
+                <li>The base unit can be used without the panel unit</li>
+                <li>Graphical user interface, available in the browser on WiFi-enabled devices</li>
+                <li>Designed for mouse and touch input, unique zoom-and-pan navigation</li>
+                <li>Drag and drop handling of presets</li>
+            </ul>
+    
+        <h3>Preset System</h3>
+            <ul>
+                <li>Unlimited number of banks and presets per bank</li>
+                <li>User-editable comment and color tag per preset</li>
+                <li>Functions for searching and comparing presets</li>
+                <li>Morphing transition between presets</li>
+            </ul>
+    
+        <h3>Undo System</h3>
+            <ul>
+                <li>Unlimited undo for all user interactions, including sound editing steps</li>
+                <li>Undo list with support for multiple editing branches (tree view)</li>
+                <li>Change indication and comparison with the original parameter value</li>
+            </ul>
+    
+        <h3>Continuous Digital Audio Capture</h3>
+            <ul>
+                <li>Permanent lossless recording of the digital output signal</li>
+                <li>Hours of FLAC-compressed audio (at least 80 min) stored in a ring buffer</li>
+                <li>Browser-based graphical UI for review, play-back and download</li>
+                <li>The states of the synth engine along the time line can be restored</li>
+                <li>Download of selected segments to the computer as WAV or FLAC files</li>
+            </ul>
+    
+        <h3>Connections</h3>
+            <ul>
+                <li>Stereo line outputs, balanced by transformers (TRS and XLR connectors)</li>
+                <li>Headphones output at the front with separate volume control</li>
+                <li>Four inputs for pedals, switches or CV (TRS, flexible pin-assignment)</li>
+                <li>USB host connector for data storage, software updates, and MIDI</li>
+                <li>Directly connectable to USB MIDI devices</li>
+                <li>Optional MIDI Bridge accessory for connection to a computer</li>
+                <li>High resolution (14-bit) option for MIDI velocities and control values</li>
+            </ul>
+    
+        <h3>Dimensions, Weight</h3>
+            <ul>
+                <li>Base unit only: 900 x 290 x 100 mm (width x depth x height), 10.5 kg</li>
+                <li>Including panel unit: 900 x 410 x 160 mm (width x depth x height), 13.5 kg</li>
+            </ul>
+            
+    </section>
+</main>
+</div>
+</body>
+</html>

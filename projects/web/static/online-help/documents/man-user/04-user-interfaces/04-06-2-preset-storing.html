@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.6.2. Storing a Preset</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-06-presets/04-06-2-storing">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-06-0-presets.html" data-number="4.6">Presets</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-06-2-preset-storing.html" data-number="4.6.2">Storing a Preset</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.6.2">Storing a Preset</h2>
+    </section>
+    <section>
+        <h3 class="heading primary">Store Select</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Store Screen">
+                <picture class="content" data-src="images/hardware-ui/boled/preset/boled-pre-store-sel.png"></picture>
+            </figure>
+            <div>
+                <p>Press the <span data-keyword="Store">Button</span> in order to focus on the <span data-keyword="Store">Screen</span> and start the <span data-keyword="Store Select">Mode</span>. The store position and bank can be adjusted by preset and bank navigation (as described in chapter <a href="./documents/man-user/04-user-interfaces/04-06-1-preset-loading.html" data-number="4.6.1">Loading a Preset</a>). The process can be canceled by pressing the Store Button again, pressing the <span data-keyword="Enter">Button</span> on the other hand will complete the Store process, storing the preset at the desired location according to the Store Method (see below).</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Store Select</h3>
+        <figure class="border maximize" data-label="Store Icon (Preset Tab)">
+            <picture class="content" data-src="images/web-ui/preset/webui-pre-preset-overwrite.png"></picture>
+        </figure>
+        <p>The <span data-keyword="Preset">Tab</span> provides a <span data-keyword="Store">Icon</span>. Clicking/touching on it will store the preset in the currently selected bank at the current position, according to the <span data-keyword="Store">Method</span> <i>(see below)</i>. The additional <span data-keyword="Select">Button</span> will start the <span data-keyword="Store Select">Mode</span> and a bank and position can be chosen (without loading any preset), then the preset can be stored at the desired location (disabling the Store Select Mode), according to the Store Method (see below). Another way of storing a preset in a particular bank or position is simply dragging and dropping the Store Icon to the desired location (the Store Select Mode and Store Method can be ignored in this case).</p>
+    </section>
+    <section>
+        <h3 class="heading primary">Store Method</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Store Method (Soft Button 4)">
+                <picture class="content" data-src="images/hardware-ui/boled/preset/boled-pre-store-method.png"></picture>
+            </figure>
+            <div>
+                <p><span data-keyword="Soft Button">4</span> provides three available <span data-keyword="Store">Methods</span> in the rightmost stack and cycles it. Pressing the <span data-keyword="Enter">Button</span> applies the process, pressing the <span data-keyword="Store">Button</span> again dismisses it. The store position will be finally influenced by the chosen Store Method, which can be one of the following three:</p>
+            </div>
+        </div>
+        <div data-columns="1">
+            <table>
+                <tr>
+                    <th>Append</th>
+                    <td>The preset will be stored at the end of the currently selected bank.</td>
+                </tr>
+                <tr>
+                    <th>Overwrite</th>
+                    <td>The preset will be stored at the current position in the currently selected bank, overwriting the existing preset.</td>
+                </tr>
+                <tr>
+                    <th>Insert</th>
+                    <td>The preset will be stored behind the current position in the currently selected bank.</td>
+                </tr>
+            </table>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Store Method</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Store Method (menu)">
+                <picture class="content" data-src="images/web-ui/preset/webui-pre-store-method.png"></picture>
+            </figure>
+            <div>
+                <p>The <span data-keyword="Store">Method</span> can be selected in the <span data-keyword="Preset">Tab</span>, above the <span data-keyword="Store">Icon</span>.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Preset Naming</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Rename Screen">
+                <picture class="content" data-src="images/hardware-ui/boled/preset/boled-pre-name.png"></picture>
+            </figure>
+            <div>
+                <p>If the preset is considered <q>new</q>, the <span data-keyword="Rename">Screen</span> will appear, requesting a name for the preset <i>(see chapter <a href="./documents/man-user/04-user-interfaces/04-12-rename-mechanism.html" data-number="4.12">The Rename Mechanism</a> for more details)</i>.</p>
+            </div>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

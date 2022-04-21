@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 07.1. MIDI Events</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/07-midi/07-01-midi-events">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/07-midi/07-00-midi.html" data-number="7">MIDI</a>
+        <span>/</span>
+        <a href="./documents/man-user/07-midi/07-01-midi-events.html" data-number="7.1">MIDI Events</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h3 class="heading primary" data-number="7.1">MIDI Events</h3>
+        <p>The C15 can send and receive MIDI messages for the following events:</p>
+        
+        <h3 class="heading secondary">Note On and Note Off</h3>
+        <p>When enabled, the C15 will produce sounds when receiving MIDI Note messages. Likewise, the C15 will send MIDI Note messages when playing on the internal keybed, if enabled. Note On and Off velocities are supported and can optionally operate on high resolution, using an additional MIDI CC (Control Change) message on Control Number 88, encoding the LSB component.</p>
+        <p>When a Split Sound is loaded, Notes can be received and sent on both Parts, using the secondary (Split) Channel setting.</p>
+        
+        <h3 class="heading secondary">The eight Hardware Sources</h3>
+        <p>Physical control elements of the C15 like a pedal or the bender are called Hardware Sources. They can be flexibly mapped to the Macro Controls, each of which can modulate up to 90 assignable parameters.</p>
+        <p>In the C15's user interface the Hardware Sources are represented by eight sliders. Their positions can be sent and received via MIDI in the following way:</p>
+        
+        <ul>
+            <li>Pedal 1/2/3/4 can be assigned to MIDI CCs 01...31 for the MSB while CC 33...63 can work as LSB for 14 bit resolution. CC 64...69 can be assigned in a 2-state switching mode.</li>
+            <li>Ribbon 1/2 can be assigned to MIDI CC 01...31 for the MSB while CC 33...63 can work as LSB for 14 bit resolution.</li>
+            <li>The Bender can be assigned to MIDI Pitchbend or to MIDI CC 01...31 for the MSB while CC 33...63 can work as LSB for 14 bit resolution.</li>
+            <li>Aftertouch can be assigned to MIDI Channel Pressure or to MIDI CC 01...31 for the MSB while CC 33...63 can work as LSB for 14 bit resolution, or to one half of the range of MIDI</li> 
+            <li>Pitchbend (up or down).</li>
+        </ul>
+        
+        <div data-highlight="note">Note that assignments are non-exclusive, so multiple Hardware Sources can be bound to the same received MIDI message, as well as being merged into indistinguishable MIDI messages when sent. This may be useful in certain scenarios, so there are no restrictions. However, it is up to the user to find a meaningful setting, apart from the provided default setting, consisting of distinct assignments.</div>
+        
+        <h3 class="heading secondary">Preset Selection</h3>
+        <p>One of the Preset Banks can be assigned to receive and send MIDI Program Changes. The Program Change numbers are mapped to the first 128 presets of this Bank.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>
