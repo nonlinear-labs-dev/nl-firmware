@@ -95,7 +95,12 @@ Bank* PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring
   auto bank = m_presetManager.addBank(transaction);
   bank->setX(transaction, x);
   bank->setY(transaction, y);
+  auto modified = m_presetManager.getEditBuffer()->isModified();
   auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer()));
+
+  if(modified)
+    preset->guessName(transaction);
+  
   bank->selectPreset(transaction, preset->getUuid());
   m_presetManager.selectBank(transaction, bank->getUuid());
   m_presetManager.getEditBuffer()->undoableLoad(transaction, preset, false);
