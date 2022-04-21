@@ -2,6 +2,8 @@
 #include "StaticKnubbelSlider.h"
 #include "StaticBarSlider.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/ParameterUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>

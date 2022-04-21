@@ -6,6 +6,8 @@
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/controls/ButtonMenuButton.h>
 #include "SingleSoundEditMenuLegacy.h"
+#include "use-cases/SoundUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <libundo/undo/Scope.h>
 #include <device-settings/Settings.h>
 #include <device-settings/RandomizeAmount.h>

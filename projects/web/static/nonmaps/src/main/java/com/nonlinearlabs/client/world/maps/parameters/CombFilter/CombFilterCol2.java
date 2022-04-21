@@ -4,6 +4,7 @@ import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
+import com.nonlinearlabs.client.world.maps.parameters.ModulatableHorizontalSlider;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.ModulateableNumericalControl;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSlider;
@@ -48,7 +49,7 @@ class CombFilterCol2 extends ParameterColumn {
 	CombFilterCol2(MapsLayout parent) {
 		super(parent);
 		addChild(new Pitch(this));
-		addChild(new ModulationSourceSlider(this, 118));
+		addChild(new ModulatableHorizontalSlider(this, 118));
 		addChild(new ModulationSourceSwitch(this, 117));
 	}
 }

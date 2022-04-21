@@ -4,6 +4,7 @@
 #include <proxies/hwui/buttons.h>
 #include <device-settings/Settings.h>
 #include <device-settings/DirectLoadSetting.h>
+#include "use-cases/PresetManagerUseCases.h"
 
 void BaseUnitBanksMode::setup()
 {

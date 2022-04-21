@@ -36,6 +36,7 @@
 #include <libundo/undo/ContinuousTransaction.h>
 #include "LoadedPresetLog.h"
 #include <sync/JsonAdlSerializers.h>
+#include <use-cases/EditBufferUseCases.h>
 
 EditBuffer::EditBuffer(PresetManager *parent, Settings &settings, std::unique_ptr<AudioEngineProxy> &aeContainer)
     : ParameterGroupSet(parent)

@@ -52,4 +52,5 @@ class ParameterImportConversions
   std::map<tParameterNumber, ConvertersBySourceFileVersion> m_mcAmountConverters;
 
   friend class TestableImportConversions;
+  tControlPositionValue pitchKTV11ToV12(tControlPositionValue v);
 };

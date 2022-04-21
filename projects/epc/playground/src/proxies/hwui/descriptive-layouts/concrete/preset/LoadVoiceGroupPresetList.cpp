@@ -4,6 +4,7 @@
 #include "presets/EditBuffer.h"
 #include "proxies/hwui/HWUI.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 
 LoadVoiceGroupPresetList::LoadVoiceGroupPresetList(const Point &p)
     : GenericPresetList(p)

@@ -1,4 +1,5 @@
 #include "RandomizeItem.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <Application.h>
 #include <device-settings/RandomizeAmount.h>
 #include <proxies/hwui/descriptive-layouts/concrete/menu/SettingLabel.h>

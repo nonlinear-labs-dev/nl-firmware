@@ -22,4 +22,9 @@ class FBMixerColumn6 extends ParameterColumn {
 			}
 		});
 	}
+
+	@Override
+	protected boolean shouldDisplayHeaderOnFirstParameter() {
+		return false;
+	}
 }

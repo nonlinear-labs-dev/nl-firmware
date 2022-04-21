@@ -8,3 +8,10 @@ class Fine105PercentScaleConverter : public LinearScaleConverter
   Fine105PercentScaleConverter();
   ~Fine105PercentScaleConverter() override;
 };
+
+class Fine200PercentScaleConverter : public LinearScaleConverter
+{
+ public:
+  Fine200PercentScaleConverter();
+  ~Fine200PercentScaleConverter() override;
+};

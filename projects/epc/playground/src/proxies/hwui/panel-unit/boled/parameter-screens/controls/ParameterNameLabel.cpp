@@ -6,6 +6,7 @@
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
+#include "parameter_declarations.h"
 #include <proxies/hwui/Oleds.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <sigc++/sigc++.h>

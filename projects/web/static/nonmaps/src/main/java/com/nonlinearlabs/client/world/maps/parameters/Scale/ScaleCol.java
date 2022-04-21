@@ -23,4 +23,8 @@ public class ScaleCol extends ParameterColumn {
 		return ret;
 	}
 
+	@Override
+	protected boolean shouldDisplayHeaderOnFirstParameter() {
+		return false;
+	}
 }

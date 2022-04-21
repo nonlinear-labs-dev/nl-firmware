@@ -55,3 +55,8 @@ bool MiniParameter::isSelected() const
 {
   return m_label->isSelected();
 }
+
+MiniParameterLabel *MiniParameter::getLabel()
+{
+  return m_label;
+}

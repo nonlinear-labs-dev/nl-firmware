@@ -34,6 +34,7 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include "UsageMode.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 
 HWUI::HWUI(Settings &settings)
     : m_voiceGoupSignal {}
@@ -237,6 +238,11 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
           Application::get().getPresetManager()->stressBlocking(1000);
         }
         Application::get().runWatchDog();
+      }
+      else if(line == "mod-all")
+      {
+        EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
+        ebUseCases.setModulationSourceOfAll(MacroControls::MC1);
       }
       else if(line == "inc-all-fine")
       {

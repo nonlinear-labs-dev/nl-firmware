@@ -11,6 +11,7 @@
 #include <proxies/hwui/controls/Label.h>
 #include <proxies/hwui/controls/LeftAlignedLabel.h>
 #include "presets/Preset.h"
+#include "use-cases/PresetManagerUseCases.h"
 #include <device-settings/Settings.h>
 #include <device-settings/DirectLoadSetting.h>
 

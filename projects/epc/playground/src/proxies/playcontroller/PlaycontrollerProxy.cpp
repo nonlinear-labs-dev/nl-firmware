@@ -17,6 +17,7 @@
 #include "groups/HardwareSourcesGroup.h"
 #include "device-settings/DebugLevel.h"
 #include "device-settings/VelocityCurve.h"
+#include "use-cases/ParameterUseCases.h"
 #include <device-settings/ParameterEditModeRibbonBehaviour.h>
 #include <memory.h>
 #include <nltools/messaging/Message.h>

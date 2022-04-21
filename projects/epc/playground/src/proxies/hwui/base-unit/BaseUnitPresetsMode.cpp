@@ -8,6 +8,8 @@
 #include <proxies/hwui/base-unit/BaseUnitPresetsMode.h>
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/HWUI.h>
+#include "use-cases/PresetManagerUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 
 void BaseUnitPresetsMode::setup()
 {
