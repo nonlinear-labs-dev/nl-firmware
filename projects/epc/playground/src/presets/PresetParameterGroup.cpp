@@ -40,47 +40,34 @@ VoiceGroup PresetParameterGroup::getVoiceGroup() const
   return m_voiceGroup;
 }
 
-template <typename Other> void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const Other *other)
+void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other)
 {
-  for(auto &otherParam : other->getParameters())
-  {
-    if(auto old = findParameterByID(otherParam->getID()))
-    {
-      old->copyFrom(transaction, otherParam);
-    }
-    else
-    {
-      auto swap = UNDO::createSwapData(std::make_unique<PresetParameter>(*otherParam));
-
-      auto doAndRedo = [=](auto) {
-        std::unique_ptr<PresetParameter> s;
-        swap->swapWith(s);
-        m_parameters.push_back(std::move(s));
-      };
-      auto undo = [=](auto) {
-        auto &place = m_parameters.back();
-        swap->swapWith(place);
-        m_parameters.pop_back();
-      };
-
-      transaction->addSimpleCommand(doAndRedo, undo);
-    }
-  }
+  for(auto &g : m_parameters)
+    if(auto o = other->findParameterByID(g->getID()))
+      g->copyFrom(transaction, o);
 
   transaction->addUndoSwap(m_voiceGroup, other->getVoiceGroup());
 }
 
-template void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other);
-template void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const ::ParameterGroup *other);
+void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const ::ParameterGroup *other)
+{
+  for(auto &g : m_parameters)
+    if(auto o = other->getParameterByID(g->getID()))
+      g->copyFrom(transaction, o);
+
+  transaction->addUndoSwap(m_voiceGroup, other->getVoiceGroup());
+}
 
 void PresetParameterGroup::assignVoiceGroup(UNDO::Transaction *transaction, VoiceGroup vg)
 {
   transaction->addUndoSwap(m_voiceGroup, vg);
 
-  transaction->addSimpleCommand([=](auto) {
-    for(auto &g : m_parameters)
-      g->assignVoiceGroup(vg);
-  });
+  transaction->addSimpleCommand(
+      [=](auto)
+      {
+        for(auto &g : m_parameters)
+          g->assignVoiceGroup(vg);
+      });
 }
 
 void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, const PresetParameterGroup *other) const
@@ -97,27 +84,30 @@ void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, con
   if(!m_parameters.empty())
     name = ParameterDB::get().getLongGroupName(m_parameters.front()->getID()).value_or(name);
 
-  writer.writeTag("group", Attribute("name", name), Attribute("afound", "true"), Attribute("bfound", "true"), [&] {
-    std::vector<int> writtenParameters;
-
-    for(auto &parameter : m_parameters)
-    {
-      auto otherParameter = other->findParameterByID({ parameter->getID().getNumber(), other->getVoiceGroup() });
-      parameter->writeDiff(writer, parameter->getID(), otherParameter);
-      writtenParameters.emplace_back(parameter->getID().getNumber());
-    }
-
-    for(auto &parameter : other->getParameters())
-    {
-      if(std::find(writtenParameters.begin(), writtenParameters.end(), parameter->getID().getNumber())
-         == writtenParameters.end())
+  writer.writeTag(
+      "group", Attribute("name", name), Attribute("afound", "true"), Attribute("bfound", "true"),
+      [&]
       {
-        auto paramName = ParameterDB::get().getLongName(parameter->getID());
-        writer.writeTag("parameter", Attribute("name", paramName), Attribute("afound", "false"),
-                        Attribute("bfound", "true"), [] {});
-      }
-    }
-  });
+        std::vector<int> writtenParameters;
+
+        for(auto &parameter : m_parameters)
+        {
+          auto otherParameter = other->findParameterByID({ parameter->getID().getNumber(), other->getVoiceGroup() });
+          parameter->writeDiff(writer, parameter->getID(), otherParameter);
+          writtenParameters.emplace_back(parameter->getID().getNumber());
+        }
+
+        for(auto &parameter : other->getParameters())
+        {
+          if(std::find(writtenParameters.begin(), writtenParameters.end(), parameter->getID().getNumber())
+             == writtenParameters.end())
+          {
+            auto paramName = ParameterDB::get().getLongName(parameter->getID());
+            writer.writeTag("parameter", Attribute("name", paramName), Attribute("afound", "false"),
+                            Attribute("bfound", "true"), [] {});
+          }
+        }
+      });
 }
 
 void PresetParameterGroup::writeDocument(Writer &writer) const
@@ -127,9 +117,4 @@ void PresetParameterGroup::writeDocument(Writer &writer) const
     const auto param = static_cast<const PresetParameter *>(p.get());
     param->writeDocument(writer);
   }
-}
-
-void PresetParameterGroup::TEST_deleteParameter(const ParameterId &id)
-{
-  m_parameters.erase(std::find_if(m_parameters.begin(), m_parameters.end(), [&](auto &p) { return p->getID() == id; }));
 }
