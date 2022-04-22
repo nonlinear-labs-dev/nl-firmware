@@ -24,6 +24,7 @@ class PresetParameterGroup
 
   // accessors
   [[nodiscard]] PresetParameter *findParameterByID(ParameterId id) const;
+  [[nodiscard]] PresetParameter *findParameterByNumber(uint16_t num) const;
 
   void writeDocument(Writer &writer) const;
 

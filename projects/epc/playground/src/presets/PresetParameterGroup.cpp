@@ -35,6 +35,14 @@ PresetParameter *PresetParameterGroup::findParameterByID(ParameterId id) const
   return nullptr;
 }
 
+PresetParameter *PresetParameterGroup::findParameterByNumber(uint16_t num) const
+{
+  for(auto &a : m_parameters)
+    if(a->getID().getNumber() == num)
+      return a.get();
+  return nullptr;
+}
+
 VoiceGroup PresetParameterGroup::getVoiceGroup() const
 {
   return m_voiceGroup;
@@ -42,9 +50,32 @@ VoiceGroup PresetParameterGroup::getVoiceGroup() const
 
 void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other)
 {
-  for(auto &g : m_parameters)
-    if(auto o = other->findParameterByID(g->getID()))
-      g->copyFrom(transaction, o);
+  for(auto &otherParam : other->getParameters())
+  {
+    ParameterId paramId = otherParam->getID();
+
+    if(auto old = findParameterByNumber(paramId.getNumber()))
+    {
+      old->copyFrom(transaction, otherParam);
+    }
+    else
+    {
+      auto swap = UNDO::createSwapData(std::make_unique<PresetParameter>(*otherParam));
+
+      auto doAndRedo = [=](auto) {
+        std::unique_ptr<PresetParameter> s;
+        swap->swapWith(s);
+        m_parameters.push_back(std::move(s));
+      };
+      auto undo = [=](auto) {
+        auto &place = m_parameters.back();
+        swap->swapWith(place);
+        m_parameters.pop_back();
+      };
+
+      transaction->addSimpleCommand(doAndRedo, undo);
+    }
+  }
 
   transaction->addUndoSwap(m_voiceGroup, other->getVoiceGroup());
 }
@@ -60,14 +91,12 @@ void PresetParameterGroup::copyFrom(UNDO::Transaction *transaction, const ::Para
 
 void PresetParameterGroup::assignVoiceGroup(UNDO::Transaction *transaction, VoiceGroup vg)
 {
-  transaction->addUndoSwap(m_voiceGroup, vg);
+  transaction->addSimpleCommand([this, swap = UNDO::createSwapData(vg)](auto) {
+    swap->swapWith(m_voiceGroup);
 
-  transaction->addSimpleCommand(
-      [=](auto)
-      {
-        for(auto &g : m_parameters)
-          g->assignVoiceGroup(vg);
-      });
+    for(auto &g : m_parameters)
+      g->assignVoiceGroup(m_voiceGroup);
+  });
 }
 
 void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, const PresetParameterGroup *other) const
