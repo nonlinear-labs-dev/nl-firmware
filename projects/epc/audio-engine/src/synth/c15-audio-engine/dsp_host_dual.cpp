@@ -1040,7 +1040,7 @@ void dsp_host_dual::render()
   m_poly[0].render_feedback(m_z_layers[1]);  // pass other layer's signals as arg
   m_poly[1].render_feedback(m_z_layers[0]);  // pass other layer's signals as arg
   // - audio dsp global - main out: combine layers, apply test_tone and soft clip
-  m_global.render_audio(m_mono[0].m_out_l + m_mono[1].m_out_l, m_mono[0].m_out_r + m_mono[1].m_out_r);
+  m_global.render_audio(m_mono[0].m_out_l, m_mono[0].m_out_r, m_mono[1].m_out_l, m_mono[1].m_out_r);
   // - final: main out, output mute
   m_mainOut_L = m_global.m_out_l * mute;
   m_mainOut_R = m_global.m_out_r * mute;

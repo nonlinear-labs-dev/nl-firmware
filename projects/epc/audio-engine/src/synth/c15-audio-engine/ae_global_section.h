@@ -32,7 +32,7 @@ class GlobalSection
   void start_fast(const uint32_t _id, const float _dx, const float _dest);
   void start_slow(const uint32_t _id, const float _dx, const float _dest);
   void start_base_key(const float _dx, const float _dest);
-  void render_audio(const float _left, const float _right);
+  void render_audio(const float _leftI, const float _rightI, const float _leftII, const float _rightII);
   void render_fast();
   void render_slow();
   void update_tone_amplitude(const float _db);
@@ -41,12 +41,14 @@ class GlobalSection
   void resetDSP();
 
  private:
+  using StereoPanningValue = ParallelData<float, 8>;
   SmootherHandle<C15::Smoothers::Global_Sync, C15::Smoothers::Global_Audio, C15::Smoothers::Global_Fast,
                  C15::Smoothers::Global_Slow>
       m_smoothers;
   float m_signal[3] = {};
   float m_sampleInc = 0.0f, m_tonePhase = 0.0f, m_toneAmp = 0.0f, m_toneFreq = 0.0f, m_baseKeyDiff = 0.0f;
   uint32_t m_combinationMode = 0;
+  void render_stereo_audio(const float _left, const float _right);
   void postProcess_audio();
   void postProcess_fast();
   void postProcess_slow();
