@@ -87,16 +87,10 @@ void GlobalSection::render_audio(const float _leftI, const float _rightI, const 
   postProcess_audio();
   // #3003: FX/Part Pan
   constexpr float panning = 0.f;  // todo: m_smoothers/_signals.get(...)
-  const float invertedPanning = -panning;
-  StereoPanningValue panned{};
-  // better all values by signals??? (reduce dsp by clamping)
-  panned[0] = panned[7] = std::min(1.0f + panning, 1.0f);
-  panned[1] = panned[6] = std::max(invertedPanning, 0.0f);
-  panned[2] = panned[5] = std::max(panning, 0.0f);
-  panned[3] = panned[4] = std::min(1.0f + invertedPanning, 1.0f);
-  const float dualSignal[8] = { _leftI, _leftI, _rightI, _rightI, _leftII, _leftII, _rightII, _rightII };
-  panned *= StereoPanningValue{ dualSignal };
-  render_stereo_audio(panned[0] + panned[2] + panned[4] + panned[6], panned[1] + panned[3] + panned[5] + panned[7]);
+  auto panned = StereoPanning::fromDualStereoSignal(_leftI, _rightI, _leftII, _rightII);
+  panned *= StereoPanning::fromPanning(panning);
+  render_stereo_audio(StereoPanning::getChannel<StereoPanning::Left>(panned),
+                      StereoPanning::getChannel<StereoPanning::Right>(panned));
 }
 
 void GlobalSection::render_stereo_audio(const float _left, const float _right)
