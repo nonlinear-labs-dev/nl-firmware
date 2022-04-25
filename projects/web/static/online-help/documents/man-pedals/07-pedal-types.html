@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Pedal Manual - 07. Pedal / Source Types</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-pedals/07-pedal-types">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-pedals/index.html">Pedal Manual</a>
+        <span>/</span>
+        <a href="./documents/man-pedals/07-pedal-types.html" data-number="7">Pedal / Source Types</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="7">Pedal / Source Types</h2>
+    </section>
+    <section>
+        <h3 class="heading primary" data-number="7.1">Expression and Damper Pedals with Continuous Output</h3>
+    </section>
+    <section>
+        <p>Most expression and damper pedals use a 3-wire cable and have a TRS plug. The basis of their operation is the voltage divider principle, using a potentiometer: A voltage is applied to the potentiometer and the wiper is moved by the pedal action. The readout is taken from the voltage at the wiper divided by the applied voltage. The wiper is internally attached either to the tip of the TRS plug (this is the <q>Tip-Active</q> pin-out, also known as <q>Boss/Roland</q> pin-out) or the wiper can go to the ring contact of the TRS (the <q>Ring Active</q> pin-out, also known as <q>Yamaha</q> pin-out).</p>
+        <p>However, there are a few pedals, for example the Korg DS-1H damper pedal, that work internally with a simple adjustable resistor whose value changes with pedal action. Such pedals use only 2-wires (even when a TRS plug is used at the cable end). Here, the read- out is basically directly proportional to the resistance value. The C15 supports this type of pedal provided that the adjustable element is connected between tip and sleeve contacts of the TRS or TS plug (<q>tip active</q>, which is the standard case, though).</p>
+        <p>Some expression and damper pedals can be switched between <q>continuous</q> and <q>switch</q> modes, please set such selectors to <q>continuous</q> position.</p>
+        <p>Some expression pedals, for example many Roland and Boss models, have a <q>minimum volume</q> control on the side or the front of the base, please set this control to its lowest position (fully counter-clockwise) for best results. The C15 can also handle those pedals correctly even with this <q>minimum volume</q> set to other positions but resolution and stability may be compromised (see Auto-Ranging and Auto-Hold feature descriptions).</p>
+        <p>Some expression pedals, for example some Moog models, have a <q>range</q> control on the side or the front of the base which restricts the maximum value the output can reach and that includes zero output if the control is set fully counter-clockwise! Please set this control to the highest position (fully clockwise) for best results, otherwise again resolution and stability may be compromised (see Auto-Ranging and Auto-Hold feature descriptions).</p>
+        <p>Some expression pedals, for example some Moog and M-Audio models, have a pin-out selector witch, typically on the bottom of the base, where the used connector pin-out can be selected. Often, this switch is marked with the pedal’s brand name on one side and <q>other</q> on the other side. The provided pedal presets indicate the required setting for some known pedals. For other pedals, please select the pedal brand name position which typically selects the <q>Boss/Roland</q> (Tip-Active) pin-out which is the preferred pin-out.</p>
+        <p>Some expression pedals are intended to be used with external cables, therefore make sure to use a correct cable (usually 3-wire with TRS connectors on both ends). Some pedals are multi-function and have several output jacks. Please use the output explicitly marked as <q>Expression</q>, <q>Exp</q> or similar.</p>
+        <p>Damper pedals (pedals which go back to their normal rest position when foot pressure is absent) come in two varieties. The first type produces minimum output in the rest position that increases when the pedal is pressed, and the other type does exactly the opposite, going from maximum output to minimum output when pressing the pedal. The C15 has pedal presets to handle either type correctly.</p>
+        <p>All continuous pedal presets of the C15 use both the Auto-Ranging and Auto-Hold feature (see Auto-Ranging and Auto-Hold feature descriptions). There is no output from the pedal source until the Auto-Ranging has completed which requires that the pedal is moved across at least some fraction of its total travel.</p>
+        <div data-highlight="note">
+            <p>You may use a physical switch as well for a continuous output, it will just jump between ࠌ the extremes (0%, 100%) with only one or two intermediate values. When using a physi- cal switch, select one of the <q>Resistor</q> types of presets.</p>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary" data-number="7.2">Switches with Bi-stable Output</h3>
+    </section>
+    <section>
+        <p>Switches are also supported, technically a switch is handled like an adjustable resistor with the values only jumping between zero resistance (<q>closed</q>) and infinite resistance (<q>open</q>).</p>
+        <p>While Auto-Ranging is used for the provided Switch presets as well, a difference is that
+        a switch pedal gives output to a Macro Control immediately, the Auto-Ranging does not have to be completed. A <q>best guess</q> initial value is used for the output which is reflecting the correct state in 99% of the cases.</p>
+        <p>The main difference is that the output of the switch, feeding the Macro Control, is chang- ing only between 0% and 100% endpoints and there are never any intermediate values, that’s why it’s called bi-stable.</p>
+        <div data-highlight="note">
+            <p>Note: You may perfectly use a continuous-type pedal for a switching type of response, the Auto-Ranging feature makes that work for potentiometer as well as adjustable resistor types of pedals. The only restriction is that the pedal must be of the <q>Tip Active</q> type.</p>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary" data-number="7.3">Control Voltages</h3>
+    </section>
+    <section>
+        <p>Control Voltages can be used as an additional source type. A typical example would be the CV output of an LFO in an analog synth. Two pedal presets are available for this, one with Auto-Ranging to automatically adapt to the voltage range the source actually sends, creating the full 0%...100% span, and another pedal preset with a fixed range of 0V (=0%) to 5V (=100%).</p>
+        <div data-highlight="note">
+            <p>Note: The frequency of a modulated control voltage should not be larger than a few Hz, higher frequencies might produce strange results and the Auto-Ranging (if used) might not be working as intended.</p>
+        </div>
+        <div data-highlight="warn">
+            <p>Warning: The voltage range of the CV source must be within 0V...+5V. Never connect sources with other output ranges (like -5V...+5V, 0V...+10V, etc) as they might damage the C15, regardless of selected pedal preset. Also, do not apply a control voltage while the C15 is switched off.</p>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

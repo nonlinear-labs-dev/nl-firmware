@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 07. MIDI</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/07-midi">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/07-midi/07-00-midi.html" data-number="7">MIDI</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="7">The MIDI Implementation of the C15</h2>
+        <p>Since the Studio Package update the C15 can receive and send MIDI messages. Received MIDI messages can control the C15 and affect the sound, similar to playing the instrument itself. When playing on the C15, MIDI messages can be sent, reflecting the performance. Note that received MIDI messages will never be sent, so there is no <q>MIDI Thru</q> or loopback functionality.</p>
+        <p>Receive and Send options include a Channel (Omni, 1 ... 16) specifier, filtering events accordingly. When a Split Sound is loaded, a secondary (Split) Channel can be used in order to separate both Parts from each other.</p>
+        <p>As classical MIDI operates on 7 bit resolution (128 steps), there is a loss in accuracy (the C15 operates on much higher precision). Nevertheless, precision can be maintained by enabling <q>High Res.</q> options. When enabled, the resolution increases to 14 bit (16384 steps). Values are then encoded as a pair of MSB (coarse) and LSB (fine) components, effectively doubling the amount of messages. This is still compatible with the classical resolution, as the LSB component is optional when receiving MIDI messages.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

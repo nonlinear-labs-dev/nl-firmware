@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.10. Overviews</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-10-overviews">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-10-overviews.html" data-number="4.10">Overviews</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.10">Overviews</h2>
+    </section>
+    <section>
+        <p>There are different overviews provided on the <span data-keyword="Panel">Unit</span>, enabling the user to quickly get an impression of the inner workings of a particular sound, just by a brief glance at the <span data-keyword="Parameter">Panels</span>. Without listening to the sound or studying parameter values, certain assumptions on signal flow and modulation assignments can be easily made.</p>
+    </section>
+    <section>
+        <h3 class="heading primary" data-detail="Panel Unit only">Active Overview</h3>
+        <p>At any time, when the <span data-keyword="Preset">Screen</span> is in focus, active overview will be provided. Signal-flow related parameters that are not zero (<q>active</q>) will have lit LEDs. When <span data-keyword="Macro">Controls</span> are mapped to at least one parameter, they will show lit LEDs as well.</p>
+    </section>
+    <section>
+        <h3 class="heading primary">MC Target Overview</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="MC Target Overview (Panel Unit)">
+                <picture class="content" data-src="images/hardware-ui/panels/gfk-mc-target-ovw.gif"></picture>
+            </figure>
+            <div>
+                <p>When a <span data-keyword="Macro">Control</span> is selected, all assigned target parameters will show their assignment by blinking LEDs. This applies to parameters that are available on one of the <span data-keyword="Parameter">Panels</span>.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">MC Target Overview</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="MC Target Overview (Graphical UI)">
+                <picture class="content" data-src="images/web-ui/parameter/webui-mc-target-overview.png"></picture>
+            </figure>
+            <div>
+                <p>When a <span data-keyword="Macro">Control</span> is selected, it will be surrounded by a red rectangle. All assigned target parameters show their assignment by surrounding red rectangles as well. In <span data-keyword="Split"></span>/<span data-keyword="Layer"></span> sounds, the <span data-keyword="Part"></span> in focus is reflected.</p>
+            </div>
+        </div>
+        <h3 class="heading primary" data-detail="Panel Unit only">MC Target Indicators</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Macro Control screen - target indicators">
+                <picture class="content" data-src="images/hardware-ui/boled/parameter/boled-mc-target-indicators.png"></picture>
+            </figure>
+            <div>
+                <p>When a <span data-keyword="Macro">Control</span> is selected, assigned Main parameters (not available on any <span data-keyword="Parameter">Panel</span>) are indicated by literal symbols in the <span data-keyword="Macro">Control Screen</span>.</p>
+            </div>
+        </div>
+        <div data-columns="1">
+            <table>
+                <tr>
+                    <th><code><b>M</b></code></th>
+                    <td>Indicates assignments to Master Volume or Master Tune.</td>
+                </tr>
+                <tr>
+                    <th><code><b>u</b></code></th>
+                    <td>Indicates an assignment to Unison Detune. In a <span data-keyword="Split"></span> sound, the <span data-keyword="Part"></span> in focus is reflected.</td>
+                </tr>
+                <tr>
+                    <th><code><b>m</b></code></th>
+                    <td>Indicates an assignment to Mono Glide. In a <span data-keyword="Split"></span> sound, the <span data-keyword="Part"></span> in focus is reflected.</td>
+                </tr>
+                <tr>
+                    <th><code><b>P</b></code></th>
+                    <td>Indicates assignments to Part Volume, Part Tune (in <span data-keyword="Split"></span>/<span data-keyword="Layer"></span> Sounds) or the Split Point (only in <span data-keyword="Split"></span> sounds).</td>
+                </tr>
+            </table>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary" data-detail="Panel Unit only">Signal Flow Overview</h3>
+        <figure class="border maximize" data-label="Signal Flow Overview (Panel Unit)">
+            <picture class="content" data-src="images/hardware-ui/panels/gfk-flow-ovw.gif"></picture>
+        </figure>
+        <p>When selecting a parameter of a particular group, blinking LEDs on the <span data-keyword="Panel">Unit</span> show where the output signal of this group is applied further in the signal chain. (If, for example, a parameter of the Feedback Mixer is selected, the PM FB and FB Mix parameters of the Oscillators and Shapers will have blinking LEDs, if they are unequal to zero - indicating that the output signal of the Feedback Mixer is applied in these particular sections.</p>
+        <div data-highlight="note">
+            <p>The Signal Flow indicator is optional and can be disabled in the <span data-keyword="Setup">Menu</span> (see chapter <a href="./documents/man-user/08-setup/08-setup.html" data-number="8">Setup (C15 System Settings)</a> for more details).</p>
+        </div>
+        <p><i>Furthermore, in <span data-keyword="Split"></span>/<span data-keyword="Layer"></span> sounds, the <span data-keyword="Sound">Screen</span>/<span data-keyword>Tab</span> can indicate send and feedback flow across <span data-keyword="Parts"></span>, as explained in <a href="./documents/man-user/04-user-interfaces/04-08-0-part-manipulation.html" data-number="4.8">Part Manipulation</a>.</i></p>
+    </section>
+    <section>
+        <h3 class="heading primary">Changed Overview</h3>
+        <p>When a previously loaded preset has been edited, an asterisk (<code><b>*</b></code>) will be shown. It can refer to different elements, depending on the context.</p>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Changed Overview - Shift Button">
+                <picture class="content" data-src="images/hardware-ui/panels/mp-shift.png"></picture>
+            </figure>
+            <div>
+                <p>On the <span data-keyword="Panel">Unit</span>, the <span data-keyword="Shift">Button</span> can be used to overview or navigate to changed elements.</p>
+            </div>
+        </div>
+        <section>
+            <h4 class="heading primary">Presets</h4>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Preset Screen - change indicator">
+                    <picture class="content" data-src="images/hardware-ui/boled/preset/boled-pre-changed-indi.png"></picture>
+                </figure>
+                <div>
+                    <p>As mentioned in chapter <a href="./documents/man-user/03-basic-concepts/03-06-presets.html" data-number="3.6">Presets</a>, the <span data-keyword="Preset">Screen</span> will indicate changes (user edits) to a loaded preset by showing an asterisk behind the unique number. When changes occured to a loaded preset, holding the <span data-keyword="Shift">Button</span> while in the <span data-keyword="Preset">Screen</span> will show the Changed Overview on the <span data-keyword="Panel">Unit</span>, as changed parameters will now have blinking LEDs.</p>
+                </div>
+            </div>
+            <h4 class="heading secondary" data-detail="Graphical UI">Presets</h4>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Change indicators (Graphical UI)">
+                    <picture class="content" data-src="images/web-ui/parameter/webui-param-chd-preset.png"></picture>
+                </figure>
+                <div>
+                    <p>In the <span data-keyword="Preset">Tab</span>, an asterisk will be shown as well. For each changed parameter, an additional yellow frame will be shown. The highlighting can be disabled in the <code><b>GUI Settings</b></code> tab of the Setup window.</p>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h4 class="heading primary">Parameters</h4>
+            <div data-columns="2">
+                <div>
+                    <figure class="border maximize" data-label="Parameter Screen - change indicator">
+                    <picture class="content" data-src="images/hardware-ui/boled/parameter/boled-param-changed-indi.png"></picture>
+                    </figure>
+                    <figure class="border maximize" data-label="Compare Screen (Shift Button)">
+                        <picture class="content" data-src="images/hardware-ui/boled/parameter/boled-param-changed-comp.png"></picture>
+                    </figure>
+                </div> 
+                <div>
+                    <p>When a changed parameter is selected and visible in the <span data-keyword="Parameter">Screen</span>, an asterisk behind its label will be shown as well. Holding the <span data-keyword="Shift">Button</span> now will redirect to the <span data-keyword="Compare">Screen</span>, showing the loaded (original) and changed (edited) positions simultaneously. Both can be recalled by using <span data-keyword="Soft Buttons">2</span>/<span data-keyword>3</span>.</p>
+                </div>
+            </div>
+            <h4 class="heading secondary" data-detail="Graphical UI">Parameters</h4>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="changed Parameter indicators/options (Parameter Tab)">
+                    <picture class="content" data-src="images/web-ui/parameter/webui-param-chd-param.png"></picture>
+                </figure>
+                <div>
+                    <p>When a changed parameter is selected and visible in the <span data-keyword="Parameter">Tab</span>, an asterisk behind its label will be shown as well. Furthermore, the previous state will be indicated left to the shown value. When selecting the previous state, it will be recalled.</p>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h4 class="heading primary">Parameter Modulation Aspects</h4>
+            <div data-columns="2">
+                <div>
+                    <figure class="border maximize" data-label="Parameter Screen - changed modulation aspects">
+                    <picture class="content" data-src="images/hardware-ui/boled/parameter/boled-param-mod-changed-indi.png"></picture>
+                    </figure>
+                    <figure class="border maximize" data-label="Compare Screen - change modulation aspects (Shift Button)">
+                        <picture class="content" data-src="images/hardware-ui/boled/parameter/boled-param-mod-changed-rec.png"></picture>
+                    </figure>
+                </div>
+                <div>
+                    <p>When the modulation aspects of a parameter have changed, an asterisk will be shown for each <span data-keyword="Soft Button"></span> label. When a particular modulation aspect is in focus, the <span data-keyword="Shift">Button</span> can again be used to compare and recall states. <span data-keyword="Soft Buttons">2</span>/<span data-keyword>3</span> can be used to recall loaded/changed states and <span data-keyword="Soft Buttons">1</span>/<span data-keyword>4</span> can be used to navigate changed modulation aspects, as long as the <span data-keyword="Shift">Button</span> remains pressed.</p>
+                </div>
+            </div>
+            <h4 class="heading secondary" data-detail="Graphical UI">Parameter Modulation Aspects</h4>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="changed Parameter modulation aspects (Parameter Tab)">
+                    <picture class="content" data-src="images/web-ui/parameter/webui-param-chd-aspect.png"></picture>
+                </figure>
+                <div>
+                    <p>When the modulation aspects of a parameter have changed, the modulation icon will appear with an additional yellow frame. After selecting the modulation icon, any changed modulation aspect will be shown with an additional yellow frame. Except for the Macro Control selector (just indicating the previous state), any particular aspect can be focussed by selecting the corresponding icon. With the aspect in focus, the previous state will be indicated left to the shown value. When selecting the previous state, it will be recalled.</p>
+                </div>
+            </div>
+        </section>
+    </section>
+    <section>
+        <h3 class="heading primary">Scale Overview</h3>
+        <p>In order to quickly notice if any keys have an individual tuning (as controlled by the Scale group's Offset parameters), the Scale group provides an overview, showing if active (non-zero) offset parameters are present.</p>
+        <h3 class="heading secondary" data-detail="Panel Unit">Scale Overview</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Scale group - indicator, reset (Soft Button 1)">
+                <picture class="content" data-src="images/hardware-ui/boled/parameter/boled-param-scale-overview.png"></picture>
+            </figure>
+            <div>
+                <p>The active state is indicated by a highlighted bar for the Scale group in the selection stack, and when the Scale group is selected, a <code><b>Reset</b></code> option is provided by <span data-keyword="Soft Button">1</span>, which will set all active Offset parameters to zero when confirming with <span data-keyword="Enter"></span>.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Scale Overview</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Scale group menu (Graphical UI)">
+                <picture class="content" data-src="images/web-ui/parameter/webui-scale-active.png"></picture>
+            </figure>
+            <div>
+                <p>The active state is indicated by an exclamation mark <code><b>!</b></code> in the Scale group header, and a <code><b>Reset</b></code> option is provided by the header context menu, which will set all active Offset parameters to zero.</p>
+            </div>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

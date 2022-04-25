@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 05.2.6. Feedback Mixer</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/05-synth-engine/05-02-sig-flow-components/05-02-6-feedback-mixer">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-synth-engine.html" data-number="5">The Synthesis Engine</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-0-sig-flow-components.html" data-number="5.2">Signal Flow and Components</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-6-feedback-mixer.html" data-number="5.2.6">Feedback Mixer</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="5.2.6">Feedback Mixer</h2>
+        <p>The global feedback signal, usable for phase modulation and within the Shapers, is defined by a mix of four signals provided by the two filters and the Effects section (blendable between pre and post Reverb). Each signal is weighted by a bipolar Amount parameter, as the polarity can have a noticeable influence on the feedback behavior.</p>
+        <p>A sine shaper (providing Drive, Fold and Asymmetry, as described for the branch Shapers) can manipulate the sum signal and create additional harmonics. The sum also can be amplified or damped by a Level parameter that can be sensitive to Key Tracking.</p>
+        <p>The feedback signal will be a mixture of polyphonic signals (provided by the filters) and monophonic signals (provided by the effects, having no more voice association and being a downmix of the original stereo signal).</p>
+        <figure class="border maximize" data-label="Feedback Mixer">
+            <picture class="content" data-src="./images/diagrams/fbmix-*.png"></picture>
+        </figure>
+        <figure class="border maximize" data-label="Feedback Signal Flow">
+            <picture class="content" data-src="./images/diagrams/single-sig-flow-s-fbk-*.png"></picture>
+        </figure>
+
+    </section>
+</main>
+</div>
+</body>
+</html>

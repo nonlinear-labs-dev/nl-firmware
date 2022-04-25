@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Change Log - [22-16] Studio Package Improvements 2</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/change-log/22-16">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/change-log/index.html">Change Log</a>
+        <span>/</span>
+        <a href="./documents/change-log/22-16.html">Studio Package Improvements 2</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 class="heading secondary"><span class="sw-version">22-16</span> Studio Package Improvements 2</h2>
+        <div data-highlight="note">
+            <p>This update further refines newly introduced MIDI features and provides additional bug fixes and enhancements.</p>
+        </div>
+    </section>
+    <section>
+        <h3>Hardware Sources</h3>
+        <p>The Positions of Hardware Sources are now separated from Presets. This allows for more reliable Preset recall and store behavior, even when returning Sources are not in their return positions.</p>
+        <p>However, the Return Behavior of Pedals and Ribbons remains a part of a Preset and may differ when recalling another Preset.</p>
+        <div class="section">
+            <h4 data-detail="Hardware UI, Graphical UI">MIDI Assignments</h4>
+            <p>When a Hardware Source has a MIDI assignment, it will be indicated on the parameter <i>(for example, the CC number)</i>.</p>
+        </div>
+        <div class="section">
+            <h4>Local On/Off Enhancements</h4>
+            <p>Decoupling a Hardware Source from the synth by setting Local Enable to <code>Off</code>, changes their representation in the UI.</p>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Local On/Off on Hardware Sources">
+                    <picture class="content" data-src="./images/web-ui/parameter/webui-hw-local.png"></picture>
+                </figure>
+                <div>
+                    <p>The Hardware Source is now shown differentiated into <q>Send</q> and <q>Receive</q>.</p>
+                </div>
+            </div>
+            <p><q>Send</q> shows the physical status of the respective Hardware Source, for example the current position of a Ribbon and relates to all communication with external devices. This value is sent via MIDI.</p>
+                    <p><q>Receive</q> assigns the value that is passed internally to the synth. This is either a value received via MIDI or, in the case of the bidirectional Ribbons, a value received via an adjusted Macro Control. This allows the audio engine of the C15 to be triggered by an external device and at the same time the Hardware Sources can be used to control other external devices without conflict.</p>
+        </div>
+        <div class="section">
+            <h4>Changing a Hardware Source Return Behavior</h4>
+            <p>When <code>[ReturnToZero/ReturnToCenter]</code> is chosen, the position of the Hardware Source will drop to the return position.</p>
+            <div data-highlight="warn">
+                <p>We recommend to leave returning Sources in their return positions when changing their Return Behavior. Otherwise, the modulation to associated Macro Controls may be compromised due to offsets and clipping Macro Controls.</p>
+            </div>
+            <div data-highlight="note">
+                <p>If a Pedal's behavior changes <code>[ReturnToCenter &#x2192; NonReturn/ReturnToZero]</code>, the position will be clipped (negative values will be set to zero).</p>
+            </div>
+        </div>
+        <div class="section">
+            <h4>Recalling a Preset with differing Return Behavior</h4>
+            <p>In case the return behavior of a particular Hardware Source changes when a preset is recalled, our general aim is to leave the position intact. However, there is an exception: If a Ribbon changes <code>[NonReturn &#x2192; ReturnToCenter]</code>, the position will drop to the return position.</p>
+        </div>
+    </section>
+    <section>
+        <h3>Boot Sound</h3>
+        <p>As Hardware Source positions are not part of a Preset anymore, loading the first Sound after booting the C15 depends on how the Hardware Sources are placed physically. Returning Hardware Sources may not be in their return positions, which will affect the Preset. Non-returning untouched Pedals and Ribbons are dominated by associated Macro Controls and will not affect the Preset.</p>
+    </section>
+    <section>
+        <h3>User Manual</h3>
+        <p>The User Manual has been reworked from scratch and now provides more content and better navigation.</p>
+    </section>
+    <section>
+        <h3>Fixes and Improvements</h3>
+        <div class="section">
+            <h4>MIDI</h4>
+            <p>If the Local Enable setting of a Hardware Source changes, the last position will be shared between the Send and Receive representations <i>(Local <code>On &#x2192; Off</code>: Receive &#x2192; Send, <code>Local Off &#x2192; On</code>: Send &#x2192; Receive)</i>. So, even for returning Sources in arbitrary positions, the last position will correctly be reflected.</p>
+            <p>A returning Hardware Source will drop to its return position (internally, affecting the Receive representation and the Synth), when Local is disabled.</p>
+            <p><code>AllNotesOff</code> messages are now sent more carefully, only if internal keys are pressed. When recalling Split Sounds with differing Mono/Unison behavior, the message will correspond to the Part in which a reset occured.</p>
+        </div>
+        <div class="section">
+            <h4>Recorder</h4>
+            <p>The Auto Start option will default to <code>Off</code>, until it is explicitly changed.</p>
+        </div>
+        <div class="section">
+            <h4>General Fixes</h4>
+            <ul>
+                <li>reworked animated screens in the Panel Unit Display</li>
+                <li>introduced a Shutdown Screen (urging the User to not cut the power supply until the C15 is properly shut down)</li>
+                <li>fixed Bank Import from USB Stick</li>
+                <li>fixed Bank sorting</li>
+            </ul>
+        </div>
+    </section>
+    <section>
+        <h3>Known Issues</h3>
+        <p>The current handling of Hardware Sources works reliably when using physical Sources or MIDI messages. Using Hardware Sources from the Hardware UI or Web UI during Behavior changes, Preset recalls or Local changes may lead to unwanted behavior.</p>
+        <div data-highlight="warn">
+            <p>Recalling a <code>[ReturnToCenter]</code> Pedal with negative position can cause a Modulation offset.</p>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

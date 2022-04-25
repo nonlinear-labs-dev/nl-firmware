@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Pedal Manual - 09. Troubleshooting and Tips</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-pedals/09-troubleshooting">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-pedals/index.html">Pedal Manual</a>
+        <span>/</span>
+        <a href="./documents/man-pedals/09-troubleshooting.html" data-number="9">Troubleshooting and Tips</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="9">Troubleshooting and Tips</h2>
+    </section>
+    <section>
+        <p><em>9.1 The selected pedal type is not working. When I repeatedly move from end stop to end stop, I don’t see any values changing in the Pedal-Editor</em></p>
+        <p>First, select a different pedal preset temporarily then go back to the intended one and check again, or unplug and re-plug the pedal.</p>
+        <p>Check if the general pedal preset type is correct for the pedal (if, for example, you have selected <q>Resistor</q> for a standard 3-wire pedal that is ring-active, you will never get any output from that because the C15 is sensing on the wrong pin).</p>
+        <p>Check it the plug is inserted fully in to the C15. Check if the cable itself is not broken. Set any <q>minimum</q> knobs to fully counter-clockwise, and any <q>range</q> knobs fully clockwise. Check if any switches are set properly. Check that the <q>Expression</q> jack is used with multi-function pedals.</p>
+        <p><em>9.2 The pedal has very uneven output over the mechanical travel</em></p>
+        <p>Quite likely you have selected a pedal preset with the wrong pin assignment for a 3-wire Pedal. Try swapping tip-active with ring-active pedal presets and vice versa, and auto- range the pedal after a pedal preset change. Also check if any pin-out selector switch is in the correct position, those are often at the bottom of the pedal base and are prone to change position unintentionally when handling the pedal.</p>
+        <p>If that doesn’t fix it, there is a rare chance that the pedal is not using a linear potentiometer but you might also happen to have used the wrong output jack of a multi-function pedal. Always use the output that is marked with <q>EXP</q>, <q>Expression</q> or similar.</p>
+        <p><em>9.3 I don’t get the full 0% to 100% span of output values anymore when I move the pedal from end stop to end stop</em></p>
+        <p>It’s possibly time to redo the Auto-Ranging as some characteristics of the pedal have changed which the C15 could not track, like a re-adjusted <q>minimum</q> level control on the pedal. Unplug and re-plug the pedal at the C15 or select a different pedal preset temporarily, then auto-range the pedal again.</p>
+        <p>In rare cases you might want to select a compatible pedal preset that has larger electrical dead-zones to catch unstable values at the end stops. Those are <q>D:Roland DP-10 (cont.)</q>, <q>E:Moog EP-3 (std.)</q> and the generic presets. See table of pedal presets for details.</p>
+        <p><em>9.4 The pedal output is high (100%) at the start position and low (0%) at the end position</em></p>
+        <p>Try using a pedal preset with reverse output, those are available for the generic 3-wire potentiometer pedals as well as for 2-wire resistors, and of course for switches.</p>
+        <p><em>9.5 The pedal output is very drifty and shows suddenly changing values</em></p>
+        <p>Check cable for broken conductors. Note: If you are using a tip-active pedal (<q>Roland</q> pin-out) you might be able to save the gig by using the <q>Resistor</q> setting.</p>
+        <p><em>9.6 The pedal constantly overwrites a shared Macro Control with new values even when I don’t touch it</em></p>
+        <p>The pedal might have developed additional mechanical and electrical slack and instabil- ity over time and should be serviced or replaced. When it is a tip-active pedal preset, you might try to change to the <q>E:Moog EP-3 (std.)</q> pedal preset which is set up for about the strongest Auto-Hold behavior.</p>
+        <p>Likewise, when you feel to have the opposite problem with the pedal not reacting close enough to pedal movement, you may want to try the <q>E:Fractal EV-2</q> pedal preset which is set up only weak Auto-Hold behavior. Again, useful only for tip-active pedals. With ring-active pedals, you can still try the other ring-active presets, also from the generic list and see if you get better results. See table of pedal presets for details.</p>
+        <p><em>9.7 Can I use a continuous pedal as a makeshift solution for a true switching pedal?</em></p>
+        <p>You may perfectly use a continuous-type pedal for a switching action (using one of the Switch presets), the Auto-Ranging feature makes this work for potentiometer as well as adjustable resistor types of pedals. The only restriction is that the pedal must be of the <q>Tip Active</q> type.</p>
+        <p><em>9.8 Can I use a switch as a makeshift solution for a true continuous pedal?</em></p>
+        <p>You may use a physical switch as well for a continuous output, it will just jump between the extremes (0%, 100%) with only one or two intermediate values. When using a physical switch, select one of the <q>Resistor</q> types of presets. Again, the restriction is that the switch must be of the <q>Tip Active</q> type.</p>
+        <p><em>9.9 Can I use <q>powered/active</q> (relay- or electronic-switch based) switchers?</em></p>
+        <p>With some caution this will work as expected.</p>
+        <p>There are certain battery- or mains-powered switching pedals that use the ring contact of their TRS jack to close the internal electrical circuit, for those only use a 2-wire cable with TS-plugs on both ends and the cable must first be connected to the switch before plugging into the C15, otherwise the function might not work properly and the input might even be damaged.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>
