@@ -306,8 +306,8 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
         case PLAYCONTROLLER_NOTIFICATION_ID_AT_STATUS:
         {
           AT_status_T s = AT_uint16ToStatus(data[1]);
-          printf("NOTIFICATION : AT status: legacyMode=%u, calibrated=%u, maskedKeys=%u, silentKeys=%u\n",
-                 s.legacyMode, s.calibrated, s.maskedKeys, s.silentKeys);
+          printf("NOTIFICATION : AT status: legacyMode=%u, calibrated=%u, validEEPROM=%u, maskedKeys=%u, silentKeys=%u\n",
+                 s.legacyMode, s.calibrated, s.eepromValid, s.maskedKeys, s.silentKeys);
           break;
         }
         default:

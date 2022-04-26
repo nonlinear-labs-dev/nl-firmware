@@ -31,6 +31,7 @@ void       AT_SetLegacyMode(int const on)
 static int      collectATtestData = 0;  // 0:off; 1:on
 static uint16_t AT_eepromHandle   = 0;  // EEPROM access handle
 static int      AT_updateEeprom   = 0;  // flag / step chain variable
+static int      eepromValid       = 0;
 
 // volatile ADC max values [61] is current single key #
 // [61] is current single key #
@@ -402,6 +403,7 @@ void AT_Init(void)
   collectATtestData = 0;  // 0:off; 1:on
   AT_eepromHandle   = 0;  // EEPROM access handle
   AT_updateEeprom   = 0;  // flag / step chain variable
+  eepromValid       = 0;
   legacyMode        = AT_LEGACY_DEFAULT;
 
   // Legacy
@@ -414,7 +416,10 @@ void AT_Init(void)
   AT_eepromHandle = NL_EEPROM_RegisterBlock(sizeof AT_adcCalibration, EEPROM_BLOCK_ALIGN_TO_PAGE);
   AT_calibration_T tmp;
   if (NL_EEPROM_ReadBlock(AT_eepromHandle, &tmp, EEPROM_READ_BOTH))
+  {
     memcpy(&AT_adcCalibration, &tmp, sizeof(AT_adcCalibration));
+    eepromValid = 1;
+  }
 }
 
 // --------------------------------------------------------
@@ -485,9 +490,10 @@ void AT_ProcessAftertouch(void)
 uint16_t AT_GetStatus(void)
 {
   AT_status_T status;
-  status.legacyMode = legacyMode != 0;
-  status.calibrated = AT_adcCalibration.keybedId != 0;
-  status.maskedKeys = POLY_maskedKeyBF != 0;
-  status.silentKeys = POLY_SilentMaskedKeys() != 0;
+  status.legacyMode  = legacyMode != 0;
+  status.calibrated  = AT_adcCalibration.keybedId != 0;
+  status.maskedKeys  = POLY_maskedKeyBF != 0;
+  status.silentKeys  = POLY_SilentMaskedKeys() != 0;
+  status.eepromValid = eepromValid != 0;
   return AT_statusToUint16(status);
 }

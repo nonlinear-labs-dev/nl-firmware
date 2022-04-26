@@ -224,8 +224,9 @@ typedef struct
 
 typedef struct
 {
-  unsigned legacyMode : 1;  // lecacy AT mode currently in use
-  unsigned calibrated : 1;  // calibration in use
-  unsigned maskedKeys : 1;  // some key are masked
-  unsigned silentKeys : 1;  // masked key only will silence the AT output
+  unsigned legacyMode  : 1;  // lecacy AT mode currently in use
+  unsigned calibrated  : 1;  // calibration in use
+  unsigned maskedKeys  : 1;  // some key are masked
+  unsigned silentKeys  : 1;  // masked key only will silence the AT output
+  unsigned eepromValid : 1;  // valid calibration data found at boot time
 } AT_status_T;
