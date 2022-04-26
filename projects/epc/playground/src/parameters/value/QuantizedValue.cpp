@@ -291,5 +291,5 @@ void QuantizedValue::onFineQuantizedChanged(Initiator initiator, tControlPositio
 
 void QuantizedValue::setFactoryDefault(double factoryDefault)
 {
-
+  super::setFactoryDefaultValue(factoryDefault);
 }
