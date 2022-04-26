@@ -28,8 +28,8 @@ class PresetParameterGroup
   void writeDocument(Writer &writer) const;
 
   // transactions
-  template <typename Other> void copyFrom(UNDO::Transaction *transaction, const Other *other);
-
+  void copyFrom(UNDO::Transaction *transaction, const PresetParameterGroup *other);
+  void copyFrom(UNDO::Transaction *transaction, const ::ParameterGroup *other);
   void assignVoiceGroup(UNDO::Transaction *transaction, VoiceGroup vg);
 
   [[nodiscard]] const std::vector<ParameterPtr> &getParameters() const
@@ -41,8 +41,6 @@ class PresetParameterGroup
 
   // algorithm
   void writeDiff(Writer &writer, const GroupId &groupId, const PresetParameterGroup *other) const;
-
-  void TEST_deleteParameter(const ParameterId &id);
 
  private:
   std::vector<ParameterPtr> m_parameters;

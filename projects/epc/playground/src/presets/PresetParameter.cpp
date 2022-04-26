@@ -67,11 +67,6 @@ void PresetParameter::setField(UNDO::Transaction *transaction, Fields field, con
   transaction->addUndoSwap(m_fields, cp);
 }
 
-void PresetParameter::copyFrom(UNDO::Transaction *transaction, const std::unique_ptr<PresetParameter> &other)
-{
-  copyFrom(transaction, other.get());
-}
-
 void PresetParameter::copyFrom(UNDO::Transaction *transaction, const PresetParameter *other)
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
