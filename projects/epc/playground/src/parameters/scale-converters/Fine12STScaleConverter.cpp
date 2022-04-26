@@ -9,3 +9,8 @@ Fine12STScaleConverter::Fine12STScaleConverter()
 Fine12STScaleConverter::~Fine12STScaleConverter()
 {
 }
+
+Fine24STScaleConverter::Fine24STScaleConverter()
+    : LinearScaleConverter(tTcdRange(0, 12000), tDisplayRange(0, 24), PitchDimensionFine::get())
+{
+}

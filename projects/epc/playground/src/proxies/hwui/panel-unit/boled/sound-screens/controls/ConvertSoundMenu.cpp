@@ -6,6 +6,7 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <libundo/undo/Scope.h>
 
 ConvertSoundMenu::ConvertSoundMenu(const Rect &rect)

@@ -18,6 +18,7 @@
 #include <groups/MacroControlsGroup.h>
 #include <http/UndoScope.h>
 #include <nltools/messaging/Message.h>
+#include "use-cases/EditBufferUseCases.h"
 
 PanelUnit::PanelUnit(Settings &settings)
     : super(settings)

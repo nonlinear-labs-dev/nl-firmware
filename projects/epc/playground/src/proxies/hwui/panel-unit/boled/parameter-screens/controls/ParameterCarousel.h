@@ -2,6 +2,7 @@
 
 #include <proxies/hwui/buttons.h>
 #include "Carousel.h"
+#include "MiniParameter.h"
 #include <nltools/Types.h>
 
 class Application;
@@ -31,5 +32,8 @@ class ParameterCarousel : public Carousel
 
   void setupChildControls(const tPanelParameterEditMode &edit, Parameter *selectedParameter, Buttons button);
   void setupChildControls(Parameter *selectedParameter, const std::__cxx11::list<int> &buttonAssignments);
+  void setupChildControlsThatFit(Parameter* selectedParameter, const std::list<int>& buttonAssignments);
+  void setupChildControlsForScaleParameterCarousel(Parameter* selectedParameter, const std::list<int>& buttonAssignments);
   void setupChildControlsForParameterWithoutButtonMapping(Parameter *selectedParameter);
+  void decorateMiniParameterControlForScaleParameterCarousel(const Parameter *param, MiniParameter *miniParam) const;
 };

@@ -383,3 +383,24 @@ void EditBufferUseCases::randomizePart(VoiceGroup part, double amount)
   auto scope = m_editBuffer.getUndoScope().startTransaction("Randomize Part");
   m_editBuffer.undoableRandomizePart(scope->getTransaction(), part, Initiator::EXPLICIT_WEBUI, amount);
 }
+
+void EditBufferUseCases::setModulationSourceOfAll(MacroControls controls)
+{
+  auto scope = m_editBuffer.getUndoScope().startTransaction("Set all Modulation Sources to %s", toString(controls));
+  auto trans = scope->getTransaction();
+
+  for(auto& groups: m_editBuffer.getParameters())
+  {
+    for(auto& g: groups)
+    {
+      for(auto& p: g->getParameters())
+      {
+        if(auto mod = dynamic_cast<ModulateableParameter*>(p))
+        {
+          mod->setModulationSource(trans, controls);
+          mod->setModulationAmount(trans, 1);
+        }
+      }
+    }
+  }
+}

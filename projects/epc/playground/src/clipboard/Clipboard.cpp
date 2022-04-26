@@ -1,5 +1,6 @@
 #include "Clipboard.h"
 #include "MultiplePresetSelection.h"
+#include "use-cases/PresetManagerUseCases.h"
 #include <presets/PresetManager.h>
 #include <presets/Preset.h>
 #include <presets/Bank.h>

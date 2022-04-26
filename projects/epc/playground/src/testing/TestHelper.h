@@ -9,6 +9,10 @@
 #include <Application.h>
 #include <parameters/ModulateableParameter.h>
 #include <nltools/messaging/Message.h>
+#include "use-cases/EditBufferUseCases.h"
+#include "use-cases/SettingsUseCases.h"
+#include "use-cases/PresetManagerUseCases.h"
+#include "use-cases/SoundUseCases.h"
 
 namespace TestHelper
 {

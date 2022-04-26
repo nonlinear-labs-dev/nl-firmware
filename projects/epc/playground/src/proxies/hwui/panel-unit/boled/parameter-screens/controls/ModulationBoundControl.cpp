@@ -6,6 +6,7 @@
 #include <presets/EditBuffer.h>
 #include <libundo/undo/Scope.h>
 #include <proxies/hwui/HWUI.h>
+#include "use-cases/ModParameterUseCases.h"
 
 bool ModulationBoundControl::onButton(Buttons i, bool down, ButtonModifiers)
 {

@@ -1,5 +1,6 @@
 #include "RenameMCLayout.h"
 #include "Application.h"
+#include "use-cases/MacroControlParameterUseCases.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>

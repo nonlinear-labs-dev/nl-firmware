@@ -17,6 +17,7 @@
 #include <proxies/hwui/TwoStateLED.h>
 #include "PanelUnitParameterEditMode.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <device-settings/LayoutMode.h>
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <sigc++/sigc++.h>

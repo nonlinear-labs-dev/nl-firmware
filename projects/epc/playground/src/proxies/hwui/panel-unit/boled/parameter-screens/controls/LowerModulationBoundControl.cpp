@@ -12,6 +12,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LowerModulationBoundSlider.h>
 #include <math.h>
 #include <parameters/scale-converters/ScaleConverter.h>
+#include "use-cases/ModParameterUseCases.h"
 
 LowerModulationBoundControl::LowerModulationBoundControl(const Rect &r)
     : super(r)

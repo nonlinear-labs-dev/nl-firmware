@@ -15,6 +15,7 @@
 #include "device-info/DeviceInformation.h"
 #include <http/WebUISupport.h>
 #include <giomm.h>
+#include <clipboard/Clipboard.h>
 
 ContentManager::WebsocketConnection::WebsocketConnection(SoupWebsocketConnection *c)
 {

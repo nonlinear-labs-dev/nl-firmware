@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.5.2. Hardware Source Properties</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-05-hardware-sources/04-05-2-properties">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-05-0-hardware-sources.html" data-number="4.5">Hardware Sources</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-05-2-hw-properties.html" data-number="4.5.2">Hardware Source Properties</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.5.2">Hardware Source Properties</h2>
+    </section>
+    <section>
+        <p><span data-keyword="Hardware">Sources</span> possess one additional property called <span data-keyword="Return">Behavior</span>, reflecting how a source behaves when it is released (either returning to a neutral position or staying where it is).</p>
+        <p>For the <span data-keyword="Bender"></span> and <span data-keyword="Aftertouch"></span>, the return behavior is fixed, as they always return mechanically. For <span data-keyword="Pedals"></span> and <span data-keyword="Ribbons"></span>, the behavior can be chosen.</p>
+        <p>The Return Behavior determines how Hardware Sources affect <span data-keyword="Macro">Controls</span>. For returning sources, the corresponding amounts can be set continuously. The amounts of non-returning sources will behave like switches, either enabling or disabling full-range modulations on Macro Controls. <i>(The amount can not be negative in this case.)</i></p>
+        <div data-highlight="note">
+            <p>The return behavior of <span data-keyword="Pedals"></span> should match how the corresponding external pedal controller behaves when released.</p>
+        </div>
+        <p>Non-returning <span data-keyword="Ribbons"></span> can only affect one <span data-keyword="Macro">Control</span> exclusively and will be linked to it, meaning that both Ribbon and Macro Control will act essentially as one parameter (changes to either element will be reflected in both).</p>
+    </section>
+    <section>
+        <h3 class="heading primary">Edit Return Behavior</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Hardware Source return behavior (Soft Button 2)">
+                <picture class="content" data-src="images/hardware-ui/boled/parameter/boled-hw-edit-behav.png"></picture>
+            </figure>
+            <div>
+                <p>By default, the <span data-keyword="Hardware">Source</span> position is in focus. Press <span data-keyword="Soft Button">2</span> in order to focus on the return behavior and adjust it like a parameter. Press the button again in order to return to the default focus.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Edit Return Behavior</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Hardware Source return behavior (menu)">
+                <picture class="content" data-src="images/web-ui/parameter/webui-ctx-hw-return-main.png"></picture>
+            </figure>
+            <div>
+                <p>In the main area, right click on a <span data-keyword="Hardware">Source</span> element to call up a context menu in order to change the <span data-keyword="Return">Behavior</span>.</p>
+            </div>
+            <figure class="border maximize" data-label="Hardware Source return behavior (menu)">
+                <picture class="content" data-src="images/web-ui/parameter/webui-ctx-hw-return-tab.png"></picture>
+            </figure>
+            <div>
+                <p>In the <span data-keyword="Parameter">Tab</span>, the menu icon provides a context menu, providing available <span data-keyword="Return">Behaviors</span> for the selected source.</p>
+            </div>
+        </div>
+        <div data-highlight="warn">
+            <p>When adjusting the Return Behavior, no Hardware Source should be moved or held during this time, otherwise clipping problems in the modulation may occur.</p>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

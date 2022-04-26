@@ -69,6 +69,8 @@
 #include "RoutingsView.h"
 #include "RoutingsEditor.h"
 #include "OneShotEntryTypes.h"
+#include "use-cases/SoundUseCases.h"
+#include "use-cases/PresetManagerUseCases.h"
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 #include <device-settings/midi/MidiChannelSettings.h>

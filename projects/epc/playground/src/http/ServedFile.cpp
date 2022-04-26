@@ -5,6 +5,7 @@
 #include <device-settings/DebugLevel.h>
 #include <giomm.h>
 #include <CompileTimeOptions.h>
+#include <filesystem>
 
 ServedFile::ServedFile(HTTPServer &server, std::shared_ptr<HTTPRequest> request)
     : ServedStream(server, request)

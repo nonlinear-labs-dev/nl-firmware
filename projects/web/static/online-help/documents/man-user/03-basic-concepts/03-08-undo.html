@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 03.8. The Undo Tree</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/03-basic-concepts/03-08-undo">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/03-basic-concepts/03-00-0-basic-concepts.html" data-number="3">Basic Concepts</a>
+        <span>/</span>
+        <a href="./documents/man-user/03-basic-concepts/03-08-undo.html" data-number="3.8">The Undo Tree</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="3.8">The Undo Tree</h2>
+    </section>
+    <section>
+        <div class="section" data-columns="2">
+            <figure class="border maximize" data-label="Undo (list-based)">
+                <picture class="content" data-src="./images/info-gfk/gfk-undo-list-*.png"></picture>
+            </figure>
+            <div>
+                <p>The usual undo history of a program would be a list-like data structure. When an editing action is tracked, it is simply appended to the list. If you undo a number of edits, they are lost when when you make new edits.</p>
+            </div>
+            <figure class="border maximize" data-label="Undo (tree-based)">
+                <picture class="content" data-src="./images/info-gfk/gfk-undo-tree-*.png"></picture>
+            </figure>
+            <div>
+                <p>The C15's undo history, on the other hand, is a tree-like data structure. All editing actions are tracked and new branches are created when you undo edits and then make new changes.</p>
+            </div>
+        </div>
+        <p>Using this mechanism, there will be no loss of editing steps, as all steps and branches are accessible. Nevertheless, an ever-growing undo tree will require lots of memory and may be capable of slowing down the system. This can be avoided by making a certain element the new root of the tree (elements prior to that position will be lost in this case) or by deleting inactive branches of the undo tree.</p>
+        <p>Within a branch, the mechanism is quite similar to the ordinary list-based undo, providing backward and forward navigation via undo or redo. The extended tree-based functionalities emerge when navigating to other branches.</p>
+        <p>The C15 undo mechanism tracks different user actions. Parameter selection, edits to parameters, preset recalls and edits to presets and banks can be undone. However, the modulation mechanism is not integrated into the undo mechanism, as it is part of the user performance.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 02.4. Setting up a device for the Graphical User Interface</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/02-setting-up/02-04-graphical-ui">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/02-setting-up/02-00-setting-up.html" data-number="2">Setting up the C15</a>
+        <span>/</span>
+        <a href="./documents/man-user/02-setting-up/02-04-graphical-ui.html" data-number="2.4">Setting up a device for the Graphical User Interface</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h3 id="ch-2-4" class="heading" data-number="2.4">Setting up a device for the Graphical User Interface</h3>
+        <figure class="border maximize" data-label="The Graphical User Interface">
+            <picture class="content" data-src="./images/package/hw-setup/graphical-ui.jpg"></picture>
+        </figure>
+        <section>
+            <h4>Concept</h4>
+            <p>The C15 is designed for flexible operation and interaction, with the <span data-keyword="Base">Unit</span> being necessary for connections and performance. In addition, the <span data-keyword="Panel">Unit</span> provides the <span data-keyword="Hardware">User Interface</span>, with access to all parameters, presets and settings.</p>
+            <p>
+                Finally, the Base Unit also provides a Wi-Fi hotspot for connection to external devices like smartphones, tablets, laptops and desktop computers. When connected, the <span data-keyword="Graphical">User Interface</span> can be accessed with a browser running on the external device. Multiple external devices can be connected simultaneously, and each can display different features. However, only one parameter can be focussed on at a time, which synchronises the Hardware User Interface with each external connected device.
+            </p>
+            <p>Furthermore, the Wi-Fi connection can be used for preset interchange, and hence the option to back up preset banks to the external device. The C15 Reference is also accessible in the browser.</p>
+        </section>
+        <section>
+            <h4>System Requirements</h4>
+            <p>Due to the browser-based implementation of the Graphical User Interface, there are almost no limitations concerning compatibility with operating systems and browsers. Basically, the only system requirements are that the device must be Wi-Fi capable and have a browser.</p>
+            <p>However, given the vast variety of devices, operating systems and browsers, optimal performance cannot be guaranteed in all cases. Differences between browsers, fast changes in technologies and frequent updates contribute to a complex situation which makes it very hard to say what works best.</p>
+            <p>Nevertheless, our experience in the development of the system enables us to make some recommendations and state some minimal requirements:</p>
+            <ul class="list-section">
+                <li>The device should have at least a 1 GHz processor and 2 GB RAM.</li>
+                <li>The device's display should support multi touch, or a mouse should be connected. A connected or integrated keyboard is useful for using the Graphical User Interface.</li>
+                <li>The device should have at least a 7'' diagonal display.</li>
+                <li>Although the choice of browser is completely up to the user, currently (September 2020) the best performance is given by Google Chrome.</li>
+            </ul>
+            <div data-highlight="note">
+                <p>If you encounter problems with your setup, try to restart your device or change to another browser (or device). If not, or if the problem won't go away, please contact us directly for help. We appreciate feedback and user reports and will do our best to solve your problem as soon as possible.</p>
+            </div>
+        </section>
+        <section>
+            <h4>Wi-Fi Settings</h4>
+            <p>To set up a well defined Wi-Fi connection, enter the <span data-keyword="Setup"> Menu</span> on the Hardware User Interface (<span data-keyword="Setup"> Button</span>) and navigate to <b>System Info</b>. Here, all relevant aspects of the Wi-Fi connection are listed:</p>
+            <table>
+                <tr>
+                    <th>Device Name</th>
+                    <td>You can name your C15 instrument by focussing on the device name entry and pressing <span data-keyword="Enter"></span> to access the Rename Screen. Once the name is set, an SSID will be generated. The SSID is composed of a prefix (<code>NL-C15-</code>) and the name you just gave to the instrument.</td>
+                </tr>
+                <tr>
+                    <th>SSID</th>
+                    <td>A Wi-Fi network with the same name as the SSID will be displayed when you scan for available networks on your external device. Connecting to this network enables your external device to control the C15 with a browser. The SSID is generated once during the booting process, so you will have to reboot the device when you rename it.</td>
+                </tr>
+                <tr>
+                    <th>Passphrase</th>
+                    <td>The network connection is secure, so a passphrase is needed to establish a connection. To connect to the network with your external device, use the displayed passphrase to confirm. The passphrase can be generated randomly by focussing on the corresponding entry and pressing <span data-keyword="Enter"></span>. Select and run the command <code>generate new</code>. If you suspect that the passphrase is no longer secure (because it has been shared with someone), a new passphrase should be generated.</td>
+                </tr>
+                <tr>
+                    <th>Address</th>
+                    <td>
+                        <p><b>192.168.8.2</b></p>
+                        <p>Once the connection is established, copy and past the address into your browser's address bar and the Graphical User Interface should appear in your browser.</p>
+                    </td>
+                </tr>
+            </table>
+            <p>The Wi-Fi connection can also be disabled to provide a more secure setup and prevent anyone else controlling the device remotely. This may be especially useful when performing live. Enter the Setup Menu (<span data-keyword="Setup"> Button</span>) and navigate to <b>Device Settings</b>. At the bottom of the list, find <code>Enable/Disable WiFi</code> and change the setting.</p>
+            <div data-highlight="note">
+                <p>If you encounter problems navigating the Setup Menu intuitively, please refer to chapters <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a> and <a href="./documents/man-user/08-setup/08-setup.html" data-number="8">Setup (C15 System Settings)</a>.</p>
+            </div>
+        </section>
+        <section>
+            <h4>Browser-specific issues</h4>
+            <p>As already mentioned, there may be restrictions on some browsers, as there is no real standard on functionality. We do our best to keep track of browser-specific issues and offer solutions if we can find them.</p>
+            <!-- <p>Please refer to the <a href="./documents/known-issues/index.html" class="label">Known Issues</a> document for more information.</p> -->
+        </section>
+    </section>
+</main>
+</div>
+</body>
+</html>

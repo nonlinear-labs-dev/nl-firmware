@@ -24,8 +24,13 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
   if(m_settings)
   {
     auto local = settings->getSetting<GlobalLocalEnableSetting>();
-    local->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onLocalChanged));
     auto routings = settings->getSetting<RoutingSettings>();
+    m_localIsEnabled = local->get();
+    const auto state = routings->getState(getIndex(getID()), RoutingSettings::tAspectIndex::LOCAL);
+    m_routingIsEnabled = state;
+    m_isEnabled = m_localIsEnabled && m_routingIsEnabled;
+
+    local->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onLocalChanged));
     routings->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onRoutingsChanged));
   }
 

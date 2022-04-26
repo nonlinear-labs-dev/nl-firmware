@@ -1,5 +1,6 @@
 #include "MacroControlSmoothingParameterLayout.h"
 #include "proxies/hwui/controls/Button.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <parameters/MacroControlParameter.h>
 #include <Application.h>
 #include <presets/PresetManager.h>

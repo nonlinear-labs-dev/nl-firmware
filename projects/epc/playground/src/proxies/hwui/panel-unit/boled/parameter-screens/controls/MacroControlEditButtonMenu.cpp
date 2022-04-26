@@ -12,6 +12,7 @@
 #include <http/UndoScope.h>
 #include <groups/MacroControlsGroup.h>
 #include <groups/ParameterGroup.h>
+#include "use-cases/EditBufferUseCases.h"
 
 int MacroControlEditButtonMenu::s_lastAction = 0;
 

@@ -8,3 +8,10 @@ class Linear100PercentScaleConverter : public LinearScaleConverter
   Linear100PercentScaleConverter();
   ~Linear100PercentScaleConverter() override;
 };
+
+class Linear200PercentScaleConverter : public LinearScaleConverter
+{
+ public:
+  Linear200PercentScaleConverter();
+  ~Linear200PercentScaleConverter() override;
+};

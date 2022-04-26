@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 05.3. Dual Mode Signal Flow</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/05-synth-engine/05-03-dual-mode-sig-flow">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-00-synth-engine.html" data-number="5">Synthesis Engine</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-03-dual-mode-sig-flow.html" data-number="5.3">Dual Mode Signal Flow</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="5.3">Dual Mode Signal Flow</h2>
+    </section>
+    <section>
+        <h3 class="heading">Recap: Parameter Organization</h3>
+        <p>As explained in <a href="./documents/man-user/04-user-interfaces/04-01-parameter-organization.html" data-number="4.1">Parameter Organization</a>, the C15 Synthesis Engine is divided into distinct <span class="keyword" data-keyword="Sections"></span> that operate differently according to the current <span class="keyword" data-keyword="Sound">Type</span>:</p>
+        <table>
+            <tr>
+                <th colspan="2"><span class="keyword" data-keyword="Global">Section</span></th>
+            </tr>
+            <tr>
+                <td class="section" colspan="2">
+                    <p>Global parameters are present once within a Preset of any <span class="keyword" data-keyword="Sound">Type</span> and form the global section, including <span class="keyword" data-keyword="Hardware">Sources</span> and their corresponding <span class="keyword" data-keyword="Hardware">Amounts</span>, <span class="keyword" data-keyword="Macro">Controls</span> and their corresponding <span class="keyword" data-keyword="Macro">Times</span> as well as the <span class="keyword" data-keyword="Master">Group</span> (containing Volume, Tune and Scale parameters).</p>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2"><span class="keyword" data-keyword="Local">Sections</span></th>
+            </tr>
+            <tr>
+                <th>Voicegroup<br>(poly)</th>
+                <td class="section" >
+                    <p>Parameters bound to polyphonic components (Envelopes A/B/C, Oscillators A/B, Shapers A/B, Comb and State Variable Filters, Feedback and Output Mixers) are present once for <span class="keyword" data-keyword="Single">Sounds</span> and twice for <span class="keyword" data-keyword="Split"></span> or <span class="keyword" data-keyword="Layer">Sounds</span> and form one (single) or two (dual) Voicegroups.</p>
+                    <p>In the Feedback Mixer, there are special parameters facilitating polyphonic cross feedback between both <span class="keyword" data-keyword="Parts"></span> (A-B, A-B From I/II, Comb From I/II, SVF From I/II) that are only available in <span class="keyword" data-keyword="Layer">Sounds</span>.</p>
+                </td>
+            </tr>
+            <tr>
+                <th>Effects<br>(mono)</th>
+                <td>Parameters bound to monophonic components (Flanger, Cabinet, Gap Filter, Echo, Reverb) also are present once for <span class="keyword" data-keyword="Single">Sounds</span> and twice for <span class="keyword" data-keyword="Split"></span> or <span class="keyword" data-keyword="Layer">Sounds</span> and form one (single) or two (dual) effect chains.</td>
+            </tr>
+            <tr>
+                <th>Part</th>
+                <td>In <span class="keyword" data-keyword="Split"></span> or <span class="keyword" data-keyword="Layer">Sounds</span>, each Voicegroup and corrsponding effect chain is bound to a Part component with additional Volume and Tune parameters.</td>
+            </tr>
+        </table>
+    </section>
+    <section>
+        <h3 class="heading">Dual Sounds - Main Signal Flow</h3>
+        <figure class="border maximize" data-label="Dual Mode Signal Flow (main)">
+            <picture class="content" data-src="./images/diagrams/dual-sig-flow-s-*.png"></picture>
+        </figure>
+        <p>The shown chart can be described as follows:</p>
+        <ol>
+            <li>The Output Mixer's main stereo signal of a particular Voicegroup is passed to the FX distributor, sending the signal to both Effect sections with different levels (similar to stereo panning of a mono signal).</li>
+            <li>The Reverb's stereo output signal of a particual effect chain is then passed to the Part component, where the Part Volume is applied.</li>
+            <li>Both Parts will then be added and passed to the global Master Volume for final gain control.</li>
+        </ol>
+    </section>
+    <section>
+        <h3 class="heading">Layer Sounds - Detailed Signal Flow</h3>
+        <figure class="border maximize" data-label="Layer Mode Signal Flow (detailed)">
+            <picture class="content" data-src="./images/diagrams/dual-sig-flow-m-*.png"></picture>
+        </figure>
+        <p>With <span class="keyword" data-keyword="Layer">Sounds</span>, the emerging additional details of the shown chart can be described as follows:</p>
+        <ol>
+            <li>The Feedback Mixer of a particular Voicegroup can apply polyphonic self/cross feedback (cross: from the other Voicegroup), allowing signals from the Oscillators A/B as well as the Comb and State Variable Filters to be sent inbetween.</li>
+            <li>The output of a particular effect chain provides an additional dry and wet signal (being downmixes of the stereo Reverb input and output signals). These signals are then sent back to each Voicegroup's Feedback Mixer for applying monophonic self/cross feedback.</li>
+        </ol>
+    </section>
+</main>
+</div>
+</body>
+</html>

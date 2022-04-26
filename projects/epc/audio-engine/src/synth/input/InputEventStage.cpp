@@ -18,6 +18,9 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
 
   for(auto &hw : m_localDisabledPositions)
     std::get<0>(hw) = std::numeric_limits<float>::max();
+
+  for(auto& p: m_polledHWPositions)
+    p = std::numeric_limits<float>::max();
 }
 
 template <>
@@ -173,20 +176,26 @@ void InputEventStage::onTCDEvent()
 
     case DecoderEventType::HardwareChange:
     {
-      onHWChanged(static_cast<HardwareSource>(decoder->getKeyOrController()), decoder->getValue(), HWChangeSource::TCD,
-                  false, false, false);
+      if(!m_isPolling)
+      {
+        onHWChanged(static_cast<HardwareSource>(decoder->getKeyOrController()), decoder->getValue(), HWChangeSource::TCD,
+                    false, false, false);
+      }
+      else
+      {
+        m_polledHWPositions[decoder->getKeyOrController()] = decoder->getValue();
+      }
       break;
     }
     case DecoderEventType::PollStart:
     {
-      // todo: disable midi send?
-      // todo: notify playground (hw poll ack/start)?
+      m_isPolling = true;
       break;
     }
     case DecoderEventType::PollStop:
     {
-      // todo: re-enable midi send?
-      // todo: notify playground (all hw sources were polled, initial sound can be loaded)
+      m_isPolling = false;
+      m_channelModeMessageCB(MidiChannelModeMessages::PollEnd);
       break;
     }
     case DecoderEventType::UNKNOWN:
@@ -1161,4 +1170,9 @@ void InputEventStage::requestExternalReset(DSPInterface::OutputResetEventSource 
     default:
       break;
   }
+}
+
+std::array<float, 8> InputEventStage::getPolledHWSourcePositions() const
+{
+  return m_polledHWPositions;
 }

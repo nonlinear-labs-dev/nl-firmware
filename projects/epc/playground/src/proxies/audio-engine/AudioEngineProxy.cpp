@@ -1,4 +1,6 @@
 #include "AudioEngineProxy.h"
+#include "parameters/PedalParameter.h"
+#include "parameters/RibbonParameter.h"
 #include <presets/PresetManager.h>
 #include <presets/Bank.h>
 #include <presets/EditBuffer.h>
@@ -42,6 +44,27 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
   onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendEditBuffer));
   onConnectionEstablished(EndPoint::AudioEngine,
                           sigc::mem_fun(this, &AudioEngineProxy::connectSettingsToAudioEngineMessage));
+
+  receive<HardwareSourcePollEnd>(EndPoint::Playground, [this](auto &msg) {
+      int index = 0;
+      bool didChange = false;
+      for(auto value: msg.m_data)
+      {
+        auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(index);
+        index++;
+        if(auto p = dynamic_cast<PhysicalControlParameter*>(param))
+        {
+          PhysicalControlParameterUseCases useCases(p);
+          didChange |= useCases.applyPolledHWPosition(value);
+        }
+      }
+
+      if(didChange)
+      {
+        nltools::Log::info("sending EditBuffer after PollEnd has been received!");
+        sendEditBuffer();
+      }
+  });
 
   receive<HardwareSourceChangedNotification>(
       EndPoint::Playground,

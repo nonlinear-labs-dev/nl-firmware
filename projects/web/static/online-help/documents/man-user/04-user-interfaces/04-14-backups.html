@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.14. Backups</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-14-backups">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-14-backups.html" data-number="4.14">Backups</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.14">Backups</h2>
+    </section>
+    <section>
+        <p>As previously mentioned, single banks can be imported and exported from and to either a connected USB stick or the connected external device. In addition, the transfer of all banks at once is also provided, which allows for fast and easy backups.</p>
+        <div data-highlight="note">
+            <p>We recommend creating backups of your banks regularly. Although the C15 can hold an arbitrary number of banks, it can be helpful to keep the interface clean by not overloading it with banks, speeding up booting, backup and shutdown processes. Using single backup files for bank collections may also be helpful for live musicians who may need to load their presets on a C15.</p>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary" data-detail="Panel Unit only">Saving and Restoring Backups on USB Stick</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Setup screen - Backups">
+                <picture class="content" data-src="images/hardware-ui/boled/setup/boled-setup-backup.png"></picture>
+            </figure>
+            <div>
+                <p>In the <span data-keyword="Setup">Screen</span>, the <code><b>Backup</b></code> submenu can be found, providing a <code><b>Restore all Banks...</b></code> and a <code><b>Save all Banks...</b></code> option. It will be indicated when a USB stick is connected, pressing <span data-keyword="Enter"></span> will then allow for exporting or restoring of backups.</p>
+            </div>
+        </div>
+        <h3 class="heading primary" data-detail="Graphical UI only">Saving and Restoring Backups on External Device</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Background menu - Backup options">
+                <picture class="content" data-src="images/web-ui/txt/webui-ctx-save-restore-banks.png"></picture>
+            </figure>
+            <div class="section">
+                <p>The background menu of the <span data-keyword="Graphical">User Interface</span> provides options for saving and restoring backups. When <code><b>Save all Banks as Backup File</b></code> is selected, all banks will be copied into a single file which then will be downloaded on the external device. (You will find the downloaded file at a location depending on your browser settings.)</p>
+                <p>When <code><b>Restore all Banks from Backup File</b></code> is selected, a backup file present on the external device can be chosen and uploaded.</p>
+            </div>
+        </div>
+        <div data-highlight="note">
+            <p>Please keep in mind that when restoring from a backup file, all banks currently present on the C15 will be lost. We recommend to save a backup file before restoring in order to maintain all preset data.</p>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

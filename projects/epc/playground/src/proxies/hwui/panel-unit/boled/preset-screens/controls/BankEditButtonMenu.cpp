@@ -21,6 +21,7 @@
 #include <nltools/GenericScopeGuard.h>
 #include <device-settings/Settings.h>
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/PresetManagerUseCases.h"
 
 static size_t s_lastSelectedButton = 0;
 

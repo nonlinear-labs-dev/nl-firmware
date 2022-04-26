@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 05.2.2. Oscillators</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/05-synth-engine/05-02-sig-flow-components/05-02-2-oscillators">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-synth-engine.html" data-number="5">The Synthesis Engine</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-0-sig-flow-components.html" data-number="5.2">Signal Flow and Components</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-02-2-oscillators.html" data-number="5.2.2">Oscillators</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="5.2.2">Oscillators</h2>
+        <p>The branches A and B both contain an Oscillator – a source for a sine-wave signal.</p>
+        <p>The perceived sound of a sine wave is rather simple, as there is just the fundamental, which is detected by the ear as a pitch. It lacks any further harmonics or partials in general, so the perceived sound is devoid of any timbre.</p>
+        <p>By phase modulation, wave shaping or ring modulation, new partial tones can be created. The resulting waveforms and spectra can vary enormously and evolve over time. This is the foundation of a sound that later can be further manipulated by the two filters.</p>
+        <p>When a key is pressed, each oscillator synchronizes to a particular start phase. This allows both oscillators to run in or out of phase up to the point, where they will cancel each other out. Besides, when using unison, the individual tones can have an individual phase offset as well. If the start phase of an oscillator is not zero, it will not start at the zero-crossing of the sine wave. With short Attack times, a clicking will be noticeable, as sharp transients can occur in that scenario.</p>
+        <p>The frequency of an oscillator (the number of oscillations per second) is represented as a Pitch parameter, providing the familiar format of semitones and cents. The influence of the position of a pressed key can be weighted by the Key Tracking parameter, adding to the basic tuning of the oscillator. At 100% Key Tracking, the Oscillator pitch directly corresponds to the keyboard. However, there are other possible influences on the pitch as a modulation target, typically by the Bender. Envelope C can shift the pitch as well.</p>
+        <p>By taking use of the Scale group, the pitches of played notes can even be set to different scalings apart from the familiar equidistant temperament of modern western music. If using unison in addition, a cluster of voices will sound where the Spread parameter can stretch the individual pitches apart from one another.</p>
+        <p>Even each oscillation cycle can vary in frequency, as provided by a Fluctuation parameter. When Fluctuation is used, each cycle will have a random offset to the basic frequency. This converts the simple sine-wave to a band-limited noise. At high amounts, the oscillator frequency can randomly vary between 5% and 195% per cycle, which leads to a very irregular behavior and a wide-band spectrum. The Fluctuation can also be affected by Envelope C.</p>
+        <p>In order to manipulate both harmonics and noisiness of the sine wave, phase modulation (<q>PM</q>, often also referred to as <q>FM</q>) can be exploited, as each Oscillator provides several parameters dedicated to define the complex relations of intermodulations.</p>
+        <p>Basically, if a slow <q>modulator</q> signal modulates the phase of another fast and tonal <q>carrier</q> signal, the perceived frequency of the fast signal will change over time, increasing or decreasing the perceived pitch. The faster the modulator signal becomes, the faster the frequency of the carrier signal will change. If both signals are periodical, new perceived frequencies may emerge and others may disappear.</p>
+        <p>In general, strong and bright spectra can emerge. The produced sounds can be harmonic and tonal (if the ratios of the Oscillator frequencies can be expressed by fractions of small integer numbers) as well as noisy and atonal (like a metallic character, emerging from non-harmonic partials). This strongly depends on relations that both involved oscillators would have, like their frequency ratios and amounts of phase modulation.</p>
+        <div data-columns="1">
+            <table>
+                <tr>
+                    <th>
+                        <div>Difference <sup>1)</sup></div>
+                    </th>
+                    <td>0</td>
+                    <td>3.87</td>
+                    <td>4.98</td>
+                    <td>7.02</td>
+                    <td>12</td>
+                    <td>14.04</td>
+                    <td>15.87</td>
+                    <td>19.02</td>
+                    <td>21.69</td>
+                    <td>24</td>
+                </tr>
+                <tr>
+                    <th>
+                        <div>Ratio <sup>2)</sup></div>
+                    </th>
+                    <td>1/1</td>
+                    <td>5/4</td>
+                    <td>4/3</td>
+                    <td>3/2</td>
+                    <td>2/1</td>
+                    <td>9/4</td>
+                    <td>5/2</td>
+                    <td>3/1</td>
+                    <td>7/2</td>
+                    <td>4/1</td>
+                </tr>
+            </table>
+        </div>
+        <p><b>1)</b> tuning difference (in semitones) between Oscillator A and B<br /><b>2)</b> emerging Ratio</p>
+        <p>More specifically, three modulation sources can be used in parallel for each Oscillator. Self modulation allows a particular oscillator to feed its own signal back, adding to its phase. This leads to a saw-like appearance of the oscillator signal and a brighter sound, depending on the modulation amount. The corresponding parameter is bipolar, affecting the direction of the saw curve. The corresponding shaper signal can be crossfaded into the modulation signal, further affecting the spectrum of the resulting oscillator signal. The corresponding Envelope can also be applied on the amount.</p>
+        <p>The phase progression of a particular Oscillator can also be affected by the opposite branch (and vice versa). Similar to self modulation, the amount can be set, the branch shaper signal can be crossfaded and the branch envelope can shape the intensity. This allows for complex intermodulations and elevates each Oscillator to function as both a carrier and a modulator simultaneously.</p>
+        <p>The third phase modulation source is the global Feedback bus, being defined by the Feedback Mixer. The amount can be defined and Envelope C can shape the intensity as well. As the feedback signal can consist of polyphonic and monophonic parts, intermodulations between several (parallel) voices can occur. In most cases, phase modulation by feedback rapidly leads to noisy behavior.</p>
+        <p>After all phase modulation sources were weighted and added, their sum will be fed to a tunable but static lowpass <q>Chirp</q> filter. This can reduce aliasing effects or chaotic noisiness, when phase modulation is used excessively.</p>
+        <p>The bipolar nature of many of the involved parameters further raises the complexity and lowers the predictability of the system as a whole. The intricate feedback network can be seen as a textbook definition of a <q>chaotic system</q>.</p>
+        <h3>1. Oscillator Phase Modulation</h3>
+        <figure class="border maximize" data-label="Oscillators (Phase Modulation)">
+            <picture class="content" data-src="./images/diagrams/osc-1-*.png"></picture>
+        </figure>
+        <h3>2. Oscillator Fluctuation</h3>        
+        <figure class="border maximize" data-label="Oscillators (Fluctuation)">
+            <picture class="content" data-src="./images/diagrams/osc-fluct-*.png"></picture>
+        </figure>
+
+    </section>
+</main>
+</div>
+</body>
+</html>

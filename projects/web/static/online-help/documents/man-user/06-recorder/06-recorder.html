@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 06. Recorder</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user//06-recorder">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/06-recorder/06-recorder.html" data-number="6">Recorder</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="6">Recorder</h2>
+        <figure class="border maximize" data-label="Recorder - Signal Flow">
+            <picture class="content" data-src="./images/diagrams/recorder-sig-flow-m-*.png"></picture>
+        </figure>
+        
+        <h3 class="heading">General Function</h3>
+        <p>The internal recorder enables you to capture the C15's output signal with the best possible audio quality at any time, without connecting a sound card. The stereo signal behind the Soft Clipper and before the D/A converter is written to the RAM, using the lossless compression of the FLAC format (24 bits, 48 kHz).</p>
+        <p>A maximum of 500 MB can be stored in the RAM. Because of the FLAC compression this is enough for hours of permanent playing and for days of recording when there are pauses in the playing. If the recorded amount of data exceeds the limit of 500 MB, the oldest data will be overwritten. Therefore it works like a ring buffer that always contains the latest recording.</p>
+        <p>The content of the RAM will be lost, when you switch off the C15. You can select a segment of the recorded audio and download it to your computer to use it in your production environment. The recorded audio can be downloaded in both the FLAC and WAV format.</p>
+    </section>
+    <section>
+        <h3 class="heading">Recorder Settings - Auto-Start</h3>
+        <p>In the Setup you find a new page for <q>Recorder</q> settings. With the option <q>Auto-Start Recorder</q> the user can decide if the audio recording starts automatically when the C15 is switched on, or if the user has to start it by the Record button.</p>
+        <figure class="border maximize" data-label="Setup window - Recorder">
+            <picture class="content" data-src="images/web-ui/setup/webui-setup-recorder.png"></picture>
+        </figure>
+        <figure class="border maximize" data-label="Setup screen - Recorder">
+            <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-recorder.png"></picture>
+        </figure>
+    </section>
+    <section>
+        <h3 class="heading">User Interface</h3>
+        <p>The Recorder tab can be opened by the <q>Open Recorder</q> entry in the <q>View</q> menu. The tab has the address: <code style="color: var(--theme-heading-color);">http://192.168.8.2/recorder/index.html</code></p>
+        <figure class="border maximize" data-label="Recorder UI">
+            <picture class="content" data-src="./images/web-ui/recorder/webui-recorder.png"></picture>
+        </figure>
+        <p>The recorder works independent from its browser tab being open or not.</p>
+    </section>
+    <section>
+        <h3 class="heading">Zoom and Scroll</h3>
+        <figure class="border maximize" data-label="Scrollbar">
+            <picture class="content" data-src="./images/web-ui/recorder/webui-recorder-scroll.png"></picture>
+        </figure>
+        <figure class="border maximize" data-label="Zoom icons">
+            <picture class="content" data-src="./images/web-ui/recorder/webui-recorder-zoom.png"></picture>
+        </figure>
+        <p>At the bottom of the recorder display you find a dark stripe representing the whole length of the audio recording that is in the memory. It is the frame for a bar that is used for scrolling and zooming. By holding the bar in its grey center area and dragging it, you shift the visible section of the recorded audio, which means that the display content is scrolled. By the two handles at the ends of the bar you can change its length and therefore the zoom factor.</p>
+        <p>The two buttons with magnifier <q>+</q> and <q>-</q> icons and the mouse wheel respectively the <q>+</q> and <q>-</q> buttons of your computer keyboard can also be used to zoom in and out.</p>
+    </section>
+    <section>
+        <h3 class="heading">Control Buttons</h3>
+        <figure class="border maximize" data-label="Control Buttons">
+            <picture class="content" data-src="./images/web-ui/recorder/webui-recorder-controls.png"></picture>
+        </figure>
+        <p>Restore  -  Play/Pause  -  Record  -  Download  -  Delete</p>
+    </section>
+    <section>
+        <h3 class="heading">Computer Keyboard Shortcuts</h3>
+        <table>
+            <tr>
+                <th>Command</th>
+                <th>Shortcut</th>
+            </tr>
+            <tr>
+                <td>Play / Pause</td>
+                <td>space bar</td>
+            </tr>
+            <tr>
+                <td>Record</td>
+                <td>R</td>
+            </tr>
+            <tr>
+                <td>Restore</td>
+                <td>Z</td>
+            </tr>
+            <tr>
+                <td>Download</td>
+                <td>S</td>
+            </tr>
+            <tr>
+                <td>Zoom In / Out</td>
+                <td>+ / -</td>
+            </tr>
+            <tr>
+                <td>Scroll</td>
+                <td>left / right arrow keys</td>
+            </tr>
+            <tr>
+                <td>To Previous/Net Preset Marker</td>
+                <td>up / down arrow keys (coming soon)</td>
+            </tr>
+        </table>
+    </section>
+    <section>
+        <h3 class="heading">Playing Back Recorded Audio</h3>
+        <figure class="border maximize" data-label="Play Cursor">
+            <picture class="content" data-src="./images/web-ui/recorder/webui-recorder-playback.png"></picture>
+        </figure>
+        <p>The C15 can play back the recorded audio through its outputs. The playback start position is set by a click/touch in the darker outer lanes of the recorder display. A green line - the Play cursor - shows the position. A time label is attached.</p>
+        <p>When the Play button is pressed, the Play cursor starts to move and the recorded audio is played back. The button gets a <q>Pause</q> symbol and can be used to interrupt and continue the playback. Alternatively you can press the space bar for toggling between Play and Pause.</p>
+        <p>You can play the C15 live while the playback is running, but please be aware that the sum of the two signals can cause clipping distortion.</p>
+    </section>
+    <section>
+        <h3 class="heading">Restoring a Sound</h3>
+        <p>The Undo system of the C15 memorizes every user action on parameters or presets. It allows to go back to the state of the synth engine at any point in time since the start of the session. Therefore it is possible to restore the sound at a certain position on the timeline of the Recorder and to use the same state of the synth engine as it was at the time of recording.</p>
+        <p>For this you move the Play cursor to the point in time of which you want to restore the sound and press the Restore button or the Z key on your keyboard. The Undo System will go back to the state of the parameters at the selected point in time, takes a <q>snapshot</q> of them and copies it into the editbuffer.</p>
+    </section>
+    <section>
+        <h3 class="heading">Preset Labels</h3>
+        <p>Please note that the selection and load status of a preset cannot be restored because the preset might have been changed, moved or deleted.</p>
+        <figure class="border maximize" data-label="Preset Labels">
+           <picture class="content" data-src="./images/web-ui/recorder/webui-recorder-labels.png"></picture>
+        </figure>
+        <p>In order to not loose the information which presets were used, the Recorder creates a label when a preset is loaded. The left end of the label is aligned to the loading time. The label contains the number and name of the bank and the preset. This might have changed in the meantime, but often it can still be found under the same name at the same place.</p>
+        <p>To be on the safe side we recommend to create copies of the banks that contain important presets by using the <q>Export</q> command.</p>
+    </section>
+    <section>
+        <h3 class="heading">Selecting a Segment for Download</h3>
+        <figure class="border maximize" data-label="Selection and Download">
+            <picture class="content" data-src="./images/web-ui/recorder/webui-recorder-download-segment.png"></picture>
+        </figure>
+        <p>By click/touch and drag in the inner lane you can select a time segment. The start and end points can be shifted by the two light-blue handles. Two labels are showing the times at the start and end points.</p>
+        <p>The selected part can be downloaded by pressing the Download button or <q>S</q> on the computer keyboard. A dialog opens in which you can change the file name and choose between FLAC and WAV format (24 bit, 48 kHz). If the browser is set to ask for the destination for the downloaded file, it will open the referring dialog now. Otherwise it will store the file in the standard download folder.</p>
+        <p>The selection can be disabled by a single click/touch in the inner lane.</p>
+    </section>
+    <section>
+        <h3 class="heading">Starting and Stopping the Recording</h3>
+        <p>If the <q>Auto-Start Recorder</q> option in the Recorder Settings is <q>On</q> the Record button will be shown as active from the beginning. You can use it to stop the recording. This might be desired to save memory or to focus on reviewing the recorded material. When you press the button again the recording will be continued.</p>
+        <p>If the <q>Auto-Start Recorder</q> option is <q>Off</q>, the Record button needs to be pressed to start recording.</p>
+        <p>The keyboard shortcut for starting or stopping the recording is R.</p> 
+    </section>
+    <section>
+        <h3 class="heading">Deleting the Recorded Audio</h3>
+        <p>When you press the Delete button the audio memory will be cleared and as a result the timeline will be empty.</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

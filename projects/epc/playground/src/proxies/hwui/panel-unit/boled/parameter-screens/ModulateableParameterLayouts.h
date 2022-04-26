@@ -61,19 +61,26 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
 
  private:
   bool hasModulationSource() const;
-  Button *m_mcPosButton, *m_mcSelButton, *m_mcAmtButton;
+  Button *m_buttonA, *m_mcSelButton, *m_mcAmtButton;
 
   Mode m_mode = Mode::ParameterValue;
   Mode m_lastMode = Mode::ParameterValue;
   Overlay *m_modeOverlay = nullptr;
   ModAspectRecallOverlay *m_modAspectRecallOverlay = nullptr;
   sigc::connection m_paramConnection;
+  sigc::connection m_groupConnection;
+  bool m_isScaleParameter = false;
 
   void installModulationCarousel(const Mode &mode);
   bool isCurrentParameterDisabled() const;
   void installModAspectRecall();
   void removeModAspectRecall();
   void cleanMode();
+
+  void updateResetButton();
+  void reset();
+  bool resetEnabled() const;
+  void onScaleGroupChanged();
 };
 
 class ModulateableParameterEditLayout2 : public ParameterEditLayout2, public ModulateableParameterLayout2

@@ -25,8 +25,9 @@ int VersionAttribute::getCurrentFileVersion()
     FIX_UNISON_VOICES = 8,
     DUAL_SPLIT_POINT = 9,
     DUAL_SPLIT_POINT_PRESETS = 10,
-    HW_SEND_PARAMETERS = 11
+    HW_SEND_PARAMETERS = 11,
+    MORE_MOD_PARAMS = 12
   };
 
-  return static_cast<int>(History::HW_SEND_PARAMETERS);
+  return static_cast<int>(History::MORE_MOD_PARAMS);
 }
