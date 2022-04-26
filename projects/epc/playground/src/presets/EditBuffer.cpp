@@ -1303,7 +1303,7 @@ void EditBuffer::undoableConvertSplitToLayer(UNDO::Transaction *transaction, Voi
   defaultFadeParameters(transaction);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   initSplitPoint(transaction);
-  initCrossFB(transaction);
+  initCrossFBExceptFromFX(transaction);
 }
 
 void EditBuffer::calculateSplitPointFromFadeParams(UNDO::Transaction *transaction)

@@ -254,6 +254,38 @@ TEST_CASE("Convert Layer I to Split")
     }
   }
 
+  WHEN("Split to Layer Cross FX is not reset")
+  {
+    TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
+    auto eb = TestHelper::getEditBuffer();
+    auto fxI = eb->findAndCastParameterByID<ModulateableParameter>({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
+    auto fxII = eb->findAndCastParameterByID<ModulateableParameter>({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+
+    ModParameterUseCases fxIUsecase(fxI);
+    ModParameterUseCases fxIIUsecase(fxII);
+
+    fxIUsecase.selectModSource(MacroControls::MC2);
+    fxIIUsecase.selectModSource(MacroControls::MC1);
+    fxIUsecase.setModulationAmount(1);
+    fxIIUsecase.setModulationAmount(1);
+
+    fxIUsecase.setControlPosition(0.420);
+    fxIIUsecase.setControlPosition(0.187);
+
+    WHEN("Converted")
+    {
+      EditBufferUseCases ebUseCases(*eb);
+      ebUseCases.convertToLayer(VoiceGroup::I);
+
+      CHECK(fxI->getModulationSource() == MacroControls::MC2);
+      CHECK(fxII->getModulationSource() == MacroControls::MC1);
+      CHECK(fxI->getModulationAmount() == 1);
+      CHECK(fxII->getModulationAmount() == 1);
+      CHECK(fxI->getControlPositionValue() == 0.420);
+      CHECK(fxII->getControlPositionValue() == 0.187);
+    }
+  }
+
   WHEN("Converted")
   {
     const auto mcmHash = EBL::createHashOfVector(EBL::getModMatrix());
