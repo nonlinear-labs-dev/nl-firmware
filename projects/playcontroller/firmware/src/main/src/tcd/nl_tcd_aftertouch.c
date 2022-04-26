@@ -328,8 +328,6 @@ static void ProcessAftertouch(int16_t adcValue)
     ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, tcdOutput);
     ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, tcdOutput);
   }
-
-  checkCalibrationEepromUpdate();
 }
 
 // -------------
@@ -484,6 +482,8 @@ void AT_ProcessAftertouch(void)
     ProcessLegacyAftertouch(adcValue);
   else
     ProcessAftertouch(adcValue);
+
+  checkCalibrationEepromUpdate();
 }
 
 // -------------
