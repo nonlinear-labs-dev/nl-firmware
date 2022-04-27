@@ -281,6 +281,10 @@ abort_if_started_from_dangerous_webui_service() {
 }
 
 remove_old_install_update_from_epc_service() {
+  if [ -e /usr/lib/systemd/system/multi-user.target.wants/install-update-from-epc.service ]; then
+    rm /usr/lib/systemd/system/multi-user.target.wants/install-update-from-epc.service
+  fi
+
   if [ -e /usr/lib/systemd/system/install-update-from-epc.service ]; then
     rm /usr/lib/systemd/system/install-update-from-epc.service
   fi
