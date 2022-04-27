@@ -164,6 +164,14 @@ double ParameterDB::getDefaultValue(const ParameterId &id)
       return 0;
   }
 
+  if(parameterNumber == C15::PID::Split_Split_Point)
+  {
+    if(id.getVoiceGroup() == VoiceGroup::I)
+      return 0.5;
+    else
+      return 0.5 + 1 / 60.0;
+  }
+
   return static_cast<double>(C15::ParameterList[id.getNumber()].m_initial);
 }
 
