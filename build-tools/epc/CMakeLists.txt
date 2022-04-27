@@ -84,20 +84,6 @@ add_custom_command(
     COMMAND touch .nonlinux-local-rootfs
 )
 
-
-add_custom_command(
-    COMMENT "Create ePC update"
-    DEPENDS .nonlinux-local-rootfs
-    DEPENDS ${ALL_FILES_IN_PROJECT}
-    DEPENDS .filesystem-created
-    DEPENDS ${CMAKE_BINARY_DIR}/projects/web/web.tar.gz
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/update.tar
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runScriptInDocker.sh
-        ${CMAKE_BINARY_DIR}
-        ${CMAKE_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/createUpdate.sh
-)
-
 add_custom_command(
     COMMENT "Build install medium (to be run with prefix EPC_INSTALL_MEDIUM=/dev/sdX)"
     OUTPUT .nonlinux-install-medium
@@ -113,15 +99,12 @@ add_custom_command(
     COMMENT "Build ePC update"
     OUTPUT ${CMAKE_BINARY_DIR}/nonlinear-epc-update.tar
     DEPENDS .filesystem-created
-    DEPENDS epc-create-update
-    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
-    DEPENDS epc2-create-update
-    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc2/create-update/update.tar
+    DEPENDS epc-one-for-all-create-update
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc-one-for-all/update.tar
     DEPENDS bbb-rootfs
     DEPENDS ${ALL_FILES_IN_PROJECT}
     COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
-        ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
-        ${CMAKE_BINARY_DIR}/build-tools/epc2/create-update/update.tar
+        ${CMAKE_BINARY_DIR}/build-tools/epc-one-for-all/update.tar
         ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
         "unused-mlo"
         "usused-uboot"

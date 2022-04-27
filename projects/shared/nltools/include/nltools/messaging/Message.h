@@ -4,6 +4,7 @@
 #include <cstring>
 #include <nltools/Testing.h>
 #include <nltools/Types.h>
+#include <array>
 
 namespace nltools
 {

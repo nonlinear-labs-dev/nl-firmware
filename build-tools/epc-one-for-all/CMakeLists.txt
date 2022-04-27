@@ -1,0 +1,20 @@
+ADD_CUSTOM_COMMAND(
+    COMMENT "Build epc-one-for-all update"
+    OUTPUT update.tar
+    DEPENDS createUpdate.sh
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/pacman/c15/c15-rootfs.tar.gz
+    DEPENDS post-install.sh
+    DEPENDS C15.nmconnection
+    DEPENDS wpa_supplicant.conf
+    VERBATIM
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/createUpdate.sh 
+      ${CMAKE_CURRENT_BINARY_DIR}
+      ${CMAKE_BINARY_DIR}/build-tools/pacman/c15/c15-rootfs.tar.gz
+      ${CMAKE_CURRENT_SOURCE_DIR}/post-install.sh
+      ${CMAKE_CURRENT_SOURCE_DIR}/C15.nmconnection
+      ${CMAKE_CURRENT_SOURCE_DIR}/wpa_supplicant.conf
+    )
+  
+ADD_CUSTOM_TARGET(epc-one-for-all-create-update 
+  DEPENDS c15-rootfs
+  DEPENDS update.tar)

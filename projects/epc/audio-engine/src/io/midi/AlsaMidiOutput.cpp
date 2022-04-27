@@ -1,5 +1,6 @@
 #include "AlsaMidiOutput.h"
 #include <nltools/logging/Log.h>
+#include <utility>
 
 AlsaMidiOutput::AlsaMidiOutput(const std::string &device)
 {
