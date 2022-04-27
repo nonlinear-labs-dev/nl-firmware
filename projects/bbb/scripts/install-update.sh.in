@@ -37,6 +37,7 @@ run_update() {
 
 main() {
     if [ -e /mnt/usb-stick/nonlinear-c15-update.tar ]; then
+        @C15_INSTALL_PATH@/text2soled/text2soled multitext "Starting the Update...@SC1" "Starting the Update...@BC2"
         unpack_update && check_preconditions && run_update
     fi
 

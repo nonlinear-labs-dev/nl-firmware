@@ -41,9 +41,9 @@ run_update() {
 
 
 main() {
+    @C15_INSTALL_PATH@/text2soled/text2soled multitext "Starting the Update...@SC1" "Starting the Update...@BC2"
     echo "install-update-from-epc.sh" >> /tmp/update.log
     unpack_update && check_preconditions && run_update
-
     return 0
 }
 
