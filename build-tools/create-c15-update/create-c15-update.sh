@@ -4,7 +4,6 @@
 # vom Cmake übergebene Pfade zu den .tarS
 
 EPC_UPDATE=$1 && shift
-EPC_2_UPDATE=$1 && shift
 BBB_UPDATE=$1 && shift
 BBB_MLO=$1 && shift
 BBB_UBOOT_IMG=$1 && shift
@@ -77,8 +76,7 @@ deploy_updates() {
 
     if [ $UPDATE_EPC == 1 ]; then
         echo "Will deploy ePC updates."
-        cp $EPC_UPDATE $OUT_DIRECTORY/EPC/update_5-7i3.tar && chmod 666 $OUT_DIRECTORY/EPC/update_5-7i3.tar || fail_and_exit;
-        cp $EPC_2_UPDATE $OUT_DIRECTORY/EPC/update_10-11i3.tar && chmod 666 $OUT_DIRECTORY/EPC/update_10-11i3.tar || fail_and_exit;
+        cp $EPC_UPDATE $OUT_DIRECTORY/EPC/update.tar && chmod 666 $OUT_DIRECTORY/EPC/update.tar || fail_and_exit;
     fi
 
     if [ $UPDATE_PLAYCONTROLLER == 1 ]; then
@@ -190,13 +188,12 @@ print_version_string()
 print_C15_version_strings() {
     echo "Getting version strings..."
     if [ $UPDATE_EPC == 1 ]; then
-        FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground
-        rm -f $FILE
-	mkdir -p $BINARY_DIR/build-tools/epc/tmp 
-        tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/update.tar ./update/NonLinuxOverlay.tar.gz
-        tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/tmp/update/NonLinuxOverlay.tar.gz ./usr/local/C15/playground/playground
-        FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground
-        print_version_string $FILE
+      FILE=$BINARY_DIR/build-tools/epc-one-for-all/tmp/usr/local/C15/playground/playground
+      rm -f $FILE
+      mkdir -p $BINARY_DIR/build-tools/epc-one-for-all/tmp 
+      tar -C $BINARY_DIR/build-tools/epc-one-for-all/tmp --extract --file=$BINARY_DIR/build-tools/epc-one-for-all/update.tar update/c15-rootfs.tar.gz
+      tar -C $BINARY_DIR/build-tools/epc-one-for-all/tmp --extract --file=$BINARY_DIR/build-tools/epc-one-for-all/tmp/update/c15-rootfs.tar.gz ./usr/local/C15/playground/playground
+      print_version_string $FILE
     fi
     if [ $UPDATE_PLAYCONTROLLER == 1 ]; then
         print_version_string $(find $BINARY_DIR/build-tools/playcontroller/ -type f -name "main.bin")

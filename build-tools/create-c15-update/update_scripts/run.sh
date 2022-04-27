@@ -122,13 +122,11 @@ check_preconditions() {
         report "" "Something went wrong!" "Please retry update!" && return 1
     fi
     
-    rm /update/EPC/update.tar
-
     if [[ "$(executeAsRoot "uname -r")" == "4.9.9-rt6-1-rt" ]]; then
-        [ -f /update/EPC/update_5-7i3.tar ] && { ln -s /update/EPC/update_5-7i3.tar /update/EPC/update.tar; FIX_EPC_1=true; FIX_EPC_2=false; } ||
+        [ -f /update/EPC/update.tar ] && { ln -s /update/EPC/update.tar /update/EPC/update.tar; FIX_EPC_1=true; FIX_EPC_2=false; } ||
             { report "" "E86: ePC update missing" "Please retry download!"; return 1; }
     else
-        [ -f /update/EPC/update_10-11i3.tar ] && { ln -s /update/EPC/update_10-11i3.tar /update/EPC/update.tar; FIX_EPC_1=false; FIX_EPC_2=true; } ||
+        [ -f /update/EPC/update.tar ] && { ln -s /update/EPC/update.tar /update/EPC/update.tar; FIX_EPC_1=false; FIX_EPC_2=true; } ||
             { report "" "E86: ePC update missing" "Please retry download!"; return 1; }
     fi
 
