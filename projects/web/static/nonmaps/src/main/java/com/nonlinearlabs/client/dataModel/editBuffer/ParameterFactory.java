@@ -38,7 +38,7 @@ public class ParameterFactory {
 
 	static private int[] pedals = { 254, 259, 264, 269 };
 	static private int[] ribbons = { 284, 289 };
-	static private int[] physicalControls = { 254, 259, 264, 269, 274, 279, 284, 289 }; //
+	static private int[] physicalControls = { 254, 259, 264, 269, 274, 279, 284, 289 };
 
 	static private int[] sendParams = { 398, 399, 400, 401, 402, 403, 404, 405 };
 
