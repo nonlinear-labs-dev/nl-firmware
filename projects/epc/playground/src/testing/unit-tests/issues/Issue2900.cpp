@@ -40,12 +40,9 @@ TEST_CASE("Issue 2900")
   auto settings = std::make_unique<MockSettingsObject>(file, &SyncMasterMockRoot::get());
   settings->init();
 
-  WHEN("settings are created")
+  WHEN("settings are created inital state is 'virgin'")
   {
-    THEN("inital state is 'virgin'")
-    {
-      CHECK(settings->getSetting<FlacRecorderVirgin>()->get());
-    }
+    CHECK(settings->getSetting<FlacRecorderVirgin>()->get());
   }
 
   nltools::msg::waitForConnection(nltools::msg::EndPoint::Playground);

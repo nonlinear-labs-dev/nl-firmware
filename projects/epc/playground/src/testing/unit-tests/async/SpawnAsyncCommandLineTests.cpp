@@ -26,7 +26,7 @@ TEST_CASE("Async Completion will mark job as done")
   SpawnAsyncCommandLine::spawn(
       { "sleep", "1" }, [&](auto) { done = true; }, [](auto) {});
   TestHelper::doMainLoop(std::chrono::milliseconds { 10 }, std::chrono::milliseconds { 2000 }, [&] { return done; });
-  CHECK(SpawnAsyncCommandLine::removeDone() > 0);
+  CHECK(SpawnAsyncCommandLine::removeDone() == 0);
 }
 
 TEST_CASE("Async Spawn increments job count")
@@ -49,7 +49,8 @@ TEST_CASE("Async Spawn increments job count")
 TEST_CASE("Async Spawn will remove done Jobs")
 {
   //Cleanup Global State
-  SpawnAsyncCommandLine::removeDone();
+  TestHelper::doMainLoop(std::chrono::milliseconds(20), std::chrono::seconds(5), [] { return SpawnAsyncCommandLine::removeDone() == 0; });
+  REQUIRE(SpawnAsyncCommandLine::getNumCommands() == 0);
 
   auto done = false;
 
