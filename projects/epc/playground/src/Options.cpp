@@ -10,12 +10,18 @@ bool Options::s_acceptanceTests = false;
 
 Options::Options()
 {
-  setDefaults();
+  if(s_acceptanceTests)
+    setDefaultsForTests();
+  else
+    setDefaults();
 }
 
 Options::Options(int &argc, char **&argv)
 {
-  setDefaults();
+  if(s_acceptanceTests)
+    setDefaultsForTests();
+  else
+    setDefaults();
 
   Glib::OptionGroup mainGroup("common", "common options");
   Glib::OptionContext ctx;
@@ -83,6 +89,25 @@ Options::Options(int &argc, char **&argv)
     nltools::Log::error(__FILE__, __FUNCTION__, __LINE__, "Could not parse args:", ss.str());
     std::exit(static_cast<int>(nltools::ErrorCode::UnknownOptionKeyError));
   }
+}
+
+void Options::setDefaultsForTests()
+{
+  auto persistencePath = Gio::File::create_for_path("/tmp");
+  auto settingsFile = Gio::File::create_for_path("/tmp/settings.xml");
+  auto timestamp = std::chrono::steady_clock::now().time_since_epoch().count();
+  auto pmName = std::string("/tmp/preset-manager-") + std::to_string(timestamp) + std::string("/");
+  auto pmDirectory = Gio::File::create_for_path(pmName);
+
+  if(persistencePath->query_exists())
+  {
+    if(pmDirectory->query_exists() || makePresetManagerDirectory(pmDirectory))
+      m_pmPath = pmDirectory->get_path();
+
+    m_settingsFile = settingsFile->get_path();
+  }
+
+  m_layoutFolder = getResourcesDir() + std::string("/templates/");
 }
 
 void Options::setDefaults()

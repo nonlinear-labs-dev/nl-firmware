@@ -7,7 +7,7 @@
 
 namespace Tests
 {
-  TEST_CASE("Initial State")
+  TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Initial State")
   {
     using namespace std::chrono_literals;
     auto options = createEmptyAudioEngineOptions();
@@ -27,7 +27,7 @@ namespace Tests
       CHECK(tester.scanOutput(std::get<0>(output)).isSilence());
     }
   }
-  TEST_CASE("Key Association")
+  TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Key Association")
   {
     using namespace std::chrono_literals;
     auto options = createEmptyAudioEngineOptions();
@@ -273,7 +273,7 @@ namespace Tests
       }
     }
   }
-  TEST_CASE("128 Keys")
+  TEST_CASE_METHOD(TestHelper::ApplicationFixture,"128 Keys")
   {
     using namespace std::chrono_literals;
     auto options = createEmptyAudioEngineOptions();
@@ -352,7 +352,7 @@ namespace Tests
       }
     }
   }
-  TEST_CASE("Reset Behavior")
+  TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Reset Behavior")
   {
     using namespace std::chrono_literals;
     auto options = createEmptyAudioEngineOptions();

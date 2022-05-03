@@ -60,7 +60,7 @@ void ExportBackupEditor::installState(State s)
 
     case Running:
       addControl(new Label("Saving Banks, stand by...", Rect(3, -20, 128, 64)));
-      Oleds::get().syncRedraw();
+      Application::get().getHWUI()->getOleds().syncRedraw();
       exportBanks();
       break;
 

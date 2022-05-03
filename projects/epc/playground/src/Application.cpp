@@ -35,9 +35,6 @@ Application *Application::theApp = nullptr;
 
 void setupMessaging(const Options *options)
 {
-  if(Options::s_acceptanceTests)
-    return;
-
   using namespace nltools::msg;
 
   const auto &bbbb = options->getBBBB();
@@ -84,7 +81,7 @@ Application::Application(int numArgs, char **argv)
           new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
     , m_audioEngineProxy(new AudioEngineProxy(*m_presetManager, *m_settings, *m_playcontrollerProxy))
-    , m_hwui(new HWUI(*m_settings.get()))
+    , m_hwui(new HWUI(*m_settings))
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
     , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster()))
@@ -95,9 +92,6 @@ Application::Application(int numArgs, char **argv)
     , m_heartbeatState(false)
     , m_isQuit(false)
 {
-  if(Options::s_acceptanceTests)
-    m_options->setPresetManagerPath("/tmp/pg-test-pm/");
-
 #ifdef _PROFILING
   Profiler::get().enable(true);
 #endif
@@ -126,6 +120,12 @@ Application::Application(int numArgs, char **argv)
 
 Application::~Application()
 {
+  auto ctx = g_main_context_get_thread_default();
+  while(g_main_context_iteration(ctx, FALSE))
+  {
+
+  }
+
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 
   m_watchDog.reset();

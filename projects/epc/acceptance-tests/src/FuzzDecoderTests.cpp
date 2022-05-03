@@ -3,7 +3,7 @@
 #include <synth/input/TCDDecoder.h>
 #include <mock/MockDSPHosts.h>
 
-TEST_CASE("Fuzz MIDIDecoder", "[FUZZ]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Fuzz MIDIDecoder", "[FUZZ]")
 {
   MockDSPHost host;
   MidiRuntimeOptions settings;
@@ -21,7 +21,7 @@ TEST_CASE("Fuzz MIDIDecoder", "[FUZZ]")
   }
 }
 
-TEST_CASE("Fuzz TCDDecoder", "[FUZZ]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Fuzz TCDDecoder", "[FUZZ]")
 {
   MockDSPHost host;
   MidiRuntimeOptions settings;

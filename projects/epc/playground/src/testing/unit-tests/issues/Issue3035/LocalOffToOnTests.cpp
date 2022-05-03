@@ -11,7 +11,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-TEST_CASE("Issue 3035, Pedal [Returning Zero] Local Off to Local On", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Zero] Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -58,7 +58,7 @@ TEST_CASE("Issue 3035, Pedal [Returning Zero] Local Off to Local On", "[3035]")
   }
 }
 
-TEST_CASE("Issue 3035, Pedal [Returning Center] Local Off to Local On", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Center] Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -102,7 +102,7 @@ TEST_CASE("Issue 3035, Pedal [Returning Center] Local Off to Local On", "[3035]"
   }
 }
 
-TEST_CASE("Issue 3035, Pedal [Nonreturn] Local Off to Local On", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Nonreturn] Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -146,7 +146,7 @@ TEST_CASE("Issue 3035, Pedal [Nonreturn] Local Off to Local On", "[3035]")
   }
 }
 
-TEST_CASE("Issue 3035, Ribbon [Returning] Local Off to Local On", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Ribbon [Returning] Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -192,7 +192,7 @@ TEST_CASE("Issue 3035, Ribbon [Returning] Local Off to Local On", "[3035]")
   }
 }
 
-TEST_CASE("Issue 3035, Ribbon [Stay] Local Off to Local On -> Set Ribbon Pos to mapped MC position", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Ribbon [Stay] Local Off to Local On -> Set Ribbon Pos to mapped MC position", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -263,7 +263,7 @@ TEST_CASE("Issue 3035, Ribbon [Stay] Local Off to Local On -> Set Ribbon Pos to 
   }
 }
 
-TEST_CASE("Issue 3035, Bender Local Off to Local On", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Bender Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();

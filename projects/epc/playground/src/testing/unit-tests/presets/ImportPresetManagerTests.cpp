@@ -12,7 +12,7 @@
 #include <xml/VersionAttribute.h>
 #include <libundo/undo/TrashTransaction.h>
 
-TEST_CASE("Import PresetManager consumes memory as expected")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Import PresetManager consumes memory as expected")
 {
   auto pm = TestHelper::getPresetManager();
   {
@@ -31,7 +31,7 @@ TEST_CASE("Import PresetManager consumes memory as expected")
   CHECK(memUsage.getUsage() < 9 * 1024 * 1024);
 }
 
-TEST_CASE("Import PresetManager overwrites banks")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Import PresetManager overwrites banks")
 {
   auto pm = TestHelper::getPresetManager();
   auto settings = TestHelper::getSettings();
@@ -52,7 +52,7 @@ TEST_CASE("Import PresetManager overwrites banks")
   CHECK(memUsage.getUsage() < 4.5 * 1024 * 1024);
 }
 
-TEST_CASE("Import PresetManager is undoable")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Import PresetManager is undoable")
 {
   auto pm = TestHelper::getPresetManager();
   auto settings = TestHelper::getSettings();

@@ -23,8 +23,8 @@
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 #include "BOLEDScreenSaver.h"
 
-BOLED::BOLED()
-    : OLEDProxy(Rect(0, 0, 256, 64))
+BOLED::BOLED(Oleds& oleds)
+    : OLEDProxy(Rect(0, 0, 256, 64), oleds)
 {
 }
 

@@ -1,7 +1,8 @@
 #include <glib.h>
 #include "EditPanel.h"
 
-EditPanel::EditPanel()
+EditPanel::EditPanel(Oleds &oleds)
+    : m_oled(oleds)
 {
   getKnob().onRotaryChanged(sigc::mem_fun(&m_oled, &BOLED::onRotary));
 }

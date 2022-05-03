@@ -55,7 +55,7 @@ class MockTCDDecoder : public TCDDecoder
   }
 };
 
-TEST_CASE("TCD Decoder Reset", "[TCD]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"TCD Decoder Reset", "[TCD]")
 {
   MockDSPHost host;
   auto setting = createTCDSettings();
@@ -72,7 +72,7 @@ TEST_CASE("TCD Decoder Reset", "[TCD]")
   CHECK(decoder.getKeyOrController() == -1);
 }
 
-TEST_CASE("TCD in leads to key down and send midi", "[MIDI][TCD]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"TCD in leads to key down and send midi", "[MIDI][TCD]")
 {
   std::vector<nltools::msg::Midi::SimpleMessage> sendMessages;
   PassOnKeyDownHost dsp { 17, 1.0, VoiceGroup::I };
@@ -113,7 +113,7 @@ TEST_CASE("TCD in leads to key down and send midi", "[MIDI][TCD]")
   }
 }
 
-TEST_CASE("TCD in leads to key up", "[MIDI][TCD]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"TCD in leads to key up", "[MIDI][TCD]")
 {
   PassOnKeyUpHost dsp { 17, 1.0, VoiceGroup::I };
   auto settings = createTCDSettings();
@@ -144,7 +144,7 @@ TEST_CASE("TCD in leads to key up", "[MIDI][TCD]")
   }
 }
 
-TEST_CASE("TCD in leads to send midi", "[MIDI][TCD]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"TCD in leads to send midi", "[MIDI][TCD]")
 {
   auto config = nltools::msg::getConfig();
   config.useEndpoints
@@ -251,7 +251,7 @@ constexpr static uint8_t Aftertouch = 0b00000101;
 constexpr static uint8_t Ribbon1 = 0b00000110;
 constexpr static uint8_t Ribbon2 = 0b00000111;
 
-TEST_CASE("TCD in leads to HW Change and send midi", "[MIDI][TCD]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"TCD in leads to HW Change and send midi", "[MIDI][TCD]")
 {
   std::vector<nltools::msg::Midi::SimpleMessage> sendMessages;
   PassOnHWReceived dsp { HardwareSource::PEDAL1, 1.0 };

@@ -34,7 +34,7 @@ bool BasicItem::drawEnterIndication(FrameBuffer& buffer)
   pos.setWidth(12);
   pos.setLeft(getPosition().getRight() - 12);
   pos.setHeight(pos.getHeight() - 1);
-  auto f = Oleds::get().getFont("Emphase-9-Regular", 9);
+  auto f = Fonts::get().getFont("Emphase-9-Regular", 9);
   buffer.setColor(isHighlight() ? FrameBufferColors::C255 : FrameBufferColors::C128);
   f->draw("\u23CE", pos.getCenter().getX() - 4, pos.getBottom() - 1);
   return true;

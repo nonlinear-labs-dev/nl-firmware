@@ -35,10 +35,14 @@ namespace detail
   }
 };
 
-TEST_CASE("Single Preset Type String", "[Preset]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Single Preset Type String", "[Preset]")
 {
   MockPresetStorage presets;
   auto preset = presets.getSinglePreset();
+  detail::disableMono<VoiceGroup::I>(preset);
+  detail::disableMono<VoiceGroup::II>(preset);
+  detail::disableUnison<VoiceGroup::I>(preset);
+  detail::disableUnison<VoiceGroup::II>(preset);
 
   SECTION("Mono Enabled")
   {
@@ -60,7 +64,7 @@ TEST_CASE("Single Preset Type String", "[Preset]")
   }
 }
 
-TEST_CASE("Layer Preset Type String", "[Preset]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Layer Preset Type String", "[Preset]")
 {
   MockPresetStorage presets;
   auto preset = presets.getLayerPreset();
@@ -90,10 +94,15 @@ TEST_CASE("Layer Preset Type String", "[Preset]")
   }
 }
 
-TEST_CASE("Split Preset Type String", "[Preset]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Preset Type String", "[Preset]")
 {
   MockPresetStorage presets;
   auto preset = presets.getSplitPreset();
+
+  detail::disableMono<VoiceGroup::I>(preset);
+  detail::disableMono<VoiceGroup::II>(preset);
+  detail::disableUnison<VoiceGroup::I>(preset);
+  detail::disableUnison<VoiceGroup::II>(preset);
 
   SECTION("None")
   {

@@ -1,4 +1,5 @@
 #include <nltools/threading/Throttler.h>
+#include "nltools/logging/Log.h"
 
 Throttler::Throttler(Expiration::Duration maxDelay)
     : m_expiration([this] { delayedCallback(); })
@@ -27,6 +28,7 @@ bool Throttler::isPending() const
 
 void Throttler::delayedCallback()
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, )
   m_isPending = false;
 
   if(Task task = std::move(m_task))
@@ -34,4 +36,9 @@ void Throttler::delayedCallback()
     task();
     m_expiration.refresh(m_maxDelay);
   }
+}
+
+void Throttler::cancel()
+{
+  m_expiration.cancel();
 }

@@ -23,7 +23,7 @@ AsyncCommandLine::AsyncCommandLine(const std::vector<std::string>& command,
   m_streamCerr = Glib::IOChannel::create_from_fd(m_cerrFD);
   m_isRunning = true;
 
-  Glib::signal_child_watch().connect(sigc::mem_fun(*this, &AsyncCommandLine::watchHandler), m_childPid);
+  m_signalWatchHandler = Glib::signal_child_watch().connect(sigc::mem_fun(*this, &AsyncCommandLine::watchHandler), m_childPid);
 }
 
 AsyncCommandLine::~AsyncCommandLine()

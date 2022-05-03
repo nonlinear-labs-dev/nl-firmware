@@ -6,12 +6,6 @@
 #include <tools/PerformanceTimer.h>
 #include <CompileTimeOptions.h>
 
-Oleds &Oleds::get()
-{
-  static Oleds oleds;
-  return oleds;
-}
-
 Oleds::Oleds()
     : m_throttler(std::chrono::milliseconds(20))
 {
@@ -19,6 +13,7 @@ Oleds::Oleds()
 
 Oleds::~Oleds()
 {
+  m_throttler.cancel();
 }
 
 void Oleds::setDirty()
@@ -35,7 +30,6 @@ bool Oleds::isDirty() const
 void Oleds::deInit()
 {
   m_proxies.clear();
-  m_fonts.clear();
 
   FrameBuffer::get().clear();
   FrameBuffer::get().swapBuffers();
@@ -54,7 +48,13 @@ void Oleds::syncRedraw(bool force)
   FrameBuffer::get().swapBuffers(force);
 }
 
-Oleds::tFont Oleds::getFont(const Glib::ustring &name, int height)
+Fonts &Fonts::get()
+{
+  static Fonts f;
+  return f;
+}
+
+Fonts::tFont Fonts::getFont(const Glib::ustring &name, int height)
 {
   tKey key(name, height);
 

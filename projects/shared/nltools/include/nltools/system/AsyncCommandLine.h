@@ -29,4 +29,5 @@ class AsyncCommandLine
 
   bool m_isRunning;
   void closeWatch(Glib::Pid pid);
+  sigc::connection m_signalWatchHandler;
 };

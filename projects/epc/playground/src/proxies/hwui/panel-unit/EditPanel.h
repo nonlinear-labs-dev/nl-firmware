@@ -10,7 +10,7 @@ class BOLED;
 class EditPanel
 {
  public:
-  EditPanel();
+  EditPanel(Oleds &oleds);
   virtual ~EditPanel();
 
   void init();

@@ -78,7 +78,7 @@ bool Layout::onRotary(int inc, ButtonModifiers modifiers)
 void Layout::setDirty()
 {
   m_clear = true;
-  Oleds::get().setDirty();
+  Application::get().getHWUI()->getOleds().setDirty();
 }
 
 void Layout::installButtonRepeat(std::function<void()> cb)

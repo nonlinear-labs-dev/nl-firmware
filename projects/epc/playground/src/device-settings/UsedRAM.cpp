@@ -16,7 +16,10 @@ UsedRAM::UsedRAM(UpdateDocumentContributor& parent)
 
 void UsedRAM::init()
 {
-  Application::get().getUndoScope()->onUndoScopeChanged(sigc::mem_fun(this, &UsedRAM::scheduleReload));
+  if(Application::exists())
+  {
+    Application::get().getUndoScope()->onUndoScopeChanged(sigc::mem_fun(this, &UsedRAM::scheduleReload));
+  }
 }
 
 void UsedRAM::load(const Glib::ustring& text, Initiator initiator)

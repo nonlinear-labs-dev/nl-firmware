@@ -14,6 +14,7 @@
 #include <glibmm/refptr.h>
 #include <png++/image.hpp>
 #include <tools/ScopedGuard.h>
+#include "Oleds.h"
 
 class Application;
 class UsageMode;
@@ -76,6 +77,8 @@ class HWUI
   std::string exportSoled();
   std::string exportBoled();
 
+  Oleds& getOleds();
+
  private:
   void exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std::string &fileName) const;
 
@@ -101,6 +104,8 @@ class HWUI
 
   void onParameterReselection(Parameter *parameter);
   void onParameterSelection(Parameter *oldParameter, Parameter *newParameter);
+
+  Oleds m_oleds;
 
   sigc::connection m_editBufferSoundTypeConnection;
   sigc::connection m_editBufferPresetLoadedConnection;

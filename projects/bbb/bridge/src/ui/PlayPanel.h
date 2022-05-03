@@ -5,6 +5,7 @@
 #include <gtkmm-3.0/gtkmm.h>
 #include "Boled.h"
 #include "Button.h"
+#include "../../../../epc/playground/src/proxies/hwui/Oleds.h"
 
 namespace nltools
 {
@@ -17,7 +18,7 @@ namespace nltools
 class PlayPanel : public Gtk::VBox
 {
  public:
-  PlayPanel();
+  PlayPanel(Oleds &oleds);
   virtual ~PlayPanel();
 
   void setFrameBuffer(const nltools::msg::SetOLEDMessage &msg);

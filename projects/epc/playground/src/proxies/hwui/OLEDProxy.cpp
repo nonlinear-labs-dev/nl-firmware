@@ -6,11 +6,13 @@
 #include <proxies/hwui/Oleds.h>
 
 #include <utility>
+#include <Application.h>
+#include <proxies/hwui/HWUI.h>
 
-OLEDProxy::OLEDProxy(const Rect &posInFrameBuffer)
+OLEDProxy::OLEDProxy(const Rect &posInFrameBuffer, Oleds &oleds)
     : m_posInFrameBuffer(posInFrameBuffer)
 {
-  Oleds::get().registerProxy(this);
+  oleds.registerProxy(this);
 }
 
 OLEDProxy::~OLEDProxy() = default;

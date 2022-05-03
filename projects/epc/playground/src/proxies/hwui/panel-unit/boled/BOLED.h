@@ -18,7 +18,7 @@ namespace DescriptiveLayouts
 class BOLED : public OLEDProxy, public sigc::trackable
 {
  public:
-  BOLED();
+  BOLED(Oleds& oleds);
   ~BOLED() override;
 
   void init();

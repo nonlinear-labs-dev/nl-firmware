@@ -149,7 +149,7 @@ void Label::drawSuffix(FrameBuffer &fb, int fullWidth, const Glib::ustring &firs
 
 std::shared_ptr<Font> Label::getFont() const
 {
-  return Oleds::get().getFont("Emphase-9-Regular", getFontHeight());
+  return Fonts::get().getFont("Emphase-9-Regular", getFontHeight());
 }
 
 int Label::getFontHeight() const

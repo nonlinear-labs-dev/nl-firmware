@@ -4,6 +4,7 @@
 #include "device-settings/DebugLevel.h"
 #include "playground-helpers.h"
 #include <giomm.h>
+#include <Options.h>
 
 int main(int numArgs, char **argv)
 {
@@ -18,16 +19,7 @@ int main(int numArgs, char **argv)
   ::signal(SIGBUS, Environment::printStackTrace);
   ::signal(SIGKILL, Environment::printStackTrace);
 
-  Application app(0, nullptr);
+  Options::s_acceptanceTests = true;
 
-  nltools::Log::setLevel(nltools::Log::Error);
-
-  app.stopWatchDog();
-
-  std::vector<const char *> args;
-  for(auto i = 0; i < numArgs; i++)
-    if(argv[i] && std::string(argv[i]).find('=') == std::string::npos)
-      args.emplace_back(argv[i]);
-
-  return Catch::Session().run(args.size(), args.data());
+  return Catch::Session().run(numArgs, argv);
 }

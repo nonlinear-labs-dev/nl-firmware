@@ -2,7 +2,7 @@
 #include <parameters/names/ParameterDB.h>
 #include "parameter_declarations.h"
 
-TEST_CASE("NL chars are sorted properly")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"NL chars are sorted properly")
 {
   auto chars
       = u8"\uE000\uE001\uE002\uE003\uE200\uE201\uE071\uE072\uE081\uE082\uE0BA\uE0BB\uE0C0\uE0C1\uE0CA\uE0F0\uE0F1\uE0F2"
@@ -36,7 +36,7 @@ TEST_CASE("NL chars are sorted properly")
   }
 }
 
-TEST_CASE("Macro Labels are sortable A < B < C < D < E < F")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Macro Labels are sortable A < B < C < D < E < F")
 {
   auto& db = ParameterDB::get();
   auto mca = db.getLongName({ C15::PID::MC_A, VoiceGroup::Global });

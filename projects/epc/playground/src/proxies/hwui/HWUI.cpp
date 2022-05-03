@@ -35,19 +35,20 @@
 #include "UsageMode.h"
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
+#include <Options.h>
 
 HWUI::HWUI(Settings &settings)
     : m_voiceGoupSignal {}
     , m_currentVoiceGroup { VoiceGroup::I }
-    , m_panelUnit { settings }
-    , m_baseUnit { settings }
+    , m_panelUnit { settings, m_oleds }
+    , m_baseUnit { settings, m_oleds }
     , m_readersCancel(Gio::Cancellable::create())
     , m_buttonStates { false }
     , m_blinkCount(0)
     , m_settings{ settings }
     , m_famSetting(*settings.getSetting<FocusAndModeSetting>())
 {
-  if(isatty(fileno(stdin)))
+  if(isatty(fileno(stdin)) && Options::s_acceptanceTests == false)
   {
     m_keyboardInput = Gio::DataInputStream::create(Gio::UnixInputStream::create(0, true));
     m_keyboardInput->read_line_async(mem_fun(this, &HWUI::onKeyboardLineRead), m_readersCancel);
@@ -59,13 +60,15 @@ HWUI::HWUI(Settings &settings)
 
 HWUI::~HWUI()
 {
+  deInit();
+  m_blinkTimerConnection.disconnect();
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   m_readersCancel->cancel();
 }
 
 void HWUI::deInit()
 {
-  Oleds::get().deInit();
+  m_oleds.deInit();
 }
 
 void HWUI::onButtonMessage(const nltools::msg::ButtonChangedMessage &msg)
@@ -75,7 +78,6 @@ void HWUI::onButtonMessage(const nltools::msg::ButtonChangedMessage &msg)
 
 void HWUI::init()
 {
-
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
   m_editBufferSoundTypeConnection = eb->onSoundTypeChanged(sigc::mem_fun(this, &HWUI::onEditBufferSoundTypeChanged));
@@ -93,7 +95,7 @@ void HWUI::init()
 
   m_rotaryChangedConnection = getPanelUnit().getEditPanel().getKnob().onRotaryChanged(
       sigc::hide(sigc::mem_fun(this, &HWUI::onRotaryChanged)));
-  Oleds::get().syncRedraw();
+  m_oleds.syncRedraw();
 }
 
 void HWUI::onRotaryChanged()
@@ -695,4 +697,9 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
       useCases.setFocusAndMode(FocusAndMode { UIFocus::Parameters });
     }
   }
+}
+
+Oleds &HWUI::getOleds()
+{
+  return m_oleds;
 }

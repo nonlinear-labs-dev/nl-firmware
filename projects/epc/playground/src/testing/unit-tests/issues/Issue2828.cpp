@@ -5,7 +5,7 @@
 #include <parameter_declarations.h>
 #include <use-cases/PresetUseCases.h>
 
-TEST_CASE("Store Preset will change EditBuffer Origin and 'mark saved Preset as loaded'")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Preset will change EditBuffer Origin and 'mark saved Preset as loaded'")
 {
   auto eb = TestHelper::getEditBuffer();
   auto pm = TestHelper::getPresetManager();

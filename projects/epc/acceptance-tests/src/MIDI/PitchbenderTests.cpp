@@ -3,7 +3,7 @@
 #include <mock/MockDSPHosts.h>
 #include <testing/TestHelper.h>
 
-TEST_CASE("Pitchbend Mappings", "[MIDI][TCD]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Pitchbend Mappings", "[MIDI][TCD]")
 {
   bool receivedHW = false;
   ConfigureableDSPHost host {};

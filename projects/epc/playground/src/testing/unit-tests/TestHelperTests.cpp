@@ -3,7 +3,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-TEST_CASE("PARAMETER VALUE ASSERT")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"PARAMETER VALUE ASSERT")
 {
   auto eb = TestHelper::getEditBuffer();
   auto scope = TestHelper::createTestScope();
@@ -20,7 +20,7 @@ TEST_CASE("PARAMETER VALUE ASSERT")
   }
 }
 
-TEST_CASE("unique_ptr can be access if referenced before creation")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"unique_ptr can be access if referenced before creation")
 {
   struct Foo {
     void bar() {

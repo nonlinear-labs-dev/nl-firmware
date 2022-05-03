@@ -15,7 +15,7 @@
 #include <recorder/FlacEncoder.h>
 #include <nltools/logging/Log.h>
 
-TEST_CASE("Recorder FlacDecoder")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Recorder FlacDecoder")
 {
   FlacFrameStorage storage(100000);
   FlacEncoder enc(48000, [&](auto frame, auto header) { storage.push(std::move(frame), header); });
@@ -44,7 +44,7 @@ TEST_CASE("Recorder FlacDecoder")
   REQUIRE(out[3].left == Approx(0.125f));
 }
 
-TEST_CASE("Recorder FlacDecoder In=Out")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Recorder FlacDecoder In=Out")
 {
   auto numFrames = 4096;
 
@@ -76,7 +76,7 @@ TEST_CASE("Recorder FlacDecoder In=Out")
   }
 }
 
-TEST_CASE("Recorder Ring")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Recorder Ring")
 {
   RingBuffer<int> ring(50);
 
@@ -105,7 +105,7 @@ TEST_CASE("Recorder Ring")
   }
 }
 
-TEST_CASE("Recorder InOut")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Recorder InOut")
 {
   auto sr = 44100;
   auto recordLength = 10;  // seconds
@@ -164,7 +164,7 @@ TEST_CASE("Recorder InOut")
   }
 }
 
-TEST_CASE("Recorder Bitstream")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Recorder Bitstream")
 {
   auto numBytes = 2000;
   std::vector<uint8_t> buffer(numBytes);
@@ -186,7 +186,7 @@ TEST_CASE("Recorder Bitstream")
   REQUIRE(reader.read(readerPos, 7) == 100);
 }
 
-TEST_CASE("Recorder Bitstream on FlacHeader")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Recorder Bitstream on FlacHeader")
 {
   // audacity egnerated header
   std::vector<uint8_t> flacHeader
@@ -238,7 +238,7 @@ TEST_CASE("Recorder Bitstream on FlacHeader")
   REQUIRE(check.read(pos, 36) == 1234567890);  // numFrames
 }
 
-TEST_CASE("Recorder Bitstream utf8 numbers reading")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Recorder Bitstream utf8 numbers reading")
 {
   uint64_t expectedFrameNumber = 0;
   FlacEncoder encoder(48000, [&](auto frame, bool isHeader) {
@@ -258,7 +258,7 @@ TEST_CASE("Recorder Bitstream utf8 numbers reading")
     encoder.push(v, 48000);
 }
 
-TEST_CASE("Recorder Bitstream utf8 numbers writing")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Recorder Bitstream utf8 numbers writing")
 {
   auto numBytes = 8;
   std::vector<uint8_t> buffer(numBytes);
@@ -280,7 +280,7 @@ TEST_CASE("Recorder Bitstream utf8 numbers writing")
   }
 }
 
-TEST_CASE("Recorder CRC8")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Recorder CRC8")
 {
   FlacEncoder encoder(48000, [&](auto frame, bool isHeader) {
     if(isHeader)
@@ -315,7 +315,7 @@ TEST_CASE("Recorder CRC8")
     encoder.push(v, 48000);
 }
 
-TEST_CASE("Recorder CRC16")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Recorder CRC16")
 {
   FlacEncoder encoder(48000, [&](auto frame, bool isHeader) {
     if(isHeader)
@@ -334,7 +334,7 @@ TEST_CASE("Recorder CRC16")
     encoder.push(v, 48000);
 }
 
-TEST_CASE("Recorder API should not stall")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Recorder API should not stall")
 {
   Recorder r(48000);
   r.getInput()->setPaused(false);

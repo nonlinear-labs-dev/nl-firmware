@@ -11,7 +11,7 @@
 
 using EBL = EditBufferLogicalParts;
 
-TEST_CASE("Convert Split (II) to Single")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Split (II) to Single")
 {
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();
@@ -167,7 +167,7 @@ TEST_CASE("Convert Split (II) to Single")
   }
 }
 
-TEST_CASE("Convert Layer (II) to Single")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Layer (II) to Single")
 {
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();
@@ -298,7 +298,7 @@ TEST_CASE("Convert Layer (II) to Single")
   }
 }
 
-TEST_CASE("Convert Layer (I) to Single")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Layer (I) to Single")
 {
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();

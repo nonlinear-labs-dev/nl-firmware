@@ -7,7 +7,7 @@
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 
-TEST_CASE("Preset Load sends EditBuffer")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Preset Load sends EditBuffer")
 {
 
   using namespace nltools::msg;
@@ -37,7 +37,7 @@ TEST_CASE("Preset Load sends EditBuffer")
   CHECK(eb->getUUIDOfLastLoadedPreset() == presets.getSinglePreset()->getUuid());
 }
 
-TEST_CASE("Store Action does not send EditBuffer")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Action does not send EditBuffer")
 {
   using namespace nltools::msg;
   using namespace std::chrono;

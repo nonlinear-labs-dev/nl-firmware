@@ -1,6 +1,7 @@
 #pragma once
 
 #include "playground.h"
+#include "Oleds.h"
 #include <nltools/Uncopyable.h>
 #include <proxies/hwui/controls/Rect.h>
 #include <memory>
@@ -14,7 +15,7 @@ class FrameBuffer;
 class OLEDProxy : public Uncopyable
 {
  public:
-  explicit OLEDProxy(const Rect &posInFrameBuffer);
+  explicit OLEDProxy(const Rect &posInFrameBuffer, Oleds &oleds);
   virtual ~OLEDProxy();
 
   typedef std::shared_ptr<Layout> tLayoutPtr;

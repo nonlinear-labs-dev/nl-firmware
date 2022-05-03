@@ -20,8 +20,9 @@
 #include <nltools/messaging/Message.h>
 #include "use-cases/EditBufferUseCases.h"
 
-PanelUnit::PanelUnit(Settings &settings)
+PanelUnit::PanelUnit(Settings &settings, Oleds &oleds)
     : super(settings)
+    , m_editPanel(oleds)
 {
   const int numLEDs = 96;
 

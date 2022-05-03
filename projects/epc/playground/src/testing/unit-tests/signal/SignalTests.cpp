@@ -24,7 +24,7 @@ namespace Detail
   };
 }
 
-TEST_CASE("Normal life cycle", "[Signals]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Normal life cycle", "[Signals]")
 {
   int received = 0;
   auto *s = new Detail::Sender();
@@ -36,7 +36,7 @@ TEST_CASE("Normal life cycle", "[Signals]")
   CHECK(received == 1);
 }
 
-TEST_CASE("Sender dies first", "[Signals]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Sender dies first", "[Signals]")
 {
 
   int received = 0;
@@ -49,7 +49,7 @@ TEST_CASE("Sender dies first", "[Signals]")
   CHECK(received == 0);
 }
 
-TEST_CASE("Receiver Dies First", "[Signals]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Receiver Dies First", "[Signals]")
 {
   int received = 0;
   auto *s = new Detail::Sender();
@@ -61,7 +61,7 @@ TEST_CASE("Receiver Dies First", "[Signals]")
   CHECK(received == 0);
 }
 
-TEST_CASE("Reconnect Before Init CB Was Received", "[Signals]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Reconnect Before Init CB Was Received", "[Signals]")
 {
   class Sender : public sigc::trackable
   {

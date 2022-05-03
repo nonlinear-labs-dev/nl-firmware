@@ -24,7 +24,7 @@ namespace DETAIL
 
     std::shared_ptr<Font> getFont() const override
     {
-      return Oleds::get().getFont("Emphase-9-Bold", getFontHeight());
+      return Fonts::get().getFont("Emphase-9-Bold", getFontHeight());
     }
 
     int getFontHeight() const override
@@ -67,9 +67,9 @@ namespace DETAIL
     }
 
    protected:
-    virtual Oleds::tFont getFont() override
+    virtual Fonts::tFont getFont() override
     {
-      return Oleds::get().getFont("Emphase-8-TXT-Regular", 8);
+      return Fonts::get().getFont("Emphase-8-TXT-Regular", 8);
     }
 
    private:
@@ -132,7 +132,7 @@ void SplashLayout::setMessage(const std::string &txt)
 {
   m_text = txt;
   m_message->setText(m_text, FrameBufferColors::C179);
-  Oleds::get().syncRedraw(true);
+  Application::get().getHWUI()->getOleds().syncRedraw(true);
 }
 
 void SplashLayout::addMessage(const std::string &txt)
@@ -144,7 +144,7 @@ void SplashLayout::addMessage(const std::string &txt)
   m_message->setText(m_text, FrameBufferColors::C179);
   scrollToMax();
 
-  Oleds::get().syncRedraw(true);
+  Application::get().getHWUI()->getOleds().syncRedraw(true);
 }
 
 void SplashLayout::addHeadline()

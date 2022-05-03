@@ -33,7 +33,7 @@ enum Buttons
   BUTTON_MODE = 123,
 };
 
-PlayPanel::PlayPanel()
+PlayPanel::PlayPanel(Oleds& oleds)
     : m_setup(BUTTON_SETUP, "Setup")
     , m_exportBoled("Export Boled", std::bind(&Boled::exportBoled, &m_boled))
     , m_exportSoled("Export Soled", std::bind(&Boled::exportSoled, &m_boled))

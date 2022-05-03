@@ -16,7 +16,7 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
  public:
   typedef std::shared_ptr<TwoStateLED> tLed;
 
-  PanelUnit(Settings& settings);
+  PanelUnit(Settings &settings, Oleds &oleds);
   ~PanelUnit() override;
 
   bool onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state) override;

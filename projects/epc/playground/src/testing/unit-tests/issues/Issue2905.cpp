@@ -2,7 +2,7 @@
 #include <presets/Bank.h>
 #include "CompileTimeOptions.h"
 
-TEST_CASE("Sort Bank Numbers deletes Banks!")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Sort Bank Numbers deletes Banks!")
 {
   auto pm = TestHelper::getPresetManager();
   {

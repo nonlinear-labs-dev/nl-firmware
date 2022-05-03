@@ -6,7 +6,7 @@
 #include <parameters/scale-converters/Linear100PercentScaleConverter.h>
 #include <sync/SyncMasterMockRoot.h>
 
-TEST_CASE("Modulateable Parameter")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Modulateable Parameter")
 {
   TestGroupSet groupSet(&SyncMasterMockRoot::get());
   groupSet.init(nullptr);

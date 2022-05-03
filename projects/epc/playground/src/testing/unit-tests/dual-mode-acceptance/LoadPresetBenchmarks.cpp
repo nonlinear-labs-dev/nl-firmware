@@ -50,7 +50,7 @@ template <typename T> inline long measure(const T& cb)
   return std::chrono::nanoseconds(end - start).count();
 }
 
-TEST_CASE("Load Presets", "[Benchmark]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Presets", "[Benchmark]")
 {
   MockPresetStorage presets1;
   MockPresetStorage presets2;

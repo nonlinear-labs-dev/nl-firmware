@@ -4,7 +4,7 @@
 #include <future>
 #include <thread>
 
-TEST_CASE("ContextBoundMessageQueue - happy path")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"ContextBoundMessageQueue - happy path")
 {
   bool received = false;
   auto ctx = Glib::MainContext::create();
@@ -18,7 +18,7 @@ TEST_CASE("ContextBoundMessageQueue - happy path")
   REQUIRE(!queue.isPending());
 }
 
-TEST_CASE("ContextBoundMessageQueue - happy path, multiple callbacks")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"ContextBoundMessageQueue - happy path, multiple callbacks")
 {
   int cnt = 0;
   auto ctx = Glib::MainContext::create();
@@ -32,7 +32,7 @@ TEST_CASE("ContextBoundMessageQueue - happy path, multiple callbacks")
   REQUIRE(!queue.isPending());
 }
 
-TEST_CASE("ContextBoundMessageQueue - destruction while pending")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"ContextBoundMessageQueue - destruction while pending")
 {
   bool received = false;
   auto ctx = Glib::MainContext::create();
@@ -45,7 +45,7 @@ TEST_CASE("ContextBoundMessageQueue - destruction while pending")
   REQUIRE(!received);
 }
 
-TEST_CASE("ContextBoundMessageQueue - multi threading")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"ContextBoundMessageQueue - multi threading")
 {
   using namespace std::chrono_literals;
 

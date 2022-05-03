@@ -3,14 +3,14 @@
 #include <testing/TestHelper.h>
 #include <device-settings/Settings.h>
 
-TEST_CASE("Edit Smoothing Time - Scales")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Edit Smoothing Time - Scales")
 {
   Settings settings("", nullptr);
   EditSmoothingTime time(settings);
   REQUIRE(time.getParent() != nullptr);
 }
 
-TEST_CASE("Edit Smoothing Time - To String")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Edit Smoothing Time - To String")
 {
   Settings settings("", nullptr);
   EditSmoothingTime time(settings);

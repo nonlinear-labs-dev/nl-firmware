@@ -14,8 +14,13 @@ DateTimeInfo::DateTimeInfo(DeviceInformation *parent)
     : DeviceInformationItem(parent)
 {
   onTimeChanged();
-  Application::get().getMainContext()->signal_timeout().connect_seconds(
+  m_signalMinutePassed = Application::get().getMainContext()->signal_timeout().connect_seconds(
       sigc::mem_fun(this, &DateTimeInfo::onTimeChanged), 60);
+}
+
+DateTimeInfo::~DateTimeInfo()
+{
+  m_signalMinutePassed.disconnect();
 }
 
 bool DateTimeInfo::onTimeChanged()

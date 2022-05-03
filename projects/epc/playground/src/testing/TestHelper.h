@@ -13,9 +13,40 @@
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/PresetManagerUseCases.h"
 #include "use-cases/SoundUseCases.h"
+#include <glibmm.h>
 
 namespace TestHelper
 {
+  class ApplicationFixture
+  {
+   protected:
+    Application app;
+   public:
+    ApplicationFixture() : app(0, nullptr)
+    {
+    }
+
+    ~ApplicationFixture()
+    {
+    }
+  };
+
+  class MainContextFixture
+  {
+   protected:
+    GMainContext* m_context;
+   public:
+    MainContextFixture() : m_context(g_main_context_new())
+    {
+    }
+
+    ~MainContextFixture()
+    {
+      g_main_context_release(m_context);
+      m_context = nullptr;
+    }
+  };
+
   struct ScopedMessagingConfiguration
   {
     explicit ScopedMessagingConfiguration(const nltools::msg::Configuration &config)
@@ -146,18 +177,23 @@ namespace TestHelper
 
   void randomizeFadeParams(UNDO::Transaction* transaction);
 
-  inline void doMainLoopFor(std::chrono::milliseconds time)
+  inline void doMainLoopFor(std::chrono::milliseconds time, GMainContext* ctx = nullptr)
   {
     Expiration exp;
     exp.refresh(time);
 
     while(exp.isPending())
-      g_main_context_iteration(nullptr, TRUE);
+      g_main_context_iteration(ctx, TRUE);
   }
 
   inline void doMainLoop(std::chrono::milliseconds minTime, std::chrono::milliseconds timeout,
-                         const std::function<bool()>& test)
+                         const std::function<bool()>& test, GMainContext* ctx = nullptr)
   {
+    if(Application::exists() && ctx == nullptr)
+    {
+      ctx = Application::get().getMainContext()->gobj();
+    }
+
     Expiration exp;
     exp.refresh(timeout);
 
@@ -167,14 +203,19 @@ namespace TestHelper
       min.refresh(minTime);
 
     while((exp.isPending() && !test()) || min.isPending())
-      g_main_context_iteration(nullptr, TRUE);
+      g_main_context_iteration(ctx, TRUE);
 
     CHECK(test());
   }
 
-  inline void doMainLoopIteration()
+  inline void doMainLoopIterationOnContext(Glib::MainContext* c)
   {
-    g_main_context_iteration(nullptr, TRUE);
+    c->iteration(true);
+  }
+
+  inline void doMainLoopIteration(GMainContext* ctx = nullptr)
+  {
+    g_main_context_iteration(ctx, TRUE);
   }
 
   inline void updateMappings(nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings& array,

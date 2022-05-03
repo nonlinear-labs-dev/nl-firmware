@@ -62,5 +62,5 @@ void ParameterInfoText::setDirty()
 
 std::shared_ptr<Font> ParameterInfoText::getFont()
 {
-  return Oleds::get().getFont("Emphase-8-TXT-Regular", 8);
+  return Fonts::get().getFont("Emphase-8-TXT-Regular", 8);
 }

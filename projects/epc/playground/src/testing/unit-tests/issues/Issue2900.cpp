@@ -7,6 +7,7 @@
 #include <thread>
 #include <nltools/GenericScopeGuard.h>
 
+#warning "remove oleds static object"
 #warning "This test can stall or crash the whole unit-test-suite"
 TEST_CASE("Issue 2900")
 {

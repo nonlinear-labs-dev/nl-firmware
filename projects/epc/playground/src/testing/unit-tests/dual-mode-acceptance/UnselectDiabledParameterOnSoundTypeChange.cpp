@@ -3,7 +3,7 @@
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <proxies/hwui/HWUI.h>
 
-TEST_CASE("FROM Layer")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"FROM Layer")
 {
   MockPresetStorage presets;
 
@@ -270,7 +270,7 @@ TEST_CASE("FROM Layer")
   }
 }
 
-TEST_CASE("Split Loaded")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Loaded")
 {
   MockPresetStorage presets;
 
