@@ -126,6 +126,27 @@ namespace nltools
       detail::connectionSignals.clear();
     }
 
+    void addTestEndpoint(EndPoint endPoint)
+    {
+      auto c = ChannelConfiguration(endPoint, threading::Priority::Normal);
+      {
+        auto cb = [peer = c.peer](const auto &s) { detail::notifyClients(s, peer); };
+
+        parseURI(c.uri, [=](auto scheme, auto, auto, auto port) {
+            nltools_assertOnDevPC(scheme == "ws");  // Currently, only web sockets are supported
+            detail::inChannels[c.peer] = std::make_unique<ws::WebSocketInChannel>(cb, port, c.prio);
+            detail::signals[std::make_pair(MessageType::Ping, c.peer)];
+        });
+      }
+      {
+          parseURI(c.uri, [=](auto scheme, auto host, auto, auto port) {
+                     nltools_assertOnDevPC(scheme == "ws");  // Currently, only web sockets are supported
+                     detail::outChannels[c.peer] = std::make_unique<ws::WebSocketOutChannel>(
+                         host, port, c.prio, [peer = c.peer] { detail::connectionSignals[peer](); });
+                   });
+      }
+    }
+
     const Configuration &getConfig()
     {
       return detail::currentConfig;

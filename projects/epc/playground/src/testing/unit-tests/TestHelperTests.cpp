@@ -14,6 +14,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"PARAMETER VALUE ASSERT")
 
     for(auto v : { 0.2, 0.0, 0.1, 0.17635456, 0.1235425, 0.1234525643, 0.8563, 0.99, 1.0, -1.0 })
       eb->forEachParameter([&](Parameter* p) {
+        if(dynamic_cast<ModulationRoutingParameter*>(p))
+          return;
         p->setCPFromHwui(transaction, v);
         CHECK_PARAMETER_CP_EQUALS_FICTION(p, v);
       });

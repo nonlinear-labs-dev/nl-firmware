@@ -28,6 +28,12 @@ namespace TestHelper
 
     ~ApplicationFixture()
     {
+      app.doRemainingSignals();
+    }
+
+    auto getMainContext()
+    {
+      return app.getMainContext()->gobj();
     }
   };
 
@@ -189,15 +195,17 @@ namespace TestHelper
   inline void doMainLoop(std::chrono::milliseconds minTime, std::chrono::milliseconds timeout,
                          const std::function<bool()>& test, GMainContext* ctx = nullptr)
   {
+    Glib::MainContext* gMainContext = nullptr;
     if(Application::exists() && ctx == nullptr)
     {
       ctx = Application::get().getMainContext()->gobj();
+      gMainContext = Application::get().getMainContext().get();
     }
 
-    Expiration exp;
+    Expiration exp({}, Expiration::Duration::zero(), 0, gMainContext);
     exp.refresh(timeout);
 
-    Expiration min;
+    Expiration min({}, Expiration::Duration::zero(), 0, gMainContext);
 
     if(minTime != std::chrono::milliseconds::zero())
       min.refresh(minTime);
@@ -215,6 +223,11 @@ namespace TestHelper
 
   inline void doMainLoopIteration(GMainContext* ctx = nullptr)
   {
+    if(Application::exists() && ctx == nullptr)
+    {
+      ctx = Application::get().getMainContext()->gobj();
+    }
+
     g_main_context_iteration(ctx, TRUE);
   }
 

@@ -73,7 +73,8 @@ void quitApp(int sig)
 
 Application::Application(int numArgs, char **argv)
     : m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
-    , m_theMainLoop(Glib::MainLoop::create(Glib::MainContext::get_default()))
+    , m_theMainContext(Glib::MainContext::create())
+    , m_theMainLoop(Glib::MainLoop::create(m_theMainContext))
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_options->getSettingsFile(), m_http->getUpdateDocumentMaster()))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
@@ -120,12 +121,6 @@ Application::Application(int numArgs, char **argv)
 
 Application::~Application()
 {
-  auto ctx = g_main_context_get_thread_default();
-  while(g_main_context_iteration(ctx, FALSE))
-  {
-
-  }
-
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 
   m_watchDog.reset();
@@ -319,4 +314,14 @@ bool Application::heartbeat()
 ActionManagers *Application::getActionManagers()
 {
   return &m_actionManagers;
+}
+
+void Application::doRemainingSignals()
+{
+  auto context = m_theMainLoop->get_context()->gobj();
+  auto ctx = g_main_context_default();
+  g_main_context_acquire(context);
+  while(g_main_context_iteration(context, FALSE))
+  {
+  }
 }

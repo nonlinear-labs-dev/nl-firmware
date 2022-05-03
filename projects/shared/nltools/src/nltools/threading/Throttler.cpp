@@ -28,7 +28,7 @@ bool Throttler::isPending() const
 
 void Throttler::delayedCallback()
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, )
+  nltools::Log::error(__PRETTY_FUNCTION__, this);
   m_isPending = false;
 
   if(Task task = std::move(m_task))

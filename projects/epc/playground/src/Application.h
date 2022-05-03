@@ -60,12 +60,15 @@ class Application
 
   ActionManagers *getActionManagers();
 
+  void doRemainingSignals();
+
  private:
   bool heartbeat();
   static std::unique_ptr<Options> initStatic(Application *app, std::unique_ptr<Options> options);
 
   static Application *theApp;
   std::unique_ptr<Options> m_options;
+  Glib::RefPtr<Glib::MainContext> m_theMainContext;
   Glib::RefPtr<Glib::MainLoop> m_theMainLoop;
 
   std::unique_ptr<HTTPServer> m_http;

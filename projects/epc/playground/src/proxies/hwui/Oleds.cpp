@@ -19,7 +19,15 @@ Oleds::~Oleds()
 void Oleds::setDirty()
 {
   if(!m_throttler.isPending())
-    m_throttler.doTask([this] { syncRedraw(false); });
+  {
+    static Settings* lastSettingsAtSetDirty = Application::get().getSettings();
+    lastSettingsAtSetDirty = Application::get().getSettings();
+    m_throttler.doTask([this, &lastSettingsAtSetDirty=lastSettingsAtSetDirty] {
+                         auto app = &Application::get();
+                         auto settingAtRedraw = app->getSettings();
+                         syncRedraw(false);
+                       });
+  }
 }
 
 bool Oleds::isDirty() const

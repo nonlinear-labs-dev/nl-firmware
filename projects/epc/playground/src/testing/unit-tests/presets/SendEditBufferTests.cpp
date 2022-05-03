@@ -9,15 +9,10 @@
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Preset Load sends EditBuffer")
 {
-
   using namespace nltools::msg;
   using namespace std::chrono;
 
-  Configuration configuration;
-  configuration.useEndpoints = { EndPoint::AudioEngine };
-  configuration.offerEndpoints = { EndPoint::Playground, EndPoint::AudioEngine };
-
-  TestHelper::ScopedMessagingConfiguration scopeEndPoint { configuration };
+  nltools::msg::addTestEndpoint(EndPoint::AudioEngine);
 
   bool singleMessageRecieved = false;
 
@@ -31,7 +26,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Preset Load sends EditBuffer")
   MockPresetStorage presets;
   ebUseCases.load(presets.getSinglePreset());
 
-  TestHelper::doMainLoop(1s, 1s, [&] { return singleMessageRecieved; });
+  TestHelper::doMainLoop(1ms, 1s, [&] { return singleMessageRecieved; });
   c.disconnect();
 
   CHECK(eb->getUUIDOfLastLoadedPreset() == presets.getSinglePreset()->getUuid());
@@ -69,7 +64,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Action does not send Edit
   auto newNumBanks = pm->getNumBanks();
   TestHelper::doMainLoopIteration();
   CHECK(newNumBanks > oldNumBanks);
-  CHECK(!singleMessageReceived);
+  TestHelper::doMainLoop(1ms, 1s, [&] { return !singleMessageReceived; });
 
   auto bank = pm->getSelectedBank();
   CHECK(bank != nullptr);
@@ -81,7 +76,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Action does not send Edit
   auto newNumPresets = bank->getNumPresets();
   TestHelper::doMainLoopIteration();
   CHECK(newNumPresets > oldNumPresets);
-  CHECK(!singleMessageReceived);
+  TestHelper::doMainLoop(1ms, 1s, [&] { return !singleMessageReceived; });
 
   //Insert preset into bank at pos 0
   oldNumPresets = bank->getNumPresets();
@@ -89,7 +84,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Action does not send Edit
   newNumPresets = bank->getNumPresets();
   TestHelper::doMainLoopIteration();
   CHECK(newNumPresets > oldNumPresets);
-  CHECK(!singleMessageReceived);
+  TestHelper::doMainLoop(1ms, 1s, [&] { return !singleMessageReceived; });
 
   c.disconnect();
 }

@@ -2,7 +2,7 @@
 #include <glibmm/main.h>
 #include <utility>
 
-Expiration::Expiration(Expiration::Callback cb, Expiration::Duration d, int priority)
+Expiration::Expiration(Expiration::Callback cb, Expiration::Duration d, int priority, Glib::MainContext* g) : m_context{g}
 {
   setCallback(std::move(cb));
 
@@ -39,7 +39,10 @@ void Expiration::refresh(Expiration::Duration d, int priority)
 
   auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(d).count();
   auto cb = sigc::mem_fun(this, &Expiration::doCallback);
-  m_timeout = Glib::MainContext::get_default()->signal_timeout().connect(cb, ms, priority);
+  if(m_context == nullptr)
+    m_timeout = Glib::MainContext::get_default()->signal_timeout().connect(cb, ms, priority);
+  else
+    m_timeout = m_context->signal_timeout().connect(cb, ms, priority);
 }
 
 bool Expiration::doCallback()

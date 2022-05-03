@@ -17,10 +17,10 @@ RibbonLabel::RibbonLabel(const ParameterId &paramID, const Rect &rect)
 {
   auto settings = Application::get().getSettings();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  eb->getParameterGroupByID({ "CS", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty));
-  eb->getParameterGroupByID({ "MCs", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty));
-  eb->getParameterGroupByID({ "MCM", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty));
-  settings->onSettingsChanged(sigc::mem_fun(this, &RibbonLabel::setDirty));
+  m_signalsChanged.emplace_back(eb->getParameterGroupByID({ "CS", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty)));
+  m_signalsChanged.emplace_back(eb->getParameterGroupByID({ "MCs", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty)));
+  m_signalsChanged.emplace_back(eb->getParameterGroupByID({ "MCM", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty)));
+  m_signalsChanged.emplace_back(settings->onSettingsChanged(sigc::mem_fun(this, &RibbonLabel::setDirty)));
   m_parameter = eb->findAndCastParameterByID<PhysicalControlParameter>(m_parameterID);
 }
 

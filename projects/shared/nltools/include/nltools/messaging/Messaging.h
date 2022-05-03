@@ -106,6 +106,7 @@ namespace nltools
 
     void init(const Configuration &conf);
     void deInit();
+    void addTestEndpoint(EndPoint e);
     const Configuration &getConfig();
 
     // wait at most timeOut for the sigc::connection to be established
