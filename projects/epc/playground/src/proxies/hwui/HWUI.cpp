@@ -35,7 +35,9 @@
 #include "UsageMode.h"
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
+#include "device-settings/ScreenSaverTimeoutSetting.h"
 #include <Options.h>
+#include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 
 HWUI::HWUI(Settings &settings)
     : m_voiceGoupSignal {}
@@ -45,7 +47,7 @@ HWUI::HWUI(Settings &settings)
     , m_readersCancel(Gio::Cancellable::create())
     , m_buttonStates { false }
     , m_blinkCount(0)
-    , m_settings{ settings }
+    , m_settings { settings }
     , m_famSetting(*settings.getSetting<FocusAndModeSetting>())
 {
   if(isatty(fileno(stdin)) && Options::s_acceptanceTests == false)
@@ -702,4 +704,52 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
 Oleds &HWUI::getOleds()
 {
   return m_oleds;
+}
+
+void HWUI::startSplash()
+{
+  auto screensaver = m_settings.getSetting<ScreenSaverTimeoutSetting>();
+  auto &boled = getPanelUnit().getEditPanel().getBoled();
+  screensaver->endAndReschedule();
+  boled.setOverlay(new SplashLayout(this));
+}
+
+void HWUI::finishSplash()
+{
+  auto &boled = getPanelUnit().getEditPanel().getBoled();
+  if(boled.getOverlay().get() == m_splashLayout)
+    boled.resetOverlay();
+}
+
+void HWUI::addSplashStatus(const std::string &msg)
+{
+  auto screensaver = m_settings.getSetting<ScreenSaverTimeoutSetting>();
+  screensaver->endAndReschedule();
+  if(m_splashLayout)
+  {
+    m_splashLayout->addMessage(msg);
+  }
+}
+
+void HWUI::setSplashStatus(const std::string &msg)
+{
+  auto screensaver = m_settings.getSetting<ScreenSaverTimeoutSetting>();
+  screensaver->endAndReschedule();
+  if(m_splashLayout)
+  {
+    m_splashLayout->setMessage(msg);
+  }
+}
+
+void HWUI::registerSplash(SplashLayout *l)
+{
+  nltools_detailedAssertAlways(m_splashLayout == nullptr, "registerSplash called with present pointer");
+  m_splashLayout = l;
+}
+
+void HWUI::unregisterSplash(SplashLayout *l)
+{
+  nltools_detailedAssertAlways(l == m_splashLayout,
+                               "unregisterSplash called with different Splashscreen pointer than installed");
+  m_splashLayout = nullptr;
 }

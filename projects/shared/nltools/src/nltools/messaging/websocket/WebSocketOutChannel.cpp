@@ -14,13 +14,14 @@ namespace nltools
     {
       WebSocketOutChannel::WebSocketOutChannel(const std::string &targetMachine, guint port,
                                                nltools::threading::Priority p,
-                                               std::function<void()> connectionEstablishedCB)
+                                               std::function<void()> connectionEstablishedCB,
+                                               Glib::RefPtr<Glib::MainContext> ctx)
           : m_uri(nltools::string::concat("http://", targetMachine, ":", port))
           , m_soupSession(soup_session_new(), g_object_unref)
           , m_message(nullptr, g_object_unref)
           , m_connection(nullptr, g_object_unref)
           , m_mainThreadContextQueue(
-                std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
+                std::make_unique<threading::ContextBoundMessageQueue>(ctx))
           , m_onConnectionEstablished(connectionEstablishedCB)
           , m_contextThread([=] { this->backgroundThread(p); })
       {

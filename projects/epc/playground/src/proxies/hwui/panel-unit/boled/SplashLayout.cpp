@@ -77,55 +77,17 @@ namespace DETAIL
   };
 }
 
-static SplashLayout *s_splash = nullptr;
-
-SplashLayout::SplashLayout()
+SplashLayout::SplashLayout(HWUI *hwui)
+  : m_hwui(hwui)
 {
+  hwui->registerSplash(this);
   Application::get().stopWatchDog();
-  s_splash = this;
 }
 
 SplashLayout::~SplashLayout()
 {
+  m_hwui->unregisterSplash(this);
   Application::get().runWatchDog();
-  s_splash = nullptr;
-}
-
-void SplashLayout::start()
-{
-  auto hwui = Application::get().getHWUI();
-  auto screensaver = Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>();
-  auto &boled = hwui->getPanelUnit().getEditPanel().getBoled();
-  screensaver->endAndReschedule();
-  boled.setOverlay(new SplashLayout());
-}
-
-void SplashLayout::finish()
-{
-  auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
-
-  if(boled.getOverlay().get() == s_splash)
-    boled.resetOverlay();
-}
-
-void SplashLayout::setStatus(const std::string &msg)
-{
-  auto screensaver = Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>();
-  screensaver->endAndReschedule();
-  if(s_splash)
-  {
-    s_splash->setMessage(msg);
-  }
-}
-
-void SplashLayout::addStatus(const std::string &msg)
-{
-  auto screensaver = Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>();
-  screensaver->endAndReschedule();
-  if(s_splash)
-  {
-    s_splash->addMessage(msg);
-  }
 }
 
 void SplashLayout::setMessage(const std::string &txt)
@@ -169,5 +131,5 @@ Scrollable *SplashLayout::createScrollableContent()
 
 Rect SplashLayout::getScrollableAreaRect() const
 {
-  return Rect(0, 16, 256, 64 - 16);
+  return {0, 16, 256, 64 - 16};
 }

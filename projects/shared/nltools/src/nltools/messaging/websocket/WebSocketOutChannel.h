@@ -21,7 +21,7 @@ namespace nltools
       {
        public:
         WebSocketOutChannel(const std::string &targetMachine, guint port, nltools::threading::Priority p,
-                            std::function<void()> connectionEstablishedCB);
+                            std::function<void()> connectionEstablishedCB, Glib::RefPtr<Glib::MainContext> ctx);
 
         ~WebSocketOutChannel() override;
 

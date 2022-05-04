@@ -13,11 +13,11 @@ namespace nltools
   {
     namespace ws
     {
-      WebSocketInChannel::WebSocketInChannel(Callback cb, guint port, nltools::threading::Priority p)
+      WebSocketInChannel::WebSocketInChannel(Callback cb, guint port, nltools::threading::Priority p, const Glib::RefPtr<Glib::MainContext>& c)
           : InChannel(std::move(cb))
           , m_port(port)
           , m_server(soup_server_new(nullptr, nullptr), g_object_unref)
-          , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
+          , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(c))
           , m_contextThread([=] { this->backgroundThread(p); })
       {
         m_conditionEstablishedThreadWaiter.wait();

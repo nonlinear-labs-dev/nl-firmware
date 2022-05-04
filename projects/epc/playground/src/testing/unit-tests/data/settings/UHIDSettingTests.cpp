@@ -10,7 +10,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"UHID formatting test")
   auto info = Application::get().getDeviceInformation()->getItem<::UniqueHardwareID>();
 
   proxy->setUHID(0);
-  TestHelper::doMainLoopIteration();
   CHECK(info->get() == "0000-0000-0000-0000");
 
   proxy->setUHID(std::numeric_limits<uint64_t>::min());

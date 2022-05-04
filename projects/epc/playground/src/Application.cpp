@@ -33,7 +33,7 @@ using namespace std::chrono_literals;
 
 Application *Application::theApp = nullptr;
 
-void setupMessaging(const Options *options)
+void setupMessaging(const Options *options, Glib::RefPtr<Glib::MainContext> pContext)
 {
   using namespace nltools::msg;
 
@@ -42,6 +42,7 @@ void setupMessaging(const Options *options)
   const auto &midi = options->getMidiBridge();
 
   Configuration conf;
+  conf.mainContext = pContext;
 #ifdef _DEVELOPMENT_PC
   conf.offerEndpoints = { { EndPoint::Playground }, { EndPoint::TestEndPoint } };
 #else
@@ -61,7 +62,7 @@ void setupMessaging(const Options *options)
 std::unique_ptr<Options> Application::initStatic(Application *app, std::unique_ptr<Options> options)
 {
   theApp = app;
-  setupMessaging(options.get());
+  setupMessaging(options.get(), app->m_theMainContext);
   return options;
 }
 
@@ -72,17 +73,17 @@ void quitApp(int sig)
 }
 
 Application::Application(int numArgs, char **argv)
-    : m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
-    , m_theMainContext(Glib::MainContext::create())
+    : m_theMainContext(Glib::MainContext::create())
+    , m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
     , m_theMainLoop(Glib::MainLoop::create(m_theMainContext))
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_options->getSettingsFile(), m_http->getUpdateDocumentMaster()))
+    , m_hwui(new HWUI(*m_settings))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_presetManager(
           new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
     , m_audioEngineProxy(new AudioEngineProxy(*m_presetManager, *m_settings, *m_playcontrollerProxy))
-    , m_hwui(new HWUI(*m_settings))
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
     , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster()))
@@ -100,7 +101,7 @@ Application::Application(int numArgs, char **argv)
   m_settings->init();
   m_hwui->init();
   m_http->init();
-  m_presetManager->init(m_audioEngineProxy.get(), *m_settings, SplashLayout::addStatus);
+  m_presetManager->init(m_audioEngineProxy.get(), *m_settings, [this](auto str) { m_hwui->addSplashStatus(str); });
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
 
   auto focusAndMode = m_settings->getSetting<FocusAndModeSetting>();
@@ -126,10 +127,10 @@ Application::~Application()
   m_watchDog.reset();
   m_aggroWatchDog.reset();
 
-  m_hwui->deInit();
-  m_hwui.reset();
   m_undoScope.reset();
   m_presetManager.reset();
+  m_hwui->deInit();
+  m_hwui.reset();
 
   nltools::msg::flush(nltools::msg::EndPoint::PanelLed, 1s);
   nltools::msg::flush(nltools::msg::EndPoint::RibbonLed, 1s);

@@ -12,7 +12,7 @@ class Application;
 class Layout;
 class FrameBuffer;
 
-class OLEDProxy : public Uncopyable
+class OLEDProxy : public Uncopyable, public sigc::trackable
 {
  public:
   explicit OLEDProxy(const Rect &posInFrameBuffer, Oleds &oleds);

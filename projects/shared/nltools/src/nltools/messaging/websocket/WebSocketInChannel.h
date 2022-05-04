@@ -24,7 +24,7 @@ namespace nltools
       class WebSocketInChannel : public InChannel
       {
        public:
-        WebSocketInChannel(Callback cb, guint port, nltools::threading::Priority p);
+        WebSocketInChannel(Callback cb, guint port, nltools::threading::Priority p, const Glib::RefPtr<Glib::MainContext>& ctx);
         ~WebSocketInChannel() override;
 
        private:

@@ -185,7 +185,13 @@ namespace TestHelper
 
   inline void doMainLoopFor(std::chrono::milliseconds time, GMainContext* ctx = nullptr)
   {
-    Expiration exp;
+    Glib::MainContext* gCtx = nullptr;
+    if(ctx == nullptr && Application::exists())
+    {
+      gCtx = Application::get().getMainContext().get();
+      ctx = Application::get().getMainContext()->gobj();
+    }
+    Expiration exp({}, Expiration::Duration::zero(), 0, gCtx);
     exp.refresh(time);
 
     while(exp.isPending())

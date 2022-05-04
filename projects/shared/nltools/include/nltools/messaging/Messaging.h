@@ -8,6 +8,7 @@
 #include <nltools/enums/EnumTools.h>
 #include <nltools/threading/Threading.h>
 #include <glibmm/bytes.h>
+#include <glibmm/main.h>
 #include <string.h>
 
 namespace nltools
@@ -102,6 +103,7 @@ namespace nltools
     {
       std::vector<ChannelConfiguration> offerEndpoints;
       std::vector<ChannelConfiguration> useEndpoints;
+      Glib::RefPtr<Glib::MainContext> mainContext;
     };
 
     void init(const Configuration &conf);

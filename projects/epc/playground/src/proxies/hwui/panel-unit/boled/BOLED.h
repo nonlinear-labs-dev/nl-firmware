@@ -15,7 +15,7 @@ namespace DescriptiveLayouts
   class GenericLayout;
 }
 
-class BOLED : public OLEDProxy, public sigc::trackable
+class BOLED : public OLEDProxy
 {
  public:
   BOLED(Oleds& oleds);
