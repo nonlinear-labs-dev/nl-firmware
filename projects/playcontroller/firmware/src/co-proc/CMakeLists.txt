@@ -21,7 +21,7 @@ target_link_options(${BLOBNAME} PUBLIC -Wl,-Map,output.map -Wl,--gc-sections)
 target_link_directories(${BLOBNAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/playcontroller/firmware/ld)
 
 set_target_properties(${BLOBNAME} PROPERTIES LINKER_LANGUAGE C)
-set_target_properties(${BLOBNAME} PROPERTIES LINK_FLAGS "-TC15_LPC4337_co-proc.ld")
+set_target_properties(${BLOBNAME} PROPERTIES LINK_FLAGS "-TC15_LPC4322_co-proc.ld")
 set_target_properties(${BLOBNAME} PROPERTIES COMPILE_FLAGS "${CMAKE_C_FLAGS}")
 
 add_custom_target(${BLOBNAME}.o

@@ -168,8 +168,6 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
         else
           printf("KEY = %3d,             %8.2lfms", data[0], time);
       }
-      if (data[0] <= HW_SOURCE_ID_PEDAL_8)
-        printf(" (%5.1lf%%)", 100.0 * data[1] / 16000.0);
       printf("\n");
       lastMessage = (cmd << 16) + data[0];
       return 1;

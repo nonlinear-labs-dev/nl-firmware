@@ -101,8 +101,8 @@ void NL_STAT_GetData(uint16_t *buffer)
   *(buffer++)                                 = NL_systemStatus.BB_MSG_bufferOvers;
   *(buffer++)                                 = NL_systemStatus.TCD_usbJams;
   *(buffer++) = NL_systemStatus.M0_ADCTime = M4TicksToUS(IPC_GetAndResetADCTime());
-  *(buffer++) = NL_systemStatus.M0_KbsIrqOver = (s.RitCrtlReg != 0) ? s.RitCrtlReg & 1 : 0xFFFF;
-  s.RitCrtlReg                                = 0;
+  *(buffer++) = NL_systemStatus.M0_KbsIrqOver = s.M0_KbsIrqOvers;
+  s.M0_KbsIrqOvers                            = 0;
 #if LPC_KEYBED_DIAG
   *(buffer++) = NL_systemStatus.MissedKeybedEventsScanner;
   *(buffer++) = NL_systemStatus.MissedKeybedEventsTCD;
