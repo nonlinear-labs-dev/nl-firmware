@@ -8,6 +8,13 @@
 #include <stdint.h>
 #include "bit_manipulation.h"
 #include "pin_manipulation.h"
+#include "version.h"
+
+#if IS_TYPE_XX4_CHIP == 0
+#define F_OSC (2000000ull)  // Oscillator frequency in Hz
+#else
+#define F_OSC (8000000ull)  // Oscillator frequency in Hz
+#endif
 
 //----------------- PORT PINS ---------------
 // System
