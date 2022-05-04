@@ -6,6 +6,7 @@
 #include "bit_manipulation.h"
 #include "pin_manipulation.h"
 #include "hardware.h"
+#include "version.h"
 #include <avr/interrupt.h>
 
 static uint8_t enable = 0;
@@ -22,10 +23,17 @@ void COMM_Init(void)
 {
   data[0] = data[1] = data[2] = 0;
   cli();
+#if IS_TYPE_XX4_CHIP == 0
   UBRRH = (uint8_t)(UBRR >> 8);
   UBRRL = (uint8_t)(UBRR);
   UCSRB = (1 << RXEN) | (1 << TXEN);
   UCSRC = (1 << URSEL) | (0 << UMSEL) | (3 << UPM0) | (1 << USBS) | (3 << UCSZ0);  // no parity, 1 stop bits, 8 data bits
+#else
+  UBRR0H = (uint8_t)(UBRR >> 8);
+  UBRR0L = (uint8_t)(UBRR);
+  UCSR0B = (1 << RXEN0) | (1 << TXEN0);
+  UCSR0C = (0b00 << UMSEL00) | (0b00 << UPM00) | (1 << USBS0) | (0b11 << UCSZ00);  // async uart, no parity, 1 stop bits, 8 data bits
+#endif
   sei();
   enable = 1;
 }
@@ -33,7 +41,11 @@ void COMM_Init(void)
 void COMM_DeInit(void)
 {
   enable = 0;
-  UCSRB  = 0;
+#if IS_TYPE_XX4_CHIP == 0
+  UCSRB = 0;
+#else
+  UCSR0B = 0;
+#endif
 }
 
 static uint8_t step = 0;
@@ -49,12 +61,21 @@ void COMM_ProccessReadCommands(void)
   if (!enable)
     return;
 
+#if IS_TYPE_XX4_CHIP == 0
   if (BitGet(UCSRA, RXC))  // receive register full ?
   {
     uint8_t ok = !BitGet(UCSRA, FE) && !BitGet(UCSRA, DOR) && !BitGet(UCSRA, UPE);
     data[2]    = data[1];
     data[1]    = data[0];
     data[0]    = UDR;
+#else
+  if (BitGet(UCSR0A, RXC0))  // receive register full ?
+  {
+    uint8_t ok = !BitGet(UCSR0A, FE0) && !BitGet(UCSR0A, DOR0) && !BitGet(UCSR0A, UPE0);
+    data[2]    = data[1];
+    data[1]    = data[0];
+    data[0]    = UDR0;
+#endif
     if (!ok)
     {
       data[0] = data[1] = data[2] = 0;
@@ -91,6 +112,7 @@ void COMM_ProccessWriteStatus(void)
 {
   if (!enable)
     return;
+#if IS_TYPE_XX4_CHIP == 0
   if (BitGet(UCSRA, UDRE))  // send register empty ?
   {
     // LED_B(-1);
@@ -112,6 +134,29 @@ void COMM_ProccessWriteStatus(void)
         break;
     }
   }
+#else
+  if (BitGet(UCSR0A, UDRE0))  // send register empty ?
+  {
+    // LED_B(-1);
+    switch (step)
+    {
+      case 0:
+        break;  // wait for someone start the chain
+      case 1:
+        UDR0 = 0x80 + config.status;
+        step++;
+        break;
+      case 2:
+        UDR0 = config.hardware_id;
+        step++;
+        break;
+      case 3:
+        UDR0 = config.firmware_id;
+        step = 0;
+        break;
+    }
+  }
+#endif
 }
 
 // end of file
