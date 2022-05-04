@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 08. Setup (C15 System Settings)</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/08-setup">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/08-setup/08-setup.html" data-number="8">Setup (C15 System Settings)</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="8">Setup (C15 System Settings)</h2>
+    </section>
+    <section>
+        <p>The C15 also features a few global settings that are preset-independent. They are organized in the <span data-keyword="Setup">Menu</span> and mainly define the interaction with peripherals (such as sensitivities for velocities, external pedal integration, MIDI, or connected devices via Wi-Fi). Besides, the Setup menu allows for installing updates and transferring backups.</p>
+        <p>Chapter <a href="./documents/man-user/04-user-interfaces/04-13-setup-navigation.html" data-number="4.13">Setup Navigation</a> provides all information on accessing and navigating the Setup menu both on the <span data-keyword="Panel">Unit</span> and on the <span data-keyword="Graphical">User Interface</span>. The following passages explain all provided menu items.</p>
+    </section>
+    <section>
+        <h3 class="heading primary" data-detail="Panel Unit, Graphical UI">Device Settings</h3>
+            <figure class="border maximize" data-label="">
+                <picture class="content" data-src="images/web-ui/setup/webui-setup-device-settings.png"></picture>
+            </figure>
+        <h4>Velocity Curve</h4>
+        <p>The Velocity Curve determines the sensitivity of the instrument for key velocities. A soft setting increases the sensitivity for low velocities, a hard setting increases the sensitivity for high velocites. With the normal setting, the sensitivity remains equal for all velocites.</p>
+        <h4>Aftertouch Curve</h4>
+        <p>The Aftertouch Curve determines the sensitivity of the instrument for Aftertouch gestures. A soft setting increases the sensitivity for low aftertouch intensities, a hard setting increases the sensitivity for high aftertouch intensities. With the normal setting, the sensitivity remains equal throughout.</p>
+        <h4>Bender Curve</h4>
+        <p>The Bender Curve determines the sensitivity of the instrument for Bender gestures. A soft setting increases the sensitivity for low bending intensities, a hard setting increases the sensitivity for high bending intensities. With the normal setting, the sensitivity remains equal throughout.</p>
+        <h4>Pedal Settings</h4>
+        <p>As described in chapter <a href="./documents/man-user/05-synth-engine/05-04-hw-sources.html" data-number="5.4">Using Hardware Sources</a> the integration of pedals can be done manually. External Pedals can be connected to the C15 while the device is running. In the Settings menu, the pedal’s <span data-keyword="PIN">Assignment</span> can be selected. Those may vary depending on the pedal vendor (Roland uses <q>Pot Tip Active</q>, Yamaha uses <q>Pot Ring Active</q>, for example). If uncertain, which setting should apply to your external pedal, try the different options until the pedal works as intended.</p>
+        <p>When an external pedal has been connected, it needs to be calibrated. This can be achieved by slowly turning the pedal to its minimal state and after remaining there for around a second, slowly turning the pedal to its maximal state and remaining there for around a second. The calibration will be stored by the C15, so the calibration is only necessary once after a pedal has been plugged in, even after restarts of the device.</p>
+        <h4>Preset Glitch Suppression</h4>
+        <p>This option can be enabled in order to avoid drastical changing pitches and other emerging artifacts, being provoked by a preset change. The suppression will be realized by clearing (flushing) all delay buffers when a new preset is loaded.</p>
+        <div data-highlight="note">
+            <p>Note that this feature is not fully implemented yet, as the suppression is not perfect in every case and can still produce small artifacts, depending on the preset change's circumstances. But in general, the effect is quite noticeable.</p>
+        </div>
+        <h4>Sync Parts across User Interfaces</h4>
+        <p>For <span data-keyword="Split"></span> and <span data-keyword="Layer">Sounds</span>, different Parts can be shown on the C15’s <span data-keyword="Panel Unit">Display</span> and on one or multiple instances of the <span data-keyword="Graphical">User Interface</span>. This can be useful but in many cases it was confusing. Therefore the normal behaviour is that the Part selection is applied once to all UIs, corresponding to <q>Sync Parts across UIs</q> being on. When the option is set off the Parts can be selected separately.</p>
+        <h4>Edit Smoothing Time</h4>
+        <p>When editing a parameter, the new adjusted value will be approached within the Edit Smoothing Time, which can range between zero and 200 ms. Higher times will lead to a slower response of the sound engine. This time does not affect preset recalls or modulations (having their own, individual times).</p>
+        <h4>Transition Time</h4>
+        <p>The transition time will be effective when recalling presets, defining the smoothing time of the parameters as they approach their new values.</p>
+        <h4>Tune Reference</h4>
+        <p>The tuning of the C15 can be adjusted in order to fit with acoustic instruments, spanning from 400.0 Hz up to 480.0 Hz (default: 440.0 Hz). When using default parameter values<sup><i>(1)</i></sup>, pressing the A3 key will produce a tone with the exact frequency provided by this setting.</p>
+        <p><i><b>1)</b> required default parameter values for: Transposition (no Note Shift), Pitch (at 60.00 st, incl. Key Tracking of 100.0 % and Env C at 0.0 st), Scaling (Offset for A at 0.0 ct).</i></p>
+        <h4>Init Sound</h4>
+        <p>As described in chapter <a href="./documents/man-user/04-user-interfaces/04-03-1-parameter-editing.html" data-number="4.3.1">Editing a Parameter</a> (and <a href="./documents/man-user/04-user-interfaces/04-07-2-sound-manipulation.html" data-number="4.7.2">Manipulating Sounds</a>), specific parameters (and whole Sounds) can be set to their default values. The current Sound can be used for overwriting these default values by pressing <code><b>Store</b></code>. In order to restore the Factory default values, press <code><b>Reset</b></code>.</p>
+    </section>
+    <section>
+        <h3 class="heading primary" data-detail="Graphical UI only">GUI Settings</h3>
+        <p>A complete reference to the settings of the <span data-keyword="Graphical">User Interface</span> can be found in chapter <a href="./documents/man-user/04-user-interfaces/04-16-5-gui-settings.html" data-number="4.16.5">GUI Settings</a>.</p>    
+    </section>
+    <section>
+        <h3 class="heading primary" data-detail="Panel Unit only">Hardware UI</h3>
+        <figure class="border maximize" data-label="">
+            <picture class="content" data-src="images/hardware-ui/boled/setup/boled-setup-hardware-ui.png"></picture>
+        </figure>
+        <h4>Encoder Acceleration</h4>
+        <p>The <span data-keyword="Encoder"></span> in the <span data-keyword="Edit">Panel</span> can detect acceleration gestures and apply them to an item in focus accordingly. With sufficient acceleration, even high resolution parameters can be completely traversed with only one or a few turns of the Encoder.</p>
+        <h4>Ribbon Relative Factor</h4>
+        <p>Similarly, drag gestures on the two <span data-keyword="Ribbon"></span> touchstrips can be amplified by the Ribbon Relative Factor. This option is only effective, when a Ribbon is in relative mode.</p>
+        <h4>Signal Flow Indication</h4>
+        <p>As described in chapter <a href="./documents/man-user/04-user-interfaces/04-10-overviews.html" data-number="4.10">Overviews</a> the Flow Overview allows for a fast and easy impression on how signals of a preset are routed. However, blinking LEDs may distract the user in some cases, therefore the Flow Overview is optional.</p>
+        <h4>Screensaver Timeout</h4>
+        <p>An optional timeout setting has been added in order to prevent possible pixel deterioration in the two displays, which can occur when the C15 is running for longer periods of time without any interaction.</p>
+        <p>When the screensaver is running, any interaction will interrupt it and reset the timeout.</p>
+    </section>
+    <section>
+        <h3 class="heading primary" data-detail="Panel Unit, Graphical UI">MIDI Settings</h3>
+        <p>A complete reference to the MIDI settings can be found in chapter <a href="./documents/man-user/07-midi/07-00-midi.html" data-number="7">MIDI</a>.</p>
+    </section>
+    <section>
+        <h3 class="heading primary" data-detail="Panel Unit, Graphical UI">Recorder (Settings)</h3>
+        <p>With the option <q>Auto-Start Recorder</q> the user can decide if the audio recording starts automatically when the C15 is switched on, or if the user has to start it by the <span data-keyword="Record">Button</span> <i>(see chapter <a href="./documents/man-user/06-recorder/06-recorder.html" data-number="6">Recorder</a> for more details)</i>.</p>
+    </section>
+    <section>
+        <h3 class="heading primary">System Info</h3>
+        <figure class="border maximize" data-label="">
+            <picture class="content" data-src="images/web-ui/setup/webui-setup-system-info.png"></picture>
+        </figure>
+        <h4>Device Name</h4>
+        <p>The Device Name of the C15 instrument can be chosen by the user. It will appear in the meta data of presets and determine the SSID of the Wi-Fi network. In order to complete the renaming process, restart the instrument afterwards.</p>
+        <h4 data-detail="Panel Unit only">SSID</h4>
+        <p>During the booting process, the SSID will be generated according to the Device Name. A Wi-Fi network with the SSID should be available after booting. Besides the Device Name, the SSID contains a static prefix (<q>NL-C15-</q>). When establishing a Wi-Fi connection, choose the network with the corresponding SSID.</p>
+        <h4>Passphrase</h4>
+        <p>The secured Wi-Fi connection has to be confirmed by a passphrase. This passphrase can be seen and changed in the System Info (effective after rebooting). The passphrase can be set manually, it can be randomly generated or set to default (<code>88888888</code>).</p>
+        <h4 data-detail="Panel Unit only">Website Address</h4>
+        <p>When a Wi-Fi connection was established, the <span data-keyword="Graphical">User Interface</span> is available with the shown address, which can be typed into your browser's address bar.</p>
+        <h4>Free Disk Space</h4>
+        <p>The remaining free disk space is displayed in order to see, if the instrument is capable of holding more presets.</p>
+        <h4 data-detail="Panel Unit only">RAM usage</h4>
+        <p>For developers, the system's current RAM consumption is indicated.</p>
+        <h4>Software Version</h4>
+        <h5><i>(Device Hardware ID, Branch, Head, Commits, Commit Date, RT Version)</i></h5>
+        <p>For developers, the Device Hardware ID and versions of integrated components are displayed as well.</p>
+        <h4>Date/Time</h4>
+        <p>The instrument contains its own system clock, which will be included in preset meta data in the form of timestamps. It can be adjusted as well.</p>
+        <h4 data-detail="Panel Unit only">Update Available</h4>
+        <p>If a USB stick with a new (not already installed) update file is connected to the C15, this entry will indicate this with <code><b>Yes</b></code>. When restarting the C15, the update will be installed.</p>
+        <h4 data-detail="Panel Unit only">Buffer Underruns</h4>
+        <p>For developers, the number of detected Audio buffer underruns is indicated, hinting at performance issues.</p>
+        <h4 data-detail="Gaphical UI only">Upload Software Update</h4>
+        <p>If an external device is connected to the C15, a software update file can be directly uploaded. The C15 will then restart and install the update.</p>
+    </section>
+    <section>
+        <h3 class="heading primary" data-detail="Panel Unit, Graphical UI">About</h3>
+        <p>In the About section, the Nonlinear Labs developer team is listed.</p>
+    </section>
+    <section>
+        <h3 class="heading primary" data-detail="Panel Unit only">Backup</h3>
+        <figure class="border maximize" data-label="">
+            <picture class="content" data-src="images/hardware-ui/boled/setup/boled-setup-backup.png"></picture>
+        </figure>
+        <h4>USB Available</h4>
+        <p>In order to backup all banks or restore a preexisting backup, a USB stick has to be plugged in. The <q>USB Available</q> indicator shows if a USB stick is currently present.</p>
+        <h4>Save all Banks</h4>
+        <p>When entering the <q>Save all Banks</q> option, a dialog will indicate that this process may take a while (when many banks are present) and ask for confirmation. After confirming, a backup file will be created on the USB stick.</p>
+        <h4>Restore all Banks</h4>
+        <p>When entering the <q>Restore all Banks</q> option, a dialog will indicate that all present banks will be discarded when proceeding. After confirming, another dialog screen will provide a list of all backup files found on the USB stick. After selecting the right file, the backup process can be started by confirming.</p>
+        <div data-highlight="note">
+            <p>Details on how to save or restore backups on the <span data-keyword="Graphical">User Interface</span> can be found in chapter <a href="./documents/man-user/04-user-interfaces/04-14-backups.html" data-number="4.14">Backups</a>.</p>
+        </div>
+    </section>
+
+</main>
+</div>
+</body>
+</html>

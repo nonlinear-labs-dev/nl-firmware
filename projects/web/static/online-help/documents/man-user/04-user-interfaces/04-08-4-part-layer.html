@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 04.8.4. Layer Sound Details</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/04-user-interfaces/04-08-part-manipulation/04-08-4-layer">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-00-user-interfaces.html" data-number="4">User Interfaces</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-08-0-part-manipulation.html" data-number="4.8">Part Manipulation</a>
+        <span>/</span>
+        <a href="./documents/man-user/04-user-interfaces/04-08-4-part-layer.html" data-number="4.8.4">Layer Sound Details</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="4.8.4">Layer Sound Details</h2>
+    </section>
+    <section>
+        <h3 class="heading primary">Key Fades in Layer Sounds</h3>
+        <figure class="border maximize" data-label="Key Fade mechanism (Layer Sound)">
+            <picture class="content" data-src="images/info-gfk/gfk-keyfades.png"></picture>
+        </figure>
+        <p>Each <span data-keyword="Part"></span> of a <span data-keyword="Layer"></span> sound has two parameters to control the key range where this part is mixed at its full level and a key range where it is faded out to silence. Depending on the key position the voices are processed by an attenuator in the Level stage of the Output Mixer.</p>
+        <div data-columns="2">
+            <div>
+                <figure class="border maximize" data-label="Parameter screen - Fade From">
+                    <picture class="content" data-src="images/hardware-ui/panels/mp-sound-layer-sb2.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Parameter screen - Fade From">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-part-fade-from.png"></picture>
+                </figure>
+            </div>
+            <div>
+                <p>To adjust key fade aspects press the <span data-keyword="Sound">Button</span> for the <span data-keyword="Sound">Screen</span>, then <span data-keyword="Soft Button">2</span> for the <span data-keyword="Part">Screen</span>. <span data-keyword="Soft Button">4</span> then brings the parameters into focus.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Key Fades in Layer Sounds</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Part Group - Fade From">
+                <picture class="content" data-src="images/web-ui/sound/webui-snd-part-layer-fade.png"></picture>
+            </figure>
+            <div>
+                <p>In the <span data-keyword="Graphical">User Interface</span>, the <span data-keyword="Part"></span> group (left to the Master group) provides the Fade From and Fade Range parameters, when a <span data-keyword="Layer"></span> sound is loaded.</p>
+            </div>
+        </div>
+        <p>The full level range of <span data-keyword="Part">I</span> spans from the lowest key (C1) to the adjustable <q>Fade From</q> key. Here begins the fade-out. Its width is adjustable by the <q>Fade Range</q> parameter.</p>
+        <p>The full level range of <span data-keyword="Part">II</span> spans from the highest key (C6) to the adjustable <q>Fade From</q> key. Here begins the fade-out. Its width is adjustable by the <q>Fade Range</q> parameter. Both parameters default to being without effect.</p>
+        <p>Possible applications for these key fade ranges:</p>
+        <ul>
+            <li>keyboard splits with a smooth transition (crossfade) between the parts</li>
+            <li>one of the parts being added only at the low or high end of the keyboard</li>
+            <li>crossfades over a wide keyboard range to change the resulting timbre gradually</li>
+        </ul>
+        <div class="developer" data-highlight="comment">
+            <h4>Current Limitations/Issues</h4>
+            <p>When a Note is <q>stolen</q> <i>(all free voices are exhausted, e.g. by high <b>Unison</b> Voices, <b>Mono</b> enabled)</i>, key fades can produce audible artifacts (clicks) as the part volume changes immediately with the beginning Note - despite of the corresponding Voice already being audible (active).</p>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Muting a Part of a Layer Sound</h3>
+        <div data-columns="2">
+            <div>
+                <figure class="border maximize" data-label="Sound screen - Part muting">
+                    <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-layer-mute.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Sound screen - Part muting">
+                    <picture class="content" data-src="images/hardware-ui/panels/mp-enc-dec-inc.png"></picture>
+                </figure>
+            </div>
+            <div>
+                <p>On the Layer <span data-keyword="Sound">Screen</span> you can use the <span data-keyword="Encoder"></span> and <span data-keyword="Dec"></span>/<span data-keyword="Inc"></span> to mute one of the <span data-keyword="Parts"></span>: turning the Encoder to the left or using Dec will mute <span data-keyword="Part">II</span>. Turning the Encoder to the right or using Inc will mute <span data-keyword="Part">I</span>. The first step back to the center will unmute the muted part.</p>
+            </div>
+            <figure class="border maximize" data-label="Parameter screen - Part muting">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-layer-mute-pre-screen.png"></picture>
+            </figure>
+            <div>
+                <p>Typical screens (<span data-keyword="Parameter"></span>/<span data-keyword="Preset"></span>/<span data-keyword="Sound"></span>) will indicate the two present parts, highlighting the selected part. When a <span data-keyword="Layer"></span> sound's part has been muted, a cross indicates the muted part.</p>
+            </div>
+            <figure class="border maximize" data-label="Mute screen (Shift Button)">
+                <picture class="content" data-src="images/hardware-ui/panels/mp-shift-sb1-mute.png"></picture>
+            </figure>
+            <div>
+                <p>On the Layer <span data-keyword="Part">Screen</span> the <span data-keyword="Shift">Button</span> will provide part muting via <span data-keyword="Soft Button">1</span>.</p>
+            </div>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI">Muting a Part of a Layer Sound</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Mute icons (Sound Tab)">
+                <picture class="content" data-src="images/web-ui/sound/webui-sound-tab-layer-mute.png"></picture>
+            </figure>
+            <div>
+                <p>The <span data-keyword="Graphical">User Interface</span> provides a <span data-keyword="Part">Inddicator</span> similar to the screens. It is located centered at the top. When a <span data-keyword="Layer"></span> sound part has been muted, a cross indicates the muted part. The <span data-keyword="Sound">Tab</span> provides a mute button for each part. Clicking on a muted part’s button will unmute the part, clicking on an unmuted part’s button will mute the part, potentially unmuting the other.</p>
+            </div>
+        </div>
+        <div data-highlight="note">
+            <p>When muting a <span data-keyword="Part"></span> of a <span data-keyword="Layer"></span> sound, only the final Part Volume stage will be affected, so any signal flow across parts will be maintained regardless.</p>
+        </div>
+        <h3 class="heading secondary" data-detail="Graphical UI only">Fade Editor</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Fade Editor icon (Sound Tab)">
+                <picture class="content" data-src="images/web-ui/sound/webui-snd-layer-edit-icon.png"></picture>
+            </figure>
+            <div>
+                <p>In the <span data-keyword="Sound">Tab</span>, the rightmost icon redirects to the <span data-keyword="Fade">Editor</span>, providing all related aspects and an interactive visual representation.</p>
+            </div>
+            <figure class="border maximize" data-label="Fade Editor">
+                <picture class="content" data-src="images/web-ui/sound/webui-snd-layer-editor.png"></picture>
+            </figure>
+            <div>
+                <p>For each part, Fade From and Fade Range can be adjusted by clicking or dragging on the corresponding values or by dragging the indicators shown on the keybed.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3 class="heading primary">Indicators in a Layer Sound</h3>
+        <div data-columns="2">
+            <figure class="border maximize" data-label="Layer Sound screen - FX indicator">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-layer-crossfx-indicator.png"></picture>
+            </figure>
+            <div class="section">
+                <p>In <span data-keyword="Layer"></span> Sounds, the <q>ToFX</q> parameter is available in the Output Mixer, allowing the mixed signal to be sent to the Effects section of the other <span data-keyword="Part"></span>.</p>
+                <p>When active, the flow across parts will be indicated in the <span data-keyword="Sound">Screen</span>/<span data-keyword>Tab</span> by labeled <q>FX</q> arrows.</p>
+            </div>
+            <figure class="border maximize" data-label="Layer Sound screen - FB indicator">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-layer-crossfb-indicator.png"></picture>
+            </figure>
+            <div class="section">
+                <p>In the Feedback Mixer, several parameters allow for feedback flow across <span data-keyword="Parts"></span>.</p>
+                <p>When active, the flow across parts will be indicated in the Sound <span data-keyword="Sound">Screen</span>/<span data-keyword>Tab</span> by labeled <q>FB</q> arrows.</p>
+            </div>
+            <figure class="border maximize" data-label="Layer Sound screen - Fade indicator">
+                <picture class="content" data-src="images/hardware-ui/boled/sound/boled-snd-layer-fade-indicators.png"></picture>
+            </figure>
+            <div>
+                <p>When Key Fades are present, they also will be indicated in the <span data-keyword="Sound">Screen</span>/<span data-keyword>Tab</span> by a small fade graph next to the Part Volume.</p>
+            </div>
+        </div>
+        <figure class="border maximize" data-label="Flow indicators (Sound Tab)">
+            <picture class="content" data-src="images/web-ui/sound/webui-sound-layer-cross-indicators.png"></picture>
+        </figure>
+    </section>
+</main>
+</div>
+</body>
+</html>

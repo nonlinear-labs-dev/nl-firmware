@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Sound Generation Tutorial - 04. The State Variable Filter</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/tut-sound-generation/04-state-variable-filter">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/index.html">Sound Generation Tutorial</a>
+        <span>/</span>
+        <a href="./documents/tut-sound-generation/04-state-variable-filter.html" data-number="4">The State Variable Filter</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+<div class="tutorial">
+
+    <section>
+        <h2 data-number="4">The State Variable Filter</h2>
+        <p>To introduce the State Variable Filter (S.V. Filter), we should first set up the oscillator section to produce a sawtooth waveform which is rich in overtones. This is a good input signal fodder to explore the State Variable Filter.<br />First, please load the Init sound – this time, you do not need to crank up <q>A</q> on the Output Mixer!</p>
+        <ul>
+            <li>Set Oscillator A’s PM Self to 90 % for a nice sounding saw-wave.</li>
+            <li>Set Envelope A’s Sustain to 60 % in order to produce a steady tone.</li>
+        </ul>
+        <p>Now please proceed like this:</p>
+        
+        <h3 class="heading secondary">Enabling the S.V. Filter:</h3>
+        <ul>
+            <li>Press <em>S.V. Filter</em> (Output Mixer).</li>
+            <li>Set the <em>Encoder</em> to approx. <em>[50.0 %]</em>.</li>
+            <li class="indent-b">The <q>S.V. Filter</q> input of the Output Mixer is fully open now and you can hear the signal passing the filter. Since input <q>A</q> is closed, all you are hearing is the plain S.V. Filter signal.</li>
+            <li>Press <em>A – B</em> (State Variable Filter).</li>
+            <li class="indent-b">This parameter determines the ratio between the Oscillator/Shaper signals A and B, fed into the S.V. Filter input. For now, keep it at its default setting <q>A</q>, i. e. <em>[0.0 %]</em>.</li>
+        </ul>
+        
+        <h3 class="heading secondary">The very basic Parameters:</h3>
+        <ul>
+            <li>Press <em>Cutoff</em> (State Variable Filter).</p>
+            <li class="indent-b">S.V. Filter (Output Mixer) is flashing to let you know that the S.V. Filter is part of the signal path.</li>
+            <li>Sweep the <em>Encoder</em> across the entire value range and dial in the default value <em>[80.0 st]</em>.</li>
+            <li class="indent-b">You will hear the characteristic transition from bright to dull since overtones are gradually being eliminated from the signal.<br />&#xE172;&ensp;At very low settings, when the cutoff setting is below the frequency of the fundamental note, the output signal might become inaudible.</li>
+            <li>Press <em>Reson</em> (State Variable Filter).</li>
+            <li>Sweep the <em>Encoder</em> across the entire value range and dial in the default value <em>[50.0 st]</em>.</li>
+            <li class="indent-b">When increasing resonance values, you will hear frequencies around the cutoff setting becoming increasingly edgier and more pronounced. Cutoff and resonance are the most effective filter parameters.</p>
+        </ul>
+        <div data-highlight="excursion">
+            <h3>Excursion – Controlling the current Parameter using Ribbon 1</h3>
+            <p>Sometimes, it can be more useful (or funnier) to control a parameter using a ribbon controller rather than an encoder. This is useful when performing with the parameter as well as adjusting values very accurately.<br />To assign a Ribbon to a specific parameter (here the Cutoff of the S.V. Filter), simply:</p>
+            <ul>
+                <li>Press <em>Cutoff</em> (State Variable Filter).</li>
+                <li>Press <em>Mode</em> (Base Unit Control Panel) until the Base Unit Display shows <em><i>Cutoff</i></em>. This mode is also called Edit Mode.</li>
+                <li>Slide your finger across <em>RIBBON 1</em>.</li>
+                <li class="indent-b">The parameter currently selected (Cutoff) is now controlled by <em>RIBBON 1</em>, or your finger tip</li>
+            </ul>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Base Unit Control Panel 1">
+                    <picture class="content" data-src="images/tutorials/sound-generation/soled-a.png"></picture>
+                </figure>
+                <figure class="border maximize" data-label="Base Unit Control Panel 2">
+                    <picture class="content" data-src="images/tutorials/sound-generation/soled-b.png"></picture>
+                </figure>
+            </div>
+            <p>&#xE172;&ensp;When using the C15’s Macro Controls, the Ribbons / Pedals can control various parameters at the same time. This very interesting topic will be covered in a later tutorial. Stay tuned.</p>
+        </div>
+        <h3 class="heading secondary">Exploring some of the more advanced S.V. Filter parameters:</h3>
+        <p>&#xE172;&ensp;Our word of advice: No matter whether you are familiar with filters in general or not, please grab the user manual and take some time to study all those flashy S.V. Filter parameters in detail.</p>
+        <div data-highlight="excursion">
+            <h3>Excursion: The S.V. Filter functionality</h3>
+            <p>The S.V. Filter is a combination of two resonating two-pole state-variable filters, each with a slope of 12 dB. Cutoff and Resonance can be controlled manually or modulated by Envelope C and Key Tracking.</p>
+            <figure class="border maximize" data-label="S.V. Filter Signal Flow">
+                <picture class="content" data-src="images/diagrams/svf-*.png"></picture>
+            </figure>
+            <p>The spacing between both cutoff-points is variable (<q>Spread</q>). The filter characteristics can be swept continuously from low through band to high-pass mode (<q>L–B–H</q>). Both filters work in series by default but can be continuously shifted to parallel operation (<q>Parallel</q>).</p>
+            <ul class="nontutorial">
+                <li>Setting Spread to 0.0 st creates a simple four-pole filter. At higher Spread values, the spacing between the two Cutoff frequencies increases.</li>
+                <li>Cutoff and Resonance always affect both filter sections in the same manner.</li>
+                <li>L–B–H determines the characteristics of both filter sections:</li>
+                <li>L – both filter sections work in lowpass mode. High frequencies are attenuated, producing a sound that can be described as <q>round</q>, <q>soft</q>, <q>fat</q>, <q>dull</q> etc.</li>
+                <li>H – both filter sections work in highpass mode. Low frequencies are attenuated, producing a sound that can be described as <q>sharp</q>, <q>thin</q>, <q>bright</q> etc.</li>
+                <li>B – the first filter section works as a highpass, the second as a lowpass. Low and high frequencies are both attenuated and a frequency band with variable width (<q>Spread</q>) passes the S.V. Filter. Particularly at higher Resonance settings, vowel/vocal-like sounds can be achieved.</li>
+                <li>FM provides a Cutoff modulation by the Oscillator/Shaper signals A and B. Very good for aggressive and distorted sounds.</li>
+            </ul>
+        <p>Check out the parameters mentioned above and keep in mind that they all interact with each other in some way. Use the Default button to reset a parameter value.</p>
+        </div>
+        
+        <h3 class="heading secondary">Envelope / Key Tracking modulation of Cutoff and Resonance:</h3>
+        <ul>
+            <li>Press <em>Cutoff</em> (State Variable Filter) until <em><i>Env C</i></em> is highlighted in the display.</li>
+            <li>Set the <em>Encoder</em> to <em>[70.00 st]</em>.</li>
+            <li class="indent-b">You will hear the sound becoming increasingly dull over time since the Cutoff is modulated by Envelope C.<br />Vary the settings of Envelope C parameters and the modulation depth (<q>Env C</q>). For more dramatic filter <q>sweeps</q> set the Resonance of the S.V. Filter to higher values.</li>
+            <li>Press <em>Cutoff</em> (State Variable Filter) until <em><i>Key Trk</i></em> is highlighted in the display.</li>
+            <li>Sweep the <em>Encoder</em> across the entire range and dial in <em>[50.0 %]</em>.</li>
+            <li class="indent-b">When set to 0.0 %, Cutoff has the same value across the entire keyboard range. When reducing the Key Tracking value, the Cutoff value will increase in higher keyboard ranges and the sound grows brighter – an effect you can find with many acoustic instruments.<br />Please check Env C / Key Trk modulation of the Resonance as well.</li>
+        </ul>
+        
+        <h3 class="heading secondary">Changing the Filter Characteristics:</h3>
+        <ul>
+            <li class="indent-b">The S.V. Filter is a four-pole filter composed of two two-pole filters. The Spread parameter determines the interval between the two cutoff frequencies of these two parts.</li>
+            <li>Set the <em>Resonance</em> to <em>[80 %]</em>.</li>
+            <li>Press <em>Spread</em> (State Variable Filter).</li>
+            <li>By default, Spread is set to 12 semitones. Try settings between 0 and 60 semitones and also vary the Cutoff.</li>
+            <li class="indent-b">When reducing the Spread value, the two peaks will emphasize each other and the result will be a very intensely resonating, <q>peaking</q> sound.</li>
+            <li>Press <em>Spread</em> (State Variable Filter) again until <em><i>L–B–H</i></em> is highlighted in the display.</li>
+            <li>Sweep the <em>Encoder</em> across the entire value range and dial in the default value <em>[0.0 %]</em> (Lowpass).</li>
+            <li class="indent-b">Using the L–B–H parameter, you can morph continuously from lowpass through bandpass to highpass. 0.0 % is fully lowpass, 100.0 % fully highpass. The width of the bandpass is determined by the Spread parameter.</li>
+        </ul>
+        
+        <h3 class="heading secondary">Cutoff FM:</h3>
+        <ul>
+            <li>Press <em>FM</em> (State Variable Filter).</li>
+            <li>Sweep the <em>Encoder</em> across the entire range.</li>
+            <li class="indent-b">Now the filter input signal is modulating the Cutoff frequency. Usually, the sound gets increasingly nasty and abrasive. Please note that positive and negative FM can produce quite different results.</li>
+            <li>Press <em>FM</em> (State Variable Filter) until A – B is highlighted in the display.</li>
+            <li class="indent-b"><em>A – B</em> blends between the Oscillator/Shaper signals A and B and determines the signal ratio which is modulating the Filter Cutoff. Depending on the waveshape and pitch of both Oscillator/Shaper signals, the results can differ considerably from each other.</li>
+            <li>Reset <em>FM</em> and <em>A – B</em> to their default values.</li>
+        </ul>
+    </section>
+    
+</div><!-- Ende Tutorial (Listen) -->
+</main>
+</div>
+</body>
+</html>

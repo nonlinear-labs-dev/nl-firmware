@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>User Manual - 05.4. Using Hardware Sources</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/man-user/05-synth-engine/05-04-using-hw-sources">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/man-user/index.html">User Manual</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-00-synth-engine.html" data-number="5">Synthesis Engine</a>
+        <span>/</span>
+        <a href="./documents/man-user/05-synth-engine/05-04-hw-sources.html" data-number="5.4">Using Hardware Sources</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 data-number="5.4">Using Hardware Sources</h2>
+        <h3 class="heading">General Aspects</h3>
+        <p>The eight <span data-keyword="Hardware">Sources</span> of the C15 can be seen as special controllers, which are designed for live performance. While playing a certain sound, the Hardware Sources can be used for modulations, changing the sound character.</p>
+        <p>Four different types of Hardware Sources are provided, each type having its individual aspects (four <span data-keyword="Pedals"></span>, two <span data-keyword="Ribbons"></span>, one <span data-keyword="Bender"></span>, one <span data-keyword="Aftertouch"></span>). As for the (external) pedals, their aspects strongly depend on the type of pedal that is used. The following section contemplates all relevant aspects of Hardware Sources and external controllers in general.</p>
+        <div data-highlight="note">
+            <h4><span class="sw-version normal">21-26</span> MIDI</h4>
+            <p>The eight Hardware Sources are capable of receiving and sending MIDI messages, allowing for external control. For more information, please refer to chapter <a class="label" href="./documents/man-user/07-midi/07-00-midi.html" data-number="7">MIDI</a>.</p>
+        </div>
+        <h3 class="heading">Continuity</h3>
+        <p>Controllers can essentially behave in two different manners. There are switches (like a <q>Sustain Pedal</q>) and there are continuous controllers (like a <q>Volume Pedal</q>). Although continuous behavior may be preferred in most use cases and can be seen as a general recommendation, switches can also be used when integrating external pedals (providing only two states: on and off). All four integrated Hardware Sources are continuous.</p>
+        <h3 class="heading">Directionality and Polarity</h3>
+        <p>Controllers with a switch behavior can behave in two different manners as well. There are opener switches (like a <q>Sustain Pedal</q>) and there are closer switches (like a <q>Mute Pedal</q> or <q>Damping Pedal</q>). The difference between these two types is the direction they are taking: opener switches go from minimum to maximum, closer switches operate in a reversed manner. Commonly (but misleadingly) this is referred to as <q>Pedal Polarity</q>. However, regardless of the direction of a controller, it can be integrated and directions can be manipulated by modulation amounts.</p>
+        <p>Continuous controllers, on the other hand, can be unipolar (the usual case, providing one direction of possible movement: up or down) or bipolar (like a <q>Pitch Bender</q>, providing two directions of movement: up and down).</p>
+        <h3 class="heading">Return Behavior</h3>
+        <p>Some controllers (like a <q>Sustain Pedal</q> or a <q>Pitch Bender</q>) return to a certain position after using them (usually, the position would be zero or the center), whereas other controllers may remain at their position after releasing them. Controllers that are returning to their center position usually are bipolar (and the center position equals zero in this case). The return behavior affects the type of modulation amount of the corresponding Hardware Source, which can be either continuous (for a returning Hardware Source) or switch-like (for non-returning Hardware Sources, providing only <q>on</q> and <q>off</q>).</p>
+        <h4>Direct and Additive Behavior</h4>
+        <p>For the Pedals and Ribbons, the user can set the <span data-keyword="Return">Behavior</span> of the Hardware Source (<code>Non-Return</code>, <code>Return to Center</code>, <span data-detail="Pedal exclusive"><code>Return to Zero</code></span>). The non-returning and returning modes differ primarily in what is called <span data-keyword="Direct"></span> and <span data-keyword="Additive">Behavior</span>.</p>
+        <table>
+            <tr>
+                <th data-detail="Non-Return">Direct Behavior</th>
+                <th data-detail="Return To Zero, Return To Center">Additive Behavior</th>
+            </tr>
+            <tr>
+                <td class="section">
+                    <p>In non-returning mode the value of the <span data-keyword="Hardware">Source</span> is transferred directly to the assigned <span data-keyword="Macro">Control</span>. This is especially important if two or more non returning Hardware Sources are assigned to one Marco Control.</p>
+                    <p>The value then corresponds absolutely to the value of the last moved Hardware Source.</p>
+                    <p>In the case of non-returning Ribbons, they can only affect one Macro Control exclusively and will be linked to it, which means that both Ribbon and Macro Control essentially act as one parameter (changes to either element are reflected in both).</p>
+                </td>
+                <td class="section">
+                    <p>In contrast, returning Hardware Sources possess <span data-keyword="Additive">Behavior</span> and do not set the Macro Control absolutely to their respective value, but instead add their value to the Macro Control value.</p>
+                    <p>A weighting factor (<span data-keyword="Hardware">Amount</span>) can be set here, which determines to which percentage the value of the Hardware Source is transferred to the Macro Control.</p>
+                    <p>With this additive behavior several returning Hardware Sources can be combined in such a way that they do not interfere with each other in simultaneous use, instead all movements are combined. For interesting pitch modulations, <span data-keyword="Bender"></span> and <span data-keyword="Aftertouch"></span> can be combined in this way, for example.</p>
+                </td>
+            </tr>
+        </table>
+        <div data-highlight="note">
+            <h4>Changing the Return Behavior</h4>
+            <p>When switching a <span data-keyword="Hardware">Source</span> from non-returning to returning behavior, keep in mind that the position of the Hardware Source no longer necessarily corresponds to the position of the assigned Macro Control. This is especially important for the <span data-keyword="Ribbons"></span>. While the Ribbons in the non-returning mode are bidirectionally connected to the assigned Macro Control and thus always show the actual Macro Control position, this is no longer the case in the returning mode.</p>
+            <p>Here the Ribbon shows the value that is transferred to the Macro Control additively. If the returning Ribbon is in the center position, this does not necessarily mean that the assigned Macro Control is also set to its center as you would expect in non returning mode. The position and therefore the center/zero position of the Macro Control depends on any other Hardware Sources connected to the Macro Control or any setting made via the <span data-keyword="Graphical"></span> or <span data-keyword="Hardware">User Interface</span>.</p>
+        </div>
+        <h3 class="heading"><span class="sw-version normal">22-16</span> Integration and Recall Behavior</h3>
+        <div data-highlight="comment">
+            <p>In earlier versions, different Hardware Sources behaved differently when recalling a new Preset. When recalling while using Hardware Sources, a well-defined behavior was not guaranteed, so we recommended leaving the Hardware Sources untouched when loading a new Preset.</p>
+            <p>In addition, only the two integrated Ribbons were able to successfully load their states in a Preset recall, if in Non-Return mode. Returning Hardware Sources did lead to unwanted effects, if differing from their return position when loading a Preset.</p>
+            <p>On the other hand, the (external) pedals could (and still can) not be affected by loading new Presets. So, they could be at an unexpected position and produce a jumping behavior when used.</p>
+        </div>
+        <p>The recall behavior of Hardware Sources has been reworked, fixing long-known problems and better integrating the MIDI functionality. The Return Behavior of a particular Hardware Source still is part of a Preset and may change when loading a Preset. However, the positions of Hardware Sources are no longer part of a Preset, they instead remain in their arbitrary positions when Presets are loaded <sup>(1.)</sup>. Even when a Return Behavior changed, the Hardware Source position will persist <sup>(1.)</sup>.</p>
+        <p class="footnote" data-number="1">except for non-returning Ribbons</p>
+        <h4>Returning Hardware Sources</h4>
+        <p>When the Preset is loaded, the position of a returning Hardware Source will be reflected on associated Macro Controls. When the returning Source stays untouched in its return position (the usual case), every load of the same Preset will look and sound identical. When the returning Source is in an arbitrary position, loading the same Preset will look and sound different, depending on the current position.</p>
+        <h4>Non-Returning Pedals</h4>
+        <p>When the Preset is loaded, the position of a non-returning Pedal will be ignored by associated Macro Controls. Loading the same Preset will look and sound the same. The Pedal and Macro are likely to differ in their positions. With the next movement of the Pedal, the Macro will jump to the next position and both Pedal and Macro positions are synchronized again.</p>
+        <h4>Non-Returning Ribbons</h4>
+        <p>When the Preset is loaded, the position of a non-returning Ribbon will be overwritten by the associated Macro Control (if present). Loading the same Preset will look and sound the same. Both Ribbon and Macro positions remain synchronized throughout.</p>
+        <h3 class="heading">Additional Settings</h3>
+        <p>There are more settings provided for each Hardware Source in the Setup menu, depending on the type of source. The Bender and Aftertouch provide a curve, weighting the movements, whereas the Ribbons provide a <q>Relative Factor</q>, amplifying movements on the Ribbons when using relative mode.</p>
+        <h3 class="heading">Operation Modes</h3>
+        <p>Except for the Ribbons, all Hardware Sources operate in absolute mode. Ribbons on the other hand, can operate in both absolute and relative mode (the relative mode can amplify drag gestures on the Ribbon).</p>
+        <h3 class="heading">Functionality Overview</h3>
+        <p>All the mentioned different aspects of Hardware Sources are shown in the following table:</p>
+        <div data-columns="1">
+            <table style="text-align: center;">
+                <tr>
+                    <th>Source</th>
+                    <th>Pedal 1 ... 4</th>
+                    <th>Bender</th>
+                    <th>Aftertouch</th>
+                    <th>Ribon 1, 2</th>
+                </tr>
+                <tr>
+                    <th>Continuity</th>
+                    <td>continuous/switch</td>
+                    <td colspan="4">continous</td>
+                </tr>
+                <tr>
+                    <th>Polarity</th>
+                    <td>unipolar/bipolar</td>
+                    <td>bipolar</td>
+                    <td>unipolar</td>
+                    <td>unipolar/bipolar</td>
+                </tr>
+                <tr>
+                    <th>
+                        <p>Return</p>
+                        <p>Behavior</p>
+                    </th>
+                    <td>non/zero/center</td>
+                    <td>center</td>
+                    <td>zero</td>
+                    <td>non/center</td>
+                </tr>
+                <tr>
+                    <th>Integration</th>
+                    <td>external</td>
+                    <td colspan="3">integrated</td>
+                </tr>
+                <tr>
+                    <th>
+                        <p><span class="sw-version">22-16</span> Recall</p>
+                        <p>Behavior</p>
+                    </th>
+                    <td colspan="4">
+                        <dl class="info">
+                            <dt>returning Sources</dt>
+                            <dd>The Preset will load reflecting the returning HW Source in its current (arbitrary) position, so the resulting state and sound depends on where the Source currently is.</dd>
+                            <dt>non-returning Pedals</dt>
+                            <dd>The Preset will load ignoring the non-returning Pedals. In most cases, associated Macro Controls will differ in their position. Once the Pedal is moved, the Macro Control will jump to the next Pedal position and both positions will be synchronized again.</dd>
+                            <dt>non-returning Ribbons</dt>
+                            <dd colspan="4">The Preset will load overwriting the non-returning Ribbons, if they are associated to a Macro Control.</dd>
+                        </dl>
+                    </td>
+                    <!-- <td>no</td>
+                    <td colspan="2">n/a</td>
+                    <td>yes</td> -->
+                </tr>
+                <tr>
+                    <th>Settings</th>
+                    <td>Pedal Preset (Pin Assignment)</td>
+                    <td colspan="2">Curve</td>
+                    <td>Relative Factor</td>
+                </tr>
+                <tr>
+                    <th>
+                        <p>Operation</p>
+                        <p>Mode</p>
+                    </th>
+                    <td colspan="3">absolute</td>
+                    <td>absolute/relative</td>
+                </tr>
+            </table>
+        </div>
+        <h3 class="heading">Pedal Integration</h3>
+        <p>For now, the safe and recommended method of integrating external pedals is to turn the device off beforehand. After all pedals are plugged in the provided sockets, the C15 can be switched on again. The booting process will recognize the pedals' circuit architectures and integrate them accordingly.</p>
+        <p>There is a Setup menu provided as well, in which the pin assignment of each pedal can be set manually. However, this menu should only be used if the pin assignment of a pedal is known, as wrong assignments can easily lead to overheating, possibly causing permanent damage on the device. Besides, the menu is still in development and proper functionality is not guaranteed for now.</p>
+        <figure class="border maximize" data-label="Pedal (Pin details)">
+            <picture class="content" data-src="./images/info-gfk/gfk-pedal-trs-*.png"></picture>
+        </figure>
+        <h3 class="heading">Modulation Aspects</h3>
+        <p>As already mentioned, the modulation amount of a certain Hardware Source on a Macro Control depends on the source’s Return Behavior (only returning sources allow for a continuous amount).</p>
+        <p>Furthermore, when a non-returning Ribbon is assigned to a Macro Control, the assignment will be bidirectional. In other words, the Ribbon will move the Macro Control and vice versa. For a better understanding, have a look at this interactive <a href="./documents/illustrations/parameter-modulation.html">diagram</a>.</p>
+        <p>Considering the Hardware Sources, their current settings and the modulation amounts on Macro Controls alltogether, they can be referred to as a <q>Modulation Template</q>. All included settings will be stored and recalled with presets, but for different use cases (like different pedals on another device), the template may not work properly. We plan to further investigate on template functionalities (like import and export functions) and may offer solutions in the near future.</p>
+        <p>For the sound design (and included factory presets) so far, the following template appeared to be meaningful, and it can be found in most of the presets:</p>
+        <figure class="border maximize" data-label="Hardware Sources (standard routing)">
+            <picture class="content" data-src="images/web-ui/parameter/webui-hw-src-group.png"></picture>
+        </figure>
+        <p>The template defines two non-returning, continuous Pedals (1 and 2) for Macro Controls A and B, which are used to modulate different sound aspects like phase modulation intensities, filter frequencies, resonances or effect amounts, for example. Similarly, the two Ribbons are mapped on the two Macro Controls as well.</p>
+        <p>In addition, Macro Control C is assigned to the Bender and primarily used for bending pitches. The remaining Macro Control D is assigned to a returning, continuous Pedal (4), which serves as a Sustain or Damper Pedal (depending on the sound).</p>
+    </section>
+</main>
+</div>
+</body>
+</html>

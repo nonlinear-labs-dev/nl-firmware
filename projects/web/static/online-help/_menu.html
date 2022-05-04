@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- url base -->
+    <base target="_top">
+    <!-- meu styling -->
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/menu.css">
+    <!-- meu scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/menu.js" defer></script>
+</head>
+<body>
+    <!-- menu content -->
+    <dl id="menu-tabs" class="tabs h">
+        <dt>
+            <label tab="documents" onclick="selectTab('documents')">Documents</label>
+            <label tab="settings" onclick="selectTab('settings')">Settings</label>
+            <!-- <label tab="search" onclick="selectTab('search')" class="developer">Search</label> -->
+        </dt>
+        <dd>
+            <div id="tab-documents" tab="documents">
+                <dl class="menu-settings">
+                    <dd class ="developer" style="display: grid; padding: 0.5rem; margin-bottom: 0; display: none;">
+                        <input type="text" name="search-input" id="search" placeholder="&#xE180;">
+                        <div style="display: flex; gap: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--theme-main-border);">
+                            <a data-setting="search" data-value="Search"></a>
+                            <a data-setting="search" data-value="Clear"></a>
+                        </div>
+                    </dd>
+                </dl>
+                <iframe id="documents-frame" frameborder="0" scrolling="no"></iframe>
+            </div>
+            <div id="tab-settings" tab="settings">
+                <dl class="menu-settings">
+                    <dt>Developer Mode</dt>
+                    <dd>
+                        <a class="radio" data-setting="developer" data-value="off"></a>
+                        <a class="radio" data-setting="developer" data-value="on"></a>
+                    </dd>
+                </dl>
+                <dl class="menu-settings">
+                    <dt>Color Theme</dt>
+                    <dd>
+                        <a class="radio" data-setting="theme" data-value="dark"></a>
+                        <a class="radio" data-setting="theme" data-value="auto"></a>
+                        <a class="radio" data-setting="theme" data-value="light"></a>
+                    </dd>
+                </dl>
+            </div>
+        </dd>
+    </dl>
+    <!-- menu footer -->
+    <footer>
+        <span class="logo" data-utf="nl-logo"></span>
+        <!-- info field -->
+        <dl class="info">
+            <dt>SW Version</dt>
+            <dd><span class="sw-version normal">22-16</span></dd>
+            <dt>Date</dt>
+            <dd>2022-04-28</dd>
+        </dl>
+    </footer>
+</body>
+</html>
