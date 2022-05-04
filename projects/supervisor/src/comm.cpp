@@ -11,14 +11,12 @@
 
 static uint8_t enable = 0;
 
-#define UBRR_300  (416)  // 2000000/(16ul*BITS_PER_SECOND) -1   , for 300bps
-#define UBRR_1200 (103)  // 2000000/(16ul*BITS_PER_SECOND) -1   , for 1200bps
-#define UBRR_9600 (12)   // 2000000/(16ul*BITS_PER_SECOND) -1   , for 9600bps
-
-#define UBRR (UBRR_1200)
+#define BAUD (1200ul)
+#define UBRR (F_OSC / (16ul * BAUD) - 1)
 
 static uint8_t data[3];
 
+// async uart, 8 data bits, 2 stop bits, odd parity
 void COMM_Init(void)
 {
   data[0] = data[1] = data[2] = 0;
@@ -27,12 +25,12 @@ void COMM_Init(void)
   UBRRH = (uint8_t)(UBRR >> 8);
   UBRRL = (uint8_t)(UBRR);
   UCSRB = (1 << RXEN) | (1 << TXEN);
-  UCSRC = (1 << URSEL) | (0 << UMSEL) | (3 << UPM0) | (1 << USBS) | (3 << UCSZ0);  // no parity, 1 stop bits, 8 data bits
+  UCSRC = (1 << URSEL) | (0 << UMSEL) | (3 << UPM0) | (1 << USBS) | (3 << UCSZ0);
 #else
   UBRR0H = (uint8_t)(UBRR >> 8);
   UBRR0L = (uint8_t)(UBRR);
   UCSR0B = (1 << RXEN0) | (1 << TXEN0);
-  UCSR0C = (0b00 << UMSEL00) | (0b00 << UPM00) | (1 << USBS0) | (0b11 << UCSZ00);  // async uart, no parity, 1 stop bits, 8 data bits
+  UCSR0C = (0b00 << UMSEL00) | (3 << UPM00) | (1 << USBS0) | (0b11 << UCSZ00);
 #endif
   sei();
   enable = 1;
@@ -115,7 +113,6 @@ void COMM_ProccessWriteStatus(void)
 #if IS_TYPE_XX4_CHIP == 0
   if (BitGet(UCSRA, UDRE))  // send register empty ?
   {
-    // LED_B(-1);
     switch (step)
     {
       case 0:
@@ -137,7 +134,6 @@ void COMM_ProccessWriteStatus(void)
 #else
   if (BitGet(UCSR0A, UDRE0))  // send register empty ?
   {
-    // LED_B(-1);
     switch (step)
     {
       case 0:
