@@ -22,17 +22,6 @@
 
 // COMPILE-TIME OPTIONS :
 
-/****
-Firmware versions and Internal ID Numbers
-The ID Numbers+1 will be displayed as LED blinks during Power-Up, after HW- Version
-	5.0			= 1
-	5.1			= 2
-	5.2			= 3
-	etc
-****/
-#define FW5_Version_ID (2)
-#define FW_Version_ID  (50 + FW5_Version_ID)
-
 // --------- define this != 0 to check and display severe ePC status error
 #define __CHECK_EPC__ (0)
 /* 
