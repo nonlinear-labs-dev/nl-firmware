@@ -36,7 +36,7 @@ run_update() {
 
 main() {
     if [ -e /mnt/usb-stick/nonlinear-c15-update.tar ]; then
-        @C15_INSTALL_PATH@/text2soled/text2soled multitext "Copying the Update...@SC1" "DO NOT SWITCH OFF!@SC2" "Copying the Update...EPC@BC2" "DO NOT SWITCH OFF!@BC3"
+        @C15_INSTALL_PATH@/text2soled/text2soled multitext "Unpacking C15 update...@SC1" "DO NOT SWITCH OFF!@SC2" "Unpacking C15 update...EPC@BC2" "DO NOT SWITCH OFF!@BC3"
         unpack_update && check_preconditions && run_update
     fi
 
