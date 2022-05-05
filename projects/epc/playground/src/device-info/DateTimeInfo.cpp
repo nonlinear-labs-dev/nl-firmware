@@ -37,10 +37,12 @@ void DateTimeInfo::writeDocument(Writer &writer, UpdateDocumentContributor::tUpd
 
 Glib::ustring DateTimeInfo::get() const
 {
-  return TimeTools::getAdjustedIso();
+  auto adj = Application::get().getSettings()->getSetting<DateTimeAdjustment>();
+  return TimeTools::getAdjustedIso(adj);
 }
 
 Glib::ustring DateTimeInfo::getDisplayString() const
 {
-  return TimeTools::getDisplayStringFromIso(TimeTools::getAdjustedIso());
+  auto adj = Application::get().getSettings()->getSetting<DateTimeAdjustment>();
+  return TimeTools::getDisplayStringFromIso(TimeTools::getAdjustedIso(adj));
 }

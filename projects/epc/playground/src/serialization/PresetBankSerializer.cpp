@@ -3,6 +3,11 @@
 
 #include <presets/Bank.h>
 #include <tools/TimeTools.h>
+#include <presets/PresetManager.h>
+#include <device-settings/Settings.h>
+#include <device-settings/DateTimeAdjustment.h>
+#include <presets/EditBuffer.h>
+#include <iostream>
 
 PresetBankSerializer::PresetBankSerializer(Bank *bank, Progress progress, bool ignoreUUIDs)
     : super(bank, progress, ignoreUUIDs)
@@ -13,7 +18,17 @@ void PresetBankSerializer::writeTagContent(Writer &writer) const
 {
   addStatus("Writing bank " + m_bank->getName(true));
 
-  writer.writeTextElement("bank-serialize-date", TimeTools::getAdjustedIso());
+  auto pm  = m_bank->getPresetManager();
+  if(pm)
+  {
+    auto& settings = pm->getEditBuffer()->getSettings();
+    writer.writeTextElement("bank-serialize-date", TimeTools::getAdjustedIso(settings.getSetting<DateTimeAdjustment>()));
+  }
+  else
+  {
+    writer.writeTextElement("bank-serialize-date", TimeTools::getRealIso());
+  }
+
 
   super::writeTagContent(writer);
 
@@ -33,7 +48,9 @@ void PresetBankSerializer::readTagContent(Reader &reader) const
   super::readTagContent(reader);
 
   reader.onTag(PresetSerializer::getTagName(), [&](const auto &attr) mutable {
+    std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
     auto pos = std::stoull(attr.get("pos", to_string(std::numeric_limits<size_t>::max())));
+    std::cout << PresetSerializer::getTagName() << "pos: " << pos << std::endl;
     if(pos < m_bank->getNumPresets())
       return new PresetSerializer(m_bank->getPresetAt(pos), m_ignoreUUIDs);
     auto p = m_bank->appendPreset(reader.getTransaction());

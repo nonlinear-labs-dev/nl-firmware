@@ -102,9 +102,9 @@ class PresetManagerUseCases
         _finish();
     }
 
-    StartProgressIndication _start;
-    UpdateProgressIndication _update;
-    FinishProgressIndication _finish;
+    StartProgressIndication _start = std::function<void(void)>();
+    UpdateProgressIndication _update = std::function<void(std::string)>();
+    FinishProgressIndication _finish = std::function<void(void)>();
   };
 
   PresetManagerUseCases::ImportExitCode importBackupFile(FileInStream& in, const ProgressIndication& progress,

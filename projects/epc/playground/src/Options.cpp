@@ -94,9 +94,13 @@ Options::Options(int &argc, char **&argv)
 void Options::setDefaultsForTests()
 {
   auto persistencePath = Gio::File::create_for_path("/tmp");
-  auto settingsFile = Gio::File::create_for_path("/tmp/settings.xml");
+
   auto timestamp = std::chrono::steady_clock::now().time_since_epoch().count();
-  auto pmName = std::string("/tmp/preset-manager-") + std::to_string(timestamp) + std::string("/");
+  auto fine = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+
+  auto settingsName = std::string("/tmp/settings") + std::to_string(fine) + std::string(".xml");
+  auto settingsFile = Gio::File::create_for_path(settingsName);
+  auto pmName = std::string("/tmp/preset-manager-") + std::to_string(timestamp) + "-" + std::to_string(fine) + std::string("/");
   auto pmDirectory = Gio::File::create_for_path(pmName);
 
   if(persistencePath->query_exists())

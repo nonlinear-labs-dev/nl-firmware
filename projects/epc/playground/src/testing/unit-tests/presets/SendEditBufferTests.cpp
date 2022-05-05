@@ -12,7 +12,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Preset Load sends EditBuffer")
   using namespace nltools::msg;
   using namespace std::chrono;
 
-  auto ctx = app.getMainContext()->gobj();
   auto oldConfig = nltools::msg::getConfig();
   oldConfig.useEndpoints.emplace_back(EndPoint::AudioEngine);
   oldConfig.offerEndpoints.emplace_back(EndPoint::AudioEngine);

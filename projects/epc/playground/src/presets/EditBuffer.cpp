@@ -254,6 +254,11 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const P
     throw std::runtime_error("could not select parameter: " + id.toString());
 }
 
+bool EditBuffer::hasLocks() const
+{
+  return hasLocks(VoiceGroup::I) || hasLocks(VoiceGroup::II) || hasLocks(VoiceGroup::Global);
+}
+
 bool EditBuffer::hasLocks(VoiceGroup vg) const
 {
   return searchForAnyParameterWithLock(vg) != nullptr;

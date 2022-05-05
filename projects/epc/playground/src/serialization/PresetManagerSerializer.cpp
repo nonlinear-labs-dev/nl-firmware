@@ -2,6 +2,10 @@
 #include "PresetManagerSerializer.h"
 #include <tools/TimeTools.h>
 #include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
+#include <device-settings/Settings.h>
+#include <device-settings/DateTimeAdjustment.h>
+#include <iostream>
 
 PresetManagerSerializer::PresetManagerSerializer(PresetManager *pm, Progress progress)
     : Serializer(getTagName(), progress)
@@ -21,7 +25,8 @@ Glib::ustring PresetManagerSerializer::getTagName()
 
 void PresetManagerSerializer::writeTagContent(Writer &writer) const
 {
-  writer.writeTextElement("serialize-date", TimeTools::getAdjustedIso());
+  auto adj = m_pm->getEditBuffer()->getSettings().getSetting<DateTimeAdjustment>();
+  writer.writeTextElement("serialize-date", TimeTools::getAdjustedIso(adj));
   writer.writeTextElement("selected-bank-uuid", m_pm->getSelectedBankUuid().raw());
   writer.writeTextElement("selected-midi-bank-uuid", m_pm->getMidiSelectedBank().raw());
 
@@ -35,17 +40,24 @@ void PresetManagerSerializer::writeTagContent(Writer &writer) const
 
 void PresetManagerSerializer::readTagContent(Reader &reader) const
 {
+  std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
   addStatus("Reading PresetManager");
+  std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
 
   reader.onTextElement("selected-bank-uuid", [&](const auto &text, const auto &) {
+                         std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
     m_pm->selectBank(reader.getTransaction(), Uuid { text });
+    std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
   });
 
   reader.onTextElement("selected-midi-bank-uuid", [&](const auto &text, const auto&) {
-    m_pm->selectMidiBank(reader.getTransaction(), Uuid { text });
+                         std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
+                         m_pm->selectMidiBank(reader.getTransaction(), Uuid { text });
+                         std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
   });
 
   reader.onTag(PresetBankSerializer::getTagName(), [&](const auto &) mutable {
+                 std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
     return new PresetBankSerializer(m_pm->addBank(reader.getTransaction()), getProgressCB());
   });
 }

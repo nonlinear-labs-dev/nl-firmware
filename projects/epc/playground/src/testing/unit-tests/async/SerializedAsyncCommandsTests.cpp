@@ -4,11 +4,9 @@
 using namespace std::chrono_literals;
 
 constexpr auto c_testFileDir = "/tmp/SerializedAsyncCommands-tests";
-
-#warning "readd these tests"
-//TEST_CASE("SerializedAsyncCommands: all commands are executed")
+//
+//TEST_CASE_METHOD(TestHelper::ApplicationFixture, "SerializedAsyncCommands: all commands are executed")
 //{
-//  auto ctx = Glib::MainContext::create();
 //  SerializedAsyncCommands commands;
 //
 //  system(nltools::string::concat("rm -rf ", c_testFileDir).c_str());
@@ -23,7 +21,7 @@ constexpr auto c_testFileDir = "/tmp/SerializedAsyncCommands-tests";
 //  for(auto &file : files)
 //    commands.schedule({ "touch", file }, [&](auto) { counter++; }, [](auto) { REQUIRE(false); });
 //
-//  TestHelper::doMainLoop(0s, 1s, [&] { return counter == 10; }, ctx->gobj());
+//  TestHelper::doMainLoop(0s, 1s, [&] { return counter == 10; });
 //
 //  for(auto &file : files)
 //    CHECK(std::filesystem::exists(file));

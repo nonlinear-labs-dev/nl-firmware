@@ -743,7 +743,10 @@ void HWUI::setSplashStatus(const std::string &msg)
 
 void HWUI::registerSplash(SplashLayout *l)
 {
-  nltools_detailedAssertAlways(m_splashLayout == nullptr, "registerSplash called with present pointer");
+  if(m_splashLayout != nullptr)
+  {
+    nltools::Log::error("overwriting m_splashLayout");
+  }
   m_splashLayout = l;
 }
 

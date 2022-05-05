@@ -28,7 +28,6 @@ namespace TestHelper
 
     ~ApplicationFixture()
     {
-      app.doRemainingSignals();
     }
 
     auto getMainContext()

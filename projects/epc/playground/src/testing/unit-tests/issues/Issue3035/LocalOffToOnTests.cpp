@@ -294,7 +294,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Bender Local Off to
   {
     settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
     settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Bender, RoutingSettings::tAspectIndex::LOCAL, true);
-    TestHelper::doMainLoopIteration();
+    TestHelper::doMainLoopFor(std::chrono::milliseconds(15));
 
     THEN("Bender has current position and send is reset to return value")
     {

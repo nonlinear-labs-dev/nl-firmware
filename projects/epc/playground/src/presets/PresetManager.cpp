@@ -962,7 +962,8 @@ PresetManagerMetadataSerializer::Progress PresetManager::getProgressDecorator()
   {
     return [](auto str) {
       auto hwui = Application::get().getHWUI();
-      hwui->addSplashStatus(str);
+      if(hwui)
+        hwui->addSplashStatus(str);
     };
   }
   return Serializer::MockProgress;

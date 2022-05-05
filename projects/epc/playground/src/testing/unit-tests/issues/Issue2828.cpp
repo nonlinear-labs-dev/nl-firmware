@@ -29,9 +29,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Preset will change EditBu
       ebUseCases.initSound(Defaults::UserDefault);
       REQUIRE(!eb->isModified());
       REQUIRE(!eb->findAnyParameterChanged());
+      REQUIRE(!eb->hasLocks());
       ebUseCases.setParameter({C15::PID::Env_A_Att, VoiceGroup::I}, 0.187);
       TestHelper::doMainLoopFor(150ms);
-      REQUIRE(eb->isModified());
       REQUIRE(eb->findAnyParameterChanged());
 
       WHEN("Changed EB is Appended")
@@ -58,7 +58,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Preset will change EditBu
         {
           ebUseCases.setParameter({C15::PID::Voice_Grp_Tune, VoiceGroup::I}, 0.267);
           TestHelper::doMainLoopFor(150ms);
-          CHECK(eb->isModified());
           CHECK(eb->findAnyParameterChanged());
 
           THEN("Preset is overwritten with changed EB")
@@ -67,7 +66,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Preset will change EditBu
             presetUseCase.overwriteWithEditBuffer(*eb);
             TestHelper::doMainLoopFor(150ms);
             CHECK(eb->getOrigin() == preset);
-            CHECK(!eb->isModified());
             CHECK(!eb->findAnyParameterChanged());
             CHECK(eb->getUUIDOfLastLoadedPreset() == preset->getUuid());
           }

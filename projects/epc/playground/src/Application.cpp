@@ -78,10 +78,9 @@ Application::Application(int numArgs, char **argv)
     , m_theMainLoop(Glib::MainLoop::create(m_theMainContext))
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_options->getSettingsFile(), m_http->getUpdateDocumentMaster()))
+    , m_presetManager(new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
     , m_hwui(new HWUI(*m_settings))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
-    , m_presetManager(
-          new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
     , m_audioEngineProxy(new AudioEngineProxy(*m_presetManager, *m_settings, *m_playcontrollerProxy))
     , m_watchDog(new WatchDog)
@@ -127,10 +126,10 @@ Application::~Application()
   m_watchDog.reset();
   m_aggroWatchDog.reset();
 
-  m_undoScope.reset();
-  m_presetManager.reset();
   m_hwui->deInit();
   m_hwui.reset();
+  m_undoScope.reset();
+  m_presetManager.reset();
 
   nltools::msg::flush(nltools::msg::EndPoint::PanelLed, 1s);
   nltools::msg::flush(nltools::msg::EndPoint::RibbonLed, 1s);
@@ -315,14 +314,4 @@ bool Application::heartbeat()
 ActionManagers *Application::getActionManagers()
 {
   return &m_actionManagers;
-}
-
-void Application::doRemainingSignals()
-{
-  auto context = m_theMainLoop->get_context()->gobj();
-  auto ctx = g_main_context_default();
-  g_main_context_acquire(context);
-  while(g_main_context_iteration(context, FALSE))
-  {
-  }
 }
