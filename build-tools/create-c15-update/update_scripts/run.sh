@@ -13,6 +13,7 @@ MSG_UPDATING_EPC="1/3 Updating..."
 MSG_UPDATING_BBB="2/3 Updating..."
 MSG_UPDATING_RT_FIRMWARE="3/3 Updating..."
 MSG_DONE="DONE!"
+MSG_OK="OK!"
 MSG_FAILED="FAILED!"
 MSG_FAILED_WITH_ERROR_CODE="FAILED! Error code:"
 MSG_CHECK_LOG="Please check update log!"
@@ -189,7 +190,7 @@ epc_update() {
     executeAsRoot "reboot"
     wait4epc 60
 
-    pretty "" "$MSG_UPDATING_EPC" "$MSG_DONE" "$MSG_UPDATING_EPC" "$MSG_DONE"
+    pretty "" "$MSG_UPDATING_EPC" "$MSG_OK" "$MSG_UPDATING_EPC" "$MSG_OK"
     sleep 2
     return 0
 }
@@ -212,7 +213,7 @@ bbb_update() {
     fi
 
     configure_ssh
-    pretty "" "$MSG_UPDATING_BBB" "$MSG_DONE" "$MSG_UPDATING_BBB" "$MSG_DONE"
+    pretty "" "$MSG_UPDATING_BBB" "$MSG_OK" "$MSG_UPDATING_BBB" "$MSG_OK"
 
     sleep 2
     return 0
@@ -234,7 +235,7 @@ playcontroller_update() {
         return 1;
     fi
 
-    pretty "" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_DONE" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_DONE"
+    pretty "" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_OK" "$MSG_UPDATING_RT_FIRMWARE" "$MSG_OK"
     sleep 2
     return 0
 }
