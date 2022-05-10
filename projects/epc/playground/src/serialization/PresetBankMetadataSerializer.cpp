@@ -39,7 +39,6 @@ void PresetBankMetadataSerializer::writeTagContent(Writer &writer) const
 void PresetBankMetadataSerializer::readTagContent(Reader &reader) const
 {
   reader.onTextElement("name", [&](const Glib::ustring &text, const Attributes &) {
-    std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
 
     m_bank->setName(reader.getTransaction(), text);
 
@@ -50,43 +49,30 @@ void PresetBankMetadataSerializer::readTagContent(Reader &reader) const
   if(!m_ignoreUUIDs)
   {
     reader.onTextElement("uuid", [&](const Glib::ustring &text, const Attributes &) {
-                           std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
                            m_bank->setUuid(reader.getTransaction(), Uuid { text });
-                           std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
     });
   }
 
   reader.onTextElement(
       "x", [&](const Glib::ustring &text, const Attributes &) {
-        std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
         m_bank->setX(reader.getTransaction(), text);
-        std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
       });
 
   reader.onTextElement(
       "y", [&](const Glib::ustring &text, const Attributes &) {
-        std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
         m_bank->setY(reader.getTransaction(), text);
-        std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
       });
 
   reader.onTextElement("selected-preset", [&](const Glib::ustring &text, const Attributes &) {
-                         std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
                          m_bank->selectPreset(reader.getTransaction(), Uuid { text });
-                         std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
   });
 
   reader.onTextElement("attached-to-bank", [&](const Glib::ustring &text, const Attributes &) {
-    std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
     m_bank->setAttachedToBank(reader.getTransaction(), Uuid { text });
-    std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
-
   });
 
   reader.onTextElement("attach-direction", [&](const Glib::ustring &text, const Attributes &) {
-    std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
     m_bank->setAttachedDirection(reader.getTransaction(), text);
-    std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
  });
 
   reader.onTag(PresetOrderSerializer::getTagName(),

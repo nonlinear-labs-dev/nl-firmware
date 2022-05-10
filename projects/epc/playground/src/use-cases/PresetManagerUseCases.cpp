@@ -658,20 +658,13 @@ void PresetManagerUseCases::createBankFromPresets(const std::string& csv, const 
 PresetManagerUseCases::ImportExitCode
     PresetManagerUseCases::importBackupFile(FileInStream& in, const ProgressIndication& progress, AudioEngineProxy& ae)
 {
-  std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
   if(!in.eof())
   {
-    std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
     if(auto lock = m_presetManager.getLoadingLock())
     {
-      std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
       auto scope = m_presetManager.getUndoScope().startTransaction("Import Presetmanager Backup");
       if(importBackupFile(scope->getTransaction(), in, progress, ae))
         return ImportExitCode::OK;
-    }
-    else
-    {
-      std::cout << __PRETTY_FUNCTION__ << __LINE__ << std::endl;
     }
   }
   return ImportExitCode::Unsupported;

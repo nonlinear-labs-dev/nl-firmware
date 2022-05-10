@@ -21,8 +21,8 @@ namespace nltools
         : m_port(port)
         , m_cb(std::move(cb))
         , m_server(soup_server_new(nullptr, nullptr), g_object_unref)
-        , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
         , m_messageLoop(Glib::MainLoop::create(Glib::MainContext::create()))
+        , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
         , m_bgContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(m_messageLoop->get_context()))
         , m_contextThread(std::async(std::launch::async, [=] { this->backgroundThread(); }))
     {

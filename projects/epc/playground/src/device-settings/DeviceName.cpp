@@ -7,6 +7,7 @@
 
 DeviceName::DeviceName(Settings &parent)
     : super(parent)
+    , m_settings(parent)
 {
 }
 
@@ -29,7 +30,7 @@ void DeviceName::set(Glib::ustring name)
   if(m_name != name || m_name.empty())
   {
     m_name = name;
-    sanitize(nullptr);
+    sanitize(m_settings.getSetting<DateTimeAdjustment>());
     notify();
   }
 }

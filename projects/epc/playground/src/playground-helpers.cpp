@@ -6,6 +6,9 @@
 #include <glib.h>
 #include <iomanip>
 #include <limits>
+#include <dirent.h>
+#include <stddef.h>
+#include <sys/types.h>
 
 std::string to_string(double d)
 {
@@ -93,6 +96,22 @@ namespace Environment
     }
 
     free(symbols);
+  }
+
+  int count_open_fds(void) {
+    DIR *dp = opendir("/proc/self/fd");
+    struct dirent *de;
+    int count = -3; // '.', '..', dp
+
+    if (dp == NULL)
+      return -1;
+
+    while ((de = readdir(dp)) != NULL)
+      count++;
+
+    (void)closedir(dp);
+
+    return count;
   }
 
   void setupLocale()

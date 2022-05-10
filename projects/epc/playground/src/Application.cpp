@@ -121,6 +121,7 @@ Application::Application(int numArgs, char **argv)
 
 Application::~Application()
 {
+  stopWatchDog();
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 
   m_watchDog.reset();

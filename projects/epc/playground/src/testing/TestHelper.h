@@ -13,6 +13,7 @@
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/PresetManagerUseCases.h"
 #include "use-cases/SoundUseCases.h"
+#include "nltools/system/SpawnCommandLine.h"
 #include <glibmm.h>
 
 namespace TestHelper
@@ -24,10 +25,24 @@ namespace TestHelper
    public:
     ApplicationFixture() : app(0, nullptr)
     {
+      auto pid = getpid();
+      auto command = StringTools::buildString("ls -la /proc/", pid, "/fd");
+      nltools::Log::error(command);
+      SpawnCommandLine cmd(command);
+      auto cout = cmd.getStdOutput();
+      auto numFDs = std::count(cout.begin(), cout.end(), '\n');
+      nltools::Log::error(numFDs);
     }
 
     ~ApplicationFixture()
     {
+      auto pid = getpid();
+      auto command = StringTools::buildString("ls -la /proc/", pid, "/fd");
+      nltools::Log::error(command);
+      SpawnCommandLine cmd(command);
+      auto cout = cmd.getStdOutput();
+      auto numFDs = std::count(cout.begin(), cout.end(), '\n');
+      nltools::Log::error(numFDs);
     }
 
     auto getMainContext()
