@@ -86,10 +86,11 @@ class PresetManagerUseCases
   {
     static ProgressIndication getMock()
     {
-      ProgressIndication ret{};
-      ret._start = [](){};
-      ret._update = [](auto){};
-      ret._finish = [](){};
+      ProgressIndication ret {};
+      ret._start = []() {};
+      ret._update = [](auto) {};
+      ret._finish = []() {};
+      return ret;
     }
 
     void start() const

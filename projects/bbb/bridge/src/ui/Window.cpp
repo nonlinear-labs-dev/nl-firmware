@@ -12,7 +12,6 @@ constexpr auto framebufferDimX = 256;
 constexpr auto framebufferDimY = 96;
 
 Window::Window()
-    : m_playPanel(<#initializer#>)
 {
   set_default_size(framebufferDimX, framebufferDimY * 2);
   set_size_request(framebufferDimX, framebufferDimY * 2);

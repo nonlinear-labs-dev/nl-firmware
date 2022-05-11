@@ -13,7 +13,8 @@ namespace nltools
   {
     namespace ws
     {
-      WebSocketInChannel::WebSocketInChannel(Callback cb, guint port, nltools::threading::Priority p, const Glib::RefPtr<Glib::MainContext>& c)
+      WebSocketInChannel::WebSocketInChannel(Callback cb, guint port, nltools::threading::Priority p,
+                                             const Glib::RefPtr<Glib::MainContext> &c)
           : InChannel(std::move(cb))
           , m_port(port)
           , m_server(soup_server_new(nullptr, nullptr), g_object_unref)
@@ -69,6 +70,7 @@ namespace nltools
         m_messageLoop = Glib::MainLoop::create(m);
         m_conditionEstablishedThreadWaiter.notify();
         m_messageLoop->run();
+        g_main_context_pop_thread_default(m->gobj());
       }
 
       void WebSocketInChannel::webSocket(SoupServer *, SoupWebsocketConnection *c, const char *, SoupClientContext *,

@@ -18,18 +18,17 @@
 #include <iostream>
 #include <giomm/file.h>
 
-LayoutFolderMonitor& LayoutFolderMonitor::get()
-{
-  static LayoutFolderMonitor mon;
-  return mon;
-}
-
 LayoutFolderMonitor::LayoutFolderMonitor()
     : m_rootFolder(Gio::File::create_for_path(Application::get().getOptions()->getLayoutFolder()))
     , m_recMonitor(m_rootFolder,
                    std::bind(&LayoutFolderMonitor::onFileChanged, this, std::placeholders::_1, std::placeholders::_2,
                              std::placeholders::_3))
 {
+}
+
+void LayoutFolderMonitor::start()
+{
+  m_recMonitor.rebuildDirectoryList();
   bruteForce();
 }
 

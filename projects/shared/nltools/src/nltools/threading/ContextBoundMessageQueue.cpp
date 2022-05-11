@@ -46,5 +46,10 @@ namespace nltools
     {
       return m_pendingCalls > 0;
     }
+
+    Glib::RefPtr<Glib::MainContext> ContextBoundMessageQueue::getContext()
+    {
+      return m_context;
+    }
   }
 }

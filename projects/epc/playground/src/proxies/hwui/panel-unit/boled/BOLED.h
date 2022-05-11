@@ -9,6 +9,7 @@
 class Application;
 class Parameter;
 class Setting;
+class LayoutFolderMonitor;
 
 namespace DescriptiveLayouts
 {
@@ -18,7 +19,7 @@ namespace DescriptiveLayouts
 class BOLED : public OLEDProxy
 {
  public:
-  BOLED(Oleds& oleds);
+  BOLED(Oleds& oleds, LayoutFolderMonitor* mon);
   ~BOLED() override;
 
   void init();

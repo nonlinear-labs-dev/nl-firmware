@@ -42,7 +42,8 @@
 HWUI::HWUI(Settings &settings)
     : m_voiceGoupSignal {}
     , m_currentVoiceGroup { VoiceGroup::I }
-    , m_panelUnit { settings, m_oleds }
+    , m_layoutFolderMonitor(std::make_unique<LayoutFolderMonitor>())
+    , m_panelUnit { settings, m_oleds, m_layoutFolderMonitor.get() }
     , m_baseUnit { settings, m_oleds }
     , m_readersCancel(Gio::Cancellable::create())
     , m_buttonStates { false }
@@ -80,6 +81,8 @@ void HWUI::onButtonMessage(const nltools::msg::ButtonChangedMessage &msg)
 
 void HWUI::init()
 {
+  m_layoutFolderMonitor->start();
+
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
   m_editBufferSoundTypeConnection = eb->onSoundTypeChanged(sigc::mem_fun(this, &HWUI::onEditBufferSoundTypeChanged));
@@ -123,7 +126,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
     {
       if(line == "r")
       {
-        LayoutFolderMonitor::get().bruteForce();
+        m_layoutFolderMonitor->bruteForce();
       }
       if(line == "t")
       {

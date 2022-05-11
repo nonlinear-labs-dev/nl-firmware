@@ -19,6 +19,7 @@
 class Application;
 class UsageMode;
 class Settings;
+class LayoutFolderMonitor;
 
 namespace UNDO
 {
@@ -78,20 +79,20 @@ class HWUI
   std::string exportSoled();
   std::string exportBoled();
 
-  Oleds& getOleds();
+  Oleds &getOleds();
 
   //SplashScreen
   void startSplash();
   void finishSplash();
   void setSplashStatus(const std::string &msg);
   void addSplashStatus(const std::string &msg);
-  void registerSplash(SplashLayout* l);
-  void unregisterSplash(SplashLayout* l);
+  void registerSplash(SplashLayout *l);
+  void unregisterSplash(SplashLayout *l);
 
  private:
   void exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std::string &fileName) const;
 
-  void onFocusAndModeChanged(const Setting* s);
+  void onFocusAndModeChanged(const Setting *s);
   void onPresetLoaded();
   void onEditBufferSoundTypeChanged(SoundType type);
   void undoableUpdateParameterSelection(UNDO::Transaction *transaction);
@@ -132,6 +133,7 @@ class HWUI
   bool m_loadToPartActive = false;
 
   VoiceGroup m_currentVoiceGroup = VoiceGroup::I;
+  std::unique_ptr<LayoutFolderMonitor> m_layoutFolderMonitor;
   PanelUnit m_panelUnit;
   BaseUnit m_baseUnit;
 
@@ -150,7 +152,7 @@ class HWUI
   int m_blinkCount;
   Expiration m_switchOffBlockingMainThreadIndicator;
   ScopedGuard m_parameterFocusLock;
-  Settings& m_settings;
-  FocusAndModeSetting & m_famSetting;
-  SplashLayout* m_splashLayout = nullptr;
+  Settings &m_settings;
+  FocusAndModeSetting &m_famSetting;
+  SplashLayout *m_splashLayout = nullptr;
 };

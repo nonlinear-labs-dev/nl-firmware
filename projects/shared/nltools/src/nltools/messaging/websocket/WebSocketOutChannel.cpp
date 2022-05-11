@@ -20,8 +20,7 @@ namespace nltools
           , m_soupSession(soup_session_new(), g_object_unref)
           , m_message(nullptr, g_object_unref)
           , m_connection(nullptr, g_object_unref)
-          , m_mainThreadContextQueue(
-                std::make_unique<threading::ContextBoundMessageQueue>(ctx))
+          , m_mainThreadContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(ctx))
           , m_onConnectionEstablished(connectionEstablishedCB)
           , m_contextThread([=] { this->backgroundThread(p); })
       {
@@ -103,7 +102,7 @@ namespace nltools
         pthread_setname_np(pthread_self(), "WebSockOut");
         threading::setThisThreadPrio(p);
 
-        auto mainContext = Glib::MainContext::get_default();
+        auto mainContext = m_mainThreadContextQueue->getContext();
 
         auto m = Glib::MainContext::create();
         g_main_context_push_thread_default(m->gobj());

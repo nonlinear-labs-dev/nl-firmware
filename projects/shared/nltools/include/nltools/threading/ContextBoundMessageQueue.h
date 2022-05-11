@@ -22,6 +22,7 @@ namespace nltools
 
       void pushMessage(tMessage&& m);
       bool isPending() const;
+      Glib::RefPtr<Glib::MainContext> getContext();
 
      private:
       Glib::RefPtr<Glib::MainContext> m_context;
