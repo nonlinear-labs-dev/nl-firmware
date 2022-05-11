@@ -9,7 +9,7 @@ namespace nltools
   namespace threading
   {
     ContextBoundMessageQueue::ContextBoundMessageQueue(Glib::RefPtr<Glib::MainContext> context)
-        : m_context(std::move(context))
+        : m_context(context)
         , m_mutex(std::make_shared<std::recursive_mutex>())
     {
     }

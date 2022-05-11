@@ -84,6 +84,14 @@ class PresetManagerUseCases
 
   struct ProgressIndication
   {
+    static ProgressIndication getMock()
+    {
+      ProgressIndication ret{};
+      ret._start = [](){};
+      ret._update = [](auto){};
+      ret._finish = [](){};
+    }
+
     void start() const
     {
       if(_start)

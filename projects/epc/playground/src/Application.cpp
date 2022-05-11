@@ -143,6 +143,8 @@ Application::~Application()
 #endif
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 
+  nltools::msg::deInit();
+
   theApp = nullptr;
 }
 

@@ -5,6 +5,7 @@
 #include "Application.h"
 #include <giomm.h>
 #include <nltools/ErrorCodes.h>
+#include <filesystem>
 
 bool Options::s_acceptanceTests = false;
 
@@ -93,22 +94,22 @@ Options::Options(int &argc, char **&argv)
 
 void Options::setDefaultsForTests()
 {
-  auto persistencePath = Gio::File::create_for_path("/tmp");
+  auto persistencePath = std::filesystem::path("/tmp");
 
   auto timestamp = std::chrono::steady_clock::now().time_since_epoch().count();
   auto fine = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 
   auto settingsName = std::string("/tmp/settings") + std::to_string(fine) + std::string(".xml");
-  auto settingsFile = Gio::File::create_for_path(settingsName);
+  auto settingsFile = std::filesystem::path(settingsName);
   auto pmName = std::string("/tmp/preset-manager-") + std::to_string(timestamp) + "-" + std::to_string(fine) + std::string("/");
-  auto pmDirectory = Gio::File::create_for_path(pmName);
+  auto pmDirectory = std::filesystem::path(pmName);
 
-  if(persistencePath->query_exists())
+  if(is_directory(persistencePath))
   {
-    if(pmDirectory->query_exists() || makePresetManagerDirectory(pmDirectory))
-      m_pmPath = pmDirectory->get_path();
-
-    m_settingsFile = settingsFile->get_path();
+    if(not is_directory(pmDirectory))
+      std::filesystem::create_directories(pmDirectory);
+    m_pmPath = pmDirectory.string();
+    m_settingsFile = settingsFile.string();
   }
 
   m_layoutFolder = getResourcesDir() + std::string("/templates/");

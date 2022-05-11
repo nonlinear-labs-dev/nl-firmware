@@ -21,33 +21,15 @@ namespace TestHelper
   class ApplicationFixture
   {
    protected:
-    Application app;
+    std::unique_ptr<Application> app;
    public:
-    ApplicationFixture() : app(0, nullptr)
-    {
-      auto pid = getpid();
-      auto command = StringTools::buildString("ls -la /proc/", pid, "/fd");
-      nltools::Log::error(command);
-      SpawnCommandLine cmd(command);
-      auto cout = cmd.getStdOutput();
-      auto numFDs = std::count(cout.begin(), cout.end(), '\n');
-      nltools::Log::error(numFDs);
-    }
+    ApplicationFixture();
 
-    ~ApplicationFixture()
-    {
-      auto pid = getpid();
-      auto command = StringTools::buildString("ls -la /proc/", pid, "/fd");
-      nltools::Log::error(command);
-      SpawnCommandLine cmd(command);
-      auto cout = cmd.getStdOutput();
-      auto numFDs = std::count(cout.begin(), cout.end(), '\n');
-      nltools::Log::error(numFDs);
-    }
+    ~ApplicationFixture();
 
     auto getMainContext()
     {
-      return app.getMainContext()->gobj();
+      return app->getMainContext()->gobj();
     }
   };
 

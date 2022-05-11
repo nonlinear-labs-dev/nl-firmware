@@ -110,7 +110,7 @@ namespace nltools
 
         m_backgroundContextQueue = std::make_unique<threading::ContextBoundMessageQueue>(m);
         m_messageLoop = Glib::MainLoop::create(m);
-        m_backgroundContextQueue->pushMessage(std::bind(&WebSocketOutChannel::connect, this));
+        m_backgroundContextQueue->pushMessage([this] { connect(); });
 
         auto c = mainContext->signal_timeout().connect_seconds(sigc::mem_fun(this, &WebSocketOutChannel::ping), 2);
         m_messageLoop->run();
@@ -160,7 +160,7 @@ namespace nltools
       void WebSocketOutChannel::reconnect()
       {
         auto sigTimeOut = this->m_messageLoop->get_context()->signal_timeout();
-        sigTimeOut.connect_seconds_once(std::bind(&WebSocketOutChannel::connect, this), 2);
+        sigTimeOut.connect_seconds_once([this] { connect(); }, 2);
       }
 
       void WebSocketOutChannel::connectWebSocket(SoupWebsocketConnection *connection)

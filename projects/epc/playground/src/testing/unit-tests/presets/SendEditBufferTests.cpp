@@ -45,7 +45,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Action does not send Edit
 
   Configuration configuration;
   configuration.useEndpoints = { EndPoint::AudioEngine };
-  configuration.offerEndpoints = { EndPoint::Playground, EndPoint::AudioEngine };
+  configuration.offerEndpoints = { EndPoint::AudioEngine };
 
   TestHelper::ScopedMessagingConfiguration scopeEndPoint { configuration };
 
