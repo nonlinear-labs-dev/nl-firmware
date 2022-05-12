@@ -33,4 +33,8 @@ public abstract class ParameterColumn extends LayoutResizingVertical {
 		}
 		return super.skipChildOnLayout(c);
 	}
+
+	protected boolean shouldDisplayHeaderOnFirstParameter() {
+		return true;
+	}
 }

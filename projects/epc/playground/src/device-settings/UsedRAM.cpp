@@ -6,6 +6,7 @@
 #include <nltools/system/SpawnAsyncCommandLine.h>
 #include <nltools/logging/Log.h>
 #include <tools/StringTools.h>
+#include <device-settings/Settings.h>
 
 UsedRAM::UsedRAM(UpdateDocumentContributor& parent)
     : Setting(parent)

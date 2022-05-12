@@ -6,6 +6,11 @@ Linear100PercentScaleConverter::Linear100PercentScaleConverter()
 {
 }
 
-Linear100PercentScaleConverter::~Linear100PercentScaleConverter()
+Linear100PercentScaleConverter::~Linear100PercentScaleConverter() noexcept = default;
+
+Linear200PercentScaleConverter::Linear200PercentScaleConverter()
+    : LinearScaleConverter(tTcdRange(0, 16000), tDisplayRange(0, 200), PercentageDimension::get())
 {
 }
+
+Linear200PercentScaleConverter::~Linear200PercentScaleConverter() noexcept = default;

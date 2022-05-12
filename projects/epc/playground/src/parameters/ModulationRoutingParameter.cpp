@@ -6,6 +6,8 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulationRouterParameterLayouts.h>
 #include <cmath>
 #include <Application.h>
+#include <parameters/MacroControlParameter.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 ModulationRoutingParameter::ModulationRoutingParameter(ParameterGroup *group, const ParameterId& id, tSrcParameterPtr srcParam,
                                                        tMCParameterPtr tgtParam, const ScaleConverter *scaling)

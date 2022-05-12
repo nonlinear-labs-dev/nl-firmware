@@ -22,6 +22,19 @@ class UnmodulateableParameterSelectLayout2 : public ParameterSelectLayout2, publ
 
  protected:
   void init() override;
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
+
+ private:
+  void onParameterSelectionChanged(Parameter* oldP, Parameter* newP);
+  void onScaleGroupChanged();
+  void updateResetButton();
+  bool resetEnabled();
+  void resetScaleGroup();
+
+  bool m_isScaleParameter = false;
+  sigc::connection m_signalParameterSelectionChanged = {};
+  sigc::connection m_signalScaleChanged = {};
+  Button* m_resetButton = nullptr;
 };
 
 class UnmodulateableParameterEditLayout2 : public ParameterEditLayout2, public UnmodulateableParameterLayout2

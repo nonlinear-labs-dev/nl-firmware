@@ -528,10 +528,10 @@ void PolySection::postProcess_poly_audio(const uint32_t _voiceId, const float _m
                  * tmp_amt)
                     + 0.18f);
   tmp_env = m_smoothers.get(C15::Smoothers::Poly_Slow::Shp_A_FB_Env_C);
+  tmp_amt = tmp_env < 0.0f ? 1.0f : m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId);
   m_signals.set(C15::Signals::Truepoly_Signals::Shp_A_FB_Env_C, _voiceId,
                 NlToolbox::Crossfades::unipolarCrossFade(
-                    m_signals.get(C15::Signals::Truepoly_Signals::Env_G_Sig, _voiceId),
-                    m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), tmp_env));
+                    m_signals.get(C15::Signals::Truepoly_Signals::Env_G_Sig, _voiceId), tmp_amt, std::abs(tmp_env)));
   // poly osc b signals
   tmp_amt = m_smoothers.get(C15::Smoothers::Poly_Fast::Osc_B_PM_Self);
   tmp_env = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_PM_Self_Env_B);
@@ -560,10 +560,10 @@ void PolySection::postProcess_poly_audio(const uint32_t _voiceId, const float _m
                  * tmp_amt)
                     + 0.18f);
   tmp_env = m_smoothers.get(C15::Smoothers::Poly_Slow::Shp_B_FB_Env_C);
+  tmp_amt = tmp_env < 0.0f ? 1.0f : m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId);
   m_signals.set(C15::Signals::Truepoly_Signals::Shp_B_FB_Env_C, _voiceId,
                 NlToolbox::Crossfades::unipolarCrossFade(
-                    m_signals.get(C15::Signals::Truepoly_Signals::Env_G_Sig, _voiceId),
-                    m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), tmp_env));
+                    m_signals.get(C15::Signals::Truepoly_Signals::Env_G_Sig, _voiceId), tmp_amt, std::abs(tmp_env)));
   // comb filter
   tmp_amt = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Pitch_Env_C);
   tmp_env = m_convert->eval_lin_pitch(
@@ -649,13 +649,13 @@ void PolySection::postProcess_poly_slow(const uint32_t _voiceId)
   m_signals.set(C15::Signals::Truepoly_Signals::Osc_A_Fluct_Env_C, _voiceId,
                 m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_A_Fluct)
                     * NlToolbox::Crossfades::unipolarCrossFade(
-                        1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
+                          1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
   // osc b
   envMod = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Fluct_Env_C);
   m_signals.set(C15::Signals::Truepoly_Signals::Osc_B_Fluct_Env_C, _voiceId,
                 m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Fluct)
                     * NlToolbox::Crossfades::unipolarCrossFade(
-                        1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
+                          1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
   // comb filter
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Decay_KT);
   unitSign = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Decay) < 0 ? -0.001f : 0.001f;
@@ -762,13 +762,13 @@ void PolySection::postProcess_poly_key(const uint32_t _voiceId)
   m_signals.set(C15::Signals::Truepoly_Signals::Osc_A_Fluct_Env_C, _voiceId,
                 m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_A_Fluct)
                     * NlToolbox::Crossfades::unipolarCrossFade(
-                        1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
+                          1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
   // osc b
   envMod = m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Fluct_Env_C);
   m_signals.set(C15::Signals::Truepoly_Signals::Osc_B_Fluct_Env_C, _voiceId,
                 m_smoothers.get(C15::Smoothers::Poly_Slow::Osc_B_Fluct)
                     * NlToolbox::Crossfades::unipolarCrossFade(
-                        1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
+                          1.0f, m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId), envMod));
   // comb filter
   keyTracking = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Decay_KT);
   unitSign = m_smoothers.get(C15::Smoothers::Poly_Slow::Comb_Flt_Decay) < 0 ? -0.001f : 0.001f;

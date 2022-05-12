@@ -7,6 +7,8 @@
 #include "Application.h"
 #include "device-settings/Settings.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/PresetManagerUseCases.h"
+#include "use-cases/BankUseCases.h"
 #include <presets/PresetManager.h>
 #include <presets/Bank.h>
 #include <presets/Preset.h>

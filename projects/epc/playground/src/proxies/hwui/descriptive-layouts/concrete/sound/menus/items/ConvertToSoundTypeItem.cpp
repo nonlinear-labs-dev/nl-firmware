@@ -7,6 +7,7 @@
 #include <libundo/undo/Scope.h>
 #include "ConvertToSoundTypeItem.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 
 ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toType)
     : AnimatedGenericItem(

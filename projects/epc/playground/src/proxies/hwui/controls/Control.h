@@ -20,6 +20,7 @@ class Control : public sigc::trackable, public Uncopyable
 
   virtual const Rect &getPosition() const;
 
+  void toggleHighlight();
   virtual void setHighlight(bool isHighlight);
   bool isHighlight() const;
 

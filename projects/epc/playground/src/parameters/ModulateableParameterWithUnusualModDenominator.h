@@ -5,8 +5,6 @@ class ModulateableParameterWithUnusualModDenominator : public ModulateableParame
 {
  public:
   ModulateableParameterWithUnusualModDenominator(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
-                                                 tDisplayValue def, tControlPositionValue coarseDenominator,
-                                                 tControlPositionValue fineDenominator,
                                                  tControlPositionValue modAmountCoarseDenom,
                                                  tControlPositionValue modAmountFineDenom);
 

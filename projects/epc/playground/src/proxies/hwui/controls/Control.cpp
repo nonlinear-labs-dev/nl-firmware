@@ -94,3 +94,8 @@ HWUI *Control::getHWUI() const
 {
   return Application::get().getHWUI();
 }
+
+void Control::toggleHighlight()
+{
+  setHighlight(!isHighlight());
+}

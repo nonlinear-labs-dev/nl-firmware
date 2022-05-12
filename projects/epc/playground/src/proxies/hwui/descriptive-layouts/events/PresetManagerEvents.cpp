@@ -12,6 +12,7 @@
 #include "http/UndoScope.h"
 #include "device-settings/Settings.h"
 #include "device-settings/DirectLoadSetting.h"
+#include "use-cases/PresetManagerUseCases.h"
 
 namespace DescriptiveLayouts
 {

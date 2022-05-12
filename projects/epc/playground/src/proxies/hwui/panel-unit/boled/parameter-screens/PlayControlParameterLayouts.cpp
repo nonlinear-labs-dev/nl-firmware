@@ -1,5 +1,6 @@
 #include "PlayControlParameterLayouts.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/PhysicalControlSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationRoutersCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/PhysicalControlBehaviorLabel.h>

@@ -15,6 +15,10 @@
 #include "proxies/hwui/HWUI.h"
 #include "proxies/hwui/Layout.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/ParameterUseCases.h"
+#include "use-cases/MacroControlParameterUseCases.h"
+#include "use-cases/ModParameterUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableDualVoiceGroupMasterAndSplitPointLayout.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>

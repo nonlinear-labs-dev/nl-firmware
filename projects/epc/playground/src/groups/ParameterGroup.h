@@ -5,6 +5,7 @@
 #include "parameters/Parameter.h"
 #include "http/UpdateDocumentContributor.h"
 #include "tools/IntrusiveList.h"
+#include "parameters/ModulateableParameter.h"
 
 class PresetParameterGroup;
 class ParameterGroupSet;
@@ -86,6 +87,10 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   template<typename T>
   T* appendParameter(T *p)
   {
+    if(dynamic_cast<ModulateableParameter*>(p))
+      m_modulateableParameters++;
+    else
+      m_unModulateableParameters++;
     m_parameters.append(p);
     return p;
   }
@@ -99,4 +104,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   const char *m_webUIName;
   IntrusiveList<tParameterPtr> m_parameters;
   Signal<void> m_signalGroupChanged;
+
+  int m_modulateableParameters;
+  int m_unModulateableParameters;
 };
