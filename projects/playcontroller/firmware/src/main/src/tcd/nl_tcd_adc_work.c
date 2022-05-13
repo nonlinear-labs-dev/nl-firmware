@@ -13,6 +13,7 @@
 #include "spibb/nl_bb_msg.h"
 #include "playcontroller/lpc_lib.h"
 #include "tcd/nl_tcd_aftertouch.h"
+#include "tcd/nl_tcd_bender.h"
 #include "tcd/nl_tcd_poly.h"
 #include "ehc/nl_ehc_ctrl.h"
 #include "drv/nl_dbg.h"
@@ -21,30 +22,10 @@
 #include "playcontroller/playcontroller-defs.h"
 #include "io/pins.h"
 
-#define BIPOLAR_CENTER      8000  // bipolar "0" in unsigned 0...16000 notation
-#define BENDER_DEADRANGE    20    // +/-1 % of +/-2047
-#define BENDER_SMALL_THRESH 200   // +/-10 % of +/-2047, test range
-#define BENDER_TEST_PERIOD  80    // 1 s = 80 * 12.5 ms
-#define BENDER_RAMP_INC     8     // 400 / 8 = 50 steps from the threshold to zero (50 * 12.5 ms = 625 ms)
-#define BENDER_FACTOR       4540  // 4540 / 4096 = 2047 / 1847 for saturation = 100 % at 90 % of the input range
-
 static int      sendUiValues = 0;
 static uint16_t uiSendValue[NUM_HW_SOURCES];
 static uint16_t aeSendValue[NUM_HW_REAL_SOURCES];
 static int      pollDataRequest = 0;
-
-static int32_t lastPitchbend = BIPOLAR_CENTER;
-static int32_t lastRawPitchbend;
-static int32_t pitchbendZero;
-
-static uint16_t  pbSignalIsSmall;
-static uint16_t  pbTestTime;
-static uint16_t  pbTestMode;
-static uint16_t  pbRampMode;
-static int32_t   pbRamp;
-static int32_t   pbRampInc;
-static uint32_t  allBenderTables[3][33] = {};  // contains the bender curves
-static uint32_t *benderTable;
 
 //========= ribbons ========
 static uint16_t rib_eepromHandle = 0;  // EEPROM access handle
@@ -121,52 +102,6 @@ static int16_t SetThreshold(int32_t val)
   return val;
 }
 
-/*****************************************************************************
-* @brief	ADC_WORK_Select_BenderTable
-* @param	0: soft, 1: normal, 2: hard
-******************************************************************************/
-void ADC_WORK_Select_BenderTable(uint16_t const curve)
-{
-  if (curve > 2)
-    return;
-  benderTable = allBenderTables[curve];
-  //  #warning TEST CODE !!! Bender-Curve HARD selects LegacyAftertouch mode
-  //  AT_SetLegacyMode(curve == 2);
-}
-
-void Generate_BenderTable(uint16_t const curve)
-{
-  float_t range = BIPOLAR_CENTER;  // separate processing of absolute values for positive and negative range
-
-  float_t s;
-
-  switch (curve)  // s defines the curve shape
-  {
-    case 0:     // soft
-      s = 0.0;  // y = x
-      break;
-    case 1:     // normal
-      s = 0.5;  // y = 0.5 * x + 0.5 * x^3
-      break;
-    case 2:     // hard
-      s = 1.0;  // y = x^3
-      break;
-    default:
-      return;
-  }
-
-  uint32_t i_max = 32;
-  uint32_t i;
-  float    x;
-
-  for (i = 0; i <= i_max; i++)
-  {
-    x = (float) i / (float) i_max;
-
-    allBenderTables[curve][i] = (uint32_t)(range * x * ((1.0 - s) + s * x * x));
-  }
-}
-
 void ClearHWValuesForUI(void)
 {
   for (int i = 0; i < NUM_HW_SOURCES; i++)
@@ -184,22 +119,6 @@ void ClearHWValuesForAE(void)
 ******************************************************************************/
 void ADC_WORK_Init1(void)
 {
-  lastRawPitchbend = 0;
-  lastPitchbend    = BIPOLAR_CENTER;
-  pitchbendZero    = 2048;
-
-  pbSignalIsSmall = 0;
-  pbTestTime      = 0;
-  pbTestMode      = 0;
-  pbRampMode      = 0;
-  pbRamp          = 0;
-  pbRampInc       = 0;
-
-  Generate_BenderTable(0);
-  Generate_BenderTable(1);
-  Generate_BenderTable(2);
-  ADC_WORK_Select_BenderTable(1);
-
   // initialize ribbon data
   for (int i = 0; i <= 1; i++)
   {
@@ -229,6 +148,7 @@ void ADC_WORK_Init1(void)
     memcpy(&ribbonCalibrationData, tmp, sizeof(ribbonCalibrationData));
 
   AT_Init();  // will use EEPROM, this position makes sure that EHC EEPROM Data remains valid
+  BNDR_Init();
 
   ClearHWValuesForUI();
   ClearHWValuesForAE();
@@ -348,8 +268,8 @@ static void PollHWValues(void)
 {
   MSG_SendAEDevelopperCmd(AE_PROTOCOL_CMD_POLL_DATA_START);
 
-  ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_PITCHBEND, lastPitchbend);
-  ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_PITCHBEND, lastPitchbend);
+  ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_PITCHBEND, BNDR_GetLastBender());
+  ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_PITCHBEND, BNDR_GetLastBender());
 
   ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_AFTERTOUCH, AT_GetLastAftertouch());
   ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_AFTERTOUCH, AT_GetLastAftertouch());
@@ -644,144 +564,6 @@ void ADC_WORK_Resume(void)
 }
 
 /*****************************************************************************
-* @brief  Process Bender
-******************************************************************************/
-static void SendBenderIfChanged(int32_t value)
-{
-  if (value != lastPitchbend)
-  {
-    ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_PITCHBEND, value);
-    ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_PITCHBEND, value);
-    lastPitchbend = value;
-  }
-}
-
-static void ProcessBender(void)
-{
-  int32_t value;
-  int32_t valueToSend;
-
-  value = IPC_ReadAdcBufferAveraged(IPC_ADC_PITCHBENDER);  // 0 ... 4095
-
-  value = value - pitchbendZero;  // -2048 ... 2047 (after initialization)
-
-  if ((value > -BENDER_SMALL_THRESH) && (value < BENDER_SMALL_THRESH))  // small signals
-  {
-    if (!pbSignalIsSmall)  // entering the small-signal range
-    {
-      pbTestTime = 0;
-      pbTestMode = 1;  // start testing
-    }
-
-    pbSignalIsSmall = 1;
-  }
-  else  // large signals
-  {
-    if (pbSignalIsSmall)  // leaving the small-signal range
-    {
-      pbTestMode = 0;  // discard testing
-    }
-
-    pbSignalIsSmall = 0;
-  }
-
-  if (pbTestMode)
-  {
-    if (pbTestTime < BENDER_TEST_PERIOD)
-    {
-      pbTestTime++;
-    }
-    else  // test time finished
-    {
-      pbTestMode = 0;
-      pbRampMode = 1;  // start the ramp to zero
-
-      if (value > 0)
-      {
-        pbRamp    = value;            // absolute amount of shifting
-        pbRampInc = BENDER_RAMP_INC;  // positive increment, will shift the zero line up
-      }
-      else
-      {
-        pbRamp    = -value;            // absolute amount of shifting
-        pbRampInc = -BENDER_RAMP_INC;  // negative increment, will shift the zero line down
-      }
-    }
-  }
-
-  if (pbRampMode)
-  {
-    pbRamp -= BENDER_RAMP_INC;  // determines the size of the ramp
-
-    if (pbRamp <= 0)  // ramp has reached zero
-    {
-      pbRampMode = 0;  // and is stopped
-    }
-    else  // the steps before the ramp reaches zero
-    {
-      pitchbendZero += pbRampInc;  // shifting the zero line = negative feedback
-    }
-  }
-
-  if (value != lastRawPitchbend)
-  {
-    if (value > BENDER_DEADRANGE)  // is in the positive work range
-    {
-      valueToSend = value - BENDER_DEADRANGE;  // absolute amount
-
-      valueToSend = valueToSend * BENDER_FACTOR;  // saturation factor
-
-      if (valueToSend > 2047 * 4096)
-      {
-        valueToSend = BIPOLAR_CENTER;  // clipping
-      }
-      else
-      {
-        valueToSend = valueToSend >> 12;  // 0 ... 2047 (11 Bit)
-
-        uint32_t fract = valueToSend & 0x3F;                                                         // lower 6 bits used for interpolation
-        uint32_t index = valueToSend >> 6;                                                           // upper 5 bits (0...31) used as index in the table
-        valueToSend    = (benderTable[index] * (64 - fract) + benderTable[index + 1] * fract) >> 6;  // (0...8000) * 64 / 64
-      }
-
-      valueToSend = BIPOLAR_CENTER + valueToSend;  // 8001 ... 16000
-
-      SendBenderIfChanged(valueToSend);
-    }
-    else if (value < -BENDER_DEADRANGE)  // is in the negative work range
-    {
-      valueToSend = -BENDER_DEADRANGE - value;  // absolute amount
-
-      valueToSend = valueToSend * BENDER_FACTOR;  // saturation factor
-
-      if (valueToSend > 2047 * 4096)
-      {
-        valueToSend = BIPOLAR_CENTER;  // clipping
-      }
-      else
-      {
-        valueToSend = valueToSend >> 12;  // 0 ... 2047 (11 Bit)
-
-        uint32_t fract = valueToSend & 0x3F;                                                         // lower 6 bits used for interpolation
-        uint32_t index = valueToSend >> 6;                                                           // upper 5 bits (0...31) used as index in the table
-        valueToSend    = (benderTable[index] * (64 - fract) + benderTable[index + 1] * fract) >> 6;  // (0...8000) * 64 / 64
-      }
-
-      valueToSend = BIPOLAR_CENTER - valueToSend;  // 7999 ... 0
-
-      SendBenderIfChanged(valueToSend);
-    }
-    else  // is in the dead range
-    {
-      if ((lastRawPitchbend > BENDER_DEADRANGE) || (lastRawPitchbend < -BENDER_DEADRANGE))  // was outside of the dead range before
-        SendBenderIfChanged(BIPOLAR_CENTER);
-    }
-
-    lastRawPitchbend = value;
-  }
-}
-
-/*****************************************************************************
 * @brief  Send Raw ADC values
 ******************************************************************************/
 static void SendRawValues(void)
@@ -846,7 +628,7 @@ void ADC_WORK_Process4(void)
   if (suspend)
     return;
   AT_ProcessAftertouch();
-  ProcessBender();
+  BNDR_ProcessBender();
   ProcessRibbons();
 
   if (pollDataRequest)

@@ -12,6 +12,8 @@
 #define RETURN_TO_ZERO   1
 #define RETURN_TO_CENTER 2
 
+#define BIPOLAR_CENTER 8000  // bipolar "0" in unsigned 0...16000 notation
+
 //------- public functions
 
 void ADC_WORK_Init1(void);

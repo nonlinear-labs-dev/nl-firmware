@@ -12,6 +12,7 @@
 #include "tcd/nl_tcd_adc_work.h"
 #include "tcd/nl_tcd_poly.h"
 #include "tcd/nl_tcd_aftertouch.h"
+#include "tcd/nl_tcd_bender.h"
 #include "tcd/nl_tcd_msg.h"
 #include "drv/nl_dbg.h"
 #include "sup/nl_sup.h"
@@ -334,7 +335,7 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         AT_Select_AftertouchTable(data[1]);             // 0: soft, 1: normal, 2: hard
         break;
       case PLAYCONTROLLER_SETTING_ID_BENDER_CURVE:  // Bender Curve
-        ADC_WORK_Select_BenderTable(data[1]);       // 0: soft, 1: normal, 2: hard
+        BNDR_Select_BenderTable(data[1]);           // 0: soft, 1: normal, 2: hard
         break;
       case PLAYCONTROLLER_SETTING_ID_SOFTWARE_MUTE_OVERRIDE:
         SUP_SetMuteOverride(data[1]);  // enable/disable Software Mute Override and value
