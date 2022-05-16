@@ -23,7 +23,7 @@ uint32_t        AT_GetLastAftertouch()
 #define AT_LEGACY_DEFAULT (0)
 static int legacyMode = AT_LEGACY_DEFAULT;
 void       AT_SetLegacyMode(int const on)
-{
+{  // NOTE: legacy mode OFF only is effective with a valid aftertouch calibration
   legacyMode = (on != 0);
 }
 

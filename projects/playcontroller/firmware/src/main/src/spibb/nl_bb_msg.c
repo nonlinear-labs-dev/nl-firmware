@@ -434,6 +434,10 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_AT_STATUS, AT_GetStatus());
         BB_MSG_SendTheBuffer();
         break;
+      case PLAYCONTROLLER_REQUEST_ID_BNDR_STATUS:  // sending bender status to the BB
+        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_BNDR_STATUS, BNDR_GetStatus());
+        BB_MSG_SendTheBuffer();
+        break;
       case PLAYCONTROLLER_REQUEST_ID_UHID64:
       {
         BB_MSG_WriteMessage(PLAYCONTROLLER_BB_MSG_TYPE_UHID64, 4, (uint16_t*) &NL_uhid64);

@@ -10,6 +10,12 @@
 #include "playcontroller/lpc_lib.h"
 //#include "io/pins.h"
 
+static BNDR_status_T status;
+uint16_t             BNDR_GetStatus(void)
+{
+  return BNDR_statusToUint16(status);
+}
+
 // --------------
 static uint32_t BNDR_lastBender;
 uint32_t        BNDR_GetLastBender()
@@ -21,7 +27,8 @@ uint32_t        BNDR_GetLastBender()
 static int legacyMode = BNDR_LEGACY_DEFAULT;
 void       BNDR_SetLegacyMode(int const on)
 {
-  legacyMode = (on != 0);
+  legacyMode        = (on != 0);
+  status.legacyMode = legacyMode;
 }
 
 #define TABLE_SIZE (32)
@@ -233,14 +240,19 @@ static void ProcessLegacyBender(int32_t value)
 // -----------------------------------------------------------------------------------------------------------
 //
 
-#define DEADZONE       (10)   // when settled ignore adcValue changes (wrt center) below this
-#define AUTOZERO_RANGE (300)  // 2048 +- this value is the range where we will do autozeroing
+#define DEADZONE        (10)   // when settled ignore adcValue changes (wrt center) below this -- kills noise
+#define EXTREMA_BACKOFF (10)   // back-off for saturated adc values at end stops
+#define AUTOZERO_RANGE  (512)  // 2048 +- this adc value is the range where we will do autozeroing (512 = +-25%), \
+                               // to catch even heavily off-centered benders
+
 // --- Bender: ADC value to Output conversion (this is the general characteristic curve)
-static int16_t             BNDR_adcToTcdX[4] = { 20, 2048 - DEADZONE, 2048 + DEADZONE, 4010 };  // adc values
-static int16_t             BNDR_adcToTcdY[4] = { 0, 8000, 8000, 16000 };                        // TCD output
+static int16_t             BNDR_adcToTcdX[4] = { 33 + 500, 2048 - DEADZONE, 2048 + DEADZONE, 4000 - 500 };  // adc values
+static int16_t             BNDR_adcToTcdY[4] = { 0, 8000, 8000, 16000 };                                    // TCD output
 static LIB_interpol_data_T BNDR_adcToTcd     = { 4, BNDR_adcToTcdX, BNDR_adcToTcdY };
+static int16_t *const      pLeftEndStop      = &BNDR_adcToTcdX[0];
 static int16_t *const      pLowerDeadzone    = &BNDR_adcToTcdX[1];
 static int16_t *const      pUpperDeadzone    = &BNDR_adcToTcdX[2];
+static int16_t *const      pRightEndStop     = &BNDR_adcToTcdX[3];
 
 // ---------------- begin Value Buffer defs
 #define VALBUF_SIZE (32)  // 2^N !!! Floating Average is used based on this size
@@ -316,6 +328,18 @@ static void ProcessBender(int16_t adcValue)
   if (!isValueBufferFilled(&windowBuffer))
     return;
 
+  // adjust end stops
+  if (adcValue >= (*pRightEndStop) + EXTREMA_BACKOFF)
+  {
+    (*pRightEndStop)    = adcValue - EXTREMA_BACKOFF;
+    status.rightEndStop = 1;
+  }
+  if (adcValue + EXTREMA_BACKOFF < (*pLeftEndStop))
+  {
+    (*pLeftEndStop)    = adcValue + EXTREMA_BACKOFF;
+    status.leftEndStop = 1;
+  }
+
   uint16_t   min;
   uint16_t   max;
   uint16_t   avg;
@@ -326,35 +350,29 @@ static void ProcessBender(int16_t adcValue)
   int16_t tcdOutput;
 
   getValueBufferStats(&windowBuffer, &min, &max, &avg, &rms);
-  //tcdOutput = rms;
 
-  if (adcValue > 2048 - AUTOZERO_RANGE && adcValue < 2048 + AUTOZERO_RANGE)  // inside autozero range ?
-  {
+  if (adcValue > 2048 - AUTOZERO_RANGE && adcValue < 2048 + AUTOZERO_RANGE)
+  {  // inside absolute autozero range
     if (settled)
-    {
-      settled = rms < 2000 || (max - min) < 80;  // coarse value stability
-    }
+      settled = (rms < 2000) || ((max - min) < 80);  // check coarse value stability
     else
     {
-      int settledCandidate = rms < 400 && (max - min) < 4;  // fine value stability
-      // ledWarning           = settledCandidate;
-      if (settledCandidate)
+      if ((rms < 400) && ((max - min) < 4))  // check fine value stability
       {
-        if (settledCandidateCntr < 10)
+        if (settledCandidateCntr < 10)  // continuously stable ?
           settledCandidateCntr++;
         else
           settled = 1;
       }
-      else
-        settled = 0;
     }
   }
   else
-  {
+  {  // outside absolute autozero range, never settle
     settled              = 0;
     settledCandidateCntr = 0;
   }
-  // ledError = settled;
+  status.settled = settled;
+  status.everSettled |= settled;
 
   if (settled)
   {  // move dead zones to new zero and expand them to full span
@@ -376,6 +394,8 @@ static void ProcessBender(int16_t adcValue)
   }
 
   tcdOutput = LIB_InterpolateValue(&BNDR_adcToTcd, adcValue);
+
+  // apply user curves. Tables are not bipolar ==> split pos. and neg. processing
   if (tcdOutput >= BIPOLAR_CENTER)
   {
     tcdOutput = tcdOutput - BIPOLAR_CENTER;
@@ -427,4 +447,6 @@ void BNDR_Init(void)
   // legacy end
 
   clearValueBuffer(&windowBuffer, 2 * VALBUF_SIZE);
+  status            = BNDR_uint16ToStatus(0);
+  status.legacyMode = legacyMode;
 }

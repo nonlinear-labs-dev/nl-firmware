@@ -308,6 +308,13 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
                  s.legacyMode, s.calibrated, s.eepromValid, s.maskedKeys, s.silentKeys);
           break;
         }
+        case PLAYCONTROLLER_NOTIFICATION_ID_BNDR_STATUS:
+        {
+          BNDR_status_T s = BNDR_uint16ToStatus(data[1]);
+          printf("NOTIFICATION : Bender status: legacyMode=%u, settled=%u, everSettled=%u, leftEndStop=%u, rightEndStop=%u\n",
+                 s.legacyMode, s.settled, s.everSettled, s.leftEndStop, s.rightEndStop);
+          break;
+        }
         default:
           printf("NOTIFICATION : unknown ID=%d, data=%d     \n", data[0], data[1]);
           break;

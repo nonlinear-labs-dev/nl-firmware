@@ -89,6 +89,7 @@ enum PLAYCONTROLLER_REQUEST_IDS
   PLAYCONTROLLER_REQUEST_ID_POLLHWS        = 0x0009,
   PLAYCONTROLLER_REQUEST_ID_AT_TEST_DATA   = 0x000A,
   PLAYCONTROLLER_REQUEST_ID_AT_STATUS      = 0x000B,
+  PLAYCONTROLLER_REQUEST_ID_BNDR_STATUS    = 0x000C,
 };
 
 enum PLAYCONTROLLER_NOTIFICATION_IDS
@@ -105,6 +106,7 @@ enum PLAYCONTROLLER_NOTIFICATION_IDS
   PLAYCONTROLLER_NOTIFICATION_ID_POLLHWS        = 0x0009,
   PLAYCONTROLLER_NOTIFICATION_ID_AT_TEST_DATA   = 0x000A,
   PLAYCONTROLLER_NOTIFICATION_ID_AT_STATUS      = 0x000B,
+  PLAYCONTROLLER_NOTIFICATION_ID_BNDR_STATUS    = 0x000C,
   PLAYCONTROLLER_NOTIFICATION_ID_TEST_MSG       = 0xFFFF,
 };
 
@@ -225,9 +227,19 @@ typedef struct
 
 typedef struct
 {
-  unsigned legacyMode  : 1;  // lecacy AT mode currently in use
-  unsigned calibrated  : 1;  // calibration in use
-  unsigned maskedKeys  : 1;  // some key are masked
-  unsigned silentKeys  : 1;  // masked key only will silence the AT output
+  unsigned legacyMode : 1;   // lecacy AT mode currently in use (Note: non-legacy mode only is active with a valid calibration)
+  unsigned calibrated : 1;   // calibration in use (ignore in legacy mode)
+  unsigned maskedKeys : 1;   // some key are masked (ignore in legacy mode)
+  unsigned silentKeys : 1;   // masked key only will silence the AT output (ignore in legacy mode)
   unsigned eepromValid : 1;  // valid calibration data found at boot time
 } AT_status_T;
+
+// ---- Bender status
+typedef struct
+{
+  unsigned legacyMode : 1;    // lecacy Bender mode currently in use
+  unsigned settled : 1;       // current value is settled (typical zero position)  (ignore in legacy mode)
+  unsigned everSettled : 1;   // a settled valued has been reached (ignore in legacy mode)
+  unsigned leftEndStop : 1;   // left end stop has been adjusted (ignore in legacy mode)
+  unsigned rightEndStop : 1;  // right end stop has been adjusted (ignore in legacy mode)
+} BNDR_status_T;

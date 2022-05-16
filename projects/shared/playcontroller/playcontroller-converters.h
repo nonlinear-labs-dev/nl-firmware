@@ -67,10 +67,10 @@ static inline EHC_ControllerStatus_T EHC_uint16ToStatus(const uint16_t s)
 static inline uint16_t AT_statusToUint16(const AT_status_T s)
 {
   uint16_t ret = 0;
-  ret |= s.legacyMode  << 0;
-  ret |= s.calibrated  << 1;
-  ret |= s.maskedKeys  << 2;
-  ret |= s.silentKeys  << 3;
+  ret |= s.legacyMode << 0;
+  ret |= s.calibrated << 1;
+  ret |= s.maskedKeys << 2;
+  ret |= s.silentKeys << 3;
   ret |= s.eepromValid << 4;
   return ret;
 }
@@ -83,5 +83,28 @@ static inline AT_status_T AT_uint16ToStatus(const uint16_t s)
   ret.maskedKeys  = (s & 0b0000000000000100) >> 2;
   ret.silentKeys  = (s & 0b0000000000001000) >> 3;
   ret.eepromValid = (s & 0b0000000000010000) >> 4;
+  return ret;
+}
+
+// ----------------
+static inline uint16_t BNDR_statusToUint16(const BNDR_status_T s)
+{
+  uint16_t ret = 0;
+  ret |= s.legacyMode << 0;
+  ret |= s.settled << 1;
+  ret |= s.everSettled << 2;
+  ret |= s.leftEndStop << 3;
+  ret |= s.rightEndStop << 4;
+  return ret;
+}
+
+static inline BNDR_status_T BNDR_uint16ToStatus(const uint16_t s)
+{
+  BNDR_status_T ret;
+  ret.legacyMode   = (s & 0b0000000000000001) >> 0;
+  ret.settled      = (s & 0b0000000000000010) >> 1;
+  ret.everSettled  = (s & 0b0000000000000100) >> 2;
+  ret.leftEndStop  = (s & 0b0000000000001000) >> 3;
+  ret.rightEndStop = (s & 0b0000000000010000) >> 4;
   return ret;
 }
