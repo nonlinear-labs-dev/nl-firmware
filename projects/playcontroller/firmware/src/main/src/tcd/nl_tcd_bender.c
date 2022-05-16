@@ -8,7 +8,7 @@
 #include "sys/nl_eeprom.h"
 #include "sys/nl_stdlib.h"
 #include "playcontroller/lpc_lib.h"
-#include "io/pins.h"
+//#include "io/pins.h"
 
 // --------------
 static uint32_t BNDR_lastBender;
@@ -24,6 +24,8 @@ void       BNDR_SetLegacyMode(int const on)
   legacyMode = (on != 0);
 }
 
+#define TABLE_SIZE (32)
+
 // legacy
 #define BENDER_DEADRANGE    20    // +/-1 % of +/-2047
 #define BENDER_SMALL_THRESH 200   // +/-10 % of +/-2047, test range
@@ -35,14 +37,18 @@ static int32_t lastPitchbend = BIPOLAR_CENTER;
 static int32_t lastRawPitchbend;
 static int32_t pitchbendZero;
 
-static uint16_t  pbSignalIsSmall;
-static uint16_t  pbTestTime;
-static uint16_t  pbTestMode;
-static uint16_t  pbRampMode;
-static int32_t   pbRamp;
-static int32_t   pbRampInc;
-static uint32_t  allBenderTables[3][33] = {};  // contains the bender curves
-static uint32_t *benderTable;
+static uint16_t pbSignalIsSmall;
+static uint16_t pbTestTime;
+static uint16_t pbTestMode;
+static uint16_t pbRampMode;
+static int32_t  pbRamp;
+static int32_t  pbRampInc;
+static int16_t  allBenderTables[3][TABLE_SIZE + 1] = {};  // contains the bender curves
+static int16_t *benderTable;
+// legacy
+
+static int16_t             benderTableX[TABLE_SIZE + 1];
+static LIB_interpol_data_T BNDR_benderCurves = { TABLE_SIZE + 1, benderTableX, allBenderTables[1] };
 
 /*****************************************************************************
 * @brief	ADC_WORK_Select_BenderTable
@@ -52,12 +58,13 @@ void BNDR_Select_BenderTable(uint16_t const curve)
 {
   if (curve > 2)
     return;
-  benderTable = allBenderTables[curve];
+  benderTable                = allBenderTables[curve];
+  BNDR_benderCurves.y_values = allBenderTables[curve];
 }
 
 static void Generate_BenderTable(uint16_t const curve)
 {
-  float range = BIPOLAR_CENTER;  // separate processing of absolute values for positive and negative range
+  // separate processing of absolute values for positive and negative range
 
   float s;
 
@@ -76,15 +83,13 @@ static void Generate_BenderTable(uint16_t const curve)
       return;
   }
 
-  uint32_t i_max = 32;
-  uint32_t i;
-  float    x;
+  float x;
 
-  for (i = 0; i <= i_max; i++)
+  for (int i = 0; i <= TABLE_SIZE; i++)
   {
-    x = (float) i / (float) i_max;
-
-    allBenderTables[curve][i] = (uint32_t)(range * x * ((1.0 - s) + s * x * x));
+    x                         = (float) i / (float) TABLE_SIZE;
+    benderTableX[i]           = (uint16_t)(x * BIPOLAR_CENTER);
+    allBenderTables[curve][i] = (uint16_t)(x * BIPOLAR_CENTER * ((1.0 - s) + s * x * x));
   }
 }
 
@@ -228,9 +233,11 @@ static void ProcessLegacyBender(int32_t value)
 // -----------------------------------------------------------------------------------------------------------
 //
 
+#define DEADZONE       (10)   // when settled ignore adcValue changes (wrt center) below this
+#define AUTOZERO_RANGE (300)  // 2048 +- this value is the range where we will do autozeroing
 // --- Bender: ADC value to Output conversion (this is the general characteristic curve)
-static int16_t             BNDR_adcToTcdX[4] = { 20, 2048 - 20, 2048 + 20, 4010 };  // adc values
-static int16_t             BNDR_adcToTcdY[4] = { 0, 8000, 8000, 16000 };            // TCD output
+static int16_t             BNDR_adcToTcdX[4] = { 20, 2048 - DEADZONE, 2048 + DEADZONE, 4010 };  // adc values
+static int16_t             BNDR_adcToTcdY[4] = { 0, 8000, 8000, 16000 };                        // TCD output
 static LIB_interpol_data_T BNDR_adcToTcd     = { 4, BNDR_adcToTcdX, BNDR_adcToTcdY };
 static int16_t *const      pLowerDeadzone    = &BNDR_adcToTcdX[1];
 static int16_t *const      pUpperDeadzone    = &BNDR_adcToTcdX[2];
@@ -280,22 +287,23 @@ static inline int isValueBufferFilled(ValueBuffer_T *const this)
 
 static inline void getValueBufferStats(ValueBuffer_T *const this, uint16_t *const pMin, uint16_t *const pMax, uint16_t *const pAvg, uint32_t *const pRms)
 {
-  uint16_t min = 4095;
-  uint16_t max = 0;
-  uint16_t avg = this->sum / VALBUF_SIZE;
-  uint32_t rms = 0;
+  uint16_t min         = 4095;
+  uint16_t max         = 0;
+  uint16_t avg         = this->sum / VALBUF_SIZE;
+  uint32_t avgUnscaled = this->sum;
+  uint32_t rms         = 0;
   for (int i = 0; i < VALBUF_SIZE; i++)
   {
     if (this->values[i] > max)
       max = this->values[i];
     if (this->values[i] < min)
       min = this->values[i];
-    rms += (this->values[i] - avg) * (this->values[i] - avg);
+    rms += (VALBUF_SIZE * this->values[i] - avgUnscaled) * (VALBUF_SIZE * this->values[i] - avgUnscaled);
   }
   *pMin = min;
   *pMax = max;
   *pAvg = avg;
-  *pRms = rms;
+  *pRms = rms / VALBUF_SIZE;
 }
 // ---------------- end Value Buffer defs
 
@@ -315,15 +323,21 @@ static void ProcessBender(int16_t adcValue)
   static int settled              = 0;
   static int settledCandidateCntr = 0;
 
-  getValueBufferStats(&windowBuffer, &min, &max, &avg, &rms);
+  int16_t tcdOutput;
 
-  if (adcValue > 2048 - 300 && adcValue < 2048 + 300)  // inside autozero range ?
+  getValueBufferStats(&windowBuffer, &min, &max, &avg, &rms);
+  //tcdOutput = rms;
+
+  if (adcValue > 2048 - AUTOZERO_RANGE && adcValue < 2048 + AUTOZERO_RANGE)  // inside autozero range ?
   {
     if (settled)
-      settled = rms < 100 || (max - min) < 80;  // coarse value stability
+    {
+      settled = rms < 2000 || (max - min) < 80;  // coarse value stability
+    }
     else
     {
-      int settledCandidate = rms < 30 && (max - min) < 8;  // fine value stability
+      int settledCandidate = rms < 400 && (max - min) < 4;  // fine value stability
+      // ledWarning           = settledCandidate;
       if (settledCandidate)
       {
         if (settledCandidateCntr < 10)
@@ -332,7 +346,7 @@ static void ProcessBender(int16_t adcValue)
           settled = 1;
       }
       else
-        settledCandidateCntr = 0;
+        settled = 0;
     }
   }
   else
@@ -342,18 +356,15 @@ static void ProcessBender(int16_t adcValue)
   }
   // ledError = settled;
 
-  ledWarning = rms < 100 || (max - min) < 80;
-  ledError   = rms < 30 && (max - min) < 8;
-
   if (settled)
   {  // move dead zones to new zero and expand them to full span
-    if (*pLowerDeadzone < avg - 20)
+    if (*pLowerDeadzone < avg - DEADZONE)
       (*pLowerDeadzone)++;
-    if (*pLowerDeadzone > avg - 20)
+    if (*pLowerDeadzone > avg - DEADZONE)
       (*pLowerDeadzone)--;
-    if (*pUpperDeadzone < avg + 20)
+    if (*pUpperDeadzone < avg + DEADZONE)
       (*pUpperDeadzone)++;
-    if (*pUpperDeadzone > avg + 20)
+    if (*pUpperDeadzone > avg + DEADZONE)
       (*pUpperDeadzone)--;
   }
   else
@@ -364,8 +375,17 @@ static void ProcessBender(int16_t adcValue)
       (*pUpperDeadzone)--;
   }
 
-  int16_t tcdOutput;
   tcdOutput = LIB_InterpolateValue(&BNDR_adcToTcd, adcValue);
+  if (tcdOutput >= BIPOLAR_CENTER)
+  {
+    tcdOutput = tcdOutput - BIPOLAR_CENTER;
+    tcdOutput = +LIB_InterpolateValue(&BNDR_benderCurves, tcdOutput) + BIPOLAR_CENTER;
+  }
+  else
+  {
+    tcdOutput = BIPOLAR_CENTER - tcdOutput;
+    tcdOutput = -LIB_InterpolateValue(&BNDR_benderCurves, tcdOutput) + BIPOLAR_CENTER;
+  }
 
   if (tcdOutput != BNDR_lastBender)
   {

@@ -20,7 +20,7 @@ uint32_t        AT_GetLastAftertouch()
 {
   return AT_lastAftertouch;
 }
-#define AT_LEGACY_DEFAULT (1)
+#define AT_LEGACY_DEFAULT (0)
 static int legacyMode = AT_LEGACY_DEFAULT;
 void       AT_SetLegacyMode(int const on)
 {

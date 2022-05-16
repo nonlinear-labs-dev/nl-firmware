@@ -22,7 +22,8 @@
 #include "playcontroller/playcontroller-defs.h"
 #include "io/pins.h"
 
-static int      sendUiValues = 0;
+static int sendUiValues = 0;
+
 static uint16_t uiSendValue[NUM_HW_SOURCES];
 static uint16_t aeSendValue[NUM_HW_REAL_SOURCES];
 static int      pollDataRequest = 0;
