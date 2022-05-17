@@ -5,12 +5,60 @@
 #include <tools/StringTools.h>
 #include <parameters/Parameter.h>
 #include <parameter_list.h>
+#include <placeholder.h>
 #include <cassert>
 #include <nltools/logging/Log.h>
 #include <groups/MacroControlsGroup.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>
+
+namespace C15
+{
+
+  namespace Placeholder
+  {
+
+    static Glib::ustring replaceGlobal(const Text &_text, const bool &_multiple = false)
+    {
+      Glib::ustring ret{ _text };
+      std::size_t pos;
+      while((pos = ret.find(Qualifier)) != std::string::npos)
+      {
+        for(const GlobalReplacer &placeholder : GlobalPlaceholders)
+        {
+          if((pos = ret.find(placeholder.m_qualifier)) == Glib::ustring::npos)
+            continue;
+          ret.replace(pos, strlen(placeholder.m_qualifier), placeholder.getReplacement());
+          if(!_multiple)
+            return ret;
+        }
+      }
+      return ret;
+    }
+
+    static Glib::ustring replaceLocal(const Text &_text, const SoundType &_st, const VoiceGroup &_vg,
+                                      const bool &_multiple = false)
+    {
+      Glib::ustring ret{ _text };
+      std::size_t pos;
+      while((pos = ret.find(Qualifier)) != std::string::npos)
+      {
+        for(const LocalReplacer &placeholder : LocalPlaceholders)
+        {
+          if((pos = ret.find(placeholder.m_qualifier)) == Glib::ustring::npos)
+            continue;
+          ret.replace(pos, strlen(placeholder.m_qualifier), placeholder.getReplacement(_st, _vg));
+          if(!_multiple)
+            return ret;
+        }
+      }
+      return ret;
+    }
+
+  }  // namespace C15::Placeholder
+
+}  // namespace C15
 
 ParameterDB &ParameterDB::get()
 {
