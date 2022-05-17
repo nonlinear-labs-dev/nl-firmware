@@ -51,6 +51,7 @@ projects/web/static/nonmaps/cmake_install.cmake
 projects/web/static/nonmaps/target
 cmake-build-debug
 cmake-build-release
+cmake-build-relwithdebinfo
 projects/playground/CMakeCache.txt
 projects/playground/CMakeFiles
 projects/playground/.idea
