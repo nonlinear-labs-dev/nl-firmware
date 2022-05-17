@@ -87,6 +87,7 @@ Retry:
 #define AT_TEST_DATA    "at-test-data"
 #define AT_STATUS       "at-status"
 #define BNDR_STATUS     "bndr-status"
+#define BNDR_RESET      "bndr-reset"
 #if LPC_KEYBED_DIAG
 #define KEY_CNTRS "key-counters"
 #endif
@@ -138,7 +139,7 @@ void Usage(void)
 #if LPC_KEYBED_DIAG
   puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|key-counters");
 #else
-  puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|pollhws|at-test-data|at-status");
+  puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|pollhws|at-test-data|at-status|bndr-status|bndr-reset");
 #endif
   puts("     sw-version   : get LPC firware version");
   puts("     muting       : get software&hardware muting status");
@@ -150,7 +151,8 @@ void Usage(void)
   puts("     pollhws      : poll hardware sources");
   puts("     at-test-data : get aftertouch raw ADC (or Ohms) values for all keys");
   puts("     at-status    : get aftertouch status");
-  puts("     bndr-status  : get bender status");
+  puts("     bndr-status  : get pitchbender status");
+  puts("     bndr-reset   : reset pitchbender");
 #if LPC_KEYBED_DIAG
   puts("     key-counters : get diagnostic key error counters");
 #endif
@@ -331,6 +333,12 @@ int main(int argc, char const *argv[])
     if (strncmp(argv[2], BNDR_STATUS, sizeof BNDR_STATUS) == 0)
     {
       REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_BNDR_STATUS;
+      writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
+      return 0;
+    }
+    if (strncmp(argv[2], BNDR_RESET, sizeof BNDR_RESET) == 0)
+    {
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_BNDR_RESET;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }

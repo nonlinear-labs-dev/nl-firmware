@@ -90,6 +90,7 @@ enum PLAYCONTROLLER_REQUEST_IDS
   PLAYCONTROLLER_REQUEST_ID_AT_TEST_DATA   = 0x000A,
   PLAYCONTROLLER_REQUEST_ID_AT_STATUS      = 0x000B,
   PLAYCONTROLLER_REQUEST_ID_BNDR_STATUS    = 0x000C,
+  PLAYCONTROLLER_REQUEST_ID_BNDR_RESET     = 0x000D,
 };
 
 enum PLAYCONTROLLER_NOTIFICATION_IDS
@@ -107,6 +108,7 @@ enum PLAYCONTROLLER_NOTIFICATION_IDS
   PLAYCONTROLLER_NOTIFICATION_ID_AT_TEST_DATA   = 0x000A,
   PLAYCONTROLLER_NOTIFICATION_ID_AT_STATUS      = 0x000B,
   PLAYCONTROLLER_NOTIFICATION_ID_BNDR_STATUS    = 0x000C,
+  PLAYCONTROLLER_NOTIFICATION_ID_BNDR_RESET     = 0x000D,
   PLAYCONTROLLER_NOTIFICATION_ID_TEST_MSG       = 0xFFFF,
 };
 
@@ -238,8 +240,10 @@ typedef struct
 typedef struct
 {
   unsigned legacyMode : 1;    // lecacy Bender mode currently in use
-  unsigned settled : 1;       // current value is settled (typical zero position)  (ignore in legacy mode)
-  unsigned everSettled : 1;   // a settled valued has been reached (ignore in legacy mode)
+  unsigned zeroed : 1;        // current value is zero position  (ignore in legacy mode)
+  unsigned everZeroed : 1;    // a zero position has ever been reached (ignore in legacy mode)
   unsigned leftEndStop : 1;   // left end stop has been adjusted (ignore in legacy mode)
   unsigned rightEndStop : 1;  // right end stop has been adjusted (ignore in legacy mode)
+  unsigned offZero : 1;       // a settled value has occured outside the auto-zero range (and not being an end stop)
+  unsigned zeroValue : 10;    // zero value (upper 10bits of the 12bits adc range)
 } BNDR_status_T;

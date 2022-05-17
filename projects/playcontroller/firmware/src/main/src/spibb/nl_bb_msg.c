@@ -2,7 +2,7 @@
  *  last mod: 2016-04-27 DTZ
  *  Created on: 21.01.2015
  *      Author: ssc
- *  changed 2020-03-31 KSTR
+ *  changed 2022-05-17 KSTR
  */
 
 //#define BB_MSG_DBG  // if defined, discards normal BB_MSG_WriteMessage*() messages and enables the *_DBG() variants instead
@@ -436,6 +436,11 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         break;
       case PLAYCONTROLLER_REQUEST_ID_BNDR_STATUS:  // sending bender status to the BB
         BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_BNDR_STATUS, BNDR_GetStatus());
+        BB_MSG_SendTheBuffer();
+        break;
+      case PLAYCONTROLLER_REQUEST_ID_BNDR_RESET:  // reset bender
+        BNDR_Reset();
+        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_BNDR_RESET, 1);
         BB_MSG_SendTheBuffer();
         break;
       case PLAYCONTROLLER_REQUEST_ID_UHID64:
