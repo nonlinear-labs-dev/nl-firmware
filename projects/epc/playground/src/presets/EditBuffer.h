@@ -194,6 +194,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void combineLayerPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void initFadeParameters(UNDO::Transaction *transaction, VoiceGroup group);
   void initCrossFB(UNDO::Transaction *transaction);
+  void initCrossFBExceptFromFX(UNDO::Transaction* transaction);
   void undoableUnmuteLayers(UNDO::Transaction *transaction);
   void undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg);
   void undoableConvertSingleToLayer(UNDO::Transaction *transaction);
