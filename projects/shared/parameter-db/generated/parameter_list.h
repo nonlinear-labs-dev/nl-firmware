@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2022-05-17, 15:55
+    @date       2022-05-17, 17:26
     @version    1.7B-9
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -1894,7 +1894,7 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Fast::FB_Mix_Osc, Signals::Quasipoly_Signals::FB_Mix_Osc, Properties::SmootherScale::Linear,
         1.0f, 0.0f, true },
-      { 100, 1000, 100, 1000, "0", "Feedback Mixer", "FB Mixer", "A/B @VG:Other", "A/B @VG:Other",
+      { 100, 1000, 100, 1000, "0", "Feedback Mixer", "FB Mixer", "A/B @ST:Between", "A/B @ST:Between",
         "Level of the signal from branch A or B of the other Part. (Only available when using Layer mode.)" } },
     { None },
     { Parameters::Local_Modulateables::FB_Mix_Osc_Src,

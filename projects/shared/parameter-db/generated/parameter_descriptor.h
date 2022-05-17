@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /** @file       parameter_descriptor.h
-    @date       2022-05-17, 15:55
+    @date       2022-05-17, 17:26
     @version    1.7B-9
     @author     M. Seeber
     @brief      provide a flexible descriptor structure

@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       placeholder.h
-    @date       2022-05-17, 14:48
+    @date       2022-05-17, 17:26
     @version    1.7B-9
     @author     M. Seeber
     @brief      placeholders for parameter label/info string replacements
@@ -35,8 +35,7 @@ static constexpr auto VgBetween = Replacer::createVoiceGroupReplacer( { u8"\ue07
 static constexpr LocalReplacer LocalPlaceholders[] = {
     { "@VG:Self", VgSelf },
     { "@VG:Other", VgOther },
-    { "@ST:From", VgBetween, VgOther },
-    { "@ST:To", VgBetween, VgOther }
+    { "@ST:Between", VgBetween, VgOther }
 /* parameters to come */
 //    { "@ST:Pan", { "FX" }, { "Part" } },
 //    { "@ST:FX", { u8"\ue072 to \ue071", u8"\ue071 to \ue072" } }
