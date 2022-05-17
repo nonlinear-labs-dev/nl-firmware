@@ -42,8 +42,8 @@ void ShaperBGroup::init()
                                             ScaleConverter::get<Linear100PercentScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Shp_B_FB_Env_C, getVoiceGroup() },
-                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
+                                            ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Shp_B_Ring_Mod, getVoiceGroup() },
-                                            ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
+                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
 }
