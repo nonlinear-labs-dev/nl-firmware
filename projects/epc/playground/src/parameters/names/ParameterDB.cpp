@@ -13,60 +13,50 @@
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>
 
-namespace C15
+namespace C15::Placeholder
 {
-
-  namespace Placeholder
+  static Glib::ustring replaceGlobal(const Glib::ustring &_text, const bool &_multiple = false)
   {
-
-    static Glib::ustring replaceGlobal(const Text &_text, const bool &_multiple = false)
+    Glib::ustring ret{ _text };
+    std::size_t pos;
+    while((pos = ret.find(Qualifier)) != std::string::npos)
     {
-      Glib::ustring ret{ _text };
-      std::size_t pos;
-      while((pos = ret.find(Qualifier)) != std::string::npos)
+      for(const GlobalReplacer &placeholder : GlobalPlaceholders)
       {
-        for(const GlobalReplacer &placeholder : GlobalPlaceholders)
-        {
-          if((pos = ret.find(placeholder.m_qualifier)) == Glib::ustring::npos)
-            continue;
-          ret.replace(pos, strlen(placeholder.m_qualifier), placeholder.getReplacement());
-          if(!_multiple)
-            return ret;
-        }
+        if((pos = ret.find(placeholder.m_qualifier)) == Glib::ustring::npos)
+          continue;
+        ret.replace(pos, strlen(placeholder.m_qualifier), placeholder.getReplacement());
+        if(!_multiple)
+          return ret;
       }
-      return ret;
     }
+    return ret;
+  }
 
-    static Glib::ustring replaceLocal(const Text &_text, const SoundType &_st, const VoiceGroup &_vg,
-                                      const bool &_multiple = false)
+  static Glib::ustring replaceLocal(const Glib::ustring &_text, const SoundType &_st, const VoiceGroup &_vg,
+                                    const bool &_multiple = false)
+  {
+    Glib::ustring ret{ _text };
+    std::size_t pos;
+    while((pos = ret.find(Qualifier)) != std::string::npos)
     {
-      Glib::ustring ret{ _text };
-      std::size_t pos;
-      while((pos = ret.find(Qualifier)) != std::string::npos)
+      for(const LocalReplacer &placeholder : LocalPlaceholders)
       {
-        for(const LocalReplacer &placeholder : LocalPlaceholders)
-        {
-          if((pos = ret.find(placeholder.m_qualifier)) == Glib::ustring::npos)
-            continue;
-          ret.replace(pos, strlen(placeholder.m_qualifier), placeholder.getReplacement(_st, _vg));
-          if(!_multiple)
-            return ret;
-        }
+        if((pos = ret.find(placeholder.m_qualifier)) == Glib::ustring::npos)
+          continue;
+        ret.replace(pos, strlen(placeholder.m_qualifier), placeholder.getReplacement(_st, _vg));
+        if(!_multiple)
+          return ret;
       }
-      return ret;
     }
-
-  }  // namespace C15::Placeholder
-
+    return ret;
+  }
 }  // namespace C15
 
-ParameterDB &ParameterDB::get()
+ParameterDB::ParameterDB(EditBuffer &eb)
+    : m_editBuffer(eb)
 {
-  static ParameterDB db;
-  return db;
 }
-
-ParameterDB::ParameterDB() = default;
 
 ParameterDB::~ParameterDB() = default;
 
@@ -95,7 +85,7 @@ Glib::ustring ParameterDB::getLongName(const ParameterId &id) const
     return "MISSING!!!";
   }
 
-  return sanitize(replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_long, id.getVoiceGroup()));
+  return sanitize(replaceInDynamicLabels(d.m_pg.m_param_label_long, id, m_editBuffer.getType()));
 }
 
 Glib::ustring ParameterDB::getShortName(const ParameterId &id) const
@@ -112,7 +102,7 @@ Glib::ustring ParameterDB::getShortName(const ParameterId &id) const
     return "MISSING!!!";
   }
 
-  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_short, id.getVoiceGroup());
+  return replaceInDynamicLabels(d.m_pg.m_param_label_short, id, m_editBuffer.getType());
 }
 
 Glib::ustring ParameterDB::getDescription(const ParameterId &id) const
@@ -128,7 +118,7 @@ std::optional<Glib::ustring> ParameterDB::getLongGroupName(const ParameterId &id
   if(!d.m_pg.m_group_label_long)
     return {};
 
-  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_group_label_long, id.getVoiceGroup());
+  return replaceInDynamicLabels(d.m_pg.m_group_label_long, id, m_editBuffer.getType());
 }
 
 Glib::ustring ParameterDB::getDescription(const int num) const
@@ -152,6 +142,7 @@ Glib::ustring ParameterDB::getDescription(const int num) const
     return "";
   }
 
+  //TODO add replacement of infotexts
   return d.m_pg.m_param_info;
 }
 
@@ -165,14 +156,14 @@ tControlPositionValue ParameterDB::getSignalPathIndication(int id) const
                                                                     : getInvalidSignalPathIndication();
 }
 
-Glib::ustring ParameterDB::replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const
+Glib::ustring ParameterDB::replaceInDynamicLabels(const Glib::ustring &name, const ParameterId &parameterID, SoundType type) const
 {
-  if(name.find("@VG") != Glib::ustring::npos)
-  {
-    auto invert = [](VoiceGroup v) { return v == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I; };
-    name.replace(name.find("@VG"), 3, toString(invert(originGroup)));
-    return name;
-  }
+  auto paramType = C15::ParameterList[parameterID.getNumber()].m_param.m_type;
+  using namespace C15::Descriptors;
+  auto isGlobal = paramType != ParameterType::Local_Modulateable && paramType != ParameterType::Local_Unmodulateable;
 
-  return name;
+  if(isGlobal)
+    return C15::Placeholder::replaceGlobal(name);
+  else
+    return C15::Placeholder::replaceLocal(name, type, parameterID.getVoiceGroup());
 }

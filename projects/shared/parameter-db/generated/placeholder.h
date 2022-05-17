@@ -26,11 +26,11 @@ static constexpr GlobalReplacer GlobalPlaceholders[] = {
 };
 
 // common local
-static constexpr Text VgI = u8"\ue081";
-static constexpr Text VgII = u8"\ue082";
+static constexpr Text VgI = u8"\ue071";
+static constexpr Text VgII = u8"\ue072";
 static constexpr auto VgSelf = Replacer::createVoiceGroupReplacer( { VgI, VgII } );
 static constexpr auto VgOther = Replacer::createVoiceGroupReplacer( { VgII, VgI } );
-static constexpr auto VgBetween = Replacer::createVoiceGroupReplacer( { u8"\ue081-\ue082" } );
+static constexpr auto VgBetween = Replacer::createVoiceGroupReplacer( { u8"\ue071-\ue072" } );
 
 static constexpr LocalReplacer LocalPlaceholders[] = {
     { "@VG:Self", VgSelf },
@@ -39,7 +39,7 @@ static constexpr LocalReplacer LocalPlaceholders[] = {
     { "@ST:To", VgBetween, VgOther }
 /* parameters to come */
 //    { "@ST:Pan", { "FX" }, { "Part" } },
-//    { "@ST:FX", { u8"\ue082 to \ue081", u8"\ue081 to \ue082" } }
+//    { "@ST:FX", { u8"\ue072 to \ue071", u8"\ue071 to \ue072" } }
 };
 
 } // namespace C15::Placeholder

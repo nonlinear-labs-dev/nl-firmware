@@ -105,7 +105,10 @@ void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, con
   std::string name = groupId.getName();
 
   if(!m_parameters.empty())
-    name = ParameterDB::get().getLongGroupName(m_parameters.front()->getID()).value_or(name);
+  {
+    auto& db = Application::get().getPresetManager()->getEditBuffer()->getParameterDB();
+    name = db.getLongGroupName(m_parameters.front()->getID()).value_or(name);
+  }
 
   writer.writeTag("group", Attribute("name", name), Attribute("afound", "true"), Attribute("bfound", "true"), [&] {
     std::vector<int> writtenParameters;
@@ -122,7 +125,8 @@ void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, con
       if(std::find(writtenParameters.begin(), writtenParameters.end(), parameter->getID().getNumber())
          == writtenParameters.end())
       {
-        auto paramName = ParameterDB::get().getLongName(parameter->getID());
+        auto& db = Application::get().getPresetManager()->getEditBuffer()->getParameterDB();
+        auto paramName = db.getLongName(parameter->getID());
         writer.writeTag("parameter", Attribute("name", paramName), Attribute("afound", "false"),
                         Attribute("bfound", "true"), [] {});
       }

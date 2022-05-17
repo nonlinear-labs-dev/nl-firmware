@@ -3,6 +3,7 @@
 #include "ParameterGroupSet.h"
 #include "presets/recall/RecallParameterGroups.h"
 #include "nltools/GenericScopeGuard.h"
+#include "parameters/names/ParameterDB.h"
 #include <nltools/threading/Expiration.h>
 #include <sync/SyncedItem.h>
 #include <tools/DelayedJob.h>
@@ -132,6 +133,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   };
 
   PartOrigin getPartOrigin(VoiceGroup vg) const;
+  ParameterDB& getParameterDB();
 
   std::shared_ptr<ScopedGuard::Lock> getParameterFocusLockGuard();
   bool isParameterFocusLocked() const;
@@ -240,6 +242,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   friend class EditBufferUseCases;
   friend class SoundUseCases;
 
+  ParameterDB m_parameterDB;
   Uuid m_lastLoadedPreset;
 
   Glib::ustring m_name;
