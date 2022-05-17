@@ -4,9 +4,9 @@
 #include "VoiceGroupMasterModulateableParameter.h"
 #include <groups/ParameterGroup.h>
 
-VoiceGroupMasterModulateableParameter::VoiceGroupMasterModulateableParameter(
-    ParameterGroup *group, const ParameterId &id, const ScaleConverter *scaling, tControlPositionValue def,
-    tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator)
+VoiceGroupMasterModulateableParameter::VoiceGroupMasterModulateableParameter(ParameterGroup *group,
+                                                                             const ParameterId &id,
+                                                                             const ScaleConverter *scaling)
     : ModulateableParameter(group, id, scaling)
 {
 }

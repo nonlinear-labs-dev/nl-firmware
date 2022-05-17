@@ -7,6 +7,8 @@
 #include "parameters/scale-converters/LinearBipolar48StScaleConverter.h"
 #include "parameters/scale-converters/ParabolicGainDbScaleConverter.h"
 
+#include <parameter_list.h>
+
 MasterGroup::MasterGroup(ParameterGroupSet *parent)
     : ParameterGroup(parent, { "Master", VoiceGroup::Global }, "Master", "Master", "Master")
 {
@@ -18,11 +20,11 @@ MasterGroup::~MasterGroup()
 
 void MasterGroup::init()
 {
-  appendParameter(new ModulateableParameter(this, { 247, VoiceGroup::Global },
+  appendParameter(new ModulateableParameter(this, { C15::PID::Master_Volume, VoiceGroup::Global },
                                             ScaleConverter::get<ParabolicGainDbScaleConverter>()));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, { 248, VoiceGroup::Global }, ScaleConverter::get<LinearBipolar48StScaleConverter>(),
+      this, { C15::PID::Master_Tune, VoiceGroup::Global }, ScaleConverter::get<LinearBipolar48StScaleConverter>(),
       ScaleConverter::get<LinearBipolar96StScaleConverterFine>()));
 }
 
