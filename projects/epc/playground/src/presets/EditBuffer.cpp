@@ -41,6 +41,7 @@
 EditBuffer::EditBuffer(PresetManager *parent, Settings &settings, std::unique_ptr<AudioEngineProxy> &aeContainer)
     : ParameterGroupSet(parent)
     , SyncedItem(parent->getRoot()->getSyncMaster(), "/editbuffer")
+    , m_parameterDB(*this)
     , m_deferredJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
     , m_isModified(false)
     , m_recallSet(this)
@@ -1722,4 +1723,9 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
       }
     }
   }
+}
+
+ParameterDB &EditBuffer::getParameterDB()
+{
+  return m_parameterDB;
 }

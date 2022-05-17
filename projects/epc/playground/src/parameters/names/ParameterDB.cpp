@@ -12,13 +12,10 @@
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>
 
-ParameterDB &ParameterDB::get()
+ParameterDB::ParameterDB(EditBuffer &eb)
+    : m_editBuffer(eb)
 {
-  static ParameterDB db;
-  return db;
 }
-
-ParameterDB::ParameterDB() = default;
 
 ParameterDB::~ParameterDB() = default;
 
@@ -47,7 +44,7 @@ Glib::ustring ParameterDB::getLongName(const ParameterId &id) const
     return "MISSING!!!";
   }
 
-  return sanitize(replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_long, id.getVoiceGroup()));
+  return sanitize(replaceInDynamicLabels(d.m_pg.m_param_label_long, id.getVoiceGroup(), m_editBuffer.getType()));
 }
 
 Glib::ustring ParameterDB::getShortName(const ParameterId &id) const
@@ -64,7 +61,7 @@ Glib::ustring ParameterDB::getShortName(const ParameterId &id) const
     return "MISSING!!!";
   }
 
-  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_short, id.getVoiceGroup());
+  return replaceInDynamicLabels(d.m_pg.m_param_label_short, id.getVoiceGroup(), m_editBuffer.getType());
 }
 
 Glib::ustring ParameterDB::getDescription(const ParameterId &id) const
@@ -80,7 +77,7 @@ std::optional<Glib::ustring> ParameterDB::getLongGroupName(const ParameterId &id
   if(!d.m_pg.m_group_label_long)
     return {};
 
-  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_group_label_long, id.getVoiceGroup());
+  return replaceInDynamicLabels(d.m_pg.m_group_label_long, id.getVoiceGroup(), m_editBuffer.getType());
 }
 
 Glib::ustring ParameterDB::getDescription(const int num) const
@@ -104,6 +101,7 @@ Glib::ustring ParameterDB::getDescription(const int num) const
     return "";
   }
 
+  //TODO add replacement of infotexts
   return d.m_pg.m_param_info;
 }
 
@@ -116,8 +114,7 @@ tControlPositionValue ParameterDB::getSignalPathIndication(int id) const
   return (d.m_pg.m_inactive_cp && strlen(d.m_pg.m_inactive_cp) > 0) ? std::stod(d.m_pg.m_inactive_cp)
                                                                     : getInvalidSignalPathIndication();
 }
-
-Glib::ustring ParameterDB::replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const
+Glib::ustring ParameterDB::replaceInDynamicLabels(Glib::ustring name, VoiceGroup originGroup, SoundType type) const
 {
   if(name.find("@VG") != Glib::ustring::npos)
   {

@@ -34,9 +34,12 @@ void ParameterInfoText::onParameterSelected(Parameter *oldParam, Parameter *newP
 
 void ParameterInfoText::onParameterChanged(const Parameter *newParameter)
 {
-  auto &db = ParameterDB::get();
-  onTextLoaded(db.getDescription(newParameter->getID()));
-  scrollTop();
+  if(auto eb = newParameter->getParentEditBuffer())
+  {
+    auto &db = eb->getParameterDB();
+    onTextLoaded(db.getDescription(newParameter->getID()));
+    scrollTop();
+  }
 }
 
 void ParameterInfoText::onTextLoaded(const Glib::ustring &text)
