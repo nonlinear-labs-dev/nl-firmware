@@ -38,7 +38,8 @@ TEST_CASE("NL chars are sorted properly")
 
 TEST_CASE("Macro Labels are sortable A < B < C < D < E < F")
 {
-  auto& db = ParameterDB::get();
+  auto eb = TestHelper::getEditBuffer();
+  ParameterDB db(*eb);
   auto mca = db.getLongName({ C15::PID::MC_A, VoiceGroup::Global });
   auto mcb = db.getLongName({ C15::PID::MC_B, VoiceGroup::Global });
   auto mcc = db.getLongName({ C15::PID::MC_C, VoiceGroup::Global });

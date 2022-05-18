@@ -60,6 +60,19 @@ TEST_CASE("Convert Split (II) to Single")
     TestHelper::randomizeFadeParams(transaction);
   }
 
+  WHEN("FB From FX Selected")
+  {
+    EditBufferUseCases ebUseCases(*TestHelper::getEditBuffer());
+    ebUseCases.selectParameter({C15::PID::FB_Mix_FX_Src, VoiceGroup::I}, true);
+    ebUseCases.convertToSingle(VoiceGroup::I);
+
+    THEN("FB Effects selected")
+    {
+      auto eb = TestHelper::getEditBuffer();
+      CHECK(eb->getSelectedParameterNumber() == C15::PID::FB_Mix_FX);
+    }
+  }
+
   WHEN("Converted")
   {
 

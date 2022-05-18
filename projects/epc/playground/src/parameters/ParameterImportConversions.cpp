@@ -87,6 +87,8 @@ ParameterImportConversions::ParameterImportConversions(bool registerDefaults)
     registerConverter(C15::PID::Comb_Flt_LP_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
     registerConverter(C15::PID::SV_Flt_Cut_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
     registerConverter(C15::PID::Unison_Detune, 11, [=](auto v, auto, auto) { return v * 0.5; });
+    registerMCAmountConverter(C15::PID::Unison_Detune, 11, [=](auto v, auto, auto) { return v * 0.5; });
+
     registerConverter(C15::PID::Env_A_Att_Vel, 11, [=](auto v, auto, auto) { return v * 0.5; });
     registerConverter(C15::PID::Env_B_Att_Vel, 11, [=](auto v, auto, auto) { return v * 0.5; });
     registerConverter(C15::PID::Env_C_Att_Vel, 11, [=](auto v, auto, auto) { return v * 0.5; });
