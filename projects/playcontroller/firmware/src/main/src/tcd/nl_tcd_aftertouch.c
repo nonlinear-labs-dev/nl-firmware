@@ -60,21 +60,6 @@ static AT_calibration_T NL_EEPROM_ALIGN AT_adcCalibration =
 	ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL, ATCAL,
   }
 };
-/* TEST CODE
-static AT_calibration_T NL_EEPROM_ALIGN AT_adcCalibration =
-{
-  .keybedId   = 00001,
-  .adcTarget  = 3290,  // input into adc-to-force characteristic to achieve 10N
-  .adcDefault = 3465,
-  {
-    3019, 2980, 3200, 2999, 3256, 3231, 3087, 3275, 3119, 3263, 3133, 3295,
-	3296, 3172, 3417, 3367, 3530, 3526, 3451, 3633, 3581, 3676, 3620, 3687,
-	3675, 3607, 3673, 3630, 3706, 3683, 3562, 3622, 3522, 3635, 3561, 3608,
-	3582, 3471, 3565, 3496, 3589, 3546, 3467, 3543, 3454, 3555, 3455, 3566,
-	3567, 3517, 3610, 3558, 3618, 3609, 3530, 3542, 3576, 3621, 3533, 3593, 3570
-  }
-};
-*/
 // clang-format on
 
 // --- Force to TDC range conversion tables ---
@@ -311,7 +296,6 @@ static void ProcessAftertouch(int16_t adcValue)
   else
   {
     // apply calibration
-
     adcToForceInput = adcValue + (AT_adcCalibration.adcTarget - calibrationPoint);
 
     // convert to force and then to TCD
@@ -437,17 +421,13 @@ static void ProcessLegacyAftertouch(int16_t const adcValue)
     if (value > AT_DEADRANGE)  // outside of the dead range
     {
       valueToSend = value - AT_DEADRANGE;
-
       valueToSend = value * AT_FACTOR;  // saturation factor
 
       if (valueToSend > 4095 * 4096)
-      {
         valueToSend = 16000;
-      }
       else
       {
-        valueToSend = valueToSend >> 12;  // 0 ... 4095
-
+        valueToSend    = valueToSend >> 12;                                                                   // 0 ... 4095
         uint32_t fract = valueToSend & 0x7F;                                                                  // lower 7 bits used for interpolation
         uint32_t index = valueToSend >> 7;                                                                    // upper 5 bits (0...31) used as index in the table
         valueToSend    = (aftertouchTable[index] * (128 - fract) + aftertouchTable[index + 1] * fract) >> 7;  // (0...16000) * 128 / 128
@@ -466,7 +446,6 @@ static void ProcessLegacyAftertouch(int16_t const adcValue)
         AT_lastAftertouch = 0;
       }
     }
-
     lastAftertouch = value;
   }
 }

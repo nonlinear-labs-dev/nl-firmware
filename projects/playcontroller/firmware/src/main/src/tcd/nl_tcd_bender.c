@@ -8,7 +8,6 @@
 #include "sys/nl_eeprom.h"
 #include "sys/nl_stdlib.h"
 #include "playcontroller/lpc_lib.h"
-//#include "io/pins.h"
 
 static BNDR_status_T status;
 uint16_t             BNDR_GetStatus(void)
@@ -126,25 +125,19 @@ static void ProcessLegacyBender(int32_t value)
       pbTestTime = 0;
       pbTestMode = 1;  // start testing
     }
-
     pbSignalIsSmall = 1;
   }
   else  // large signals
   {
     if (pbSignalIsSmall)  // leaving the small-signal range
-    {
-      pbTestMode = 0;  // discard testing
-    }
-
+      pbTestMode = 0;     // discard testing
     pbSignalIsSmall = 0;
   }
 
   if (pbTestMode)
   {
     if (pbTestTime < BENDER_TEST_PERIOD)
-    {
       pbTestTime++;
-    }
     else  // test time finished
     {
       pbTestMode = 0;
@@ -167,62 +160,46 @@ static void ProcessLegacyBender(int32_t value)
   {
     pbRamp -= BENDER_RAMP_INC;  // determines the size of the ramp
 
-    if (pbRamp <= 0)  // ramp has reached zero
-    {
-      pbRampMode = 0;  // and is stopped
-    }
-    else  // the steps before the ramp reaches zero
-    {
+    if (pbRamp <= 0)               // ramp has reached zero
+      pbRampMode = 0;              // and is stopped
+    else                           // the steps before the ramp reaches zero
       pitchbendZero += pbRampInc;  // shifting the zero line = negative feedback
-    }
   }
 
   if (value != lastRawPitchbend)
   {
     if (value > BENDER_DEADRANGE)  // is in the positive work range
     {
-      valueToSend = value - BENDER_DEADRANGE;  // absolute amount
-
+      valueToSend = value - BENDER_DEADRANGE;     // absolute amount
       valueToSend = valueToSend * BENDER_FACTOR;  // saturation factor
 
       if (valueToSend > 2047 * 4096)
-      {
         valueToSend = BIPOLAR_CENTER;  // clipping
-      }
       else
       {
-        valueToSend = valueToSend >> 12;  // 0 ... 2047 (11 Bit)
-
+        valueToSend    = valueToSend >> 12;                                                          // 0 ... 2047 (11 Bit)
         uint32_t fract = valueToSend & 0x3F;                                                         // lower 6 bits used for interpolation
         uint32_t index = valueToSend >> 6;                                                           // upper 5 bits (0...31) used as index in the table
         valueToSend    = (benderTable[index] * (64 - fract) + benderTable[index + 1] * fract) >> 6;  // (0...8000) * 64 / 64
       }
 
       valueToSend = BIPOLAR_CENTER + valueToSend;  // 8001 ... 16000
-
       SendBenderIfChanged(valueToSend);
     }
     else if (value < -BENDER_DEADRANGE)  // is in the negative work range
     {
-      valueToSend = -BENDER_DEADRANGE - value;  // absolute amount
-
+      valueToSend = -BENDER_DEADRANGE - value;    // absolute amount
       valueToSend = valueToSend * BENDER_FACTOR;  // saturation factor
-
       if (valueToSend > 2047 * 4096)
-      {
         valueToSend = BIPOLAR_CENTER;  // clipping
-      }
       else
       {
-        valueToSend = valueToSend >> 12;  // 0 ... 2047 (11 Bit)
-
+        valueToSend    = valueToSend >> 12;                                                          // 0 ... 2047 (11 Bit)
         uint32_t fract = valueToSend & 0x3F;                                                         // lower 6 bits used for interpolation
         uint32_t index = valueToSend >> 6;                                                           // upper 5 bits (0...31) used as index in the table
         valueToSend    = (benderTable[index] * (64 - fract) + benderTable[index + 1] * fract) >> 6;  // (0...8000) * 64 / 64
       }
-
       valueToSend = BIPOLAR_CENTER - valueToSend;  // 7999 ... 0
-
       SendBenderIfChanged(valueToSend);
     }
     else  // is in the dead range
@@ -230,7 +207,6 @@ static void ProcessLegacyBender(int32_t value)
       if ((lastRawPitchbend > BENDER_DEADRANGE) || (lastRawPitchbend < -BENDER_DEADRANGE))  // was outside of the dead range before
         SendBenderIfChanged(BIPOLAR_CENTER);
     }
-
     lastRawPitchbend = value;
   }
 }
@@ -240,30 +216,30 @@ static void ProcessLegacyBender(int32_t value)
 // -----------------------------------------------------------------------------------------------------------
 //
 
-#define ADC_RANGE  (4096)
-#define ADC_CENTER (2048)
+#define ADC_RANGE  (4096u)
+#define ADC_CENTER (2048u)
 
 // ---------------- begin Value Buffer defs
-#define VALBUF_SIZE (32)  // 2^N !!! Floating Average is used based on this size
+#define VALBUF_SIZE (32ul)  // 2^N !!! Floating Average is used based on this size
 #define VALBUF_MOD  (VALBUF_SIZE - 1)
 typedef struct
 {
   uint16_t values[VALBUF_SIZE];
   uint16_t index;
   uint16_t invalidCntr;
-  int      sum;
+  uint32_t sum;
 } ValueBuffer_T;
 
-static void inline clearValueBuffer(ValueBuffer_T *const this, const uint16_t invalidCount)
+static void inline clearValueBuffer(ValueBuffer_T *const this, uint16_t const invalidCount, uint16_t const clearValue)
 {
   this->index = 0;
-  this->sum   = 0;
   if (invalidCount < VALBUF_SIZE)
     this->invalidCntr = VALBUF_SIZE;
   else
     this->invalidCntr = invalidCount;
   for (int i = 0; i < VALBUF_SIZE; i++)
-    this->values[i] = 0;
+    this->values[i] = clearValue;
+  this->sum = (uint32_t) clearValue * VALBUF_SIZE;
 }
 
 static inline uint16_t addInValueBuffer(ValueBuffer_T *const this, const uint16_t value)
@@ -306,29 +282,43 @@ static ValueBuffer_T windowBuffer;
 
 // ---------------- end Value Buffer defs
 
-#define DEADZONE              (10)    // when settled ignore adcValue changes (wrt center) below this -- kills noise
-#define EXTREMA_BACKOFF       (30)    // back-off for saturated adc values at end stops for safe 0% or 100% output
-#define NOMINAL_LEFT_ENDSTOP  (33)    // default left end stop safe adc value (saturated adc)
-#define NOMINAL_RIGHT_ENDSTOP (4000)  // default right end stop safe adc value (saturated adc)
-#define ENDSTOP_RANGE         (512)   // range from either nominal end (saturated) where an end stop may be expected
-#define AUTOZERO_RANGE        (512)   // 2048 +- this adc value is the range where we will do autozeroing (512 = +-25%), to catch even heavily off-centered benders
+#define DEADZONE              (10u)    // when settled ignore adcValue changes (wrt center) below this -- kills noise
+#define EXTREMA_BACKOFF       (30u)    // back-off for saturated adc values at end stops for safe 0% or 100% output
+#define NOMINAL_LEFT_ENDSTOP  (33u)    // default left end stop safe adc value (saturated adc)
+#define NOMINAL_RIGHT_ENDSTOP (4000u)  // default right end stop safe adc value (saturated adc)
+#define ENDSTOP_RANGE         (512u)   // range from either nominal end (saturated) where an end stop may be expected
+#define AUTOZERO_RANGE        (512u)   // 2048 +- this adc value is the range where we will do autozeroing (512 = +-25%), to catch even heavily off-centered benders
+#define SETTLE_TIME_THRESHOLD (1000u)  // time in milliseconds values must be stable before transition from unsettled to settled
+
+#define SETTLE_TIME_THRESHOLD_TS (SETTLE_TIME_THRESHOLD * 10ul / 125ul)
+
+#define RMS_THRES_HIGH   (700)
+#define RMS_THRES_LOW    (400)
+#define DELTA_THRES_HIGH (10)
+#define DELTA_THRES_LOW  (5)
 
 // --- Bender: ADC value to Output conversion (this is the general characteristic curve)
-static int16_t             BNDR_adcToTcdX[4]    = { NOMINAL_LEFT_ENDSTOP, ADC_CENTER - DEADZONE, ADC_CENTER + DEADZONE, NOMINAL_RIGHT_ENDSTOP };
-static int16_t             BNDR_adcToTcdY[4]    = { 0, 8000, 8000, 16000 };  // TCD output
-static LIB_interpol_data_T BNDR_adcToTcd        = { 4, BNDR_adcToTcdX, BNDR_adcToTcdY };
-static int16_t *const      pLeftEndStop         = &BNDR_adcToTcdX[0];
-static int16_t *const      pLowerDeadzone       = &BNDR_adcToTcdX[1];
-static int16_t *const      pUpperDeadzone       = &BNDR_adcToTcdX[2];
-static int16_t *const      pRightEndStop        = &BNDR_adcToTcdX[3];
-static int                 settled              = 0;
-static int                 settledCandidateCntr = 0;
+static int16_t             BNDR_adcToTcdX[4] = { NOMINAL_LEFT_ENDSTOP, ADC_CENTER - DEADZONE, ADC_CENTER + DEADZONE, NOMINAL_RIGHT_ENDSTOP };
+static int16_t             BNDR_adcToTcdY[4] = { 0, 8000, 8000, 16000 };  // TCD output
+static LIB_interpol_data_T BNDR_adcToTcd     = { 4, BNDR_adcToTcdX, BNDR_adcToTcdY };
+static int16_t *const      pLeftEndStop      = &BNDR_adcToTcdX[0];
+static int16_t *const      pLowerDeadzone    = &BNDR_adcToTcdX[1];
+static int16_t *const      pUpperDeadzone    = &BNDR_adcToTcdX[2];
+static int16_t *const      pRightEndStop     = &BNDR_adcToTcdX[3];
+static uint16_t            settledCandidateCntr;
+static uint16_t            currentCenter;
+//flags
+static int8_t goingSettled;
+static int8_t settled;
 
 static void ProcessBender(int16_t adcValue)
 {
   addInValueBuffer(&windowBuffer, adcValue);
   if (!isValueBufferFilled(&windowBuffer))
+  {  // provide initial center target
+    currentCenter = windowBuffer.sum / VALBUF_SIZE;
     return;
+  }
 
   uint16_t min;
   uint16_t max;
@@ -339,23 +329,28 @@ static void ProcessBender(int16_t adcValue)
 
   // check for settled value
   if (settled)
-    settled = (rmsSq < 2000) || ((max - min) < 80);  // when settled wait for a single larger change to go unsettled
+  {  // when settled wait for a single larger change to go unsettled
+    settled = (rmsSq < RMS_THRES_HIGH) && ((max - min) < DELTA_THRES_HIGH);
+    if (!settled)
+      settledCandidateCntr = 0;
+  }
   else
-  {                                          // when not settled wait for stable and really small changes to go settled again
-    if ((rmsSq < 400) && ((max - min) < 4))  // check fine value stability
+  {  // when not settled wait for stable and really small changes to go settled again
+    if ((rmsSq < RMS_THRES_LOW) && ((max - min) < DELTA_THRES_LOW))
     {
-      if (settledCandidateCntr < 10)  // continuously stable ?
+      if (settledCandidateCntr < SETTLE_TIME_THRESHOLD_TS)  // continuously stable ?
         settledCandidateCntr++;
       else
         settled = 1;
     }
   }
 
-  int zeroing = 0;
+  int tryZeroing = 0;
 
   // process adc value from right (high values) to left (low values)
   if (adcValue > (NOMINAL_RIGHT_ENDSTOP - ENDSTOP_RANGE))
   {  // close to typical right end stop
+    goingSettled = 0;
     if (settled && ((*pRightEndStop) > avg - EXTREMA_BACKOFF))
     {  // new end stop is closer to center
       (*pRightEndStop)    = avg - EXTREMA_BACKOFF;
@@ -364,18 +359,37 @@ static void ProcessBender(int16_t adcValue)
   }
   else if (adcValue > (ADC_CENTER + AUTOZERO_RANGE))
   {  // above auto-zero range
+    goingSettled = 0;
     status.offZero |= settled;
   }
   else if (adcValue > (ADC_CENTER - AUTOZERO_RANGE))
   {  // inside auto-zero catch range
-    zeroing = settled;
+    switch (goingSettled)
+    {
+      case 0:  // wait until settled
+        if (!settled)
+          break;
+        // determine and save new center target
+        currentCenter = avg;
+        goingSettled  = 1;
+      case 1:  // wait until unsettled
+        if (settled)
+        {
+          tryZeroing = 1;
+          break;
+        }
+        goingSettled = 0;
+        break;
+    }
   }
   else if (adcValue > (NOMINAL_LEFT_ENDSTOP + ENDSTOP_RANGE))
   {  // below auto-zero range
+    goingSettled = 0;
     status.offZero |= settled;
   }
   else
   {  // close to typical left end stop
+    goingSettled = 0;
     if (settled && ((*pLeftEndStop) < avg + EXTREMA_BACKOFF))
     {  // new end stop is closer to center
       (*pLeftEndStop)    = avg + EXTREMA_BACKOFF;
@@ -383,26 +397,33 @@ static void ProcessBender(int16_t adcValue)
     }
   }
 
-  status.zeroed = zeroing;
-  status.everZeroed |= zeroing;
+  status.zeroed = tryZeroing;
+  status.everZeroed |= tryZeroing;
 
-  if (zeroing)
-  {  // move dead zones to new zero and expand them to full span
-    if (*pLowerDeadzone < avg - DEADZONE)
+  if (tryZeroing)
+  {
+    currentCenter = avg;
+
+    // move dead zones to new zero and expand them to full span
+    if (*pLowerDeadzone + DEADZONE < currentCenter)
       (*pLowerDeadzone)++;
-    if (*pLowerDeadzone > avg - DEADZONE)
+    else if (*pLowerDeadzone + DEADZONE > currentCenter)
       (*pLowerDeadzone)--;
-    if (*pUpperDeadzone < avg + DEADZONE)
+    if (*pUpperDeadzone < currentCenter + DEADZONE)
       (*pUpperDeadzone)++;
-    if (*pUpperDeadzone > avg + DEADZONE)
+    else if (*pUpperDeadzone > currentCenter + DEADZONE)
       (*pUpperDeadzone)--;
-    status.zeroValue = avg >> 2;
+    status.zeroValue = currentCenter >> 2;
   }
   else
   {  // shrink deadzones
-    if (*pLowerDeadzone < *pUpperDeadzone)
+    if (*pLowerDeadzone < currentCenter)
       (*pLowerDeadzone)++;
-    if (*pLowerDeadzone < *pUpperDeadzone)
+    else if (*pLowerDeadzone > currentCenter)
+      (*pLowerDeadzone)--;
+    if (*pUpperDeadzone < currentCenter)
+      (*pUpperDeadzone)++;
+    else if (*pUpperDeadzone > currentCenter)
       (*pUpperDeadzone)--;
   }
 
@@ -454,7 +475,9 @@ void BNDR_Reset()
   settled              = 0;
   settledCandidateCntr = 0;
   BNDR_lastBender      = BIPOLAR_CENTER;
-  clearValueBuffer(&windowBuffer, 2 * VALBUF_SIZE);
+  goingSettled         = 0;
+
+  clearValueBuffer(&windowBuffer, 2 * VALBUF_SIZE, ADC_CENTER);
   ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_PITCHBEND, BIPOLAR_CENTER);
   ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_PITCHBEND, BIPOLAR_CENTER);
 }
