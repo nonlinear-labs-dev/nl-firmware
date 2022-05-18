@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2022-05-18, 13:33
+    @date       2022-05-18, 14:52
     @version    1.7B-9
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -2287,10 +2287,10 @@ namespace C15
       0.0f,
       { Smoothers::Global_Fast::Master_Pan, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
       { 100, 1000, 100, 1000, "", "Master", "Master", "@ST:Pan Pan", "@ST:Pan Pan",
-        "Panning of the dual effect chain (not available in Single Sounds). The stereo signals of both “FX” Parts can "
-        "be panned against each other:\n-100%: Part I is panned completely to the right, Part II is panned completely "
-        "to the left.\n0%: no additional panning, both Parts equally feed the resulting stereo signal.\n100%: Part I "
-        "is panned completely to the left, Part II is panned completely to the right." } },
+        "Panning of the dual effect chain (not available in Single Sounds). The stereo signals of both  \"FX \" Parts "
+        "can be panned against each other:\n-100%: Part I is panned completely to the right, Part II is panned "
+        "completely to the left.\n0%: no additional panning, both Parts equally feed the resulting stereo "
+        "signal.\n100%: Part I is panned completely to the left, Part II is panned completely to the right." } },
   };
 
 }  // namespace C15
