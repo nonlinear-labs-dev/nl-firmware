@@ -6,12 +6,12 @@
 #include <optional>
 
 class Parameter;
+class EditBuffer;
 
-class ParameterDB
+class ParameterDB : public sigc::trackable
 {
  public:
-  static ParameterDB& get();
-
+  explicit ParameterDB(EditBuffer& eb);
   virtual ~ParameterDB();
 
   [[nodiscard]] Glib::ustring getLongName(const ParameterId& id) const;
@@ -27,6 +27,7 @@ class ParameterDB
   }
 
  private:
-  [[nodiscard]] Glib::ustring replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const;
-  ParameterDB();
+  [[nodiscard]] Glib::ustring replaceInDynamicLabels(const Glib::ustring& name, const ParameterId& parameterID, SoundType type) const;
+
+  EditBuffer& m_editBuffer;
 };
