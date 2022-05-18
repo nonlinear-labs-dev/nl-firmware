@@ -166,6 +166,7 @@ class Parameter : public UpdateDocumentContributor,
 
   void undoableSetDefaultValue(UNDO::Transaction *transaction, tControlPositionValue value);
   nlohmann::json serialize() const override;
+  void onSoundTypeChanged(SoundType t);
 
  private:
   mutable Signal<void, const Parameter *> m_signalParamChanged;
