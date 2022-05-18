@@ -174,6 +174,7 @@ class Parameter : public UpdateDocumentContributor,
   ParameterId m_id;
   QuantizedValue m_value;
   sigc::connection m_valueChangedConnection;
+  sigc::connection m_onSoundTypeChangedConnection;
   VoiceGroup m_voiceGroup;
 
   std::optional<tControlPositionValue> m_cpBeforeDefault = std::nullopt;

@@ -43,11 +43,14 @@ Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter
 {
   if(auto eb = getParentEditBuffer())
   {
-    eb->onSoundTypeChanged(sigc::mem_fun(this, &Parameter::onSoundTypeChanged));
+    m_onSoundTypeChangedConnection = eb->onSoundTypeChanged(sigc::mem_fun(this, &Parameter::onSoundTypeChanged));
   }
 }
 
-Parameter::~Parameter() = default;
+Parameter::~Parameter()
+{
+  m_onSoundTypeChangedConnection.disconnect();
+}
 
 nlohmann::json Parameter::serialize() const
 {
