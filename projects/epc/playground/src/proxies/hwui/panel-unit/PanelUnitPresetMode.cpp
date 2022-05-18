@@ -91,6 +91,7 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
                                             std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto db = editBuffer->getParameterDB();
   auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   for(const auto i : parameters)
@@ -125,7 +126,7 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
           break;
         }
       }
-      else if(signalFlowIndicator != ParameterDB::getInvalidSignalPathIndication())
+      else if(signalFlowIndicator != db.getInvalidSignalPathIndication())
       {
         if(parameter->getControlPositionValue() != signalFlowIndicator)
         {
