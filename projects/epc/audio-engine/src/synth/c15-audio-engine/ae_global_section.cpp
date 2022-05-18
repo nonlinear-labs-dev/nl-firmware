@@ -86,9 +86,8 @@ void GlobalSection::render_audio(const float _leftI, const float _rightI, const 
   m_smoothers.render_audio();
   postProcess_audio();
   // #3003: FX/Part Pan
-  constexpr float panning = 0.f;  // todo: m_smoothers/_signals.get(...)
   auto panned = StereoPanning::fromDualStereoSignal(_leftI, _rightI, _leftII, _rightII);
-  panned *= StereoPanning::fromPanning(panning);
+  panned *= StereoPanning::fromPanning(m_smoothers.get(C15::Smoothers::Global_Fast::Master_Pan));
   render_stereo_audio(StereoPanning::getChannel<StereoPanning::Left>(panned),
                       StereoPanning::getChannel<StereoPanning::Right>(panned));
 }

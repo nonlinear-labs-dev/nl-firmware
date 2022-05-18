@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2022-05-17, 17:26
+    @date       2022-05-18, 13:33
     @version    1.7B-9
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
@@ -186,6 +186,7 @@ namespace C15
     {
       Master_Volume,
       Master_Tune,
+      Master_Pan,
       Scale_Offset_0,
       Scale_Offset_1,
       Scale_Offset_2,
@@ -439,6 +440,7 @@ namespace C15
     enum class Global_Fast
     {
       Master_Volume,
+      Master_Pan,
       _LENGTH_
     };
 
@@ -1188,7 +1190,8 @@ namespace C15
       Bender_Send = 402,
       Aftertouch_Send = 403,
       Ribbon_1_Send = 404,
-      Ribbon_2_Send = 405
+      Ribbon_2_Send = 405,
+      Master_Pan = 406
     };
 
   }  // namespace C15::PID
