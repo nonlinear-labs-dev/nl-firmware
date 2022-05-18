@@ -187,13 +187,13 @@ void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Param
 {
   const auto paramID = selectedParameter->getID().getNumber();
 
-  if(paramID == C15::PID::Master_Volume || paramID == C15::PID::Master_Tune)
+  if(paramID == C15::PID::Master_Volume || paramID == C15::PID::Master_Tune || paramID == C15::PID::Master_Pan)
   {
-    setupChildControls(selectedParameter, { C15::PID::Master_Volume, C15::PID::Master_Tune, C15::PID::Scale_Base_Key });
+    setupChildControls(selectedParameter, { C15::PID::Master_Volume, C15::PID::Master_Tune, C15::PID::Master_Pan, C15::PID::Scale_Base_Key });
   }
   else if(paramID == C15::PID::Scale_Base_Key || ScaleGroup::isScaleParameter(selectedParameter))
   {
-    setupChildControls(selectedParameter, {C15::PID::Master_Tune, C15::PID::Scale_Base_Key, C15::PID::Scale_Offset_0, C15::PID::Scale_Offset_1, C15::PID::Scale_Offset_2,
+    setupChildControls(selectedParameter, {C15::PID::Master_Pan, C15::PID::Scale_Base_Key, C15::PID::Scale_Offset_0, C15::PID::Scale_Offset_1, C15::PID::Scale_Offset_2,
                                             C15::PID::Scale_Offset_3, C15::PID::Scale_Offset_4, C15::PID::Scale_Offset_5, C15::PID::Scale_Offset_6,
                                             C15::PID::Scale_Offset_7, C15::PID::Scale_Offset_8, C15::PID::Scale_Offset_9, C15::PID::Scale_Offset_10,
                                             C15::PID::Scale_Offset_11, C15::PID::Master_Volume});
