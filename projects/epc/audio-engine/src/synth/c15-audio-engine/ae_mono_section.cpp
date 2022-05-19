@@ -94,6 +94,9 @@ void MonoSection::render_audio(const float _left, const float _right, const floa
   // capture z samples
   m_z_self->m_fx_dry = m_reverb.m_out_dry;
   m_z_self->m_fx_wet = m_reverb.m_out_wet;
+  constexpr float crossFB = 0.0f;  // todo #2996: Voice_Grp:FX (Parameter, Smoother)
+  m_z_self->m_fx_l = m_reverb.m_out_L * crossFB;
+  m_z_self->m_fx_r = m_reverb.m_out_R * crossFB;
   // output values
   m_out_l = m_reverb.m_out_L * _vol;
   m_out_r = m_reverb.m_out_R * _vol;

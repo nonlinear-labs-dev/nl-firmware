@@ -1030,12 +1030,13 @@ void dsp_host_dual::render()
   // - audio dsp poly - first stage - both layers (up to Output Mixer)
   m_poly[0].render_audio(mute);
   m_poly[1].render_audio(mute);
-  // - audio dsp mono - each layer with separate sends - left, right)
-
-  m_mono[0].render_audio(m_poly[0].m_send_self_l + m_poly[1].m_send_other_l,
-                         m_poly[0].m_send_self_r + m_poly[1].m_send_other_r, m_poly[0].getVoiceGroupVolume());
-  m_mono[1].render_audio(m_poly[0].m_send_other_l + m_poly[1].m_send_self_l,
-                         m_poly[0].m_send_other_r + m_poly[1].m_send_self_r, m_poly[1].getVoiceGroupVolume());
+  // - audio dsp mono - each layer with separate sends - left, right), #2996: fx cross-feedback
+  const float left[2] = { m_poly[0].m_send_self_l + m_poly[1].m_send_other_l + m_z_layers[1].m_fx_l,
+                          m_poly[0].m_send_other_l + m_poly[1].m_send_self_l + m_z_layers[0].m_fx_l };
+  const float right[2] = { m_poly[0].m_send_self_r + m_poly[1].m_send_other_r + m_z_layers[1].m_fx_r,
+                           m_poly[0].m_send_other_r + m_poly[1].m_send_self_r + m_z_layers[0].m_fx_r };
+  m_mono[0].render_audio(left[0], right[0], m_poly[0].getVoiceGroupVolume());
+  m_mono[1].render_audio(left[1], right[1], m_poly[1].getVoiceGroupVolume());
   // audio dsp poly - second stage - both layers (FB Mixer)
   m_poly[0].render_feedback(m_z_layers[1]);  // pass other layer's signals as arg
   m_poly[1].render_feedback(m_z_layers[0]);  // pass other layer's signals as arg
