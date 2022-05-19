@@ -1110,13 +1110,20 @@ C15::Parameters::Macro_Controls dsp_host_dual::getMacro(const MacroControls _mc)
   static_assert(static_cast<int>(MacroControls::MC4) == static_cast<int>(C15::Parameters::Macro_Controls::MC_D));
   static_assert(static_cast<int>(MacroControls::MC5) == static_cast<int>(C15::Parameters::Macro_Controls::MC_E));
   static_assert(static_cast<int>(MacroControls::MC6) == static_cast<int>(C15::Parameters::Macro_Controls::MC_F));
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::NONE) == C15::Parameters::Macro_Controls::None);
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC1) == C15::Parameters::Macro_Controls::MC_A);
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC2) == C15::Parameters::Macro_Controls::MC_B);
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC3) == C15::Parameters::Macro_Controls::MC_C);
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC4) == C15::Parameters::Macro_Controls::MC_D);
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC5) == C15::Parameters::Macro_Controls::MC_E);
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC6) == C15::Parameters::Macro_Controls::MC_F);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::NONE)
+                == C15::Parameters::Macro_Controls::None);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC1)
+                == C15::Parameters::Macro_Controls::MC_A);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC2)
+                == C15::Parameters::Macro_Controls::MC_B);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC3)
+                == C15::Parameters::Macro_Controls::MC_C);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC4)
+                == C15::Parameters::Macro_Controls::MC_D);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC5)
+                == C15::Parameters::Macro_Controls::MC_E);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC6)
+                == C15::Parameters::Macro_Controls::MC_F);
 
   return static_cast<C15::Parameters::Macro_Controls>(_mc);
 }
@@ -1789,10 +1796,11 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
   // global updates: parameters
   if(LOG_RECALL)
   {
-    nltools::Log::info("recall: global params:");
+    nltools::Log::info("recall: global params (modulateables/unmodulateables):");
   }
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
+  globalParRcl(msg->master.pan);
   for(uint32_t i = 0; i < msg->scale.size(); i++)
   {
     globalParRcl(msg->scale[i]);
@@ -1945,14 +1953,11 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
   // global updates: parameters
   if(LOG_RECALL)
   {
-    nltools::Log::info("recall: global params (modulateables):");
+    nltools::Log::info("recall: global params (modulateables/unmodulateables):");
   }
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: global params (unmodulateables):");
-  }
+  globalParRcl(msg->master.pan);
   for(auto i : msg->scale)
   {
     globalParRcl(i);
@@ -2110,14 +2115,11 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
   // global updates: parameters
   if(LOG_RECALL)
   {
-    nltools::Log::info("recall: global params (modulateables):");
+    nltools::Log::info("recall: global params (modulateables/unmodulateables):");
   }
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: global params (unmodulateables):");
-  }
+  globalParRcl(msg->master.pan);
   for(auto i : msg->scale)
   {
     globalParRcl(i);
