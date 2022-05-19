@@ -60,7 +60,6 @@ namespace nltools
         BackgroundThreadWaiter m_connectionEstablishedWaiter;
         std::function<void()> m_onConnectionEstablished;
         sigc::connection m_reconnetConnection;
-        std::atomic<uint> m_connectsInFlight { 0 };
         std::thread m_contextThread;
         bool m_flushing = false;
       };

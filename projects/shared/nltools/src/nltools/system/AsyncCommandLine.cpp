@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include "nltools/system/AsyncCommandLine.h"
 
-AsyncCommandLine::AsyncCommandLine(const std::vector<std::string>& command,
+AsyncCommandLine::AsyncCommandLine(Glib::RefPtr<Glib::MainContext> ctx, const std::vector<std::string>& command,
                                    std::function<void(const std::string&)> onSuccess,
                                    std::function<void(const std::string&)> onError)
     : m_onSuccess { std::move(onSuccess) }
@@ -24,7 +24,7 @@ AsyncCommandLine::AsyncCommandLine(const std::vector<std::string>& command,
   m_isRunning = true;
 
   m_signalWatchHandler
-      = Glib::signal_child_watch().connect(sigc::mem_fun(*this, &AsyncCommandLine::watchHandler), m_childPid);
+      = ctx->signal_child_watch().connect(sigc::mem_fun(*this, &AsyncCommandLine::watchHandler), m_childPid);
 }
 
 AsyncCommandLine::~AsyncCommandLine()

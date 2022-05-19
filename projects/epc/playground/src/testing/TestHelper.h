@@ -42,18 +42,12 @@ namespace TestHelper
   class MainContextFixture
   {
    protected:
-    GMainContext* m_context;
+    Glib::RefPtr<Glib::MainContext> m_context;
 
    public:
     MainContextFixture()
-        : m_context(g_main_context_new())
+        : m_context(Glib::MainContext::create())
     {
-    }
-
-    ~MainContextFixture()
-    {
-      g_main_context_release(m_context);
-      m_context = nullptr;
     }
   };
 

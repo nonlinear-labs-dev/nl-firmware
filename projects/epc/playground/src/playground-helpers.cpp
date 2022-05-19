@@ -88,7 +88,7 @@ namespace Environment
       nltools::Log::error("You could be missing some frames from your backtrace. Try to increase your maxFrames");
     }
 
-    auto symbols = backtrace_symbols(stack.data(), numFrames); //symbols is mallocced here
+    auto symbols = backtrace_symbols(stack.data(), numFrames);  //symbols is mallocced here
 
     for(auto i = 0; i < numFrames; i++)
     {
@@ -96,22 +96,6 @@ namespace Environment
     }
 
     free(symbols);
-  }
-
-  int count_open_fds(void) {
-    DIR *dp = opendir("/proc/self/fd");
-    struct dirent *de;
-    int count = -3; // '.', '..', dp
-
-    if (dp == NULL)
-      return -1;
-
-    while ((de = readdir(dp)) != NULL)
-      count++;
-
-    (void)closedir(dp);
-
-    return count;
   }
 
   void setupLocale()

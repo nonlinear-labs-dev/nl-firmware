@@ -81,7 +81,7 @@ void EpcWifi::spawn(const std::vector<std::string>& command, std::function<void(
 {
   if constexpr(!isDevelopmentPC)
   {
-    SpawnAsyncCommandLine::spawn(command, onSuccess, [this](const std::string& e) {
+    SpawnAsyncCommandLine::spawn(Application::get().getMainContext(), command, onSuccess, [this](const std::string& e) {
       nltools::Log::error(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
       m_busy = false;
     });

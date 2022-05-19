@@ -40,12 +40,6 @@ namespace nltools
           std::this_thread::sleep_for(10ms);
         }
 
-        while(m_connectsInFlight)
-        {
-          using namespace std::chrono_literals;
-          std::this_thread::sleep_for(10ms);
-        }
-
         if(m_messageLoop && m_messageLoop->is_running())
           m_messageLoop->quit();
 
@@ -138,7 +132,6 @@ namespace nltools
 
       void WebSocketOutChannel::connect()
       {
-        m_connectsInFlight++;
         m_message.reset(soup_message_new("GET", m_uri.c_str()));
         auto cb = reinterpret_cast<GAsyncReadyCallback>(&WebSocketOutChannel::onWebSocketConnected);
         soup_session_websocket_connect_async(m_soupSession.get(), m_message.get(), nullptr, nullptr, m_cancel->gobj(),
@@ -149,8 +142,6 @@ namespace nltools
                                                      WebSocketOutChannel *pThis)
       {
         GError *error = nullptr;
-
-        pThis->m_connectsInFlight--;
 
         if(SoupWebsocketConnection *connection = soup_session_websocket_connect_finish(session, res, &error))
           pThis->connectWebSocket(connection);

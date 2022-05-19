@@ -25,6 +25,7 @@ FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation* parent)
 bool FreeDiscSpaceInformation::refresh()
 {
   SpawnAsyncCommandLine::spawn(
+      Application::get().getMainContext(),
       { "sh", "-c", "\"df", "-h", "|", "grep", "'persistent'", "|", "awk", "'{print $4}'\"" },
       [&](const std::string& success) {
         if(success.empty())

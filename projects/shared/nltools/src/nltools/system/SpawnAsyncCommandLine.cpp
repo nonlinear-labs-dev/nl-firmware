@@ -4,11 +4,11 @@
 
 std::list<std::unique_ptr<AsyncCommandLine>> SpawnAsyncCommandLine::m_commands;
 
-size_t SpawnAsyncCommandLine::spawn(const std::vector<std::string>& command,
+size_t SpawnAsyncCommandLine::spawn(Glib::RefPtr<Glib::MainContext> ctx, const std::vector<std::string>& command,
                                     const std::function<void(const std::string&)>& success,
                                     const std::function<void(const std::string&)>& error)
 {
-  m_commands.emplace_back(std::make_unique<AsyncCommandLine>(command, success, error));
+  m_commands.emplace_back(std::make_unique<AsyncCommandLine>(ctx, command, success, error));
   return removeDone();
 }
 

@@ -46,7 +46,7 @@ void UsedRAM::scheduleReload()
 {
   m_scheduleThrottler.doTask([&] {
     SpawnAsyncCommandLine::spawn(
-        std::vector<std::string> { "free", "--mega" },
+        Application::get().getMainContext(), std::vector<std::string> { "free", "--mega" },
         [](const std::string& s) {
           if(Application::exists())
           {
