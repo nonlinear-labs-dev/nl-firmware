@@ -37,7 +37,7 @@ class MonoSection
   void start_audio(const uint32_t _id, const float _dx, const float _dest);
   void start_fast(const uint32_t _id, const float _dx, const float _dest);
   void start_slow(const uint32_t _id, const float _dx, const float _dest);
-  void render_audio(const float _left, const float _right, const float _vol);
+  void render_audio(const float _left, const float _right, const float _vol, const float _to_other);
   void render_fast();
   void render_slow();
   void keyDown(PolyKeyEvent *_event);

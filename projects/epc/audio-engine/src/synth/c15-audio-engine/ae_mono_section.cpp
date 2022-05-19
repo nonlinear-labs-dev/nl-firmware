@@ -81,7 +81,7 @@ void MonoSection::start_slow(const uint32_t _id, const float _dx, const float _d
   m_smoothers.start_slow(_id, _dx, _dest);
 }
 
-void MonoSection::render_audio(const float _left, const float _right, const float _vol)
+void MonoSection::render_audio(const float _left, const float _right, const float _vol, const float _to_other)
 {
   m_smoothers.render_audio();
   postProcess_audio();
@@ -94,9 +94,8 @@ void MonoSection::render_audio(const float _left, const float _right, const floa
   // capture z samples
   m_z_self->m_fx_dry = m_reverb.m_out_dry;
   m_z_self->m_fx_wet = m_reverb.m_out_wet;
-  constexpr float crossFB = 0.0f;  // todo #2996: Voice_Grp:FX (Parameter, Smoother)
-  m_z_self->m_fx_l = m_reverb.m_out_L * crossFB;
-  m_z_self->m_fx_r = m_reverb.m_out_R * crossFB;
+  m_z_self->m_fx_to_other_l = m_reverb.m_out_L * _to_other;
+  m_z_self->m_fx_to_other_r = m_reverb.m_out_R * _to_other;
   // output values
   m_out_l = m_reverb.m_out_L * _vol;
   m_out_r = m_reverb.m_out_R * _vol;
