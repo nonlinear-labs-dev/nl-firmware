@@ -38,15 +38,33 @@ namespace C15
           return None;
         }
       };
-      class SoundTypeReplacer
+      class GlobalSoundTypeReplacer
+      {
+        static constexpr size_t s_size = 3;  // probably temporary: single, split, layer
+        using Replacement = Text[s_size];
+        const Replacement m_replacement;
+
+       public:
+        inline constexpr GlobalSoundTypeReplacer(const Text &_single, const Text &_split, const Text &_layer)
+            : m_replacement{ _single, _split, _layer }
+        {
+        }
+        inline const Text &getReplacement(const SoundType &_st) const
+        {
+          if((size_t) _st < s_size)
+            return m_replacement[(size_t) _st];
+          return None;
+        }
+      };
+      class LocalSoundTypeReplacer
       {
         static constexpr size_t s_size = 3;  // probably temporary: single, split, layer
         using Replacement = VoiceGroupReplacer[s_size];
         const Replacement m_replacement;
 
        public:
-        inline constexpr SoundTypeReplacer(const VoiceGroupReplacer &_single, const VoiceGroupReplacer &_split,
-                                           const VoiceGroupReplacer &_layer)
+        inline constexpr LocalSoundTypeReplacer(const VoiceGroupReplacer &_single, const VoiceGroupReplacer &_split,
+                                                const VoiceGroupReplacer &_layer)
             : m_replacement{ _single, _split, _layer }
         {
         }
@@ -70,18 +88,29 @@ namespace C15
     {
      public:
       static constexpr bool s_isGlobal = true;
-      inline const Text &getReplacement() const
+      inline const Text &getReplacement(const SoundType &_st) const
       {
-        return m_replacement;
+        return m_replacement.getReplacement(_st);
       }
-      inline constexpr GlobalReplacer(const Text &_qualifier, const Text &_replacement)
+      inline constexpr GlobalReplacer(const Text &_qualifier, const Text &_all)
           : Replacer{ _qualifier }
-          , m_replacement{ _replacement }
+          , m_replacement{ _all, _all, _all }
+      {
+      }
+      inline constexpr GlobalReplacer(const Text &_qualifier, const Text &_single, const Text &_dual)
+          : Replacer{ _qualifier }
+          , m_replacement{ _single, _dual, _dual }
+      {
+      }
+      inline constexpr GlobalReplacer(const Text &_qualifier, const Text &_single, const Text &_split,
+                                      const Text &_layer)
+          : Replacer{ _qualifier }
+          , m_replacement{ _single, _split, _layer }
       {
       }
 
      private:
-      const Text m_replacement;
+      const GlobalSoundTypeReplacer m_replacement;
     };
 
     class LocalReplacer : public Replacer
@@ -111,7 +140,7 @@ namespace C15
       }
 
      private:
-      const SoundTypeReplacer m_replacement;
+      const LocalSoundTypeReplacer m_replacement;
     };
 
   }  // namespace C15::Placeholder

@@ -15,7 +15,7 @@
 
 namespace C15::Placeholder
 {
-  static Glib::ustring replaceGlobal(const Glib::ustring &_text, const bool &_multiple = false)
+  static Glib::ustring replaceGlobal(const Glib::ustring &_text, const SoundType &_st, const bool &_multiple = false)
   {
     Glib::ustring ret{ _text };
     std::size_t pos;
@@ -25,7 +25,7 @@ namespace C15::Placeholder
       {
         if((pos = ret.find(placeholder.m_qualifier)) == Glib::ustring::npos)
           continue;
-        ret.replace(pos, strlen(placeholder.m_qualifier), placeholder.getReplacement());
+        ret.replace(pos, strlen(placeholder.m_qualifier), placeholder.getReplacement(_st));
         if(!_multiple)
           return ret;
       }
@@ -60,17 +60,6 @@ ParameterDB::ParameterDB(EditBuffer &eb)
 
 ParameterDB::~ParameterDB() = default;
 
-std::string sanitize(const std::string &in)
-{
-  auto mod = StringTools::replaceAll(in, "Ⓐ", u8"\ue000");
-  mod = StringTools::replaceAll(mod, "Ⓑ", u8"\ue001");
-  mod = StringTools::replaceAll(mod, "Ⓒ", u8"\ue002");
-  mod = StringTools::replaceAll(mod, "Ⓓ", u8"\ue003");
-  mod = StringTools::replaceAll(mod, "Ⓔ", u8"\ue200");
-  mod = StringTools::replaceAll(mod, "Ⓕ", u8"\ue201");
-  return mod;
-}
-
 Glib::ustring ParameterDB::getLongName(const ParameterId &id) const
 {
   auto num = id.getNumber();
@@ -85,7 +74,7 @@ Glib::ustring ParameterDB::getLongName(const ParameterId &id) const
     return "MISSING!!!";
   }
 
-  return sanitize(replaceInDynamicLabels(d.m_pg.m_param_label_long, id, m_editBuffer.getType()));
+  return replaceInDynamicLabels(d.m_pg.m_param_label_long, id, m_editBuffer.getType());
 }
 
 Glib::ustring ParameterDB::getShortName(const ParameterId &id) const
@@ -156,14 +145,15 @@ tControlPositionValue ParameterDB::getSignalPathIndication(int id) const
                                                                     : getInvalidSignalPathIndication();
 }
 
-Glib::ustring ParameterDB::replaceInDynamicLabels(const Glib::ustring &name, const ParameterId &parameterID, SoundType type) const
+Glib::ustring ParameterDB::replaceInDynamicLabels(const Glib::ustring &name, const ParameterId &parameterID,
+                                                  SoundType type) const
 {
   auto paramType = C15::ParameterList[parameterID.getNumber()].m_param.m_type;
   using namespace C15::Descriptors;
   auto isGlobal = paramType != ParameterType::Local_Modulateable && paramType != ParameterType::Local_Unmodulateable;
 
   if(isGlobal)
-    return C15::Placeholder::replaceGlobal(name);
+    return C15::Placeholder::replaceGlobal(name, type);
   else
     return C15::Placeholder::replaceLocal(name, type, parameterID.getVoiceGroup());
 }
