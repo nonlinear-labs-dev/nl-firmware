@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2022-05-18, 14:52
+    @date       2022-05-19, 16:05
     @version    1.7B-9
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -2291,6 +2291,16 @@ namespace C15
         "can be panned against each other:\n-100%: Part I is panned completely to the right, Part II is panned "
         "completely to the left.\n0%: no additional panning, both Parts equally feed the resulting stereo "
         "signal.\n100%: Part I is panned completely to the left, Part II is panned completely to the right." } },
+    { None },
+    { Parameters::Global_Modulateables::Master_Serial_FX,
+      PID::Master_Serial_FX,
+      0.0f,
+      { Smoothers::Global_Fast::Master_Serial_FX, None, Properties::SmootherScale::Linear, 1.0f, 0.0f, true },
+      { 100, 1000, 100, 1000, "", "Master", "Master", "Serial FX", "Serial FX",
+        "The output of an FX chain can be routed to the input of the other FX chain, thus creating a series of 10 "
+        "effects (not available in Single Sounds).\nNegative values: the FX II output signals are routed to FX I (with "
+        "absolute amount)\n0.0%: no routing of signals between the FX chains\nPositive values: the FX I output signals "
+        "are routed to FX II (with absolute amount)" } },
   };
 
 }  // namespace C15
