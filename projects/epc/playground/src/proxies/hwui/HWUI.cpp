@@ -48,6 +48,7 @@ HWUI::HWUI(Settings &settings)
     , m_readersCancel(Gio::Cancellable::create())
     , m_buttonStates { false }
     , m_blinkCount(0)
+    , m_switchOffBlockingMainThreadIndicator(Application::get().getMainContext())
     , m_settings { settings }
     , m_famSetting(*settings.getSetting<FocusAndModeSetting>())
 {

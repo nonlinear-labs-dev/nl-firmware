@@ -10,6 +10,7 @@
 #include "ScreenSaverTimeoutSetting.h"
 #include <device-settings/Settings.h>
 #include <nltools/messaging/Message.h>
+#include <Application.h>
 
 static constexpr auto c_disabled = std::chrono::minutes::zero();
 static constexpr std::array<int, 6> s_logTimeOuts = { 0, 1, 5, 20, 60, 180 };
@@ -18,7 +19,7 @@ static const std::vector<Glib::ustring> s_displayStrings
 
 ScreenSaverTimeoutSetting::ScreenSaverTimeoutSetting(UpdateDocumentContributor& parent)
     : Setting(parent)
-    , m_expiration([this] { sendState(true); })
+    , m_expiration(Application::get().getMainContext(), [this] { sendState(true); })
 {
   nltools_assertOnDevPC(s_logTimeOuts.size() == s_displayStrings.size());
 }

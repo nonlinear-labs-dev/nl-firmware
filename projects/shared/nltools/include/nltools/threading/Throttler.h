@@ -7,7 +7,7 @@ class Throttler
  public:
   using Task = std::function<void()>;
 
-  explicit Throttler(Expiration::Duration maxDelay);
+  explicit Throttler(Glib::RefPtr<Glib::MainContext> ctx, Expiration::Duration maxDelay);
   ~Throttler();
 
   void doTask(Task&& task);

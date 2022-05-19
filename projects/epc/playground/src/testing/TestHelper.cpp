@@ -60,9 +60,11 @@ int TestHelper::getNumberOfFDs()
 
 TestHelper::ApplicationFixture::ApplicationFixture()
 {
+  nltools::Log::setLevel(nltools::Log::Error);
   Glib::MainContext::get_default();
   m_numFileDescriptors = getNumberOfFDs();
   app = std::make_unique<Application>(0, nullptr);
+  nltools::Log::setLevel(nltools::Log::Error);
 }
 
 TestHelper::ApplicationFixture::~ApplicationFixture()
@@ -72,6 +74,6 @@ TestHelper::ApplicationFixture::~ApplicationFixture()
 
   if(m_numFileDescriptors != n)
   {
-    nltools::Log::warning("Test leaks filedescriptors, before:", m_numFileDescriptors, ", now:", n);
+    nltools::Log::error("Test leaks filedescriptors, before:", m_numFileDescriptors, ", now:", n);
   }
 }

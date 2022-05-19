@@ -62,6 +62,9 @@ namespace nltools
             gchar *output = nullptr;
             g_spawn_command_line_sync(script.c_str(), &output, nullptr, nullptr, nullptr);
 
+            m_conditionEstablishedThreadWaiter.notify();
+            m_backgroundCtx->pop_thread_default();
+
             if(output)
               nltools::throwException("Could not listen to port ", m_port, ", because '", output, "' already owns it.");
 

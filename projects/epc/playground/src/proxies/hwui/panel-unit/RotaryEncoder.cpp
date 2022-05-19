@@ -11,7 +11,7 @@
 #include <proxies/hwui/HWUI.h>
 
 RotaryEncoder::RotaryEncoder()
-    : m_throttler(std::chrono::milliseconds(2))
+    : m_throttler(Application::get().getMainContext(), std::chrono::milliseconds(2))
 {
   nltools::msg::receive<nltools::msg::RotaryChangedMessage>(nltools::msg::EndPoint::Playground,
                                                             sigc::mem_fun(this, &RotaryEncoder::onMessage));

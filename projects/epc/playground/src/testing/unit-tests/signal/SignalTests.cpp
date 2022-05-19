@@ -25,13 +25,13 @@ namespace Detail
   };
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Normal life cycle", "[Signals]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Normal life cycle", "[Signals]")
 {
   int received = 0;
   auto *s = new Detail::Sender();
   auto *r = new Detail::Receiver(received);
   s->sig.connectAndInit(mem_fun(r, &Detail::Receiver::fn), false);
-  g_main_context_iteration(nullptr, FALSE);
+  TestHelper::doMainLoopIteration();
   delete r;
   delete s;
   CHECK(received == 1);
@@ -45,7 +45,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Sender dies first", "[Signals]
   auto *r = new Detail::Receiver(received);
   s->sig.connectAndInit(mem_fun(r, &Detail::Receiver::fn), false);
   delete s;
-  g_main_context_iteration(nullptr, FALSE);
+  TestHelper::doMainLoopIteration();
   delete r;
   CHECK(received == 0);
 }
@@ -57,12 +57,12 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Receiver Dies First", "[Signal
   auto *r = new Detail::Receiver(received);
   s->sig.connectAndInit(mem_fun(r, &Detail::Receiver::fn), false);
   delete r;
-  g_main_context_iteration(nullptr, FALSE);
+  TestHelper::doMainLoopIteration();
   delete s;
   CHECK(received == 0);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Reconnect Before Init CB Was Received", "[Signals]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reconnect Before Init CB Was Received", "[Signals]")
 {
   class Sender : public sigc::trackable
   {
@@ -91,7 +91,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Reconnect Before Init CB Was Re
   auto connection = senderA->sig.connectAndInit(mem_fun(r.get(), &Receiver::fn), senderA.get());
   connection.disconnect();
   connection = senderB->sig.connectAndInit(mem_fun(r.get(), &Receiver::fn), senderB.get());
-  g_main_context_iteration(nullptr, FALSE);
+  TestHelper::doMainLoopIteration();
   CHECK(r->received[senderA.get()] == 0);
   CHECK(r->received[senderB.get()] == 1);
 }

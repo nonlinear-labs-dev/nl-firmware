@@ -3,10 +3,9 @@
 #include <nltools/logging/Log.h>
 #include <netinet/tcp.h>
 #include <glibmm.h>
-#include <giomm.h>
 #include <nltools/messaging/Message.h>
 #include <pthread.h>
-#include <thread>
+#include <giomm/cancellable.h>
 
 namespace nltools
 {
@@ -21,54 +20,37 @@ namespace nltools
           : m_cancel(Gio::Cancellable::create())
           , m_uri(nltools::string::concat("http://", targetMachine, ":", port))
           , m_soupSession(soup_session_new(), g_object_unref)
+          , m_message(nullptr, g_object_unref)
           , m_connection(nullptr, g_object_unref)
           , m_mainThreadContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(ctx))
           , m_onConnectionEstablished(connectionEstablishedCB)
+          , m_contextThread([=] { this->backgroundThread(p); })
       {
-        connect();
-        ctx->signal_timeout().connect_seconds(sigc::mem_fun(this, &WebSocketOutChannel::ping), 2);
       }
 
       WebSocketOutChannel::~WebSocketOutChannel()
       {
+        m_connection.reset();
+        m_reconnetConnection.disconnect();
         m_cancel->cancel();
-      }
 
-      bool WebSocketOutChannel::connect()
-      {
-        auto msg = soup_message_new("GET", m_uri.c_str());
-        auto cb = reinterpret_cast<GAsyncReadyCallback>(&WebSocketOutChannel::onWebSocketConnected);
-        soup_session_websocket_connect_async(m_soupSession.get(), msg, nullptr, nullptr, m_cancel->gobj(), cb, this);
-        g_object_unref(msg);
-        return false;
-      }
-
-      void WebSocketOutChannel::onWebSocketConnected(SoupSession *session, GAsyncResult *res,
-                                                     WebSocketOutChannel *pThis)
-      {
-        GError *error = nullptr;
-
-        if(SoupWebsocketConnection *connection = soup_session_websocket_connect_finish(session, res, &error))
-          pThis->connectWebSocket(connection);
-
-        if(error)
+        while(!m_bgRunning)
         {
-          nltools::Log::warning(__PRETTY_FUNCTION__, __LINE__, error->code);
-          nltools::Log::debug(pThis->m_uri, " -> ", error->message);
-
-          if(error->code == Gio::Error::Code::CANCELLED)
-          {
-            g_error_free(error);
-            return;
-          }
-
-          pThis->reconnect();
-          g_error_free(error);
+          using namespace std::chrono_literals;
+          std::this_thread::sleep_for(10ms);
         }
-        else
+
+        while(m_connectsInFlight)
         {
-          pThis->signalConnectionEstablished();
+          using namespace std::chrono_literals;
+          std::this_thread::sleep_for(10ms);
         }
+
+        if(m_messageLoop && m_messageLoop->is_running())
+          m_messageLoop->quit();
+
+        if(m_contextThread.joinable())
+          m_contextThread.join();
       }
 
       bool WebSocketOutChannel::send(const SerializedMessage &msg)
@@ -76,26 +58,45 @@ namespace nltools
         if(!m_connection || m_flushing)
           return false;
 
-        auto state = soup_websocket_connection_get_state(m_connection.get());
+        m_backgroundContextQueue->pushMessage([=]() {
+          if(m_connection)
+          {
+            auto state = soup_websocket_connection_get_state(m_connection.get());
 
-        if(state == SOUP_WEBSOCKET_STATE_OPEN)
-        {
-          gsize len = 0;
-          auto data = msg->get_data(len);
-          soup_websocket_connection_send_binary(m_connection.get(), data, len);
-          return true;
-        }
-        else
-        {
-          m_connection.reset();
-          reconnect();
-          return false;
-        }
+            if(state == SOUP_WEBSOCKET_STATE_OPEN)
+            {
+              gsize len = 0;
+              auto data = msg->get_data(len);
+              soup_websocket_connection_send_binary(m_connection.get(), data, len);
+            }
+            else
+            {
+              m_connection.reset();
+              reconnect();
+            }
+          }
+        });
+        return true;
       }
 
       void WebSocketOutChannel::flush(std::chrono::milliseconds timeout)
       {
-#warning "todo"
+        if(!m_connection)
+          return;
+
+        m_flushing = true;
+
+        auto start = std::chrono::steady_clock::now();
+
+        while(m_backgroundContextQueue->isPending())
+        {
+          auto now = std::chrono::steady_clock::now();
+          auto elapsed = now - start;
+          if(elapsed > timeout)
+            return;
+        }
+
+        m_flushing = false;
       }
 
       bool WebSocketOutChannel::waitForConnection(std::chrono::milliseconds timeOut)
@@ -108,24 +109,81 @@ namespace nltools
         return m_connectionEstablishedWaiter.isNotified();
       }
 
+      void WebSocketOutChannel::backgroundThread(nltools::threading::Priority p)
+      {
+        pthread_setname_np(pthread_self(), "WebSockOut");
+        threading::setThisThreadPrio(p);
+
+        auto mainContext = m_mainThreadContextQueue->getContext();
+
+        auto m = Glib::MainContext::create();
+        m->push_thread_default();
+
+        m_backgroundContextQueue = std::make_unique<threading::ContextBoundMessageQueue>(m);
+        m_messageLoop = Glib::MainLoop::create(m);
+        m_backgroundContextQueue->pushMessage([this] { m_bgRunning = true; });
+
+        auto c = mainContext->signal_timeout().connect_seconds(sigc::mem_fun(this, &WebSocketOutChannel::ping), 2);
+        connect();
+        m_messageLoop->run();
+
+        m->pop_thread_default();
+      }
+
       bool WebSocketOutChannel::ping()
       {
         send(detail::serialize(PingMessage()));
         return true;
       }
 
+      void WebSocketOutChannel::connect()
+      {
+        m_connectsInFlight++;
+        m_message.reset(soup_message_new("GET", m_uri.c_str()));
+        auto cb = reinterpret_cast<GAsyncReadyCallback>(&WebSocketOutChannel::onWebSocketConnected);
+        soup_session_websocket_connect_async(m_soupSession.get(), m_message.get(), nullptr, nullptr, m_cancel->gobj(),
+                                             cb, this);
+      }
+
+      void WebSocketOutChannel::onWebSocketConnected(SoupSession *session, GAsyncResult *res,
+                                                     WebSocketOutChannel *pThis)
+      {
+        GError *error = nullptr;
+
+        pThis->m_connectsInFlight--;
+
+        if(SoupWebsocketConnection *connection = soup_session_websocket_connect_finish(session, res, &error))
+          pThis->connectWebSocket(connection);
+
+        if(error)
+        {
+          if(error->code == G_IO_ERROR_CANCELLED)
+            return;
+
+          nltools::Log::debug(pThis->m_uri, " -> ", error->message);
+          g_error_free(error);
+          pThis->reconnect();
+        }
+        else
+        {
+          pThis->signalConnectionEstablished();
+        }
+      }
+
       void WebSocketOutChannel::signalConnectionEstablished()
       {
-        nltools::Log::warning(__PRETTY_FUNCTION__, __LINE__);
         m_connectionEstablishedWaiter.notify();
         m_mainThreadContextQueue->pushMessage([this] { this->m_onConnectionEstablished(); });
       }
 
       void WebSocketOutChannel::reconnect()
       {
-        nltools::Log::warning(__PRETTY_FUNCTION__, __LINE__);
-        m_reconnect = m_mainThreadContextQueue->getContext()->signal_timeout().connect_seconds(
-            sigc::mem_fun(this, &WebSocketOutChannel::connect), 2);
+        m_reconnetConnection = m_messageLoop->get_context()->signal_timeout().connect_seconds(
+            [this] {
+              this->connect();
+              return false;
+            },
+            2);
       }
 
       void WebSocketOutChannel::connectWebSocket(SoupWebsocketConnection *connection)

@@ -187,41 +187,36 @@ namespace TestHelper
 
   void randomizeFadeParams(UNDO::Transaction* transaction);
 
-  inline void doMainLoopFor(std::chrono::milliseconds time, GMainContext* ctx = nullptr)
+  inline void doMainLoopFor(std::chrono::milliseconds time,
+                            Glib::RefPtr<Glib::MainContext> ctx = Glib::RefPtr<Glib::MainContext>(nullptr))
   {
-    Glib::MainContext* gCtx = nullptr;
-    if(ctx == nullptr && Application::exists())
-    {
-      gCtx = Application::get().getMainContext().get();
-      ctx = Application::get().getMainContext()->gobj();
-    }
-    Expiration exp({}, Expiration::Duration::zero(), 0, gCtx);
+    if(!ctx && Application::exists())
+      ctx = Application::get().getMainContext();
+
+    Expiration exp(ctx, {}, Expiration::Duration::zero(), 0);
     exp.refresh(time);
 
     while(exp.isPending())
-      g_main_context_iteration(ctx, TRUE);
+      ctx->iteration(true);
   }
 
   inline void doMainLoop(std::chrono::milliseconds minTime, std::chrono::milliseconds timeout,
-                         const std::function<bool()>& test, GMainContext* ctx = nullptr)
+                         const std::function<bool()>& test,
+                         Glib::RefPtr<Glib::MainContext> ctx = Glib::RefPtr<Glib::MainContext>(nullptr))
   {
-    Glib::MainContext* gMainContext = nullptr;
-    if(Application::exists() && ctx == nullptr)
-    {
-      ctx = Application::get().getMainContext()->gobj();
-      gMainContext = Application::get().getMainContext().get();
-    }
+    if(!ctx && Application::exists())
+      ctx = Application::get().getMainContext();
 
-    Expiration exp({}, Expiration::Duration::zero(), 0, gMainContext);
+    Expiration exp(ctx, {}, Expiration::Duration::zero(), 0);
     exp.refresh(timeout);
 
-    Expiration min({}, Expiration::Duration::zero(), 0, gMainContext);
+    Expiration min(ctx, {}, Expiration::Duration::zero(), 0);
 
     if(minTime != std::chrono::milliseconds::zero())
       min.refresh(minTime);
 
     while((exp.isPending() && !test()) || min.isPending())
-      g_main_context_iteration(ctx, TRUE);
+      ctx->iteration(true);
 
     CHECK(test());
   }

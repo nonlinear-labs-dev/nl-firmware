@@ -11,7 +11,7 @@
 
 SelectedParamValueWithFrame::SelectedParamValueWithFrame(const Rect &rect)
     : super(rect)
-    , m_showParameterName(std::bind(&SelectedParamValueWithFrame::showName, this))
+    , m_showParameterName(Application::get().getMainContext(), std::bind(&SelectedParamValueWithFrame::showName, this))
 {
 }
 

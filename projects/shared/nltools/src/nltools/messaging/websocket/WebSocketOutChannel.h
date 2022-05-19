@@ -6,12 +6,11 @@
 #include <nltools/threading/Threading.h>
 
 #include <memory>
-#include <future>
+#include <thread>
 #include <atomic>
 #include <condition_variable>
 #include <libsoup/soup.h>
-
-#include <sigc++/connection.h>
+#include <sigc++/sigc++.h>
 
 namespace nltools
 {
@@ -34,12 +33,13 @@ namespace nltools
         void signalConnectionEstablished();
 
        private:
-        bool connect();
+        void connect();
         void connectWebSocket(SoupWebsocketConnection *connection);
 
         static void onWebSocketConnected(SoupSession *session, GAsyncResult *res, WebSocketOutChannel *pThis);
 
         void reconnect();
+        void backgroundThread(nltools::threading::Priority p);
         bool ping();
 
         using tSessionPtr = std::unique_ptr<SoupSession, decltype(*g_object_unref)>;
@@ -49,14 +49,20 @@ namespace nltools
         Glib::RefPtr<Gio::Cancellable> m_cancel;
         std::string m_uri;
         tSessionPtr m_soupSession;
+        tMessagePtr m_message;
         tWebSocketPtr m_connection;
 
+        std::unique_ptr<threading::ContextBoundMessageQueue> m_backgroundContextQueue;
         std::unique_ptr<threading::ContextBoundMessageQueue> m_mainThreadContextQueue;
+        Glib::RefPtr<Glib::MainLoop> m_messageLoop;
 
+        std::atomic_bool m_bgRunning = { false };
         BackgroundThreadWaiter m_connectionEstablishedWaiter;
         std::function<void()> m_onConnectionEstablished;
+        sigc::connection m_reconnetConnection;
+        std::atomic<uint> m_connectsInFlight { 0 };
+        std::thread m_contextThread;
         bool m_flushing = false;
-        sigc::connection m_reconnect;
       };
     }
   }

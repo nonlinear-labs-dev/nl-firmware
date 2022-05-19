@@ -1,4 +1,5 @@
 #include <testing/TestHelper.h>
+#include <device-settings/GlobalLocalEnableSetting.h>
 #include <device-settings/Settings.h>
 #include <device-settings/flac/FlacRecorderVirgin.h>
 #include <sync/SyncMasterMockRoot.h>
@@ -13,8 +14,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 2900")
   using namespace nltools::msg;
 
   auto oldConfig = nltools::msg::getConfig();
-  oldConfig.useEndpoints.emplace_back(EndPoint::Playground);
-  oldConfig.offerEndpoints.emplace_back(EndPoint::AudioEngine);
+  oldConfig.useEndpoints.insert(EndPoint::Playground);
+  oldConfig.offerEndpoints.insert(EndPoint::AudioEngine);
   REQUIRE(oldConfig.mainContext.get() != nullptr);
 
   init(oldConfig);
@@ -29,7 +30,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 2900")
     CHECK(settings->getSetting<FlacRecorderVirgin>()->get());
   }
 
-  nltools::msg::waitForConnection(nltools::msg::EndPoint::Playground);
+  auto testSettings = Application::get().getSettings();
+  auto testSetting = settings->getSetting<GlobalLocalEnableSetting>();
+
+  CHECK(nltools::msg::waitForConnection(nltools::msg::EndPoint::Playground));
 
   WHEN("audioengine notifies state")
   {

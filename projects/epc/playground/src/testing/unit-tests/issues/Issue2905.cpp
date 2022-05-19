@@ -5,6 +5,8 @@
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Sort Bank Numbers deletes Banks!", "[2905]")
 {
+  Application::get().stopWatchDog();
+
   auto pm = TestHelper::getPresetManager();
   {
     auto trash = UNDO::Scope::startTrashTransaction();

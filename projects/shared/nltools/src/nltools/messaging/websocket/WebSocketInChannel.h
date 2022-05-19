@@ -41,12 +41,12 @@ namespace nltools
         std::unique_ptr<SoupServer, decltype(*g_object_unref)> m_server;
         Glib::RefPtr<Glib::MainContext> m_backgroundCtx;
         Glib::RefPtr<Glib::MainLoop> m_backgroundLoop;
+        BackgroundThreadWaiter m_conditionEstablishedThreadWaiter;
         std::future<void> m_backgroundTask;
 
         std::unique_ptr<threading::ContextBoundMessageQueue> m_mainContextQueue;
         std::list<tWebSocketPtr> m_connections;
 
-        BackgroundThreadWaiter m_conditionEstablishedThreadWaiter;
         bool m_bgLoopRunning = false;
       };
     }

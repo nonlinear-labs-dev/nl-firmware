@@ -4,6 +4,7 @@
 #include <nltools/Types.h>
 #include <glibmm.h>
 #include "EpcWifi.h"
+#include "Application.h"
 
 EpcWifi::EpcWifi()
     : m_currentEpcWifiState(std::nullopt)
@@ -14,8 +15,8 @@ EpcWifi::EpcWifi()
 
   if(isEpc2)
   {
-    Glib::MainContext::get_default()->signal_timeout().connect_seconds(sigc::mem_fun(this, &EpcWifi::syncCredentials),
-                                                                       2);
+    Application::get().getMainContext()->signal_timeout().connect_seconds(
+        sigc::mem_fun(this, &EpcWifi::syncCredentials), 2);
   }
 }
 

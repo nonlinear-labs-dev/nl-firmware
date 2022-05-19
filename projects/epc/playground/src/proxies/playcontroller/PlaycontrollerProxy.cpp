@@ -28,8 +28,8 @@
 
 PlaycontrollerProxy::PlaycontrollerProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
-    , m_throttledRelativeParameterChange(std::chrono::milliseconds(1))
-    , m_throttledAbsoluteParameterChange(std::chrono::milliseconds(1))
+    , m_throttledRelativeParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
+    , m_throttledAbsoluteParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
 {
   m_msgParser.reset(new MessageParser());
 

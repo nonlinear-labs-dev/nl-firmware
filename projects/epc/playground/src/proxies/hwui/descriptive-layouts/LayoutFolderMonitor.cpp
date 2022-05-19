@@ -59,8 +59,10 @@ void LayoutFolderMonitor::bruteForce()
       }
     }
 
-    DescriptiveLayouts::ConsistencyChecker checker(std::cout);
+    std::stringstream out;
+    DescriptiveLayouts::ConsistencyChecker checker(out);
     checker.checkAll();
+    nltools::Log::warning(out.str());
     m_onChange.send();
   }
   catch(ExceptionTools::TemplateException& e)

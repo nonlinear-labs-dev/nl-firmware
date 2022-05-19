@@ -20,8 +20,8 @@ namespace nltools
       using ConnectionSignals = std::map<EndPoint, sigc::signal<void>>;
 
       static Configuration currentConfig;
-      static std::vector<ChannelConfiguration> inChannelConfig;
-      static std::vector<ChannelConfiguration> outChannelConfig;
+      static std::set<ChannelConfiguration> inChannelConfig;
+      static std::set<ChannelConfiguration> outChannelConfig;
       static OutChannels outChannels;
       static InChannels inChannels;
       static Signals signals;
@@ -119,7 +119,7 @@ namespace nltools
 
     void deInit()
     {
-      detail::currentConfig = Configuration{};
+      detail::currentConfig = Configuration {};
       detail::outChannels.clear();
       detail::inChannels.clear();
       detail::signals.clear();

@@ -10,7 +10,7 @@
 
 UsedRAM::UsedRAM(UpdateDocumentContributor& parent)
     : Setting(parent)
-    , m_scheduleThrottler { Expiration::Duration { std::chrono::minutes { 1 } } }
+    , m_scheduleThrottler(Application::get().getMainContext(), Expiration::Duration { std::chrono::minutes { 1 } })
 {
 }
 
@@ -57,7 +57,8 @@ void UsedRAM::scheduleReload()
             if(auto setting = Application::get().getSettings()->getSetting<UsedRAM>())
               setting->load(used, Initiator::EXPLICIT_LOAD);
           }
-          else {
+          else
+          {
             nltools::Log::error("Nasty Async Bug Happened!");
           }
         },

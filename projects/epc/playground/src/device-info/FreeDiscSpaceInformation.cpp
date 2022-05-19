@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "nltools/system/AsyncCommandLine.h"
 #include "nltools/system/SpawnAsyncCommandLine.h"
+#include "Application.h"
 
 FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation* parent)
     : DeviceInformationItem(parent)
@@ -17,13 +18,15 @@ FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation* parent)
 
   using namespace std::chrono;
   constexpr minutes timeout(5);
-  m_signalRefresh = Glib::MainContext::get_default()->signal_timeout().connect(sigc::mem_fun(this, &FreeDiscSpaceInformation::refresh),
-                                                             duration_cast<milliseconds>(timeout).count());
+  m_signalRefresh = Application::get().getMainContext()->signal_timeout().connect(
+      sigc::mem_fun(this, &FreeDiscSpaceInformation::refresh), duration_cast<milliseconds>(timeout).count());
 }
 
 bool FreeDiscSpaceInformation::refresh()
 {
-  SpawnAsyncCommandLine::spawn({"sh", "-c", "\"df", "-h", "|", "grep", "'persistent'", "|", "awk", "'{print $4}'\""}, [&](const std::string& success){
+  SpawnAsyncCommandLine::spawn(
+      { "sh", "-c", "\"df", "-h", "|", "grep", "'persistent'", "|", "awk", "'{print $4}'\"" },
+      [&](const std::string& success) {
         if(success.empty())
           m_value = "N/A";
         else
@@ -37,8 +40,8 @@ bool FreeDiscSpaceInformation::refresh()
             onChange();
           }
         }
-  }, [](auto err) {
-  });
+      },
+      [](auto err) {});
   return true;
 }
 

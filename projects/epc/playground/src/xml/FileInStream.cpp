@@ -48,13 +48,13 @@ FileInStream::FileInStream(const Glib::ustring &fileName, bool tryZip)
   }
   else
   {
-    DebugLevel::error("Could not open file stream:", fileName);
+    DebugLevel::warning("Could not open file stream:", fileName);
   }
 
   if(!m_stream)
   {
     m_eof = true;
-    DebugLevel::error("FileInStream has no stream for file:", fileName);
+    DebugLevel::warning("FileInStream has no stream for file:", fileName);
   }
 }
 

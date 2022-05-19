@@ -4,10 +4,11 @@
 #include <synth/C15Synth.h>
 #include <synth/c15-audio-engine/dsp_host_dual.h>
 #include <mock/DspHostDualTester.h>
+#include <testing/TestHelper.h>
 
 namespace Tests
 {
-  TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Initial State")
+  TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Initial State")
   {
     using namespace std::chrono_literals;
     auto options = createEmptyAudioEngineOptions();
@@ -27,7 +28,7 @@ namespace Tests
       CHECK(tester.scanOutput(std::get<0>(output)).isSilence());
     }
   }
-  TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Key Association")
+  TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Key Association")
   {
     using namespace std::chrono_literals;
     auto options = createEmptyAudioEngineOptions();
@@ -273,7 +274,7 @@ namespace Tests
       }
     }
   }
-  TEST_CASE_METHOD(TestHelper::ApplicationFixture,"128 Keys")
+  TEST_CASE_METHOD(TestHelper::ApplicationFixture, "128 Keys")
   {
     using namespace std::chrono_literals;
     auto options = createEmptyAudioEngineOptions();
@@ -352,7 +353,7 @@ namespace Tests
       }
     }
   }
-  TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Reset Behavior")
+  TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset Behavior")
   {
     using namespace std::chrono_literals;
     auto options = createEmptyAudioEngineOptions();

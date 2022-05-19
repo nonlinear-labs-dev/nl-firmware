@@ -1,5 +1,6 @@
 #include <tools/Uuid.h>
 #include "ArrowIncrementDecrementOverlay.h"
+#include <Application.h>
 
 ArrowIncrementDecrementOverlay::ArrowIncrementDecrementOverlay(const Rect& r)
     : LeftRightUpDownCommitOverlay(r)
@@ -31,5 +32,6 @@ void ArrowIncrementDecrementOverlay::installResetHighlight(Control* controlToRes
 {
   using std::chrono::milliseconds;
 
-  m_resetHighlight = std::make_unique<Expiration>([=]() { controlToReset->setHighlight(false); }, milliseconds { 150 });
+  m_resetHighlight = std::make_unique<Expiration>(
+      Application::get().getMainContext(), [=]() { controlToReset->setHighlight(false); }, milliseconds { 150 });
 }

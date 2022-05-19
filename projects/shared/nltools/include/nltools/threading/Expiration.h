@@ -4,8 +4,10 @@
 #include <chrono>
 #include <functional>
 #include <sigc++/connection.h>
+#include <glibmm.h>
 
-namespace Glib {
+namespace Glib
+{
   class MainContext;
 }
 
@@ -15,7 +17,8 @@ class Expiration : public Uncopyable
   using Callback = std::function<void()>;
   using Duration = std::chrono::steady_clock::duration;
 
-  Expiration(Callback cb = Callback(), Duration d = Duration::zero(), int priority = 0, Glib::MainContext* g = nullptr);
+  Expiration(Glib::RefPtr<Glib::MainContext> ctx, Callback cb = Callback(), Duration d = Duration::zero(),
+             int priority = 0);
   ~Expiration();
 
   void setCallback(Callback cb);
@@ -28,5 +31,5 @@ class Expiration : public Uncopyable
 
   Callback m_cb;
   sigc::connection m_timeout;
-  Glib::MainContext* m_context;
+  Glib::RefPtr<Glib::MainContext> m_context;
 };

@@ -29,6 +29,7 @@ AsyncCommandLine::AsyncCommandLine(const std::vector<std::string>& command,
 
 AsyncCommandLine::~AsyncCommandLine()
 {
+  m_signalWatchHandler.disconnect();
   closeWatch(m_childPid);
   close(m_coutFD);
   close(m_cerrFD);

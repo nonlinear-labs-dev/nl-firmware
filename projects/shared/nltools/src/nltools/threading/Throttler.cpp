@@ -1,8 +1,8 @@
 #include <nltools/threading/Throttler.h>
 #include "nltools/logging/Log.h"
 
-Throttler::Throttler(Expiration::Duration maxDelay)
-    : m_expiration([this] { delayedCallback(); })
+Throttler::Throttler(Glib::RefPtr<Glib::MainContext> ctx, Expiration::Duration maxDelay)
+    : m_expiration(ctx, [this] { delayedCallback(); })
     , m_maxDelay(maxDelay)
 {
 }
@@ -28,7 +28,6 @@ bool Throttler::isPending() const
 
 void Throttler::delayedCallback()
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, this);
   m_isPending = false;
 
   if(Task task = std::move(m_task))

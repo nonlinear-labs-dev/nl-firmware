@@ -17,9 +17,12 @@ RibbonLabel::RibbonLabel(const ParameterId &paramID, const Rect &rect)
 {
   auto settings = Application::get().getSettings();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  m_signalsChanged.emplace_back(eb->getParameterGroupByID({ "CS", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty)));
-  m_signalsChanged.emplace_back(eb->getParameterGroupByID({ "MCs", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty)));
-  m_signalsChanged.emplace_back(eb->getParameterGroupByID({ "MCM", VoiceGroup::Global })->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty)));
+  m_signalsChanged.emplace_back(eb->getParameterGroupByID({ "CS", VoiceGroup::Global })
+                                    ->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty)));
+  m_signalsChanged.emplace_back(eb->getParameterGroupByID({ "MCs", VoiceGroup::Global })
+                                    ->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty)));
+  m_signalsChanged.emplace_back(eb->getParameterGroupByID({ "MCM", VoiceGroup::Global })
+                                    ->onGroupChanged(sigc::mem_fun(this, &RibbonLabel::setDirty)));
   m_signalsChanged.emplace_back(settings->onSettingsChanged(sigc::mem_fun(this, &RibbonLabel::setDirty)));
   m_parameter = eb->findAndCastParameterByID<PhysicalControlParameter>(m_parameterID);
 }
@@ -44,8 +47,8 @@ RibbonLabel::tRibbonEnables RibbonLabel::getRibbonEnabledStates() const
 
   if(Application::exists())
   {
-    static auto settings = Application::get().getSettings();
-    static const auto routingsSetting = settings->getSetting<RoutingSettings>();
+    auto settings = Application::get().getSettings();
+    const auto routingsSetting = settings->getSetting<RoutingSettings>();
 
     const auto isRibbon1 = m_parameterID == ParameterId { C15::PID::Ribbon_1, VoiceGroup::Global };
     const auto isRibbon2 = m_parameterID == ParameterId { C15::PID::Ribbon_2, VoiceGroup::Global };
@@ -55,12 +58,12 @@ RibbonLabel::tRibbonEnables RibbonLabel::getRibbonEnabledStates() const
     const auto isRibbon2Enabled = isRibbon2 && routingsSetting->getState(rIDX::Ribbon2, aIDX::LOCAL) && isLocalEnabled;
     return std::make_pair(isRibbon1Enabled, isRibbon2Enabled);
   }
-  return {false, false};
+  return { false, false };
 }
 
 StringAndSuffix RibbonLabel::getText() const
 {
-  static auto settings = Application::get().getSettings();
+  auto settings = Application::get().getSettings();
 
   const auto isRibbon1 = m_parameterID == ParameterId { C15::PID::Ribbon_1, VoiceGroup::Global };
   const auto isRibbon2 = m_parameterID == ParameterId { C15::PID::Ribbon_2, VoiceGroup::Global };

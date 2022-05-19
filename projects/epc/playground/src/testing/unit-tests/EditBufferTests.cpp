@@ -34,13 +34,13 @@ template <SoundType tNewSoundType> void loadPreset(Preset *newPreset)
   CHECK(editBuffer->getUUIDOfLastLoadedPreset() == newPreset->getUuid());
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"EditBuffer Initialized")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "EditBuffer Initialized")
 {
   auto eb = getEditBuffer();
   CHECK(eb != nullptr);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Simple EditBuffer Conversion")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Simple EditBuffer Conversion")
 {
   auto editBuffer = getEditBuffer();
   EditBufferUseCases useCase(*editBuffer);
@@ -160,7 +160,7 @@ void dualToSingleTestsPolyToGlobalParameterCopy(LoadPresetFunction loadPresetCB,
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Sound Conversion - Master Volume Parameter")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Sound Conversion - Master Volume Parameter")
 {
   MockPresetStorage presets;
 
@@ -218,7 +218,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Sound Conversion - Master Tune
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Preset Mock Storage")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Preset Mock Storage")
 {
   MockPresetStorage presets;
   REQUIRE(presets.getSinglePreset() != nullptr);
@@ -229,7 +229,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Preset Mock Storage")
   REQUIRE(presets.getLayerPreset()->getType() == SoundType::Layer);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Presets Complete")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load Presets Complete")
 {
   auto editBuffer = getEditBuffer();
   auto pm = editBuffer->getParent();
@@ -277,7 +277,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Presets Complete")
   REQUIRE(numBanks == pm->getNumBanks());
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Editbuffer Contents loaded")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Editbuffer Contents loaded")
 {
   MockPresetStorage presets;
 
@@ -315,7 +315,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Editbuffer Contents loaded")
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load <-> Changed")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load <-> Changed")
 {
   MockPresetStorage presets;
   auto singlePreset = presets.getSinglePreset();
@@ -473,7 +473,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load <-> Changed")
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Part Label")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Part Label")
 {
   auto eb = getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
@@ -551,7 +551,7 @@ void randomizeRequireChangedAndInitSoundTest(const Preset *preset)
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Init Sound resets all Parameters")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Init Sound resets all Parameters")
 {
   MockPresetStorage presets;
 
@@ -571,7 +571,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Init Sound resets all Parameter
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Sound Leads to Converted UUID")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Convert Sound Leads to Converted UUID")
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
@@ -635,7 +635,7 @@ namespace PartNaming
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Dual To Single Label Naming")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Convert Dual To Single Label Naming")
 {
   MockPresetStorage presets;
   auto eb = TestHelper::getEditBuffer();
@@ -695,7 +695,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Dual To Single Label Na
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Init Sound initializes VG Labels to 'init'")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Init Sound initializes VG Labels to 'init'")
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases useCase(*eb);
@@ -742,7 +742,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Init Sound initializes VG Label
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Rename MC leads to changed EB")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Rename MC leads to changed EB")
 {
   TestHelper::initSingleEditBuffer();
   auto eb = TestHelper::getEditBuffer();

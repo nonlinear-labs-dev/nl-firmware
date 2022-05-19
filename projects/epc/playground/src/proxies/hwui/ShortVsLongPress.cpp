@@ -1,9 +1,10 @@
 #include "ShortVsLongPress.h"
+#include <Application.h>
 
 ShortVsLongPress::ShortVsLongPress(Callback shortPressAction, Callback longPressAction)
     : m_shortPressAction(shortPressAction)
     , m_longPressAction(longPressAction)
-    , m_exp(std::bind(&ShortVsLongPress::expired, this))
+    , m_exp(Application::get().getMainContext(), std::bind(&ShortVsLongPress::expired, this))
 {
 }
 

@@ -16,7 +16,7 @@
 #include <device-settings/Settings.h>
 
 PanelUnitPresetMode::PanelUnitPresetMode()
-    : m_bruteForceLedThrottler(std::chrono::milliseconds(40))
+    : m_bruteForceLedThrottler(Application::get().getMainContext(), std::chrono::milliseconds(40))
 {
   DebugLevel::gassy(__PRETTY_FUNCTION__);
 
@@ -213,7 +213,7 @@ void PanelUnitSoundMode::setup()
         else
           useCases.setFocusAndMode(famSetting.getOldState());
       else
-         useCases.setFocusAndMode(FocusAndMode { UIFocus::Sound });
+        useCases.setFocusAndMode(FocusAndMode { UIFocus::Sound });
     }
 
     return true;

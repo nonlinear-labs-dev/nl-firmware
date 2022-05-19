@@ -63,6 +63,7 @@ void setupMessaging(const Options *options, Glib::RefPtr<Glib::MainContext> pCon
 
 std::unique_ptr<Options> Application::initStatic(Application *app, std::unique_ptr<Options> options)
 {
+  app->m_theMainContext->push_thread_default();
   theApp = app;
   setupMessaging(options.get(), app->m_theMainContext);
   return options;
@@ -80,7 +81,8 @@ Application::Application(int numArgs, char **argv)
     , m_theMainLoop(Glib::MainLoop::create(m_theMainContext))
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_options->getSettingsFile(), m_http->getUpdateDocumentMaster()))
-    , m_presetManager(new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
+    , m_presetManager(
+          new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
     , m_hwui(new HWUI(*m_settings))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
@@ -119,6 +121,8 @@ Application::Application(int numArgs, char **argv)
   ::signal(SIGQUIT, quitApp);
   ::signal(SIGTERM, quitApp);
   ::signal(SIGINT, quitApp);
+
+  m_theMainContext->pop_thread_default();
 }
 
 Application::~Application()
