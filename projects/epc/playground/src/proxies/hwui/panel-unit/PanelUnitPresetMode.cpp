@@ -126,7 +126,7 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
           break;
         }
       }
-      else if(signalFlowIndicator != db.getInvalidSignalPathIndication())
+      else if(signalFlowIndicator != ParameterDB::getInvalidSignalPathIndication())
       {
         if(parameter->getControlPositionValue() != signalFlowIndicator)
         {

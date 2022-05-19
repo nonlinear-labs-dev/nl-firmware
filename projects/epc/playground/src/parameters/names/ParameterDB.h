@@ -20,7 +20,7 @@ class ParameterDB : public sigc::trackable
   [[nodiscard]] std::optional<Glib::ustring> getLongGroupName(const ParameterId& id) const;
   [[nodiscard]] Glib::ustring getDescription(int parameterNumber) const;
   [[nodiscard]] tControlPositionValue getSignalPathIndication(int id) const;
-  [[nodiscard]] constexpr tControlPositionValue getInvalidSignalPathIndication() const
+  static constexpr tControlPositionValue getInvalidSignalPathIndication()
   {
     return std::numeric_limits<tControlPositionValue>::max();
   }
