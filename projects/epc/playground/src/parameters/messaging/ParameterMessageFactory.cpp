@@ -15,13 +15,14 @@ namespace ParameterMessageFactory
     nltools::msg::ModulateableParameterChangedMessage createMessage(const ModulateableParameter *param)
     {
       auto range = param->getModulationRange(false);
-      return nltools::msg::ModulateableParameterChangedMessage { param->getID().getNumber(),
+      auto msg = nltools::msg::ModulateableParameterChangedMessage { param->getID().getNumber(),
                                                                  param->getControlPositionValue(),
                                                                  param->getModulationSource(),
                                                                  param->getModulationAmount(),
                                                                  range.second,
                                                                  range.first,
                                                                  param->getID().getVoiceGroup() };
+      return msg;
     }
 
     nltools::msg::MacroControlChangedMessage createMessage(const MacroControlParameter *param)

@@ -757,6 +757,7 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   initFadeFrom(transaction, VoiceGroup::II);
   initCrossFB(transaction);
   initSplitPoint(transaction);
+  initMasterPan(transaction);
 
   forEachParameter(VoiceGroup::II, [&](Parameter *p) { p->loadDefault(transaction, Defaults::FactoryDefault); });
 
@@ -1180,6 +1181,12 @@ void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)
   }
 }
 
+void EditBuffer::initMasterPan(UNDO::Transaction* transaction)
+{
+  auto masterPan = findParameterByID({C15::PID::Master_Pan, VoiceGroup::Global});
+  masterPan->loadDefault(transaction, Defaults::FactoryDefault);
+}
+
 void EditBuffer::initFadeFrom(UNDO::Transaction *transaction, VoiceGroup vg)
 {
   findParameterByID({ C15::PID::Voice_Grp_Fade_From, vg })->loadDefault(transaction, Defaults::FactoryDefault);
@@ -1526,7 +1533,8 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
                                          { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume },
                                          { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune },
                                          { C15::PID::Voice_Grp_Fade_From, C15::PID::Master_Volume },
-                                         { C15::PID::Voice_Grp_Fade_Range, C15::PID::Master_Volume } } },
+                                         { C15::PID::Voice_Grp_Fade_Range, C15::PID::Master_Volume },
+                                         { C15::PID::Master_Pan, C15::PID::Master_Volume } } },
                                      { { From::Split, To::Layer },
                                        { { C15::PID::Split_Split_Point, C15::PID::Voice_Grp_Volume } } },
                                      { { From::Split, To::Single },
@@ -1534,7 +1542,8 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
                                          { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune },
                                          { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume },
                                          { C15::PID::Out_Mix_To_FX, C15::PID::Out_Mix_Lvl },
-                                         { C15::PID::FB_Mix_FX_Src, C15::PID::FB_Mix_FX } } } };
+                                         { C15::PID::FB_Mix_FX_Src, C15::PID::FB_Mix_FX },
+                                         { C15::PID::Master_Pan, C15::PID::Master_Volume } } } };
 
   if(Application::exists())
   {

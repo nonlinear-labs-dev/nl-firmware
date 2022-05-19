@@ -1041,7 +1041,7 @@ void dsp_host_dual::render()
   m_poly[0].render_feedback(m_z_layers[1]);  // pass other layer's signals as arg
   m_poly[1].render_feedback(m_z_layers[0]);  // pass other layer's signals as arg
   // - audio dsp global - main out: combine layers, apply test_tone and soft clip
-  m_global.render_audio(m_mono[0].m_out_l + m_mono[1].m_out_l, m_mono[0].m_out_r + m_mono[1].m_out_r);
+  m_global.render_audio(m_mono[0].m_out_l, m_mono[0].m_out_r, m_mono[1].m_out_l, m_mono[1].m_out_r);
   // - final: main out, output mute
   m_mainOut_L = m_global.m_out_l * mute;
   m_mainOut_R = m_global.m_out_r * mute;
@@ -1104,26 +1104,29 @@ C15::Properties::HW_Return_Behavior dsp_host_dual::getBehavior(const RibbonRetur
 
 C15::Parameters::Macro_Controls dsp_host_dual::getMacro(const MacroControls _mc)
 {
-  switch(_mc)
-  {
-    case MacroControls::NONE:
-      return C15::Parameters::Macro_Controls::None;
-    case MacroControls::MC1:
-      return C15::Parameters::Macro_Controls::MC_A;
-    case MacroControls::MC2:
-      return C15::Parameters::Macro_Controls::MC_B;
-    case MacroControls::MC3:
-      return C15::Parameters::Macro_Controls::MC_C;
-    case MacroControls::MC4:
-      return C15::Parameters::Macro_Controls::MC_D;
-    case MacroControls::MC5:
-      return C15::Parameters::Macro_Controls::MC_E;
-    case MacroControls::MC6:
-      return C15::Parameters::Macro_Controls::MC_F;
-    default:
-      return C15::Parameters::Macro_Controls::None;
-  }
-  // maybe, a simple static_cast would be sufficient ...
+  static_assert(static_cast<int>(MacroControls::NONE) == static_cast<int>(C15::Parameters::Macro_Controls::None));
+  static_assert(static_cast<int>(MacroControls::MC1) == static_cast<int>(C15::Parameters::Macro_Controls::MC_A));
+  static_assert(static_cast<int>(MacroControls::MC2) == static_cast<int>(C15::Parameters::Macro_Controls::MC_B));
+  static_assert(static_cast<int>(MacroControls::MC3) == static_cast<int>(C15::Parameters::Macro_Controls::MC_C));
+  static_assert(static_cast<int>(MacroControls::MC4) == static_cast<int>(C15::Parameters::Macro_Controls::MC_D));
+  static_assert(static_cast<int>(MacroControls::MC5) == static_cast<int>(C15::Parameters::Macro_Controls::MC_E));
+  static_assert(static_cast<int>(MacroControls::MC6) == static_cast<int>(C15::Parameters::Macro_Controls::MC_F));
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::NONE)
+                == C15::Parameters::Macro_Controls::None);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC1)
+                == C15::Parameters::Macro_Controls::MC_A);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC2)
+                == C15::Parameters::Macro_Controls::MC_B);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC3)
+                == C15::Parameters::Macro_Controls::MC_C);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC4)
+                == C15::Parameters::Macro_Controls::MC_D);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC5)
+                == C15::Parameters::Macro_Controls::MC_E);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC6)
+                == C15::Parameters::Macro_Controls::MC_F);
+
+  return static_cast<C15::Parameters::Macro_Controls>(_mc);
 }
 
 uint32_t dsp_host_dual::getMacroId(const MacroControls _mc)
@@ -1794,10 +1797,11 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
   // global updates: parameters
   if(LOG_RECALL)
   {
-    nltools::Log::info("recall: global params:");
+    nltools::Log::info("recall: global params (modulateables/unmodulateables):");
   }
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
+  globalParRcl(msg->master.pan);
   for(uint32_t i = 0; i < msg->scale.size(); i++)
   {
     globalParRcl(msg->scale[i]);
@@ -1950,14 +1954,11 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
   // global updates: parameters
   if(LOG_RECALL)
   {
-    nltools::Log::info("recall: global params (modulateables):");
+    nltools::Log::info("recall: global params (modulateables/unmodulateables):");
   }
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: global params (unmodulateables):");
-  }
+  globalParRcl(msg->master.pan);
   for(auto i : msg->scale)
   {
     globalParRcl(i);
@@ -2115,14 +2116,11 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
   // global updates: parameters
   if(LOG_RECALL)
   {
-    nltools::Log::info("recall: global params (modulateables):");
+    nltools::Log::info("recall: global params (modulateables/unmodulateables):");
   }
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: global params (unmodulateables):");
-  }
+  globalParRcl(msg->master.pan);
   for(auto i : msg->scale)
   {
     globalParRcl(i);
