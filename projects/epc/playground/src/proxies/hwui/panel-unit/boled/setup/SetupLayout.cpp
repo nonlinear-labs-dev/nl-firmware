@@ -117,7 +117,7 @@ namespace NavTree
       return false;
     }
 
-    virtual Node*getDesiredFocusChangeOnEditModeExited()
+    virtual Node *getDesiredFocusChangeOnEditModeExited()
     {
       return nullptr;
     }
@@ -1068,7 +1068,7 @@ namespace NavTree
 
    private:
     const RoutingSettings::tRoutingIndex m_id;
-    RoutingSettings::tRoutingIndex& m_parentSelection;
+    RoutingSettings::tRoutingIndex &m_parentSelection;
   };
 
   template <bool value> struct SetRoutingsTo : public OneShotEntry
@@ -1113,8 +1113,7 @@ namespace NavTree
 
     Node *getDesiredFocusChangeOnEditModeExited() override
     {
-      auto at = [](auto& list, auto n)
-      {
+      auto at = [](auto &list, auto n) {
         auto it = list.begin();
         std::advance(it, n);
         return it->get();
@@ -1308,7 +1307,7 @@ class Breadcrumb : public Control
       }
 
       auto font = Fonts::get().getFont("Emphase-9-Regular", 9);
-      auto width = font->draw(title, left, getPosition().getBottom() - 1);
+      auto width = font->draw(fb, title, left, getPosition().getBottom() - 1);
       return left + width;
     }
     return 5;

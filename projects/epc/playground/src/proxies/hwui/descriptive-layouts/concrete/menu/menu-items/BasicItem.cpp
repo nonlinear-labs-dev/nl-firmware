@@ -36,7 +36,7 @@ bool BasicItem::drawEnterIndication(FrameBuffer& buffer)
   pos.setHeight(pos.getHeight() - 1);
   auto f = Fonts::get().getFont("Emphase-9-Regular", 9);
   buffer.setColor(isHighlight() ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  f->draw("\u23CE", pos.getCenter().getX() - 4, pos.getBottom() - 1);
+  f->draw(buffer, "\u23CE", pos.getCenter().getX() - 4, pos.getBottom() - 1);
   return true;
 }
 

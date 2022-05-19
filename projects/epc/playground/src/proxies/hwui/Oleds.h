@@ -7,12 +7,13 @@
 
 class OLEDProxy;
 class Font;
+class FrameBuffer;
 
 class Fonts
 {
  public:
   typedef std::shared_ptr<Font> tFont;
-  static Fonts& get();
+  static Fonts &get();
   tFont getFont(const Glib::ustring &name, int height);
 
  private:
@@ -29,6 +30,8 @@ class Oleds
 
   virtual ~Oleds();
 
+  FrameBuffer &getFrameBuffer() const;
+
   void registerProxy(OLEDProxy *proxy);
   void syncRedraw(bool force = false);
   void setDirty();
@@ -39,6 +42,8 @@ class Oleds
  private:
   Oleds(const Oleds &other);
   Oleds &operator=(const Oleds &);
+
+  std::unique_ptr<FrameBuffer> m_fb;
 
   std::list<OLEDProxy *> m_proxies;
   Throttler m_throttler;

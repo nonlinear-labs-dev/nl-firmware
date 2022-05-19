@@ -18,6 +18,8 @@ class OLEDProxy : public Uncopyable, public sigc::trackable
   explicit OLEDProxy(const Rect &posInFrameBuffer, Oleds &oleds);
   virtual ~OLEDProxy();
 
+  FrameBuffer &getFrameBuffer();
+
   typedef std::shared_ptr<Layout> tLayoutPtr;
 
   tLayoutPtr getLayout() const;
@@ -48,6 +50,7 @@ class OLEDProxy : public Uncopyable, public sigc::trackable
   Layout *getScreenSaver();
 
  private:
+  FrameBuffer &m_fb;
   sigc::signal<void, Layout *> m_sigLayoutInstalled;
 
   tLayoutPtr m_layout;

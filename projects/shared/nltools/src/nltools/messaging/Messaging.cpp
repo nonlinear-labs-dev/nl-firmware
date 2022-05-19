@@ -140,15 +140,30 @@ namespace nltools
     {
       auto ret = detail::connectionSignals[endPoint].connect(cb);
 
-      if(detail::outChannels.at(endPoint)->isConnected())
-        cb();
+      try
+      {
+        if(detail::outChannels.at(endPoint)->isConnected())
+          cb();
+      }
+      catch(...)
+      {
+        nltools::Log::warning("no such end point:", toString(endPoint));
+      }
 
       return ret;
     }
 
     void flush(EndPoint receiver, const std::chrono::milliseconds timeout)
     {
-      detail::outChannels.at(receiver)->flush(timeout);
+      try
+      {
+
+        detail::outChannels.at(receiver)->flush(timeout);
+      }
+      catch(...)
+      {
+        nltools::Log::warning("no such end point:", toString(receiver));
+      }
     }
 
   }

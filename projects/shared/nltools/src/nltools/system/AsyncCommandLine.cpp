@@ -10,9 +10,9 @@
 AsyncCommandLine::AsyncCommandLine(const std::vector<std::string>& command,
                                    std::function<void(const std::string&)> onSuccess,
                                    std::function<void(const std::string&)> onError)
-    : m_onSuccess{ std::move(onSuccess) }
-    , m_onError{ std::move(onError) }
-    , m_childPid{ 0 }
+    : m_onSuccess { std::move(onSuccess) }
+    , m_onError { std::move(onError) }
+    , m_childPid { 0 }
 {
   Glib::spawn_async_with_pipes("", command, Glib::SPAWN_DO_NOT_REAP_CHILD | Glib::SPAWN_SEARCH_PATH,
                                Glib::SlotSpawnChildSetup(), &m_childPid, nullptr, &m_coutFD, &m_cerrFD);
@@ -23,7 +23,8 @@ AsyncCommandLine::AsyncCommandLine(const std::vector<std::string>& command,
   m_streamCerr = Glib::IOChannel::create_from_fd(m_cerrFD);
   m_isRunning = true;
 
-  m_signalWatchHandler = Glib::signal_child_watch().connect(sigc::mem_fun(*this, &AsyncCommandLine::watchHandler), m_childPid);
+  m_signalWatchHandler
+      = Glib::signal_child_watch().connect(sigc::mem_fun(*this, &AsyncCommandLine::watchHandler), m_childPid);
 }
 
 AsyncCommandLine::~AsyncCommandLine()
@@ -37,7 +38,7 @@ void AsyncCommandLine::watchHandler(Glib::Pid pid, int status)
 {
   nltools_detailedAssertAlways(pid == m_childPid, "AsyncCommandLine: Child PID changed since launch");
 
-  Glib::ustring cout{}, cerr{};
+  Glib::ustring cout {}, cerr {};
 
   m_streamCout->read_to_end(cout);
   m_streamCerr->read_to_end(cerr);

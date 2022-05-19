@@ -2,6 +2,9 @@
 #include "testing/unit-tests/mock/EditBufferNamedLogicalParts.h"
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <dirent.h>
+#include <stddef.h>
+#include <sys/types.h>
 
 void TestHelper::randomizeCrossFBAndToFX(UNDO::Transaction* transaction)
 {
@@ -38,27 +41,37 @@ void TestHelper::randomizeFadeParams(UNDO::Transaction* transaction)
   TestHelper::forceParameterChange(transaction, EBL::getFadeRange<VoiceGroup::II>());
 };
 
-int getNumberOfFDs(int pid)
+int TestHelper::getNumberOfFDs()
 {
-  auto command = StringTools::buildString("ls -la /proc/", pid, "/fd");
-  SpawnCommandLine cmd(command);
-  auto cout = cmd.getStdOutput();
-  auto numFDs = std::count(cout.begin(), cout.end(), '\n');
-  return numFDs;
+  DIR* dp = opendir("/proc/self/fd");
+  struct dirent* de;
+  int count = -3;  // '.', '..', dp
+
+  if(dp == NULL)
+    return -1;
+
+  while((de = readdir(dp)) != NULL)
+    count++;
+
+  (void) closedir(dp);
+
+  return count;
 }
 
 TestHelper::ApplicationFixture::ApplicationFixture()
 {
-  auto pid = getpid();
-  nltools::Log::error("before con", getNumberOfFDs(pid));
+  Glib::MainContext::get_default();
+  m_numFileDescriptors = getNumberOfFDs();
   app = std::make_unique<Application>(0, nullptr);
-  nltools::Log::error("after con", getNumberOfFDs(pid));
 }
 
 TestHelper::ApplicationFixture::~ApplicationFixture()
 {
-  auto pid = getpid();
-  nltools::Log::error("before destr", getNumberOfFDs(pid));
   app.reset(nullptr);
-  nltools::Log::error("after destr", getNumberOfFDs(pid));
+  auto n = getNumberOfFDs();
+
+  if(m_numFileDescriptors != n)
+  {
+    nltools::Log::warning("Test leaks filedescriptors, before:", m_numFileDescriptors, ", now:", n);
+  }
 }

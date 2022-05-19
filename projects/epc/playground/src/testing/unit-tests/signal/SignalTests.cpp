@@ -1,4 +1,5 @@
 #include <testing/TestHelper.h>
+#include <nltools/messaging/Messaging.h>
 
 namespace Detail
 {
@@ -36,7 +37,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Normal life cycle", "[Signals]"
   CHECK(received == 1);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Sender dies first", "[Signals]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Sender dies first", "[Signals]")
 {
 
   int received = 0;
@@ -49,7 +50,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Sender dies first", "[Signals]"
   CHECK(received == 0);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Receiver Dies First", "[Signals]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Receiver Dies First", "[Signals]")
 {
   int received = 0;
   auto *s = new Detail::Sender();

@@ -18,10 +18,13 @@
 
 namespace TestHelper
 {
+  int getNumberOfFDs();
+
   class ApplicationFixture
   {
    protected:
     std::unique_ptr<Application> app;
+
    public:
     ApplicationFixture();
 
@@ -31,14 +34,19 @@ namespace TestHelper
     {
       return app->getMainContext()->gobj();
     }
+
+   private:
+    int m_numFileDescriptors = 0;
   };
 
   class MainContextFixture
   {
    protected:
     GMainContext* m_context;
+
    public:
-    MainContextFixture() : m_context(g_main_context_new())
+    MainContextFixture()
+        : m_context(g_main_context_new())
     {
     }
 
@@ -51,7 +59,7 @@ namespace TestHelper
 
   struct ScopedMessagingConfiguration
   {
-    explicit ScopedMessagingConfiguration(const nltools::msg::Configuration &config)
+    explicit ScopedMessagingConfiguration(const nltools::msg::Configuration& config)
     {
       m_oldConfig = nltools::msg::getConfig();
       nltools::msg::init(config);
@@ -234,18 +242,18 @@ namespace TestHelper
   }
 
   inline void updateMappings(nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings& array,
-                      nltools::msg::Setting::MidiSettingsMessage::RoutingAspect index, bool b)
+                             nltools::msg::Setting::MidiSettingsMessage::RoutingAspect index, bool b)
   {
-    for(auto& hw: array) {
+    for(auto& hw : array)
+    {
       hw[static_cast<int>(index)] = b;
     }
   }
 
   inline void updateMappingForRow(nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings& array,
-                                  nltools::msg::Setting::MidiSettingsMessage::RoutingIndex index,
-                                  bool value)
+                                  nltools::msg::Setting::MidiSettingsMessage::RoutingIndex index, bool value)
   {
-    for(auto& a: array[static_cast<int>(index)])
+    for(auto& a : array[static_cast<int>(index)])
     {
       a = value;
     }

@@ -7,7 +7,8 @@
 #include <CompileTimeOptions.h>
 
 Oleds::Oleds()
-    : m_throttler(std::chrono::milliseconds(20))
+    : m_fb(std::make_unique<FrameBuffer>())
+    , m_throttler(std::chrono::milliseconds(20))
 {
 }
 
@@ -16,17 +17,22 @@ Oleds::~Oleds()
   m_throttler.cancel();
 }
 
+FrameBuffer &Oleds::getFrameBuffer() const
+{
+  return *m_fb;
+}
+
 void Oleds::setDirty()
 {
   if(!m_throttler.isPending())
   {
-    static Settings* lastSettingsAtSetDirty = Application::get().getSettings();
+    static Settings *lastSettingsAtSetDirty = Application::get().getSettings();
     lastSettingsAtSetDirty = Application::get().getSettings();
-    m_throttler.doTask([this, &lastSettingsAtSetDirty=lastSettingsAtSetDirty] {
-                         auto app = &Application::get();
-                         auto settingAtRedraw = app->getSettings();
-                         syncRedraw(false);
-                       });
+    m_throttler.doTask([this, &lastSettingsAtSetDirty = lastSettingsAtSetDirty] {
+      auto app = &Application::get();
+      auto settingAtRedraw = app->getSettings();
+      syncRedraw(false);
+    });
   }
 }
 
@@ -39,8 +45,8 @@ void Oleds::deInit()
 {
   m_proxies.clear();
 
-  FrameBuffer::get().clear();
-  FrameBuffer::get().swapBuffers();
+  m_fb->clear();
+  m_fb->swapBuffers();
 }
 
 void Oleds::registerProxy(OLEDProxy *proxy)
@@ -53,7 +59,7 @@ void Oleds::syncRedraw(bool force)
   for(auto proxy : m_proxies)
     proxy->redraw();
 
-  FrameBuffer::get().swapBuffers(force);
+  m_fb->swapBuffers(force);
 }
 
 Fonts &Fonts::get()

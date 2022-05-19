@@ -648,7 +648,7 @@ void HWUI::exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std:
   constexpr auto frameBufferDimX = 256;
   constexpr auto frameBufferDimY = 96;
 
-  auto &fb = FrameBuffer::get();
+  auto &fb = m_oleds.getFrameBuffer();
   auto &buffer = fb.getBackBuffer();
   png::image<png::rgb_pixel> boledFile(w, h);
 

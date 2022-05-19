@@ -28,6 +28,7 @@
 #include <presets/EditBufferActions.h>
 #include <use-cases/SettingsUseCases.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
+#include <nltools/system/SpawnAsyncCommandLine.h>
 
 using namespace std::chrono_literals;
 
@@ -43,6 +44,7 @@ void setupMessaging(const Options *options, Glib::RefPtr<Glib::MainContext> pCon
 
   Configuration conf;
   conf.mainContext = pContext;
+
 #ifdef _DEVELOPMENT_PC
   conf.offerEndpoints = { { EndPoint::Playground }, { EndPoint::TestEndPoint } };
 #else
@@ -123,6 +125,8 @@ Application::~Application()
 {
   stopWatchDog();
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+
+  SpawnAsyncCommandLine::clear();
 
   m_watchDog.reset();
   m_aggroWatchDog.reset();

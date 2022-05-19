@@ -46,6 +46,6 @@ bool EditorItem::redrawEnterIndication(FrameBuffer &buffer)
   leftRect.setLeft(getPosition().getRight() - 12);
   auto f = Fonts::get().getFont("Emphase-9-Regular", 9);
   buffer.setColor(isHighlight() ? FrameBufferColors::C255 : FrameBufferColors::C128);
-  f->draw("...", leftRect.getCenter().getX() - 4, leftRect.getBottom() - 1);
+  f->draw(buffer, "...", leftRect.getCenter().getX() - 4, leftRect.getBottom() - 1);
   return true;
 }

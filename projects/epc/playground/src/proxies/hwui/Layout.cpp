@@ -40,12 +40,7 @@ bool Layout::redrawLayout()
     m_oled.clear();
   }
 
-  return redraw(getFrameBuffer());
-}
-
-FrameBuffer &Layout::getFrameBuffer()
-{
-  return FrameBuffer::get();
+  return redraw(getOLEDProxy().getFrameBuffer());
 }
 
 bool Layout::onButton(Buttons i, bool down, ::ButtonModifiers modifiers)
