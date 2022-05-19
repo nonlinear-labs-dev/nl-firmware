@@ -31,15 +31,20 @@ static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionV
 
 bool wasDefaultedAndNotUnselected();
 const tControlPositionValue &getPriorDefaultValue();
+
 Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tControlPositionValue def,
                      tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator)
     : UpdateDocumentContributor(group)
     , SyncedItem(group->getRoot()->getSyncMaster(), "/parameter/" + id.toString())
     , m_id(id)
     , m_value(this, scaling, def, coarseDenominator, fineDenominator)
-    , m_lastSnapshotedValue(c_invalidSnapshotValue)
     , m_voiceGroup { group->getVoiceGroup() }
+    , m_lastSnapshotedValue(c_invalidSnapshotValue)
 {
+  if(auto eb = getParentEditBuffer())
+  {
+    eb->onSoundTypeChanged(sigc::mem_fun(this, &Parameter::onSoundTypeChanged));
+  }
 }
 
 Parameter::~Parameter()
@@ -392,17 +397,29 @@ void Parameter::invalidate()
 
 Glib::ustring Parameter::getLongName() const
 {
-  return ParameterDB::get().getLongName(getID());
+  if(auto eb = getParentEditBuffer())
+  {
+    return eb->getParameterDB().getLongName(getID());
+  }
+  return getID().toString();
 }
 
 Glib::ustring Parameter::getShortName() const
 {
-  return ParameterDB::get().getShortName(getID());
+  if(auto eb = getParentEditBuffer())
+  {
+    return eb->getParameterDB().getShortName(getID());
+  }
+  return getID().toString();
 }
 
 Glib::ustring Parameter::getInfoText() const
 {
-  return ParameterDB::get().getDescription(getID());
+  if(auto eb = getParentEditBuffer())
+  {
+    return eb->getParameterDB().getDescription(getID());
+  }
+  return getID().toString();
 }
 
 Glib::ustring Parameter::getMiniParameterEditorName() const
@@ -439,14 +456,14 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
   writer.writeTextElement("value", to_string(m_value.getRawValue()));
   writer.writeTextElement("default", to_string(m_value.getDefaultValue()));
   writer.writeTextElement("boolean", to_string(m_value.isBoolean()));
+  writer.writeTextElement("long-name", getLongName());
+  writer.writeTextElement("short-name", getShortName());
+  writer.writeTextElement("info-text", getInfoText());
 
   if(shouldWriteDocProperties(knownRevision))
   {
     writer.writeTextElement("bipolar", to_string(m_value.isBiPolar()));
     writer.writeTextElement("scaling", m_value.getScaleConverter()->controlPositionToDisplayJS());
-    writer.writeTextElement("long-name", getLongName());
-    writer.writeTextElement("short-name", getShortName());
-    writer.writeTextElement("info-text", getInfoText());
     writer.writeTextElement("coarse-denominator", to_string(m_value.getCoarseDenominator()));
     writer.writeTextElement("fine-denominator", to_string(m_value.getFineDenominator()));
   }
@@ -652,4 +669,9 @@ bool Parameter::isDisabled() const
 void Parameter::stepCP(UNDO::Transaction *transaction, int incs, bool fine, bool shift)
 {
   setCPFromHwui(transaction, getNextStepValue(incs, fine, shift));
+}
+
+void Parameter::onSoundTypeChanged(SoundType t)
+{
+  invalidate();
 }

@@ -94,7 +94,7 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
 
   for(const auto i : parameters)
   {
-    auto signalFlowIndicator = ParameterDB::get().getSignalPathIndication(i);
+    auto signalFlowIndicator = editBuffer->getParameterDB().getSignalPathIndication(i);
 
     Parameter* parameter = nullptr;
 

@@ -472,7 +472,7 @@ const std::set<int> &getUnavailableParametersBySoundType(SoundType t)
   };
 
   static std::set<int> unavailableInSplitSounds {
-    C15::PID::FB_Mix_Comb_Src,     C15::PID::FB_Mix_FX_Src,        C15::PID::FB_Mix_Osc_Src, C15::PID::FB_Mix_SVF_Src,
+    C15::PID::FB_Mix_Comb_Src,     C15::PID::FB_Mix_Osc_Src, C15::PID::FB_Mix_SVF_Src,
     C15::PID::Voice_Grp_Fade_From, C15::PID::Voice_Grp_Fade_Range, C15::PID::FB_Mix_Osc,
   };
 

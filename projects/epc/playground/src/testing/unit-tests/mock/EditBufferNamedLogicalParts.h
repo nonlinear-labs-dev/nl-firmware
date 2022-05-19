@@ -36,6 +36,19 @@ class EditBufferLogicalParts
   }
 
  public:
+  static std::vector<Parameter*> removeElements(std::vector<Parameter*> p, std::vector<int> ids)
+  {
+    std::vector<Parameter*> ret{};
+    for(auto& param: p)
+    {
+      if(std::find(ids.begin(), ids.end(), param->getID().getNumber()) == ids.end())
+      {
+        ret.emplace_back(param);
+      }
+    }
+    return ret;
+  }
+
   template <VoiceGroup vg> static std::vector<Parameter*> getLocalNormal()
   {
     using namespace detail;

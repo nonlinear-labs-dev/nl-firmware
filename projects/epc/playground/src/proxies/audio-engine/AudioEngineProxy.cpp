@@ -122,6 +122,13 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditB
   tune.modulationAmount = tuneParameter->getModulationAmount();
   tune.mc = tuneParameter->getModulationSource();
 
+  auto panParameter = editBuffer.findAndCastParameterByID<ModulateableParameter>({C15::PID::Master_Pan, VoiceGroup::Global});
+  auto& pan = msg.master.pan;
+  pan.id = panParameter->getID().getNumber();
+  pan.controlPosition = panParameter->getControlPositionValue();
+  pan.modulationAmount = panParameter->getModulationAmount();
+  pan.mc = panParameter->getModulationSource();
+
   for(auto &g : editBuffer.getParameterGroups(VoiceGroup::Global))
   {
     for(auto p : g->getParameters())

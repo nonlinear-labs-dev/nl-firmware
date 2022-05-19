@@ -687,6 +687,7 @@ namespace nltools
       {
         ParameterGroups::ModulateableParameter volume;
         ParameterGroups::ModulateableParameter tune;
+        ParameterGroups::ModulateableParameter pan;
       };
 
       inline bool operator==(const Parameter& lhs, const Parameter& rhs)

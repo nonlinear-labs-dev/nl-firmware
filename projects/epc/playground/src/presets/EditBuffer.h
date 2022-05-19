@@ -3,6 +3,7 @@
 #include "ParameterGroupSet.h"
 #include "presets/recall/RecallParameterGroups.h"
 #include "nltools/GenericScopeGuard.h"
+#include "parameters/names/ParameterDB.h"
 #include <nltools/threading/Expiration.h>
 #include <sync/SyncedItem.h>
 #include <tools/DelayedJob.h>
@@ -133,6 +134,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   };
 
   PartOrigin getPartOrigin(VoiceGroup vg) const;
+  ParameterDB& getParameterDB();
 
   std::shared_ptr<ScopedGuard::Lock> getParameterFocusLockGuard();
   bool isParameterFocusLocked() const;
@@ -188,6 +190,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *transaction, const Preset *preset,
                                                    VoiceGroup copyFrom, VoiceGroup copyTo);
   void initSplitPoint(UNDO::Transaction *transaction);
+  void initMasterPan(UNDO::Transaction *transaction);
   void initFadeFrom(UNDO::Transaction *transaction, VoiceGroup vg);
   void defaultFadeParameters(UNDO::Transaction *transaction);
   void copyVoicesGroups(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
@@ -195,6 +198,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void combineLayerPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void initFadeParameters(UNDO::Transaction *transaction, VoiceGroup group);
   void initCrossFB(UNDO::Transaction *transaction);
+  void initCrossFBExceptFromFX(UNDO::Transaction* transaction);
   void undoableUnmuteLayers(UNDO::Transaction *transaction);
   void undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg);
   void undoableConvertSingleToLayer(UNDO::Transaction *transaction);
@@ -240,6 +244,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   friend class EditBufferUseCases;
   friend class SoundUseCases;
 
+  ParameterDB m_parameterDB;
   Uuid m_lastLoadedPreset;
 
   Glib::ustring m_name;

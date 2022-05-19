@@ -5,6 +5,7 @@
 #include <tools/StringTools.h>
 #include <parameters/Parameter.h>
 #include <parameter_list.h>
+#include <placeholder.h>
 #include <cassert>
 #include <nltools/logging/Log.h>
 #include <groups/MacroControlsGroup.h>
@@ -12,26 +13,52 @@
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>
 
-ParameterDB &ParameterDB::get()
+namespace C15::Placeholder
 {
-  static ParameterDB db;
-  return db;
-}
+  static Glib::ustring replaceGlobal(const Glib::ustring &_text, const SoundType &_st, const bool &_multiple = false)
+  {
+    Glib::ustring ret{ _text };
+    std::size_t pos;
+    while((pos = ret.find(Qualifier)) != std::string::npos)
+    {
+      for(const GlobalReplacer &placeholder : GlobalPlaceholders)
+      {
+        if((pos = ret.find(placeholder.m_qualifier)) == Glib::ustring::npos)
+          continue;
+        ret.replace(pos, strlen(placeholder.m_qualifier), placeholder.getReplacement(_st));
+        if(!_multiple)
+          return ret;
+      }
+    }
+    return ret;
+  }
 
-ParameterDB::ParameterDB() = default;
+  static Glib::ustring replaceLocal(const Glib::ustring &_text, const SoundType &_st, const VoiceGroup &_vg,
+                                    const bool &_multiple = false)
+  {
+    Glib::ustring ret{ _text };
+    std::size_t pos;
+    while((pos = ret.find(Qualifier)) != std::string::npos)
+    {
+      for(const LocalReplacer &placeholder : LocalPlaceholders)
+      {
+        if((pos = ret.find(placeholder.m_qualifier)) == Glib::ustring::npos)
+          continue;
+        ret.replace(pos, strlen(placeholder.m_qualifier), placeholder.getReplacement(_st, _vg));
+        if(!_multiple)
+          return ret;
+      }
+    }
+    return ret;
+  }
+}  // namespace C15
+
+ParameterDB::ParameterDB(EditBuffer &eb)
+    : m_editBuffer(eb)
+{
+}
 
 ParameterDB::~ParameterDB() = default;
-
-std::string sanitize(const std::string &in)
-{
-  auto mod = StringTools::replaceAll(in, "Ⓐ", u8"\ue000");
-  mod = StringTools::replaceAll(mod, "Ⓑ", u8"\ue001");
-  mod = StringTools::replaceAll(mod, "Ⓒ", u8"\ue002");
-  mod = StringTools::replaceAll(mod, "Ⓓ", u8"\ue003");
-  mod = StringTools::replaceAll(mod, "Ⓔ", u8"\ue200");
-  mod = StringTools::replaceAll(mod, "Ⓕ", u8"\ue201");
-  return mod;
-}
 
 Glib::ustring ParameterDB::getLongName(const ParameterId &id) const
 {
@@ -47,7 +74,7 @@ Glib::ustring ParameterDB::getLongName(const ParameterId &id) const
     return "MISSING!!!";
   }
 
-  return sanitize(replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_long, id.getVoiceGroup()));
+  return replaceInDynamicLabels(d.m_pg.m_param_label_long, id, m_editBuffer.getType());
 }
 
 Glib::ustring ParameterDB::getShortName(const ParameterId &id) const
@@ -64,7 +91,7 @@ Glib::ustring ParameterDB::getShortName(const ParameterId &id) const
     return "MISSING!!!";
   }
 
-  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_param_label_short, id.getVoiceGroup());
+  return replaceInDynamicLabels(d.m_pg.m_param_label_short, id, m_editBuffer.getType());
 }
 
 Glib::ustring ParameterDB::getDescription(const ParameterId &id) const
@@ -80,7 +107,7 @@ std::optional<Glib::ustring> ParameterDB::getLongGroupName(const ParameterId &id
   if(!d.m_pg.m_group_label_long)
     return {};
 
-  return replaceVoiceGroupInDynamicLabels(d.m_pg.m_group_label_long, id.getVoiceGroup());
+  return replaceInDynamicLabels(d.m_pg.m_group_label_long, id, m_editBuffer.getType());
 }
 
 Glib::ustring ParameterDB::getDescription(const int num) const
@@ -104,6 +131,7 @@ Glib::ustring ParameterDB::getDescription(const int num) const
     return "";
   }
 
+  //TODO add replacement of infotexts
   return d.m_pg.m_param_info;
 }
 
@@ -117,14 +145,15 @@ tControlPositionValue ParameterDB::getSignalPathIndication(int id) const
                                                                     : getInvalidSignalPathIndication();
 }
 
-Glib::ustring ParameterDB::replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const
+Glib::ustring ParameterDB::replaceInDynamicLabels(const Glib::ustring &name, const ParameterId &parameterID,
+                                                  SoundType type) const
 {
-  if(name.find("@VG") != Glib::ustring::npos)
-  {
-    auto invert = [](VoiceGroup v) { return v == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I; };
-    name.replace(name.find("@VG"), 3, toString(invert(originGroup)));
-    return name;
-  }
+  auto paramType = C15::ParameterList[parameterID.getNumber()].m_param.m_type;
+  using namespace C15::Descriptors;
+  auto isGlobal = paramType != ParameterType::Local_Modulateable && paramType != ParameterType::Local_Unmodulateable;
 
-  return name;
+  if(isGlobal)
+    return C15::Placeholder::replaceGlobal(name, type);
+  else
+    return C15::Placeholder::replaceLocal(name, type, parameterID.getVoiceGroup());
 }
