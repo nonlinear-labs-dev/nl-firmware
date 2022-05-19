@@ -213,8 +213,3 @@ double ParameterDB::getDefaultValue(const ParameterId &id)
 
   return static_cast<double>(C15::ParameterList[id.getNumber()].m_initial);
 }
-
-constexpr tControlPositionValue ParameterDB::getInvalidSignalPathIndication() const
-{
-  return std::numeric_limits<tControlPositionValue>::max();
-}
