@@ -1103,26 +1103,22 @@ C15::Properties::HW_Return_Behavior dsp_host_dual::getBehavior(const RibbonRetur
 
 C15::Parameters::Macro_Controls dsp_host_dual::getMacro(const MacroControls _mc)
 {
-  switch(_mc)
-  {
-    case MacroControls::NONE:
-      return C15::Parameters::Macro_Controls::None;
-    case MacroControls::MC1:
-      return C15::Parameters::Macro_Controls::MC_A;
-    case MacroControls::MC2:
-      return C15::Parameters::Macro_Controls::MC_B;
-    case MacroControls::MC3:
-      return C15::Parameters::Macro_Controls::MC_C;
-    case MacroControls::MC4:
-      return C15::Parameters::Macro_Controls::MC_D;
-    case MacroControls::MC5:
-      return C15::Parameters::Macro_Controls::MC_E;
-    case MacroControls::MC6:
-      return C15::Parameters::Macro_Controls::MC_F;
-    default:
-      return C15::Parameters::Macro_Controls::None;
-  }
-  // maybe, a simple static_cast would be sufficient ...
+  static_assert(static_cast<int>(MacroControls::NONE) == static_cast<int>(C15::Parameters::Macro_Controls::None));
+  static_assert(static_cast<int>(MacroControls::MC1) == static_cast<int>(C15::Parameters::Macro_Controls::MC_A));
+  static_assert(static_cast<int>(MacroControls::MC2) == static_cast<int>(C15::Parameters::Macro_Controls::MC_B));
+  static_assert(static_cast<int>(MacroControls::MC3) == static_cast<int>(C15::Parameters::Macro_Controls::MC_C));
+  static_assert(static_cast<int>(MacroControls::MC4) == static_cast<int>(C15::Parameters::Macro_Controls::MC_D));
+  static_assert(static_cast<int>(MacroControls::MC5) == static_cast<int>(C15::Parameters::Macro_Controls::MC_E));
+  static_assert(static_cast<int>(MacroControls::MC6) == static_cast<int>(C15::Parameters::Macro_Controls::MC_F));
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::NONE) == C15::Parameters::Macro_Controls::None);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC1) == C15::Parameters::Macro_Controls::MC_A);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC2) == C15::Parameters::Macro_Controls::MC_B);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC3) == C15::Parameters::Macro_Controls::MC_C);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC4) == C15::Parameters::Macro_Controls::MC_D);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC5) == C15::Parameters::Macro_Controls::MC_E);
+  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC6) == C15::Parameters::Macro_Controls::MC_F);
+
+  return static_cast<C15::Parameters::Macro_Controls>(_mc);
 }
 
 uint32_t dsp_host_dual::getMacroId(const MacroControls _mc)
