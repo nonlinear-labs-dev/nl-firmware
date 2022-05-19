@@ -105,7 +105,7 @@ PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
   auto left = Rect(0, 0, hW, pos.getHeight());
   auto right = Rect(hW, 0, hW, pos.getHeight());
 
-  LabelStyle style { .size = FontSize::Size8,
+  LabelStyle style { .size = FontSize::Size9,
                      .decoration = FontDecoration::Regular,
                      .justification = Font::Justification::Center,
                      .backgroundColor = FrameBufferColors::Transparent };
@@ -116,6 +116,7 @@ PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
   m_localEnabledLabel->setLabelStyle(style);
   m_localDisabledLabelSnd->setLabelStyle(style);
   m_localDisabledLabelRcv->setLabelStyle(style);
+  m_localEnabledLabel->setHighlight(true);
 
   auto settings = Application::get().getSettings();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
