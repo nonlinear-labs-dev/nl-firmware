@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Atmel Studio Solution File, Format Version 11.00
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "supervisorATM164A", "supervisorATM164A.cppproj", "{E2FB0B0C-DA9D-4D5F-A696-842E51450915}"
-EndProject
-Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "supervisorATM16A", "supervisorATM16A.cppproj", "{78521C71-FCAF-4078-B96F-6F5022376249}"
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "supervisor", "supervisor.cppproj", "{DCE6C7E3-EE26-4D79-826B-08594B9AD897}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +11,10 @@ Global
 		Release|AVR = Release|AVR
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E2FB0B0C-DA9D-4D5F-A696-842E51450915}.Debug|AVR.ActiveCfg = Debug|AVR
-		{E2FB0B0C-DA9D-4D5F-A696-842E51450915}.Debug|AVR.Build.0 = Debug|AVR
-		{E2FB0B0C-DA9D-4D5F-A696-842E51450915}.Release|AVR.ActiveCfg = Release|AVR
-		{E2FB0B0C-DA9D-4D5F-A696-842E51450915}.Release|AVR.Build.0 = Release|AVR
-		{78521C71-FCAF-4078-B96F-6F5022376249}.Debug|AVR.ActiveCfg = Debug|AVR
-		{78521C71-FCAF-4078-B96F-6F5022376249}.Debug|AVR.Build.0 = Debug|AVR
-		{78521C71-FCAF-4078-B96F-6F5022376249}.Release|AVR.ActiveCfg = Release|AVR
-		{78521C71-FCAF-4078-B96F-6F5022376249}.Release|AVR.Build.0 = Release|AVR
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|AVR.ActiveCfg = Debug|AVR
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|AVR.Build.0 = Debug|AVR
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Release|AVR.ActiveCfg = Release|AVR
+		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

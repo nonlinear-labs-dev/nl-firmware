@@ -12,9 +12,6 @@ Die entscheidenden Konfigurations-Files von LPCxpresso/Eclipse sind:
 Es empfielt sich diese vier Files auf read-only zu setzen, v.a. wenn man nur compilieren will.
 LPCxpresso verändert allein durch Aufrufen jedesmal die .cproject und fügt weitere "Leerzeilen" hinzu obwohl
 man rein garnichts geändert hat (ein Bug?)
-Alle Zeilen
-  <listOptionValue builtIn="false" value=""/>
-kann (und sollte) man problemlos löschen, sollte man den .cproject-Dateien etwas ändern und committen wollen.
 
 LPCxpresso starten, workspace auf ~\projects\playcontroller\firmware setzen.
 
@@ -29,17 +26,8 @@ Warnings wie "warning: unknown option after '#pragma GCC diagnostic' kind" darf 
 abhängig vom unterliegenden Compiler welche warning options es gibt und es sind die ignores passend
 für mehrere verschiedene Compiler im Source-Code.
 
-Ausgabefile zum Proggen unter LPCxpresso mit dem Adapter ist:
+Ausgabefile zum Proggen mit dem Adapter ist:
 ~\projects\playcontroller\firmware\src\main\Release\main.axf
-
 und zum Update via "mxli" auf dem BBB:
 ~\projects\playcontroller\firmware\src\main\Release\main.bin
 Das sagt er auch zum Schluss im Consolenfenster wenn man main compliert.
-
-Nicht wundern wenn man immer zwei Durchläufe bis zum korrekten Brennen mit LPCxpresso braucht,
-immer jeder zweite geht schief, ("Terminate Timeout"), Ursache bisher unbekannt.
-
-Der Progger sucht sich offenbar anhand des in-situ gescannten LPC-typs den richtigen Flash-Driver selber aus,
-dieser kann aber dennoch manuell geändert werden wenn es nötig ist für experimentelle Zwecke.
-... und zwar *jedesmal* vor dem Brennen weil die Einstellung im Brenner-Dialog ist nicht persistent. Immerhin bleibt er
-im DropDown-Menu (was im .cproject ebenso gespeichert ist).

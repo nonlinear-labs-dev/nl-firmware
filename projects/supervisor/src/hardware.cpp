@@ -4,7 +4,6 @@
 #include "hardware.h"
 #include "bit_manipulation.h"
 #include "pin_manipulation.h"
-#include "version.h"
 #include "globals.h"
 #include "comm.h"
 
@@ -113,7 +112,6 @@ void IOPortInit(void)
 
 void TimerInit(void)
 {
-#if IS_TYPE_XX4_CHIP == 0
   // set Timer Mode to CTC (Clear Timer on Compare Match)
   BitSet(TCCR0, WGM01);
   BitClr(TCCR0, WGM00);
@@ -125,19 +123,6 @@ void TimerInit(void)
   BitClr(TCCR0, CS02);
   OCR0 = 249;            // Set the value that you want to count to minus one
   BitSet(TIMSK, OCIE0);  // Set the ISR COMPA vector
-#else
-  // set Timer Mode to CTC (Clear Timer on Compare Match)
-  BitSet(TCCR0A, WGM01);
-  BitClr(TCCR0A, WGM00);
-
-  // 8MHz
-  // prescaler ( 64 -> 011b ) and start the timer
-  BitSet(TCCR0B, CS00);
-  BitSet(TCCR0B, CS01);
-  BitClr(TCCR0B, CS02);
-  OCR0A = 124;             // Set the value that you want to count to minus one
-  BitSet(TIMSK0, OCIE0A);  // Set the ISR COMPA vector
-#endif
 }
 
 void ComparatorInit(void)
@@ -147,15 +132,11 @@ void ComparatorInit(void)
   PinPud(SYS_ADC_19V);  // disable Pullup
   // Analog Comparator Setup :
   BitClr(ADCSRA, ADEN);  // ADC OFF
-#if IS_TYPE_XX4_CHIP == 0
-  BitSet(SFIOR, ACME);  // Comp -IN uses ADC Muxer
-#else
-  BitSet(ADCSRB, ACME);    // Comp -IN uses ADC Muxer
-#endif
-  BitSet(ADMUX, MUX0);  // Select ...
-  BitSet(ADMUX, MUX1);  // ... channel 7 (PortA, 7) ...
-  BitSet(ADMUX, MUX2);  // ... as Comp Input.
-  BitSet(ACSR, ACBG);   // Select 1.24V Bandgap for Comp +IN
+  BitSet(SFIOR, ACME);   // Comp -IN uses ADC Muxer
+  BitSet(ADMUX, MUX0);   // Select ...
+  BitSet(ADMUX, MUX1);   // ... channel 7 (PortA, 7) ...
+  BitSet(ADMUX, MUX2);   // ... as Comp Input.
+  BitSet(ACSR, ACBG);    // Select 1.24V Bandgap for Comp +IN
 }
 
 void ArmComparatorIRQ(void)
@@ -225,11 +206,6 @@ void Wait(uint16_t ms)
   while (ticker <= ms)
     ;
 }
-
-#if IS_TYPE_XX4_CHIP == 1
-#define EEWE  EEPE
-#define EEMWE EEMPE
-#endif
 
 void EEPROM_Write(uint8_t pattern)
 {
@@ -449,22 +425,12 @@ uint8_t mcucsr_mirror __attribute__((section(".noinit")));
 void wdt_init(void) __attribute__((naked)) __attribute__((section(".init3")));
 void wdt_init(void)
 {
-#if IS_TYPE_XX4_CHIP == 0
   mcucsr_mirror = MCUCSR;  // MCUCSR must be read once before zeroing it
   MCUCSR        = 0;
   wdt_disable();  // disable watchdog just to make sure
 #if DISABLE_JTAG
   BitSet(MCUCSR, JTD);
   BitSet(MCUCSR, JTD);
-#endif
-#else
-  mcucsr_mirror = MCUSR;   // MCUSR must be read once before zeroing it
-  MCUSR         = 0;
-  wdt_disable();  // disable watchdog just to make sure
-#if DISABLE_JTAG
-  BitSet(MCUCR, JTD);
-  BitSet(MCUCR, JTD);
-#endif
 #endif
 }
 

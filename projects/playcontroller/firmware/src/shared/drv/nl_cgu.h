@@ -10,11 +10,10 @@
 #define NL_LPC_CLK_PERIOD_100PS (10000000000ul / NL_LPC_CLK)
 #define NL_LPC_AUDIO_CLK        (12288000ul)
 
-// M4 ticker interrupt period in us
-#define M4_PERIOD_US (5ul)
+#define M4_PERIOD_US (5ul)  // M4 ticker interrupt period in 1us multiples
 #define M4_FREQ_HZ   (1000000 / M4_PERIOD_US)
 
-// M0 interrupt period in ns
-#define M0_IRQ_PERIOD_NS       (1500ull)
-#define M0_IRQ_FREQ_HZ         (1000000000ull / M0_IRQ_PERIOD_NS)                  // M0 interrupt frequency
-#define KBS_MICROSECS_PER_SCAN ((unsigned) (16ull * 1000000ull / M0_IRQ_FREQ_HZ))  // keybed scanner takes 16 M0 IRQ periods
+// M0 interrupt period in 62.5ns multiples
+// this value * 16 is the keybed scanner round-trip time
+#define M0_PERIOD_62_5NS (24ul)  // 1.5us ==> *16 = 24us keybed scanner round-trip
+#define M0_FREQ_HZ       (16000000ul / M0_PERIOD_62_5NS)

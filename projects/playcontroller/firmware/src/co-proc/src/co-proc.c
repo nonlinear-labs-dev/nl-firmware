@@ -59,7 +59,7 @@ static void    jitterESPIclk(void)
 // ---------------- clock jitter for timer IRQ
 static inline void jitterIRQ(void)
 {
-  RIT_SetCompVal((NL_LPC_CLK / M0_IRQ_FREQ_HZ) - 32 + (xorshift_u32() & 63));  // offset clock by 2^6(+-32) clock periods
+  RIT_SetCompVal((NL_LPC_CLK / M0_FREQ_HZ) - 32 + (xorshift_u32() & 63));  // offset clock by 2^6(+-32) clock periods
 }
 
 /******************************************************************************/
@@ -312,7 +312,7 @@ void main(void)
   ESPI_DEV_Pitchbender_Init();
   ESPI_DEV_Ribbons_Init();
 
-  RIT_Init_IntervalInHz(M0_IRQ_FREQ_HZ);
+  RIT_Init_IntervalInHz(M0_FREQ_HZ);
 
   while (1)
     ProcessADCs();
@@ -334,5 +334,5 @@ void M0_RIT_OR_WWDT_IRQHandler(void)
   RIT_ClearInt();
   jitterIRQ();
   (*KBS_Process)();
-  s.M0_KbsIrqOvers += (1 & RIT_GetCtrlReg());  // note that this profiling increases IRQ time itself (Heisenberg ;-)
+  s.RitCrtlReg |= RIT_GetCtrlReg();  // note that this profiling increases IRQ time itself (Heisenberg ;-)
 }

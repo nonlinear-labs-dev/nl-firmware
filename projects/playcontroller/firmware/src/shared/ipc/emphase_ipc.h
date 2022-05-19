@@ -70,7 +70,7 @@ typedef struct
   uint32_t           adcBufferReadIndex;
   volatile uint32_t  ticker;
   uint32_t           ADCTicks;
-  uint32_t           M0_KbsIrqOvers;
+  uint32_t           RitCrtlReg;
 #if LPC_KEYBED_DIAG
   int16_t keyOnOffCntr[64];
 #endif

@@ -1,7 +1,6 @@
 Supervisor Firmware V5 features.	2019-11-06 KSTR
 Last changed :
 	2020-05-19 KSTR		: implement power-cycling hidden feature
-	2022-03-04 KSTR		: unified version for ATmega16A and ATmega164A
 
 V5.x firmware is primarily intedend to be used with V7.1 hardware but it was attempted
 to remain fully compatible to V6 & V7 hardware and older Firmwares for BBB and LPC

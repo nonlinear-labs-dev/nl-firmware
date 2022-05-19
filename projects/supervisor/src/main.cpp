@@ -1,45 +1,21 @@
 /******************************************************************************/
-/** @version	V5.3 2022-03 KSTR
+/** @version	V5.2 2020-05 KSTR
     @date		
     @author		KSTR
     @brief    	        systick 1ms
 
-### Compiling steps (Atmel Studio 7):
-- Load Solution "supervisor.atsln"
-- Clean Solution
-- Select _"supervisorATM16A"_ in Solution Explorer as active project
-- Build-->Rebuild _"supervisorATM16A"_
-- Select _"supervisorATM164A"_ in Solution Explorer as active project
-- Build-->Rebuild _"supervisorATM164A"_
-The **"Rebuild"** step is important to get the correct version strings into the .elf artifacts
-DO NOT USE just simply "build solution", etc
+	!!! Set fuse LOW.SUT_CKSEL to "INTRCOSC_2MHZ_6CK_64MS" !!!
+	!!! Set fuse LOW.BODLEVEL to "2.7V" !!!
+	!!! Set fuse LOW.BODON to "2ON" !!!
+	
+	
 
-### Programming:
-- Loading a Solution/Project is not required
-- Select proper device (ATmega16A or ATmega164A) in the progger, then press "apply", then "read
-("read" makes sure AtmelStudio will complain if the hardware does not match the selection)
-- Select proper image file in the progger.
-
-### Fuse Settings:
-- For ATmega16A:
-  - Set fuse LOW.SUT_CKSEL to "INT.RC.OSC 2MHZ 6CK 64MS"
-  - Set fuse LOW.BODLEVEL to "2.7V"
-  - Set fuse LOW.BODON to "2ON"
- 
-- For ATmega164A:
-  - Set fuse LOW.SUT_CKSEL to "Int RC, 6CK + 65m"
-  - Set fuse LOW.CKDIV8 to OFF
-  - Set fuse EXTENDED.BODLEVEL to "2.7V"
-
-Changes :
+    Changes :
 	2019-09-11 KSTR : Add infinite time power fail recovery via EEPROM
 	2019-10-22 KSTR : Add BBB signal communication to allow mute/unmute via BBB
 	2019-10-25 KSTR : Adapt default muting and ePC/BBB monitoring
-  2022-03-05 KSTR : Support for ATmega16A and ATmega164A
     
 *****/
-
-#include "version.h"
 
 #if defined __PWR_CYCLING
 #if (!defined __PWR_CYCLING_HARDCODED && !defined __PWR_CYCLING_HIDDEN_FEATURE) || (defined __PWR_CYCLING_HARDCODED && defined __PWR_CYCLING_HIDDEN_FEATURE)
@@ -333,21 +309,8 @@ void SM_HotReboot(void)
 }
 
 //----------------------------------------------------------------------
-
-volatile char dummy;
-
-void dummyFunction(const char *string)
-{
-  while (*string)
-  {
-    dummy = *string++;
-  }
-}
-
 int main(void)
 {
-  // referencing the version string so compiler won't optimize it away
-  dummyFunction(VERSION_STRING);
   cli();
   HardwareInit_1();  // primary hardware init that doesn't need IRQ (timer) functionality
   sei();             // start ticker etc, IRQ based stuff
@@ -406,22 +369,14 @@ int main(void)
 *******************************************************************************/
 
 // timer 0 overflow interrupt
-#if defined(__AVR_ATmega16A__)
 ISR(TIMER0_COMP_vect)
-#elif defined(__AVR_ATmega164A__)
-ISR(TIMER0_COMPA_vect)
-#endif
 {
   coos_update();
   ticker++;
 }
 
 // analog comparator interrupt
-#if defined(__AVR_ATmega16A__)
 ISR(ANA_COMP_vect)
-#elif defined(__AVR_ATmega164A__)
-ISR(ANALOG_COMP_vect)
-#endif
 {
   if (BitGet(ACSR, ACO))  // Comp Out set == falling edge has occured
   {

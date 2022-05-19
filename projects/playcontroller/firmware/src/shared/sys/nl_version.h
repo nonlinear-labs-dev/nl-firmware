@@ -10,6 +10,7 @@
 // ==== V 205 ====
 // fix for max. Velocity und max. HWSource, added keybed press sent to BBBB
 // Velocity-Auflösung 14 Bit statt 12 Bit
+// #define SW_VERSION 205
 
 // ==== V 206 ====
 // complete revised "pedals" (aka external controllers) proccessing
@@ -26,13 +27,10 @@
 // ==== V 208 ====
 // added "Poll Hardware Sources" feature
 // added "Enable HW Source messages to UI" feature (default: disabled)
+#define SW_VERSION 208
 
 // ==== V 209 ====
-// restructured to allow smaller chips than the LPC4337
-#define SW_VERSION 209
-
-// ==== V 210 ====
-// new Aftertouch processing, with calibration
+// new/better ranging for Aftertouch
 
 #define STR_IMPL_(x) #x            //stringify argument
 #define STR(x)       STR_IMPL_(x)  //indirection to expand argument macros
@@ -44,4 +42,4 @@
 #error "either CORE_M4 or CORE_M0 must be defined!"
 #endif
 
-static const char VERSION_STRING[] = "\n\nC15 RT-SYS, LPC43xx Core " CORE ", FIRMWARE VERSION: " STR(SW_VERSION) " \n\n\0\0\0";
+static const char VERSION_STRING[] = "\n\nC15 RT-SYS, LPC4337 Core " CORE ", FIRMWARE VERSION: " STR(SW_VERSION) " \n\n\0\0\0";
