@@ -1804,7 +1804,8 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
   globalParRcl(msg->master.pan);
-  // todo: globalParRcl(msg->master.serialFx);
+  globalParRcl(msg->master.separation);
+  
   for(uint32_t i = 0; i < msg->scale.size(); i++)
   {
     globalParRcl(msg->scale[i]);
@@ -1962,7 +1963,8 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
   globalParRcl(msg->master.pan);
-  // todo: globalParRcl(msg->master.serialFx);
+  globalParRcl(msg->master.separation);
+
   for(auto i : msg->scale)
   {
     globalParRcl(i);
@@ -2125,7 +2127,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
   globalParRcl(msg->master.volume);
   globalParRcl(msg->master.tune);
   globalParRcl(msg->master.pan);
-  // todo: globalParRcl(msg->master.serialFx);
+  globalParRcl(msg->master.separation);
   for(auto i : msg->scale)
   {
     globalParRcl(i);
