@@ -1,10 +1,8 @@
 #include "ModulateableParameterWithUnusualModDenominator.h"
 
 ModulateableParameterWithUnusualModDenominator::ModulateableParameterWithUnusualModDenominator(
-    ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tDisplayValue def,
-    tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator,
-    tControlPositionValue modAmountCoarseDenom, tControlPositionValue modAmountFineDenom)
-    : ModulateableParameter(group, id, scaling, def, coarseDenominator, fineDenominator)
+    ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tControlPositionValue modAmountCoarseDenom, tControlPositionValue modAmountFineDenom)
+    : ModulateableParameter(group, id, scaling)
     , m_fineModAmountDenominator(modAmountFineDenom)
     , m_coarseModAmountDenominator(modAmountCoarseDenom)
 {

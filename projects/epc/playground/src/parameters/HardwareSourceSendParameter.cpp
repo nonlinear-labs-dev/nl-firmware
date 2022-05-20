@@ -17,7 +17,7 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
                                                          PhysicalControlParameter& sibling,
                                                          const ParameterId& id, const ScaleConverter* converter,
                                                          double def, int coarseDenominator, int fineDenominator, Settings* settings)
-    : Parameter(pGroup, id, converter, def, coarseDenominator, fineDenominator)
+    : Parameter(pGroup, id, converter)
     , m_sibling{sibling}
     , m_settings(settings)
 {

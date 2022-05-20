@@ -16,8 +16,7 @@
 
 SplitPointParameter::SplitPointParameter(ParameterGroup* group, const ParameterId& id)
     : ModulateableParameterWithUnusualModUnit(group, id, ScaleConverter::get<SplitPointScaleConverter>(),
-                                              ScaleConverter::get<LinearBipolar60StScaleConverter>(),
-                                              id.getVoiceGroup() == VoiceGroup::I ? 0.5 : 0.5 + 1 / 60.0, 60, 60)
+                                              ScaleConverter::get<LinearBipolar60StScaleConverter>())
 {
 }
 

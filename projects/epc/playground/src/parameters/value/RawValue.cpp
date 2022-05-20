@@ -101,3 +101,8 @@ void RawValue::setToDefault(Initiator initiator)
 void RawValue::onRawValueChanged(Initiator initiator, tValueType oldRawValue, tValueType newRawValue)
 {
 }
+
+void RawValue::setFactoryDefaultValue(tValueType t)
+{
+  m_factoryDefaultValue = t;
+}

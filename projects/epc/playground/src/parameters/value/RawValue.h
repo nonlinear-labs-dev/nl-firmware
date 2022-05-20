@@ -23,6 +23,7 @@ class RawValue
   void setDefaultValue(tValueType defaultValue);
   [[nodiscard]] tValueType getDefaultValue() const;
   [[nodiscard]] tValueType getFactoryDefaultValue() const;
+  void setFactoryDefaultValue(tValueType v);
 
   [[nodiscard]] bool isBiPolar() const;
   [[nodiscard]] bool isBoolean() const;

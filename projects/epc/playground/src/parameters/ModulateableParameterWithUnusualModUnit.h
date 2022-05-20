@@ -8,9 +8,8 @@ class ModulateableParameterWithUnusualModUnit : public ModulateableParameter
   typedef ModulateableParameter super;
 
  public:
-  ModulateableParameterWithUnusualModUnit(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
-                                          const ScaleConverter *modAmountScaling, tDisplayValue def,
-                                          int coarseDenominator, int fineDenominator);
+  ModulateableParameterWithUnusualModUnit(ParameterGroup* group, ParameterId id, const ScaleConverter* scaling,
+                                          const ScaleConverter* modAmountScaling);
 
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
   Glib::ustring stringizeModulationAmount() const override;

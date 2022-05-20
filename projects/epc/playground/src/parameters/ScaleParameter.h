@@ -8,8 +8,7 @@ class ScaleParameter : public ModulateableParameterWithUnusualModUnit
   typedef ModulateableParameterWithUnusualModUnit super;
 
  public:
-  ScaleParameter(ParameterGroup *group, const ParameterId& id, const ScaleConverter *scaling, tControlPositionValue def,
-                 tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator);
+  ScaleParameter(ParameterGroup *group, const ParameterId& id, const ScaleConverter *scaling);
 
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
   Glib::ustring getLongName() const override;
@@ -21,6 +20,6 @@ class BaseScaleParameter : public Parameter
   typedef Parameter super;
 
  public:
-  BaseScaleParameter(ParameterGroup* group, const ParameterId& id, const ScaleConverter *scaling, tControlPositionValue def, tControlPositionValue coarseDenom, tControlPositionValue fineDenom);
+  BaseScaleParameter(ParameterGroup* group, const ParameterId& id, const ScaleConverter *scaling);
   void writeDocProperties(Writer& writer, tUpdateID knownRevision) const override;
 };

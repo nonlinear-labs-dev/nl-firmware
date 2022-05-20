@@ -23,10 +23,8 @@
 #include <presets/PresetManager.h>
 #include <http/UndoScope.h>
 
-ModulateableParameter::ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
-                                             tDisplayValue def, tControlPositionValue coarseDenominator,
-                                             tControlPositionValue fineDenominator)
-    : Parameter(group, id, scaling, def, coarseDenominator, fineDenominator)
+ModulateableParameter::ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling)
+    : Parameter(group, id, scaling)
     , m_modulationAmount(0)
     , m_modSource(MacroControls::NONE)
 {

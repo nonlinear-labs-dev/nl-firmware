@@ -13,6 +13,7 @@ class QuantizedValue : public ClippedValue
   typedef ClippedValue super;
 
  public:
+  QuantizedValue(Parameter* owner, const ScaleConverter *scale);
   QuantizedValue(Parameter *owner, const ScaleConverter *scale, tValueType def, tControlPositionValue coarseDenominator,
                  tControlPositionValue fineDenominator);
 
@@ -78,6 +79,8 @@ class QuantizedValue : public ClippedValue
   virtual void onFineQuantizedChanged(Initiator initiator, tControlPositionValue oldFine,
                                       tControlPositionValue newFine);
   void onRawValueChanged(Initiator initiator, tValueType oldRawValue, tValueType newRawValue) override;
+
+  void setFactoryDefault(double factoryDefault);
 
  private:
   [[nodiscard]] bool isValueCoarseQuantized() const;

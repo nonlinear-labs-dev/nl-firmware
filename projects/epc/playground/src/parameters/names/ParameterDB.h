@@ -20,11 +20,16 @@ class ParameterDB : public sigc::trackable
   [[nodiscard]] std::optional<Glib::ustring> getLongGroupName(const ParameterId& id) const;
   [[nodiscard]] Glib::ustring getDescription(int parameterNumber) const;
   [[nodiscard]] tControlPositionValue getSignalPathIndication(int id) const;
-
   static constexpr tControlPositionValue getInvalidSignalPathIndication()
   {
     return std::numeric_limits<tControlPositionValue>::max();
   }
+
+  static tControlPositionValue getCourseDenominator(const ParameterId& id);
+  static tControlPositionValue getFineDenominator(const ParameterId& id);
+  static tControlPositionValue getCourseModulationDenominator(const ParameterId& id);
+  static tControlPositionValue getFineModulationDenominator(const ParameterId& id);
+  static double getDefaultValue(const ParameterId& id);
 
  private:
   [[nodiscard]] Glib::ustring replaceInDynamicLabels(const Glib::ustring& name, const ParameterId& parameterID, SoundType type) const;

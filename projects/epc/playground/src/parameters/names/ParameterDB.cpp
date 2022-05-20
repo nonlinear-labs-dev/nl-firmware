@@ -157,3 +157,49 @@ Glib::ustring ParameterDB::replaceInDynamicLabels(const Glib::ustring &name, con
   else
     return C15::Placeholder::replaceLocal(name, type, parameterID.getVoiceGroup());
 }
+
+tControlPositionValue ParameterDB::getCourseDenominator(const ParameterId &id)
+{
+  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  return desc.m_coarse_cp;
+}
+
+tControlPositionValue ParameterDB::getFineDenominator(const ParameterId &id)
+{
+  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  return desc.m_fine_cp;
+}
+
+tControlPositionValue ParameterDB::getCourseModulationDenominator(const ParameterId &id)
+{
+  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  return desc.m_coarse_amt;
+}
+
+tControlPositionValue ParameterDB::getFineModulationDenominator(const ParameterId &id)
+{
+  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  return desc.m_fine_amt;
+}
+
+double ParameterDB::getDefaultValue(const ParameterId &id)
+{
+  auto parameterNumber = id.getNumber();
+  if(parameterNumber == C15::PID::Voice_Grp_Fade_From)
+  {
+    if(id.getVoiceGroup() == VoiceGroup::I)
+      return 1;
+    else
+      return 0;
+  }
+
+  if(parameterNumber == C15::PID::Split_Split_Point)
+  {
+    if(id.getVoiceGroup() == VoiceGroup::I)
+      return 0.5;
+    else
+      return 0.5 + 1 / 60.0;
+  }
+
+  return static_cast<double>(C15::ParameterList[id.getNumber()].m_initial);
+}

@@ -14,6 +14,7 @@
 #include <device-settings/HighlightChangedParametersSetting.h>
 #include <sigc++/sigc++.h>
 #include <device-settings/Settings.h>
+#include <parameter-db/generated/parameter_list.h>
 
 PanelUnitPresetMode::PanelUnitPresetMode()
     : m_bruteForceLedThrottler(std::chrono::milliseconds(40))
@@ -90,6 +91,7 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
                                             std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+  auto db = editBuffer->getParameterDB();
   auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
 
   for(const auto i : parameters)
@@ -124,7 +126,7 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
           break;
         }
       }
-      else if(signalFlowIndicator != invalidSignalFlowIndicator)
+      else if(signalFlowIndicator != ParameterDB::getInvalidSignalPathIndication())
       {
         if(parameter->getControlPositionValue() != signalFlowIndicator)
         {
@@ -147,38 +149,35 @@ void PanelUnitPresetMode::applyStateToLeds(std::array<TwoStateLED::LedState, num
 
 std::pair<bool, bool> PanelUnitPresetMode::trySpecialCaseParameter(const Parameter* selParam) const
 {
+  using namespace C15::PID;
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   if(selParam)
   {
     switch(selParam->getID().getNumber())
     {
-      //Env A/B Sustain
-      case 8:
+      case Env_A_Sus:
       {
-        auto splitLevel = eb->findParameterByID({ 332, selParam->getVoiceGroup() });
+        auto splitLevel = eb->findParameterByID({ Env_A_Elevate, selParam->getVoiceGroup() });
         return { true, splitLevel->getControlPositionValue() != 0 || selParam->getControlPositionValue() > 0 };
       }
-      case 27:
+      case Env_B_Sus:
       {
-        auto splitLevel = eb->findParameterByID({ 338, selParam->getVoiceGroup() });
+        auto splitLevel = eb->findParameterByID({ Env_B_Elevate, selParam->getVoiceGroup() });
         return { true, splitLevel->getControlPositionValue() != 0 || selParam->getControlPositionValue() > 0 };
       }
-        //Flanger Mix
-      case 223:
+      case Flanger_Mix:
       {
-        auto tremolo = eb->findParameterByID({ 389, selParam->getVoiceGroup() });
+        auto tremolo = eb->findParameterByID({ Flanger_Tremolo, selParam->getVoiceGroup() });
         return { true, tremolo->getControlPositionValue() > 0 || selParam->getControlPositionValue() != 0 };
       }
-        //Echo Mix
-      case 233:
+      case Echo_Mix:
       {
-        auto echoSend = eb->findParameterByID({ 342, selParam->getVoiceGroup() });
+        auto echoSend = eb->findParameterByID({ Echo_Send, selParam->getVoiceGroup() });
         return { true, echoSend->getControlPositionValue() > 0 && selParam->getControlPositionValue() > 0 };
       }
-        //Reverb Mix
-      case 241:
+      case Reverb_Mix:
       {
-        auto reverbSend = eb->findParameterByID({ 344, selParam->getVoiceGroup() });
+        auto reverbSend = eb->findParameterByID({ Reverb_Send, selParam->getVoiceGroup() });
         return { true, reverbSend->getControlPositionValue() > 0 && selParam->getControlPositionValue() > 0 };
       }
       default:

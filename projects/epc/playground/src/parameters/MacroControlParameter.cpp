@@ -30,7 +30,7 @@
 static ParameterId lastSelectedMacroControl = MacroControlsGroup::modSrcToParamId(MacroControls::MC1);
 
 MacroControlParameter::MacroControlParameter(ParameterGroup *group, const ParameterId &id)
-    : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>(), 0.5, 100, 1000)
+    : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>())
     , m_UiSelectedHardwareSourceParameterID(HardwareSourcesGroup::getPedal1ParameterID().getNumber(),
                                             id.getVoiceGroup())
     , m_lastMCViewUuid { "NONE" }

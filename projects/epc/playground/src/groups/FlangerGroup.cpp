@@ -25,45 +25,46 @@ FlangerGroup::~FlangerGroup()
 
 void FlangerGroup::init()
 {
-  appendParameter(new ModulateableParameter(
-      this, { C15::PID::Flanger_Time_Mod, getVoiceGroup() }, ScaleConverter::get<BipolarParabolic100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Flanger_Time_Mod, getVoiceGroup() },
+                                            ScaleConverter::get<BipolarParabolic100PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameter(this, { C15::PID::Flanger_Phase, getVoiceGroup() }, ScaleConverter::get<Linear180DegreeScaleConverter>(),
-                                0.5, 180, 1800));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Flanger_Phase, getVoiceGroup() },
+                                            ScaleConverter::get<Linear180DegreeScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Flanger_Rate, getVoiceGroup() },
-                                            ScaleConverter::get<Parabolic10HzScaleConverter>(), 0.317, 100, 1000));
+                                            ScaleConverter::get<Parabolic10HzScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Flanger_Time, getVoiceGroup() },
-                                            ScaleConverter::get<Parabolic50MsScaleConverter>(), 0.317, 125, 1250));
+                                            ScaleConverter::get<Parabolic50MsScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Flanger_Stereo, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar50PercentScaleConverter>(), 0, 50, 500));
+                                            ScaleConverter::get<LinearBipolar50PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, { C15::PID::Flanger_Feedback, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
-      ScaleConverter::get<LinearBipolar200PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(
+      new ModulateableParameterWithUnusualModUnit(this, { C15::PID::Flanger_Feedback, getVoiceGroup() },
+                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
+                                                  ScaleConverter::get<LinearBipolar200PercentScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Flanger_Cross_FB, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0.5, 100, 1000));
+                                            ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameter(this, { C15::PID::Flanger_Hi_Cut, getVoiceGroup() }, ScaleConverter::get<Linear60To140StScaleConverter>(),
-                                0.75, 80, 800));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Flanger_Hi_Cut, getVoiceGroup() },
+                                            ScaleConverter::get<Linear60To140StScaleConverter>()));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
       this, { C15::PID::Flanger_Mix, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
-      ScaleConverter::get<LinearBipolar200PercentScaleConverter>(), 0, 100, 1000));
+      ScaleConverter::get<LinearBipolar200PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameter(this, { C15::PID::Flanger_Envelope, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
-                                0.0, 100, 1000));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Flanger_Envelope, getVoiceGroup() },
+                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameter(
-      this, { C15::PID::Flanger_AP_Mod, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0.0, 100, 1000));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Flanger_AP_Mod, getVoiceGroup() },
+                                            ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, { C15::PID::Flanger_AP_Tune, getVoiceGroup() }, ScaleConverter::get<Linear0To140StScaleConverter>(),
-      ScaleConverter::get<LinearBipolar140StScaleConverter>(), 1.0, 140, 1400));
+  appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::Flanger_AP_Tune, getVoiceGroup() },
+                                                              ScaleConverter::get<Linear0To140StScaleConverter>(),
+                                                              ScaleConverter::get<LinearBipolar140StScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Flanger_Tremolo, getVoiceGroup() },
-                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0.0, 100, 1000));
+                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
 }

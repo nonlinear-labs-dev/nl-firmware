@@ -24,45 +24,46 @@ SVFilterGroup::~SVFilterGroup()
 void SVFilterGroup::init()
 {
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_In_A_B, getVoiceGroup() },
-                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0.0, 100, 1000));
+                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, { C15::PID::SV_Flt_Comb_Mix, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
-      ScaleConverter::get<LinearBipolar200PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(
+      new ModulateableParameterWithUnusualModUnit(this, { C15::PID::SV_Flt_Comb_Mix, getVoiceGroup() },
+                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
+                                                  ScaleConverter::get<LinearBipolar200PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, { C15::PID::SV_Flt_Cut, getVoiceGroup() }, ScaleConverter::get<Linear20To140StScaleConverter>(),
-      ScaleConverter::get<LinearBipolar120StScaleConverter>(), 0.5, 120, 1200));
+  appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::SV_Flt_Cut, getVoiceGroup() },
+                                                              ScaleConverter::get<Linear20To140StScaleConverter>(),
+                                                              ScaleConverter::get<LinearBipolar120StScaleConverter>()));
 
-  appendParameter(new Parameter(this, { C15::PID::SV_Flt_Cut_KT, getVoiceGroup() }, ScaleConverter::get<Linear200PercentScaleConverter>(),
-                                0.5, 200, 2000));
+  appendParameter(new Parameter(this, { C15::PID::SV_Flt_Cut_KT, getVoiceGroup() },
+                                ScaleConverter::get<Linear200PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::SV_Flt_Cut_Env_C, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100StScaleConverter>(), ScaleConverter::get<LinearBipolar100StScaleConverter>(),
-                                0, 100, 1000));
+  appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_Cut_Env_C, getVoiceGroup() },
+                                            ScaleConverter::get<LinearBipolar100StScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_Res, getVoiceGroup() },
-                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
+                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::SV_Flt_Res_KT, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 100, 1000));
+                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_Res_Env_C, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 100, 1000));
+                                            ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameterWithUnusualModUnit(
-      this, { C15::PID::SV_Flt_Spread, getVoiceGroup() }, ScaleConverter::get<LinearBipolar60StScaleConverter>(),
-      ScaleConverter::get<LinearBipolar120StScaleConverter>(), 0.2, 60, 600));
+  appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::SV_Flt_Spread, getVoiceGroup() },
+                                                              ScaleConverter::get<LinearBipolar60StScaleConverter>(),
+                                                              ScaleConverter::get<LinearBipolar120StScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_LBH, getVoiceGroup() },
-                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_Par, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 100, 1000));
+                                            ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
       this, { C15::PID::SV_Flt_FM, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
-      ScaleConverter::get<LinearBipolar200PercentScaleConverter>(), 0, 100, 1000));
+      ScaleConverter::get<LinearBipolar200PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_FM_A_B, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(),
-                                0.0, 100, 1000));
+  appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_FM_A_B, getVoiceGroup() },
+                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
 }

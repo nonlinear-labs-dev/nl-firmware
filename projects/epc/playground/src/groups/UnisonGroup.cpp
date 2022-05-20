@@ -27,13 +27,13 @@ void UnisonGroup::init()
 
   appendParameter(new ModulateableUnisonParameterWithUnusualModUnit(
       this, ParameterId { C15::PID::Unison_Detune, getVoiceGroup() }, ScaleConverter::get<Fine24STScaleConverter>(),
-      ScaleConverter::get<FineBipolar24STScaleConverter>(), 0, 240, 24000));
+      ScaleConverter::get<FineBipolar24STScaleConverter>()));
 
-  appendParameter(new ModulateableUnisonParameter(
-      this, ParameterId { C15::PID::Unison_Phase, getVoiceGroup() }, ScaleConverter::get<Linear360DegreeScaleConverter>(), 0, 360, 3600));
+  appendParameter(new ModulateableUnisonParameter(this, ParameterId { C15::PID::Unison_Phase, getVoiceGroup() },
+                                                    ScaleConverter::get<Linear360DegreeScaleConverter>()));
 
-  appendParameter(new ModulateableUnisonParameter(
-      this, ParameterId { C15::PID::Unison_Pan, getVoiceGroup() }, ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
+  appendParameter(new ModulateableUnisonParameter(this, ParameterId { C15::PID::Unison_Pan, getVoiceGroup() },
+                                                    ScaleConverter::get<Linear100PercentScaleConverter>()));
 }
 
 bool UnisonGroup::isUnisonParameter(const Parameter *parameter)
@@ -44,7 +44,8 @@ bool UnisonGroup::isUnisonParameter(const Parameter *parameter)
 bool UnisonGroup::isUnisonParameter(const ParameterId &id)
 {
   const auto n = id.getNumber();
-  return n == C15::PID::Unison_Voices || n == C15::PID::Unison_Detune || n == C15::PID::Unison_Pan || n == C15::PID::Unison_Phase;
+  return n == C15::PID::Unison_Voices || n == C15::PID::Unison_Detune || n == C15::PID::Unison_Phase
+      || n == C15::PID::Unison_Pan;
 }
 
 bool UnisonGroup::isUnisonVoicesParameter(const Parameter *parameter)

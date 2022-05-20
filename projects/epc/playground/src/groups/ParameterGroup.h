@@ -5,6 +5,7 @@
 #include "parameters/Parameter.h"
 #include "http/UpdateDocumentContributor.h"
 #include "tools/IntrusiveList.h"
+#include "parameters/ModulateableParameter.h"
 
 class PresetParameterGroup;
 class ParameterGroupSet;
