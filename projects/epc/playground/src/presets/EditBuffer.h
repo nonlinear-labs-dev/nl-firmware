@@ -189,7 +189,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *transaction, const Preset *preset,
                                                    VoiceGroup copyFrom, VoiceGroup copyTo);
   void initSplitPoint(UNDO::Transaction *transaction);
-  void initMasterPan(UNDO::Transaction *transaction);
+  void initMasterPanAndSeperation(UNDO::Transaction *transaction);
   void initFadeFrom(UNDO::Transaction *transaction, VoiceGroup vg);
   void defaultFadeParameters(UNDO::Transaction *transaction);
   void copyVoicesGroups(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);

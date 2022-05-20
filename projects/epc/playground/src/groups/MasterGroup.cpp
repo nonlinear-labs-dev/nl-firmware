@@ -30,6 +30,10 @@ void MasterGroup::init()
   appendParameter(new ModulateableParameter(this, { C15::PID::Master_Pan, VoiceGroup::Global },
                                             ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 100,
                                             1000));
+
+  appendParameter(new ModulateableParameter(this, { C15::PID::Master_Serial_FX, VoiceGroup::Global },
+                                            ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 100,
+                                            1000));
 }
 
 void MasterGroup::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
