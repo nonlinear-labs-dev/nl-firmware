@@ -4,7 +4,8 @@
 void     BNDR_Init(void);
 void     BNDR_SetLegacyMode(int const on);
 uint16_t BNDR_GetStatus(void);
-uint32_t BNDR_GetLastBender();
+uint32_t BNDR_GetLastBender(void);
 void     BNDR_Select_BenderTable(uint16_t const curve);
+void     BNDR_Select_BenderSensitivity(uint16_t const sensitivity);
 void     BNDR_Reset();
 void     BNDR_ProcessBender(void);

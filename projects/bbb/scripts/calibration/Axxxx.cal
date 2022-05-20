@@ -1,0 +1,4 @@
+[Header]
+<keybed-serial-number xxxx>,<test-force in mN>
+[Data]
+<61 adc valued for this test force, comma-seperated (and no blanks!)>

@@ -387,6 +387,9 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
       case PLAYCONTROLLER_SETTING_ID_ENABLE_LEGACY_BNDR:
         BNDR_SetLegacyMode(data[1]);
         break;
+      case PLAYCONTROLLER_SETTING_ID_BNDR_SETTLING_SENSITIVITY:
+        BNDR_Select_BenderSensitivity(data[1]);
+        break;
       default:
         // do nothing
         type = 0;  // to set a breakpoint only

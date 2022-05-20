@@ -113,6 +113,9 @@ Retry:
 #define AT_TEST_DATA        "at-test-data"
 #define AT_LEGACY           "legacy-at"
 #define BNDR_LEGACY         "legacy-bndr"
+#define BNDR_SETTL          "bndr-settling"
+#define BNDR_SETTL_INSENS   "insensitive"
+#define BNDR_SETTL_SENS     "sensitive"
 
 #define KEY_EMUL "key"
 
@@ -156,17 +159,20 @@ void Usage(void)
 #if LPC_KEYBED_DIAG
   puts("     key-counters : get diagnostic key error counters");
 #endif
-  puts("  set[ting] : mute-ctrl|sensors|key-logging|hws-to-ui|at-test-data|legacy-at|legacy-bndr|ae-cmd|system");
-  puts("     mute-ctrl: disable|mute|unmute : disable mute override or set/clear muting");
-  puts("     sensors: on|off                : turn raw sensor messages on/off");
-  puts("     key-logging: on|off            : turn key-logging messages on/off");
-  puts("     hws-to-ui: on|off              : turn hardware-source to UI messages on/off");
-  puts("     at-test-data: on|off           : turn collecting aftertouch test data on/off");
-  puts("     legacy-at: on|off              : turn legacy aftertouch mode on/off");
-  puts("     legacy-bndr: on|off            : turn legacy pitchbender mode on/off");
-  puts("     ae-cmd: tton|ttoff|def-snd     : Audio Engine Special, test-tone on/off, load default sound");
-  puts("     system: reboot|hb-reset|enable-midi");
-  puts("                                    : System Specials: reboot system, reset heartbeat counter, enable midi");
+  puts("  set[ting] : mute-ctrl|sensors|key-logging|hws-to-ui|at-test-data");
+  puts("              |legacy-at|legacy-bndr|bndr-settling|ae-cmd|system");
+  puts("     mute-ctrl disable|mute|unmute : disable mute override or set/clear muting");
+  puts("     sensors on|off                : turn raw sensor messages on/off");
+  puts("     key-logging on|off            : turn key-logging messages on/off");
+  puts("     hws-to-ui on|off              : turn hardware-source to UI messages on/off");
+  puts("     at-test-data on|off           : turn collecting aftertouch test data on/off");
+  puts("     legacy-at on|off              : turn legacy aftertouch mode on/off");
+  puts("     legacy-bndr on|off            : turn legacy pitchbender mode on/off");
+  puts("     bndr-settling insensitive|sensitive");
+  puts("                                   : pitchbender auto-zero settling sensitivity");
+  puts("     ae-cmd tton|ttoff|def-snd     : Audio Engine Special, test-tone on/off, load default sound");
+  puts("     system reboot|hb-reset|enable-midi");
+  puts("                                   : System Specials: reboot system, reset heartbeat counter, enable midi");
   puts("  key <note-nr> <time>      : send emulated key");
   puts("     <note-nr>              : MIDI key number, 60=\"C3\"");
   puts("     <time>                 : key time (~1/velocity) in us (1000...525000), negative means key release");
@@ -505,6 +511,26 @@ int main(int argc, char const *argv[])
         return 0;
       }
       puts("set legacy-bndr : illegal parameter");
+      Usage();
+    }
+
+    // Bender sensitivity
+    if (strncmp(argv[2], BNDR_SETTL, sizeof BNDR_SETTL) == 0)
+    {
+      SET_DATA[2] = PLAYCONTROLLER_SETTING_ID_BNDR_SETTLING_SENSITIVITY;
+      if (strncmp(argv[3], BNDR_SETTL_INSENS, sizeof BNDR_SETTL_INSENS) == 0)
+      {
+        SET_DATA[3] = 0;
+        writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
+        return 0;
+      }
+      if (strncmp(argv[3], BNDR_SETTL_SENS, sizeof BNDR_SETTL_SENS) == 0)
+      {
+        SET_DATA[3] = 1;
+        writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
+        return 0;
+      }
+      puts("set bndr-settling : illegal parameter");
       Usage();
     }
 
