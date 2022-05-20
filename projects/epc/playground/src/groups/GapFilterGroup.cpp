@@ -25,23 +25,23 @@ void GapFilterGroup::init()
 {
   appendParameter(new ModulateableParameterWithUnusualModUnit(
       this, { C15::PID::Gap_Flt_Center, getVoiceGroup() }, ScaleConverter::get<Linear24To120StScaleConverter>(),
-      ScaleConverter::get<LinearBipolar96StScaleConverterCoarse>(), 0.5, 96, 960));
+      ScaleConverter::get<LinearBipolar96StScaleConverterCoarse>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Gap_Flt_Stereo, getVoiceGroup() },
-                                            ScaleConverter::get<LinearBipolar36StScaleConverter>(), 0, 72, 720));
+                                            ScaleConverter::get<LinearBipolar36StScaleConverter>()));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
       this, { C15::PID::Gap_Flt_Gap, getVoiceGroup() }, ScaleConverter::get<Linear96StScaleConverter>(),
-      ScaleConverter::get<LinearBipolar96StScaleConverterCoarse>(), 12.0 / 96.0, 96, 960));
+      ScaleConverter::get<LinearBipolar96StScaleConverterCoarse>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Gap_Flt_Res, getVoiceGroup() },
-                                            ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
+                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
       this, { C15::PID::Gap_Flt_Bal, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
-      ScaleConverter::get<LinearBipolar200PercentScaleConverter>(), 0, 100, 1000));
+      ScaleConverter::get<LinearBipolar200PercentScaleConverter>()));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
       this, { C15::PID::Gap_Flt_Mix, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
-      ScaleConverter::get<LinearBipolar200PercentScaleConverter>(), 0, 100, 1000));
+      ScaleConverter::get<LinearBipolar200PercentScaleConverter>()));
 }

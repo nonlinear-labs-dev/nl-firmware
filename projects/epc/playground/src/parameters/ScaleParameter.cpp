@@ -7,12 +7,11 @@
 #include <xml/Writer.h>
 #include "scale-converters/dimension/NoteDimension.h"
 #include "parameter_declarations.h"
+#include "parameters/scale-converters/Fine12STScaleConverter.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 
-ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId& id, const ScaleConverter *scaling,
-                               tControlPositionValue def, tControlPositionValue coarseDenominator,
-                               tControlPositionValue fineDenominator)
-    : super(group, id, scaling, scaling, def, coarseDenominator, fineDenominator)
+ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId& id, const ScaleConverter *scaling)
+    : super(group, id, scaling, ScaleConverter::get<Fine24STScaleConverter>())
 {
 }
 
@@ -51,10 +50,8 @@ Glib::ustring ScaleParameter::getLongName() const
   return super::getLongName();
 }
 
-BaseScaleParameter::BaseScaleParameter(ParameterGroup *group, const ParameterId &id, const ScaleConverter *scaling,
-                                       tControlPositionValue def, tControlPositionValue coarseDenom,
-                                       tControlPositionValue fineDenom)
-: super(group, id, scaling, def, coarseDenom, fineDenom)
+BaseScaleParameter::BaseScaleParameter(ParameterGroup *group, const ParameterId &id, const ScaleConverter *scaling)
+: super(group, id, scaling)
 {
 }
 

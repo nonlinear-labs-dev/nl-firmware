@@ -4,6 +4,31 @@
 #include <presets/PresetParameter.h>
 #include <catch.hpp>
 
+TEST_CASE("Init sound stored as single and used in single")
+{
+  auto pm = TestHelper::getPresetManager();
+  auto eb = TestHelper::getEditBuffer();
+  EditBufferUseCases useCase(*eb);
+  SoundUseCases soundUseCases(eb, pm);
+
+  TestHelper::initSingleEditBuffer();
+
+  auto pI = eb->findParameterByID({ C15::PID::ParameterID::Env_A_Att, VoiceGroup::I });
+  auto pII = eb->findParameterByID({ C15::PID::ParameterID::Env_A_Att, VoiceGroup::II });
+
+  ParameterUseCases p1UseCase(pI);
+
+  p1UseCase.setControlPosition(0.25);
+  useCase.convertToSingle(VoiceGroup::I);
+  soundUseCases.storeInitSound();
+  p1UseCase.setControlPosition(1);
+
+  TestHelper::initSingleEditBuffer();
+  useCase.initSound(Defaults::UserDefault);
+
+  CHECK(pI->getControlPositionValue() == 0.25);
+}
+
 TEST_CASE("Init sound stored as single but used in dual")
 {
   auto pm = TestHelper::getPresetManager();

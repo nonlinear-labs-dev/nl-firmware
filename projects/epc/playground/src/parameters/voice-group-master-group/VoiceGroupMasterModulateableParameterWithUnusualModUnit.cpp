@@ -5,9 +5,8 @@
 #include <groups/ParameterGroup.h>
 
 VoiceGroupMasterModulateableParameterWithUnusualModUnit::VoiceGroupMasterModulateableParameterWithUnusualModUnit(
-    ParameterGroup* group, const ParameterId& id, const ScaleConverter* scale, const ScaleConverter* modScale,
-    tControlPositionValue def, int coarse, int fine)
-    : ModulateableParameterWithUnusualModUnit(group, id, scale, modScale, def, coarse, fine)
+    ParameterGroup* group, const ParameterId& id, const ScaleConverter* scale, const ScaleConverter* modScale)
+    : ModulateableParameterWithUnusualModUnit(group, id, scale, modScale)
 {
 }
 

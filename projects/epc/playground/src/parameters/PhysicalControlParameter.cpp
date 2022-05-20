@@ -20,7 +20,7 @@
 
 PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
                                                    tDisplayValue def, int coarseDenominator, int fineDenominator)
-    : super(group, id, scaling, def, coarseDenominator, fineDenominator)
+    : super(group, id, scaling)
 {
 }
 

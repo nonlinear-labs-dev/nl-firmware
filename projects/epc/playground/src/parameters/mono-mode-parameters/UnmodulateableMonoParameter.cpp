@@ -3,11 +3,9 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/UnmodulatebaleParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 
-UnmodulateableMonoParameter::UnmodulateableMonoParameter(ParameterGroup *group, const ParameterId &id,
-                                                         const ScaleConverter *scaling, tControlPositionValue def,
-                                                         tControlPositionValue coarseDenominator,
-                                                         tControlPositionValue fineDenominator)
-    : Parameter { group, id, scaling, def, coarseDenominator, fineDenominator }
+UnmodulateableMonoParameter::UnmodulateableMonoParameter(ParameterGroup* group, const ParameterId& id,
+                                                         const ScaleConverter* scaling)
+    : Parameter { group, id, scaling }
 {
 }
 

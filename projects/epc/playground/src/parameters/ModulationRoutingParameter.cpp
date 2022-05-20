@@ -11,7 +11,7 @@
 
 ModulationRoutingParameter::ModulationRoutingParameter(ParameterGroup *group, const ParameterId& id, tSrcParameterPtr srcParam,
                                                        tMCParameterPtr tgtParam, const ScaleConverter *scaling)
-    : super(group, id, scaling, 0, 100, 1000)
+    : super(group, id, scaling)
     , m_tgtParameter(tgtParam)
     , m_srcParameter(srcParam)
 {

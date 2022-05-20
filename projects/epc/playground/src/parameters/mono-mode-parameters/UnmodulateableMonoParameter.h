@@ -5,9 +5,7 @@
 class UnmodulateableMonoParameter : public Parameter
 {
  public:
-  UnmodulateableMonoParameter(ParameterGroup *group, const ParameterId &id, const ScaleConverter *scaling,
-                              tControlPositionValue def, tControlPositionValue coarseDenominator,
-                              tControlPositionValue fineDenominator);
+  UnmodulateableMonoParameter(ParameterGroup* group, const ParameterId& id, const ScaleConverter* scaling);
 
   Layout *createLayout(FocusAndMode focusAndMode) const override;
 };
