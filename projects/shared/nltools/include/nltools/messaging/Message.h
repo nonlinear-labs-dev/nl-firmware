@@ -688,6 +688,7 @@ namespace nltools
         ParameterGroups::ModulateableParameter volume;
         ParameterGroups::ModulateableParameter tune;
         ParameterGroups::ModulateableParameter pan;
+        ParameterGroups::ModulateableParameter serialFX;
       };
 
       inline bool operator==(const Parameter& lhs, const Parameter& rhs)
@@ -728,6 +729,8 @@ namespace nltools
       {
         auto ret = lhs.volume == rhs.volume;
         ret &= lhs.tune == rhs.tune;
+        ret &= lhs.pan == rhs.pan;
+        ret &= lhs.serialFX == rhs.serialFX;
         return ret;
       }
     }

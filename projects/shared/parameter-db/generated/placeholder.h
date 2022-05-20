@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       placeholder.h
-    @date       2022-05-18, 14:52
+    @date       2022-05-19, 16:05
     @version    1.7B-9
     @author     M. Seeber
     @brief      placeholders for parameter label/info string replacements

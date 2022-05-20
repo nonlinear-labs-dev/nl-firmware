@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_declarations.h
-    @date       2022-05-18, 14:52
+    @date       2022-05-19, 16:05
     @version    1.7B-9
     @author     M. Seeber
     @brief      descriptors for all parameter-related details
@@ -187,6 +187,7 @@ namespace C15
       Master_Volume,
       Master_Tune,
       Master_Pan,
+      Master_Serial_FX,
       Scale_Offset_0,
       Scale_Offset_1,
       Scale_Offset_2,
@@ -441,6 +442,7 @@ namespace C15
     {
       Master_Volume,
       Master_Pan,
+      Master_Serial_FX,
       _LENGTH_
     };
 
@@ -710,6 +712,8 @@ namespace C15
     enum class Global_Signals
     {
       Master_Tune,
+      Master_FX_I_to_II,
+      Master_FX_II_to_I,
       Scale_Base_Key_Pos,
       Scale_Base_Key_Start,
       Scale_Base_Key_Dest,
@@ -1191,7 +1195,8 @@ namespace C15
       Aftertouch_Send = 403,
       Ribbon_1_Send = 404,
       Ribbon_2_Send = 405,
-      Master_Pan = 406
+      Master_Pan = 406,
+      Master_Serial_FX = 408
     };
 
   }  // namespace C15::PID

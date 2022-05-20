@@ -134,6 +134,13 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditB
   pan.modulationAmount = panParameter->getModulationAmount();
   pan.mc = panParameter->getModulationSource();
 
+  auto sepParam = editBuffer.template findAndCastParameterByID<ModulateableParameter>({C15::PID::Master_Serial_FX, VoiceGroup::Global});
+  auto& sep = msg.master.serialFX;
+  sep.id = sepParam->getID().getNumber();
+  sep.controlPosition = sepParam->getControlPositionValue();
+  sep.modulationAmount = sepParam->getModulationAmount();
+  sep.mc = sepParam->getModulationSource();
+
   for(auto &g : editBuffer.getParameterGroups(VoiceGroup::Global))
   {
     for(auto p : g->getParameters())

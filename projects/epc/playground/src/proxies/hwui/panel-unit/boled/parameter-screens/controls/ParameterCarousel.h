@@ -36,4 +36,5 @@ class ParameterCarousel : public Carousel
   void setupChildControlsForScaleParameterCarousel(Parameter* selectedParameter, const std::list<int>& buttonAssignments);
   void setupChildControlsForParameterWithoutButtonMapping(Parameter *selectedParameter);
   void decorateMiniParameterControlForScaleParameterCarousel(const Parameter *param, MiniParameter *miniParam) const;
+  void setupChildControlsThatDontFit(Parameter *selectedParameter, const std::list<int> &buttonAssignments);
 };
