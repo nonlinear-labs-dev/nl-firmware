@@ -4,7 +4,7 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableHorizontalSlider;
 import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnob;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSlider;
-import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSwitch;
+import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceKeytracking;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
 class FluctColumn extends ParameterColumn {

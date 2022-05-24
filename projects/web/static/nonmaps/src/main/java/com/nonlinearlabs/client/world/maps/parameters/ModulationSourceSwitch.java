@@ -1,6 +1,6 @@
 package com.nonlinearlabs.client.world.maps.parameters;
-
 import com.nonlinearlabs.client.world.maps.MapsLayout;
+import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 
 public class ModulationSourceSwitch extends ModulationSourceHighPriority {
 
@@ -17,4 +17,10 @@ public class ModulationSourceSwitch extends ModulationSourceHighPriority {
 			}
 		});
 	}
+
+    @Override
+    protected void startMouseEdit() {
+        currentParameterChanger = EditBufferUseCases.get().startEditParameterValue(getParameterNumber(),
+                getPixRect().getWidth() / 2);
+    }
 }

@@ -69,6 +69,11 @@ public class MonoColumn extends ParameterColumn {
             protected int getBackgroundRoundings() {
                 return Rect.ROUNDING_BOTTOM;
             }
+
+            @Override
+            protected void startMouseEdit() {
+                currentParameterChanger = EditBufferUseCases.get().startEditParameterValue(getParameterNumber(), 200);
+            }
         });
     }
 }
