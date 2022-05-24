@@ -14,12 +14,7 @@ public abstract class ModulationSourceHighPriority extends ModulationSource {
 
 		if(presenter.modulation.isModulateable)
 		{
-			modSrcLabel = addChild(new ModulationSourceLabel(this, getParameterNumber()) {
-				@Override
-				public double getLevelOfDetailForFullVisibility() {
-					return getParent().getLevelOfDetailForFullVisibility() + 1;
-				}
-			});
+			modSrcLabel = addChild(new ModulationSourceLabel(this, getParameterNumber()));
 		}
 	}
 

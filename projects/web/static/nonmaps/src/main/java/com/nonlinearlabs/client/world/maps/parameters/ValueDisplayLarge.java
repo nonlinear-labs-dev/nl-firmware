@@ -25,7 +25,7 @@ public class ValueDisplayLarge extends ValueDisplay {
 
 	@Override
 	protected double getMinHeight() {
-		return 15;
+		return 0;
 	}
 
 	@Override

@@ -45,6 +45,11 @@ public class ModulationSourceLabel extends Label {
 	}
 
 	@Override
+	protected double getMinHeight() {
+		return getBasicHeight();
+	}
+
+	@Override
 	protected String getDisplayText() {
 		return presenter.modulation.modulationSourceLabel;
 	}
