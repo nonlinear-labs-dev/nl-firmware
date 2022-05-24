@@ -1,10 +1,8 @@
 package com.nonlinearlabs.client.world.overlay.html.setup;
 
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -30,8 +28,6 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.xhr.client.XMLHttpRequest;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.ServerProxy;
-import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.presetManager.Bank;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
@@ -62,7 +58,6 @@ import com.nonlinearlabs.client.presenters.LocalSettings;
 import com.nonlinearlabs.client.presenters.LocalSettingsProvider;
 import com.nonlinearlabs.client.presenters.MidiSettings;
 import com.nonlinearlabs.client.presenters.MidiSettingsProvider;
-import com.nonlinearlabs.client.tools.Pair;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.useCases.SystemSettings;
 import com.nonlinearlabs.client.world.overlay.html.Range;
@@ -435,17 +430,16 @@ public class Setup extends Composite {
 				upload.getElement().removeClassName("hidden");
 				upload.click();
 				upload.getElement().addClassName("hidden");
-
-				chooseFileButton.getElement().addClassName("hidden");
-				
-				choosenFileLabel.getElement().removeClassName("hidden");
-				choosenFileLabel.setText("Uploading...");
 			}
 		});
 
 		upload.addChangeHandler(new ChangeHandler() {
 			@Override
 			public void onChange(ChangeEvent e) {
+				chooseFileButton.getElement().addClassName("hidden");
+				choosenFileLabel.getElement().removeClassName("hidden");
+				choosenFileLabel.setText("Uploading...");
+
 				updateSpinner.removeClassName("hidden");
 
 				loadUpdateFile(e.getNativeEvent(), new TarUploadedHandler(){
@@ -457,6 +451,7 @@ public class Setup extends Composite {
 							public void onUploadFinished(XMLHttpRequest answer) {
 								choosenFileLabel.getElement().addClassName("hidden");
 								chooseFileButton.getElement().removeClassName("hidden");
+								upload.getElement().setPropertyString("value", "");
 								updateSpinner.addClassName("hidden");
 							}
 						});
@@ -464,7 +459,6 @@ public class Setup extends Composite {
 				});
 			}
 		});
-
 
 		int entryIndex = 0;
 		for(RoutingsMap m: m_routingMap) {
