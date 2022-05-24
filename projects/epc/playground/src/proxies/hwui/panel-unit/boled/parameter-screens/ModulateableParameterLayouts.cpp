@@ -44,6 +44,8 @@
 #include "use-cases/ModParameterUseCases.h"
 #include "groups/ScaleGroup.h"
 #include "use-cases/EditBufferUseCases.h"
+#include "groups/MasterGroup.h"
+#include "parameter_declarations.h"
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
 {
@@ -84,18 +86,12 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
 void ModulateableParameterSelectLayout2::onSelectedParameterChanged(Parameter *, Parameter *newParam)
 {
   m_paramConnection.disconnect();
-  m_groupConnection.disconnect();
 
   if(newParam)
   {
     m_paramConnection = newParam->onParameterChanged(
         sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onCurrentParameterChanged));
     m_isScaleParameter = ScaleGroup::isScaleParameter(newParam);
-
-    if(m_isScaleParameter)
-    {
-      m_groupConnection = newParam->getParentGroup()->onGroupChanged(sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onScaleGroupChanged));
-    }
   }
 }
 
@@ -232,9 +228,15 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
       case Buttons::BUTTON_A:
         if(m_mode == Mode::ParameterValue && !isCurrentParameterDisabled())
         {
-          if(m_isScaleParameter && resetEnabled() && m_buttonA)
+          if(MasterGroup::isMasterParameter(modParam))
           {
-            m_buttonA->toggleHighlight();
+            EditBufferUseCases ebUseCases(*modParam->getParentEditBuffer());
+            ebUseCases.selectParameter({C15::PID::Scale_Base_Key, VoiceGroup::Global}, true);
+          }
+          else if(ScaleGroup::isScaleParameter(modParam))
+          {
+            EditBufferUseCases ebUseCases(*modParam->getParentEditBuffer());
+            ebUseCases.selectParameter({C15::PID::Master_Volume, VoiceGroup::Global}, true);
           }
           else
           {
@@ -276,14 +278,6 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
           return true;
         }
         break;
-
-      case Buttons::BUTTON_ENTER:
-        if(m_isScaleParameter && m_buttonA->isHighlight())
-        {
-          reset();
-          m_buttonA->setHighlight(false);
-          return true;
-        }
     }
   }
 
@@ -558,7 +552,7 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
       break;
   }
 
-  updateResetButton();
+  updateMasterButton();
 }
 
 bool ModulateableParameterSelectLayout2::isCurrentParameterDisabled() const
@@ -652,28 +646,12 @@ ModulateableParameterSelectLayout2::Mode ModulateableParameterSelectLayout2::get
   return m_mode;
 }
 
-void ModulateableParameterSelectLayout2::updateResetButton()
+void ModulateableParameterSelectLayout2::updateMasterButton()
 {
   if(m_isScaleParameter)
-    m_buttonA->setText(StringAndSuffix { resetEnabled() ? "Reset" : "" });
-}
-
-bool ModulateableParameterSelectLayout2::resetEnabled() const
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto scaleGroup = dynamic_cast<ScaleGroup*>(eb->getParameterGroupByID({ "Scale", VoiceGroup::Global }));
-  return scaleGroup->isAnyOffsetChanged();
-}
-
-void ModulateableParameterSelectLayout2::reset()
-{
-  EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
-  ebUseCases.resetCustomScale();
-}
-
-void ModulateableParameterSelectLayout2::onScaleGroupChanged()
-{
-  updateResetButton();
+    m_buttonA->setText(StringAndSuffix { "Master..." });
+  else
+    m_buttonA->setText(StringAndSuffix { "" });
 }
 
 ModulateableParameterEditLayout2::ModulateableParameterEditLayout2()

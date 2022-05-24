@@ -1,6 +1,7 @@
 #include "UnmodulatebaleParameterLayouts.h"
 #include "groups/ScaleGroup.h"
 #include "use-cases/EditBufferUseCases.h"
+#include "parameter_declarations.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterBarSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
@@ -85,17 +86,10 @@ bool UnmodulateableParameterSelectLayout2::onButton(Buttons i, bool down, Button
       switch(i)
       {
         case Buttons::BUTTON_A:
-          if(m_resetButton)
+          if(m_resetButton && m_isScaleParameter)
           {
-            m_resetButton->toggleHighlight();
-            return true;
-          }
-          break;
-        case Buttons::BUTTON_ENTER:
-          if(m_resetButton && m_resetButton->isHighlight())
-          {
-            resetScaleGroup();
-            m_resetButton->setHighlight(false);
+            EditBufferUseCases ebUseCases(*getCurrentParameter()->getParentEditBuffer());
+            ebUseCases.selectParameter({C15::PID::Master_Volume, VoiceGroup::Global}, true);
             return true;
           }
           break;
@@ -116,36 +110,20 @@ void UnmodulateableParameterSelectLayout2::onParameterSelectionChanged(Parameter
 
     if(m_isScaleParameter)
     {
-      m_signalScaleChanged = newP->getParentGroup()->onGroupChanged(
-          sigc::mem_fun(this, &UnmodulateableParameterSelectLayout2::onScaleGroupChanged));
+      updateMasterButton();
     }
   }
 }
 
-void UnmodulateableParameterSelectLayout2::onScaleGroupChanged()
-{
-  updateResetButton();
-}
-
-void UnmodulateableParameterSelectLayout2::updateResetButton()
+void UnmodulateableParameterSelectLayout2::updateMasterButton()
 {
   if(m_resetButton)
   {
-    m_resetButton->setText(StringAndSuffix { resetEnabled() ? "Reset" : "" });
+    if(m_isScaleParameter)
+      m_resetButton->setText(StringAndSuffix { "Master..." });
+    else
+      m_resetButton->setText(StringAndSuffix { "" });
   }
-}
-
-bool UnmodulateableParameterSelectLayout2::resetEnabled()
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto scaleGroup = dynamic_cast<ScaleGroup *>(eb->getParameterGroupByID({ "Scale", VoiceGroup::Global }));
-  return scaleGroup->isAnyOffsetChanged();
-}
-
-void UnmodulateableParameterSelectLayout2::resetScaleGroup()
-{
-  EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
-  ebUseCases.resetCustomScale();
 }
 
 UnmodulateableParameterEditLayout2::UnmodulateableParameterEditLayout2()

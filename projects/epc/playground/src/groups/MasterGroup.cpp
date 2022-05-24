@@ -39,3 +39,13 @@ void MasterGroup::init()
 void MasterGroup::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
 }
+
+bool MasterGroup::isMasterParameter(const Parameter *p)
+{
+  if(p)
+  {
+    auto id = p->getID().getNumber();
+    return id == C15::PID::Master_Volume || id == C15::PID::Master_Tune || id == C15::PID::Master_Serial_FX || id == C15::PID::Master_Pan;
+  }
+  return false;
+}

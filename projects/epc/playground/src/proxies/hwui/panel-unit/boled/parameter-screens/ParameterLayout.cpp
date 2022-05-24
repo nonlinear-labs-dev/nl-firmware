@@ -4,6 +4,7 @@
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/ParameterUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
+#include "groups/ScaleGroup.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
@@ -191,7 +192,15 @@ void ParameterSelectLayout2::init()
 
 Carousel *ParameterSelectLayout2::createCarousel(const Rect &rect)
 {
-  return new ParameterCarousel(rect);
+  auto parameter = getCurrentParameter();
+  if(!ScaleGroup::isScaleParameter(parameter))
+  {
+    return new ParameterCarousel(rect);
+  }
+  else
+  {
+    return new ScaleParameterCarousel(rect);
+  }
 }
 
 void ParameterSelectLayout2::setCarousel(Carousel *c)

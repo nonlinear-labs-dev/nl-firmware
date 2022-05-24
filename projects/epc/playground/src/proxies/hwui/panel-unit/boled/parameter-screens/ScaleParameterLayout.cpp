@@ -8,24 +8,12 @@
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ScaleParameterLayout.h>
 #include "use-cases/EditBufferUseCases.h"
-
-void toggleHightlight(Control* c);
+#include "parameter_declarations.h"
 
 void ScaleParameterSelectLayout::init()
 {
   super::init();
-
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  eb->getParameterGroupByID({ "Scale", VoiceGroup::Global })
-      ->onGroupChanged(sigc::mem_fun(this, &ScaleParameterSelectLayout::updateResetButton));
-
-  m_resetButton = addControl(new Button("", Buttons::BUTTON_A));
-  updateResetButton();
-}
-
-void ScaleParameterSelectLayout::updateResetButton()
-{
-  m_resetButton->setText(StringAndSuffix { resetEnabled() ? "Reset" : "" });
+  m_masterButton = addControl(new Button("Master...", Buttons::BUTTON_A));
 }
 
 bool ScaleParameterSelectLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
@@ -39,27 +27,15 @@ bool ScaleParameterSelectLayout::onButton(Buttons i, bool down, ButtonModifiers 
     {
 
       case Buttons::BUTTON_A:
-        if(resetEnabled())
         {
-          toggleHightlight(m_resetButton);
+          auto eb = Application::get().getPresetManager()->getEditBuffer();
+          EditBufferUseCases ebUseCases(*eb);
+          ebUseCases.selectParameter({C15::PID::Master_Volume, VoiceGroup::Global}, true);
         }
         return true;
     }
   }
   return false;
-}
-
-void ScaleParameterSelectLayout::reset()
-{
-  EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
-  ebUseCases.resetCustomScale();
-}
-
-bool ScaleParameterSelectLayout::resetEnabled() const
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto scaleGroup = dynamic_cast<ScaleGroup*>(eb->getParameterGroupByID({ "Scale", VoiceGroup::Global }));
-  return scaleGroup->isAnyOffsetChanged();
 }
 
 Carousel* ScaleParameterSelectLayout::createCarousel(const Rect& rect)
@@ -99,9 +75,4 @@ void ScaleParameterSelectLayout::selectParameter(int inc)
   }
 
   ebUseCases.selectParameter({ id, VoiceGroup::Global }, true);
-}
-
-void toggleHightlight(Control* c)
-{
-  c->setHighlight(!c->isHighlight());
 }

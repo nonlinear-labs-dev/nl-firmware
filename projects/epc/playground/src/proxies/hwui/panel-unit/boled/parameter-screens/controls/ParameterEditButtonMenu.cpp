@@ -14,6 +14,7 @@
 #include "parameters/HardwareSourceSendParameter.h"
 #include "parameters/PhysicalControlParameter.h"
 #include "use-cases/EditBufferUseCases.h"
+#include "groups/ScaleGroup.h"
 
 int ParameterEditButtonMenu::s_lastAction = 0;
 
@@ -53,19 +54,31 @@ void ParameterEditButtonMenu::addActions()
   }
 
   if(!eb->getSelected(vg)->getParentGroup()->areAllParametersLocked())
-    addButton("Lock all", std::bind(&ParameterEditButtonMenu::lockAll, this));
+    addButton("Lock all", [this] { lockAll(); });
 
   if(eb->hasLocks(vg))
-    addButton("Unlock all", std::bind(&ParameterEditButtonMenu::unlockAll, this));
+    addButton("Unlock all", [this] { unlockAll(); });
 
   if(auto selectedParameter = eb->getSelected(vg))
   {
     if(auto sendParameter = dynamic_cast<const HardwareSourceSendParameter*>(selectedParameter))
-      addButton("Select >", std::bind(&ParameterEditButtonMenu::selectParameter, this, sendParameter->getSiblingParameter()->getID()));
+      addButton("Select >", [this, capture0 = sendParameter->getSiblingParameter()->getID()] { selectParameter(capture0); });
 
     if(auto hardwareParameter = dynamic_cast<const PhysicalControlParameter*>(selectedParameter))
       if(!hardwareParameter->isLocalEnabled())
-        addButton("< Select", std::bind(&ParameterEditButtonMenu::selectParameter, this, hardwareParameter->getSendParameter()->getID()));
+        addButton("< Select", [this, capture0 = hardwareParameter->getSendParameter()->getID()] { selectParameter(capture0); });
+
+    if(ScaleGroup::isScaleParameter(selectedParameter))
+    {
+      auto scaleGroup = dynamic_cast<ScaleGroup*>(eb->getParameterGroupByID({ "Scale", VoiceGroup::Global }));
+      if(scaleGroup->isAnyOffsetChanged())
+      {
+        addButton("Reset Scale", [](){
+          EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
+          ebUseCases.resetCustomScale();
+        });
+      }
+    }
   }
 
   eb->onSelectionChanged(sigc::mem_fun(this, &ParameterEditButtonMenu::onParameterSelectionChanged), vg);

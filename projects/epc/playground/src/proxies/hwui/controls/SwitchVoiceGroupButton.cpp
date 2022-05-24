@@ -1,4 +1,6 @@
 #include "SwitchVoiceGroupButton.h"
+#include "groups/MasterGroup.h"
+#include "groups/ScaleGroup.h"
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
@@ -35,8 +37,18 @@ void SwitchVoiceGroupButton::rebuild()
 
   if(allowToggling(selected, eb))
     setText(StringAndSuffix { "I / II", 0 });
+  else if(MasterGroup::isMasterParameter(selected))
+  {
+    setText(StringAndSuffix { "Scale...", 0 });
+  }
+  else if(ScaleGroup::isScaleParameter(selected))
+  {
+    setText(StringAndSuffix { "Master...", 0 });
+  }
   else
+  {
     setText(StringAndSuffix { "", 0 });
+  }
 }
 
 void SwitchVoiceGroupButton::onParameterSelectionChanged(Parameter* oldSelected, Parameter* newSelection)
@@ -69,4 +81,9 @@ bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const Edit
     return layerAndGroupAllowToggling;
   else
     return false;
+}
+
+bool SwitchVoiceGroupButton::allowScaleFocusSwitch(const Parameter* selected)
+{
+  return MasterGroup::isMasterParameter(selected);
 }
