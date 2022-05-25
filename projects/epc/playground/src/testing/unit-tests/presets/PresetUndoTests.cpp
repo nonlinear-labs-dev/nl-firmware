@@ -159,8 +159,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"PresetParameterGroup")
 
       void init()
       {
-        appendParameter(new Parameter(this, { 1, VoiceGroup::I }, ScaleConverter::get<Linear100PercentScaleConverter>(),
-                                      0, 100, 1000));
+        appendParameter(new Parameter(this, { 1, VoiceGroup::I }, ScaleConverter::get<Linear100PercentScaleConverter>()));
       }
     };
 

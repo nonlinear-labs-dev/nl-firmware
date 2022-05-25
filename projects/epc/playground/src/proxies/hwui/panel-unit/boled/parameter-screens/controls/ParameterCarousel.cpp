@@ -83,6 +83,10 @@ void ParameterCarousel::setupChildControls(Parameter* selectedParameter, const s
   {
     setupChildControlsForScaleParameterCarousel(selectedParameter, buttonAssignments);
   }
+  else
+  {
+    setupChildControlsThatDontFit(selectedParameter, buttonAssignments);
+  }
 }
 
 void ParameterCarousel::setupChildControlsThatFit(Parameter* selectedParameter, const std::list<int>& buttonAssignments)
@@ -185,38 +189,41 @@ void ParameterCarousel::turn()
 
 void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Parameter* selectedParameter)
 {
+  using namespace C15::PID;
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto soundType = eb->getType();
   const auto isDualSound = soundType == SoundType::Layer || soundType == SoundType::Split;
   const auto paramID = selectedParameter->getID().getNumber();
 
-  if(paramID == C15::PID::Master_Volume || paramID == C15::PID::Master_Tune || paramID == C15::PID::Master_Pan)
+  if(paramID == Master_Volume || paramID == Master_Tune || paramID == Master_Pan || paramID == Master_Serial_FX)
   {
     if(isDualSound)
-      setupChildControls(selectedParameter, { C15::PID::Master_Volume, C15::PID::Master_Tune, C15::PID::Master_Pan, C15::PID::Scale_Base_Key });
+      setupChildControls(selectedParameter,
+                         { Master_Volume, Master_Tune, Master_Pan, Master_Serial_FX, Scale_Base_Key });
     else
-      setupChildControls(selectedParameter, { C15::PID::Master_Volume, C15::PID::Master_Tune, C15::PID::Scale_Base_Key });
+      setupChildControls(selectedParameter, { Master_Volume, Master_Tune, Scale_Base_Key });
   }
-  else if(paramID == C15::PID::Scale_Base_Key || ScaleGroup::isScaleParameter(selectedParameter))
+  else if(paramID == Scale_Base_Key || ScaleGroup::isScaleParameter(selectedParameter))
   {
     if(isDualSound)
-      setupChildControls(selectedParameter, {C15::PID::Master_Pan, C15::PID::Scale_Base_Key, C15::PID::Scale_Offset_0, C15::PID::Scale_Offset_1, C15::PID::Scale_Offset_2,
-                                            C15::PID::Scale_Offset_3, C15::PID::Scale_Offset_4, C15::PID::Scale_Offset_5, C15::PID::Scale_Offset_6,
-                                            C15::PID::Scale_Offset_7, C15::PID::Scale_Offset_8, C15::PID::Scale_Offset_9, C15::PID::Scale_Offset_10,
-                                            C15::PID::Scale_Offset_11, C15::PID::Master_Volume});
+      setupChildControls(selectedParameter,
+                         { Master_Serial_FX, Scale_Base_Key, Scale_Offset_0, Scale_Offset_1, Scale_Offset_2,
+                           Scale_Offset_3, Scale_Offset_4, Scale_Offset_5, Scale_Offset_6, Scale_Offset_7,
+                           Scale_Offset_8, Scale_Offset_9, Scale_Offset_10, Scale_Offset_11, Master_Volume });
     else
-      setupChildControls(selectedParameter, {C15::PID::Master_Tune, C15::PID::Scale_Base_Key, C15::PID::Scale_Offset_0, C15::PID::Scale_Offset_1, C15::PID::Scale_Offset_2,
-                                              C15::PID::Scale_Offset_3, C15::PID::Scale_Offset_4, C15::PID::Scale_Offset_5, C15::PID::Scale_Offset_6,
-                                              C15::PID::Scale_Offset_7, C15::PID::Scale_Offset_8, C15::PID::Scale_Offset_9, C15::PID::Scale_Offset_10,
-                                              C15::PID::Scale_Offset_11, C15::PID::Master_Volume});
+      setupChildControls(selectedParameter,
+                         { Master_Tune, Scale_Base_Key, Scale_Offset_0, Scale_Offset_1, Scale_Offset_2, Scale_Offset_3,
+                           Scale_Offset_4, Scale_Offset_5, Scale_Offset_6, Scale_Offset_7, Scale_Offset_8,
+                           Scale_Offset_9, Scale_Offset_10, Scale_Offset_11, Master_Volume });
   }
-  else if(paramID == C15::PID::Unison_Voices || paramID == C15::PID::Unison_Detune || paramID == C15::PID::Unison_Phase || paramID == C15::PID::Unison_Pan)
+  else if(paramID == Unison_Voices || paramID == Unison_Detune || paramID == Unison_Phase || paramID == Unison_Pan)
   {
-    setupChildControls(selectedParameter, { C15::PID::Unison_Voices, C15::PID::Unison_Detune, C15::PID::Unison_Phase, C15::PID::Unison_Pan });
+    setupChildControls(selectedParameter, { Unison_Voices, Unison_Detune, Unison_Phase, Unison_Pan });
   }
 }
 
-void ParameterCarousel::setupChildControlsForScaleParameterCarousel(Parameter* selectedParameter, const std::list<int>& buttonAssignments)
+void ParameterCarousel::setupChildControlsForScaleParameterCarousel(Parameter* selectedParameter,
+                                                                    const std::list<int>& buttonAssignments)
 {
   auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
@@ -226,7 +233,8 @@ void ParameterCarousel::setupChildControlsForScaleParameterCarousel(Parameter* s
   const int miniParamWidth = 56;
   auto yPos = ySpaceing;
 
-  auto itOfSelectedParameter = std::find(buttonAssignments.begin(), buttonAssignments.end(), selectedParameter->getID().getNumber());
+  auto itOfSelectedParameter
+      = std::find(buttonAssignments.begin(), buttonAssignments.end(), selectedParameter->getID().getNumber());
   auto itOfElementBefore = itOfSelectedParameter;
   std::advance(itOfElementBefore, -1);
 
@@ -265,8 +273,57 @@ void ParameterCarousel::decorateMiniParameterControlForScaleParameterCarousel(co
   }
   else
   {
-    miniParam->getLabel()->setParameterNameTransformer([](auto in){
-      return StringTools::removeSpaces(in);
-    });
+    miniParam->getLabel()->setParameterNameTransformer([](auto in) { return StringTools::removeSpaces(in); });
+  }
+}
+
+void ParameterCarousel::setupChildControlsThatDontFit(Parameter* selectedParameter,
+                                                      const std::list<int>& buttonAssignments)
+{
+  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+
+  const int ySpaceing = 3;
+  const int miniParamHeight = 12;
+  const int miniParamWidth = 56;
+  auto yPos = ySpaceing;
+
+  auto itOfSelectedParameter
+      = std::find(buttonAssignments.begin(), buttonAssignments.end(), selectedParameter->getID().getNumber());
+  auto itOfElementBefore = itOfSelectedParameter;
+  if(itOfSelectedParameter != buttonAssignments.begin())
+    std::advance(itOfElementBefore, -1);
+
+  auto distanceToEnd = std::distance(itOfSelectedParameter, buttonAssignments.end());
+  auto itOfLastShownElement = itOfSelectedParameter;
+
+  if(itOfSelectedParameter != buttonAssignments.begin())
+    std::advance(itOfLastShownElement, std::min(3l, distanceToEnd));
+  else
+    std::advance(itOfLastShownElement, std::min(4l, distanceToEnd));
+
+  for(auto it = itOfElementBefore; it != itOfLastShownElement; it++)
+  {
+    auto i = *it;
+    auto param = eb->findParameterByID({ i, vg });
+
+    if(!param)
+      param = eb->findParameterByID({ i, VoiceGroup::Global });
+
+    if(!param)
+      continue;
+
+    auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
+    addControl(miniParam);
+    miniParam->setSelected(it == itOfSelectedParameter);
+
+    yPos += ySpaceing;
+    yPos += miniParamHeight;
+
+    if(ScaleGroup::isScaleParameter(param))
+    {
+      auto label = miniParam->getLabel();
+      label->setInfix("...");
+    }
   }
 }

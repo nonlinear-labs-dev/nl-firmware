@@ -6,6 +6,7 @@
 #include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
 #include <parameters/scale-converters/LegatoScaleConverter.h>
 #include "MonoGroup.h"
+#include <parameter_list.h>
 
 MonoGroup::MonoGroup(ParameterGroupSet* parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Mono", vg }, "Mono", "Mono", "Mono")
@@ -14,13 +15,13 @@ MonoGroup::MonoGroup(ParameterGroupSet* parent, VoiceGroup vg)
 
 void MonoGroup::init()
 {
-  appendParameter(new UnmodulateableMonoParameter(this, { 364, getVoiceGroup() },
-                                                  ScaleConverter::get<OnOffScaleConverter>(), 0, 1, 1));
-  appendParameter(new UnmodulateableMonoParameter(this, { 365, getVoiceGroup() },
-                                                  ScaleConverter::get<MonoPriorityScaleConverter>(), 0.5, 2, 2));
-  appendParameter(new UnmodulateableMonoParameter(this, { 366, getVoiceGroup() },
-                                                  ScaleConverter::get<LegatoScaleConverter>(), 1, 3, 3));
-  appendParameter(new MonoGlideTimeParameter(this, { 367, getVoiceGroup() }));
+  appendParameter(new UnmodulateableMonoParameter(this, { C15::PID::Mono_Grp_Enable, getVoiceGroup() },
+                                                  ScaleConverter::get<OnOffScaleConverter>()));
+  appendParameter(new UnmodulateableMonoParameter(this, { C15::PID::Mono_Grp_Prio, getVoiceGroup() },
+                                                  ScaleConverter::get<MonoPriorityScaleConverter>()));
+  appendParameter(new UnmodulateableMonoParameter(this, { C15::PID::Mono_Grp_Legato, getVoiceGroup() },
+                                                  ScaleConverter::get<LegatoScaleConverter>()));
+  appendParameter(new MonoGlideTimeParameter(this, { C15::PID::Mono_Grp_Glide, getVoiceGroup() }));
 }
 
 bool MonoGroup::isMonoParameter(const ParameterId& id)

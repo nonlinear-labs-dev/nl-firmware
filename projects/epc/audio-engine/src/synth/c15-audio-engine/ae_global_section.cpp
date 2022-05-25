@@ -192,6 +192,10 @@ void GlobalSection::postProcess_fast()
   {
     m_signals.set(traversal->m_signalId[i], m_smoothers.get_fast(traversal->m_smootherId[i]));
   }
+  // #2996: Serial FX
+  const float serialFX = m_smoothers.get(C15::Smoothers::Global_Fast::Master_Serial_FX);
+  m_signals.set(C15::Signals::Global_Signals::Master_FX_I_to_II, std::max(0.f, serialFX));
+  m_signals.set(C15::Signals::Global_Signals::Master_FX_II_to_I, std::max(0.f, -serialFX));
 }
 
 void GlobalSection::postProcess_slow()
