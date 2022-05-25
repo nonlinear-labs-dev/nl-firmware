@@ -12,7 +12,7 @@
 #include <parameters/scale-converters/LinearBipolar60DbScaleConverter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModDenominator.h>
-#include <parameters/scale-converters/LinearBipolar60DBTScaleConverter.h>
+#include <parameters/scale-converters/LinearBipolarInverted60DBTScaleConverter.h>
 #include "parameter_declarations.h"
 
 EnvelopeAGroup::EnvelopeAGroup(ParameterGroupSet *parent, VoiceGroup vg)
@@ -53,13 +53,13 @@ void EnvelopeAGroup::init()
                                 ScaleConverter::get<LinearBipolar60DbScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_A_Att_Vel, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar60DbtScaleConverter>()));
+                                ScaleConverter::get<LinearBipolarInverted60DbtScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_A_Dec_1_Vel, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar60DbtScaleConverter>()));
+                                ScaleConverter::get<LinearBipolarInverted60DbtScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_A_Dec_2_Vel, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar60DbtScaleConverter>()));
+                                ScaleConverter::get<LinearBipolarInverted60DbtScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_A_Rel_Vel, getVoiceGroup() },
                                 ScaleConverter::get<Linear60DbtScaleConverter>()));
