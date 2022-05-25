@@ -26,8 +26,9 @@ void MonoGroup::init()
 
 bool MonoGroup::isMonoParameter(const ParameterId& id)
 {
+  using namespace C15::PID;
   auto number = id.getNumber();
-  return number == 364 || number == 365 || number == 366 || number == 367;
+  return number == Mono_Grp_Enable || number == Mono_Grp_Prio || number == Mono_Grp_Legato || number == Mono_Grp_Glide;
 }
 
 bool MonoGroup::isMonoParameter(const Parameter* parameter)

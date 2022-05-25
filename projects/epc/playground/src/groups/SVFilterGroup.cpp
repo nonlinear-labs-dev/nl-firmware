@@ -45,7 +45,7 @@ void SVFilterGroup::init()
                                             ScaleConverter::get<Linear100PercentScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::SV_Flt_Res_KT, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
+                                ScaleConverter::get<LinearBipolar100StScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_Res_Env_C, getVoiceGroup() },
                                             ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
