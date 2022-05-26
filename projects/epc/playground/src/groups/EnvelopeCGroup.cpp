@@ -54,7 +54,7 @@ void EnvelopeCGroup::init()
                                 ScaleConverter::get<LinearBipolarInverted60DbtScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_C_Rel_Vel, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolarInverted60DbtScaleConverter>()));
+                                ScaleConverter::get<Linear60DbtScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_C_Lvl_KT, getVoiceGroup() },
                                 ScaleConverter::get<LinearBipolar1DbstScaleConverter>()));
