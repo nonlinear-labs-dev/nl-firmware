@@ -6,28 +6,25 @@
 #include <tools/PerformanceTimer.h>
 #include <CompileTimeOptions.h>
 
+Oleds &Oleds::get()
+{
+  static Oleds oleds;
+  return oleds;
+}
+
 Oleds::Oleds()
-    : m_fb(std::make_unique<FrameBuffer>())
-    , m_throttler(Application::get().getMainContext(), std::chrono::milliseconds(20))
+    : m_throttler(std::chrono::milliseconds(20))
 {
 }
 
 Oleds::~Oleds()
 {
-  m_throttler.cancel();
-}
-
-FrameBuffer &Oleds::getFrameBuffer() const
-{
-  return *m_fb;
 }
 
 void Oleds::setDirty()
 {
   if(!m_throttler.isPending())
-  {
     m_throttler.doTask([this] { syncRedraw(false); });
-  }
 }
 
 bool Oleds::isDirty() const
@@ -38,9 +35,10 @@ bool Oleds::isDirty() const
 void Oleds::deInit()
 {
   m_proxies.clear();
+  m_fonts.clear();
 
-  m_fb->clear();
-  m_fb->swapBuffers();
+  FrameBuffer::get().clear();
+  FrameBuffer::get().swapBuffers();
 }
 
 void Oleds::registerProxy(OLEDProxy *proxy)
@@ -53,16 +51,10 @@ void Oleds::syncRedraw(bool force)
   for(auto proxy : m_proxies)
     proxy->redraw();
 
-  m_fb->swapBuffers(force);
+  FrameBuffer::get().swapBuffers(force);
 }
 
-Fonts &Fonts::get()
-{
-  static Fonts f;
-  return f;
-}
-
-Fonts::tFont Fonts::getFont(const Glib::ustring &name, int height)
+Oleds::tFont Oleds::getFont(const Glib::ustring &name, int height)
 {
   tKey key(name, height);
 

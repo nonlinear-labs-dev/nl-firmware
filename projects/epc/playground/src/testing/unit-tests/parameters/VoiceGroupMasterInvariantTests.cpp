@@ -1,6 +1,6 @@
 #include <testing/TestHelper.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Default value for Fade From is different in I and II")
+TEST_CASE("Default value for Fade From is different in I and II")
 {
   auto eb = TestHelper::getEditBuffer();
   CHECK(TestHelper::floating::differs(
@@ -8,7 +8,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Default value for Fade From is 
       eb->findParameterByID({ 396, VoiceGroup::II })->getValue().getFactoryDefaultValue()));
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Fade From gets properly initialized on convert to Layer")
+TEST_CASE("Fade From gets properly initialized on convert to Layer")
 {
   TestHelper::initSingleEditBuffer();
 

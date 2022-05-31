@@ -9,7 +9,7 @@
 #include <mock/XMLPresetLoader.h>
 #include <mock/TCDHelpers.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Reset on convert")
+TEST_CASE("Reset on convert")
 {
   // prepare Configuration
   auto config = nltools::msg::getConfig();

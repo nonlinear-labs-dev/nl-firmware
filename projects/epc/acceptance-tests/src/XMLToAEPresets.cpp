@@ -8,7 +8,7 @@
 #include <mock/MockSettingsObject.h>
 #include <sync/SyncMasterMockRoot.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load XML Preset into AE")
+TEST_CASE("Load XML Preset into AE")
 {
   auto config = nltools::msg::getConfig();
   config.useEndpoints = { nltools::msg::EndPoint::Playground, nltools::msg::EndPoint::AudioEngine,

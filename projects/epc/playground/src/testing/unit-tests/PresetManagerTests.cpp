@@ -7,13 +7,13 @@
 #include <device-settings/Settings.h>
 #include <use-cases/PresetUseCases.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Preset Manager Init")
+TEST_CASE("Preset Manager Init")
 {
   auto pm = TestHelper::getPresetManager();
   REQUIRE(pm != nullptr);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Create Bank")
+TEST_CASE("Create Bank")
 {
   auto pm = TestHelper::getPresetManager();
   auto settings = TestHelper::getSettings();
@@ -59,7 +59,7 @@ namespace EditBufferHelper
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Overwrite Presets")
+TEST_CASE("Overwrite Presets")
 {
   auto pm = TestHelper::getPresetManager();
   auto settings = TestHelper::getSettings();
@@ -122,7 +122,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Overwrite Presets")
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Midi Selection Sends Signals Appropriately")
+TEST_CASE("Midi Selection Sends Signals Appropriately")
 {
   auto pm = TestHelper::getPresetManager();
   auto settings = TestHelper::getSettings();
@@ -163,7 +163,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Midi Selection Sends Signals Ap
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Delete Current Midi Bank resets attribute")
+TEST_CASE("Delete Current Midi Bank resets attribute")
 {
   auto pm = TestHelper::getPresetManager();
   auto settings = TestHelper::getSettings();
@@ -188,7 +188,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Delete Current Midi Bank resets
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"When Midi Bank is Selected new and old midi selection banks get notified via onChange")
+TEST_CASE("When Midi Bank is Selected new and old midi selection banks get notified via onChange")
 {
   auto pm = TestHelper::getPresetManager();
   auto settings = TestHelper::getSettings();

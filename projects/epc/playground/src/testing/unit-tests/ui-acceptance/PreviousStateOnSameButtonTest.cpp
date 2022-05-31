@@ -6,7 +6,7 @@
 #include <device-settings/Settings.h>
 #include <device-settings/FocusAndModeSetting.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Test Previous Boled Focus on Button")
+TEST_CASE("Test Previous Boled Focus on Button")
 {
   auto hwui = Application::get().getHWUI();
   auto& editPanel = hwui->getPanelUnit().getEditPanel();

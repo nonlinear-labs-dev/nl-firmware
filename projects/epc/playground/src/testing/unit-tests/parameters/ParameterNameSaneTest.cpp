@@ -3,7 +3,7 @@
 #include "presets/EditBuffer.h"
 #include <groups/ParameterGroup.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"No Parameter Name Contains '@VG' placeholder")
+TEST_CASE("No Parameter Name Contains '@VG' placeholder")
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
     for(auto& g : TestHelper::getEditBuffer()->getParameterGroups(vg))

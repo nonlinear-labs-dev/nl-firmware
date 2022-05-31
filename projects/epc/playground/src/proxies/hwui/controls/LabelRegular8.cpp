@@ -15,7 +15,7 @@ LabelRegular8::~LabelRegular8() = default;
 
 std::shared_ptr<Font> LabelRegular8::getFont() const
 {
-  return Fonts::get().getFont("Emphase-8-Regular", getFontHeight());
+  return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
 }
 
 int LabelRegular8::getFontHeight() const

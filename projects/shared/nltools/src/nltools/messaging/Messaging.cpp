@@ -20,8 +20,8 @@ namespace nltools
       using ConnectionSignals = std::map<EndPoint, sigc::signal<void>>;
 
       static Configuration currentConfig;
-      static std::set<ChannelConfiguration> inChannelConfig;
-      static std::set<ChannelConfiguration> outChannelConfig;
+      static std::vector<ChannelConfiguration> inChannelConfig;
+      static std::vector<ChannelConfiguration> outChannelConfig;
       static OutChannels outChannels;
       static InChannels inChannels;
       static Signals signals;
@@ -46,7 +46,7 @@ namespace nltools
 
           parseURI(c.uri, [=](auto scheme, auto, auto, auto port) {
             nltools_assertOnDevPC(scheme == "ws");  // Currently, only web sockets are supported
-            inChannels[c.peer] = std::make_unique<ws::WebSocketInChannel>(cb, port, c.prio, conf.mainContext);
+            inChannels[c.peer] = std::make_unique<ws::WebSocketInChannel>(cb, port, c.prio);
             signals[std::make_pair(MessageType::Ping, c.peer)];
           });
         }
@@ -60,7 +60,7 @@ namespace nltools
           parseURI(c.uri, [=](auto scheme, auto host, auto, auto port) {
             nltools_assertOnDevPC(scheme == "ws");  // Currently, only web sockets are supported
             outChannels[c.peer] = std::make_unique<ws::WebSocketOutChannel>(
-                host, port, c.prio, [peer = c.peer] { connectionSignals[peer](); }, conf.mainContext);
+                host, port, c.prio, [peer = c.peer] { connectionSignals[peer](); });
           });
         }
       }
@@ -119,7 +119,7 @@ namespace nltools
 
     void deInit()
     {
-      detail::currentConfig = Configuration {};
+      detail::currentConfig = {};
       detail::outChannels.clear();
       detail::inChannels.clear();
       detail::signals.clear();
@@ -140,30 +140,15 @@ namespace nltools
     {
       auto ret = detail::connectionSignals[endPoint].connect(cb);
 
-      try
-      {
-        if(detail::outChannels.at(endPoint)->isConnected())
-          cb();
-      }
-      catch(...)
-      {
-        nltools::Log::warning("no such end point:", toString(endPoint));
-      }
+      if(detail::outChannels.at(endPoint)->isConnected())
+        cb();
 
       return ret;
     }
 
     void flush(EndPoint receiver, const std::chrono::milliseconds timeout)
     {
-      try
-      {
-
-        detail::outChannels.at(receiver)->flush(timeout);
-      }
-      catch(...)
-      {
-        nltools::Log::warning("no such end point:", toString(receiver));
-      }
+      detail::outChannels.at(receiver)->flush(timeout);
     }
 
   }

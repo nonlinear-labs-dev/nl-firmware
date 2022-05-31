@@ -4,8 +4,6 @@
 #include <freetype2/ft2build.h>
 #include <freetype2/freetype/freetype.h>
 
-class FrameBuffer;
-
 class Font
 {
  public:
@@ -22,12 +20,12 @@ class Font
   };
 
   [[nodiscard]] uint32_t getStringWidth(const Glib::ustring &str) const;
-  uint32_t draw(FrameBuffer &fb, const Glib::ustring &text, tCoordinate x, tCoordinate y);
+  uint32_t draw(const Glib::ustring &text, tCoordinate x, tCoordinate y);
   [[nodiscard]] int getHeight() const;
 
  private:
   FT_Face m_face;
   int m_height;
 
-  tCoordinate drawLetter(FrameBuffer &fb, FT_GlyphSlot slot, tCoordinate x, tCoordinate y);
+  tCoordinate drawLetter(FT_GlyphSlot slot, tCoordinate x, tCoordinate y);
 };

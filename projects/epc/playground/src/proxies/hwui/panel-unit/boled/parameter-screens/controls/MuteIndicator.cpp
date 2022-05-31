@@ -55,7 +55,7 @@ void MuteIndicator::onParameterChanged(const Parameter* p)
 
 std::shared_ptr<Font> MuteIndicator::getFont() const
 {
-  return Fonts::get().getFont("Emphase-8-Regular", getFontHeight());
+  return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
 }
 
 int MuteIndicator::getFontHeight() const

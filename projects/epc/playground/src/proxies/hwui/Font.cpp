@@ -41,14 +41,14 @@ uint32_t Font::getStringWidth(const Glib::ustring &text) const
   return x >> 6;
 }
 
-uint32_t Font::draw(FrameBuffer &fb, const Glib::ustring &text, tCoordinate x, tCoordinate y)
+uint32_t Font::draw(const Glib::ustring &text, tCoordinate x, tCoordinate y)
 {
   auto oldX = x;
   x <<= 6;
 
   for(const auto c : text)
     if(check(FT_Load_Char(m_face, c, FT_LOAD_RENDER), __LINE__, c))
-      x += drawLetter(fb, m_face->glyph, x, y);
+      x += drawLetter(m_face->glyph, x, y);
 
   x >>= 6;
   return x - oldX;
@@ -60,14 +60,14 @@ inline bool isPixelSet(FT_GlyphSlot slot, int srcX, int srcY)
   return slot->bitmap.buffer[index];
 }
 
-Font::tCoordinate Font::drawLetter(FrameBuffer &fb, FT_GlyphSlot slot, tCoordinate x, tCoordinate y)
+Font::tCoordinate Font::drawLetter(FT_GlyphSlot slot, tCoordinate x, tCoordinate y)
 {
   x >>= 6;
 
   for(auto srcX = 0; srcX < slot->bitmap.width; srcX++)
     for(auto srcY = 0; srcY < slot->bitmap.rows; srcY++)
       if(isPixelSet(slot, srcX, srcY))
-        fb.setPixel(srcX + x + slot->bitmap_left, (m_height - slot->bitmap_top) + srcY + y - m_height);
+        FrameBuffer::get().setPixel(srcX + x + slot->bitmap_left, (m_height - slot->bitmap_top) + srcY + y - m_height);
 
   return slot->advance.x;
 }

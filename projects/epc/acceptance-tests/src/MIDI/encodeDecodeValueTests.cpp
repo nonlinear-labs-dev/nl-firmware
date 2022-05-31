@@ -1,8 +1,7 @@
 #include <catch.hpp>
 #include <synth/c15-audio-engine/midi_handle.h>
-#include <testing/TestHelper.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Encode Decode", "[MIDI][TCD]")
+TEST_CASE("Encode Decode", "[MIDI][TCD]")
 {
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;

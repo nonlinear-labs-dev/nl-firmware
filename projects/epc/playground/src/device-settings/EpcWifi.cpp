@@ -4,7 +4,6 @@
 #include <nltools/Types.h>
 #include <glibmm.h>
 #include "EpcWifi.h"
-#include "Application.h"
 
 EpcWifi::EpcWifi()
     : m_currentEpcWifiState(std::nullopt)
@@ -15,8 +14,8 @@ EpcWifi::EpcWifi()
 
   if(isEpc2)
   {
-    Application::get().getMainContext()->signal_timeout().connect_seconds(
-        sigc::mem_fun(this, &EpcWifi::syncCredentials), 2);
+    Glib::MainContext::get_default()->signal_timeout().connect_seconds(sigc::mem_fun(this, &EpcWifi::syncCredentials),
+                                                                       2);
   }
 }
 
@@ -81,7 +80,7 @@ void EpcWifi::spawn(const std::vector<std::string>& command, std::function<void(
 {
   if constexpr(!isDevelopmentPC)
   {
-    SpawnAsyncCommandLine::spawn(Application::get().getMainContext(), command, onSuccess, [this](const std::string& e) {
+    SpawnAsyncCommandLine::spawn(command, onSuccess, [this](const std::string& e) {
       nltools::Log::error(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
       m_busy = false;
     });

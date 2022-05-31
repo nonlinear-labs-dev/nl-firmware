@@ -1,7 +1,6 @@
 #pragma once
 
 #include "playground.h"
-#include "Oleds.h"
 #include <nltools/Uncopyable.h>
 #include <proxies/hwui/controls/Rect.h>
 #include <memory>
@@ -12,13 +11,11 @@ class Application;
 class Layout;
 class FrameBuffer;
 
-class OLEDProxy : public Uncopyable, public sigc::trackable
+class OLEDProxy : public Uncopyable
 {
  public:
-  explicit OLEDProxy(const Rect &posInFrameBuffer, Oleds &oleds);
+  explicit OLEDProxy(const Rect &posInFrameBuffer);
   virtual ~OLEDProxy();
-
-  FrameBuffer &getFrameBuffer();
 
   typedef std::shared_ptr<Layout> tLayoutPtr;
 
@@ -50,7 +47,6 @@ class OLEDProxy : public Uncopyable, public sigc::trackable
   Layout *getScreenSaver();
 
  private:
-  FrameBuffer &m_fb;
   sigc::signal<void, Layout *> m_sigLayoutInstalled;
 
   tLayoutPtr m_layout;

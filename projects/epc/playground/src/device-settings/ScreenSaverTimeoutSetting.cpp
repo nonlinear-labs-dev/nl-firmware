@@ -10,7 +10,6 @@
 #include "ScreenSaverTimeoutSetting.h"
 #include <device-settings/Settings.h>
 #include <nltools/messaging/Message.h>
-#include <Application.h>
 
 static constexpr auto c_disabled = std::chrono::minutes::zero();
 static constexpr std::array<int, 6> s_logTimeOuts = { 0, 1, 5, 20, 60, 180 };
@@ -19,7 +18,7 @@ static const std::vector<Glib::ustring> s_displayStrings
 
 ScreenSaverTimeoutSetting::ScreenSaverTimeoutSetting(UpdateDocumentContributor& parent)
     : Setting(parent)
-    , m_expiration(Application::get().getMainContext(), [this] { sendState(true); })
+    , m_expiration([this] { sendState(true); })
 {
   nltools_assertOnDevPC(s_logTimeOuts.size() == s_displayStrings.size());
 }
@@ -67,19 +66,16 @@ void ScreenSaverTimeoutSetting::init()
   if(m_timeout != c_disabled)
     m_expiration.refresh(m_timeout);
 
-  if(Application::exists())
-  {
-    auto& app = Application::get();
-    auto editBuffer = app.getPresetManager()->getEditBuffer();
-    auto reschedule = sigc::mem_fun(this, &ScreenSaverTimeoutSetting::endAndReschedule);
+  auto& app = Application::get();
+  auto editBuffer = app.getPresetManager()->getEditBuffer();
+  auto reschedule = sigc::mem_fun(this, &ScreenSaverTimeoutSetting::endAndReschedule);
 
-    editBuffer->onSelectionChanged(sigc::hide(sigc::hide(reschedule)), std::nullopt);
-    editBuffer->onChange(reschedule, false);
-    app.getPlaycontrollerProxy()->onLastKeyChanged(reschedule);
-    app.getSettings()->onSettingsChanged(reschedule);
-    app.getHWUI()->getPanelUnit().getEditPanel().getBoled().onLayoutInstalled(
-        sigc::mem_fun(this, &ScreenSaverTimeoutSetting::onLayoutInstalled));
-  }
+  editBuffer->onSelectionChanged(sigc::hide(sigc::hide(reschedule)), std::nullopt);
+  editBuffer->onChange(reschedule, false);
+  app.getPlaycontrollerProxy()->onLastKeyChanged(reschedule);
+  app.getSettings()->onSettingsChanged(reschedule);
+  app.getHWUI()->getPanelUnit().getEditPanel().getBoled().onLayoutInstalled(
+      sigc::mem_fun(this, &ScreenSaverTimeoutSetting::onLayoutInstalled));
 }
 
 void ScreenSaverTimeoutSetting::sendState(bool state)

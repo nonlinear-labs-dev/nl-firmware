@@ -1,7 +1,7 @@
 #include <testing/TestHelper.h>
 #include <parameters/value/Hysteresis.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Hysteresis Set", "[Parameter]")
+TEST_CASE("Hysteresis Set", "[Parameter]")
 {
   Hysteresis h(0.0, 0.1);
   CHECK(h.set(0.01) == 0.0);

@@ -26,8 +26,7 @@ bool WifiSetting::set(tEnum m)
   else if(m == WifiSettings::Disabled)
     m_localWifi->setNewWifiState(false);
 
-  if(!isLoading())
-  {
+  if(!isLoading()) {
     setupBBBWifiIfBBBConnectedAndSettingLoaded();
   }
 
@@ -49,8 +48,7 @@ void WifiSetting::load(const Glib::ustring& text, Initiator initiator)
   m_isLoading = true;
   NLEnumSetting::load(text, initiator);
 
-  if(initiator == Initiator::EXPLICIT_LOAD)
-  {
+  if(initiator == Initiator::EXPLICIT_LOAD) {
     m_didSettingLoad = true;
     setupBBBWifiIfBBBConnectedAndSettingLoaded();
   }
@@ -60,9 +58,9 @@ void WifiSetting::load(const Glib::ustring& text, Initiator initiator)
 
 void WifiSetting::enableDisableBBBWifi(WifiSettings m)
 {
-  using namespace nltools::msg;
-  WiFi::EnableWiFiMessage message { m == WifiSettings::Enabled };
-  send(EndPoint::BeagleBone, message);
+    using namespace nltools::msg;
+    WiFi::EnableWiFiMessage message { m == WifiSettings::Enabled };
+    send(EndPoint::BeagleBone, message);
 }
 
 void WifiSetting::setupBBBWifiIfBBBConnectedAndSettingLoaded()

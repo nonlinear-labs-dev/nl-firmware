@@ -70,11 +70,8 @@ PedalType::~PedalType() = default;
 
 void PedalType::syncExternals(SendReason reason) const
 {
-  if(Application::exists())
-  {
-    auto reset = reason == SendReason::SettingChanged;
-    Application::get().getPlaycontrollerProxy()->sendPedalSetting(m_playcontrollerKey, get(), reset);
-  }
+  auto reset = reason == SendReason::SettingChanged;
+  Application::get().getPlaycontrollerProxy()->sendPedalSetting(m_playcontrollerKey, get(), reset);
 }
 
 void PedalType::load(const Glib::ustring &text, Initiator initiator)

@@ -97,15 +97,15 @@ bool Label::redraw(FrameBuffer &fb)
   switch(getJustification())
   {
     case Font::Justification::Center:
-      font->draw(fb, splits.first, left + (pos.getWidth() - width) / 2, pos.getBottom() - offset + getYOffset());
+      font->draw(splits.first, left + (pos.getWidth() - width) / 2, pos.getBottom() - offset + getYOffset());
       break;
 
     case Font::Justification::Left:
-      font->draw(fb, splits.first, left, pos.getBottom() - offset + getYOffset());
+      font->draw(splits.first, left, pos.getBottom() - offset + getYOffset());
       break;
 
     case Font::Justification::Right:
-      font->draw(fb, splits.first, left + (pos.getWidth() - width - getRightMargin()),
+      font->draw(splits.first, left + (pos.getWidth() - width - getRightMargin()),
                  pos.getBottom() - offset + getYOffset());
       break;
   }
@@ -134,22 +134,22 @@ void Label::drawSuffix(FrameBuffer &fb, int fullWidth, const Glib::ustring &firs
   switch(getJustification())
   {
     case Font::Justification::Center:
-      font->draw(fb, secondPart, left + (pos.getWidth() - fullWidth) / 2, pos.getBottom() - offset + getYOffset());
+      font->draw(secondPart, left + (pos.getWidth() - fullWidth) / 2, pos.getBottom() - offset + getYOffset());
       break;
 
     case Font::Justification::Left:
-      font->draw(fb, secondPart, left, pos.getBottom() - offset + getYOffset());
+      font->draw(secondPart, left, pos.getBottom() - offset + getYOffset());
       break;
 
     case Font::Justification::Right:
-      font->draw(fb, secondPart, left + (pos.getWidth() - fullWidth), pos.getBottom() - offset + getYOffset());
+      font->draw(secondPart, left + (pos.getWidth() - fullWidth), pos.getBottom() - offset + getYOffset());
       break;
   }
 }
 
 std::shared_ptr<Font> Label::getFont() const
 {
-  return Fonts::get().getFont("Emphase-9-Regular", getFontHeight());
+  return Oleds::get().getFont("Emphase-9-Regular", getFontHeight());
 }
 
 int Label::getFontHeight() const

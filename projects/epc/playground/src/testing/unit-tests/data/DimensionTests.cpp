@@ -23,7 +23,7 @@ class TestableDimension : public Dimension
 
 using namespace std::string_literals;
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Format Dimension Digits", "[Dimension]")
+TEST_CASE("Format Dimension Digits", "[Dimension]")
 {
   TestableDimension d;
 
@@ -60,7 +60,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Format Dimension Digits", "[Dim
   CHECK(d.formatDimensionDigits(-1234567, "foo", 3) == "-1230000 foo"s);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"formatDimensionRounded", "[Dimension]")
+TEST_CASE("formatDimensionRounded", "[Dimension]")
 {
   TestableDimension d;
 

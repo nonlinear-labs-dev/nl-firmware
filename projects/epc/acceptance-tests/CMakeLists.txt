@@ -5,7 +5,7 @@ prepare_nltools()
 
 find_package(PkgConfig REQUIRED)
 
-file(GLOB_RECURSE SOURCE_FILES src/*.cpp ../playground/src/testing/TestHelper.cpp )
+file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 add_nltools(${PROJECT_NAME})
 

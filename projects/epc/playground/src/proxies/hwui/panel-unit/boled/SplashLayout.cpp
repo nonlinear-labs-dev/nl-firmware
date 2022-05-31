@@ -24,7 +24,7 @@ namespace DETAIL
 
     std::shared_ptr<Font> getFont() const override
     {
-      return Fonts::get().getFont("Emphase-9-Bold", getFontHeight());
+      return Oleds::get().getFont("Emphase-9-Bold", getFontHeight());
     }
 
     int getFontHeight() const override
@@ -67,9 +67,9 @@ namespace DETAIL
     }
 
    protected:
-    virtual Fonts::tFont getFont() override
+    virtual Oleds::tFont getFont() override
     {
-      return Fonts::get().getFont("Emphase-8-TXT-Regular", 8);
+      return Oleds::get().getFont("Emphase-8-TXT-Regular", 8);
     }
 
    private:
@@ -77,24 +77,62 @@ namespace DETAIL
   };
 }
 
-SplashLayout::SplashLayout(HWUI *hwui)
-  : m_hwui(hwui)
+static SplashLayout *s_splash = nullptr;
+
+SplashLayout::SplashLayout()
 {
-  hwui->registerSplash(this);
   Application::get().stopWatchDog();
+  s_splash = this;
 }
 
 SplashLayout::~SplashLayout()
 {
-  m_hwui->unregisterSplash(this);
   Application::get().runWatchDog();
+  s_splash = nullptr;
+}
+
+void SplashLayout::start()
+{
+  auto hwui = Application::get().getHWUI();
+  auto screensaver = Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>();
+  auto &boled = hwui->getPanelUnit().getEditPanel().getBoled();
+  screensaver->endAndReschedule();
+  boled.setOverlay(new SplashLayout());
+}
+
+void SplashLayout::finish()
+{
+  auto &boled = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled();
+
+  if(boled.getOverlay().get() == s_splash)
+    boled.resetOverlay();
+}
+
+void SplashLayout::setStatus(const std::string &msg)
+{
+  auto screensaver = Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>();
+  screensaver->endAndReschedule();
+  if(s_splash)
+  {
+    s_splash->setMessage(msg);
+  }
+}
+
+void SplashLayout::addStatus(const std::string &msg)
+{
+  auto screensaver = Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>();
+  screensaver->endAndReschedule();
+  if(s_splash)
+  {
+    s_splash->addMessage(msg);
+  }
 }
 
 void SplashLayout::setMessage(const std::string &txt)
 {
   m_text = txt;
   m_message->setText(m_text, FrameBufferColors::C179);
-  Application::get().getHWUI()->getOleds().syncRedraw(true);
+  Oleds::get().syncRedraw(true);
 }
 
 void SplashLayout::addMessage(const std::string &txt)
@@ -106,7 +144,7 @@ void SplashLayout::addMessage(const std::string &txt)
   m_message->setText(m_text, FrameBufferColors::C179);
   scrollToMax();
 
-  Application::get().getHWUI()->getOleds().syncRedraw(true);
+  Oleds::get().syncRedraw(true);
 }
 
 void SplashLayout::addHeadline()
@@ -131,5 +169,5 @@ Scrollable *SplashLayout::createScrollableContent()
 
 Rect SplashLayout::getScrollableAreaRect() const
 {
-  return {0, 16, 256, 64 - 16};
+  return Rect(0, 16, 256, 64 - 16);
 }

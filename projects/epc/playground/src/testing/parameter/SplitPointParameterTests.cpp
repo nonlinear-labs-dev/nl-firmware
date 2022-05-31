@@ -8,7 +8,7 @@
 #include <nltools/messaging/Messaging.h>
 #include <device-settings/SyncSplitSettingUseCases.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Point Unlinked with Overlap gets linked -> msg is correct")
+TEST_CASE("Split Point Unlinked with Overlap gets linked -> msg is correct")
 {
   auto eb = TestHelper::getEditBuffer();
   auto pm = TestHelper::getPresetManager();

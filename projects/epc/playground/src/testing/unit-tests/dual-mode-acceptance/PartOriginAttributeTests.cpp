@@ -24,7 +24,7 @@ namespace detail
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Part Origin Attribute")
+TEST_CASE("Part Origin Attribute")
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
@@ -117,7 +117,7 @@ auto getOrigins()
   return std::pair { eb->getPartOrigin(VoiceGroup::I), eb->getPartOrigin(VoiceGroup::II) };
 };
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
+TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
 {
   DualPresetBank presets;
   auto bank = presets.getBank();

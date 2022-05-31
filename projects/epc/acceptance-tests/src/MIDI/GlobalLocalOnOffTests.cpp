@@ -6,7 +6,7 @@
 #include <mock/MidiOptionsHelpers.h>
 #include <mock/TCDHelpers.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"'Global Local Enable' will be combined with 'RoutingSetting'")
+TEST_CASE("'Global Local Enable' will be combined with 'RoutingSetting'")
 {
   using namespace TCD_HELPER;
 
@@ -75,7 +75,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"'Global Local Enable' will be c
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Key Events Local enable disable")
+TEST_CASE("Key Events Local enable disable")
 {
   using namespace TCD_HELPER;
 

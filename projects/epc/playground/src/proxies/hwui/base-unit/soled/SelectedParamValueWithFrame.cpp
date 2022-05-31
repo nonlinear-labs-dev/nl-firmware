@@ -11,7 +11,7 @@
 
 SelectedParamValueWithFrame::SelectedParamValueWithFrame(const Rect &rect)
     : super(rect)
-    , m_showParameterName(Application::get().getMainContext(), std::bind(&SelectedParamValueWithFrame::showName, this))
+    , m_showParameterName(std::bind(&SelectedParamValueWithFrame::showName, this))
 {
 }
 
@@ -35,7 +35,7 @@ bool SelectedParamValueWithFrame::redraw(FrameBuffer &fb)
 
 std::shared_ptr<Font> SelectedParamValueWithFrame::getFont() const
 {
-  return Fonts::get().getFont("Emphase-8-Regular", getFontHeight());
+  return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
 }
 
 int SelectedParamValueWithFrame::getFontHeight() const

@@ -4,7 +4,7 @@
 #include <testing/unit-tests/mock/MockSettingsObject.h>
 #include <sync/SyncMasterMockRoot.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"setAllValues will not notify if no values Changed")
+TEST_CASE("setAllValues will not notify if no values Changed")
 {
   MockSettingsObject settings("", &SyncMasterMockRoot::get());
 

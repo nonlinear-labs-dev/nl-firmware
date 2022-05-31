@@ -29,6 +29,7 @@ class Layout : public sigc::trackable, public ControlOwner
   void setDirty() override;
 
   bool isInitialized() const;
+  FrameBuffer &getFrameBuffer();
 
   void installButtonRepeat(std::function<void()> cb);
   void removeButtonRepeat();

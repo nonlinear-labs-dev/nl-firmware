@@ -41,7 +41,6 @@ class ParameterImportConversions
   [[nodiscard]] tControlPositionValue splitIIV9ToV10(tControlPositionValue d, VoiceGroup vg) const;
   [[nodiscard]] tControlPositionValue combFltResonAPV4ToV5(tControlPositionValue d) const;
   [[nodiscard]] tControlPositionValue reverbColorV4ToV5(tControlPositionValue d) const;
-  [[nodiscard]] tControlPositionValue pitchKTV11ToV12(tControlPositionValue v) const;
 
   struct ConvertersBySourceFileVersion
   {
@@ -52,4 +51,6 @@ class ParameterImportConversions
   std::map<tParameterNumber, ConvertersBySourceFileVersion> m_converters;
   std::map<tParameterNumber, ConvertersBySourceFileVersion> m_mcAmountConverters;
 
+  friend class TestableImportConversions;
+  tControlPositionValue pitchKTV11ToV12(tControlPositionValue v);
 };

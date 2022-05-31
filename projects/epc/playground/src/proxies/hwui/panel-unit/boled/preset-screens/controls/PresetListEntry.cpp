@@ -112,7 +112,7 @@ void PresetListEntry::animate(tCallback cb)
   m_animationProgress = 0;
   int interval = c_animationLength / c_numAnimationSteps;
   auto animation = sigc::mem_fun(this, &PresetListEntry::animationProgress);
-  m_animationConnection = Application::get().getMainContext()->signal_timeout().connect(animation, interval);
+  m_animationConnection = Glib::MainContext::get_default()->signal_timeout().connect(animation, interval);
 }
 
 bool PresetListEntry::isTransparent() const

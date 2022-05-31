@@ -65,7 +65,7 @@ void SplitParameterValue::drawParts(FrameBuffer& fb, const std::vector<Glib::ust
   {
     auto part = parts[i];
     fb.setColor(getColorForSplit(i));
-    getFont()->draw(fb, part, x, y);
+    getFont()->draw(part, x, y);
     x += getFont()->getStringWidth(part);
   }
 }

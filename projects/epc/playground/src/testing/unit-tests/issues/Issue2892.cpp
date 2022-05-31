@@ -2,7 +2,7 @@
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 2892")
+TEST_CASE("Issue 2892")
 {
   auto pm = TestHelper::getPresetManager();
   EditBufferUseCases ebUseCase(*pm->getEditBuffer());

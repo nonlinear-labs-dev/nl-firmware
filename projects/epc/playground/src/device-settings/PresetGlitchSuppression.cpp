@@ -15,9 +15,6 @@ PresetGlitchSuppression::~PresetGlitchSuppression()
 
 void PresetGlitchSuppression::syncExternals(SendReason reason) const
 {
-  if(Application::exists())
-  {
-    nltools::msg::Setting::PresetGlitchMessage msg { get() };
-    Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::PresetGlitchMessage>(msg);
-  }
+  nltools::msg::Setting::PresetGlitchMessage msg { get() };
+  Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::PresetGlitchMessage>(msg);
 }

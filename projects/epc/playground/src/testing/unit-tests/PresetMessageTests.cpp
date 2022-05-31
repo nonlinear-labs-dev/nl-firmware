@@ -104,7 +104,7 @@ void assertNoIDTwice(const nltools::msg::LayerPresetMessage &msg)
   collectDual<1>(msg);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Single Preset Message")
+TEST_CASE("Single Preset Message")
 {
   MockPresetStorage presets;
   auto single = presets.getSinglePreset();

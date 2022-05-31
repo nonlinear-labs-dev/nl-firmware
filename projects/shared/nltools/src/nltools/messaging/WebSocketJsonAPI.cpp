@@ -17,14 +17,13 @@ namespace nltools
       g_object_unref(connection);
     }
 
-    WebSocketJsonAPI::WebSocketJsonAPI(Glib::RefPtr<Glib::MainContext> ctx, guint port, ReceiveCB cb)
+    WebSocketJsonAPI::WebSocketJsonAPI(guint port, ReceiveCB cb)
         : m_port(port)
         , m_cb(std::move(cb))
-        , m_server(soup_server_new(nullptr, nullptr))
-        , m_mainContext(Glib::MainContext::create())
-        , m_messageLoop(Glib::MainLoop::create(m_mainContext))
-        , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(ctx))
-        , m_bgContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(m_mainContext))
+        , m_server(soup_server_new(nullptr, nullptr), g_object_unref)
+        , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
+        , m_messageLoop(Glib::MainLoop::create(Glib::MainContext::create()))
+        , m_bgContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(m_messageLoop->get_context()))
         , m_contextThread(std::async(std::launch::async, [=] { this->backgroundThread(); }))
     {
     }
@@ -35,7 +34,6 @@ namespace nltools
       m_quit = true;
       m_messageLoop->quit();
       m_contextThread.wait();
-      g_object_unref(m_server);
     }
 
     void WebSocketJsonAPI::send(API::ClientConnection *a, const nlohmann::json &msg)
@@ -78,13 +76,13 @@ namespace nltools
     {
       std::unique_lock<std::recursive_mutex> l(m_mutex);
 
-      m_messageLoop->get_context()->push_thread_default();
+      g_main_context_push_thread_default(m_messageLoop->get_context()->gobj());
 
       GError *error = nullptr;
 
       auto callback = (SoupServerWebsocketCallback) &WebSocketJsonAPI::webSocket;
-      soup_server_add_websocket_handler(m_server, nullptr, nullptr, nullptr, callback, this, nullptr);
-      soup_server_listen_all(m_server, m_port, SOUP_SERVER_LISTEN_IPV4_ONLY, &error);
+      soup_server_add_websocket_handler(m_server.get(), nullptr, nullptr, nullptr, callback, this, nullptr);
+      soup_server_listen_all(m_server.get(), m_port, SOUP_SERVER_LISTEN_IPV4_ONLY, &error);
 
       if(error)
       {
@@ -97,8 +95,6 @@ namespace nltools
         l.unlock();
         m_messageLoop->run();
       }
-
-      m_messageLoop->get_context()->pop_thread_default();
     }
 
     bool WebSocketJsonAPI::doSend(SoupWebsocketConnection *c, const nlohmann::json &msg)

@@ -8,10 +8,9 @@
 #include <tools/PerformanceTimer.h>
 #include <nltools/messaging/Messaging.h>
 #include <nltools/messaging/Message.h>
-#include <proxies/hwui/HWUI.h>
 
 RotaryEncoder::RotaryEncoder()
-    : m_throttler(Application::get().getMainContext(), std::chrono::milliseconds(2))
+    : m_throttler(std::chrono::milliseconds(2))
 {
   nltools::msg::receive<nltools::msg::RotaryChangedMessage>(nltools::msg::EndPoint::Playground,
                                                             sigc::mem_fun(this, &RotaryEncoder::onMessage));
@@ -32,9 +31,9 @@ void RotaryEncoder::onMessage(const nltools::msg::RotaryChangedMessage &msg)
 
 void RotaryEncoder::onMessageTimestamped(const nltools::msg::TimestampedRotaryChangedMessage &msg)
 {
-  bool wasDirty = Application::get().getHWUI()->getOleds().isDirty();
+  bool wasDirty = Oleds::get().isDirty();
   applyIncrement(msg.increment);
-  bool isDirty = Application::get().getHWUI()->getOleds().isDirty();
+  bool isDirty = Oleds::get().isDirty();
 
   if(!wasDirty && isDirty && m_oldestPendingTimestamp == 0)
   {

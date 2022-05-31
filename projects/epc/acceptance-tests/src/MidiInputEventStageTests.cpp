@@ -55,7 +55,7 @@ class MockMIDIDecoder : public MIDIDecoder
   }
 };
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Midi Decoder Reset", "[MIDI]")
+TEST_CASE("Midi Decoder Reset", "[MIDI]")
 {
   MockDSPHost host;
   auto setting = createMidiSettings();
@@ -73,7 +73,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Midi Decoder Reset", "[MIDI]")
   CHECK(decoder.getChannel() == MidiReceiveChannel::None);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MIDI input on Secondary channel is ignored if not in split", "[MIDI]")
+TEST_CASE("MIDI input on Secondary channel is ignored if not in split", "[MIDI]")
 {
   PassOnKeyDownHost dsp { 17, 1.0, VoiceGroup::I };
   auto settings = createMidiSettings();
@@ -123,7 +123,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MIDI input on Secondary channel
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Input Event Mapping CC to HW", "[MIDI]")
+TEST_CASE("Input Event Mapping CC to HW", "[MIDI]")
 {
   PassOnHWReceived dsp { HardwareSource::PEDAL1, 1.0 };
   auto settings = createMidiSettings();
@@ -161,7 +161,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Input Event Mapping CC to HW", 
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Input Event Stage MIDI In KeyDown", "[MIDI]")
+TEST_CASE("Input Event Stage MIDI In KeyDown", "[MIDI]")
 {
   PassOnKeyDownHost dsp { 17, 1, VoiceGroup::I };
 
@@ -182,7 +182,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Input Event Stage MIDI In KeyDo
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Input Event Stage MIDI In KeyUp", "[MIDI]")
+TEST_CASE("Input Event Stage MIDI In KeyUp", "[MIDI]")
 {
   PassOnKeyUpHost dsp { 17, 1, VoiceGroup::I };
 
@@ -205,7 +205,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Input Event Stage MIDI In KeyUp
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Input Event Stage MIDI In HWSource -> Pedal1 100%", "[MIDI]")
+TEST_CASE("Input Event Stage MIDI In HWSource -> Pedal1 100%", "[MIDI]")
 {
   PassOnHWReceived dsp { HardwareSource::PEDAL1, 1 };
 
@@ -235,7 +235,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Input Event Stage MIDI In HWSou
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MIDI in of PitchBender as Channel Pitchbend", "[MIDI]")
+TEST_CASE("MIDI in of PitchBender as Channel Pitchbend", "[MIDI]")
 {
   PassOnHWReceived dsp { HardwareSource::BENDER, 1 };
   auto settings = createMidiSettings();
@@ -244,7 +244,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MIDI in of PitchBender as Chann
   CHECK(dsp.didReceiveHW());
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MIDI in of PitchBender as Control Change", "[MIDI]")
+TEST_CASE("MIDI in of PitchBender as Control Change", "[MIDI]")
 {
   PassOnHWReceived dsp { HardwareSource::BENDER, 1 };
   auto settings = createMidiSettings();
@@ -266,7 +266,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MIDI in of PitchBender as Contr
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MIDI in of Aftertouch as Channel Pressure", "[MIDI]")
+TEST_CASE("MIDI in of Aftertouch as Channel Pressure", "[MIDI]")
 {
   PassOnHWReceived dsp { HardwareSource::AFTERTOUCH, 1 };
   auto settings = createMidiSettings();
@@ -277,7 +277,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MIDI in of Aftertouch as Channe
   CHECK(dsp.didReceiveHW());
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MIDI in of Aftertouch as Control Change", "[MIDI]")
+TEST_CASE("MIDI in of Aftertouch as Control Change", "[MIDI]")
 {
   PassOnHWReceived dsp { HardwareSource::AFTERTOUCH, 1 };
   auto settings = createMidiSettings();

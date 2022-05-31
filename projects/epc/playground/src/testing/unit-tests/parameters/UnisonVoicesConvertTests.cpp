@@ -4,7 +4,7 @@
 #include <libundo/undo/Scope.h>
 #include <http/UndoScope.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single to Dual Sound Changes Unison Accordingly", "[Unison][Parameter]")
+TEST_CASE("Convert Single to Dual Sound Changes Unison Accordingly", "[Unison][Parameter]")
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases ebUseCase(*eb);
@@ -49,7 +49,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single to Dual Sound Ch
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Dual to Single Sound", "[Unison][Parameter]")
+TEST_CASE("Convert Dual to Single Sound", "[Unison][Parameter]")
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases useCase(*eb);
@@ -87,7 +87,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Dual to Single Sound", 
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Undo Convert Sound resets Scaling", "[Unison][Parameter]")
+TEST_CASE("Undo Convert Sound resets Scaling", "[Unison][Parameter]")
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases useCase(*eb);

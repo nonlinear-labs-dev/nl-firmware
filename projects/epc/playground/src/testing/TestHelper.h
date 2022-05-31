@@ -13,47 +13,12 @@
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/PresetManagerUseCases.h"
 #include "use-cases/SoundUseCases.h"
-#include "nltools/system/SpawnCommandLine.h"
-#include <glibmm.h>
 
 namespace TestHelper
 {
-  int getNumberOfFDs();
-
-  class ApplicationFixture
-  {
-   protected:
-    std::unique_ptr<Application> app;
-
-   public:
-    ApplicationFixture();
-
-    ~ApplicationFixture();
-
-    auto getMainContext()
-    {
-      return app->getMainContext()->gobj();
-    }
-
-   private:
-    int m_numFileDescriptors = 0;
-  };
-
-  class MainContextFixture
-  {
-   protected:
-    Glib::RefPtr<Glib::MainContext> m_context;
-
-   public:
-    MainContextFixture()
-        : m_context(Glib::MainContext::create())
-    {
-    }
-  };
-
   struct ScopedMessagingConfiguration
   {
-    explicit ScopedMessagingConfiguration(const nltools::msg::Configuration& config)
+    explicit ScopedMessagingConfiguration(const nltools::msg::Configuration &config)
     {
       m_oldConfig = nltools::msg::getConfig();
       nltools::msg::init(config);
@@ -181,68 +146,50 @@ namespace TestHelper
 
   void randomizeFadeParams(UNDO::Transaction* transaction);
 
-  inline void doMainLoopFor(std::chrono::milliseconds time,
-                            Glib::RefPtr<Glib::MainContext> ctx = Glib::RefPtr<Glib::MainContext>(nullptr))
+  inline void doMainLoopFor(std::chrono::milliseconds time)
   {
-    if(!ctx && Application::exists())
-      ctx = Application::get().getMainContext();
-
-    Expiration exp(ctx, {}, Expiration::Duration::zero(), 0);
+    Expiration exp;
     exp.refresh(time);
 
     while(exp.isPending())
-      ctx->iteration(true);
+      g_main_context_iteration(nullptr, TRUE);
   }
 
   inline void doMainLoop(std::chrono::milliseconds minTime, std::chrono::milliseconds timeout,
-                         const std::function<bool()>& test,
-                         Glib::RefPtr<Glib::MainContext> ctx = Glib::RefPtr<Glib::MainContext>(nullptr))
+                         const std::function<bool()>& test)
   {
-    if(!ctx && Application::exists())
-      ctx = Application::get().getMainContext();
-
-    Expiration exp(ctx, {}, Expiration::Duration::zero(), 0);
+    Expiration exp;
     exp.refresh(timeout);
 
-    Expiration min(ctx, {}, Expiration::Duration::zero(), 0);
+    Expiration min;
 
     if(minTime != std::chrono::milliseconds::zero())
       min.refresh(minTime);
 
     while((exp.isPending() && !test()) || min.isPending())
-      ctx->iteration(true);
+      g_main_context_iteration(nullptr, TRUE);
 
     CHECK(test());
   }
 
-  inline void doMainLoopIterationOnContext(Glib::MainContext* c)
+  inline void doMainLoopIteration()
   {
-    c->iteration(true);
-  }
-
-  inline void doMainLoopIteration(GMainContext* ctx = nullptr)
-  {
-    if(Application::exists() && ctx == nullptr)
-    {
-      ctx = Application::get().getMainContext()->gobj();
-    }
-
-    g_main_context_iteration(ctx, TRUE);
+    g_main_context_iteration(nullptr, TRUE);
   }
 
   inline void updateMappings(nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings& array,
-                             nltools::msg::Setting::MidiSettingsMessage::RoutingAspect index, bool b)
+                      nltools::msg::Setting::MidiSettingsMessage::RoutingAspect index, bool b)
   {
-    for(auto& hw : array)
-    {
+    for(auto& hw: array) {
       hw[static_cast<int>(index)] = b;
     }
   }
 
   inline void updateMappingForRow(nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings& array,
-                                  nltools::msg::Setting::MidiSettingsMessage::RoutingIndex index, bool value)
+                                  nltools::msg::Setting::MidiSettingsMessage::RoutingIndex index,
+                                  bool value)
   {
-    for(auto& a : array[static_cast<int>(index)])
+    for(auto& a: array[static_cast<int>(index)])
     {
       a = value;
     }

@@ -6,9 +6,10 @@
 #include "device-settings/NoteShift.h"
 
 NoteShiftStateMachine::NoteShiftStateMachine()
-    : m_plusButtonState(false)
+    :
+
+    m_plusButtonState(false)
     , m_minusButtonState(false)
-    , m_resetTimeout(Application::get().getMainContext())
 {
   m_resetTimeout.setCallback(
       std::bind(&NoteShiftStateMachine::traverse, this, NoteShiftEvents::NOTE_SHIFT_EVENT_RESET_TIMEOUT));

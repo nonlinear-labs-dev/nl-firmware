@@ -3,7 +3,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetManager.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Split to Layer With Part Names")
+TEST_CASE("Convert Split to Layer With Part Names")
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases useCase(*eb);

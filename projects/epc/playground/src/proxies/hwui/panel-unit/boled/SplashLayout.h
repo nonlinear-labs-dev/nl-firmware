@@ -4,15 +4,19 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/InfoLayout.h>
 
 class MultiLineLabel;
-class HWUI;
 
 class SplashLayout : public InfoLayout
 {
   typedef InfoLayout super;
 
  public:
-  SplashLayout(HWUI *hwui);
+  SplashLayout();
   ~SplashLayout() override;
+
+  static void start();
+  static void finish();
+  static void setStatus(const std::string &msg);
+  static void addStatus(const std::string &msg);
 
   void setMessage(const std::string &txt);
   void addMessage(const std::string &txt);
@@ -26,5 +30,4 @@ class SplashLayout : public InfoLayout
 
   MultiLineLabel *m_message = nullptr;
   std::string m_text;
-  HWUI* m_hwui;
 };

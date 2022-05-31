@@ -7,7 +7,7 @@
 #include <libsoup/soup.h>
 #include <memory>
 #include <list>
-#include <future>
+#include <thread>
 #include <glibmm/refptr.h>
 
 namespace nltools
@@ -24,8 +24,7 @@ namespace nltools
       class WebSocketInChannel : public InChannel
       {
        public:
-        WebSocketInChannel(Callback cb, guint port, nltools::threading::Priority p,
-                           const Glib::RefPtr<Glib::MainContext> &ctx);
+        WebSocketInChannel(Callback cb, guint port, nltools::threading::Priority p);
         ~WebSocketInChannel() override;
 
        private:
@@ -39,15 +38,12 @@ namespace nltools
 
         guint m_port;
         std::unique_ptr<SoupServer, decltype(*g_object_unref)> m_server;
-        Glib::RefPtr<Glib::MainContext> m_backgroundCtx;
-        Glib::RefPtr<Glib::MainLoop> m_backgroundLoop;
-        BackgroundThreadWaiter m_conditionEstablishedThreadWaiter;
-        std::future<void> m_backgroundTask;
-
+        Glib::RefPtr<Glib::MainLoop> m_messageLoop;
         std::unique_ptr<threading::ContextBoundMessageQueue> m_mainContextQueue;
         std::list<tWebSocketPtr> m_connections;
 
-        bool m_bgLoopRunning = false;
+        BackgroundThreadWaiter m_conditionEstablishedThreadWaiter;
+        std::thread m_contextThread;
       };
     }
   }

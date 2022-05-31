@@ -15,7 +15,6 @@
 #include <tools/TimeTools.h>
 #include <xml/FileOutStream.h>
 #include <xml/VersionAttribute.h>
-#include <device-settings/DateTimeAdjustment.h>
 
 BankUseCases::BankUseCases(Bank* bank, Settings& settings)
     : m_bank { bank }
@@ -241,8 +240,7 @@ void BankUseCases::exportBankToFile(const std::string& outFile)
 {
   GenericScopeGuard syncAfterAllFileOperation([] {}, FileSystem::syncAll);
   auto scope = UNDO::Scope::startTrashTransaction();
-  auto adj = m_settings.getSetting<DateTimeAdjustment>();
-  m_bank->setAttribute(scope->getTransaction(), "Date of Export File", TimeTools::getAdjustedIso(adj));
+  m_bank->setAttribute(scope->getTransaction(), "Date of Export File", TimeTools::getAdjustedIso());
   m_bank->setAttribute(scope->getTransaction(), "Name of Export File", outFile);
   PresetBankSerializer serializer(m_bank, {}, false);
   FileOutStream stream(outFile, false);

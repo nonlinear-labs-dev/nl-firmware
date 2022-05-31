@@ -84,15 +84,6 @@ class PresetManagerUseCases
 
   struct ProgressIndication
   {
-    static ProgressIndication getMock()
-    {
-      ProgressIndication ret {};
-      ret._start = []() {};
-      ret._update = [](auto) {};
-      ret._finish = []() {};
-      return ret;
-    }
-
     void start() const
     {
       if(_start)
@@ -111,9 +102,9 @@ class PresetManagerUseCases
         _finish();
     }
 
-    StartProgressIndication _start = std::function<void(void)>();
-    UpdateProgressIndication _update = std::function<void(std::string)>();
-    FinishProgressIndication _finish = std::function<void(void)>();
+    StartProgressIndication _start;
+    UpdateProgressIndication _update;
+    FinishProgressIndication _finish;
   };
 
   PresetManagerUseCases::ImportExitCode importBackupFile(FileInStream& in, const ProgressIndication& progress,

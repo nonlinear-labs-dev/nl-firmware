@@ -6,9 +6,6 @@
 #include <glib.h>
 #include <iomanip>
 #include <limits>
-#include <dirent.h>
-#include <stddef.h>
-#include <sys/types.h>
 
 std::string to_string(double d)
 {
@@ -88,7 +85,7 @@ namespace Environment
       nltools::Log::error("You could be missing some frames from your backtrace. Try to increase your maxFrames");
     }
 
-    auto symbols = backtrace_symbols(stack.data(), numFrames);  //symbols is mallocced here
+    auto symbols = backtrace_symbols(stack.data(), numFrames); //symbols is mallocced here
 
     for(auto i = 0; i < numFrames; i++)
     {

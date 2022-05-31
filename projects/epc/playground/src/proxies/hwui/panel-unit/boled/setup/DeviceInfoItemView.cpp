@@ -6,7 +6,6 @@
 
 DeviceInfoItemView::DeviceInfoItemView(DeviceInformationItem* item, Duration updateInterval)
     : base_type("", Rect(0, 0, 0, 0))
-    , m_update(Application::get().getMainContext())
 {
   item->onChange(mem_fun(this, &DeviceInfoItemView::onInfoChanged));
 

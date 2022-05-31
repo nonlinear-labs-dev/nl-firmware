@@ -11,5 +11,5 @@ ArrowDown::~ArrowDown() = default;
 
 std::shared_ptr<Font> ArrowDown::getFont() const
 {
-  return Fonts::get().getFont("Emphase-8-Regular", getFontHeight());
+  return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
 }

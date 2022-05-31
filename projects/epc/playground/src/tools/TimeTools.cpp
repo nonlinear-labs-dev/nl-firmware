@@ -15,11 +15,12 @@ time_t TimeTools::getRealTimestamp()
   return time(nullptr);
 }
 
-time_t TimeTools::getAdjustedTimestamp(DateTimeAdjustment* adj)
+time_t TimeTools::getAdjustedTimestamp()
 {
-  if(adj)
+  if(Application::exists())
   {
-    return getRealTimestamp() + adj->get();
+    auto dateTimeSetting = Application::get().getSettings()->getSetting<DateTimeAdjustment>();
+    return getRealTimestamp() + dateTimeSetting->get();
   }
 
   return getRealTimestamp();
@@ -30,9 +31,9 @@ Glib::ustring TimeTools::getRealIso()
   return getIsoTime(getRealTimestamp());
 }
 
-Glib::ustring TimeTools::getAdjustedIso(DateTimeAdjustment *adj)
+Glib::ustring TimeTools::getAdjustedIso()
 {
-  return getIsoTime(getAdjustedTimestamp(adj));
+  return getIsoTime(getAdjustedTimestamp());
 }
 
 Glib::ustring TimeTools::getIsoTime(const time_t stamp)

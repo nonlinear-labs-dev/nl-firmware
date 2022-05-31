@@ -15,7 +15,7 @@ template <typename tData> class List : public IntrusiveList<Item<tData> *>
 {
 };
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Simple IntrusiveList Operations")
+TEST_CASE("Simple IntrusiveList Operations")
 {
   List<int> l;
 

@@ -13,5 +13,5 @@ ArrowUp::~ArrowUp()
 
 std::shared_ptr<Font> ArrowUp::getFont() const
 {
-  return Fonts::get().getFont("Emphase-8-Regular", getFontHeight());
+  return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
 }

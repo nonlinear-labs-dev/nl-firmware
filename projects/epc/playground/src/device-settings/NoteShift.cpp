@@ -48,11 +48,8 @@ void NoteShift::set(int shift)
 
 void NoteShift::syncExternals(SendReason reason) const
 {
-  if(Application::exists())
-  {
-    nltools::msg::Setting::NoteShiftMessage msg { m_shift };
-    Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::NoteShiftMessage>(msg);
-  }
+  nltools::msg::Setting::NoteShiftMessage msg { m_shift };
+  Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::NoteShiftMessage>(msg);
 }
 
 int NoteShift::get() const

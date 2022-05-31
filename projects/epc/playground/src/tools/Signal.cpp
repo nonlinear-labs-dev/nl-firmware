@@ -1,6 +1,6 @@
 #include "Signal.h"
 #include <sigc++/trackable.h>
-#include <Application.h>
+#include <glibmm/main.h>
 
 SignalBase::SignalBase()
     : m_initCallbackScheduled(false)
@@ -19,7 +19,7 @@ void SignalBase::scheduleInitCallback(const void *cookie, SignalBase::tCallback 
 
   if(!m_initCallbackScheduled.exchange(true))
   {
-    m_initCallbackConnection = Application::get().getMainContext()->signal_idle().connect(
+    m_initCallbackConnection = Glib::MainContext::get_default()->signal_idle().connect(
         sigc::mem_fun(this, &SignalBase::doTheCallbacks), Glib::PRIORITY_HIGH);
   }
 }
@@ -44,7 +44,7 @@ void SignalBase::deferedSend()
 {
   if(!m_deferedCallbackConnection.connected())
   {
-    auto ctx = Application::get().getMainContext();
+    auto ctx = Glib::MainContext::get_default();
     m_deferedCallbackConnection
         = ctx->signal_idle().connect(sigc::mem_fun(this, &SignalBase::emitDefered), Glib::PRIORITY_DEFAULT);
   }

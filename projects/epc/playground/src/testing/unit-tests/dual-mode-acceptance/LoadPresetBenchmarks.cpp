@@ -29,7 +29,7 @@ class Averager
     auto total = std::accumulate(m_values.begin(), m_values.end(), 0ul);
     std::chrono::milliseconds totalMs
         = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::nanoseconds(total));
-    nltools::Log::warning(m_name, "took on avg:", totalMs.count() / m_values.size(), "ms");
+    nltools::Log::error(m_name, "took on avg:", totalMs.count() / m_values.size(), "ms");
   }
 
   void put(unsigned long val)
@@ -50,7 +50,7 @@ template <typename T> inline long measure(const T& cb)
   return std::chrono::nanoseconds(end - start).count();
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load Presets", "[Benchmark]")
+TEST_CASE("Load Presets", "[Benchmark]")
 {
   MockPresetStorage presets1;
   MockPresetStorage presets2;
@@ -71,17 +71,17 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load Presets", "[Benchmark]")
   {
 
     avgSingle.put(measure([&]() {
-      ebUseCases.load(presets1.getSinglePreset());
+          ebUseCases.load(presets1.getSinglePreset());
       ebUseCases.load(presets2.getSinglePreset());
     }));
 
     avgLayer.put(measure([&]() {
-      ebUseCases.load(presets1.getLayerPreset());
+          ebUseCases.load(presets1.getLayerPreset());
       ebUseCases.load(presets2.getLayerPreset());
     }));
 
     avgSplit.put(measure([&] {
-      ebUseCases.load(presets1.getSplitPreset());
+          ebUseCases.load(presets1.getSplitPreset());
       ebUseCases.load(presets2.getSplitPreset());
     }));
   }

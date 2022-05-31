@@ -10,7 +10,7 @@
 #include <use-cases/PresetUseCases.h>
 #include <parameters/scale-converters/Linear100PercentScaleConverter.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Undo copyFrom")
+TEST_CASE("Undo copyFrom")
 {
   auto pm = TestHelper::getPresetManager();
   auto eb = TestHelper::getEditBuffer();
@@ -146,7 +146,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Undo copyFrom")
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"PresetParameterGroup")
+TEST_CASE("PresetParameterGroup")
 {
   WHEN("VoiceGroup is assigned to PresetParameterGroup")
   {

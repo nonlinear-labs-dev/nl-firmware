@@ -9,7 +9,7 @@
 #include <presets/PresetParameter.h>
 #include <parameters/SplitPointParameter.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Import Preset with ModAspects on Split")
+TEST_CASE("Import Preset with ModAspects on Split")
 {
   auto settings = TestHelper::getSettings();
   auto pm = TestHelper::getPresetManager();
@@ -66,7 +66,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Import Preset with ModAspects o
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Import Conversion for Bank with Version 7 Checks out")
+TEST_CASE("Import Conversion for Bank with Version 7 Checks out")
 {
   auto pm = TestHelper::getPresetManager();
 

@@ -25,8 +25,8 @@ namespace nltools
 
       using ReceiveCB = std::function<nlohmann::json(std::weak_ptr<ClientConnection>, const nlohmann::json &)>;
 
-      WebSocketJsonAPI(Glib::RefPtr<Glib::MainContext> ctx, guint port, ReceiveCB cb);
-      ~WebSocketJsonAPI() override;
+      WebSocketJsonAPI(guint port, ReceiveCB cb);
+      ~WebSocketJsonAPI();
 
       void send(API::ClientConnection *c, const nlohmann::json &msg) override;
       void sendAll(const nlohmann::json &msg) override;
@@ -46,8 +46,7 @@ namespace nltools
 
       guint m_port;
       ReceiveCB m_cb;
-      SoupServer *m_server;
-      Glib::RefPtr<Glib::MainContext> m_mainContext;
+      std::unique_ptr<SoupServer, tGObjectUnref> m_server;
       Glib::RefPtr<Glib::MainLoop> m_messageLoop;
       std::unique_ptr<threading::ContextBoundMessageQueue> m_mainContextQueue;
       std::unique_ptr<threading::ContextBoundMessageQueue> m_bgContextQueue;

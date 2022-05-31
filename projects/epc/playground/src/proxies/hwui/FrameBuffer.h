@@ -21,9 +21,13 @@ namespace nltools::msg
 class FrameBuffer : public Uncopyable, public sigc::trackable
 {
  public:
-  FrameBuffer();
-
   virtual ~FrameBuffer();
+
+  static inline FrameBuffer &get()
+  {
+    static FrameBuffer buf;
+    return buf;
+  }
 
   typedef int32_t tCoordinate;
   typedef uint8_t tPixel;
@@ -94,6 +98,8 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   bool isValidColor(Colors c) const;
 
  private:
+  FrameBuffer();
+
   void setOffsetPixel(tCoordinate x, tCoordinate y);
   void setRawPixel(tCoordinate x, tCoordinate y);
   void drawRawHorizontalLine(tCoordinate x, tCoordinate y, tCoordinate length);

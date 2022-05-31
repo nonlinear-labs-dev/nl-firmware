@@ -5,7 +5,6 @@ class SpawnCommandLine
 {
  public:
   explicit SpawnCommandLine(const std::string &cmd);
-  ~SpawnCommandLine();
 
   std::string getStdOutputOrFallback(const std::string &fallbackIfEmpty) const;
   const std::string &getStdOutput() const;

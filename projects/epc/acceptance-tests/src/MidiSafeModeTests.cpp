@@ -10,7 +10,7 @@
 #include <mock/DspHostDualTester.h>
 #include <mock/TCDHelpers.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Midi Safe Mode disabled")
+TEST_CASE("Midi Safe Mode disabled")
 {
   // prepare Configuration
   auto config = nltools::msg::getConfig();

@@ -61,5 +61,5 @@ Font::Justification PresetListHeaderArrow::getJustification() const
 
 std::shared_ptr<Font> PresetListHeaderArrow::getFont() const
 {
-  return Fonts::get().getFont("Emphase-9-Regular", getFontHeight());
+  return Oleds::get().getFont("Emphase-9-Regular", getFontHeight());
 }

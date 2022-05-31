@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Setting.h"
-#include "DateTimeAdjustment.h"
 
 class Settings;
 
@@ -16,7 +15,7 @@ class DeviceName : public Setting
 
   Glib::ustring getDisplayString() const override;
 
-  void sanitize(DateTimeAdjustment *adj);
+  void sanitize();
 
   void load(const Glib::ustring &text, Initiator initiator) override;
   Glib::ustring save() const override;
@@ -25,6 +24,5 @@ class DeviceName : public Setting
   const Glib::ustring &get() const;
 
  private:
-  Settings& m_settings;
   Glib::ustring m_name;
 };

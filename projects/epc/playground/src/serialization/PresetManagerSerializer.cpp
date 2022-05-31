@@ -2,10 +2,6 @@
 #include "PresetManagerSerializer.h"
 #include <tools/TimeTools.h>
 #include <presets/PresetManager.h>
-#include <presets/EditBuffer.h>
-#include <device-settings/Settings.h>
-#include <device-settings/DateTimeAdjustment.h>
-#include <iostream>
 
 PresetManagerSerializer::PresetManagerSerializer(PresetManager *pm, Progress progress)
     : Serializer(getTagName(), progress)
@@ -25,8 +21,7 @@ Glib::ustring PresetManagerSerializer::getTagName()
 
 void PresetManagerSerializer::writeTagContent(Writer &writer) const
 {
-  auto adj = m_pm->getEditBuffer()->getSettings().getSetting<DateTimeAdjustment>();
-  writer.writeTextElement("serialize-date", TimeTools::getAdjustedIso(adj));
+  writer.writeTextElement("serialize-date", TimeTools::getAdjustedIso());
   writer.writeTextElement("selected-bank-uuid", m_pm->getSelectedBankUuid().raw());
   writer.writeTextElement("selected-midi-bank-uuid", m_pm->getMidiSelectedBank().raw());
 

@@ -60,7 +60,7 @@ void ExportBackupEditor::installState(State s)
 
     case Running:
       addControl(new Label("Saving Banks, stand by...", Rect(3, -20, 128, 64)));
-      Application::get().getHWUI()->getOleds().syncRedraw();
+      Oleds::get().syncRedraw();
       exportBanks();
       break;
 
@@ -76,11 +76,7 @@ void ExportBackupEditor::writeBackupToStream(OutStream &stream)
 {
   XmlWriter writer(stream);
   auto pm = Application::get().getPresetManager();
-  auto addStatus = [](auto str) {
-    auto hwui = Application::get().getHWUI();
-    hwui->addSplashStatus(str);
-  };
-  PresetManagerSerializer serializer(pm, addStatus);
+  PresetManagerSerializer serializer(pm, SplashLayout::addStatus);
   serializer.write(writer, VersionAttribute::get());
 }
 
@@ -116,11 +112,10 @@ void ExportBackupEditor::exportBanks()
 
 void ExportBackupEditor::writeBackupFileXML()
 {
-  auto hwui = Application::get().getHWUI();
-  hwui->startSplash();
+  SplashLayout::start();
   FileOutStream stream(c_tempBackupFile, true);
   writeBackupToStream(stream);
-  hwui->finishSplash();
+  SplashLayout::finish();
 }
 
 bool ExportBackupEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)

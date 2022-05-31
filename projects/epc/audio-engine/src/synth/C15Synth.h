@@ -78,15 +78,15 @@ class C15Synth : public Synth, public sigc::trackable
   MidiRuntimeOptions m_midiOptions;
 
   //Latch-Filters, Queues
-  std::array<std::array<float, 3>, 8> m_playgroundHwSourceKnownValues {};
+  std::array<std::array<float, 3>, 8> m_playgroundHwSourceKnownValues{};
   RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
   RingBuffer<MidiChannelModeMessages> m_queuedChannelModeMessages;
 
-  InputEventStage m_inputEventStage;
-
   //Concurrency
+  std::future<void> m_syncExternalsTask;
   std::condition_variable m_syncExternalsWaiter;
   std::mutex m_syncExternalsMutex;
-  std::atomic<bool> m_quit { false };
-  std::future<void> m_syncExternalsTask;
+  std::atomic<bool> m_quit{ false };
+
+  InputEventStage m_inputEventStage;
 };

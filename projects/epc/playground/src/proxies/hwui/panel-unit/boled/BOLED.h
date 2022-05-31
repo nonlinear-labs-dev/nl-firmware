@@ -9,17 +9,16 @@
 class Application;
 class Parameter;
 class Setting;
-class LayoutFolderMonitor;
 
 namespace DescriptiveLayouts
 {
   class GenericLayout;
 }
 
-class BOLED : public OLEDProxy
+class BOLED : public OLEDProxy, public sigc::trackable
 {
  public:
-  BOLED(Oleds& oleds, LayoutFolderMonitor* mon);
+  BOLED();
   ~BOLED() override;
 
   void init();

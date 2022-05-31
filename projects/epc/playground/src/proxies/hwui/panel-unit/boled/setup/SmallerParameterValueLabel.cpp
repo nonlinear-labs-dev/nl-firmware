@@ -6,7 +6,7 @@
 
 std::shared_ptr<Font> SmallerParamValueLabel::getFont() const
 {
-  return Fonts::get().getFont("Emphase-8-Regular", getFontHeight());
+  return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
 }
 
 int SmallerParamValueLabel::getFontHeight() const

@@ -2,7 +2,7 @@
 #include <proxies/hwui/controls/Rect.h>
 #include <limits>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Rect Basic", "[Rect]")
+TEST_CASE("Rect Basic", "[Rect]")
 {
   Rect a(0, 0, 0, 0);
   CHECK(a.isEmpty());
@@ -23,7 +23,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Rect Basic", "[Rect]")
   CHECK(b.getBottom() == 0);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Rect Intersect", "[Rect]")
+TEST_CASE("Rect Intersect", "[Rect]")
 {
   Rect a(0, 0, 10, 10);
   Rect b(20, 20, 10, 10);

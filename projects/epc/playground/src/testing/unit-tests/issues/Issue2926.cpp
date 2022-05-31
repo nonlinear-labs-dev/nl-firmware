@@ -3,7 +3,7 @@
 #include <presets/Preset.h>
 #include "use-cases/PresetUseCases.h"
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 2926")
+TEST_CASE("Issue 2926")
 {
   auto pm = TestHelper::getPresetManager();
   EditBufferUseCases ebUseCase(*pm->getEditBuffer());

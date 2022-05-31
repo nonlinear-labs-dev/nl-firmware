@@ -1,5 +1,5 @@
 #include "DelayedJob.h"
-#include <Application.h>
+#include <glibmm/main.h>
 
 DelayedJob::DelayedJob(int maxDelay, tJob job)
     : m_maxDelay(maxDelay)
@@ -16,8 +16,8 @@ void DelayedJob::trigger()
 {
   if(m_timeout.empty())
   {
-    m_timeout = Application::get().getMainContext()->signal_timeout().connect(
-        sigc::mem_fun(this, &DelayedJob::onTimeout), m_maxDelay);
+    m_timeout = Glib::MainContext::get_default()->signal_timeout().connect(sigc::mem_fun(this, &DelayedJob::onTimeout),
+                                                                           m_maxDelay);
   }
 }
 

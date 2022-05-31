@@ -52,11 +52,8 @@ void TransitionTime::setDefault()
 
 void TransitionTime::syncExternals(SendReason reason) const
 {
-  if(Application::exists())
-  {
-    nltools::msg::Setting::TransitionTimeMessage msg { static_cast<float>(m_time.getQuantizedClipped()) };
-    Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::TransitionTimeMessage>(msg);
-  }
+  nltools::msg::Setting::TransitionTimeMessage msg { static_cast<float>(m_time.getQuantizedClipped()) };
+  Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::TransitionTimeMessage>(msg);
 }
 
 tControlPositionValue TransitionTime::get() const

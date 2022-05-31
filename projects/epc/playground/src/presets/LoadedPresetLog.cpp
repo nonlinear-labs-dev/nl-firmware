@@ -2,7 +2,6 @@
 #include "EditBuffer.h"
 #include <tools/Uuid.h>
 #include <nltools/messaging/WebSocketJsonAPI.h>
-#include <Application.h>
 
 namespace std
 {
@@ -13,9 +12,8 @@ namespace std
 }
 
 LoadedPresetLog::LoadedPresetLog()
-    : m_throttler(Application::get().getMainContext(), std::chrono::milliseconds(500))
-    , m_api(std::make_unique<nltools::msg::WebSocketJsonAPI>(Application::get().getMainContext(),
-                                                             PLAYGROUND_PRESETLOAD_LOG_PORT,
+    : m_throttler(std::chrono::milliseconds(500))
+    , m_api(std::make_unique<nltools::msg::WebSocketJsonAPI>(PLAYGROUND_PRESETLOAD_LOG_PORT,
                                                              [this](auto, const auto &in) { return onApiCall(in); }))
 {
 }

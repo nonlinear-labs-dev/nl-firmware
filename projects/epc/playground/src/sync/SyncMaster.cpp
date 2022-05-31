@@ -3,7 +3,6 @@
 #include <sync/JsonAdlSerializers.h>
 #include <nltools/messaging/MockAPI.h>
 #include <nltools/messaging/WebSocketJsonAPI.h>
-#include <Application.h>
 
 using namespace std::chrono_literals;
 using namespace nltools::msg;
@@ -21,7 +20,7 @@ namespace nlohmann
 
 SyncMaster::SyncMaster(nltools::msg::API::Backend backend)
     : m_api(createAPI(backend))
-    , m_throttler(Application::get().getMainContext(), 5ms)
+    , m_throttler(5ms)
 {
 }
 
@@ -32,7 +31,7 @@ std::unique_ptr<SyncMaster::tAPI> SyncMaster::createAPI(SyncMaster::tAPI::Backen
   switch(backend)
   {
     case tAPI::Backend::Websocket:
-      return std::make_unique<WebSocketJsonAPI>(Application::get().getMainContext(), SYNCJS_WEBSOCKET_PORT,
+      return std::make_unique<WebSocketJsonAPI>(SYNCJS_WEBSOCKET_PORT,
                                                 [this](const auto &client, auto in) { return api(client, in); });
     default:
     case tAPI::Backend::Mock:

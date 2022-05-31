@@ -6,7 +6,7 @@
 #include <xml/VersionAttribute.h>
 #include <presets/BankActions.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Export/Import Presets With Part Names", "[Preset][Store][Export][Import]")
+TEST_CASE("Export/Import Presets With Part Names", "[Preset][Store][Export][Import]")
 {
   auto pm = TestHelper::getPresetManager();
 

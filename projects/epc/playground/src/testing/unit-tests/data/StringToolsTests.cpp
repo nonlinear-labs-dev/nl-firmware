@@ -1,7 +1,7 @@
 #include <testing/TestHelper.h>
 #include <tools/StringTools.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Splitting strings at spaces")
+TEST_CASE("Splitting strings at spaces")
 {
   REQUIRE(StringTools::splitStringAtSpacesAndTrimSpaces("Bar").size() == 1);
   REQUIRE(StringTools::splitStringAtSpacesAndTrimSpaces("Bar          Foo").size() == 2);
@@ -10,7 +10,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Splitting strings at spaces")
   REQUIRE(StringTools::splitStringAtSpacesAndTrimSpaces("  ").empty());
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"NL Stringtools")
+TEST_CASE("NL Stringtools")
 {
   REQUIRE(nltools::string::removeCharacters("Foo", {}) == "Foo");
   REQUIRE(nltools::string::removeCharacters("Foo", {'o'}) == "F");

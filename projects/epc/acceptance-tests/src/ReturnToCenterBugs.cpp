@@ -32,7 +32,7 @@ MidiRuntimeOptions createTCDSettings2()
 constexpr static uint8_t BASE_TCD = 0b11100000;
 constexpr static uint8_t Ribbon1 = 0b00000110;
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Ribbon 1 Return to Center")
+TEST_CASE("Ribbon 1 Return to Center")
 {
   class MyTestHost : public PassOnHWReceived
   {

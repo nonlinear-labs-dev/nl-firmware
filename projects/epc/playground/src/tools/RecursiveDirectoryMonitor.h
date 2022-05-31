@@ -24,7 +24,6 @@ namespace FileTools
 
    public:
     RecursiveDirectoryMonitor(const tFile& rootFolder, tCallBack callback);
-    ~RecursiveDirectoryMonitor();
     void rebuildDirectoryList();
     void addMonitor(const tFile& file);
     void onFileChanged(const tFile& oldFile, const tFile& newFile, int monitorEvent);

@@ -28,7 +28,7 @@ void Control::setPosition(const Rect &rect)
 
 void Control::setDirty()
 {
-  Application::get().getHWUI()->getOleds().setDirty();
+  Oleds::get().setDirty();
 }
 
 bool Control::isVisible() const

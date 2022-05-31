@@ -9,7 +9,6 @@
 #include <proxies/hwui/panel-unit/boled/info/MultiLineInfoContent.h>
 #include <proxies/hwui/panel-unit/boled/info/InfoField.h>
 #include <presets/PresetParameter.h>
-#include "parameter_declarations.h"
 
 PresetInfoContent::PresetInfoContent()
 {
@@ -95,13 +94,12 @@ bool PresetInfoContent::fillDefaults()
 
 Glib::ustring PresetInfoContent::createPresetTypeString(const Preset *preset)
 {
-  using namespace C15::PID;
   Glib::ustring type = toString(preset->getType());
 
-  auto monoI = preset->findParameterByID({ Mono_Grp_Enable, VoiceGroup::I }, false);
-  auto monoII = preset->findParameterByID({ Mono_Grp_Enable, VoiceGroup::II }, false);
-  auto unisonI = preset->findParameterByID({ Unison_Voices, VoiceGroup::I }, false);
-  auto unisonII = preset->findParameterByID({ Unison_Voices, VoiceGroup::II }, false);
+  auto monoI = preset->findParameterByID({ 364, VoiceGroup::I }, false);
+  auto monoII = preset->findParameterByID({ 364, VoiceGroup::II }, false);
+  auto unisonI = preset->findParameterByID({ 249, VoiceGroup::I }, false);
+  auto unisonII = preset->findParameterByID({ 249, VoiceGroup::II }, false);
 
   const auto monoIEnabled = monoI ? differs(monoI->getValue(), 0.0) : false;
   const auto monoIIEnabled = monoII ? differs(monoII->getValue(), 0.0) : false;

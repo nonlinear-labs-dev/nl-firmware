@@ -8,10 +8,9 @@
 #include <string>
 #include <glibmm.h>
 #include <profiling/Profiler.h>
-#include <Application.h>
 
 WatchDog::WatchDog()
-    : m_regularTimer(Application::get().getMainContext(), sigc::mem_fun(this, &WatchDog::onTimer))
+    : m_regularTimer(sigc::mem_fun(this, &WatchDog::onTimer))
 {
 }
 

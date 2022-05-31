@@ -4,7 +4,7 @@
 #include <parameter_declarations.h>
 #include <use-cases/RibbonParameterUseCases.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Setting Ribbon to Return to center leads to HW-Amt to be 100% if boolean was on")
+TEST_CASE("Setting Ribbon to Return to center leads to HW-Amt to be 100% if boolean was on")
 {
   TestHelper::initSingleEditBuffer();
 
@@ -60,7 +60,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Setting Ribbon to Return to cen
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Setting Ribbon to Return to center leads to unchanged HW-Amt if boolean was off")
+TEST_CASE("Setting Ribbon to Return to center leads to unchanged HW-Amt if boolean was off")
 {
   TestHelper::initSingleEditBuffer();
 

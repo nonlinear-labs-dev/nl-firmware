@@ -10,9 +10,8 @@
 #include <proxies/hwui/HWUI.h>
 #include <device-settings/FocusAndModeSetting.h>
 
-BaseUnit::BaseUnit(Settings &settings, Oleds &oleds)
+BaseUnit::BaseUnit(Settings& settings)
     : super(settings)
-    , m_playPanel(oleds)
 {
   settings.getSetting<BaseUnitUIMode>()->onChange(mem_fun(this, &BaseUnit::respectUsageMode));
   nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::RibbonLed,

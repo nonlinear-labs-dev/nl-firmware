@@ -18,7 +18,7 @@ ENUM(TestButtons, uint16_t, FIRST_PARAMETER_BUTTON = 0, BUTTON_0 = 0, BUTTON_1, 
      BUTTON_REDO = 113, BUTTON_MINUS = 120, BUTTON_PLUS = 121, BUTTON_FUNCTION = 122, BUTTON_MODE = 123,
      NUM_BUTTONS = 128, ROTARY_MINUS, ROTARY_PLUS, INVALID);
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Enum to String", "[nltools][enum]")
+TEST_CASE("Enum to String", "[nltools][enum]")
 {
   CHECK(toString(FooBar::Foo) == "Foo");
   CHECK(toString(FooBar::Bar) == "Bar");
@@ -28,7 +28,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Enum to String", "[nltools][enu
   CHECK(toString(FooBar::Knall) == "Knall");
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"String to Enum", "[nltools][enum]")
+TEST_CASE("String to Enum", "[nltools][enum]")
 {
   CHECK(to<TestButtons>("BUTTON_12") == TestButtons::BUTTON_12);
   CHECK(to<TestButtons>("BUTTON_DEC") == TestButtons::BUTTON_DEC);

@@ -59,8 +59,8 @@ Glib::ustring XmlReader::trim(const Glib::ustring& text)
 {
   static std::unordered_set<std::string> emptyStrings;
 
-  if(emptyStrings.count(text.raw()) > 0)
-    return {};
+  if(emptyStrings.find(text.raw()) != emptyStrings.end())
+    return Glib::ustring();
 
   auto begin = text.end();
   auto end = text.end();

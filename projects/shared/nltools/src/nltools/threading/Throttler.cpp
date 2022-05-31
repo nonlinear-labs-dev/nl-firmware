@@ -1,8 +1,7 @@
 #include <nltools/threading/Throttler.h>
-#include "nltools/logging/Log.h"
 
-Throttler::Throttler(Glib::RefPtr<Glib::MainContext> ctx, Expiration::Duration maxDelay)
-    : m_expiration(ctx, [this] { delayedCallback(); })
+Throttler::Throttler(Expiration::Duration maxDelay)
+    : m_expiration([this] { delayedCallback(); })
     , m_maxDelay(maxDelay)
 {
 }
@@ -35,9 +34,4 @@ void Throttler::delayedCallback()
     task();
     m_expiration.refresh(m_maxDelay);
   }
-}
-
-void Throttler::cancel()
-{
-  m_expiration.cancel();
 }

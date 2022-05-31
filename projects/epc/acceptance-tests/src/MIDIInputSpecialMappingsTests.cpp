@@ -58,7 +58,7 @@ namespace SecTests
   };
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Secondary Channel", "[MIDI][TCD]")
+TEST_CASE("Secondary Channel", "[MIDI][TCD]")
 {
   constexpr static uint8_t BASE_TCD = 0b11100000;
   constexpr static uint8_t TCD_KEY_POS = 13;
@@ -140,7 +140,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Secondary Channel", "[MIDI][TCD
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Receive MIDI from Channel I and Channel II leads to correct Split", "[MIDI][TCD]")
+TEST_CASE("Receive MIDI from Channel I and Channel II leads to correct Split", "[MIDI][TCD]")
 {
   class PassOnKeyDownHostSplit : public PassOnKeyDownHost
   {
@@ -206,7 +206,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Receive MIDI from Channel I and
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Receive MIDI Special Receive Channel Settings leads to Note Down", "[MIDI][TCD]")
+TEST_CASE("Receive MIDI Special Receive Channel Settings leads to Note Down", "[MIDI][TCD]")
 {
   class PassOnKeyDownHostSingle : public PassOnKeyDownHost
   {

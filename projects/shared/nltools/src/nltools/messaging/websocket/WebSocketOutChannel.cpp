@@ -5,7 +5,6 @@
 #include <glibmm.h>
 #include <nltools/messaging/Message.h>
 #include <pthread.h>
-#include <giomm/cancellable.h>
 
 namespace nltools
 {
@@ -15,14 +14,13 @@ namespace nltools
     {
       WebSocketOutChannel::WebSocketOutChannel(const std::string &targetMachine, guint port,
                                                nltools::threading::Priority p,
-                                               std::function<void()> connectionEstablishedCB,
-                                               Glib::RefPtr<Glib::MainContext> ctx)
-          : m_cancel(Gio::Cancellable::create())
-          , m_uri(nltools::string::concat("http://", targetMachine, ":", port))
+                                               std::function<void()> connectionEstablishedCB)
+          : m_uri(nltools::string::concat("http://", targetMachine, ":", port))
           , m_soupSession(soup_session_new(), g_object_unref)
           , m_message(nullptr, g_object_unref)
           , m_connection(nullptr, g_object_unref)
-          , m_mainThreadContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(ctx))
+          , m_mainThreadContextQueue(
+                std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
           , m_onConnectionEstablished(connectionEstablishedCB)
           , m_contextThread([=] { this->backgroundThread(p); })
       {
@@ -30,10 +28,6 @@ namespace nltools
 
       WebSocketOutChannel::~WebSocketOutChannel()
       {
-        m_connection.reset();
-        m_reconnetConnection.disconnect();
-        m_cancel->cancel();
-
         while(!m_bgRunning)
         {
           using namespace std::chrono_literals;
@@ -108,20 +102,18 @@ namespace nltools
         pthread_setname_np(pthread_self(), "WebSockOut");
         threading::setThisThreadPrio(p);
 
-        auto mainContext = m_mainThreadContextQueue->getContext();
+        auto mainContext = Glib::MainContext::get_default();
 
         auto m = Glib::MainContext::create();
-        m->push_thread_default();
+        g_main_context_push_thread_default(m->gobj());
 
         m_backgroundContextQueue = std::make_unique<threading::ContextBoundMessageQueue>(m);
         m_messageLoop = Glib::MainLoop::create(m);
-        m_backgroundContextQueue->pushMessage([this] { m_bgRunning = true; });
+        m_backgroundContextQueue->pushMessage(std::bind(&WebSocketOutChannel::connect, this));
 
         auto c = mainContext->signal_timeout().connect_seconds(sigc::mem_fun(this, &WebSocketOutChannel::ping), 2);
-        connect();
         m_messageLoop->run();
-
-        m->pop_thread_default();
+        c.disconnect();
       }
 
       bool WebSocketOutChannel::ping()
@@ -132,10 +124,10 @@ namespace nltools
 
       void WebSocketOutChannel::connect()
       {
+        m_bgRunning.store(true);
         m_message.reset(soup_message_new("GET", m_uri.c_str()));
         auto cb = reinterpret_cast<GAsyncReadyCallback>(&WebSocketOutChannel::onWebSocketConnected);
-        soup_session_websocket_connect_async(m_soupSession.get(), m_message.get(), nullptr, nullptr, m_cancel->gobj(),
-                                             cb, this);
+        soup_session_websocket_connect_async(m_soupSession.get(), m_message.get(), nullptr, nullptr, nullptr, cb, this);
       }
 
       void WebSocketOutChannel::onWebSocketConnected(SoupSession *session, GAsyncResult *res,
@@ -148,9 +140,6 @@ namespace nltools
 
         if(error)
         {
-          if(error->code == G_IO_ERROR_CANCELLED)
-            return;
-
           nltools::Log::debug(pThis->m_uri, " -> ", error->message);
           g_error_free(error);
           pThis->reconnect();
@@ -169,12 +158,8 @@ namespace nltools
 
       void WebSocketOutChannel::reconnect()
       {
-        m_reconnetConnection = m_messageLoop->get_context()->signal_timeout().connect_seconds(
-            [this] {
-              this->connect();
-              return false;
-            },
-            2);
+        auto sigTimeOut = this->m_messageLoop->get_context()->signal_timeout();
+        sigTimeOut.connect_seconds_once(std::bind(&WebSocketOutChannel::connect, this), 2);
       }
 
       void WebSocketOutChannel::connectWebSocket(SoupWebsocketConnection *connection)

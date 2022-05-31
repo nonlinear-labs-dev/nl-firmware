@@ -3,7 +3,7 @@
 
 std::shared_ptr<Font> LeftAligned9pxCaptionLabel::getFont() const
 {
-  return Fonts::get().getFont("Emphase-9-Regular", 9);
+  return Oleds::get().getFont("Emphase-9-Regular", 9);
 }
 
 void LeftAligned9pxCaptionLabel::setFontColor(FrameBuffer& fb) const

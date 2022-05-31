@@ -84,7 +84,7 @@ void HTTPServer::initializeServer()
 
   if(error)
   {
-    nltools::Log::warning("Could not start http server:", error->message);
+    nltools::Log::error("Could not start http server:", error->message);
     g_error_free(error);
   }
 }
@@ -211,14 +211,12 @@ bool HTTPServer::isStaticFileURL(const Glib::ustring &path)
   }
 }
 
-bool HTTPServer::isTMPStaticFile(const Glib::ustring &path)
+bool HTTPServer::isTMPStaticFile(const Glib::ustring& path)
 {
-  try
-  {
-    std::filesystem::path p { path.c_str() };
+  try {
+    std::filesystem::path p{path.c_str()};
     return p.string().find("/tmp/") == 0;
-  }
-  catch(...)
+  } catch(...)
   {
     return false;
   }

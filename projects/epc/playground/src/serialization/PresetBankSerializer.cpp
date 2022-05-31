@@ -3,11 +3,6 @@
 
 #include <presets/Bank.h>
 #include <tools/TimeTools.h>
-#include <presets/PresetManager.h>
-#include <device-settings/Settings.h>
-#include <device-settings/DateTimeAdjustment.h>
-#include <presets/EditBuffer.h>
-#include <iostream>
 
 PresetBankSerializer::PresetBankSerializer(Bank *bank, Progress progress, bool ignoreUUIDs)
     : super(bank, progress, ignoreUUIDs)
@@ -18,17 +13,7 @@ void PresetBankSerializer::writeTagContent(Writer &writer) const
 {
   addStatus("Writing bank " + m_bank->getName(true));
 
-  auto pm  = m_bank->getPresetManager();
-  if(pm)
-  {
-    auto& settings = pm->getEditBuffer()->getSettings();
-    writer.writeTextElement("bank-serialize-date", TimeTools::getAdjustedIso(settings.getSetting<DateTimeAdjustment>()));
-  }
-  else
-  {
-    writer.writeTextElement("bank-serialize-date", TimeTools::getRealIso());
-  }
-
+  writer.writeTextElement("bank-serialize-date", TimeTools::getAdjustedIso());
 
   super::writeTagContent(writer);
 

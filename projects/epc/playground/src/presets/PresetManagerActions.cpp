@@ -20,7 +20,6 @@
 #include <proxies/hwui/panel-unit/boled/setup/ExportBackupEditor.h>
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
-#include <device-settings/DateTimeAdjustment.h>
 
 PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, PresetManager& presetManager, AudioEngineProxy& aeProxy, Settings& settings)
     : SectionAndActionManager(parent, "/presets/")
@@ -107,22 +106,7 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
           auto* buffer = http->getFlattenedBuffer();
 
           PresetManagerUseCases useCase(m_presetManager, m_settings);
-          auto start = [](){
-            auto hwui = Application::get().getHWUI();
-            hwui->startSplash();
-          };
-
-          auto addStatus = [](auto str){
-            auto hwui = Application::get().getHWUI();
-            hwui->addSplashStatus(str);
-          };
-
-          auto finish = [](){
-            auto hwui = Application::get().getHWUI();
-            hwui->finishSplash();
-          };
-
-          if(!useCase.importBackupFile(buffer, { start, addStatus, finish }, m_aeProxy))
+          if(!useCase.importBackupFile(buffer, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish }, m_aeProxy))
             http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
 
           soup_buffer_free(buffer);
@@ -201,10 +185,8 @@ bool PresetManagerActions::handleRequest(const Glib::ustring& path, std::shared_
   {
     if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
-      auto hwui = Application::get().getHWUI();
-      auto settings = Application::get().getSettings();
-      hwui->startSplash();
-      const auto time = TimeTools::getDisplayStringFromStamp(TimeTools::getAdjustedTimestamp(settings->getSetting<DateTimeAdjustment>()));
+      SplashLayout::start();
+      const auto time = TimeTools::getDisplayStringFromStamp(TimeTools::getAdjustedTimestamp());
       const auto timeWithoutWhitespaces = StringTools::replaceAll(time, " ", "-");
       const auto timeSanitized = StringTools::replaceAll(timeWithoutWhitespaces, ":", "-");
       auto disposition = "attachment; filename=\"" + timeSanitized + "-nonlinear-c15-banks.xml.tar.gz\"";
@@ -212,7 +194,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring& path, std::shared_
       ExportBackupEditor::writeBackupToStream(stream);
       httpRequest->respondComplete(SOUP_STATUS_OK, "application/zip", { { "Content-Disposition", disposition } },
                                    stream.exhaust());
-      hwui->finishSplash();
+      SplashLayout::finish();
       return true;
     }
   }

@@ -30,7 +30,6 @@ class RibbonLabel : public Label
   using tRibbonEnables = std::pair<bool, bool>;
   tRibbonEnables getRibbonEnabledStates() const;
 
-  std::vector<sigc::connection> m_signalsChanged;
   ParameterId m_parameterID;
   PhysicalControlParameter *m_parameter;
 };

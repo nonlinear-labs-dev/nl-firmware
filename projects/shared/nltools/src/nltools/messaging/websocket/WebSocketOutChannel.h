@@ -10,7 +10,6 @@
 #include <atomic>
 #include <condition_variable>
 #include <libsoup/soup.h>
-#include <sigc++/sigc++.h>
 
 namespace nltools
 {
@@ -22,7 +21,7 @@ namespace nltools
       {
        public:
         WebSocketOutChannel(const std::string &targetMachine, guint port, nltools::threading::Priority p,
-                            std::function<void()> connectionEstablishedCB, Glib::RefPtr<Glib::MainContext> ctx);
+                            std::function<void()> connectionEstablishedCB);
 
         ~WebSocketOutChannel() override;
 
@@ -46,7 +45,6 @@ namespace nltools
         using tWebSocketPtr = std::unique_ptr<SoupWebsocketConnection, decltype(*g_object_unref)>;
         using tMessagePtr = std::unique_ptr<SoupMessage, decltype(*g_object_unref)>;
 
-        Glib::RefPtr<Gio::Cancellable> m_cancel;
         std::string m_uri;
         tSessionPtr m_soupSession;
         tMessagePtr m_message;
@@ -59,7 +57,6 @@ namespace nltools
         std::atomic_bool m_bgRunning = { false };
         BackgroundThreadWaiter m_connectionEstablishedWaiter;
         std::function<void()> m_onConnectionEstablished;
-        sigc::connection m_reconnetConnection;
         std::thread m_contextThread;
         bool m_flushing = false;
       };
