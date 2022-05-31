@@ -1806,10 +1806,12 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
   globalParRcl(msg->master.pan);
   globalParRcl(msg->master.serialFX);
 
-  for(uint32_t i = 0; i < msg->scale.size(); i++)
+  globalParRcl(msg->scaleBaseKey);
+  for(uint32_t i = 0; i < msg->scaleOffsets.size(); i++)
   {
-    globalParRcl(msg->scale[i]);
+    globalParRcl(msg->scaleOffsets[i]);
   }
+
   // local updates: unison, mono - updating va
   localPolyRcl(0, true, msg->unison, msg->mono);
   // local updates: unmodulateables
@@ -1965,7 +1967,8 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
   globalParRcl(msg->master.pan);
   globalParRcl(msg->master.serialFX);
 
-  for(auto i : msg->scale)
+  globalParRcl(msg->scaleBaseKey);
+  for(auto& i : msg->scaleOffsets)
   {
     globalParRcl(i);
   }
@@ -2128,10 +2131,13 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
   globalParRcl(msg->master.tune);
   globalParRcl(msg->master.pan);
   globalParRcl(msg->master.serialFX);
-  for(auto i : msg->scale)
+
+  globalParRcl(msg->scaleBaseKey);
+  for(auto i : msg->scaleOffsets)
   {
     globalParRcl(i);
   }
+
   // local updates: unison, mono - updating va
   localPolyRcl(0, true, msg->unison, msg->mono);
   // transfer unison detune, phase, pan and mono glide to other part for proper smoother values - ignoring va

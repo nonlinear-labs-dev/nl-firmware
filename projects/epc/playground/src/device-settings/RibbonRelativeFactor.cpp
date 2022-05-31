@@ -57,8 +57,11 @@ void RibbonRelativeFactor::set(tControlPositionValue amount)
 
 void RibbonRelativeFactor::syncExternals(SendReason reason) const
 {
-  auto v = static_cast<uint16_t>(m_factor.getTcdValue());
-  Application::get().getPlaycontrollerProxy()->sendSetting(RIBBON_REL_FACTOR, v);
+  if(Application::exists())
+  {
+    auto v = static_cast<uint16_t>(m_factor.getTcdValue());
+    Application::get().getPlaycontrollerProxy()->sendSetting(RIBBON_REL_FACTOR, v);
+  }
 }
 
 void RibbonRelativeFactor::setDefault()

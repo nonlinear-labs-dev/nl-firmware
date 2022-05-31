@@ -34,9 +34,11 @@
 #include <use-cases/BankUseCases.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
 #include <device-settings/NoteShift.h>
+#include <Application.h>
 
 AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, PlaycontrollerProxy &playProxy)
-    : m_presetManager { pm }
+    : m_sendMidiSettingThrottler(Application::get().getMainContext(), std::chrono::milliseconds { 250 })
+    , m_presetManager { pm }
     , m_settings { settings }
     , m_playcontrollerProxy { playProxy }
 {
@@ -46,59 +48,52 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
                           sigc::mem_fun(this, &AudioEngineProxy::connectSettingsToAudioEngineMessage));
 
   receive<HardwareSourcePollEnd>(EndPoint::Playground, [this](auto &msg) {
-      int index = 0;
-      bool didChange = false;
-      for(auto value: msg.m_data)
+    int index = 0;
+    bool didChange = false;
+    for(auto value : msg.m_data)
+    {
+      auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(index);
+      index++;
+      if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
       {
-        auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(index);
-        index++;
-        if(auto p = dynamic_cast<PhysicalControlParameter*>(param))
-        {
-          PhysicalControlParameterUseCases useCases(p);
-          didChange |= useCases.applyPolledHWPosition(value);
-        }
+        PhysicalControlParameterUseCases useCases(p);
+        didChange |= useCases.applyPolledHWPosition(value);
       }
+    }
 
-      if(didChange)
+    if(didChange)
+    {
+      nltools::Log::info("sending EditBuffer after PollEnd has been received!");
+      sendEditBuffer();
+    }
+  });
+
+  receive<HardwareSourceChangedNotification>(EndPoint::Playground, [this](auto &msg) {
+    if(auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(msg.hwSource))
+    {
+      if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
       {
-        nltools::Log::info("sending EditBuffer after PollEnd has been received!");
-        sendEditBuffer();
+        PhysicalControlParameterUseCases useCase(p);
+        useCase.changeFromAudioEngine(msg.position, msg.source);
+        m_playcontrollerProxy.notifyRibbonTouch(p->getID().getNumber());
+      }
+    }
+  });
+
+  receive<Midi::ProgramChangeMessage>(EndPoint::Playground, [=](const auto &msg) {
+    if(auto lock = m_programChangeRecursion.lock())
+      if(auto bank = m_presetManager.findMidiSelectedBank())
+      {
+        setLastKnownMIDIProgramChangeNumber(static_cast<int>(msg.program));
+        BankUseCases useCase(bank, m_settings);
+        useCase.selectPreset(msg.program);
       }
   });
 
-  receive<HardwareSourceChangedNotification>(
-      EndPoint::Playground,
-      [this](auto &msg)
-      {
-        if(auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(msg.hwSource))
-        {
-          if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
-          {
-            PhysicalControlParameterUseCases useCase(p);
-            useCase.changeFromAudioEngine(msg.position, msg.source);
-            m_playcontrollerProxy.notifyRibbonTouch(p->getID().getNumber());
-          }
-        }
-      });
-
-  receive<Midi::ProgramChangeMessage>(EndPoint::Playground,
-                                      [=](const auto &msg)
-                                      {
-                                        if(auto lock = m_programChangeRecursion.lock())
-                                          if(auto bank = m_presetManager.findMidiSelectedBank())
-                                          {
-                                            setLastKnownMIDIProgramChangeNumber(static_cast<int>(msg.program));
-                                            BankUseCases useCase(bank, m_settings);
-                                            useCase.selectPreset(msg.program);
-                                          }
-                                      });
-
-  receive<nltools::msg::Setting::SetGlobalLocalSetting>(EndPoint::Playground,
-                                                        [=](const auto &msg)
-                                                        {
-                                                          SettingsUseCases useCases(m_settings);
-                                                          useCases.setGlobalLocal(msg.m_state);
-                                                        });
+  receive<nltools::msg::Setting::SetGlobalLocalSetting>(EndPoint::Playground, [=](const auto &msg) {
+    SettingsUseCases useCases(m_settings);
+    useCases.setGlobalLocal(msg.m_state);
+  });
 
   m_presetManager.onLoadHappened(sigc::mem_fun(this, &AudioEngineProxy::onPresetManagerLoaded));
 }
@@ -106,7 +101,7 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
 template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditBuffer &editBuffer)
 {
   size_t hwSource = 0;
-  size_t globalParams = 0;
+  size_t scaleOffsets = 0;
   size_t mc = 0;
   size_t mcT = 0;
   size_t modR = 0;
@@ -156,9 +151,20 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditB
       }
       else if(isScale)
       {
-        auto &pItem = msg.scale[globalParams++];
-        pItem.id = p->getID().getNumber();
-        pItem.controlPosition = p->getControlPositionValue();
+        if(p->getID().getNumber() == C15::PID::Scale_Base_Key)
+        {
+          auto& pItem = msg.scaleBaseKey;
+          pItem.id = p->getID().getNumber();
+          pItem.controlPosition = p->getControlPositionValue();
+        }
+        else if(auto modP = dynamic_cast<ModulateableParameter*>(p))
+        {
+          auto &pItem = msg.scaleOffsets[scaleOffsets++];
+          pItem.id = p->getID().getNumber();
+          pItem.controlPosition = p->getControlPositionValue();
+          pItem.mc = modP->getModulationSource();
+          pItem.modulationAmount = modP->getModulationAmount();
+        }
       }
       else if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
       {
@@ -181,7 +187,7 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditB
     }
   }
 
-  nltools_assertAlways(msg.scale.size() == globalParams);
+  nltools_assertAlways(msg.scaleOffsets.size() == scaleOffsets);
   nltools_assertAlways(msg.hwsources.size() == hwSource);
   nltools_assertAlways(msg.macros.size() == mc);
   nltools_assertAlways(msg.hwamounts.size() == modR);
@@ -521,47 +527,43 @@ void AudioEngineProxy::connectSettingsToAudioEngineMessage()
                           EnableHighVelocityCC, Enable14BitSupport, RoutingSettings, GlobalLocalEnableSetting>(
       &m_settings);
 
-  m_settingConnections.push_back(m_settings.getSetting<AutoStartRecorderSetting>()->onChange(
-      [](const Setting *s)
-      {
-        auto as = static_cast<const AutoStartRecorderSetting *>(s);
-        const auto shouldAutoStart = as->get();
-        auto msg = nltools::msg::Setting::FlacRecorderAutoStart {};
-        msg.enabled = shouldAutoStart;
-        nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
-      }));
+  m_settingConnections.push_back(m_settings.getSetting<AutoStartRecorderSetting>()->onChange([](const Setting *s) {
+    auto as = static_cast<const AutoStartRecorderSetting *>(s);
+    const auto shouldAutoStart = as->get();
+    auto msg = nltools::msg::Setting::FlacRecorderAutoStart {};
+    msg.enabled = shouldAutoStart;
+    nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+  }));
 }
 
 void AudioEngineProxy::scheduleMidiSettingsMessage()
 {
-  m_sendMidiSettingThrottler.doTask(
-      [this]()
-      {
-        nltools::msg::Setting::MidiSettingsMessage msg;
-        msg.sendChannel = m_settings.getSetting<MidiSendChannelSetting>()->get();
-        msg.sendSplitChannel = m_settings.getSetting<MidiSendChannelSplitSetting>()->get();
-        msg.receiveChannel = m_settings.getSetting<MidiReceiveChannelSetting>()->get();
-        msg.receiveSplitChannel = m_settings.getSetting<MidiReceiveChannelSplitSetting>()->get();
+  m_sendMidiSettingThrottler.doTask([this]() {
+    nltools::msg::Setting::MidiSettingsMessage msg;
+    msg.sendChannel = m_settings.getSetting<MidiSendChannelSetting>()->get();
+    msg.sendSplitChannel = m_settings.getSetting<MidiSendChannelSplitSetting>()->get();
+    msg.receiveChannel = m_settings.getSetting<MidiReceiveChannelSetting>()->get();
+    msg.receiveSplitChannel = m_settings.getSetting<MidiReceiveChannelSplitSetting>()->get();
 
-        msg.pedal1cc = m_settings.getSetting<PedalCCMapping<1>>()->get();
-        msg.pedal2cc = m_settings.getSetting<PedalCCMapping<2>>()->get();
-        msg.pedal3cc = m_settings.getSetting<PedalCCMapping<3>>()->get();
-        msg.pedal4cc = m_settings.getSetting<PedalCCMapping<4>>()->get();
-        msg.ribbon1cc = m_settings.getSetting<RibbonCCMapping<1>>()->get();
-        msg.ribbon2cc = m_settings.getSetting<RibbonCCMapping<2>>()->get();
-        msg.aftertouchcc = m_settings.getSetting<AftertouchCCMapping>()->get();
-        msg.bendercc = m_settings.getSetting<BenderCCMapping>()->get();
+    msg.pedal1cc = m_settings.getSetting<PedalCCMapping<1>>()->get();
+    msg.pedal2cc = m_settings.getSetting<PedalCCMapping<2>>()->get();
+    msg.pedal3cc = m_settings.getSetting<PedalCCMapping<3>>()->get();
+    msg.pedal4cc = m_settings.getSetting<PedalCCMapping<4>>()->get();
+    msg.ribbon1cc = m_settings.getSetting<RibbonCCMapping<1>>()->get();
+    msg.ribbon2cc = m_settings.getSetting<RibbonCCMapping<2>>()->get();
+    msg.aftertouchcc = m_settings.getSetting<AftertouchCCMapping>()->get();
+    msg.bendercc = m_settings.getSetting<BenderCCMapping>()->get();
 
-        msg.highVeloCCEnabled = m_settings.getSetting<EnableHighVelocityCC>()->get();
-        msg.highResCCEnabled = m_settings.getSetting<Enable14BitSupport>()->get();
+    msg.highVeloCCEnabled = m_settings.getSetting<EnableHighVelocityCC>()->get();
+    msg.highResCCEnabled = m_settings.getSetting<Enable14BitSupport>()->get();
 
-        msg.routings = m_settings.getSetting<RoutingSettings>()->getRaw();
-        msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
+    msg.routings = m_settings.getSetting<RoutingSettings>()->getRaw();
+    msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
 
-        msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
+    msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
 
-        nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
-      });
+    nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+  });
 }
 
 void AudioEngineProxy::setLastKnownMIDIProgramChangeNumber(int pc)

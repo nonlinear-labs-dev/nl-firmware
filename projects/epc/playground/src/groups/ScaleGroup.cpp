@@ -4,10 +4,11 @@
 #include <parameters/scale-converters/KeyScaleConverter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
 #include "parameter_declarations.h"
+#include <Application.h>
 
 ScaleGroup::ScaleGroup(ParameterGroupSet* parent)
     : ParameterGroup(parent, { "Scale", VoiceGroup::Global }, "Scale", "Scale", "Scale")
-    , m_updateNames(std::chrono::milliseconds(200))
+    , m_updateNames(Application::get().getMainContext(), std::chrono::milliseconds(200))
 {
 }
 
@@ -34,6 +35,7 @@ void ScaleGroup::init()
 {
   auto baseKeyParam = new BaseScaleParameter(this, { getScaleBaseParameterNumber(), VoiceGroup::Global },
                                              ScaleConverter::get<BaseKeyScaleConverter>());
+
   baseKeyParam->onParameterChanged(sigc::mem_fun(this, &ScaleGroup::onBaseKeyParameterChanged), false);
   appendParameter(baseKeyParam);
 
@@ -76,12 +78,10 @@ void ScaleGroup::init()
 
 void ScaleGroup::onBaseKeyParameterChanged(const Parameter*)
 {
-  m_updateNames.doTask(
-      [=]()
-      {
-        for(auto a : getParameters())
-          a->onChange();
-      });
+  m_updateNames.doTask([=]() {
+    for(auto a : getParameters())
+      a->onChange();
+  });
 }
 
 bool ScaleGroup::isScaleParameter(const ParameterId& id)

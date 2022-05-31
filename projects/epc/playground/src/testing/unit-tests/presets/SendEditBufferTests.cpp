@@ -7,17 +7,17 @@
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 
-TEST_CASE("Preset Load sends EditBuffer")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Preset Load sends EditBuffer")
 {
-
   using namespace nltools::msg;
   using namespace std::chrono;
 
-  Configuration configuration;
-  configuration.useEndpoints = { EndPoint::AudioEngine };
-  configuration.offerEndpoints = { EndPoint::Playground, EndPoint::AudioEngine };
+  auto oldConfig = nltools::msg::getConfig();
 
-  TestHelper::ScopedMessagingConfiguration scopeEndPoint { configuration };
+  oldConfig.useEndpoints.insert(EndPoint::AudioEngine);
+  oldConfig.offerEndpoints.insert(EndPoint::AudioEngine);
+
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint { oldConfig };
 
   bool singleMessageRecieved = false;
 
@@ -31,13 +31,13 @@ TEST_CASE("Preset Load sends EditBuffer")
   MockPresetStorage presets;
   ebUseCases.load(presets.getSinglePreset());
 
-  TestHelper::doMainLoop(1s, 1s, [&] { return singleMessageRecieved; });
+  TestHelper::doMainLoop(1ms, 1s, [&] { return singleMessageRecieved; });
   c.disconnect();
 
   CHECK(eb->getUUIDOfLastLoadedPreset() == presets.getSinglePreset()->getUuid());
 }
 
-TEST_CASE("Store Action does not send EditBuffer")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Store Action does not send EditBuffer")
 {
   using namespace nltools::msg;
   using namespace std::chrono;
@@ -46,7 +46,7 @@ TEST_CASE("Store Action does not send EditBuffer")
 
   Configuration configuration;
   configuration.useEndpoints = { EndPoint::AudioEngine };
-  configuration.offerEndpoints = { EndPoint::Playground, EndPoint::AudioEngine };
+  configuration.offerEndpoints = { EndPoint::AudioEngine };
 
   TestHelper::ScopedMessagingConfiguration scopeEndPoint { configuration };
 
@@ -55,12 +55,9 @@ TEST_CASE("Store Action does not send EditBuffer")
 
   bool singleMessageReceived = false;
 
-
-  CHECK(waitForConnection(EndPoint::AudioEngine));
+  CHECK(waitForConnection(EndPoint::AudioEngine, std::chrono::seconds(1000)));
   auto c = receive<SinglePresetMessage>(EndPoint::AudioEngine,
-                                        [&](const auto &singleEditMessage) {
-                                          singleMessageReceived = true;
-                                        });
+                                        [&](const auto &singleEditMessage) { singleMessageReceived = true; });
   PresetManagerUseCases useCases(*pm, *settings);
 
   //Store EditBuffer as new Bank
@@ -69,7 +66,7 @@ TEST_CASE("Store Action does not send EditBuffer")
   auto newNumBanks = pm->getNumBanks();
   TestHelper::doMainLoopIteration();
   CHECK(newNumBanks > oldNumBanks);
-  CHECK(!singleMessageReceived);
+  TestHelper::doMainLoop(1ms, 1s, [&] { return !singleMessageReceived; });
 
   auto bank = pm->getSelectedBank();
   CHECK(bank != nullptr);
@@ -81,7 +78,7 @@ TEST_CASE("Store Action does not send EditBuffer")
   auto newNumPresets = bank->getNumPresets();
   TestHelper::doMainLoopIteration();
   CHECK(newNumPresets > oldNumPresets);
-  CHECK(!singleMessageReceived);
+  TestHelper::doMainLoop(1ms, 1s, [&] { return !singleMessageReceived; });
 
   //Insert preset into bank at pos 0
   oldNumPresets = bank->getNumPresets();
@@ -89,7 +86,7 @@ TEST_CASE("Store Action does not send EditBuffer")
   newNumPresets = bank->getNumPresets();
   TestHelper::doMainLoopIteration();
   CHECK(newNumPresets > oldNumPresets);
-  CHECK(!singleMessageReceived);
+  TestHelper::doMainLoop(1ms, 1s, [&] { return !singleMessageReceived; });
 
   c.disconnect();
 }

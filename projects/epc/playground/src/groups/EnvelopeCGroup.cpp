@@ -12,7 +12,7 @@
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar60DbScaleConverter.h>
 #include <parameter_declarations.h>
-#include "parameters/scale-converters/LinearBipolar60DBTScaleConverter.h"
+#include "parameters/scale-converters/LinearBipolarInverted60DBTScaleConverter.h"
 
 EnvelopeCGroup::EnvelopeCGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Env C", vg }, "Envelope C", "Envelope C", "Envelope C")
@@ -49,7 +49,7 @@ void EnvelopeCGroup::init()
                                 ScaleConverter::get<LinearBipolar60DbScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_C_Att_Vel, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar60DbtScaleConverter>()));
+                                ScaleConverter::get<LinearBipolarInverted60DbtScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_C_Rel_Vel, getVoiceGroup() },
                                 ScaleConverter::get<Linear60DbtScaleConverter>()));

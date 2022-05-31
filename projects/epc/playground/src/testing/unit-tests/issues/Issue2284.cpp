@@ -9,7 +9,7 @@
 #include "xml/MemoryInStream.h"
 #include "xml/FileOutStream.h"
 
-TEST_CASE("Export Backup with MIDI Bank exports MIDI UUID")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Export Backup with MIDI Bank exports MIDI UUID")
 {
   auto pm = TestHelper::getPresetManager();
   auto settings = TestHelper::getSettings();

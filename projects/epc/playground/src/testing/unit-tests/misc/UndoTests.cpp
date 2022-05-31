@@ -4,7 +4,7 @@
 
 using namespace std::chrono_literals;
 
-TEST_CASE("Timestamped Undo")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Timestamped Undo")
 {
   auto now = std::chrono::system_clock::time_point();
   std::list<std::chrono::seconds> timestamps { 1s, 2s, 3s, 4s, 5s };
@@ -30,7 +30,7 @@ TEST_CASE("Timestamped Undo")
   CHECK(log.findRecentTransactionAt(now + 10s) == reinterpret_cast<const UNDO::Transaction *>(5));
 }
 
-TEST_CASE("Timestamped Undo - find after undo")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Timestamped Undo - find after undo")
 {
   auto now = std::chrono::system_clock::time_point();
   std::list<std::chrono::seconds> timestamps { 1s, 2s, 3s, 4s, 5s };
@@ -56,7 +56,7 @@ TEST_CASE("Timestamped Undo - find after undo")
   CHECK(log.findRecentTransactionAt(now + 10s) == reinterpret_cast<const UNDO::Transaction *>(3));
 }
 
-TEST_CASE("Timestamped Undo - duplicate")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Timestamped Undo - duplicate")
 {
   auto now = std::chrono::system_clock::time_point();
   std::list<std::chrono::seconds> timestamps { 1s, 2s, 3s, 4s, 5s };
@@ -77,7 +77,7 @@ TEST_CASE("Timestamped Undo - duplicate")
   CHECK(timestamps.size() == 3);  // only 2 items popped
 }
 
-TEST_CASE("Timestamped Undo - remove")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Timestamped Undo - remove")
 {
   auto now = std::chrono::system_clock::time_point();
   std::list<std::chrono::seconds> timestamps { 1s, 2s, 3s, 4s, 5s };

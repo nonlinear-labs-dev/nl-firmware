@@ -59,7 +59,7 @@ void assertNoIDTwice(const nltools::msg::SinglePresetMessage &msg)
   collectIDs(msg.hwamounts, count);
   collectIDs(msg.hwsources, count);
   collectIDs(msg.macros, count);
-  collectIDs(msg.scale, count);
+  collectIDs(msg.scaleOffsets, count);
   assertMap(count);
 }
 
@@ -74,7 +74,7 @@ template <int vg, typename tMsg> void collectDual(const tMsg &msg)
   collectIDs(msg.hwamounts, count);
   collectIDs(msg.hwsources, count);
   collectIDs(msg.macros, count);
-  collectIDs(msg.scale, count);
+  collectIDs(msg.scaleOffsets, count);
   assertMap(count);
 }
 
@@ -88,7 +88,7 @@ template <int vg> void collectDual(const nltools::msg::LayerPresetMessage &msg)
   collectIDs(msg.hwamounts, count);
   collectIDs(msg.hwsources, count);
   collectIDs(msg.macros, count);
-  collectIDs(msg.scale, count);
+  collectIDs(msg.scaleOffsets, count);
   assertMap(count);
 }
 
@@ -104,7 +104,7 @@ void assertNoIDTwice(const nltools::msg::LayerPresetMessage &msg)
   collectDual<1>(msg);
 }
 
-TEST_CASE("Single Preset Message")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Single Preset Message")
 {
   MockPresetStorage presets;
   auto single = presets.getSinglePreset();

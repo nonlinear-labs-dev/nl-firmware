@@ -11,9 +11,12 @@ SplitPointSyncParameters::SplitPointSyncParameters(Settings& s)
 
 void SplitPointSyncParameters::init()
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  eb->onEditBufferConverted(sigc::mem_fun(this, &SplitPointSyncParameters::onSoundConverted));
-  Setting::init();
+  if(Application::exists())
+  {
+    auto eb = Application::get().getPresetManager()->getEditBuffer();
+    eb->onEditBufferConverted(sigc::mem_fun(this, &SplitPointSyncParameters::onSoundConverted));
+    Setting::init();
+  }
 }
 
 void SplitPointSyncParameters::undoableSet(UNDO::Transaction* transaction, bool newState)

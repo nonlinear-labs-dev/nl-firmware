@@ -6,7 +6,7 @@ void assertStrings(const Glib::ustring &query, const std::list<Glib::ustring> &e
   CHECK(result == expected);
 }
 
-TEST_CASE("Quoted Search Query", "[Search Query]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Quoted Search Query", "[Search Query]")
 {
   assertStrings("", std::list<Glib::ustring> {});
 

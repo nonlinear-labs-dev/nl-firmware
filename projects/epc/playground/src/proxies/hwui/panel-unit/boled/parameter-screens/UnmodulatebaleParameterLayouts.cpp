@@ -85,7 +85,7 @@ bool UnmodulateableParameterSelectLayout2::onButton(Buttons i, bool down, Button
       switch(i)
       {
         case Buttons::BUTTON_A:
-          if(m_resetButton)
+          if(m_resetButton && resetEnabled())
           {
             m_resetButton->toggleHighlight();
             return true;

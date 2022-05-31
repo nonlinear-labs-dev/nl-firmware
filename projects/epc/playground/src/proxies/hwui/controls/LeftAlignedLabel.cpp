@@ -8,7 +8,7 @@ LeftAlignedLabel::LeftAlignedLabel(const Glib::ustring &text, const Rect &pos)
 
 std::shared_ptr<Font> LeftAlignedLabel::getFont() const
 {
-  return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
+  return Fonts::get().getFont("Emphase-8-Regular", getFontHeight());
 }
 
 int LeftAlignedLabel::getFontHeight() const

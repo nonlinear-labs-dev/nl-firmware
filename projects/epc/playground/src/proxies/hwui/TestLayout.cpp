@@ -23,7 +23,7 @@ void TestLayout::iterate()
 
 bool TestLayout::redraw(FrameBuffer &fb)
 {
-  FrameBuffer &s = getFrameBuffer();
+  FrameBuffer &s = getOLEDProxy().getFrameBuffer();
   auto r = getOLEDProxy().getPosInFrameBuffer();
 
   s.setColor(FrameBuffer::Colors::C43);
