@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2022-05-26, 00:55
+    @date       2022-05-31, 13:25
     @version    1.7B-9
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -55,7 +55,7 @@ namespace C15
       PID::Env_A_Rel,
       0.53f,
       { Smoothers::Poly_Slow::Env_A_Rel, None, Properties::SmootherScale::Expon_Env_Time, 1.01f, -20.0f, false },
-      { 101, 1010, 101, 1010, "", "Envelope A", "Envelope A", "Release Time", "Release",
+      { 101, 1010, 100, 1000, "", "Envelope A", "Envelope A", "Release Time", "Release",
         "Time of the (exponential) Release segment in milliseconds (infinite at maximum)." } },
     { None },
     { Parameters::Local_Modulateables::Env_A_Gain,
@@ -141,7 +141,7 @@ namespace C15
       PID::Env_B_Rel,
       0.53f,
       { Smoothers::Poly_Slow::Env_B_Rel, None, Properties::SmootherScale::Expon_Env_Time, 1.01f, -20.0f, false },
-      { 101, 1010, 101, 1010, "", "Envelope B", "Envelope B", "Release Time", "Release",
+      { 101, 1010, 100, 1000, "", "Envelope B", "Envelope B", "Release Time", "Release",
         "Time of the (exponential) Release segment in milliseconds (infinite at maximum)." } },
     { None },
     { Parameters::Local_Modulateables::Env_B_Gain,
@@ -220,7 +220,7 @@ namespace C15
       PID::Env_C_Rel,
       0.53f,
       { Smoothers::Poly_Slow::Env_C_Rel, None, Properties::SmootherScale::Expon_Env_Time, 1.01f, -20.0f, false },
-      { 101, 1010, 101, 1010, "", "Envelope C", "Envelope C", "Release Time", "Release",
+      { 101, 1010, 100, 1000, "", "Envelope C", "Envelope C", "Release Time", "Release",
         "Time of the (exponential) Release segment in milliseconds (infinite at maximum)." } },
     { None },
     { Parameters::Local_Unmodulateables::Env_C_Lvl_Vel,

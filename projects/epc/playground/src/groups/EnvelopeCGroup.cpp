@@ -10,7 +10,6 @@
 #include <parameters/scale-converters/LinearBipolar1DbstScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar200PercentScaleConverter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
-#include <parameters/ModulateableParameterWithUnusualModDenominator.h>
 #include <parameters/scale-converters/LinearBipolar60DbScaleConverter.h>
 #include <parameter_declarations.h>
 #include "parameters/scale-converters/LinearBipolarInverted60DBTScaleConverter.h"
@@ -43,9 +42,8 @@ void EnvelopeCGroup::init()
       this, { C15::PID::Env_C_Sus, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
       ScaleConverter::get<LinearBipolar200PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameterWithUnusualModDenominator(
-      this, { C15::PID::Env_C_Rel, getVoiceGroup() }, ScaleConverter::get<EnvelopeReleaseTimeMSScaleConverter>(), 100,
-      1000));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Env_C_Rel, getVoiceGroup() },
+                                            ScaleConverter::get<EnvelopeReleaseTimeMSScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_C_Lvl_Vel, getVoiceGroup() },
                                 ScaleConverter::get<LinearBipolar60DbScaleConverter>()));
