@@ -5,7 +5,6 @@
 #include <parameters/scale-converters/EnvelopeTimeMSScaleConverter.h>
 #include <parameters/scale-converters/Linear100PercentScaleConverter.h>
 #include <parameters/scale-converters/Linear60DbScaleConverter.h>
-#include <parameters/scale-converters/Linear60DbtScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar100PercentScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar1DbstScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar200PercentScaleConverter.h>
@@ -52,7 +51,7 @@ void EnvelopeCGroup::init()
                                 ScaleConverter::get<LinearBipolarInverted60DbtScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_C_Rel_Vel, getVoiceGroup() },
-                                ScaleConverter::get<Linear60DbtScaleConverter>()));
+                                ScaleConverter::get<LinearBipolarInverted60DbtScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_C_Lvl_KT, getVoiceGroup() },
                                 ScaleConverter::get<LinearBipolar1DbstScaleConverter>()));
