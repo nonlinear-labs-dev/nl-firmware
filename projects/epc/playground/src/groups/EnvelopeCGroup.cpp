@@ -29,9 +29,6 @@ void EnvelopeCGroup::init()
   appendParameter(new ModulateableParameter(this, { C15::PID::Env_C_Att, getVoiceGroup() },
                                             ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>()));
 
-  appendParameter(new ModulateableParameter(this, { C15::PID::Env_C_Att_Curve, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
-
   appendParameter(new ModulateableParameter(this, { C15::PID::Env_C_Dec_1, getVoiceGroup() },
                                             ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>()));
 
@@ -54,7 +51,7 @@ void EnvelopeCGroup::init()
                                 ScaleConverter::get<LinearBipolar60DbScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_C_Att_Vel, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar60DbScaleConverter>()));
+                                ScaleConverter::get<LinearBipolar60DbtScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_C_Rel_Vel, getVoiceGroup() },
                                 ScaleConverter::get<Linear60DbtScaleConverter>()));
@@ -63,7 +60,10 @@ void EnvelopeCGroup::init()
                                 ScaleConverter::get<LinearBipolar1DbstScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_C_Time_KT, getVoiceGroup() },
-                                ScaleConverter::get<Linear100PercentScaleConverter>()));
+                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
+
+  appendParameter(new ModulateableParameter(this, { C15::PID::Env_C_Att_Curve, getVoiceGroup() },
+                                            ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::ParameterID::Env_C_Retr_H, getVoiceGroup() },
                                 ScaleConverter::get<Linear100PercentScaleConverter>()));
