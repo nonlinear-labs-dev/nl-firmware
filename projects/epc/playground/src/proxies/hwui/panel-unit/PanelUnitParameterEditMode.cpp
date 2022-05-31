@@ -128,10 +128,10 @@ void PanelUnitParameterEditMode::setup()
       sigc::mem_fun(this, &PanelUnitParameterEditMode::onParamSelectionChanged),
       Application::get().getHWUI()->getCurrentVoiceGroup());
 
-  Glib::MainContext::get_default()->signal_idle().connect_once([=]() {
+  Application::get().getMainContext()->signal_idle().connect_once([=]() {
     auto hwui = Application::get().getHWUI();
     auto &panelUnit = hwui->getPanelUnit();
-    auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+    auto &famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
 
     if(panelUnit.getUsageMode().get() == this)
     {
@@ -146,7 +146,7 @@ bool PanelUnitParameterEditMode::handleMacroControlButton(bool state, int mcPara
   auto &mcStateMachine = getMacroControlAssignmentStateMachine();
   mcStateMachine.setCurrentMCParameter(mcParamId);
 
-  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+  auto &famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
 
   bool isAlreadySelected = Application::get()
                                .getPresetManager()

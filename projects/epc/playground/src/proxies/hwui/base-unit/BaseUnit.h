@@ -15,7 +15,7 @@ class BaseUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   typedef HardwareUserInterfaceUnit super;
 
  public:
-  BaseUnit(Settings& settings);
+  BaseUnit(Settings& settings, Oleds& oleds);
   ~BaseUnit() override;
 
   void onTimeout();

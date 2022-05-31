@@ -6,6 +6,7 @@
 #include <netinet/tcp.h>
 #include <glibmm.h>
 #include <utility>
+#include <thread>
 
 namespace nltools
 {
@@ -13,23 +14,29 @@ namespace nltools
   {
     namespace ws
     {
-      WebSocketInChannel::WebSocketInChannel(Callback cb, guint port, nltools::threading::Priority p)
+      WebSocketInChannel::WebSocketInChannel(Callback cb, guint port, nltools::threading::Priority p,
+                                             const Glib::RefPtr<Glib::MainContext> &c)
           : InChannel(std::move(cb))
           , m_port(port)
           , m_server(soup_server_new(nullptr, nullptr), g_object_unref)
-          , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(Glib::MainContext::get_default()))
-          , m_contextThread([=] { this->backgroundThread(p); })
+          , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(c))
+          , m_backgroundCtx(Glib::MainContext::create())
+          , m_backgroundLoop(Glib::MainLoop::create(m_backgroundCtx))
+          , m_backgroundTask(std::async(std::launch::async, [=] { this->backgroundThread(p); }))
       {
         m_conditionEstablishedThreadWaiter.wait();
       }
 
       WebSocketInChannel::~WebSocketInChannel()
       {
-        if(m_messageLoop)
-          m_messageLoop->quit();
+        using namespace std::chrono_literals;
 
-        if(m_contextThread.joinable())
-          m_contextThread.join();
+        while(!m_bgLoopRunning)
+          std::this_thread::sleep_for(10ms);
+
+        m_backgroundLoop->quit();
+        m_backgroundTask.get();
+        m_server.reset();
       }
 
       void WebSocketInChannel::backgroundThread(nltools::threading::Priority p)
@@ -37,8 +44,7 @@ namespace nltools
         pthread_setname_np(pthread_self(), "WebSockIn");
         threading::setThisThreadPrio(p);
 
-        auto m = Glib::MainContext::create();
-        g_main_context_push_thread_default(m->gobj());
+        m_backgroundCtx->push_thread_default();
 
         GError *error = nullptr;
 
@@ -56,6 +62,9 @@ namespace nltools
             gchar *output = nullptr;
             g_spawn_command_line_sync(script.c_str(), &output, nullptr, nullptr, nullptr);
 
+            m_conditionEstablishedThreadWaiter.notify();
+            m_backgroundCtx->pop_thread_default();
+
             if(output)
               nltools::throwException("Could not listen to port ", m_port, ", because '", output, "' already owns it.");
 
@@ -66,9 +75,10 @@ namespace nltools
           g_error_free(error);
         }
 
-        m_messageLoop = Glib::MainLoop::create(m);
         m_conditionEstablishedThreadWaiter.notify();
-        m_messageLoop->run();
+        m_backgroundCtx->signal_idle().connect_once([&] { m_bgLoopRunning = true; });
+        m_backgroundLoop->run();
+        m_backgroundCtx->pop_thread_default();
       }
 
       void WebSocketInChannel::webSocket(SoupServer *, SoupWebsocketConnection *c, const char *, SoupClientContext *,

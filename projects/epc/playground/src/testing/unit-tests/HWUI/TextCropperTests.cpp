@@ -3,7 +3,7 @@
 #include <proxies/hwui/Font.h>
 #include <proxies/hwui/TextCropper.h>
 
-TEST_CASE("Shorten String if Necessary", "[HWUI][Text]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Shorten String if Necessary", "[HWUI][Text]")
 {
   auto pathToFont = getResourcesDir() + "/Emphase-9-Regular.ttf";
   auto font = std::make_shared<Font>(pathToFont, 9);

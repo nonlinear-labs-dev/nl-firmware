@@ -68,16 +68,15 @@ std::shared_ptr<Font> LabelStyleable::getFont() const
         break;
     }
 
-    auto& oled = Oleds::get();
     auto rawStr = fontStream.str();
-    return oled.getFont(rawStr, fontHeight);
+    return Fonts::get().getFont(rawStr, fontHeight);
   }
   catch(...)
   {
     ExceptionTools::errorLogCurrentException();
   }
 
-  return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
+  return Fonts::get().getFont("Emphase-8-Regular", getFontHeight());
 }
 
 LabelStyle LabelStyleable::getCurrentStyle() const
