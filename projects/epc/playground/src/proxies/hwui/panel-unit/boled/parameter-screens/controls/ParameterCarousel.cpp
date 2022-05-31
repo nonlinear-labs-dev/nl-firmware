@@ -125,12 +125,6 @@ void ParameterCarousel::setupChildControlsThatFit(Parameter* selectedParameter, 
     addControl(miniParam);
     yPos += ySpaceing;
     yPos += miniParamHeight;
-
-    if(ScaleGroup::isScaleParameter(param))
-    {
-      auto label = miniParam->getLabel();
-      label->setInfix("...");
-    }
   }
 }
 
