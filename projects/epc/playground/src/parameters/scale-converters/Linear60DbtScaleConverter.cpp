@@ -2,7 +2,7 @@
 #include "Linear60DbtScaleConverter.h"
 
 Linear60DbtScaleConverter::Linear60DbtScaleConverter()
-    : LinearScaleConverter(tTcdRange(0, 12000), tDisplayRange(0, 60), DBTDimension::get())
+    : LinearScaleConverter(tTcdRange(0, 12000), tDisplayRange(-60, 0), DBTDimension::get())
 {
 }
 

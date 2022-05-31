@@ -67,7 +67,7 @@ void OutputMixerGroup::init()
                                             ScaleConverter::get<ParabolicGainDbScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Out_Mix_Key_Pan, getVoiceGroup() },
-                                ScaleConverter::get<Linear100PercentScaleConverter>()));
+                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Out_Mix_To_FX, getVoiceGroup() },
                                             ScaleConverter::get<Linear100PercentScaleConverter>()));

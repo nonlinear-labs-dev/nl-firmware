@@ -11,9 +11,8 @@
 #include <parameters/scale-converters/LinearBipolar24DbScaleConverter.h>
 #include <parameters/scale-converters/LinearBipolar48DbScaleConverter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
-#include <parameters/ModulateableParameterWithUnusualModDenominator.h>
 #include <parameters/scale-converters/LinearBipolar60DbScaleConverter.h>
-#include <parameters/scale-converters/LinearBipolar60DBTScaleConverter.h>
+#include <parameters/scale-converters/LinearBipolarInverted60DBTScaleConverter.h>
 #include "parameter_declarations.h"
 
 EnvelopeBGroup::EnvelopeBGroup(ParameterGroupSet *parent, VoiceGroup vg)
@@ -30,9 +29,6 @@ void EnvelopeBGroup::init()
   appendParameter(new ModulateableParameter(this, { C15::PID::Env_B_Att, getVoiceGroup() },
                                             ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>()));
 
-  appendParameter(new ModulateableParameter(this, { C15::PID::Env_B_Att_Curve, getVoiceGroup() },
-                                            ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
-
   appendParameter(new ModulateableParameter(this, { C15::PID::Env_B_Dec_1, getVoiceGroup() },
                                             ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>()));
 
@@ -45,9 +41,8 @@ void EnvelopeBGroup::init()
   appendParameter(new ModulateableParameter(this, { C15::PID::Env_B_Sus, getVoiceGroup() },
                                             ScaleConverter::get<Linear100PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameterWithUnusualModDenominator(
-      this, { C15::PID::Env_B_Rel, getVoiceGroup() }, ScaleConverter::get<EnvelopeReleaseTimeMSScaleConverter>(), 100,
-      1000));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Env_B_Rel, getVoiceGroup() },
+                                            ScaleConverter::get<EnvelopeReleaseTimeMSScaleConverter>()));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::Env_B_Gain, getVoiceGroup() },
                                                               ScaleConverter::get<LinearBipolar24DbScaleConverter>(),
@@ -57,7 +52,13 @@ void EnvelopeBGroup::init()
                                 ScaleConverter::get<LinearBipolar60DbScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_B_Att_Vel, getVoiceGroup() },
-                                ScaleConverter::get<Linear60DbtScaleConverter>()));
+                                ScaleConverter::get<LinearBipolarInverted60DbtScaleConverter>()));
+
+  appendParameter(new Parameter(this, { C15::PID::Env_B_Dec_1_Vel, getVoiceGroup() },
+                                ScaleConverter::get<LinearBipolarInverted60DbtScaleConverter>()));
+
+  appendParameter(new Parameter(this, { C15::PID::Env_B_Dec_2_Vel, getVoiceGroup() },
+                                ScaleConverter::get<LinearBipolarInverted60DbtScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_B_Rel_Vel, getVoiceGroup() },
                                 ScaleConverter::get<Linear60DbtScaleConverter>()));
@@ -66,13 +67,10 @@ void EnvelopeBGroup::init()
                                 ScaleConverter::get<LinearBipolar1DbstScaleConverter>()));
 
   appendParameter(new Parameter(this, { C15::PID::Env_B_Time_KT, getVoiceGroup() },
-                                ScaleConverter::get<Linear100PercentScaleConverter>()));
+                                ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
-  appendParameter(new Parameter(this, { C15::PID::Env_B_Dec_1_Vel, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar60DbtScaleConverter>()));
-
-  appendParameter(new Parameter(this, { C15::PID::Env_B_Dec_2_Vel, getVoiceGroup() },
-                                ScaleConverter::get<LinearBipolar60DbtScaleConverter>()));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Env_B_Att_Curve, getVoiceGroup() },
+                                            ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Env_B_Elevate, getVoiceGroup() },
                                             ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));

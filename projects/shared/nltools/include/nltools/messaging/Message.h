@@ -756,14 +756,16 @@ namespace nltools
 
       ParameterGroups::MasterGroup master;
 
-      std::array<ParameterGroups::GlobalParameter, 13> scale;
+      ParameterGroups::GlobalParameter scaleBaseKey;
+      std::array<ParameterGroups::ModulateableParameter, 12> scaleOffsets;
     };
 
     inline bool operator==(const SinglePresetMessage& lhs, const SinglePresetMessage& rhs)
     {
       auto ret = lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.scale == rhs.scale;
+      ret &= lhs.scaleOffsets == rhs.scaleOffsets;
+      ret &= lhs.scaleBaseKey == rhs.scaleBaseKey;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
       ret &= lhs.master == rhs.master;
@@ -800,7 +802,8 @@ namespace nltools
       std::array<ParameterGroups::MacroParameter, 6> macros;
       std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
 
-      std::array<ParameterGroups::GlobalParameter, 13> scale;
+      ParameterGroups::GlobalParameter scaleBaseKey;
+      std::array<ParameterGroups::ModulateableParameter, 12> scaleOffsets;
       std::array<ParameterGroups::SplitPoint, 2> splitpoint;
     };
 
@@ -808,7 +811,8 @@ namespace nltools
     {
       auto ret = lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.scale == rhs.scale;
+      ret &= lhs.scaleOffsets == rhs.scaleOffsets;
+      ret &= lhs.scaleBaseKey == rhs.scaleBaseKey;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
       ret &= lhs.master == rhs.master;
@@ -846,14 +850,16 @@ namespace nltools
 
       ParameterGroups::MasterGroup master;
 
-      std::array<ParameterGroups::GlobalParameter, 13> scale;
+      ParameterGroups::GlobalParameter scaleBaseKey;
+      std::array<ParameterGroups::ModulateableParameter, 12> scaleOffsets;
     };
 
     inline bool operator==(const LayerPresetMessage& lhs, const LayerPresetMessage& rhs)
     {
       auto ret = lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.scale == rhs.scale;
+      ret &= lhs.scaleOffsets == rhs.scaleOffsets;
+      ret &= lhs.scaleBaseKey == rhs.scaleBaseKey;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
       ret &= lhs.master == rhs.master;

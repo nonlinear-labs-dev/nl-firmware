@@ -838,7 +838,7 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   // env a
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Time_KT) * _pitch;
   levelVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Lvl_Vel);
-  attackVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Att_Vel) * _vel;
+  attackVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Att_Vel) * _vel;
   decay1Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Dec_1_Vel) * _vel;
   decay2Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Dec_2_Vel) * _vel;
   levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Lvl_KT) * _pitch;
@@ -870,7 +870,7 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   // env b
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Time_KT) * _pitch;
   levelVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Lvl_Vel);
-  attackVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Att_Vel) * _vel;
+  attackVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Att_Vel) * _vel;
   decay1Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Dec_1_Vel) * _vel;
   decay2Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Dec_2_Vel) * _vel;
   levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Lvl_KT) * _pitch;
@@ -902,7 +902,7 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch, co
   // env c
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Time_KT) * _pitch;
   levelVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_Vel);
-  attackVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Att_Vel) * _vel;
+  attackVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Att_Vel) * _vel;
   levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_KT) * _pitch;
   if(levelVel < 0.0f)
   {
@@ -943,7 +943,7 @@ void PolySection::stopEnvelopes(const uint32_t _voiceId, const float _pitch, con
   float time, timeKT, releaseVel;
   // env a
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Time_KT) * _pitch;
-  releaseVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Rel_Vel) * _vel;
+  releaseVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Rel_Vel) * _vel;
   m_env_a.m_timeFactor[_voiceId][3] = m_convert->eval_level(timeKT + releaseVel) * m_millisecond;
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_A_Rel);
   if(time <= env_highest_finite_time)
@@ -957,7 +957,7 @@ void PolySection::stopEnvelopes(const uint32_t _voiceId, const float _pitch, con
   }
   // env b
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Time_KT) * _pitch;
-  releaseVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Rel_Vel) * _vel;
+  releaseVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Rel_Vel) * _vel;
   m_env_b.m_timeFactor[_voiceId][3] = m_convert->eval_level(timeKT + releaseVel) * m_millisecond;
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_B_Rel);
   if(time <= env_highest_finite_time)
@@ -971,7 +971,7 @@ void PolySection::stopEnvelopes(const uint32_t _voiceId, const float _pitch, con
   }
   // env c
   timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Time_KT) * _pitch;
-  releaseVel = -m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Rel_Vel) * _vel;
+  releaseVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Rel_Vel) * _vel;
   m_env_c.m_timeFactor[_voiceId][3] = m_convert->eval_level(timeKT + releaseVel) * m_millisecond;
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Rel);
   if(time <= env_highest_finite_time)

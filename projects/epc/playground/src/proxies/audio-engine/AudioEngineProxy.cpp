@@ -106,7 +106,7 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
 template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditBuffer &editBuffer)
 {
   size_t hwSource = 0;
-  size_t globalParams = 0;
+  size_t scaleOffsets = 0;
   size_t mc = 0;
   size_t mcT = 0;
   size_t modR = 0;
@@ -156,9 +156,20 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditB
       }
       else if(isScale)
       {
-        auto &pItem = msg.scale[globalParams++];
-        pItem.id = p->getID().getNumber();
-        pItem.controlPosition = p->getControlPositionValue();
+        if(p->getID().getNumber() == C15::PID::Scale_Base_Key)
+        {
+          auto& pItem = msg.scaleBaseKey;
+          pItem.id = p->getID().getNumber();
+          pItem.controlPosition = p->getControlPositionValue();
+        }
+        else if(auto modP = dynamic_cast<ModulateableParameter*>(p))
+        {
+          auto &pItem = msg.scaleOffsets[scaleOffsets++];
+          pItem.id = p->getID().getNumber();
+          pItem.controlPosition = p->getControlPositionValue();
+          pItem.mc = modP->getModulationSource();
+          pItem.modulationAmount = modP->getModulationAmount();
+        }
       }
       else if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
       {
@@ -181,7 +192,7 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditB
     }
   }
 
-  nltools_assertAlways(msg.scale.size() == globalParams);
+  nltools_assertAlways(msg.scaleOffsets.size() == scaleOffsets);
   nltools_assertAlways(msg.hwsources.size() == hwSource);
   nltools_assertAlways(msg.macros.size() == mc);
   nltools_assertAlways(msg.hwamounts.size() == modR);

@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2022-05-19, 16:05
+    @date       2022-05-31, 13:25
     @version    1.7B-9
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -55,7 +55,7 @@ namespace C15
       PID::Env_A_Rel,
       0.53f,
       { Smoothers::Poly_Slow::Env_A_Rel, None, Properties::SmootherScale::Expon_Env_Time, 1.01f, -20.0f, false },
-      { 101, 1010, 101, 1010, "", "Envelope A", "Envelope A", "Release Time", "Release",
+      { 101, 1010, 100, 1000, "", "Envelope A", "Envelope A", "Release Time", "Release",
         "Time of the (exponential) Release segment in milliseconds (infinite at maximum)." } },
     { None },
     { Parameters::Local_Modulateables::Env_A_Gain,
@@ -78,12 +78,12 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Sync::Env_A_Att_Vel, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, true },
       { 60, 600, None, None, "", "Envelope A", "Envelope A", "Attack Velocity", "Velocity",
-        "Velocity influence on the Attack time. The value represents the logarithmic amount of the reduction (positive "
-        "values) or gain (negative values) of the Attack time by high Note-On velocities." } },
+        "Velocity influence on the Attack time. The value represents the logarithmic amount of the reduction (negative "
+        "values) or gain (positive values) of the Attack time by high Note-On velocities." } },
     { Parameters::Local_Unmodulateables::Env_A_Rel_Vel,
       PID::Env_A_Rel_Vel,
-      0.0f,
-      { Smoothers::Poly_Sync::Env_A_Rel_Vel, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
+      1.0f,
+      { Smoothers::Poly_Sync::Env_A_Rel_Vel, None, Properties::SmootherScale::Linear, 60.0f, -60.0f, false },
       { 60, 600, None, None, "", "Envelope A", "Envelope A", "Release Velocity", "Velocity",
         "Velocity influence on the Release time. The value represents the logarithmic amount of the reduction of the "
         "Release time by high Note-Off velocities." } },
@@ -141,7 +141,7 @@ namespace C15
       PID::Env_B_Rel,
       0.53f,
       { Smoothers::Poly_Slow::Env_B_Rel, None, Properties::SmootherScale::Expon_Env_Time, 1.01f, -20.0f, false },
-      { 101, 1010, 101, 1010, "", "Envelope B", "Envelope B", "Release Time", "Release",
+      { 101, 1010, 100, 1000, "", "Envelope B", "Envelope B", "Release Time", "Release",
         "Time of the (exponential) Release segment in milliseconds (infinite at maximum)." } },
     { None },
     { Parameters::Local_Modulateables::Env_B_Gain,
@@ -164,12 +164,12 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Sync::Env_B_Att_Vel, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, true },
       { 60, 600, None, None, "", "Envelope B", "Envelope B", "Attack Velocity", "Velocity",
-        "Velocity influence on the Attack time. The value represents the logarithmic amount of the reduction (positive "
-        "values) or gain (negative values) of the Attack time by high Note-On velocities." } },
+        "Velocity influence on the Attack time. The value represents the logarithmic amount of the reduction (negative "
+        "values) or gain (positive values) of the Attack time by high Note-On velocities." } },
     { Parameters::Local_Unmodulateables::Env_B_Rel_Vel,
       PID::Env_B_Rel_Vel,
-      0.0f,
-      { Smoothers::Poly_Sync::Env_B_Rel_Vel, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
+      1.0f,
+      { Smoothers::Poly_Sync::Env_B_Rel_Vel, None, Properties::SmootherScale::Linear, 60.0f, -60.0f, false },
       { 60, 600, None, None, "", "Envelope B", "Envelope B", "Release Velocity", "Velocity",
         "Velocity influence on the Release time. The value represents the logarithmic amount of the reduction of the "
         "Release time by high Note-Off velocities." } },
@@ -220,7 +220,7 @@ namespace C15
       PID::Env_C_Rel,
       0.53f,
       { Smoothers::Poly_Slow::Env_C_Rel, None, Properties::SmootherScale::Expon_Env_Time, 1.01f, -20.0f, false },
-      { 101, 1010, 101, 1010, "", "Envelope C", "Envelope C", "Release Time", "Release",
+      { 101, 1010, 100, 1000, "", "Envelope C", "Envelope C", "Release Time", "Release",
         "Time of the (exponential) Release segment in milliseconds (infinite at maximum)." } },
     { None },
     { Parameters::Local_Unmodulateables::Env_C_Lvl_Vel,
@@ -235,12 +235,12 @@ namespace C15
       0.0f,
       { Smoothers::Poly_Sync::Env_C_Att_Vel, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, true },
       { 60, 600, None, None, "", "Envelope C", "Envelope C", "Attack Velocity", "Velocity",
-        "Velocity influence on the Attack time. The value represents the logarithmic amount of the reduction (positive "
-        "values) or gain (negative values) of the Attack time by high Note-On velocities." } },
+        "Velocity influence on the Attack time. The value represents the logarithmic amount of the reduction (negative "
+        "values) or gain (positive values) of the Attack time by high Note-On velocities." } },
     { Parameters::Local_Unmodulateables::Env_C_Rel_Vel,
       PID::Env_C_Rel_Vel,
-      0.0f,
-      { Smoothers::Poly_Sync::Env_C_Rel_Vel, None, Properties::SmootherScale::Linear, 60.0f, 0.0f, false },
+      1.0f,
+      { Smoothers::Poly_Sync::Env_C_Rel_Vel, None, Properties::SmootherScale::Linear, 60.0f, -60.0f, false },
       { 60, 600, None, None, "", "Envelope C", "Envelope C", "Release Velocity", "Velocity",
         "Velocity influence on the Release time. The value represents the logarithmic amount of the reduction of the "
         "Release time by high Note-Off velocities." } },

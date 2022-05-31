@@ -222,17 +222,12 @@ void ModulateableParameter::loadDefault(UNDO::Transaction *transaction, Defaults
 
 double ModulateableParameter::getModulationAmountFineDenominator() const
 {
-  auto fineDenominator = getValue().getFineDenominator();
-
-  while(fineDenominator > 8000)
-    fineDenominator /= 2;
-
-  return fineDenominator;
+  return ParameterDB::getFineModulationDenominator(getID());
 }
 
 double ModulateableParameter::getModulationAmountCoarseDenominator() const
 {
-  return getValue().getCoarseDenominator();
+  return ParameterDB::getCourseModulationDenominator(getID());
 }
 
 void ModulateableParameter::exportReaktorParameter(std::stringstream &target) const
