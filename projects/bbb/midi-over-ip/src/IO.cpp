@@ -32,7 +32,7 @@ Input::Input(const std::string &name)
   if(pipe(m_cancelPipe))
     nltools::Log::warning("Couldn't create pipe");
 
-  m_bg = std::async(std::launch::async, [=] { readMidi(); });
+  m_bg = std::async(std::launch::async, [=] { if(m_handle) readMidi(); });
 }
 
 Input::~Input()
