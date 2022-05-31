@@ -28,16 +28,14 @@
 #include <presets/EditBufferActions.h>
 #include <use-cases/SettingsUseCases.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
+#include <nltools/system/SpawnAsyncCommandLine.h>
 
 using namespace std::chrono_literals;
 
 Application *Application::theApp = nullptr;
 
-void setupMessaging(const Options *options)
+void setupMessaging(const Options *options, Glib::RefPtr<Glib::MainContext> pContext)
 {
-  if(Options::s_acceptanceTests)
-    return;
-
   using namespace nltools::msg;
 
   const auto &bbbb = options->getBBBB();
@@ -45,6 +43,8 @@ void setupMessaging(const Options *options)
   const auto &midi = options->getMidiBridge();
 
   Configuration conf;
+  conf.mainContext = pContext;
+
 #ifdef _DEVELOPMENT_PC
   conf.offerEndpoints = { { EndPoint::Playground }, { EndPoint::TestEndPoint } };
 #else
@@ -63,8 +63,9 @@ void setupMessaging(const Options *options)
 
 std::unique_ptr<Options> Application::initStatic(Application *app, std::unique_ptr<Options> options)
 {
+  app->m_theMainContext->push_thread_default();
   theApp = app;
-  setupMessaging(options.get());
+  setupMessaging(options.get(), app->m_theMainContext);
   return options;
 }
 
@@ -75,16 +76,17 @@ void quitApp(int sig)
 }
 
 Application::Application(int numArgs, char **argv)
-    : m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
-    , m_theMainLoop(Glib::MainLoop::create(Glib::MainContext::get_default()))
+    : m_theMainContext(Glib::MainContext::create())
+    , m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
+    , m_theMainLoop(Glib::MainLoop::create(m_theMainContext))
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_options->getSettingsFile(), m_http->getUpdateDocumentMaster()))
-    , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_presetManager(
           new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
+    , m_hwui(new HWUI(*m_settings))
+    , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
     , m_audioEngineProxy(new AudioEngineProxy(*m_presetManager, *m_settings, *m_playcontrollerProxy))
-    , m_hwui(new HWUI(*m_settings.get()))
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
     , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster()))
@@ -95,9 +97,6 @@ Application::Application(int numArgs, char **argv)
     , m_heartbeatState(false)
     , m_isQuit(false)
 {
-  if(Options::s_acceptanceTests)
-    m_options->setPresetManagerPath("/tmp/pg-test-pm/");
-
 #ifdef _PROFILING
   Profiler::get().enable(true);
 #endif
@@ -105,7 +104,7 @@ Application::Application(int numArgs, char **argv)
   m_settings->init();
   m_hwui->init();
   m_http->init();
-  m_presetManager->init(m_audioEngineProxy.get(), *m_settings, SplashLayout::addStatus);
+  m_presetManager->init(m_audioEngineProxy.get(), *m_settings, [this](auto str) { m_hwui->addSplashStatus(str); });
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
 
   auto focusAndMode = m_settings->getSetting<FocusAndModeSetting>();
@@ -122,11 +121,16 @@ Application::Application(int numArgs, char **argv)
   ::signal(SIGQUIT, quitApp);
   ::signal(SIGTERM, quitApp);
   ::signal(SIGINT, quitApp);
+
+  m_theMainContext->pop_thread_default();
 }
 
 Application::~Application()
 {
+  stopWatchDog();
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+
+  SpawnAsyncCommandLine::clear();
 
   m_watchDog.reset();
   m_aggroWatchDog.reset();
@@ -146,6 +150,8 @@ Application::~Application()
   Profiler::get().print();
 #endif
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+
+  nltools::msg::deInit();
 
   theApp = nullptr;
 }

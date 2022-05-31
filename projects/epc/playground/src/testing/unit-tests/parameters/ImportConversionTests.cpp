@@ -4,7 +4,7 @@
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
 #include "parameters/ParameterImportConversions.h"
 
-TEST_CASE("FB Drive 50db to 70db", "[Parameter][Convert]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"FB Drive 50db to 70db", "[Parameter][Convert]")
 {
   auto newDimension = ScaleConverter::get<Linear70DbScaleConverter>();
   auto &converter = ParameterImportConversions::get();
@@ -19,7 +19,7 @@ TEST_CASE("FB Drive 50db to 70db", "[Parameter][Convert]")
   }
 }
 
-TEST_CASE("Volume Scaleconverter Display <-> CP")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Volume Scaleconverter Display <-> CP")
 {
   ParabolicGainDbScaleConverter converter;
 
@@ -27,7 +27,7 @@ TEST_CASE("Volume Scaleconverter Display <-> CP")
     CHECK(Approx(v / 1000.0) == converter.displayToControlPosition(converter.controlPositionToDisplay(v / 1000.0)));
 }
 
-TEST_CASE("Pitch KT")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Pitch KT")
 {
   auto& converter = ParameterImportConversions::get();
 

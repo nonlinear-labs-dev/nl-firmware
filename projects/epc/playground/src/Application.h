@@ -65,16 +65,17 @@ class Application
   static std::unique_ptr<Options> initStatic(Application *app, std::unique_ptr<Options> options);
 
   static Application *theApp;
+  Glib::RefPtr<Glib::MainContext> m_theMainContext;
   std::unique_ptr<Options> m_options;
   Glib::RefPtr<Glib::MainLoop> m_theMainLoop;
 
   std::unique_ptr<HTTPServer> m_http;
   std::unique_ptr<Settings> m_settings;
-  std::unique_ptr<UndoScope> m_undoScope;
   std::unique_ptr<PresetManager> m_presetManager;
+  std::unique_ptr<HWUI> m_hwui;
+  std::unique_ptr<UndoScope> m_undoScope;
   std::unique_ptr<PlaycontrollerProxy> m_playcontrollerProxy;
   std::unique_ptr<AudioEngineProxy> m_audioEngineProxy;
-  std::unique_ptr<HWUI> m_hwui;
 
   std::unique_ptr<WatchDog> m_watchDog;
   std::unique_ptr<WatchDog> m_aggroWatchDog;

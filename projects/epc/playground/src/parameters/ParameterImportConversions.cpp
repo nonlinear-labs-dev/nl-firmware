@@ -245,7 +245,7 @@ tControlPositionValue ParameterImportConversions::reverbColorV4ToV5(tControlPosi
   return d * d * d * 4.0;
 }
 
-tControlPositionValue ParameterImportConversions::pitchKTV11ToV12(tControlPositionValue v)
+tControlPositionValue ParameterImportConversions::pitchKTV11ToV12(tControlPositionValue v) const
 {
   auto displayValueIn = v * 105.0;
   return displayValueIn / 200.0;

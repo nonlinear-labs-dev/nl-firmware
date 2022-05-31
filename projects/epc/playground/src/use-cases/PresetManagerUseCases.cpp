@@ -1,6 +1,7 @@
 #include <Application.h>
 #include <parameter_declarations.h>
 #include <device-settings/SyncSplitSettingUseCases.h>
+#include <device-settings/DateTimeAdjustment.h>
 #include <presets/ClusterEnforcement.h>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string.hpp>
@@ -703,7 +704,9 @@ bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InS
       reader.read<PresetManagerSerializer>(&pm, pg._update);
       ae.sendEditBuffer();
     }
-    pg.finish();
+
+    if(pg._finish)
+      pg.finish();
   });
 
   // fill preset manager with trash transaction, as snapshot above will
@@ -933,6 +936,7 @@ Bank* PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y
   auto transaction = scope->getTransaction();
 
   auto dlSetting = m_settings.getSetting<DirectLoadSetting>();
+  auto adj = m_settings.getSetting<DateTimeAdjustment>();
   std::shared_ptr<BooleanSettings> autoLoadOff = dlSetting->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
   auto newBank = m_presetManager.addBank(transaction, std::make_unique<Bank>(&m_presetManager));
 
@@ -947,7 +951,7 @@ Bank* PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y
 
   newBank->ensurePresetSelection(transaction);
   newBank->setAttribute(transaction, "Name of Import File", fileName);
-  newBank->setAttribute(transaction, "Date of Import File", TimeTools::getAdjustedIso());
+  newBank->setAttribute(transaction, "Date of Import File", TimeTools::getAdjustedIso(adj));
   newBank->setAttribute(transaction, "Name of Export File", "");
   newBank->setAttribute(transaction, "Date of Export File", "");
 

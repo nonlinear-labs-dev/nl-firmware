@@ -10,7 +10,7 @@
 #include <device-settings/SyncSplitSettingUseCases.h>
 #include <sync/SyncMasterMockRoot.h>
 
-TEST_CASE("Split Point Display Value")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Point Display Value")
 {
   auto eb = TestHelper::getEditBuffer();
 
@@ -46,7 +46,7 @@ TEST_CASE("Split Point Display Value")
   CHECK(splitII->getDisplayString() == "C6");
 }
 
-TEST_CASE("Split Point Helper Functions")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Point Helper Functions")
 {
   auto eb = TestHelper::getEditBuffer();
   auto settings = TestHelper::getSettings();
@@ -82,7 +82,7 @@ TEST_CASE("Split Point Helper Functions")
   }
 }
 
-TEST_CASE("Sync Setting gets updated on store and load")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Sync Setting gets updated on store and load")
 {
   auto pm = TestHelper::getPresetManager();
   auto eb = TestHelper::getEditBuffer();
@@ -190,7 +190,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
   }
 }
 
-TEST_CASE("Note to Display")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Note to Display")
 {
   SplitPointDimension dim;
   CHECK(dim.stringizeNote(0) == "C1");

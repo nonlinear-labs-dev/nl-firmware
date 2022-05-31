@@ -4,7 +4,7 @@
 #include <catch.hpp>
 #include "testing/TestHelper.h"
 
-TEST_CASE("Recall write and Read")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Recall write and Read")
 {
   auto eb = TestHelper::getEditBuffer();
 

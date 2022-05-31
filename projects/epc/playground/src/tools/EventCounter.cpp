@@ -1,11 +1,11 @@
 #include "EventCounter.h"
 #include <device-settings/DebugLevel.h>
-#include <glibmm.h>
+#include <Application.h>
 
 EventCounter::EventCounter(const char *name)
     : m_name(name)
 {
-  Glib::MainContext::get_default()->signal_timeout().connect_seconds(sigc::mem_fun(this, &EventCounter::trace), 1);
+  Application::get().getMainContext()->signal_timeout().connect_seconds(sigc::mem_fun(this, &EventCounter::trace), 1);
   std::fill(m_counters.begin(), m_counters.end(), 0);
 }
 

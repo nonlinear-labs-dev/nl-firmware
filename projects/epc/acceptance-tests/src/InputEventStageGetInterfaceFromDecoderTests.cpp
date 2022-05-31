@@ -8,7 +8,7 @@
 using InputEvent = DSPInterface::InputEventSource;
 using tMSG = nltools::msg::Setting::MidiSettingsMessage;
 
-TEST_CASE("Interface correct", "[MIDI]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Interface correct", "[MIDI]")
 {
   MockDSPHost host;
   MidiRuntimeOptions options;
@@ -93,7 +93,7 @@ namespace CCBitDetail
   }
 }
 
-TEST_CASE("MIDI Channel Mapping Tests", "[MIDI]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MIDI Channel Mapping Tests", "[MIDI]")
 {
   MockDSPHost host;
   MidiRuntimeOptions options;

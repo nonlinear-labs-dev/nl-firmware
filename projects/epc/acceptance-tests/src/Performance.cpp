@@ -7,7 +7,7 @@
 namespace Tests
 {
   //TODO is this failure an performance regression we have to pay attention to?
-  //  SCENARIO("CPU Usage is constant")
+  //  TEST_CASE_METHOD(TestHelper::ApplicationFixture,"CPU Usage is constant")
   //  {
   //    using namespace std::chrono_literals;
   //

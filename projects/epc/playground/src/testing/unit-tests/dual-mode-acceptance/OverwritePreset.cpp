@@ -3,7 +3,7 @@
 #include <presets/Preset.h>
 #include <use-cases/PresetUseCases.h>
 
-TEST_CASE("Override Single Preset With new!", "[Preset][Store]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Override Single Preset With new!", "[Preset][Store]")
 {
   MockPresetStorage presets;
   auto toOverwrite = presets.getSinglePreset();
@@ -20,7 +20,7 @@ TEST_CASE("Override Single Preset With new!", "[Preset][Store]")
   CHECK(toOverwrite->getName() == "Name");
 }
 
-TEST_CASE("Override Dual Preset With new!", "[Preset][Store]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Override Dual Preset With new!", "[Preset][Store]")
 {
   MockPresetStorage presets;
   auto toOverwrite = presets.getLayerPreset();
