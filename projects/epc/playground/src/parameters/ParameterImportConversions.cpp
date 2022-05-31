@@ -82,7 +82,7 @@ ParameterImportConversions::ParameterImportConversions(bool registerDefaults)
     registerConverter(C15::PID::Out_Mix_Key_Pan, 11, [=](auto v, auto, auto) { return v * 0.5; });
     registerConverter(C15::PID::Osc_A_Pitch_KT, 11, [=](auto v, auto, auto) { return pitchKTV11ToV12(v); });
     registerConverter(C15::PID::Osc_B_Pitch_KT, 11, [=](auto v, auto, auto) { return pitchKTV11ToV12(v); });
-    registerConverter(C15::PID::Comb_Flt_Pitch_KT, 11, [=](auto  v, auto, auto) { return pitchKTV11ToV12(v); });
+    registerConverter(C15::PID::Comb_Flt_Pitch_KT, 11, [=](auto v, auto, auto) { return pitchKTV11ToV12(v); });
     registerConverter(C15::PID::Comb_Flt_AP_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
     registerConverter(C15::PID::Comb_Flt_LP_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
     registerConverter(C15::PID::SV_Flt_Cut_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
@@ -97,6 +97,13 @@ ParameterImportConversions::ParameterImportConversions(bool registerDefaults)
     registerConverter(C15::PID::Env_C_Time_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
     registerConverter(C15::PID::Shp_A_FB_Env_C, 11, [=](auto v, auto, auto) { return v * 0.5; });
     registerConverter(C15::PID::Shp_B_FB_Env_C, 11, [=](auto v, auto, auto) { return v * 0.5; });
+
+    registerConverter(C15::PID::Env_A_Att_Vel, 12, [=](auto v, auto, auto) { return -v; });
+    registerConverter(C15::PID::Env_B_Att_Vel, 12, [=](auto v, auto, auto) { return -v; });
+    registerConverter(C15::PID::Env_C_Att_Vel, 12, [=](auto v, auto, auto) { return -v; });
+    registerConverter(C15::PID::Env_A_Rel_Vel, 12, [=](auto v, auto, auto) { return 1 - v; });
+    registerConverter(C15::PID::Env_B_Rel_Vel, 12, [=](auto v, auto, auto) { return 1 - v; });
+    registerConverter(C15::PID::Env_C_Rel_Vel, 12, [=](auto v, auto, auto) { return 1 - v; });
   }
 }
 
