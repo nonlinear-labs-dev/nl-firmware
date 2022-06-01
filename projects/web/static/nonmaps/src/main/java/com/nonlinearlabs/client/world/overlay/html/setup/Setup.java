@@ -101,7 +101,7 @@ public class Setup extends Composite {
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
 			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, globalLocalOn, globalLocalOff, 
 			highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff, legacyAftertouchOn, legacyAftertouchOff,
-			legacyBenderOn, legacyBenderOff;
+			legacyBenderOn, legacyBenderOff, sensitiveBenderOn, sensitiveBenderOff;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -245,6 +245,7 @@ public class Setup extends Composite {
 
 		fillRadioButtons(legacyAftertouchOn, legacyAftertouchOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(legacyBenderOn, legacyBenderOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(sensitiveBenderOn, sensitiveBenderOff, MidiSettings.OnOffOption.options);
 	}
 
 	private void setupMappings(boolean showLSB)
@@ -339,6 +340,9 @@ public class Setup extends Composite {
 
 		legacyBenderOn.addClickHandler(e -> settings.setLegacyBender(BooleanValues.on));
 		legacyBenderOff.addClickHandler(e -> settings.setLegacyBender(BooleanValues.off));
+
+		sensitiveBenderOn.addAttachHandler(e -> settings.setBenderSensitive(BooleanValues.on));
+		sensitiveBenderOff.addAttachHandler(e -> settings.setBenderSensitive(BooleanValues.off));
 
 		showContextMenusOn.addClickHandler(e -> locals.setContextMenus(BooleanValues.on));
 		showContextMenusOff.addClickHandler(e -> locals.setContextMenus(BooleanValues.off));
@@ -621,6 +625,9 @@ public class Setup extends Composite {
 
 		legacyBenderOn.setValue(t.legacyBender);
 		legacyBenderOff.setValue(!t.legacyBender);
+
+		sensitiveBenderOn.setValue(t.benderSensitivity);
+		sensitiveBenderOff.setValue(!t.benderSensitivity);
 	}
 
 	public void applyPedalValues(DeviceSettings.Pedal src, ListBox type, Range slider, Label text) {

@@ -70,6 +70,7 @@
 #include "RoutingsEditor.h"
 #include "OneShotEntryTypes.h"
 #include "device-settings/BenderLegacyMode.h"
+#include "device-settings/SensitiveBenderSettling.h"
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 #include <device-settings/midi/MidiChannelSettings.h>
@@ -453,6 +454,7 @@ namespace NavTree
       children.emplace_back(new SettingItem<AftertouchLegacyMode>(this, "Legacy Aftertouch mode"));
       children.emplace_back(new BenderCurveSetting(this));
       children.emplace_back(new SettingItem<BenderLegacyMode>(this, "Legacy Bender mode"));
+      children.emplace_back(new SettingItem<SensitiveBenderSettling>(this, "Sensitive Bender Settling"));
       children.emplace_back(new PedalSettings(this));
       children.emplace_back(new EnumSettingItem<PresetGlitchSuppression>(this, "Preset Glitch Suppression"));
       children.emplace_back(new EnumSettingItem<SyncVoiceGroupsAcrossUIS>(this, "Sync Parts across UIs"));

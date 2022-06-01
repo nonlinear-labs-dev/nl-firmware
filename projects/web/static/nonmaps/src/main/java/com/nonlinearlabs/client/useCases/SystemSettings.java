@@ -259,4 +259,9 @@ public class SystemSettings {
 		SetupModel.get().systemSettings.legacyBender.setValue(on);
 		NonMaps.theMaps.getServerProxy().setSetting("BenderLegacyMode", netify(on.name()));
 	}
+
+	public void setBenderSensitive(BooleanValues on) {
+		SetupModel.get().systemSettings.benderSensitivity.setValue(on);
+		NonMaps.theMaps.getServerProxy().setSetting("SensitiveBenderSettling", netify(on.name()));
+	}
 }
