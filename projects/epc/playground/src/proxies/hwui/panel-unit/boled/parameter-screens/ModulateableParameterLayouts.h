@@ -68,7 +68,6 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
   Overlay *m_modeOverlay = nullptr;
   ModAspectRecallOverlay *m_modAspectRecallOverlay = nullptr;
   sigc::connection m_paramConnection;
-  sigc::connection m_groupConnection;
   bool m_isScaleParameter = false;
 
   void installModulationCarousel(const Mode &mode);
@@ -77,10 +76,7 @@ class ModulateableParameterSelectLayout2 : public ParameterSelectLayout2, public
   void removeModAspectRecall();
   void cleanMode();
 
-  void updateResetButton();
-  void reset();
-  bool resetEnabled() const;
-  void onScaleGroupChanged();
+  void updateMasterButton();
 };
 
 class ModulateableParameterEditLayout2 : public ParameterEditLayout2, public ModulateableParameterLayout2
