@@ -75,8 +75,20 @@ void quitApp(int sig)
   Application::get().quit();
 }
 
+Glib::RefPtr<Glib::MainContext> createMainContext()
+{
+  if(Options::s_acceptanceTests)
+  {
+    return Glib::MainContext::create();
+  }
+  else
+  {
+    return Glib::MainContext::get_default();
+  }
+}
+
 Application::Application(int numArgs, char **argv)
-    : m_theMainContext(Glib::MainContext::create())
+    : m_theMainContext(createMainContext())
     , m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
     , m_theMainLoop(Glib::MainLoop::create(m_theMainContext))
     , m_http(new HTTPServer())
@@ -211,21 +223,24 @@ void Application::runWatchDog()
 
   if(m_aggroWatchDog)
   {
-    m_aggroWatchDog->run(std::chrono::milliseconds(250), [=](int numWarning, int inactiveFoMS) {
-      DebugLevel::warning("Aggro WatchDog was inactive for ", inactiveFoMS, "ms. Warning #", numWarning);
+    m_aggroWatchDog->run(std::chrono::milliseconds(250),
+                         [=](int numWarning, int inactiveFoMS)
+                         {
+                           DebugLevel::warning("Aggro WatchDog was inactive for ", inactiveFoMS, "ms. Warning #",
+                                               numWarning);
 
 #ifdef _PROFILING
-      Profiler::get().printAllCallstacks();
+                           Profiler::get().printAllCallstacks();
 #endif
 
-      if(auto h = getHWUI())
-      {
-        if(getSettings()->getSetting<BlockingMainThreadIndication>()->get())
-        {
-          h->indicateBlockingMainThread();
-        }
-      }
-    });
+                           if(auto h = getHWUI())
+                           {
+                             if(getSettings()->getSetting<BlockingMainThreadIndication>()->get())
+                             {
+                               h->indicateBlockingMainThread();
+                             }
+                           }
+                         });
   }
 }
 
