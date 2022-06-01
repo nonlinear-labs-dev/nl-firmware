@@ -73,6 +73,7 @@ public class SetupUpdater extends Updater {
 		m.put("GlobalLocalEnable", SetupModel.get().systemSettings.localEnabled);
 		m.put("AftertouchLegacyMode", SetupModel.get().systemSettings.legacyAftertouch);
 		m.put("BenderLegacyMode", SetupModel.get().systemSettings.legacyBender);
+		m.put("SensitiveBenderSettling", SetupModel.get().systemSettings.benderSensitivity);
 		return m;
 	}
 

@@ -341,8 +341,8 @@ public class Setup extends Composite {
 		legacyBenderOn.addClickHandler(e -> settings.setLegacyBender(BooleanValues.on));
 		legacyBenderOff.addClickHandler(e -> settings.setLegacyBender(BooleanValues.off));
 
-		sensitiveBenderOn.addAttachHandler(e -> settings.setBenderSensitive(BooleanValues.on));
-		sensitiveBenderOff.addAttachHandler(e -> settings.setBenderSensitive(BooleanValues.off));
+		sensitiveBenderOn.addClickHandler(e -> settings.setBenderSensitive(BooleanValues.on));
+		sensitiveBenderOff.addClickHandler(e -> settings.setBenderSensitive(BooleanValues.off));
 
 		showContextMenusOn.addClickHandler(e -> locals.setContextMenus(BooleanValues.on));
 		showContextMenusOff.addClickHandler(e -> locals.setContextMenus(BooleanValues.off));
