@@ -100,7 +100,8 @@ public class Setup extends Composite {
 	RadioButton presetGlitchSuppressionOn, presetGlitchSuppressionOff, showContextMenusOn, showContextMenusOff,
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
 			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, globalLocalOn, globalLocalOff, 
-			highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff, legacyAftertouchOn, legacyAftertouchOff;
+			highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff, legacyAftertouchOn, legacyAftertouchOff,
+			legacyBenderOn, legacyBenderOff;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -243,6 +244,7 @@ public class Setup extends Composite {
 		fillRadioButtons(globalLocalOn, globalLocalOff, MidiSettings.OnOffOption.options);
 
 		fillRadioButtons(legacyAftertouchOn, legacyAftertouchOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(legacyBenderOn, legacyBenderOff, MidiSettings.OnOffOption.options);
 	}
 
 	private void setupMappings(boolean showLSB)
@@ -334,6 +336,9 @@ public class Setup extends Composite {
 
 		legacyAftertouchOn.addClickHandler(e -> settings.setLegacyAftertouch(BooleanValues.on));
 		legacyAftertouchOff.addClickHandler(e -> settings.setLegacyAftertouch(BooleanValues.off));
+
+		legacyBenderOn.addClickHandler(e -> settings.setLegacyBender(BooleanValues.on));
+		legacyBenderOff.addClickHandler(e -> settings.setLegacyBender(BooleanValues.off));
 
 		showContextMenusOn.addClickHandler(e -> locals.setContextMenus(BooleanValues.on));
 		showContextMenusOff.addClickHandler(e -> locals.setContextMenus(BooleanValues.off));
@@ -613,6 +618,9 @@ public class Setup extends Composite {
 
 		legacyAftertouchOn.setValue(t.legacyAftertouch);
 		legacyAftertouchOff.setValue(!t.legacyAftertouch);
+
+		legacyBenderOn.setValue(t.legacyBender);
+		legacyBenderOff.setValue(!t.legacyBender);
 	}
 
 	public void applyPedalValues(DeviceSettings.Pedal src, ListBox type, Range slider, Label text) {

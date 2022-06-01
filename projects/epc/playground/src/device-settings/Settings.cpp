@@ -50,6 +50,7 @@
 #include "GlobalLocalEnableSetting.h"
 #include "FocusAndModeSetting.h"
 #include "AftertouchLegacyMode.h"
+#include "BenderLegacyMode.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -148,6 +149,7 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master)
 
   addSetting("FlacRecorderVirgin", new FlacRecorderVirgin(*this));
   addSetting("AftertouchLegacyMode", new AftertouchLegacyMode(*this));
+  addSetting("BenderLegacyMode", new BenderLegacyMode(*this));
 }
 
 Settings::~Settings()

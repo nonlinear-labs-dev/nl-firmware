@@ -44,6 +44,7 @@ public class DeviceSettings {
 
 	public VelocityCurve velocityCurve = new VelocityCurve();
 	public boolean legacyAftertouch = false;
+	public boolean legacyBender = false;
 	public AftertouchCurve aftertouchCurve = new AftertouchCurve();
 	public BenderCurve benderCurve = new BenderCurve();
 	public Pedal pedal1 = new Pedal();

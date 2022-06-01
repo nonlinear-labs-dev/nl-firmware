@@ -254,4 +254,9 @@ public class SystemSettings {
 		SetupModel.get().systemSettings.legacyAftertouch.setValue(on);
 		NonMaps.theMaps.getServerProxy().setSetting("AftertouchLegacyMode", netify(on.name()));
     }
+
+	public void setLegacyBender(BooleanValues on) {
+		SetupModel.get().systemSettings.legacyBender.setValue(on);
+		NonMaps.theMaps.getServerProxy().setSetting("BenderLegacyMode", netify(on.name()));
+	}
 }

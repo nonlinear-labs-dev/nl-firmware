@@ -67,6 +67,19 @@
 						</div>
 					</div>
 
+					<div class="eins-he">
+						<div class="w70p">
+							<p>Legacy Bender</p>
+						</div>
+
+						<div class="w30p mw-fit-content">
+							<g:RadioButton ui:field="legacyBenderOn"
+								name="rad_lbndr" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="legacyBenderOff"
+								name="rad_lbndr" value="false"></g:RadioButton>
+						</div>
+					</div>
+
 					<div class="linie"></div>
 
 					<div class="eins-he fl-j-center">
