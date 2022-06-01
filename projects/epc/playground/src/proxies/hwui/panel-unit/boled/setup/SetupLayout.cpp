@@ -91,6 +91,8 @@
 #include <device-settings/GlobalLocalEnableSetting.h>
 #include <device-info/UniqueHardwareID.h>
 
+#include <device-settings/AftertouchLegacyMode.h>
+
 namespace NavTree
 {
   struct InnerNode;
@@ -447,6 +449,7 @@ namespace NavTree
       children.emplace_back(new SettingItem<TransitionTime>(this, "Transition Time"));
       children.emplace_back(new Velocity(this));
       children.emplace_back(new Aftertouch(this));
+      children.emplace_back(new SettingItem<AftertouchLegacyMode>(this, "Legacy Aftertouch mode"));
       children.emplace_back(new BenderCurveSetting(this));
       children.emplace_back(new PedalSettings(this));
       children.emplace_back(new EnumSettingItem<PresetGlitchSuppression>(this, "Preset Glitch Suppression"));

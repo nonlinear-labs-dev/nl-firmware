@@ -31,7 +31,7 @@ void ParameterEditModeRibbonBehaviour::sendRelatedSettingToPlaycontroller() cons
 void ParameterEditModeRibbonBehaviour::syncExternals(SendReason reason) const
 {
   auto v = static_cast<uint16_t>(get());
-  Application::get().getPlaycontrollerProxy()->sendSetting(PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR, v);
+  Application::get().getPlaycontrollerProxy()->sendSetting(PLAYCONTROLLER_SETTING_ID_EDIT_MODE_RIBBON_BEHAVIOUR, v);
 }
 
 const std::vector<Glib::ustring> &ParameterEditModeRibbonBehaviour::enumToString() const

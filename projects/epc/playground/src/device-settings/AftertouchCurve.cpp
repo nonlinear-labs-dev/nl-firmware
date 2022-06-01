@@ -15,7 +15,7 @@ AftertouchCurve::~AftertouchCurve()
 
 void AftertouchCurve::syncExternals(SendReason reason) const
 {
-  Application::get().getPlaycontrollerProxy()->sendSetting(AFTERTOUCH_CURVE, (uint16_t)(get()));
+  Application::get().getPlaycontrollerProxy()->sendSetting(PLAYCONTROLLER_SETTING_ID_AFTERTOUCH_CURVE, (uint16_t)(get()));
 }
 
 const std::vector<Glib::ustring> &AftertouchCurve::enumToString() const
