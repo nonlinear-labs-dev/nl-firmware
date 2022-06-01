@@ -83,7 +83,3 @@ bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const Edit
     return false;
 }
 
-bool SwitchVoiceGroupButton::allowScaleFocusSwitch(const Parameter* selected)
-{
-  return MasterGroup::isMasterParameter(selected);
-}
