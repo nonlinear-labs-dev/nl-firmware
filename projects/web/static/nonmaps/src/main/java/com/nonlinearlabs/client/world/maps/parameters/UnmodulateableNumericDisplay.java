@@ -2,9 +2,9 @@ package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 
-public class ModulationSourceKeytracking extends ModulationSourceHighPriority {
+public class UnmodulateableNumericDisplay extends ModulationSourceHighPriority {
 
-	public ModulationSourceKeytracking(MapsLayout parent, int parameterID) {
+	public UnmodulateableNumericDisplay(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
 		addChild(new LabelModulationSource(this, getParameterNumber()));
 

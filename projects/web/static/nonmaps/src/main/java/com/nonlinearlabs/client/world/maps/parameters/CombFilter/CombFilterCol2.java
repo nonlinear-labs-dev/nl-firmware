@@ -8,7 +8,7 @@ import com.nonlinearlabs.client.world.maps.parameters.ModulatableHorizontalSlide
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.ModulateableNumericalControl;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSlider;
-import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceKeytracking;
+import com.nonlinearlabs.client.world.maps.parameters.UnmodulateableNumericDisplay;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.client.world.maps.parameters.Spacer;
 
@@ -50,6 +50,6 @@ class CombFilterCol2 extends ParameterColumn {
 		super(parent);
 		addChild(new Pitch(this));
 		addChild(new ModulatableHorizontalSlider(this, 118));
-		addChild(new ModulationSourceKeytracking(this, 117));
+		addChild(new UnmodulateableNumericDisplay(this, 117));
 	}
 }

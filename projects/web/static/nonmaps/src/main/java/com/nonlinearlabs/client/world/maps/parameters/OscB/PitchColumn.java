@@ -8,7 +8,7 @@ import com.nonlinearlabs.client.world.maps.parameters.ModulatableHorizontalSlide
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.ModulateableNumericalControl;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSlider;
-import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceKeytracking;
+import com.nonlinearlabs.client.world.maps.parameters.UnmodulateableNumericDisplay;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
 class PitchColumn extends ParameterColumn {
@@ -54,6 +54,6 @@ class PitchColumn extends ParameterColumn {
 		super(parent);
 		addChild(new Pitch(this));
 		addChild(new ModulatableHorizontalSlider(this, 86));
-		addChild(new ModulationSourceKeytracking(this, 85));
+		addChild(new UnmodulateableNumericDisplay(this, 85));
 	}
 }
