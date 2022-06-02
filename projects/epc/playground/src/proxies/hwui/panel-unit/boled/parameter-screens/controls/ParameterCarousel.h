@@ -27,18 +27,19 @@ class ParameterCarousel : public Carousel
  protected:
   void setup(Parameter *selectedParameter) override;
 
+  std::vector<int> m_currentCarouselContentIDs;
+
  private:
   using tPanelParameterEditMode = std::shared_ptr<PanelUnitParameterEditMode>;
-
   void setupChildControls(const tPanelParameterEditMode &edit, Parameter *selectedParameter, Buttons button);
   void setupChildControls(Parameter *selectedParameter, const std::__cxx11::list<int> &buttonAssignments);
   void setupChildControlsThatFit(Parameter* selectedParameter, const std::list<int>& buttonAssignments);
   void setupChildControlsForParameterWithoutButtonMapping(Parameter *selectedParameter);
   void setupChildControlsThatDontFit(Parameter *selectedParameter, const std::list<int> &buttonAssignments);
   int firstParameterIDOfCarousel() const;
-  int lastParameterIDOfCarousel() const;
 
-  std::vector<int> m_currentCarouselContentIDs;
+
+  int lastParameterIDOfCarousel() const;
 };
 
 

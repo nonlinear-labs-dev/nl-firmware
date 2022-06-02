@@ -58,7 +58,14 @@ void SpecialParameterCarousel::setupControls(Parameter *parameter)
   int yPos = ySpaceing;
 
   const auto soundType = Application::get().getPresetManager()->getEditBuffer()->getType();
-  for(const auto &id : getParameterIdsForMode(soundType))
+  auto ids = getParameterIdsForMode(soundType);
+
+  m_currentCarouselContentIDs = {};
+  for(auto id: ids) {
+    m_currentCarouselContentIDs.emplace_back(id.getNumber());
+  }
+
+  for(const auto &id : ids)
   {
     auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id);
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));
