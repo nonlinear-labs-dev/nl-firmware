@@ -81,7 +81,7 @@ public class Setup extends Composite {
 	FileUpload upload;
 
 	@UiField
-	DivElement deviceSettings, uiSettings, midiSettings, flacSettings, systemInfo, about, updateSpinner;
+	DivElement deviceSettings, uiSettings, midiSettings, flacSettings, systemInfo, about, updateSpinner, aftertouchLegacyDiv;
 
 	@UiField
 	ListBox velocityCurve, aftertouchCurve, benderCurve, pedal1Type, pedal2Type, pedal3Type, pedal4Type,
@@ -663,6 +663,12 @@ public class Setup extends Composite {
 		uiTotalRam.setText(t.totalRam);
 		uniqueHardwareID.setText(t.uniqueHardwareID);
 		uiRTVersion.setText(t.rtVersion);
+
+		if(t.isAftertouchCalibrated) {
+			aftertouchLegacyDiv.removeClassName("hidden");
+		} else {
+			aftertouchLegacyDiv.addClassName("hidden");
+		}
 	}
 
 	private void applyPresenter(MidiSettings t) {

@@ -46,6 +46,8 @@ class PlaycontrollerProxy
   void notifyRibbonTouch(int ribbonsParameterID);
   void setUHID(uint64_t uhid);
 
+  sigc::connection onCalibrationStatusChanged(const sigc::slot<void, bool>& slot);
+
  private:
   void onPlaycontrollerMessage(const nltools::msg::PlaycontrollerMessage &msg);
   void onMessageReceived(const MessageParser::NLMessage &msg);
@@ -71,12 +73,15 @@ class PlaycontrollerProxy
   Signal<void, int> m_signalRibbonTouched;
   Signal<void, int> m_signalPlaycontrollerSoftwareVersionChanged;
   Signal<void, uint64_t> m_signalUHIDChanged;
+  Signal<void, bool> m_signalCalibrationStatus;
   Signal<void> m_lastKeyChanged;
 
   std::unique_ptr<QuantizedValue::IncrementalChanger> m_relativeEditControlMessageChanger;
 
   int m_playcontrollerSoftwareVersion = -1;
   uint64_t m_uhid = 0;
+
+  bool m_hasAftertouchCalibrationData = false;
 
   Throttler m_throttledRelativeParameterChange;
   gint32 m_throttledRelativeParameterAccumulator = 0;
@@ -93,4 +98,6 @@ class PlaycontrollerProxy
   void notifyKeyBedActionHappened();
   void onUHIDReceived(const MessageParser::NLMessage &message);
   void requestHWPositions();
+  void requestCalibrationStatus();
+  void onAftertouchCalibrationDataReceived(const MessageParser::NLMessage &message);
 };

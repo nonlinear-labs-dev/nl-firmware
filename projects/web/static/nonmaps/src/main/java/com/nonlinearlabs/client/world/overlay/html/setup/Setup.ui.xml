@@ -42,7 +42,7 @@
 						</div>
 					</div>
 
-					<div class="eins-he">
+					<div class="eins-he" ui:field="aftertouchLegacyDiv">
 						<div class="w70p">
 							<p>Legacy Aftertouch</p>
 						</div>

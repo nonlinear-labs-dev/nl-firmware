@@ -71,6 +71,7 @@
 #include "OneShotEntryTypes.h"
 #include "device-settings/BenderLegacyMode.h"
 #include "device-settings/SensitiveBenderSettling.h"
+#include "device-info/AftertouchCalibratedStatus.h"
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 #include <device-settings/midi/MidiChannelSettings.h>
@@ -451,7 +452,10 @@ namespace NavTree
       children.emplace_back(new SettingItem<TransitionTime>(this, "Transition Time"));
       children.emplace_back(new Velocity(this));
       children.emplace_back(new Aftertouch(this));
-      children.emplace_back(new SettingItem<AftertouchLegacyMode>(this, "Legacy Aftertouch mode"));
+      if(Application::get().getDeviceInformation()->getItem<AftertouchCalibratedStatus>()->isCalibrated())
+      {
+        children.emplace_back(new SettingItem<AftertouchLegacyMode>(this, "Legacy Aftertouch mode"));
+      }
       children.emplace_back(new BenderCurveSetting(this));
       children.emplace_back(new SettingItem<BenderLegacyMode>(this, "Legacy Bender mode"));
       children.emplace_back(new SettingItem<SensitiveBenderSettling>(this, "Sensitive Bender Settling"));

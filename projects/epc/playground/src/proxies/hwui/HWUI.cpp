@@ -34,6 +34,8 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include "UsageMode.h"
 #include "use-cases/SettingsUseCases.h"
+#include <device-info/AftertouchCalibratedStatus.h>
+#include <device-info/DeviceInformation.h>
 
 HWUI::HWUI(Settings &settings)
     : m_voiceGoupSignal {}
@@ -270,6 +272,12 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         f = powf(fabsf(f), 1.5f) * sign;
         auto c = static_cast<signed char>(roundf(f));
         m_panelUnit.getEditPanel().getKnob().fake(c);
+      }
+      else if(line == "atc")
+      {
+        auto dev = Application::get().getDeviceInformation();
+        dev->getItem<AftertouchCalibratedStatus>()->toggle();
+        nltools::Log::error("ATC ist nun:", dev->getItem<AftertouchCalibratedStatus>()->get());
       }
       else
       {

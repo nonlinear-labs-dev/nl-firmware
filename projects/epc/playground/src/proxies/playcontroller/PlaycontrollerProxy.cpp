@@ -105,6 +105,10 @@ void PlaycontrollerProxy::onMessageReceived(const MessageParser::NLMessage &msg)
   {
     onHeartbeatReceived(msg);
   }
+  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_AT_CAL)
+  {
+    onAftertouchCalibrationDataReceived(msg);
+  }
 }
 
 void PlaycontrollerProxy::onHeartbeatReceived(const MessageParser::NLMessage &msg)
@@ -170,6 +174,7 @@ void PlaycontrollerProxy::onPlaycontrollerConnected()
   requestPlaycontrollerSoftwareVersion();
   requestPlaycontrollerUHID();
   requestHWPositions();
+  requestCalibrationStatus();
 }
 
 void PlaycontrollerProxy::sendCalibrationData()
@@ -379,6 +384,7 @@ void PlaycontrollerProxy::onHeartbeatStumbled()
   requestPlaycontrollerSoftwareVersion();
   requestPlaycontrollerUHID();
   requestHWPositions();
+  requestCalibrationStatus();
 }
 
 sigc::connection PlaycontrollerProxy::onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s)
@@ -443,5 +449,28 @@ void PlaycontrollerProxy::setUHID(uint64_t uhid)
   {
     m_uhid = uhid;
     m_signalUHIDChanged.send(m_uhid);
+  }
+}
+
+sigc::connection PlaycontrollerProxy::onCalibrationStatusChanged(const sigc::slot<void, bool>& slot)
+{
+  return m_signalCalibrationStatus.connect(slot);
+}
+
+void PlaycontrollerProxy::requestCalibrationStatus()
+{
+  sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_AT_STATUS);
+}
+
+void PlaycontrollerProxy::onAftertouchCalibrationDataReceived(const MessageParser::NLMessage &message)
+{
+  AT_status_T ret;
+  memcpy(&ret, message.params.data(), message.length);
+  nltools::Log::error(ret.calibrated);
+  auto oldState = m_hasAftertouchCalibrationData;
+  m_hasAftertouchCalibrationData = ret.calibrated > 0;
+  if(oldState != m_hasAftertouchCalibrationData)
+  {
+    m_signalCalibrationStatus.send(m_hasAftertouchCalibrationData);
   }
 }

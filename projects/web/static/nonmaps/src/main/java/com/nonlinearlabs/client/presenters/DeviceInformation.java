@@ -13,4 +13,5 @@ public class DeviceInformation {
 	public String bufferUnderruns = "0";
 	public String uniqueHardwareID = "0";
 	public String rtVersion = "-";
+	public boolean isAftertouchCalibrated = false;
 }
