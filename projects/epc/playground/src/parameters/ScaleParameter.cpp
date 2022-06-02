@@ -8,11 +8,11 @@
 #include "scale-converters/dimension/NoteDimension.h"
 #include "parameter_declarations.h"
 #include "parameters/scale-converters/Fine12STScaleConverter.h"
-#include "parameters/scale-converters/FineBipolar2400CTScaleConverter.h"
+#include "parameters/scale-converters/FineBipolar1200CTScaleConverter.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 
 ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId& id, const ScaleConverter *scaling)
-    : super(group, id, scaling, ScaleConverter::get<FineBipolar2400CTScaleConverter>())
+    : super(group, id, scaling, ScaleConverter::get<FineBipolar1200CTScaleConverter>())
 {
 }
 
