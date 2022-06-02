@@ -21,6 +21,13 @@ public class ModulationSourceLabel extends Label {
 		});
 	}
 
+	
+
+	@Override
+	public double getLevelOfDetailForFullVisibility() {
+		return 0;
+	}
+
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
 		super.doFirstLayoutPass(levelOfDetail);
