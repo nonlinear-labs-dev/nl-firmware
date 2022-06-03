@@ -296,6 +296,8 @@ void Settings::sendGlobalPlaycontrollerInitSettings()
   getSetting("Pedal3Type")->syncExternals(SendReason::HeartBeatDropped);
   getSetting("Pedal4Type")->syncExternals(SendReason::HeartBeatDropped);
   getSetting<AftertouchLegacyMode>()->syncExternals(SendReason::HeartBeatDropped);
+  getSetting<BenderLegacyMode>()->syncExternals(SendReason::HeartBeatDropped);
+  getSetting<SensitiveBenderSettling>()->syncExternals(SendReason::HeartBeatDropped);
 }
 
 void Settings::sendGlobalAESettings()
