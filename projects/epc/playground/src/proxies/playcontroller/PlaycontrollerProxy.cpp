@@ -34,15 +34,15 @@ PlaycontrollerProxy::PlaycontrollerProxy()
 
   if(Application::exists())
   {
-      nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playcontroller,
-                                            sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerConnected));
+    nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playcontroller,
+                                          sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerConnected));
 
-      nltools::msg::receive<nltools::msg::PlaycontrollerMessage>(
-              nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerMessage));
+    nltools::msg::receive<nltools::msg::PlaycontrollerMessage>(
+        nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerMessage));
 
-      nltools::msg::receive<nltools::msg::Keyboard::NoteEventHappened>(
-              nltools::msg::EndPoint::Playground,
-              sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
+    nltools::msg::receive<nltools::msg::Keyboard::NoteEventHappened>(
+        nltools::msg::EndPoint::Playground,
+        sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
   }
 }
 
@@ -105,10 +105,6 @@ void PlaycontrollerProxy::onMessageReceived(const MessageParser::NLMessage &msg)
   {
     onHeartbeatReceived(msg);
   }
-  else if(msg.type == MessageParser::MessageTypes::PLAYCONTROLLER_BB_MSG_TYPE_AT_CAL)
-  {
-    onAftertouchCalibrationDataReceived(msg);
-  }
 }
 
 void PlaycontrollerProxy::onHeartbeatReceived(const MessageParser::NLMessage &msg)
@@ -148,6 +144,17 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
     {
       m_playcontrollerSoftwareVersion = value;
       m_signalPlaycontrollerSoftwareVersionChanged.send(m_playcontrollerSoftwareVersion);
+    }
+  }
+
+  else if(id == MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_AT_STATUS)
+  {
+    AT_status_T atStatus = AT_uint16ToStatus(value);
+
+    if(m_hasAftertouchCalibrationData != (atStatus.calibrated != 0))
+    {
+      m_hasAftertouchCalibrationData = (atStatus.calibrated != 0);
+      m_signalCalibrationStatus.send(m_hasAftertouchCalibrationData);
     }
   }
 }
@@ -195,8 +202,7 @@ void PlaycontrollerProxy::sendCalibrationData()
 
 Parameter *PlaycontrollerProxy::findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const
 {
-  auto paramId = [](uint16_t id)
-  {
+  auto paramId = [](uint16_t id) {
     switch(id)
     {
       case HW_SOURCE_ID_PEDAL_1:
@@ -262,37 +268,33 @@ void PlaycontrollerProxy::onRelativeEditControlMessageReceived(Parameter *p, gin
 {
   m_throttledRelativeParameterAccumulator += value;
 
-  m_throttledRelativeParameterChange.doTask(
-      [this, p]()
-      {
-        if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
-          m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
+  m_throttledRelativeParameterChange.doTask([this, p]() {
+    if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
+      m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
 
-        auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
-        IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
-        useCase.changeBy(amount, false);
-        m_throttledRelativeParameterAccumulator = 0;
-      });
+    auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
+    IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
+    useCase.changeBy(amount, false);
+    m_throttledRelativeParameterAccumulator = 0;
+  });
 }
 
 void PlaycontrollerProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gint16 value)
 {
   m_throttledAbsoluteParameterValue = value;
 
-  m_throttledAbsoluteParameterChange.doTask(
-      [this, p]()
-      {
-        ParameterUseCases useCase(p);
+  m_throttledAbsoluteParameterChange.doTask([this, p]() {
+    ParameterUseCases useCase(p);
 
-        if(p->isBiPolar())
-        {
-          useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
-        }
-        else
-        {
-          useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
-        }
-      });
+    if(p->isBiPolar())
+    {
+      useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
+    }
+    else
+    {
+      useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
+    }
+  });
 }
 
 void PlaycontrollerProxy::notifyRibbonTouch(int ribbonsParameterID)
@@ -433,7 +435,7 @@ void PlaycontrollerProxy::sendRequestToPlaycontroller(MessageParser::Playcontrol
   queueToPlaycontroller(cmp);
 }
 
-sigc::connection PlaycontrollerProxy::onUHIDChanged(const sigc::slot<void, uint64_t>& s)
+sigc::connection PlaycontrollerProxy::onUHIDChanged(const sigc::slot<void, uint64_t> &s)
 {
   return m_signalUHIDChanged.connectAndInit(s, m_uhid);
 }
@@ -452,7 +454,7 @@ void PlaycontrollerProxy::setUHID(uint64_t uhid)
   }
 }
 
-sigc::connection PlaycontrollerProxy::onCalibrationStatusChanged(const sigc::slot<void, bool>& slot)
+sigc::connection PlaycontrollerProxy::onCalibrationStatusChanged(const sigc::slot<void, bool> &slot)
 {
   return m_signalCalibrationStatus.connect(slot);
 }
@@ -460,17 +462,4 @@ sigc::connection PlaycontrollerProxy::onCalibrationStatusChanged(const sigc::slo
 void PlaycontrollerProxy::requestCalibrationStatus()
 {
   sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_AT_STATUS);
-}
-
-void PlaycontrollerProxy::onAftertouchCalibrationDataReceived(const MessageParser::NLMessage &message)
-{
-  AT_status_T ret;
-  memcpy(&ret, message.params.data(), message.length);
-  nltools::Log::error(ret.calibrated);
-  auto oldState = m_hasAftertouchCalibrationData;
-  m_hasAftertouchCalibrationData = ret.calibrated > 0;
-  if(oldState != m_hasAftertouchCalibrationData)
-  {
-    m_signalCalibrationStatus.send(m_hasAftertouchCalibrationData);
-  }
 }

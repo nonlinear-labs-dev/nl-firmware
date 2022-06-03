@@ -35,10 +35,10 @@ class PlaycontrollerProxy
 
   void sendPedalSetting(uint16_t pedal, PedalTypes pedalType, bool reset);
 
-  sigc::connection onRibbonTouched(const sigc::slot<void, int>& s);
+  sigc::connection onRibbonTouched(const sigc::slot<void, int> &s);
   sigc::connection onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s);
   sigc::connection onLastKeyChanged(sigc::slot<void> s);
-  sigc::connection onUHIDChanged(const sigc::slot<void, uint64_t>& s);
+  sigc::connection onUHIDChanged(const sigc::slot<void, uint64_t> &s);
   int getLastTouchedRibbonParameterID() const;
   std::string getPlaycontrollerSoftwareVersion() const;
   uint64_t getUHID() const;
@@ -46,7 +46,7 @@ class PlaycontrollerProxy
   void notifyRibbonTouch(int ribbonsParameterID);
   void setUHID(uint64_t uhid);
 
-  sigc::connection onCalibrationStatusChanged(const sigc::slot<void, bool>& slot);
+  sigc::connection onCalibrationStatusChanged(const sigc::slot<void, bool> &slot);
 
  private:
   void onPlaycontrollerMessage(const nltools::msg::PlaycontrollerMessage &msg);
@@ -55,7 +55,7 @@ class PlaycontrollerProxy
   typedef std::shared_ptr<MessageComposer> tMessageComposerPtr;
   void queueToPlaycontroller(const tMessageComposerPtr &cmp);
 
-  static gint16 separateSignedBitToComplementary(uint16_t v) ;
+  static gint16 separateSignedBitToComplementary(uint16_t v);
   void traceBytes(const Glib::RefPtr<Glib::Bytes> &bytes) const;
 
   void onEditControlMessageReceived(const MessageParser::NLMessage &msg);
@@ -99,5 +99,4 @@ class PlaycontrollerProxy
   void onUHIDReceived(const MessageParser::NLMessage &message);
   void requestHWPositions();
   void requestCalibrationStatus();
-  void onAftertouchCalibrationDataReceived(const MessageParser::NLMessage &message);
 };
