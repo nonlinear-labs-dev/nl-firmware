@@ -3,7 +3,7 @@
 #include "proxies/playcontroller/PlaycontrollerProxy.h"
 
 AftertouchLegacyMode::AftertouchLegacyMode(UpdateDocumentContributor& settings)
-    : BooleanSetting(settings, false)
+    : BooleanSetting(settings, true)
 {
 }
 

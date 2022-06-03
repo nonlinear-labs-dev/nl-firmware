@@ -3,7 +3,7 @@
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 
 BenderLegacyMode::BenderLegacyMode(UpdateDocumentContributor& settings)
-    : BooleanSetting(settings, true)
+    : BooleanSetting(settings, false)
 {
 }
 
