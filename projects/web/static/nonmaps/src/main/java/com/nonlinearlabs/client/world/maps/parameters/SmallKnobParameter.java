@@ -12,12 +12,7 @@ public class SmallKnobParameter extends ModulatableParameter {
         super(parent, parameterID);
         if(presenter.modulation.isModulateable)
 		{
-			modSrcLabel = addChild(new ModulationSourceLabel(this, getParameterNumber()) {
-				@Override
-				public double getLevelOfDetailForFullVisibility() {
-					return getParent().getLevelOfDetailForFullVisibility() + 1;
-				}
-			});
+			modSrcLabel = addChild(new ModulationSourceLabel(this, getParameterNumber()));
 		}
         addChild(new SmallParameterName(this, getParameterNumber()));
         addChild(new KnobSmall(this, getParameterNumber()));

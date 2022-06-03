@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 
@@ -13,6 +14,7 @@ public class NumericalControlLarge extends ValueDisplayLarge {
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		Rect pixRect = getPixRect();
+
 
 		ctx.setFillStyle(getColorSliderBackground().toString());
 		ctx.setStrokeStyle(getColorObjectContour().toString());
@@ -29,6 +31,7 @@ public class NumericalControlLarge extends ValueDisplayLarge {
 		ctx.strokeRect(x, y, pixRect.getWidth() - 2 * insetX, pixRect.getHeight() - 2 * insetY);
 
 		super.draw(ctx, invalidationMask);
+		//pixRect.drawDebug(ctx);
 	}
 
 	@Override

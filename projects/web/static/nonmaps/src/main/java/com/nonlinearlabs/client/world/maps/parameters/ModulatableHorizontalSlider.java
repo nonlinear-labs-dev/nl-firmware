@@ -10,12 +10,7 @@ public class ModulatableHorizontalSlider extends ModulatableParameterWithoutName
 
 	public ModulatableHorizontalSlider(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		modSrcLabel = addChild(new ModulationSourceLabel(this, getParameterNumber()) {
-			@Override
-			public double getLevelOfDetailForFullVisibility() {
-				return getParent().getLevelOfDetailForFullVisibility() + 1;
-			}
-		});
+		modSrcLabel = addChild(new ModulationSourceLabel(this, getParameterNumber()));
 		addChild(new LabelModulationSource(this, getParameterNumber()));
 		addChild(new ModulateableSliderHorizontal(this, getParameterNumber()));
 		addChild(new ValueDisplaySmall(this, getParameterNumber()));
