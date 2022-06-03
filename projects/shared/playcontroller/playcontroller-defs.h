@@ -240,11 +240,14 @@ typedef struct
 // ---- Bender status
 typedef struct
 {
-  unsigned legacyMode : 1;    // lecacy Bender mode currently in use
-  unsigned zeroed : 1;        // current value is zero position  (ignore in legacy mode)
-  unsigned everZeroed : 1;    // a zero position has ever been reached (ignore in legacy mode)
-  unsigned leftEndStop : 1;   // left end stop has been adjusted (ignore in legacy mode)
-  unsigned rightEndStop : 1;  // right end stop has been adjusted (ignore in legacy mode)
-  unsigned offZero : 1;       // a settled value has occured outside the auto-zero range (and not being an end stop)
-  unsigned zeroValue : 10;    // zero value (upper 10bits of the 12bits adc range)
+  unsigned legacyMode : 1;       // lecacy Bender mode currently in use
+  unsigned zeroed : 1;           // current value is zero position  (ignore in legacy mode)
+  unsigned everZeroed : 1;       // a zero position has ever been reached (ignore in legacy mode)
+  unsigned leftEndStop : 1;      // left end stop has been adjusted (ignore in legacy mode)
+  unsigned rightEndStop : 1;     // right end stop has been adjusted (ignore in legacy mode)
+  unsigned offZero : 1;          // a settled value has occured outside the auto-zero range (and not being an end stop)
+  unsigned useFineSettling : 1;  // using fine settling at the moment
+  unsigned settledFine : 1;      // current movement as settled wrt "fine" settling criteria
+  unsigned settledCoarse : 1;    // current movement as settled wrt "coarse" settling criteria
+  unsigned reasonableZero : 1;   // current zero is with the usually expected range
 } BNDR_status_T;

@@ -288,6 +288,7 @@ static ValueBuffer_T windowBuffer;
 #define NOMINAL_RIGHT_ENDSTOP   (4000u)  // default right end stop safe adc value (saturated adc)
 #define ENDSTOP_RANGE           (512u)   // range from either nominal end (saturated) where an end stop may be expected
 #define AUTOZERO_RANGE          (512u)   // 2048 +- this adc value is the range where we will do autozeroing (512 = +-25%), to catch even heavily off-centered benders
+#define REASONABLE_ZERO_RANGE   (200u)   // 2048 +- this adc value is considered a normal (typically expected) range for a found zero position
 #define HYSTERESIS_COMPENSATION (10)
 
 // settling parameters
@@ -397,6 +398,10 @@ static void ProcessBender(int16_t adcValue)
     }
   }
 
+  status.settledFine     = settledFine;
+  status.settledCoarse   = settledCoarse;
+  status.useFineSettling = settlingSensitivity;
+
   int settled    = settlingSensitivity ? settledFine : settledCoarse;
   int tryZeroing = 0;
 
@@ -468,7 +473,7 @@ static void ProcessBender(int16_t adcValue)
       (*pUpperDeadzone)++;
     else if (*pUpperDeadzone > currentCenter + DEADZONE)
       (*pUpperDeadzone)--;
-    status.zeroValue = currentCenter >> 2;
+    status.reasonableZero = (currentCenter >= ADC_CENTER - REASONABLE_ZERO_RANGE) && (currentCenter <= ADC_CENTER + REASONABLE_ZERO_RANGE);
   }
   else
   {  // shrink deadzones
