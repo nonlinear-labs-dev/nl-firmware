@@ -311,8 +311,8 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
         case PLAYCONTROLLER_NOTIFICATION_ID_BNDR_STATUS:
         {
           BNDR_status_T s = BNDR_uint16ToStatus(data[1]);
-          printf("NOTIFICATION : Bender status: legacyMode=%u, zeroed=%u, everZeroed=%u, leftEndStop=%u, rightEndStop=%u, offZero=%u, currentZero=%4u\n",
-                 s.legacyMode, s.zeroed, s.everZeroed, s.leftEndStop, s.rightEndStop, s.offZero, s.zeroValue << 2);
+          printf("NOTIFICATION : Bender status: legacy=%u, (ever)zeroed=(%u)%u, Stop L/R=%u/%u, ZeroPos bad/normal=%u/%u, Settling Mode/Fine/Coarse=%u/%u/%u\n",
+                 s.legacyMode, s.everZeroed, s.zeroed, s.leftEndStop, s.rightEndStop, s.offZero, s.reasonableZero, s.useFineSettling, s.settledFine, s.settledCoarse);
           break;
         }
         case PLAYCONTROLLER_NOTIFICATION_ID_BNDR_RESET:
