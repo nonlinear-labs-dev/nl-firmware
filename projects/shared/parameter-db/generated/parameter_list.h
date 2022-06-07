@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2022-05-31, 15:57
+    @date       2022-06-07, 17:24
     @version    1.7B-9
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -2180,7 +2180,7 @@ const ParameterDescriptor ParameterList[Config::tcd_elements] = {
      0.0f,
      {Smoothers::Global_Slow::Scale_Base_Key, None,
       Properties::SmootherScale::Linear, 11.0f, 0.0f, false},
-     {12, 12, None, None, "", "Scale", "Scale", "Base Key", "Base Key",
+     {11, 11, None, None, "", "Scale", "Scale", "Base Key", "Base Key",
       "Sets the base key for the custom scale. The scale is defined for the "
       "eleven keys above the base key and will be applied to all octaves "
       "accordingly."}},
