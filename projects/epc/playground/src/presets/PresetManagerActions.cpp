@@ -42,8 +42,9 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
             {
               auto x = request->get("x");
               auto y = request->get("y");
+              auto uuid = request->get("uuid");
               PresetManagerUseCases useCase{m_presetManager, m_settings};
-              useCase.newBank(x, y);
+              useCase.newBank(x, y, Uuid{uuid});
             });
 
   addAction("rename-bank",

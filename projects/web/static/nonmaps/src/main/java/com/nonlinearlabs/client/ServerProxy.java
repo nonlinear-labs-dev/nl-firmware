@@ -272,8 +272,11 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("presets", "new-bank-from-edit-buffer");
 		StaticURI.KeyValue x = new StaticURI.KeyValue("x", nonPosition.getX());
 		StaticURI.KeyValue y = new StaticURI.KeyValue("y", nonPosition.getY());
-		StaticURI uri = new StaticURI(path, x, y);
+		String newUuid = Uuid.random();
+		StaticURI.KeyValue uuid = new StaticURI.KeyValue("uuid", newUuid);
+		StaticURI uri = new StaticURI(path, x, y, uuid);
 		queueJob(uri, false);
+		RenameDialog.awaitNewPreset(newUuid);
 	}
 
 	public void renameBank(String uuid, String newName) {
