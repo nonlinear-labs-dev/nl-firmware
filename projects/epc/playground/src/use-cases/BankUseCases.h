@@ -15,6 +15,7 @@ class BankUseCases
 
   void selectPreset(int pos);
   void stepPresetSelection(int inc);
+  void selectFirstOrLastPreset(int direction);
 
   void renameBank(const Glib::ustring& name);
   void setBankComment(const Glib::ustring& comment);

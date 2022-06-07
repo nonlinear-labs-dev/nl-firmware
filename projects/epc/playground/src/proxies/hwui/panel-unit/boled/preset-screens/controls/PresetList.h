@@ -36,4 +36,5 @@ class PresetList : public PresetListBase
  protected:
   virtual void stepPresetSelection(int inc, PresetManager* pm, Bank* bank) const;
   void stepBankSelection(int inc, const ButtonModifiers& modifiers, PresetManager* pm) const;
+  void jumpToPresetListExtreme(int inc, Bank* pBank);
 };

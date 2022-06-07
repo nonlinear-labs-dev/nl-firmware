@@ -338,3 +338,23 @@ PresetManager* BankUseCases::getPresetManager() const
   nltools_assertOnDevPC(pm != nullptr);
   return pm;
 }
+
+void BankUseCases::selectFirstOrLastPreset(int inc)
+{
+  Preset* newPreset = nullptr;
+  if(inc > 0)
+  {
+    newPreset = m_bank->getPresetAt(0);
+  }
+  else if(inc < 0)
+  {
+    newPreset = m_bank->getPresetAt(m_bank->getNumPresets() - 1);
+  }
+
+  if(newPreset)
+  {
+    auto name = newPreset->buildUndoTransactionTitle("Select Preset");
+    auto scope = m_bank->getUndoScope().startTransaction(name);
+    m_bank->selectPreset(scope->getTransaction(), newPreset->getUuid());
+  }
+}
