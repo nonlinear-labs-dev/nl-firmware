@@ -138,4 +138,6 @@ class HWUI
   ScopedGuard m_parameterFocusLock;
   Settings& m_settings;
   FocusAndModeSetting & m_famSetting;
+
+  bool m_currentParameterIsFineAllowed = false;
 };

@@ -64,6 +64,7 @@ class Parameter : public UpdateDocumentContributor,
   ParameterId getID() const;
 
   bool isBiPolar() const;
+  bool isFineAllowed() const;
   tControlPositionValue getDefaultValue() const;
   tControlPositionValue getFactoryDefaultValue() const;
 
