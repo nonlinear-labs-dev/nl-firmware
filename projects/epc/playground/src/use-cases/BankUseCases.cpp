@@ -342,14 +342,11 @@ PresetManager* BankUseCases::getPresetManager() const
 void BankUseCases::selectFirstOrLastPreset(int inc)
 {
   Preset* newPreset = nullptr;
-  if(inc > 0)
-  {
+
+  if(inc < 0)
     newPreset = m_bank->getPresetAt(0);
-  }
-  else if(inc < 0)
-  {
+  else if(inc > 0)
     newPreset = m_bank->getPresetAt(m_bank->getNumPresets() - 1);
-  }
 
   if(newPreset)
   {
