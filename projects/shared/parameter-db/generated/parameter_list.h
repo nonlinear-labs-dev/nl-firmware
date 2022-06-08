@@ -2,7 +2,7 @@
 
 /******************************************************************************/
 /**	@file       parameter_list.h
-    @date       2022-06-07, 17:24
+    @date       2022-06-08, 13:08
     @version    1.7B-9
     @author     M. Seeber
     @brief      complete list of parameters (and their properties) in TCD order
@@ -526,7 +526,7 @@ const ParameterDescriptor ParameterList[Config::tcd_elements] = {
      {Smoothers::Poly_Slow::Shp_A_FB_Env_C, None,
       Properties::SmootherScale::Linear, 1.0f, 0.0f, true},
      {100, 1000, 100, 1000, "", "Shaper A", "Shaper A", "FB - Gate-Env C",
-      "Gate-Env C",
+      "G-Env C",
       "Envelope (C) amount for the Feedback Mix. At zero, only a Gate signal "
       "is applied, at higher values, Envelope C is faded in. At negative "
       "values, the Gate signal is faded out, allowing for permanent feedback "
@@ -735,7 +735,7 @@ const ParameterDescriptor ParameterList[Config::tcd_elements] = {
      {Smoothers::Poly_Slow::Shp_B_FB_Env_C, None,
       Properties::SmootherScale::Linear, 1.0f, 0.0f, true},
      {100, 1000, 100, 1000, "", "Shaper B", "Shaper B", "FB - Gate-Env C",
-      "Gate-Env C",
+      "G-Env C",
       "Envelope (C) amount for the Feedback Mix. At zero, only a Gate signal "
       "is applied, at higher values, Envelope C is faded in. At negative "
       "values, the Gate signal is faded out, allowing for permanent feedback "
