@@ -242,7 +242,6 @@ public class Bank extends LayoutResizingVertical implements Renameable, IBank {
 			Control c = (Control) currentDropPreset;
 			DropPosition dropPosition = getDropPosition(c.getPixRect(), dragPosition);
 			doDropAction(currentDropAction, dropPosition, currentDropPreset, dragProxy);
-			Tracer.log(currentDropAction.toString() + " " + dropPosition.toString());
 			dragPosition = null;
 			currentDropAction = DropAction.NONE;
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);

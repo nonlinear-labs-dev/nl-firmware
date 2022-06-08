@@ -55,7 +55,6 @@ public class TestWithSteps {
     private void tryNextStep() {
         Step s = steps.get(0);
         if (s.isDone()) {
-            GWT.log(s.name + " complete!");
             nextStep();
         }
     }

@@ -67,7 +67,6 @@ public class UndoTreeWindow extends FloatingWindow {
 		if (isHidden() && firstTimeOpen) {
 			double width = NonMaps.get().getCanvas().getCoordinateSpaceWidth() / 4;
 			double height = NonMaps.get().getCanvas().getCoordinateSpaceHeight() / 2;
-			Tracer.log("undo:" + width + "/" + height);
 			fixDimension = new Dimension(width, height);
 			firstTimeOpen = false;
 		}

@@ -97,7 +97,6 @@ SettingsActions::SettingsActions(UpdateDocumentContributor* parent, Settings& se
     auto requestedState = request->get("state") == "1";
     SettingsUseCases useCase(settings);
     useCase.setAllRoutingEntries(requestedState);
-    nltools::Log::error(ExceptionTools::handle_eptr(std::current_exception()));
   });
 
   addAction("enable-bbb-wifi-for-epc2", [](auto) {

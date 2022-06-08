@@ -20,7 +20,6 @@ public class EditBufferModelUpdater extends Updater {
 			ParameterId selParam = new ParameterId(selParamStr);
 			EditBufferModel.get().selectedParameter.setValue(selParam.getNumber());
 			String loadedPreset = getAttributeValue(root, "loaded-preset");
-			GWT.log("Loaded Preset:" + loadedPreset);
 			EditBufferModel.get().loadedPreset.setValue(loadedPreset);
 			String loadedPresetName = getAttributeValue(root, "loaded-presets-name");
 			EditBufferModel.get().loadedPresetName.setValue(loadedPresetName);

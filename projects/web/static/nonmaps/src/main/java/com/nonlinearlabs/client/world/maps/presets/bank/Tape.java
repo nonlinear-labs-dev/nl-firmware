@@ -248,8 +248,6 @@ public class Tape extends MapsControl {
 
 		if (opposite != null)
 			otherActive = opposite.isCurrentlyDraggedOverMe();
-		else
-			GWT.log("should not happen! " + toString());
 
 		if (isCurrentlyDraggedOverMe() || otherActive)
 			return activeColor;
