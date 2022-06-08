@@ -20,7 +20,7 @@ class BaseScaleParameterSelectLayout : public UnmodulateableParameterSelectLayou
   void reset();
   bool resetEnabled() const;
   void selectParameter(int inc);
-  void updateResetButton();
+  void updateMasterButton();
   Button* m_resetButton;
 };
 
@@ -43,16 +43,13 @@ class ScaleParameterSelectLayout : public ModulateableParameterSelectLayout2
 
  private:
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
-  void reset();
-  bool resetEnabled() const;
   void selectParameter(int inc);
-  void updateResetButton();
 
  protected:
   Carousel* createCarousel(const Rect& rect) override;
 
  private:
-  Button* m_resetButton;
+  Button* m_masterButton;
 };
 
 class ScaleParameterEditLayout : public UnmodulateableParameterEditLayout2

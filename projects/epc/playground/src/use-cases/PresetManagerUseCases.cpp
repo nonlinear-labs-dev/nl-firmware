@@ -89,7 +89,7 @@ Bank* PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring
   return bank;
 }
 
-Bank* PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring& y)
+Bank* PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring& y, const Uuid& uuid)
 {
   auto scope = m_presetManager.getUndoScope().startTransaction("New Bank");
   auto transaction = scope->getTransaction();
@@ -97,7 +97,7 @@ Bank* PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring
   bank->setX(transaction, x);
   bank->setY(transaction, y);
   auto modified = m_presetManager.getEditBuffer()->isModified();
-  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer()));
+  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer(), uuid));
 
   if(modified)
     preset->guessName(transaction);

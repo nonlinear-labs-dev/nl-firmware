@@ -38,7 +38,7 @@ class PresetManagerUseCases
   void createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y);
 
   Bank* newBank(const Glib::ustring& x, const Glib::ustring& y, const std::optional<Glib::ustring>& name);
-  Bank* newBank(const Glib::ustring& x, const Glib::ustring& y);
+  Bank* newBank(const Glib::ustring& x, const Glib::ustring& y, const Uuid& uuid);
 
   void selectPreset(const Uuid& uuid);
   void selectPreset(const Preset* preset);

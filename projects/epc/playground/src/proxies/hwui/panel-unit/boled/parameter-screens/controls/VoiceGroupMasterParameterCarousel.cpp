@@ -66,6 +66,10 @@ void VoiceGroupMasterParameterCarousel::rebuild()
 
 void VoiceGroupMasterParameterCarousel::setupMasterParameters(const std::vector<ParameterId> &parameters)
 {
+  m_currentCarouselContentIDs = {};
+  for(auto& i: parameters)
+    m_currentCarouselContentIDs.emplace_back(i.getNumber());
+
   const int ySpacing = 3;
   const int miniParamHeight = 12;
   const int miniParamWidth = 56;

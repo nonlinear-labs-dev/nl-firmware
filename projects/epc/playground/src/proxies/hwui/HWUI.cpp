@@ -408,7 +408,7 @@ void HWUI::setModifiers(Buttons buttonID, bool state)
 bool HWUI::isFineAllowed()
 {
   auto uiFocus = m_famSetting.getState().focus;
-  return uiFocus == UIFocus::Parameters || uiFocus == UIFocus::Sound;
+  return (uiFocus == UIFocus::Parameters || uiFocus == UIFocus::Sound) && m_currentParameterIsFineAllowed;
 }
 
 bool HWUI::detectAffengriff(Buttons buttonID, bool state)
@@ -686,7 +686,12 @@ void HWUI::onParameterReselection(Parameter *parameter)
 
 void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter)
 {
+  m_currentParameterIsFineAllowed = newParameter->isFineAllowed();
+
+  if(!m_currentParameterIsFineAllowed)
+    m_fineButton.setState(FineButtonStates::TOGGLED_OFF);
   unsetFineMode();
+
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   if(!eb->isParameterFocusLocked())
   {

@@ -104,6 +104,10 @@ ParameterImportConversions::ParameterImportConversions(bool registerDefaults)
     registerConverter(C15::PID::Env_A_Rel_Vel, 12, [=](auto v, auto, auto) { return 1 - v; });
     registerConverter(C15::PID::Env_B_Rel_Vel, 12, [=](auto v, auto, auto) { return 1 - v; });
     registerConverter(C15::PID::Env_C_Rel_Vel, 12, [=](auto v, auto, auto) { return 1 - v; });
+
+    registerConverter(C15::PID::Env_A_Rel_Vel, 13, [=](auto v, auto, auto) { return v - 1; });
+    registerConverter(C15::PID::Env_B_Rel_Vel, 13, [=](auto v, auto, auto) { return v - 1; });
+    registerConverter(C15::PID::Env_C_Rel_Vel, 13, [=](auto v, auto, auto) { return v - 1; });
   }
 }
 

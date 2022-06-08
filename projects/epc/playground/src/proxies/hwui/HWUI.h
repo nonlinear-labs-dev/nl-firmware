@@ -155,4 +155,6 @@ class HWUI
   Settings &m_settings;
   FocusAndModeSetting &m_famSetting;
   SplashLayout *m_splashLayout = nullptr;
+
+  bool m_currentParameterIsFineAllowed = false;
 };

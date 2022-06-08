@@ -29,6 +29,7 @@ public class ParameterPresenter {
 	public boolean disabled = false;
 	public boolean hidden = false;
 	public boolean isDefault = false;
+	public boolean isFine = false;
 
 	public long hash = 0;
 
@@ -79,6 +80,7 @@ public class ParameterPresenter {
 		c.eat(controlPosition);
 		c.eat(defaultPosition);
 		c.eat(isDefault);
+		c.eat(isFine);
 		c.eat(bipolar);
 		c.eat(selected);
 		c.eat(locked);

@@ -27,8 +27,9 @@ int VersionAttribute::getCurrentFileVersion()
     DUAL_SPLIT_POINT_PRESETS = 10,
     HW_SEND_PARAMETERS = 11,
     MORE_MOD_PARAMS = 12,
-    INVERTED_VELOCITIES = 13
+    INVERTED_VELOCITIES = 13,
+    BIPOLAR_RELEASE_VELOCITIES = 14
   };
 
-  return static_cast<int>(History::INVERTED_VELOCITIES);
+  return static_cast<int>(History::BIPOLAR_RELEASE_VELOCITIES);
 }

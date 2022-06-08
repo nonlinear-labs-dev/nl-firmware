@@ -21,6 +21,13 @@ public class ModulationSourceLabel extends Label {
 		});
 	}
 
+	
+
+	@Override
+	public double getLevelOfDetailForFullVisibility() {
+		return 0;
+	}
+
 	@Override
 	public void doFirstLayoutPass(double levelOfDetail) {
 		super.doFirstLayoutPass(levelOfDetail);
@@ -42,6 +49,11 @@ public class ModulationSourceLabel extends Label {
 	@Override
 	protected double getFontHeight() {
 		return 10;
+	}
+
+	@Override
+	protected double getMinHeight() {
+		return getBasicHeight();
 	}
 
 	@Override
