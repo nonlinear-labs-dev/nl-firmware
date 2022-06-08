@@ -327,6 +327,13 @@ bool Parameter::isBiPolar() const
   return m_value.isBiPolar();
 }
 
+bool Parameter::isFineAllowed() const
+{
+  auto coarse = getValue().getCoarseDenominator();
+  auto fine = getValue().getFineDenominator();
+  return coarse != fine;
+}
+
 const ParameterGroup *Parameter::getParentGroup() const
 {
   return static_cast<const ParameterGroup *>(getParent());

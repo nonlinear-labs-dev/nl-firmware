@@ -147,6 +147,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.disabled = isParameterDisabled(e);
 		presenter.hidden = isParameterHidden(e);
 		presenter.isDefault = presenter.controlPosition == presenter.defaultPosition;
+		presenter.isFine = e.value.metaData.coarseDenominator != e.value.metaData.fineDenominator;
 
 		if(presenter.id.getNumber() == 396) {
 			Tracer.log("isDefault for VG "+ presenter.id.getVoiceGroup().toString() + " is:" + presenter.isDefault);
