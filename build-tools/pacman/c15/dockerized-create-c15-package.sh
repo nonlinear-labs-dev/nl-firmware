@@ -41,6 +41,7 @@ depends=(
 'alsa-lib'
 'alsa-tools'
 'alsa-utils'
+'arch-install-scripts'
 'boost'
 'cpupower'
 'flac'
@@ -51,6 +52,8 @@ depends=(
 'libpng'
 'libsoup>=2.4'
 'lsof'
+'mc'
+'nano'
 'networkmanager'
 'util-linux-libs'
 'shared-mime-info'
@@ -59,6 +62,7 @@ depends=(
 'sshfs'
 'systemd'
 'systemd-sysvcompat'
+'vi'
 )
 
 build() {
