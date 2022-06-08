@@ -103,8 +103,6 @@ deploy_scripts() {
     if [ $UPDATE_EPC == 1 ]; then
         cp $SOURCE_DIR/update_scripts/epc_pull_update.sh $OUT_DIRECTORY/EPC/ && \
             chmod 777 $OUT_DIRECTORY/EPC/epc_pull_update.sh && \
-            cp $SOURCE_DIR/update_scripts/epc_push_update.sh $OUT_DIRECTORY/EPC/ && \
-            chmod 777 $OUT_DIRECTORY/EPC/epc_push_update.sh && \
             cp $SOURCE_DIR/update_scripts/epc_1_fix.sh $OUT_DIRECTORY/EPC/ && \
             chmod 777 $OUT_DIRECTORY/EPC/epc_1_fix.sh && \
             cp $SOURCE_DIR/update_scripts/epc_2_fix.sh $OUT_DIRECTORY/EPC/ && \

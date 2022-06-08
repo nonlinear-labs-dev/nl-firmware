@@ -4,12 +4,14 @@
 ### This results in a rootfs that can be booted and run the full NL software stack.
 
 setup_package_database() { # Create a database containing c15 package and all its dependencies
+  set -e
   mkdir -p /nl
-  repo-add -q /nl/nl.db.tar.gz /packages/*.zst /out/c15-1.0.0-1-any.pkg.tar.zst 
+  repo-add -q /nl/nl.db.tar.gz /packages/*.pkg.tar.zst /packages/*.pkg.tar.xz /out/c15-1.0.0-1-any.pkg.tar.zst 
   cp /packages/* /nl/
   cp /out/c15-1.0.0-1-any.pkg.tar.zst /nl/
   echo "[nl]" > /etc/pacman.conf
   echo "Server = file:///nl/" >> /etc/pacman.conf
+  set +e
 }
 
 create_rootfs() { # Create clean folder and install c15 package and all its dependencies
@@ -43,15 +45,17 @@ cleanup_rootfs() { # Remove unused stuff to keep the resulting tar small
   rm -rf $DIR/usr/share/locale
   rm -rf $DIR/usr/share/i18n/locales
   rm -rf $DIR/etc/pacman.d
+  rm -rf $DIR/usr/lib/libgo.*
 }
 
 create_package() { # create the tarball
   cd $DIR
   tar -czf /out/c15-rootfs.tar.gz .
 }
-
+ 
 setup_package_database
 create_rootfs
 tweak_rootfs
 cleanup_rootfs
 create_package
+

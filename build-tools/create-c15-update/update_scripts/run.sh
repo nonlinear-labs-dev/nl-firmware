@@ -130,21 +130,15 @@ check_preconditions() {
             { report "" "E86: ePC update missing" "Please retry download!"; return 1; }
     fi
 
-    if $UPDATE_BBB == 1; then
+    if [ "$UPDATE_BBB" == "1" ]; then
       [ -f "/update/BBB/rootfs.tar.gz" ] || { report "" "E87: BBB update missing" "Please retry download!"; return 1; }
     fi
     
-    if $UPDATE_PLAYCONTROLLER == 1; then
+    if [ "$UPDATE_PLAYCONTROLLER" == "1" ]; then
       [ -f "/update/playcontroller/main.bin" ] || { report "" "E88: playcontroller update missing" "Please retry download!"; return 1; }
     fi
 
     return 0
-}
-
-epc_push_update() {
-    chmod +x /update/EPC/epc_push_update.sh
-    /bin/sh /update/EPC/epc_push_update.sh $EPC_IP
-    return $?
 }
 
 epc_pull_update() {
@@ -167,14 +161,13 @@ epc_fix() {
 epc_update() {
     pretty "" "$MSG_UPDATING_EPC" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_EPC" "$MSG_DO_NOT_SWITCH_OFF"
 
-    if ! epc_push_update; then
-        epc_pull_update
-        return_code=$?
-        if [ $return_code -ne 0 ]; then
-            pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
-            sleep 2
-            return 1
-        fi
+    epc_pull_update
+    
+    return_code=$?
+    if [ $return_code -ne 0 ]; then
+      pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
+      sleep 2
+      return 1
     fi
 
     epc_fix
