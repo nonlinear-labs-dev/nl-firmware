@@ -119,7 +119,10 @@ void PresetList::onRotary(int inc, ButtonModifiers modifiers)
   }
   else if(auto bank = pm->getSelectedBank())
   {
-    stepPresetSelection(inc, pm, bank);
+    if(modifiers[ButtonModifier::SHIFT])
+      jumpToPresetListExtreme(inc, bank);
+    else
+      stepPresetSelection(inc, pm, bank);
   }
 }
 
@@ -150,4 +153,13 @@ std::pair<size_t, size_t> PresetList::getSelectedPosition() const
     return std::make_pair(bankPos, presetPos);
   }
   return { -1, -1 };
+}
+
+void PresetList::jumpToPresetListExtreme(int inc, Bank* bank)
+{
+  if(bank)
+  {
+    BankUseCases useCase(bank, *Application::get().getSettings());
+    useCase.selectFirstOrLastPreset(inc);
+  }
 }
