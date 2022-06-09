@@ -19,6 +19,21 @@ namespace C15
         constexpr char const * const milestone = "${config.milestone}";
         constexpr uint32_t total_polyphony = ${config.max_voices};
         constexpr uint32_t local_polyphoy = total_polyphony >> 1;
+        constexpr uint32_t tcd_elements = ${config.params};
+        constexpr uint32_t clock_rates[2][3] = { { ${config.clock_rates.sd} }, { ${config.clock_rates.hd} } };
+        constexpr float fade_time_ms = ${config.fade_time_in_ms};
+        // C15 physical key range: lowest, highest, count
+        constexpr uint32_t physical_key_from = ${config.physical_key_range.from};
+        constexpr uint32_t physical_key_to = ${config.physical_key_range.to};
+        constexpr uint32_t physical_key_count = 1 + physical_key_to - physical_key_from;
+        // C15 virtual key range: lowest, highest, count (fully midi compatible)
+        constexpr uint32_t virtual_key_from = ${config.virtual_key_range.from};
+        constexpr uint32_t virtual_key_to = ${config.virtual_key_range.to};
+        constexpr uint32_t virtual_key_count = 1 + virtual_key_to - virtual_key_from;
+        // generic special keys (absolute pivot point for key tracking, relative center for panning, relative reference for tuning)
+        constexpr uint32_t generic_key_pivot = ${config.generic_keys.pivot};
+        constexpr uint32_t offset_key_center = ${config.generic_keys.center} - generic_key_pivot;
+        constexpr uint32_t offset_key_reference = ${config.generic_keys.reference} - generic_key_pivot;
     }
 
 }

@@ -11,7 +11,7 @@ clock_rates:
   sd: [ 48000, 9600, 400 ]
   hd: [ 96000, 9600, 400 ]
 
-fade_time_in_ms: 3.0
+fade_time_in_ms: 3.0f
 
 physical_key_range:
   from: 36
