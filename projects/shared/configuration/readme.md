@@ -7,6 +7,7 @@ An attempt to re-implement (and extend) the "parameter-db" sub-project on a [YAM
 - required programs: node (currently using v16.15.1), npm (8.10.0), tsc (4.6.4)
 - on first run (?): `npm init -y` _(as the package.json is part of the repo, an npm install may suffice?)_
 - packages: `npm install @types/node @types/js-yaml js-yaml`
+- `mkdir ./generated` _(the current output directory - which is git-ignored)_
 
 ## Run Generation Process
 
