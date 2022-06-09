@@ -11,7 +11,7 @@ An attempt to re-implement (and extend) the "parameter-db" sub-project on a [YAM
 ## Run Generation Process
 
 ``` bash
-tsc ./blid/build.ts && node ./lib/build.js
+tsc ./lib/build.ts && node ./lib/build.js
 ```
 
 ## Status
