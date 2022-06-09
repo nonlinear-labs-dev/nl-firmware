@@ -34,7 +34,7 @@ ADD_CUSTOM_COMMAND(
 )
 
 ADD_CUSTOM_COMMAND(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/c15-rootfs.tar.gz
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/c15-rootfs.tar.xz
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/c15-1.0.0-1-any.pkg.tar.zst
     DEPENDS dockerized-create-c15-rootfs.sh
     VERBATIM
@@ -56,6 +56,6 @@ ADD_CUSTOM_TARGET(
 
 ADD_CUSTOM_TARGET(
   c15-rootfs
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/c15-rootfs.tar.gz
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/c15-rootfs.tar.xz
   DEPENDS web 
   )

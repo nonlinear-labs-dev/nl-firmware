@@ -27,19 +27,19 @@ UPDATE_BBB=0
 UPDATE_PLAYCONTROLLER=0
 UPDATE_EPC=0
 
-if [[ $ASPECTS = *epc* ]]
+if [[ "$ASPECTS" = *epc* ]]
 then
     UPDATE_EPC=1
     echo "will update epc"
 fi
 
-if [[ $ASPECTS = *playcontroller* ]]
+if [[ "$ASPECTS" = *playcontroller* ]]
 then
     UPDATE_PLAYCONTROLLER=1
     echo "will update playcontroller"
 fi
 
-if [[ $ASPECTS = *bbb* ]]
+if [[ "$ASPECTS" = *bbb* ]]
 then
     UPDATE_BBB=1
     echo "will update bbb"
@@ -129,11 +129,11 @@ check_preconditions() {
             { report "" "E86: ePC update missing" "Please retry download!"; return 1; }
     fi
 
-    if [ "$UPDATE_BBB" == "1" ]; then
+    if [ "$UPDATE_BBB" = "1" ]; then
       [ -f "/update/BBB/rootfs.tar.gz" ] || { report "" "E87: BBB update missing" "Please retry download!"; return 1; }
     fi
     
-    if [ "$UPDATE_PLAYCONTROLLER" == "1" ]; then
+    if [ "$UPDATE_PLAYCONTROLLER" = "1" ]; then
       [ -f "/update/playcontroller/main.bin" ] || { report "" "E88: playcontroller update missing" "Please retry download!"; return 1; }
     fi
 
@@ -147,9 +147,9 @@ epc_pull_update() {
 }
 
 epc_fix() {
-    if [[ "$FIX_EPC_1" == "true" ]]; then
+    if [[ "$FIX_EPC_1" = "true" ]]; then
         /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_1_fix.sh sscl@192.168.10.10:/tmp/epc_fix.sh
-    elif [[ "$FIX_EPC_2" == "true" ]]; then
+    elif [[ "$FIX_EPC_2" = "true" ]]; then
         /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_2_fix.sh sscl@192.168.10.10:/tmp/epc_fix.sh
     fi
 

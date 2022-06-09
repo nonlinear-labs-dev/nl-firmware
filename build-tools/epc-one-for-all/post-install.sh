@@ -22,12 +22,12 @@ else
   exit 1
 fi
 
-if [ $FIX_BUFFER_UNDERRUNS == 1 ]; then
+if [ "$FIX_BUFFER_UNDERRUNS" = "1" ]; then
   echo "options snd_hda_intel bdl_pos_adj=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1" > $ROOT_FS/etc/modprobe.d/snd_hda_intel.conf
   chmod 600 $ROOT_FS/etc/modprobe.d/snd_hda_intel.conf
 fi
 
-if [ $ENABLE_EPC_WIFI == 1 ]; then
+if [ "$ENABLE_EPC_WIFI" = "1" ]; then
   cp /nloverlay/update-scratch/update/wpa_supplicant.conf $ROOT_FS/etc/wpa_supplicant/wpa_supplicant.conf
   chmod 600 $ROOT_FS/etc/wpa_supplicant/wpa_supplicant.conf
   cp /nloverlay/update-scratch/update/C15.nmconnection $ROOT_FS/etc/NetworkManager/system-connections/C15.nmconnection

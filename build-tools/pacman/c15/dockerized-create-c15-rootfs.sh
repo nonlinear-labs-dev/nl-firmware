@@ -50,7 +50,9 @@ cleanup_rootfs() { # Remove unused stuff to keep the resulting tar small
 
 create_package() { # create the tarball
   cd $DIR
-  tar -czf /out/c15-rootfs.tar.gz .
+  tar -cf /out/c15-rootfs.tar .
+  rm -rf /out/c15-rootfs.tar.xz
+  xz -9 -z /out/c15-rootfs.tar
 }
  
 setup_package_database
@@ -58,4 +60,3 @@ create_rootfs
 tweak_rootfs
 cleanup_rootfs
 create_package
-
