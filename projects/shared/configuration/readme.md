@@ -1,4 +1,4 @@
-# YAML Experiments
+# [YAML Experiments] C15 Configuration
 
 An attempt to re-implement (and extend) the "parameter-db" sub-project on a [YAML](https://yaml.org/) basis, providing essential C15 definitions as shared header files (usable wherever they are needed). The current project name is "configuration", as we define more than just parameters here.
 
