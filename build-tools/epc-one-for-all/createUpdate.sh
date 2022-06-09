@@ -14,6 +14,11 @@ for var in $@; do
   cp $var $DIR/
 done
 
+tar --extract --file=$DIR/xz-5.2.5-linux-x86_64.tar.gz ./xz-5.2.5-linux-x86_64/xz
+rm $DIR/xz-5.2.5-linux-x86_64.tar.gz
+mv ./xz-5.2.5-linux-x86_64/xz $DIR/
+rm -rf ./xz-5.2.5-linux-x86_64
+
 cat << EOF > $DIR/backdoor.sh
 #!/bin/sh
 set -e
@@ -30,8 +35,9 @@ mount -t overlay -o lowerdir=/lroot,upperdir=/nloverlay/os-overlay,workdir=/nlov
 
 mv /mnt/usr/lib/modules /tmp/
 rm -rf /mnt/*
-tar -C /mnt -xzf /nloverlay/update-scratch/update/c15-rootfs.tar.gz
+./xz -c -k -d /nloverlay/update-scratch/update/c15-rootfs.tar.xz | tar -C /mnt -x
 mv /tmp/modules /mnt/usr/lib/
+
 umount /mnt
 
 for dir in "runtime-overlay" "work"; do

@@ -1,7 +1,7 @@
 FROM archlinux:base-20220424.0.54084
 
 ENV HOST_REQUIREMENTS binutils ccache cmake fakeroot gcc git linux make \
-                      nano ninja pacman pacman-contrib pkgconfig sudo squashfs-tools
+                      nano ninja pacman pacman-contrib pkgconfig sudo squashfs-tools xz
 ENV C15_REQUIREMENTS  alsa alsa-tools alsa-utils arch-install-scripts base boost cpupower flac freetype2 glibmm \
                       libpng libsoup mc nano networkmanager png++ shared-mime-info sudo sshfs lsof \
                       systemd-sysvcompat vi
