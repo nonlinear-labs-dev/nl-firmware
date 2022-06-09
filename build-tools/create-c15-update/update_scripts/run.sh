@@ -107,7 +107,7 @@ wait4epc() {
 }
 
 check_preconditions() {
-    [ $UPDATE_EPC == 0 ] && return 0
+    [ "$UPDATE_EPC" = "0" ] && return 0
     if ! wait4epc 10; then
         if [ -z "$EPC_IP" ]; then report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!" && return 1; fi
         if ! ping -c1 $EPC_IP 1>&2 > /dev/null; then  report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!" && return 1; fi
@@ -287,9 +287,9 @@ main() {
     sleep 2
 
     stop_services
-    [ $UPDATE_EPC == 1 ] && epc_update
-    [ $UPDATE_BBB == 1 ] && bbb_update
-    [ $UPDATE_PLAYCONTROLLER == 1 ] && playcontroller_update
+    [ "$UPDATE_EPC" = "1" ] && epc_update
+    [ "$UPDATE_BBB" = "1" ] && bbb_update
+    [ "$UPDATE_PLAYCONTROLLER" = "1" ] && playcontroller_update
 
     if [ $(wc -c /update/errors.log | awk '{print $1}') -ne 0 ]; then
         cp /update/errors.log /mnt/usb-stick/nonlinear-c15-update.log.txt
