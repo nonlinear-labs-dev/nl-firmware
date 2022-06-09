@@ -83,7 +83,14 @@ template <int tPedal> class PedalCCMapping : public MappingSetting<PedalCC>
                                                      "CC 66 (sw.)",
                                                      "CC 67 (sw.)",
                                                      "CC 68 (sw.)",
-                                                     "CC 69 (sw.)" };
+                                                     "CC 69 (sw.)",
+                                                     "CC 64 (cont.)",
+                                                     "CC 65 (cont.)",
+                                                     "CC 66 (cont.)",
+                                                     "CC 67 (cont.)",
+                                                     "CC 68 (cont.)",
+                                                     "CC 69 (cont.)"
+                                                    };
 
     static std::vector<Glib::ustring> retWithoutLSB = { "None",
                                                         "CC 01",
@@ -122,7 +129,14 @@ template <int tPedal> class PedalCCMapping : public MappingSetting<PedalCC>
                                                         "CC 66 (sw.)",
                                                         "CC 67 (sw.)",
                                                         "CC 68 (sw.)",
-                                                        "CC 69 (sw.)" };
+                                                        "CC 69 (sw.)",
+                                                        "CC 64 (cont.)",
+                                                        "CC 65 (cont.)",
+                                                        "CC 66 (cont.)",
+                                                        "CC 67 (cont.)",
+                                                        "CC 68 (cont.)",
+                                                        "CC 69 (cont.)"
+                                                      };
     if(is14BitSupportEnabled())
       return retWithCCs;
     else
