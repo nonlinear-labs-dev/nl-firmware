@@ -66,6 +66,19 @@ bool UnmodulateableDualVoiceGroupMasterAndSplitPointLayout::onButton(Buttons i, 
   return UnmodulateableParameterSelectLayout2::onButton(i, down, modifiers);
 }
 
+void UnmodulateableDualVoiceGroupMasterAndSplitPointLayout::init()
+{
+  UnmodulateableParameterSelectLayout2::init();
+
+  for(auto b: getControls<Button>())
+  {
+    if(b->getPosition() == b->getButtonPos(Buttons::BUTTON_C))
+    {
+      b->setText("back..");
+    }
+  }
+}
+
 SplitPointParameterLayout::SplitPointParameterLayout()
     : ModulateableDualVoiceGroupMasterAndSplitPointLayout()
 {

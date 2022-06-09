@@ -21,6 +21,7 @@ class UnmodulateableDualVoiceGroupMasterAndSplitPointLayout : public Unmodulatea
   using UnmodulateableParameterSelectLayout2::UnmodulateableParameterSelectLayout2;
 
  protected:
+  void init() override;
   Carousel* createCarousel(const Rect& rect) override;
   ModuleCaption* createModuleCaption() const override;
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;

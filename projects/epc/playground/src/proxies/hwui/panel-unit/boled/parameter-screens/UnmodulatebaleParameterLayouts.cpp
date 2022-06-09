@@ -2,6 +2,7 @@
 #include "groups/ScaleGroup.h"
 #include "use-cases/EditBufferUseCases.h"
 #include "parameter_declarations.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAmountButton.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterBarSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
@@ -67,6 +68,17 @@ void UnmodulateableParameterSelectLayout2::init()
         remove(bA.get());
 
       m_resetButton = addControl(new Button("", Buttons::BUTTON_A));
+
+      for(auto b : getControls<Button>())
+      {
+        if(b->getPosition() == b->getButtonPos(Buttons::BUTTON_C))
+        {
+          if(dynamic_cast<MCAmountButton *>(b.get()) == nullptr)
+          {
+            b->setText("back..");
+          }
+        }
+      }
     }
   }
 
@@ -85,11 +97,12 @@ bool UnmodulateableParameterSelectLayout2::onButton(Buttons i, bool down, Button
     {
       switch(i)
       {
+        case Buttons::BUTTON_C:
         case Buttons::BUTTON_A:
-          if(m_resetButton && m_isScaleParameter)
+          if(m_resetButton)
           {
             EditBufferUseCases ebUseCases(*getCurrentParameter()->getParentEditBuffer());
-            ebUseCases.selectParameter({C15::PID::Master_Volume, VoiceGroup::Global}, true);
+            ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global }, true);
             return true;
           }
           break;

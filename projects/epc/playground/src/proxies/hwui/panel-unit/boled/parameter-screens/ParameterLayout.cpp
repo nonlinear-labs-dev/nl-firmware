@@ -5,6 +5,7 @@
 #include "use-cases/ParameterUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
 #include "groups/ScaleGroup.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAmountButton.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>

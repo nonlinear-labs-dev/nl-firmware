@@ -24,12 +24,12 @@ void MCAmountButton::update(const Parameter* parameter)
       return u;
     else if(const auto* a = dynamic_cast<const ModulateableMonoParameter*>(param))
       return a;
-    else
+    else if(param != nullptr)
     {
       auto group = param->getParentGroup();
       if(dynamic_cast<const MasterGroup*>(group) || dynamic_cast<const VoiceGroupMasterGroup*>(group)
          || dynamic_cast<const ScaleGroup*>(group) || dynamic_cast<const UnisonGroup*>(group)
-         || dynamic_cast<const SplitParameterGroups*>(group))
+         || dynamic_cast<const SplitParameterGroups*>(group) || dynamic_cast<const VoiceGroupMasterGroup*>(group))
         return dynamic_cast<const ModulateableParameter*>(param);
     }
     return nullptr;

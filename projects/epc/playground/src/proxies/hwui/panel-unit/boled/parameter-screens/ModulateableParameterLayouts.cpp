@@ -269,8 +269,16 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
         {
           if(c->getText().text == "back..")
           {
-            SettingsUseCases sus(*Application::get().getSettings());
-            sus.setFocusAndMode({UIFocus::Sound, UIMode::Select, UIDetail::Init});
+            if(getCurrentParameter() && dynamic_cast<const ScaleGroup*>(getCurrentParameter()->getParentGroup()))
+            {
+              EditBufferUseCases ebUseCases(*getCurrentParameter()->getParentEditBuffer());
+              ebUseCases.selectParameter({C15::PID::Master_Volume, VoiceGroup::Global});
+            }
+            else
+            {
+              SettingsUseCases sus(*Application::get().getSettings());
+              sus.setFocusAndMode({UIFocus::Sound, UIMode::Select, UIDetail::Init});
+            }
             return true;
           }
         }
