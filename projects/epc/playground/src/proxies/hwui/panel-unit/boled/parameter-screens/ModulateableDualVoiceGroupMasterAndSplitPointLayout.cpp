@@ -14,6 +14,8 @@
 #include <sigc++/adaptors/hide.h>
 #include "device-settings/Settings.h"
 #include "device-settings/SplitPointSyncParameters.h"
+#include "use-cases/EditBufferUseCases.h"
+#include "use-cases/SettingsUseCases.h"
 
 Carousel *ModulateableDualVoiceGroupMasterAndSplitPointLayout::createCarousel(const Rect &rect)
 {
@@ -25,6 +27,24 @@ ModuleCaption *ModulateableDualVoiceGroupMasterAndSplitPointLayout::createModule
   return new DualSpecialParameterModuleCaption(Rect(0, 0, 64, 13));
 }
 
+bool ModulateableDualVoiceGroupMasterAndSplitPointLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
+{
+  if(auto modP = dynamic_cast<ModulateableParameter*>(getCurrentParameter()))
+  {
+    if(modP->getModulationSource() == MacroControls::NONE)
+    {
+      if(i == Buttons::BUTTON_C && down)
+      {
+        SettingsUseCases sus(*Application::get().getSettings());
+        sus.setFocusAndMode({UIFocus::Sound, UIMode::Select, UIDetail::Init});
+        return true;
+      }
+    }
+  }
+
+  return ModulateableParameterSelectLayout2::onButton(i, down, modifiers);
+}
+
 Carousel *UnmodulateableDualVoiceGroupMasterAndSplitPointLayout::createCarousel(const Rect &rect)
 {
   return new VoiceGroupMasterParameterCarousel(rect);
@@ -33,6 +53,17 @@ Carousel *UnmodulateableDualVoiceGroupMasterAndSplitPointLayout::createCarousel(
 ModuleCaption *UnmodulateableDualVoiceGroupMasterAndSplitPointLayout::createModuleCaption() const
 {
   return new DualSpecialParameterModuleCaption(Rect(0, 0, 64, 13));
+}
+
+bool UnmodulateableDualVoiceGroupMasterAndSplitPointLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
+{
+  if(i == Buttons::BUTTON_C && down)
+  {
+    SettingsUseCases sus(*Application::get().getSettings());
+    sus.setFocusAndMode({UIFocus::Sound, UIMode::Select, UIDetail::Init});
+    return true;
+  }
+  return UnmodulateableParameterSelectLayout2::onButton(i, down, modifiers);
 }
 
 SplitPointParameterLayout::SplitPointParameterLayout()

@@ -46,6 +46,7 @@
 #include "use-cases/EditBufferUseCases.h"
 #include "groups/MasterGroup.h"
 #include "parameter_declarations.h"
+#include "use-cases/SettingsUseCases.h"
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
 {
@@ -264,6 +265,15 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
       case Buttons::BUTTON_C:
         if(hasModulationSource() && !isCurrentParameterDisabled())
           toggleMode(Mode::MacroControlAmount);
+        else if(auto c = m_mcAmtButton)
+        {
+          if(c->getText().text == "back..")
+          {
+            SettingsUseCases sus(*Application::get().getSettings());
+            sus.setFocusAndMode({UIFocus::Sound, UIMode::Select, UIDetail::Init});
+            return true;
+          }
+        }
         return true;
 
       case Buttons::BUTTON_D:
