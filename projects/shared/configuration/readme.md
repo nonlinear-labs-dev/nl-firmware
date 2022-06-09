@@ -1,6 +1,6 @@
 # YAML Experiments
 
-An attempt to re-implement (and extend) the "parameter-db" sub-project on a [YAML](https://yaml.org/) basis, providing essential C15 definitions as shared header files (usable wherever they are needed).
+An attempt to re-implement (and extend) the "parameter-db" sub-project on a [YAML](https://yaml.org/) basis, providing essential C15 definitions as shared header files (usable wherever they are needed). The current project name is "configuration", as we define more than just parameters here.
 
 ## Prerequisites
 
@@ -14,7 +14,12 @@ An attempt to re-implement (and extend) the "parameter-db" sub-project on a [YAM
 tsc ./blid/build.ts && node ./lib/build.js
 ```
 
+## Status
+- &#x2611; src/config.yaml, src/config.in.h --> generated/config.h
+- &#x2610; src/classification.yaml, src/definitions.yaml --> generated/parameter_delarations.h, generated/parameter_list.h
+
 ## Roadmap
 
-- working proof of concept
-- "dockerize" project and integrate into make process
+- &#x2610; working proof of concept
+- &#x2610; "dockerize" project and integrate into make process
+- &#x2610; provide process safety (by yaml types) and detailed error messages
