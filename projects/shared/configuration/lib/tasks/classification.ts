@@ -9,6 +9,6 @@ export function generateClassification() {
         definitions: yaml.load(fs.readFileSync("./src/definitions.yaml", "utf-8"))
     };
 
-    console.log(result);
+    console.log(result.classification);
 
 }
