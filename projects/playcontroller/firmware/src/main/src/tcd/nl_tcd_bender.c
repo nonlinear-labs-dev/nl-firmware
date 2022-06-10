@@ -227,6 +227,7 @@ typedef struct
   uint16_t values[VALBUF_SIZE];
   uint16_t index;
   uint16_t invalidCntr;
+  uint16_t tail;
   uint32_t sum;
 } ValueBuffer_T;
 
@@ -245,6 +246,7 @@ static void inline clearValueBuffer(ValueBuffer_T *const this, uint16_t const in
 static inline uint16_t addInValueBuffer(ValueBuffer_T *const this, const uint16_t value)
 {
   this->index = (this->index + 1) & VALBUF_MOD;
+  this->tail  = this->values[this->index];
   if (this->invalidCntr)
     this->invalidCntr--;
   this->sum += (int) value - (int) this->values[this->index];
@@ -257,7 +259,7 @@ static inline int isValueBufferFilled(ValueBuffer_T *const this)
   return (this->invalidCntr == 0);
 }
 
-static inline void getValueBufferStats(ValueBuffer_T *const this, uint16_t *const pMin, uint16_t *const pMax, uint16_t *const pAvg, uint32_t *const pRmsSq)
+static inline void getValueBufferStats(ValueBuffer_T *const this, uint16_t *const pMin, uint16_t *const pMax, uint16_t *const pAvg, uint32_t *const pRmsSq, uint16_t *const pFirst)
 {
   uint16_t min         = ADC_RANGE - 1;
   uint16_t max         = 0;
@@ -276,20 +278,22 @@ static inline void getValueBufferStats(ValueBuffer_T *const this, uint16_t *cons
   *pMax   = max;
   *pAvg   = avg;
   *pRmsSq = rmsSq / VALBUF_SIZE;
+  *pFirst = this->tail;
 }
 
 static ValueBuffer_T windowBuffer;
 
 // ---------------- end Value Buffer defs
 
-#define DEADZONE                (10u)    // when settled ignore adcValue changes (wrt center) below this -- kills noise
-#define EXTREMA_BACKOFF         (30u)    // back-off for saturated adc values at end stops for safe 0% or 100% output
-#define NOMINAL_LEFT_ENDSTOP    (33u)    // default left end stop safe adc value (saturated adc)
-#define NOMINAL_RIGHT_ENDSTOP   (4000u)  // default right end stop safe adc value (saturated adc)
-#define ENDSTOP_RANGE           (512u)   // range from either nominal end (saturated) where an end stop may be expected
-#define AUTOZERO_RANGE          (512u)   // 2048 +- this adc value is the range where we will do autozeroing (512 = +-25%), to catch even heavily off-centered benders
-#define REASONABLE_ZERO_RANGE   (200u)   // 2048 +- this adc value is considered a normal (typically expected) range for a found zero position
-#define HYSTERESIS_COMPENSATION (10)
+#define DEADZONE              (10u)     // when settled ignore adcValue changes (wrt center) below this -- kills noise
+#define EXTREMA_BACKOFF       (30u)     // back-off for saturated adc values at end stops for safe 0% or 100% output
+#define NOMINAL_LEFT_ENDSTOP  (33u)     // default left end stop safe adc value (saturated adc)
+#define NOMINAL_RIGHT_ENDSTOP (4000u)   // default right end stop safe adc value (saturated adc)
+#define ENDSTOP_RANGE         (512u)    // range from either nominal end (saturated) where an end stop may be expected
+#define AUTOZERO_RANGE        (512u)    // 2048 +- this adc value is the range where we will do autozeroing (512 = +-25%), to catch even heavily off-centered benders
+#define REASONABLE_ZERO_RANGE (200u)    // 2048 +- this adc value is considered a normal (typically expected) range for a found zero position
+#define RAMP_TIME             (3000ul)  // max time in milliseconds to ramp to zero (will be 10x less, typically)
+#define RAMP_TIME_TS          (RAMP_TIME * 10ul / 125ul)
 
 // settling parameters
 #define RMS_THRES_HIGH              (3000u)
@@ -298,8 +302,8 @@ static ValueBuffer_T windowBuffer;
 #define DELTA_THRES_HIGH            (20u)
 #define DELTA_THRES_MEDIUM          (10u)
 #define DELTA_THRES_LOW             (5u)
-#define SETTLE_TIME_THRESHOLD_SHORT (400u)   // time in milliseconds values must be stable before transition from unsettled to settled
-#define SETTLE_TIME_THRESHOLD_LONG  (1000u)  // time in milliseconds values must be stable before transition from unsettled to settled
+#define SETTLE_TIME_THRESHOLD_SHORT (400ul)   // time in milliseconds values must be stable before transition from unsettled to settled
+#define SETTLE_TIME_THRESHOLD_LONG  (1000ul)  // time in milliseconds values must be stable before transition from unsettled to settled
 
 #define SETTLE_TIME_THRESHOLD_SHORT_TS (SETTLE_TIME_THRESHOLD_SHORT * 10ul / 125ul)
 #define SETTLE_TIME_THRESHOLD_LONG_TS  (SETTLE_TIME_THRESHOLD_LONG * 10ul / 125ul)
@@ -329,13 +333,12 @@ static const struct
 };
 
 // --- Bender: ADC value to Output conversion (this is the general characteristic curve)
-static int16_t             BNDR_adcToTcdX[4]   = { NOMINAL_LEFT_ENDSTOP, ADC_CENTER - DEADZONE, ADC_CENTER + DEADZONE, NOMINAL_RIGHT_ENDSTOP };
-static int16_t             BNDR_adcToTcdY[4]   = { 0, 8000, 8000, 16000 };  // TCD output
-static LIB_interpol_data_T BNDR_adcToTcd       = { 4, BNDR_adcToTcdX, BNDR_adcToTcdY };
+static int16_t             BNDR_adcToTcdX[3]   = { NOMINAL_LEFT_ENDSTOP, ADC_CENTER, NOMINAL_RIGHT_ENDSTOP };
+static int16_t             BNDR_adcToTcdY[3]   = { 0, 8000, 16000 };  // TCD output
+static LIB_interpol_data_T BNDR_adcToTcd       = { 3, BNDR_adcToTcdX, BNDR_adcToTcdY };
 static int16_t *const      pLeftEndStop        = &BNDR_adcToTcdX[0];
-static int16_t *const      pLowerDeadzone      = &BNDR_adcToTcdX[1];
-static int16_t *const      pUpperDeadzone      = &BNDR_adcToTcdX[2];
-static int16_t *const      pRightEndStop       = &BNDR_adcToTcdX[3];
+static int16_t *const      pCenter             = &BNDR_adcToTcdX[1];
+static int16_t *const      pRightEndStop       = &BNDR_adcToTcdX[2];
 static uint16_t            settlingSensitivity = 0;  // 0=low, >=1, high
 
 static uint16_t settledCandidateCntrCoarse;
@@ -343,15 +346,16 @@ static uint16_t settledCandidateCntrFine;
 static int8_t   settledCoarse;
 static int      settledFine;
 
-static uint16_t currentCenter;
-static int      goingSettled;
+static uint16_t rampToZero;
+static enum { following = 0,
+              frozen    = 1 } state;
 
 static void ProcessBender(int16_t adcValue)
 {
   addInValueBuffer(&windowBuffer, adcValue);
   if (!isValueBufferFilled(&windowBuffer))
   {  // provide initial center target
-    currentCenter = windowBuffer.sum / VALBUF_SIZE;
+    *pCenter = windowBuffer.sum / VALBUF_SIZE;
     return;
   }
 
@@ -359,8 +363,9 @@ static void ProcessBender(int16_t adcValue)
   uint16_t max;
   uint16_t avg;
   uint32_t rmsSq;
+  uint16_t first;
 
-  getValueBufferStats(&windowBuffer, &min, &max, &avg, &rmsSq);
+  getValueBufferStats(&windowBuffer, &min, &max, &avg, &rmsSq, &first);
 
   // settling checks
   // coarse
@@ -402,35 +407,32 @@ static void ProcessBender(int16_t adcValue)
   status.settledCoarse   = settledCoarse;
   status.useFineSettling = settlingSensitivity;
 
-  int settled    = settlingSensitivity ? settledFine : settledCoarse;
-  int tryZeroing = 0;
+  int settled = settlingSensitivity ? settledFine : settledCoarse;
 
   // process adc values, center range first, then from right (high values) to left (low values)
   if ((adcValue >= (ADC_CENTER - AUTOZERO_RANGE)) && (adcValue <= (ADC_CENTER + AUTOZERO_RANGE)))
-  {
-    {  // inside auto-zero catch range
-      switch (goingSettled)
+  {  // inside general allowed auto-zero catch range
+    if (state == frozen)
+    {  // zeroed in and waiting for relevant excursion
+      if (!settled)
       {
-        case 0:  // wait until settled
-          if (!settled)
-            break;
-          // determine and save new center target
-          currentCenter = avg;
-          goingSettled  = 1;
-        case 1:  // wait until unsettled
-          if (settled)
-          {
-            tryZeroing = 1;
-            break;
-          }
-          goingSettled = 0;
-          break;
+        state    = following;
+        *pCenter = first;  // use oldest zero value in buffer to avoid hysteresis
+      }
+    }
+    else
+    {  // following the movement and waiting for settling
+      if (settled)
+      {
+        state      = frozen;
+        rampToZero = RAMP_TIME_TS;
       }
     }
   }
   else
-  {
-    goingSettled = 0;
+  {  // other ranges than center range
+    state = following;
+
     if (adcValue > (NOMINAL_RIGHT_ENDSTOP - ENDSTOP_RANGE))
     {  // close to typical right end stop (using coarse settling always)
       if (settledCoarse && ((*pRightEndStop) > avg - EXTREMA_BACKOFF))
@@ -457,39 +459,29 @@ static void ProcessBender(int16_t adcValue)
     }
   }
 
-  status.zeroed = tryZeroing;
-  status.everZeroed |= tryZeroing;
+  status.zeroed = (state == frozen);
+  status.everZeroed |= status.zeroed;
 
-  if (tryZeroing)
-  {
-    currentCenter = avg;
-
-    // move dead zones to new zero and expand them to full span
-    if (*pLowerDeadzone + DEADZONE < currentCenter)
-      (*pLowerDeadzone)++;
-    else if (*pLowerDeadzone + DEADZONE > currentCenter)
-      (*pLowerDeadzone)--;
-    if (*pUpperDeadzone < currentCenter + DEADZONE)
-      (*pUpperDeadzone)++;
-    else if (*pUpperDeadzone > currentCenter + DEADZONE)
-      (*pUpperDeadzone)--;
-    status.reasonableZero = (currentCenter >= ADC_CENTER - REASONABLE_ZERO_RANGE) && (currentCenter <= ADC_CENTER + REASONABLE_ZERO_RANGE);
-  }
+  if (rampToZero)
+    rampToZero--;
+  if (state == following)
+    rampToZero = 0;
   else
-  {  // shrink deadzones
-    if (*pLowerDeadzone < currentCenter)
-      (*pLowerDeadzone)++;
-    else if (*pLowerDeadzone > currentCenter)
-      (*pLowerDeadzone)--;
-    if (*pUpperDeadzone < currentCenter)
-      (*pUpperDeadzone)++;
-    else if (*pUpperDeadzone > currentCenter)
-      (*pUpperDeadzone)--;
+  {  // ramp to zero and follow average value while settled (allow for slow drifts)
+    if (rampToZero)
+      *pCenter = ((int) (*pCenter) * rampToZero + (int) avg * (RAMP_TIME_TS - rampToZero)) / RAMP_TIME_TS;
+    else
+      *pCenter = avg;
   }
-  while (*pUpperDeadzone < *pLowerDeadzone)
-  {
-    ;
-  }
+
+  if (adcValue > *pCenter + DEADZONE)
+    adcValue -= DEADZONE;
+  else if (adcValue + DEADZONE < *pCenter)
+    adcValue += DEADZONE;
+  else
+    adcValue = *pCenter;
+
+  status.reasonableZero = (*pCenter >= ADC_CENTER - REASONABLE_ZERO_RANGE) && (*pCenter <= ADC_CENTER + REASONABLE_ZERO_RANGE);
 
   if (!status.everZeroed)  // couldn't ever find a valid zero position ==> no output
     return;
@@ -515,6 +507,7 @@ static void ProcessBender(int16_t adcValue)
     ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_PITCHBEND, tcdOutput);
   }
 }
+
 // 0=insensitive, 1=sensitive
 void BNDR_Select_BenderSensitivity(uint16_t const sensitivity)
 {
@@ -539,8 +532,7 @@ void BNDR_Reset()
   // end legacy
 
   *pLeftEndStop              = NOMINAL_LEFT_ENDSTOP;
-  *pLowerDeadzone            = ADC_CENTER - DEADZONE;
-  *pUpperDeadzone            = ADC_CENTER + DEADZONE;
+  *pCenter                   = ADC_CENTER;
   *pRightEndStop             = NOMINAL_RIGHT_ENDSTOP;
   status                     = BNDR_uint16ToStatus(0);
   status.legacyMode          = legacyMode;
@@ -549,7 +541,8 @@ void BNDR_Reset()
   settledFine                = 0;
   settledCandidateCntrFine   = 0;
   BNDR_lastBender            = BIPOLAR_CENTER;
-  goingSettled               = 0;
+  rampToZero                 = 0;
+  state                      = following;
 
   clearValueBuffer(&windowBuffer, 2 * VALBUF_SIZE, ADC_CENTER);
   ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_PITCHBEND, BIPOLAR_CENTER);
