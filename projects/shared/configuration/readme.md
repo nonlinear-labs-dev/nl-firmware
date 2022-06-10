@@ -4,9 +4,9 @@ An attempt to re-implement (and extend) the "parameter-db" sub-project on a [YAM
 
 ## Prerequisites
 
-- required programs: node (currently using v16.15.1), npm (8.10.0), tsc (4.6.4)
-- on first run (?): `npm init -y` _(as the package.json is part of the repo, an npm install may suffice?)_
-- packages: `npm install @types/node @types/js-yaml js-yaml`
+- required programs: `node` _(currently using v16.15.1)_, `npm` _(8.10.0)_, `tsc` _(4.6.4)_
+- required node packages: `@types/node @types/js-yaml js-yaml`
+- on first run: `npm install` _(the provided package.json should suffice to install the dependencies into the git-ignored `node_modules` folder)_
 - `mkdir ./generated` _(the current output directory - which is git-ignored)_
 
 ## Run Generation Process
@@ -17,7 +17,7 @@ tsc ./lib/build.ts && node ./lib/build.js
 
 ## Status
 - &#x2611; src/config.yaml, src/config.in.h --> generated/config.h
-- &#x2610; src/classification.yaml, src/definitions.yaml --> generated/parameter_delarations.h, generated/parameter_list.h
+- &#x2610; src/classification.yaml, src/definitions.yaml --> ?
 
 ## Roadmap
 
