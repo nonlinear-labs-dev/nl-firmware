@@ -14,6 +14,7 @@ TEST_CASE("PedalCC to int")
   CHECK(getMSB(PedalCC::CC68).value() == 68);
   CHECK(getMSB(PedalCC::CC30).value() == 30);
   CHECK(getMSB(PedalCC::CC64).value() == 64);
+  CHECK(getMSB(PedalCC::CC64_Continuous).value() == 64);
 
   CHECK(getLSB(PedalCC::None) == std::nullopt);
   CHECK(getLSB(PedalCC::CC01).value() == 33);
@@ -21,6 +22,7 @@ TEST_CASE("PedalCC to int")
   CHECK(getLSB(PedalCC::CC30).value() == 62);
   CHECK(getLSB(PedalCC::CC64) == std::nullopt);
   CHECK(getLSB(PedalCC::CC68) == std::nullopt);
+  CHECK(getLSB(PedalCC::CC64_Continuous) == std::nullopt);
 }
 
 TEST_CASE("RibbonCC to int")
