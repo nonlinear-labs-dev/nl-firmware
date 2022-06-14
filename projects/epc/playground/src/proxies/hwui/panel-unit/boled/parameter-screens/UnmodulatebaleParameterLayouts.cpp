@@ -2,6 +2,7 @@
 #include "groups/ScaleGroup.h"
 #include "use-cases/EditBufferUseCases.h"
 #include "parameter_declarations.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAmountButton.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterBarSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
@@ -59,15 +60,6 @@ void UnmodulateableParameterSelectLayout2::init()
         addControl(new SelectedParameterKnubbelSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
         break;
     }
-
-    m_isScaleParameter = ScaleGroup::isScaleParameter(p);
-    if(m_isScaleParameter)
-    {
-      if(auto bA = findControlOfType<SwitchVoiceGroupButton>())
-        remove(bA.get());
-
-      m_resetButton = addControl(new Button("", Buttons::BUTTON_A));
-    }
   }
 
   addControl(createParameterValueControl());
@@ -79,51 +71,11 @@ void UnmodulateableParameterSelectLayout2::init()
 
 bool UnmodulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
-  if(m_isScaleParameter)
-  {
-    if(down)
-    {
-      switch(i)
-      {
-        case Buttons::BUTTON_A:
-          if(m_resetButton && m_isScaleParameter)
-          {
-            EditBufferUseCases ebUseCases(*getCurrentParameter()->getParentEditBuffer());
-            ebUseCases.selectParameter({C15::PID::Master_Volume, VoiceGroup::Global}, true);
-            return true;
-          }
-          break;
-      }
-    }
-  }
-
   return ParameterSelectLayout2::onButton(i, down, modifiers);
 }
 
 void UnmodulateableParameterSelectLayout2::onParameterSelectionChanged(Parameter *oldP, Parameter *newP)
 {
-  m_signalScaleChanged.disconnect();
-
-  if(newP)
-  {
-    m_isScaleParameter = ScaleGroup::isScaleParameter(newP);
-
-    if(m_isScaleParameter)
-    {
-      updateMasterButton();
-    }
-  }
-}
-
-void UnmodulateableParameterSelectLayout2::updateMasterButton()
-{
-  if(m_resetButton)
-  {
-    if(m_isScaleParameter)
-      m_resetButton->setText(StringAndSuffix { "Master..." });
-    else
-      m_resetButton->setText(StringAndSuffix { "" });
-  }
 }
 
 UnmodulateableParameterEditLayout2::UnmodulateableParameterEditLayout2()

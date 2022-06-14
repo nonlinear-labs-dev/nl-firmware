@@ -26,12 +26,8 @@ class UnmodulateableParameterSelectLayout2 : public ParameterSelectLayout2, publ
 
  private:
   void onParameterSelectionChanged(Parameter* oldP, Parameter* newP);
-  void updateMasterButton();
 
-  bool m_isScaleParameter = false;
   sigc::connection m_signalParameterSelectionChanged = {};
-  sigc::connection m_signalScaleChanged = {};
-  Button* m_resetButton = nullptr;
 };
 
 class UnmodulateableParameterEditLayout2 : public ParameterEditLayout2, public UnmodulateableParameterLayout2

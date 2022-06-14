@@ -302,7 +302,7 @@ void ScaleParameterCarousel::setup(Parameter* selectedParameter)
 {
   using namespace C15::PID;
 
-  const int ySpaceing = 3;
+  const int ySpaceing = 9;
   const int miniParamHeight = 12;
   const int miniParamWidth = 56;
   auto yPos = ySpaceing;
@@ -323,14 +323,15 @@ void ScaleParameterCarousel::setup(Parameter* selectedParameter)
 
   const int sliderHeight = 3;
   constexpr int paramWidth = 27;
-  yPos = miniParamHeight + ySpaceing + 2;
+  constexpr auto offsetYOffset = miniParamHeight + ySpaceing + 3;
+  yPos = offsetYOffset;
 
   auto idx = 0;
   for(auto o : offsets)
   {
     auto rowIDX = (idx < 6 ? 0 : 1);
     if(idx == 6)
-      yPos = miniParamHeight + ySpaceing + 2;
+      yPos = offsetYOffset;
 
     auto isLowerGroup = [](auto idx)
     {

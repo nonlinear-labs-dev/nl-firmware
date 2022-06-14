@@ -43,7 +43,7 @@ void SwitchVoiceGroupButton::rebuild()
   }
   else if(ScaleGroup::isScaleParameter(selected))
   {
-    setText(StringAndSuffix { "Master...", 0 });
+    setText(StringAndSuffix { "back..", 0 });
   }
   else
   {
