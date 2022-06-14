@@ -72,13 +72,24 @@ Glib::ustring RoutingSettings::getDisplayString() const
 void RoutingSettings::setState(RoutingSettings::tRoutingIndex hwIdx, RoutingSettings::tAspectIndex settingIdx,
                                bool state)
 {
+  auto updatePair = [](bool& toSet, bool& other, bool value) {
+    other = !value;
+    toSet = value;
+  };
+
   auto idx = static_cast<size_t>(hwIdx);
   auto& val = m_data.at(idx).at(static_cast<size_t>(settingIdx));
   auto changed = false;
 
   if(val != state)
   {
-    val = state;
+    if(hwIdx != tRoutingIndex::Notes && settingIdx == tAspectIndex::RECEIVE_SPLIT)
+      updatePair(val, m_data.at(idx).at(static_cast<size_t>(tAspectIndex::RECEIVE_PRIMARY)), state);
+    else if(hwIdx != tRoutingIndex::Notes && settingIdx == tAspectIndex::RECEIVE_PRIMARY)
+      updatePair(val, m_data.at(idx).at(static_cast<size_t>(tAspectIndex::RECEIVE_SPLIT)), state);
+    else
+      val = state;
+
     changed = true;
   }
 
