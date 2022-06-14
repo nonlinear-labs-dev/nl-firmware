@@ -31,7 +31,7 @@ class PresetListSelectStorePosition : public PresetListBase
   void onChange();
   void onBankChanged();
 
-  static constexpr size_t invalidIndex = size_t(-1);
+  static constexpr int invalidIndex = int(-1);
 
   Preset *m_selectedPreset = nullptr;
   sigc::connection m_bankConnection;
