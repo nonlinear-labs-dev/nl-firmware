@@ -46,7 +46,7 @@ void MCAmountButton::update(const Parameter* parameter)
 
   if(const auto* p = dynamic_cast<const ModulateableParameter*>(parameter))
   {
-    if(p->getModulationSource() == MacroControls::NONE)
+    if(p->getModulationSource() == MacroControls::NONE || p->isDisabled())
       setText(StringAndSuffix::empty());
     else
       setText(StringAndSuffix { std::string("MC Amt") + (p->isModAmountChanged() ? "*" : "") });

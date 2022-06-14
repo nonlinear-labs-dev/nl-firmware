@@ -302,7 +302,11 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
           if(next == cleanedParameterIdForType.end())
             next = cleanedParameterIdForType.begin();
 
-          setParameterSelection({ *next, selParamID.getVoiceGroup() }, state);
+          if(auto newP = editBuffer->findParameterByID({*next, selParamID.getVoiceGroup()}))
+          {
+            if(!newP->isDisabled())
+              setParameterSelection({ *next, selParamID.getVoiceGroup() }, state);
+          }
           return true;
         }
       }
