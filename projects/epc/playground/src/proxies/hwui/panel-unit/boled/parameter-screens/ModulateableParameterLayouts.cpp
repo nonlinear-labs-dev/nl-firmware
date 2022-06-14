@@ -667,7 +667,7 @@ ModulateableParameterSelectLayout2::Mode ModulateableParameterSelectLayout2::get
 void ModulateableParameterSelectLayout2::updateMasterButton()
 {
   if(m_isScaleParameter)
-    m_buttonA->setText(StringAndSuffix { "Master..." });
+    m_buttonA->setText(StringAndSuffix { "back.." });
   else
     m_buttonA->setText(StringAndSuffix { "" });
 }

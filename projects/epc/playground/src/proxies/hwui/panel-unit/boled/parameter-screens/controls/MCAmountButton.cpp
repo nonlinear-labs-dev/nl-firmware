@@ -28,7 +28,7 @@ void MCAmountButton::update(const Parameter* parameter)
     {
       auto group = param->getParentGroup();
       if(dynamic_cast<const MasterGroup*>(group) || dynamic_cast<const VoiceGroupMasterGroup*>(group)
-         || dynamic_cast<const ScaleGroup*>(group) || dynamic_cast<const UnisonGroup*>(group)
+         || dynamic_cast<const UnisonGroup*>(group)
          || dynamic_cast<const SplitParameterGroups*>(group) || dynamic_cast<const VoiceGroupMasterGroup*>(group))
         return dynamic_cast<const ModulateableParameter*>(param);
     }

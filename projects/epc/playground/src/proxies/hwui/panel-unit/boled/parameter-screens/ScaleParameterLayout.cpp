@@ -13,7 +13,7 @@
 void ScaleParameterSelectLayout::init()
 {
   super::init();
-  m_masterButton = addControl(new Button("Master...", Buttons::BUTTON_A));
+  m_masterButton = addControl(new Button("back..", Buttons::BUTTON_A));
 }
 
 bool ScaleParameterSelectLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)

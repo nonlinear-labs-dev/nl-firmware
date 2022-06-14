@@ -60,26 +60,6 @@ void UnmodulateableParameterSelectLayout2::init()
         addControl(new SelectedParameterKnubbelSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
         break;
     }
-
-    m_isScaleParameter = ScaleGroup::isScaleParameter(p);
-    if(m_isScaleParameter)
-    {
-      if(auto bA = findControlOfType<SwitchVoiceGroupButton>())
-        remove(bA.get());
-
-      m_resetButton = addControl(new Button("", Buttons::BUTTON_A));
-
-      for(auto b : getControls<Button>())
-      {
-        if(b->getPosition() == b->getButtonPos(Buttons::BUTTON_C))
-        {
-          if(dynamic_cast<MCAmountButton *>(b.get()) == nullptr)
-          {
-            b->setText("back..");
-          }
-        }
-      }
-    }
   }
 
   addControl(createParameterValueControl());
@@ -91,52 +71,11 @@ void UnmodulateableParameterSelectLayout2::init()
 
 bool UnmodulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
-  if(m_isScaleParameter)
-  {
-    if(down)
-    {
-      switch(i)
-      {
-        case Buttons::BUTTON_C:
-        case Buttons::BUTTON_A:
-          if(m_resetButton)
-          {
-            EditBufferUseCases ebUseCases(*getCurrentParameter()->getParentEditBuffer());
-            ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global }, true);
-            return true;
-          }
-          break;
-      }
-    }
-  }
-
   return ParameterSelectLayout2::onButton(i, down, modifiers);
 }
 
 void UnmodulateableParameterSelectLayout2::onParameterSelectionChanged(Parameter *oldP, Parameter *newP)
 {
-  m_signalScaleChanged.disconnect();
-
-  if(newP)
-  {
-    m_isScaleParameter = ScaleGroup::isScaleParameter(newP);
-
-    if(m_isScaleParameter)
-    {
-      updateMasterButton();
-    }
-  }
-}
-
-void UnmodulateableParameterSelectLayout2::updateMasterButton()
-{
-  if(m_resetButton)
-  {
-    if(m_isScaleParameter)
-      m_resetButton->setText(StringAndSuffix { "Master..." });
-    else
-      m_resetButton->setText(StringAndSuffix { "" });
-  }
 }
 
 UnmodulateableParameterEditLayout2::UnmodulateableParameterEditLayout2()
