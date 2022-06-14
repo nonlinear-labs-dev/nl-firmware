@@ -961,6 +961,13 @@ void InputEventStage::onMIDIHWChanged(MIDIDecoder *decoder)
         const auto msb = hwRes.undecodedValueBytes[0];
         const auto lsb = hwRes.undecodedValueBytes[1];
         float realVal = processMidiForHWSource(m_dspHost, hw, msb, lsb);
+
+        const auto isPedal = hw >= HardwareSource::PEDAL1 && hw <= HardwareSource::PEDAL4;
+        if(isPedal && m_options->isSwitchingCC(hw))
+        {
+          realVal = realVal >= 0.5f ? 1.0f : 0.0f;
+        }
+
         m_dspHost->onHWChanged(hw, realVal, false);
         m_localDisabledPositions[static_cast<unsigned int>(hw)] = { realVal, HWChangeSource::MIDI };
         m_hwChangedCB();
