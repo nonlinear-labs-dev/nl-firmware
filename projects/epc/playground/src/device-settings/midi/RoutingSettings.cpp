@@ -73,7 +73,8 @@ void RoutingSettings::setState(RoutingSettings::tRoutingIndex hwIdx, RoutingSett
                                bool state)
 {
   auto updatePair = [](bool& toSet, bool& other, bool value) {
-    other = !value;
+    if(value)
+      other = false;
     toSet = value;
   };
 
