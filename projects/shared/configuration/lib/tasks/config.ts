@@ -40,10 +40,9 @@ export function generateConfig(timestamp: Date) : Object {
         result = {
             timestamp,
             ...parseYaml("./src/config.yaml")
-        },
-        config = generateOutput("./src/config.h.in", result);
+        };
 
-    fs.writeFileSync("./generated/config.h", config);
+    generateOutputFor("./src/config.h.in", result, "./generated/config.h");
 
     return result;
 
