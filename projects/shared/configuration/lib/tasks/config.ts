@@ -5,7 +5,7 @@ function parseYaml(filename: string) : Object {
     return { config: yaml.load(fs.readFileSync(filename, "utf-8"), { filename }) }
 }
 
-export function generateOutput(filename: string, result: Object) : string {
+function generateOutput(filename: string, result: Object) : string {
     return fs.readFileSync(filename, "utf-8").replace(/\$\{([^\}]*)\}/g, (_, keys) => {
         // a rather crude lookup mechanism
         let known = result;
@@ -19,6 +19,10 @@ export function generateOutput(filename: string, result: Object) : string {
         });
         return known.toString();
     });
+}
+
+export function generateOutputFor(filename: string, result: object, output: string) {
+    fs.writeFileSync(output, generateOutput(filename, result));
 }
 
 export function generateConfig(timestamp: Date) : Object {
