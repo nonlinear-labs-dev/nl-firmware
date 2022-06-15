@@ -3,7 +3,7 @@
 /******************************************************************************/
 /** @file       config.h
     @date       ${timestamp}
-    @version    1.7B-9
+    @version    ${config.milestone}-${config.version}
     @author     M. Seeber
     @brief      crucial information about the audio engine
     @todo       
@@ -13,10 +13,9 @@
 
 namespace C15
 {
-
     namespace Config
     {
-        constexpr char const * const milestone = "${config.milestone}";
+        constexpr char const * const milestone = "${config.milestone}-${config.version}";
         constexpr uint32_t total_polyphony = ${config.max_voices};
         constexpr uint32_t local_polyphoy = total_polyphony >> 1;
         constexpr uint32_t tcd_elements = ${config.params};
@@ -34,6 +33,5 @@ namespace C15
         constexpr uint32_t generic_key_pivot = ${config.generic_keys.pivot};
         constexpr uint32_t offset_key_center = ${config.generic_keys.center} - generic_key_pivot;
         constexpr uint32_t offset_key_reference = ${config.generic_keys.reference} - generic_key_pivot;
-    }
-
-}
+    } // namespace C15::Config
+} // namespace C15
