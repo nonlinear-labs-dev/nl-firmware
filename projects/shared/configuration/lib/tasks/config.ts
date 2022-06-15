@@ -1,8 +1,17 @@
 import * as fs from "fs";
 import * as yaml from "js-yaml";
 
+export const namespace = "tag:nonlinear-labs.de,2022:js-yaml";
+
+const schema = yaml.DEFAULT_SCHEMA.extend([
+    new yaml.Type(`${namespace}:config`, { kind: "mapping", resolve(value) {
+        if(value === null || value === undefined) return false;
+        return true;
+    } })
+]);
+
 function parseYaml(filename: string) : Object {
-    return { config: yaml.load(fs.readFileSync(filename, "utf-8"), { filename }) }
+    return { config: yaml.load(fs.readFileSync(filename, "utf-8"), { filename, schema }) }
 }
 
 function generateOutput(filename: string, result: Object) : string {

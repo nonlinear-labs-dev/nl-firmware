@@ -1,5 +1,6 @@
 %YAML 1.2
----
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !config
 
 milestone: 1.7B
 version: 9
