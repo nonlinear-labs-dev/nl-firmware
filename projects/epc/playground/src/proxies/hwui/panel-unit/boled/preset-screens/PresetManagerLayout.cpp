@@ -36,6 +36,7 @@
 #include "clipboard/Clipboard.h"
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
+#include "proxies/hwui/panel-unit/boled/preset-screens/controls/ChangedParameterIndicator.h"
 
 PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode oldFocusAndMode)
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -233,6 +234,8 @@ void PresetManagerLayout::setupPresetSelect()
 
   addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), true));
   addControl(new UndoIndicator(Rect(18, 18, 10, 8)));
+  m_changedIndicator = addControl(new ChangedParameterIndicator(Rect(0, 14, 64, 14)));
+  m_changedIndicator->setVisible(hwui->isModifierSet(ButtonModifier::SHIFT));
 }
 
 void PresetManagerLayout::setupPresetStore()
@@ -252,6 +255,9 @@ void PresetManagerLayout::setupPresetStore()
 
 bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(m_changedIndicator)
+    m_changedIndicator->setVisible(modifiers[ButtonModifier::SHIFT]);
+
   if(m_loadMode)
     if(m_loadMode->onButton(i, down, modifiers))
       return true;

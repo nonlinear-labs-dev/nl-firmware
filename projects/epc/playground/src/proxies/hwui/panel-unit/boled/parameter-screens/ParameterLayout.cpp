@@ -226,9 +226,12 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
       case Buttons::BUTTON_A:
         if(auto button = findControlOfType<SwitchVoiceGroupButton>())
         {
+          EditBufferUseCases ebUseCases(*getCurrentEditParameter()->getParentEditBuffer());
           if(SwitchVoiceGroupButton::allowToggling(getCurrentParameter(),
                                                    Application::get().getPresetManager()->getEditBuffer()))
             Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection();
+          else if(button->getText().text == "back..")
+            ebUseCases.selectParameter({C15::PID::Master_Volume, VoiceGroup::Global});
           return true;
         }
         break;
