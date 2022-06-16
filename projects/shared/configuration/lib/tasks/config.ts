@@ -10,11 +10,18 @@ const schema = yaml.DEFAULT_SCHEMA.extend([
     } })
 ]);
 
-function parseYaml(filename: string) : Object {
-    return { config: yaml.load(fs.readFileSync(filename, "utf-8"), { filename, schema }) }
+
+export type YamlResult = {
+    timestamp?: Date;
+    config?: Object;
+    declarations?: Object;
+};
+
+export function parseYaml(filename: string, schema: yaml.Schema, key: string) : YamlResult {
+    return { [key]: yaml.load(fs.readFileSync(filename, "utf-8"), { filename, schema }) }
 }
 
-function generateOutput(filename: string, result: Object) : string {
+function generateOutput(filename: string, result: YamlResult) : string {
     return fs.readFileSync(filename, "utf-8").replace(/\$\{([^\}]*)\}/g, (_, keys) => {
         // a rather crude lookup mechanism
         let known = result;
@@ -30,17 +37,16 @@ function generateOutput(filename: string, result: Object) : string {
     });
 }
 
-export function generateOutputFor(filename: string, result: object, output: string) {
+export function generateOutputFor(filename: string, result: YamlResult, output: string) {
     fs.writeFileSync(output, generateOutput(filename, result));
 }
 
-export function generateConfig(timestamp: Date) : Object {
+export function generateConfig(timestamp: Date) : YamlResult {
 
-    const
-        result = {
-            timestamp,
-            ...parseYaml("./src/config.yaml")
-        };
+    const result = {
+        timestamp,
+        ...parseYaml("./src/config.yaml", schema, "config")
+    };
 
     generateOutputFor("./src/config.h.in", result, "./generated/config.h");
 

@@ -1,17 +1,15 @@
+#pragma once
+
 /******************************************************************************/
-/** @file       main.cpp
+/** @file       declarations.h
     @date       ${timestamp}
     @version    ${config.milestone}-${config.version}
     @author     M. Seeber
-    @brief      program to successfully compile as part of validation
+    @brief      descriptors for all parameter-related details
     @todo       
 *******************************************************************************/
 
-#include "config.h"
-#include "declarations.h"
-#include <iostream>
-
-int main() {
-    std::cout << "process succeeded" << std::endl;
-    return 0;
-}
+namespace C15
+{
+    //
+} // namespace C15

@@ -1,14 +1,14 @@
 import * as process from "process";
 import { generateOutputFor, generateConfig } from "./tasks/config";
-// import { generateClassification } from "./tasks/classification";
+import { generateDeclarations } from "./tasks/declarations";
 
 const timestamp = new Date();
 
 try {
-    const
-        result = generateConfig(timestamp);
+    const result = generateConfig(timestamp);
+    generateDeclarations(result);
     generateOutputFor("./src/main.cpp", result, "./generated/main.cpp");
-    // generateClassification();
+    process.exit(0);
 } catch(err) {
     console.error(err);
     process.exit(1);

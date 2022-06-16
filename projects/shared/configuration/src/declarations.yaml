@@ -1,6 +1,19 @@
 %YAML 1.2
 %TAG ! tag:nonlinear-labs.de,2022:js-yaml:
----
+--- !declarations
+
+parameter_type: !enum
+  None: &MODULATOR_PARAM { token: true, combined_label: false, rendering_args: false }
+  Hardware_Source: *MODULATOR_PARAM
+  Hardware_Amouunt: *MODULATOR_PARAM
+  Macro_Control: *MODULATOR_PARAM
+  Macro_Time: { token: true, combined_label: false, rendering_args: true }
+  Global_Modulateable: &ORDINARY_PARAM { token: true, combined_label: true, rendering_args: true }
+  Global_Unmodulateable: *ORDINARY_PARAM
+  Local_Modulateable: *ORDINARY_PARAM
+  Local_Unmodulateable: *ORDINARY_PARAM
+  Display_Parameter: *MODULATOR_PARAM
+  Pure_Signal: { token: false, combined_label: true, rendering_args: false }
 
 # parameter_type: [
 #   None: { combined_label: false, detailed_args: false },
