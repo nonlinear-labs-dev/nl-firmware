@@ -47,14 +47,10 @@ export function generateOutputFor(filename: string, result: YamlResult, output: 
 }
 
 export function generateConfig(timestamp: Date) : YamlResult {
-
     const result = {
         timestamp,
         ...parseYaml("./src/config.yaml", schema, "config")
     };
-
     generateOutputFor("./src/config.h.in", result, "./generated/config.h");
-
     return result;
-
 }
