@@ -10,11 +10,11 @@ FileSystemSync::FileSystemSync()
     : m_task(std::async(std::launch::async, [this] { doBackgroundSyncing(); }))
 {
   nltools::msg::receive<nltools::msg::FileSystem::Sync>(nltools::msg::EndPoint::BeagleBone, [this](const auto &) {
-    nltools::Log::warning("Notify syncing file system ...");
+    nltools::Log::info("Notify syncing file system ...");
     std::unique_lock<std::mutex> l(m_mutex);
     m_dirty = true;
     m_cond.notify_all();
-    nltools::Log::warning("Notify syncing file system done.");
+    nltools::Log::info("Notify syncing file system done.");
   });
 }
 
@@ -41,9 +41,9 @@ void FileSystemSync::doBackgroundSyncing()
 
     m_dirty = false;
     l.unlock();
-    nltools::Log::warning("Syncing file system ...");
+    nltools::Log::info("Syncing file system ...");
     sync();
-    nltools::Log::warning("Syncing file system done.");
+    nltools::Log::info("Syncing file system done.");
     l.lock();
   }
 }

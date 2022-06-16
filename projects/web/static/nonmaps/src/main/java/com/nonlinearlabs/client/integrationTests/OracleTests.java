@@ -61,7 +61,6 @@ public class OracleTests extends TestWithSteps {
         }, () -> {
             boolean wasOracleOfServer = server.lastDocumentCouldOmitOracles();
             boolean updateIsNewer = lastDocumentID < server.getLastUpdateID();
-            GWT.log("update was Oracle: " + wasOracleOfServer + " is newer: " + updateIsNewer + " received on ws: " + documentReceived); 
             return wasOracleOfServer && documentReceived && updateIsNewer;
         });
 

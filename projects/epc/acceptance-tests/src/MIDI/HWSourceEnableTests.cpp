@@ -68,7 +68,6 @@ TEST_CASE("HW Source Enable Tests")
 
     bool didReceive = false;
     dsp.setOnHWChangedCB([&didReceive](auto id, auto, auto) {
-                           nltools::Log::error("id", id);
                            didReceive = true;
                          });
 
