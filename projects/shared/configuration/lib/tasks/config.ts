@@ -14,15 +14,20 @@ const schema = yaml.DEFAULT_SCHEMA.extend([
 export type YamlResult = {
     timestamp?: Date;
     config?: Object;
-    declarations?: Object;
+    declarations: {
+        [key: string]: any;
+    },
+    enums: {
+        [key: string]: any;
+    }
 };
 
 export function parseYaml(filename: string, schema: yaml.Schema, key: string) : YamlResult {
-    return { [key]: yaml.load(fs.readFileSync(filename, "utf-8"), { filename, schema }) }
+    return { declarations: {}, enums: {}, [key]: yaml.load(fs.readFileSync(filename, "utf-8"), { filename, schema }) }
 }
 
 function generateOutput(filename: string, result: YamlResult) : string {
-    return fs.readFileSync(filename, "utf-8").replace(/\$\{([^\}]*)\}/g, (_, keys) => {
+    return fs.readFileSync(filename, "utf-8").replace(/([ ]*)\$\{([^\}]*)\}/g, (_, ws = "", keys) => {
         // a rather crude lookup mechanism
         let known = result;
         keys.split(".").forEach((key) => {
@@ -33,7 +38,7 @@ function generateOutput(filename: string, result: YamlResult) : string {
                 throw new Error(`build.ts ${filename}: unknown key "${key}" in ${keys}`);
             }
         });
-        return known.toString();
+        return ws + known.toString().split("\n").join(`\n${ws}`);
     });
 }
 

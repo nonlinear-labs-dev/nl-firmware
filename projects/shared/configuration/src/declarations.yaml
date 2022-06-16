@@ -15,20 +15,6 @@ parameter_type: !enum
   Display_Parameter: *MODULATOR_PARAM
   Pure_Signal: { token: false, combined_label: true, rendering_args: false }
 
-# parameter_type: [
-#   None: { combined_label: false, detailed_args: false },
-#   Hardware_Source: { combined_label: false, detailed_args: false },
-#   Hardware_Amount: { combined_label: false, detailed_args: false },
-#   Macro_Control: { combined_label: false, detailed_args: false },
-#   Macro_Time: { combined_label: false, detailed_args: true },
-#   Global_Modulateable: { combined_label: true, detailed_args: true },
-#   Global_Unmodulateable: { combined_label: true, detailed_args: true },
-#   Local_Modulateable: { combined_label: true, detailed_args: true },
-#   Local_Unmodulateable: { combined_label: true, detailed_args: true },
-#   Display_Parameter: { combined_label: false, detailed_args: false },
-#   Pure_Signal: { combined_label: true, detailed_args: false }
-# ]
-
 # parameter_rgb: [
 #   &RGB_DEFAULT [ 195, 199, 203 ],
 #   &RGB_BRANCH_A [ 242, 184, 136 ],

@@ -2,12 +2,13 @@
 import * as yaml from "js-yaml";
 import { namespace, YamlResult, parseYaml, generateOutputFor } from "./config";
 
-class Enum extends Array<[string, Object]> {
+class Enum {
+    entries: Array<[string, Object]>;
     constructor(value : Object) {
-        super(...Object.entries(value));
+        this.entries = Object.entries(value);
     }
     getTokens() {
-        return this.filter(([, value]) => (value as Object)["token"] === true);
+        return this.entries.filter(([, value]) => (value as Object)["token"] === true).map(([name]) => name);
     }
 }
 
@@ -29,18 +30,7 @@ const schema = yaml.DEFAULT_SCHEMA.extend([
 ]);
 
 export function generateDeclarations(result: YamlResult) {
-
     Object.assign(result, parseYaml("./src/declarations.yaml", schema, "declarations"));
+    result.enums.parameter_type = result.declarations.parameter_type.getTokens().join(",\n");
     generateOutputFor("./src/declarations.in.h", result, "./generated/declarations.h");
-    console.log((result.declarations || {})["parameter_type"]);
-
-    // const result = {
-    //     timestamp: new Date(),
-    //     classification: yaml.load(fs.readFileSync("./src/classification.yaml", "utf-8")),
-    //     definitions: yaml.load(fs.readFileSync("./src/definitions.yaml", "utf-8"))
-    // };
-
-    // console.log(result.classification);
-    // console.log(result);
-
 }

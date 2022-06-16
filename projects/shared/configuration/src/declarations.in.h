@@ -11,5 +11,13 @@
 
 namespace C15
 {
-    //
+    namespace Descriptors {
+        enum class ParameterType {
+            ${enums.parameter_type}
+        };
+    } // namespace C15::Descriptors
+    namespace Properties {} // namespace C15::Properties
+    namespace Parameters {} // namespace C15::Parameters
+    namespace Smoothers {} // namespace C15::Smoothers
+    namespace Signals {} // namespace C15::Signals
 } // namespace C15
