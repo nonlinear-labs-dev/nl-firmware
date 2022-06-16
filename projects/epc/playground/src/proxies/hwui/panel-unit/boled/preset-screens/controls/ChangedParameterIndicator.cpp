@@ -22,14 +22,35 @@ void ChangedParameterIndicator::update()
   auto masterGroup = eb->getParameterGroupByID(GroupId("Master", VoiceGroup::Global));
   auto scaleGroup = eb->getParameterGroupByID(GroupId("Scale", VoiceGroup::Global));
 
-  auto partChanged = partGroupI->isAnyParameterChanged() || partGroupII->isAnyParameterChanged();
-  auto monoChanged = monoGroupI->isAnyParameterChanged() || monoGroupII->isAnyParameterChanged();
-  auto unisonChanged = unisonGroupI->isAnyParameterChanged() || unisonGroupII->isAnyParameterChanged();
+  auto partChanged = false;
+  auto monoChanged = false;
+  auto unisonChanged = false;
   auto masterChanged = masterGroup->isAnyParameterChanged();
   auto scaleChanged = scaleGroup->isAnyParameterChanged();
 
+  switch(eb->getType())
+  {
+    case SoundType::Single:
+      partChanged = false;
+      monoChanged = monoGroupI->isAnyParameterChanged();
+      unisonChanged = unisonGroupI->isAnyParameterChanged();
+      break;
+    case SoundType::Layer:
+      partChanged = partGroupI->isAnyParameterChanged() || partGroupII->isAnyParameterChanged();
+      monoChanged = monoGroupI->isAnyParameterChanged();
+      unisonChanged = unisonGroupI->isAnyParameterChanged();
+      break;
+    case SoundType::Split:
+      partChanged = partGroupI->isAnyParameterChanged() || partGroupII->isAnyParameterChanged();
+      monoChanged = monoGroupI->isAnyParameterChanged() || monoGroupII->isAnyParameterChanged();
+      unisonChanged = unisonGroupI->isAnyParameterChanged() || unisonGroupII->isAnyParameterChanged();
+      break;
+    default:
+      break;
+  }
+
   std::stringstream ss;
-  ss << (partChanged ? "P" : "") << (monoChanged ? "m" : "") << (unisonChanged ? "U" : "") << (masterChanged ? "M" : "") << (scaleChanged ? "S" : "");
+  ss << (partChanged ? "P" : "") << (monoChanged ? "m" : "") << (unisonChanged ? "u" : "") << (masterChanged ? "M" : "") << (scaleChanged ? "S" : "");
   setText({ss.str(), 0});
 }
 
