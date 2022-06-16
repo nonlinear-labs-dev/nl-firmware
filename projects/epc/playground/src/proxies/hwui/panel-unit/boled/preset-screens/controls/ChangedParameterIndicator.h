@@ -4,7 +4,7 @@
 class ChangedParameterIndicator : public Label
 {
  public:
-  ChangedParameterIndicator(const Rect& pos);
+  explicit ChangedParameterIndicator(const Rect& pos);
   int getZPriority() const override;
 
  private:

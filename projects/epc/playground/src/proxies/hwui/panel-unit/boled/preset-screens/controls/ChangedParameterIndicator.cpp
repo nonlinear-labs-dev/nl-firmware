@@ -2,6 +2,7 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
+#include <proxies/hwui/FrameBuffer.h>
 
 ChangedParameterIndicator::ChangedParameterIndicator(const Rect& pos)
     : Label(StringAndSuffix{""}, pos)
@@ -50,11 +51,14 @@ void ChangedParameterIndicator::update()
   }
 
   std::stringstream ss;
-  ss << (partChanged ? "P" : "") << (monoChanged ? "m" : "") << (unisonChanged ? "u" : "") << (masterChanged ? "M" : "") << (scaleChanged ? "S" : "");
+  ss << (partChanged ? "P" : "") << (monoChanged ? "\uE040" : "") << (unisonChanged ? "\uE041" : "") << (masterChanged ? "M" : "") << (scaleChanged ? "S" : "");
   setText({ss.str(), 0});
 }
 
 int ChangedParameterIndicator::getZPriority() const
 {
-  return 1;
+  if(isVisible() && !getText().text.empty())
+    return 1;
+  else
+    return -1;
 }
