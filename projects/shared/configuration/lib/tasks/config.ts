@@ -10,20 +10,31 @@ const schema = yaml.DEFAULT_SCHEMA.extend([
     } })
 ]);
 
-
 export type YamlResult = {
     timestamp?: Date;
     config?: Object;
     declarations: {
         [key: string]: any;
-    },
+    };
     enums: {
         [key: string]: any;
-    }
+    };
+    param_enums: {
+        [key: string]: any;
+    };
+    smoother_enums: {
+        [key: string]: any;
+    };
+    signal_enums: {
+        [key: string]: any;
+    };
 };
 
 export function parseYaml(filename: string, schema: yaml.Schema, key: string) : YamlResult {
-    return { declarations: {}, enums: {}, [key]: yaml.load(fs.readFileSync(filename, "utf-8"), { filename, schema }) }
+    return {
+        declarations: {}, enums: {}, param_enums: {}, smoother_enums: {}, signal_enums: {},
+        [key]: yaml.load(fs.readFileSync(filename, "utf-8"), { filename, schema })
+    }
 }
 
 function generateOutput(filename: string, result: YamlResult) : string {

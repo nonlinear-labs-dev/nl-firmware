@@ -38,11 +38,17 @@ namespace C15
         };
     } // namespace C15::Properties
     namespace Parameters
-    {} // namespace C15::Parameters
+    {
+        ${param_enums}
+    } // namespace C15::Parameters
     namespace Smoothers
-    {} // namespace C15::Smoothers
+    {
+        ${smoother_enums}
+    } // namespace C15::Smoothers
     namespace Signals
-    {} // namespace C15::Signals
+    {
+        ${signal_enums}
+    } // namespace C15::Signals
     namespace PID
     {
         enum ParameterID
