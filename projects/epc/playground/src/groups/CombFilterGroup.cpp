@@ -16,6 +16,8 @@
 #include "parameters/scale-converters/CombDecayBipolarMsScaleConverter.h"
 #include "parameters/scale-converters/LinearBipolar100StScaleConverter.h"
 #include "parameter_declarations.h"
+#include "parameters/scale-converters/FineBipolar160StScaleConverter.h"
+#include "parameters/scale-converters/FineBipolar200StScaleConverter.h"
 #include <parameters/scale-converters/LinearBipolar200PercentScaleConverter.h>
 #include <parameters/scale-converters/PitchCombLinearStModulationScaleConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
@@ -44,7 +46,7 @@ void CombFilterGroup::init()
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::Comb_Flt_Pitch_Env_C, getVoiceGroup() },
                                                               SC::get<FineBipolar80StScaleConverter>(),
-                                                              ScaleConverter::get<FineBipolar80StScaleConverter>()));
+                                                              SC::get<FineBipolar160StScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Comb_Flt_Decay, getVoiceGroup() },
                                             SC::get<CombDecayBipolarMsScaleConverter>()));
@@ -64,7 +66,7 @@ void CombFilterGroup::init()
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::Comb_Flt_AP_Env_C, getVoiceGroup() },
                                                               SC::get<FineBipolar80StScaleConverter>(),
-                                                              ScaleConverter::get<FineBipolar80StScaleConverter>()));
+                                                              SC::get<FineBipolar160StScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Comb_Flt_AP_Res, getVoiceGroup() },
                                             SC::get<Linear100PercentScaleConverter>()));
@@ -78,7 +80,7 @@ void CombFilterGroup::init()
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::Comb_Flt_LP_Env_C, getVoiceGroup() },
                                                               SC::get<LinearBipolar100StScaleConverter>(),
-                                                              SC::get<LinearBipolar100StScaleConverter>()));
+                                                              SC::get<FineBipolar200StScaleConverter>()));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::Comb_Flt_PM, getVoiceGroup() },
                                                               SC::get<LinearBipolar100PercentScaleConverter>(),
