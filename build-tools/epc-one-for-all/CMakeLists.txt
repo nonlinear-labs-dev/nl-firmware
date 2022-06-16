@@ -7,6 +7,7 @@ ADD_CUSTOM_COMMAND(
     DEPENDS C15.nmconnection
     DEPENDS wpa_supplicant.conf
     VERBATIM
+    COMMAND mkdir -p ${DOWNLOAD_DIR}
     COMMAND test -e ${DOWNLOAD_DIR}/xz-5.2.5-linux-x86_64.tar.gz || 
       wget ${DOWNLOAD_LOCATION}/build-tools2/xz-5.2.5-linux-x86_64.tar.gz -O ${DOWNLOAD_DIR}/xz-5.2.5-linux-x86_64.tar.gz
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/createUpdate.sh 
