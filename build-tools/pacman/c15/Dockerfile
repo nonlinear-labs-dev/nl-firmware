@@ -6,7 +6,10 @@ ENV C15_REQUIREMENTS  alsa alsa-tools alsa-utils arch-install-scripts base boost
                       libpng libsoup mc nano networkmanager png++ shared-mime-info sudo sshfs lsof \
                       systemd-sysvcompat vi
 
+RUN pacman-key --init
 RUN pacman --noconfirm -Sy
+RUN pacman --noconfirm -S archlinux-keyring
+RUN pacman-key --populate
 RUN pacman --noconfirm -Syyuu
 RUN pacman --noconfirm -S $HOST_REQUIREMENTS
 RUN pacman --noconfirm -S $C15_REQUIREMENTS
