@@ -14,24 +14,9 @@ parameter_type:
   Local_Modulateable: &ORDINARY_PARAM { combined_label: true, rendering_args: true }
   Local_Unmodulateable: &ORDINARY_PARAM { combined_label: true, rendering_args: true }
 
-# parameter_type: !enum
-#   None: &MODULATOR_PARAM { <<: &ENUM_TOKEN { token: true }, combined_label: false, rendering_args: false }
-#   Hardware_Source: *MODULATOR_PARAM
-#   Display_Parameter: *MODULATOR_PARAM
-#   Hardware_Amount: *MODULATOR_PARAM
-#   Macro_Control: *MODULATOR_PARAM
-#   Macro_Time: { <<: *ENUM_TOKEN, combined_label: false, rendering_args: true }
-#   Global_Modulateable: &ORDINARY_PARAM { <<: *ENUM_TOKEN, combined_label: true, rendering_args: true }
-#   Global_Unmodulateable: *ORDINARY_PARAM
-#   Local_Modulateable: *ORDINARY_PARAM
-#   Local_Unmodulateable: *ORDINARY_PARAM
-#   Pure_Signal: { token: false, combined_label: true, rendering_args: false }
-
-# smoother_section: !enum
-#   None: *ENUM_TOKEN
-#   Global: *ENUM_TOKEN
-#   Poly: *ENUM_TOKEN
-#   Mono: *ENUM_TOKEN
+smoother_section: { None, Global, Poly, Mono }
+smoother_clock: { Sync, Audio, Fast, Slow }
+parameter_signal: { None, Global_Signal, Quasipoly_Signal, Truepoly_Signal, Mono_Signal }
 
 # smoother_clock: !enum
 #   Sync: *ENUM_TOKEN

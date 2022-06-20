@@ -17,5 +17,17 @@ namespace C15
         {
             ${enums.parameter_type}
         };
+        enum class SmootherSection
+        {
+            ${enums.smoother_section}
+        };
+        enum class SmootherClock
+        {
+            ${enums.smoother_clock}
+        };
+        enum class ParameterSignal
+        {
+            ${enums.parameter_signal}
+        };
     } // namespace C15::Descriptors
 } // namespace C15
