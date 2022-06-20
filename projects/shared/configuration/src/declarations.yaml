@@ -2,6 +2,23 @@
 %TAG ! tag:nonlinear-labs.de,2022:js-yaml:
 --- !declarations
 
+sound_type: {
+  Single,
+  Split,
+  Layer
+}
+
+layer_id: {
+  I,
+  II
+}
+
+return_behavior: {
+  Stay,
+  Zero,
+  Center
+}
+
 parameter_type: {
   None: &SOURCE_PARAM { combined_label: false, rendering_args: false },
   Hardware_Source: *SOURCE_PARAM,

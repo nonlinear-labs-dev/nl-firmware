@@ -12,4 +12,8 @@
 #include "config.h"
 #include "descriptor.h"
 
-namespace C15 {} // namespace C15
+namespace C15 {
+    const ParameterDescriptor ParameterList[Config::tcd_elements] = {
+        
+    };
+} // namespace C15

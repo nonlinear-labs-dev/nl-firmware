@@ -1,0 +1,36 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+static: [
+  &SHARED {
+    type: Hardware_Source,
+    control_position: { coarse: 100, fine: 1000, unit: percent, initial: 500, scale: LINEAR_100_PERCENT }
+  },
+  &PEDAL {
+    return_behavior: [ None, Zero, Center ]
+  },
+  &BENDER {
+    return_behavior: [ Center ],
+    bipolar: true
+  },
+  &AFTERTOUCH {
+    return_behavior: [ Zero ],
+    bipolar: false
+  },
+  &RIBBON {
+    return_behavior: [ None, Center ]
+  }
+]
+
+group: Mod_HW
+
+parameters: [
+  {
+    id: 254,
+    token: Pedal_1, label_long: Pedal 1, label_short: Pedal 1,
+    info: "",
+    <<: *SHARED,
+    <<: *PEDAL,
+  }
+]

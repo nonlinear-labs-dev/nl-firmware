@@ -37,21 +37,15 @@ namespace C15
     namespace Properties {
         enum class LayerId
         {
-            I,
-            II,
-            _LENGTH_
+            ${enums.layer_id}
         };
         enum class LayerMode
         {
-            Single,
-            Split,
-            Layer
+            ${enums.sound_type}
         };
         enum class HW_Return_Behavior
         {
-            Stay,
-            Zero,
-            Center
+            ${enums.return_behavior}
         };
         enum class SmootherScale {
             ${enums.smoother_scale}

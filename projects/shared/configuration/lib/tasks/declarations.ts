@@ -55,6 +55,7 @@ export const DeclarationsParser = new Parser<DeclarationsType>(
     new Type("declarations", {
         kind: "mapping",
         keys: [
+            "sound_type", "layer_id", "return_behavior",
             "parameter_type", "parameter_signal", "parameter_unit",
             "parameter_rounding", "parameter_reference", "parameter_group",
             "smoother_section", "smoother_clock", "smoother_scale",
@@ -65,6 +66,9 @@ export const DeclarationsParser = new Parser<DeclarationsType>(
         },
         construct(declarations: any): DeclarationsType {
             const enums = {
+                sound_type: Object.keys(declarations.sound_type).join(",\n"),
+                layer_id: [...Object.keys(declarations.layer_id), "_LENGTH_"].join(",\n"),
+                return_behavior: Object.keys(declarations.return_behavior).join(",\n"),
                 parameter_type: Object.keys(declarations.parameter_type).join(",\n"),
                 parameter_signal: Object.keys(declarations.parameter_signal).join(",\n"),
                 parameter_unit: Object.keys(declarations.parameter_unit).join(",\n"),
