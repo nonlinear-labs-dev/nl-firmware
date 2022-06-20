@@ -34,5 +34,17 @@ namespace C15
         enum class SmootherScale {
             ${enums.smoother_scale}
         };
+        enum class ParameterUnit {
+            ${enums.parameter_unit}
+        };
+        enum class ParameterRounding {
+            ${enums.parameter_rounding}
+        };
+        enum class DisplayScalingType {
+            ${enums.display_scaling_type}
+        };
     } // namespace C15::Properties
+    namespace Parameters {
+        ${parameters}
+    } // namespace C15::Parameters
 } // namespace C15
