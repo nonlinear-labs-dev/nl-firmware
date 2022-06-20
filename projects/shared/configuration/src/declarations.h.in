@@ -35,6 +35,24 @@ namespace C15
         };
     } // namespace C15::Descriptors
     namespace Properties {
+        enum class LayerId
+        {
+            I,
+            II,
+            _LENGTH_
+        };
+        enum class LayerMode
+        {
+            Single,
+            Split,
+            Layer
+        };
+        enum class HW_Return_Behavior
+        {
+            Stay,
+            Zero,
+            Center
+        };
         enum class SmootherScale {
             ${enums.smoother_scale}
         };
@@ -58,6 +76,8 @@ namespace C15
         ${signals}
     } // namespace C15::Signals
     namespace PID {
-        ${pid}
+        enum ParameterID {
+            ${enums.pid}
+        };
     } // namespace C15::PID
 } // namespace C15

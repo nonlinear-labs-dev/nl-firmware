@@ -1,17 +1,15 @@
+#pragma once
+
 /******************************************************************************/
-/** @file       main.cpp
+/** @file       definitions.h
     @date       ${timestamp}
     @version    ${config.milestone}-${config.version}
     @author     M. Seeber
-    @brief      program to successfully compile as part of validation
+    @brief      complete list of groups/parameters (and their properties) in TCD order
     @todo       
 *******************************************************************************/
 
-#include "definitions.h"
-#include "placeholder.h"
-#include <iostream>
+#include "config.h"
+#include "descriptor.h"
 
-int main() {
-    std::cout << "process succeeded" << std::endl;
-    return 0;
-}
+namespace C15 {} // namespace C15

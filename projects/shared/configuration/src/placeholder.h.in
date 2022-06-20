@@ -1,17 +1,12 @@
+#pragma once
+
 /******************************************************************************/
-/** @file       main.cpp
+/** @file       placeholder.h
     @date       ${timestamp}
     @version    ${config.milestone}-${config.version}
     @author     M. Seeber
-    @brief      program to successfully compile as part of validation
+    @brief      placeholders for parameter label/info string replacements
     @todo       
 *******************************************************************************/
 
-#include "definitions.h"
-#include "placeholder.h"
-#include <iostream>
-
-int main() {
-    std::cout << "process succeeded" << std::endl;
-    return 0;
-}
+namespace C15 {} // namespace C15
