@@ -17,10 +17,10 @@ type ParameterType = {
     control_position: ValueType & {
         inactive?: number
     };
+    info: string;
+    bipolar?: boolean;
     return_behavior?: Array<string>;
     modulation_amount?: ValueType;
-    bipolar?: boolean;
-    info: string;
     rendering?: {
         scale: string;
         factor: number;
@@ -31,9 +31,15 @@ type ParameterType = {
     };
 };
 
+type SignalType = {
+    token: string;
+    signal: string;
+};
+
 export type DefinitionsType = {
     group: string;
     parameters: Array<ParameterType>;
+    signals?: Array<SignalType>;
 };
 
 export const DefinitionsParser = new Parser<DefinitionsType>(

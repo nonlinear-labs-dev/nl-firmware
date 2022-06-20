@@ -4,7 +4,6 @@ import { generateOutputFile } from "./yaml";
 import { ConfigType, ConfigParser } from "./tasks/config";
 import { DeclarationsType, DeclarationsParser } from "./tasks/declarations";
 import { DefinitionsType, DefinitionsParser } from "./tasks/definitions";
-import { group } from "console";
 
 type Result = ConfigType & DeclarationsType & {
     timestamp: Date;
@@ -24,30 +23,52 @@ const indent = " ".repeat(4);
 function processDefinitions(result: Result) {
     const
         err = "processDefinitions error",
-        paramId: Array<number> = [],
-        paramToken: Array<string> = [],
+        params: Array<number | string> = [],
         pid: Array<string> = [],
         parameterType = Object.keys(result.declarations.parameter_type).reduce((out: ParamType, type: string) => {
             if(type !== "None") out[`${type}s`] = [];
             return out;
         }, {});
     result.definitions.forEach((definition) => {
-        const group = {name: definition.group, data: result.declarations.parameter_group[definition.group]};
-        if(!group.data) throw new Error(`${err}: unknown group token "${group.name}"`);
-        definition.parameters.forEach((parameter) => {
+        const
+            group = {
+                name: definition.group,
+                data: result.declarations.parameter_group[definition.group]
+            },
+            { signals } = definition;
+        if(!group.data) {
+            throw new Error(`${err}: unknown group token "${group.name}"`);
+        }
+        definition.parameters.forEach((parameter, index) => {
             const
                 type = { name: parameter.type, data: result.declarations.parameter_type[parameter.type] },
-                { token, id, control_position, return_behavior, modulation_amount, bipolar, info, rendering } = parameter;
-            if(!type.data) throw new Error(`${err}: unknown parameter type "${type.name}"`);
-            if(id < 0 || id > 16382) throw new Error(`${err}: parameter id ${id} is out of tcd range [0 ... 16382]`);
-            if(type.data.rendering_args && !rendering) throw new Error(`${err}: parameter id ${id} requires rendering args`);
-            if(paramId.includes(id)) throw new Error(`${err}: parameter id ${id} is already defined`);
+                {
+                    token, id, label_long, label_short, control_position, info,
+                    return_behavior, modulation_amount, bipolar, rendering
+                } = parameter;
+            if(!type.data) {
+                throw new Error(`${err}: unknown parameter type "${type.name}"`);
+            }
+            if([!token, !id, !label_long, !label_short, !control_position, !info].reduce((out, entry) => out || entry), false) {
+                throw new Error(`${err}: insufficient parameter definition in group "${group.name}" element ${index + 1}`);
+            }
             const tokenStr = type.data.combined_label ? `${group.name}_${token}` : token;
-            if(paramToken.includes(tokenStr)) throw new Error(`${err}: parameter token ${tokenStr} is already defined`);
-            paramId.push(id);
-            paramToken.push(tokenStr);
+            if(id < 0 || id > 16382) {
+                throw new Error(`${err}: parameter id ${id} is out of tcd range [0 ... 16382]`);
+            }
+            if(type.data.rendering_args && !rendering) {
+                throw new Error(`${err}: parameter id ${id} requires rendering args`);
+            }
+            if(params.includes(id)) {
+                throw new Error(`${err}: parameter id ${id} is already defined`);
+            }
+            if(params.includes(tokenStr)) {
+                throw new Error(`${err}: parameter token ${tokenStr} is already defined`);
+            }
+            params.push(id, tokenStr);
             pid[id] = `${tokenStr} = ${id}`;
             parameterType[`${type.name}s`].push(tokenStr);
+            if(rendering) {}
         });
     });
     result.parameters = Object.entries(parameterType).reduce((out: Array<string>, [key, entries]) => {
