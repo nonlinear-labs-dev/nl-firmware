@@ -30,4 +30,9 @@ namespace C15
             ${enums.parameter_signal}
         };
     } // namespace C15::Descriptors
+    namespace Properties {
+        enum class SmootherScale {
+            ${enums.smoother_scale}
+        };
+    } // namespace C15::Properties
 } // namespace C15

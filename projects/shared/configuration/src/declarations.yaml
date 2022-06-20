@@ -2,47 +2,54 @@
 %TAG ! tag:nonlinear-labs.de,2022:js-yaml:
 --- !declarations
 
-parameter_type:
-  None: &SOURCE_PARAM { combined_label: false, rendering_args: false }
-  Hardware_Source: *SOURCE_PARAM
-  Display_Parameter: *SOURCE_PARAM
-  Hardware_Amount: *SOURCE_PARAM
-  Macro_Control: *SOURCE_PARAM
-  Macro_Time: { combined_label: false, rendering_args: true }
-  Global_Modulateable: &ORDINARY_PARAM { combined_label: true, rendering_args: true }
-  Global_Unmodulateable: &ORDINARY_PARAM { combined_label: true, rendering_args: true }
-  Local_Modulateable: &ORDINARY_PARAM { combined_label: true, rendering_args: true }
-  Local_Unmodulateable: &ORDINARY_PARAM { combined_label: true, rendering_args: true }
+parameter_type: {
+  None: &SOURCE_PARAM { combined_label: false, rendering_args: false },
+  Hardware_Source: *SOURCE_PARAM,
+  Display_Parameter: *SOURCE_PARAM,
+  Hardware_Amount: *SOURCE_PARAM,
+  Macro_Control: *SOURCE_PARAM,
+  Macro_Time: { combined_label: false, rendering_args: true },
+  Global_Modulateable: &ORDINARY_PARAM { combined_label: true, rendering_args: true },
+  Global_Unmodulateable: *ORDINARY_PARAM,
+  Local_Modulateable: *ORDINARY_PARAM,
+  Local_Unmodulateable: *ORDINARY_PARAM
+}
 
-smoother_section: { None, Global, Poly, Mono }
-smoother_clock: { Sync, Audio, Fast, Slow }
-parameter_signal: { None, Global_Signal, Quasipoly_Signal, Truepoly_Signal, Mono_Signal }
+parameter_signal: {
+  None,
+  Global_Signal,
+  Quasipoly_Signal,
+  Truepoly_Signal,
+  Mono_Signal
+}
 
-# smoother_clock: !enum
-#   Sync: *ENUM_TOKEN
-#   Audio: *ENUM_TOKEN
-#   Fast: *ENUM_TOKEN
-#   Slow: *ENUM_TOKEN
+smoother_section: {
+  None,
+  Global,
+  Poly,
+  Mono
+}
 
-# parameter_signal: !enum
-#   None: *ENUM_TOKEN
-#   Global_Signal: *ENUM_TOKEN
-#   Quasipoly_Signal: *ENUM_TOKEN
-#   Truepoly_Signal: *ENUM_TOKEN
-#   Mono_Signal: *ENUM_TOKEN
+smoother_clock: {
+  Sync,
+  Audio,
+  Fast,
+  Slow
+}
 
-# smoother_scale: !enum
-#   None: *ENUM_TOKEN
-#   Linear: *ENUM_TOKEN
-#   Parabolic: *ENUM_TOKEN
-#   Cubic: *ENUM_TOKEN
-#   S_Curve: *ENUM_TOKEN
-#   Expon_Gain: *ENUM_TOKEN
-#   Expon_Osc_Pitch: *ENUM_TOKEN
-#   Expon_Lin_Pitch: *ENUM_TOKEN
-#   Expon_Shaper_Drive: *ENUM_TOKEN
-#   Expon_Mix_Drive: *ENUM_TOKEN
-#   Expon_Env_Time: *ENUM_TOKEN
+smoother_scale: {
+  None,
+  Linear,
+  Parabolic,
+  Cubic,
+  S_Curve,
+  Expon_Gain,
+  Expon_Osc_Pitch,
+  Expon_Lin_Pitch,
+  Expon_Shaper_Drive,
+  Expon_Mix_Drive,
+  Expon_Env_Time
+}
 
 # parameter_rgb: [
 #   &RGB_DEFAULT [ 195, 199, 203 ],

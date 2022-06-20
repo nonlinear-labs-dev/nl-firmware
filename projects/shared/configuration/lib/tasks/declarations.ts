@@ -12,7 +12,7 @@ export type DeclarationsType = {
 };
 
 const keys = [
-    "parameter_type", "smoother_section", "smoother_clock", "parameter_signal"
+    "parameter_type", "parameter_signal", "smoother_section", "smoother_clock", "smoother_scale"
 ];
 
 export const DeclarationsParser = new Parser<DeclarationsType>(
@@ -24,9 +24,10 @@ export const DeclarationsParser = new Parser<DeclarationsType>(
         construct(declarations: any): DeclarationsType {
             const enums = {
                 parameter_type: Object.keys(declarations.parameter_type).join(",\n"),
+                parameter_signal: Object.keys(declarations.parameter_signal).join(",\n"),
                 smoother_section: Object.keys(declarations.smoother_section).join(",\n"),
                 smoother_clock: Object.keys(declarations.smoother_clock).join(",\n"),
-                parameter_signal: Object.keys(declarations.parameter_signal).join(",\n")
+                smoother_scale: Object.keys(declarations.smoother_scale).join(",\n")
             }
             return { declarations, enums };
         }
