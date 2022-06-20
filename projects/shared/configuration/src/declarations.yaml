@@ -62,6 +62,7 @@ parameter_rgb: {
 }
 
 parameter_group: {
+  None,
   Env_A: { label_long: Envelope A, label_short: Envelope A, color: *RGB_BRANCH_A, token_java: "Env A", global_group: false },
   Env_B: { label_long: Envelope B, label_short: Envelope B, color: *RGB_BRANCH_B, token_java: "Env B", global_group: false },
   Env_C: { label_long: Envelope C, label_short: Envelope C, color: *RGB_DEFAULT, token_java: "Env C", global_group: false },
@@ -106,6 +107,7 @@ smoother_clock: {
 }
 
 smoother_scale: {
+  None,
   Linear,
   Parabolic,
   Cubic,
