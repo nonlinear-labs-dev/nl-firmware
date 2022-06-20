@@ -17,6 +17,10 @@ namespace C15
         {
             ${enums.parameter_type}
         };
+        enum class ParameterGroup
+        {
+            ${enums.parameter_group}
+        };
         enum class SmootherSection
         {
             ${enums.smoother_section}
@@ -47,4 +51,13 @@ namespace C15
     namespace Parameters {
         ${parameters}
     } // namespace C15::Parameters
+    namespace Smoothers {
+        ${smoothers}
+    } // namespace C15::Smoothers
+    namespace Signals {
+        ${signals}
+    } // namespace C15::Signals
+    namespace PID {
+        ${pid}
+    } // namespace C15::PID
 } // namespace C15

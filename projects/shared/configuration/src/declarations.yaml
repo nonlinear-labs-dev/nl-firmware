@@ -106,7 +106,6 @@ smoother_clock: {
 }
 
 smoother_scale: {
-  None,
   Linear,
   Parabolic,
   Cubic,
@@ -119,9 +118,7 @@ smoother_scale: {
   Expon_Env_Time
 }
 
-display_scaling_type: {}
-
-# display_scaling_type: [
+display_scaling_type: {
 #   COMB_DECAY_BIPOLAR_MS: { round: , unit: , reference: , inf: , values: [] },
 #   ENVELOPE_TIME_MS: { round: , unit: , reference: , inf: , values: [] },
 #   ENVELOPE_TIME_MS_INF: { round: , unit: , reference: , inf: , values: [] },
@@ -176,4 +173,4 @@ display_scaling_type: {}
 #   LINEAR_200_PERCENT: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_INVERTED_60_DBT: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_BIPOLAR_INVERTED_60_DBT: { round: , unit: , reference: , inf: , values: [] }
-# ]
+}

@@ -51,18 +51,17 @@ export type DeclarationsType = {
     };
 };
 
-const keys = [
-    "parameter_type", "parameter_signal", "parameter_unit",
-    "parameter_rounding", "parameter_reference", "parameter_group",
-    "smoother_section", "smoother_clock", "smoother_scale",
-    "display_scaling_type"
-];
-
 export const DeclarationsParser = new Parser<DeclarationsType>(
     new Type("declarations", {
         kind: "mapping",
+        keys: [
+            "parameter_type", "parameter_signal", "parameter_unit",
+            "parameter_rounding", "parameter_reference", "parameter_group",
+            "smoother_section", "smoother_clock", "smoother_scale",
+            "display_scaling_type"
+        ],
         resolve(declarations: any): boolean {
-            return keys.reduce((out, key) => out && (key in declarations), true);
+            return this.keys.reduce((out, key) => out && (key in declarations), true);
         },
         construct(declarations: any): DeclarationsType {
             const enums = {
