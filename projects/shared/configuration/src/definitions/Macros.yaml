@@ -1,0 +1,117 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+static: [
+  &MACRO {
+    availability: {
+      Single: &AVAILABILITY { hidden: false, disabled: false, count: 1 },
+      Split: *AVAILABILITY,
+      Layer: *AVAILABILITY
+    }
+  },
+  &MACRO_CONTROL {
+    <<: *MACRO,
+    type: Macro_Control,
+    control_position: { coarse: 100, fine: 1000, unit: percent, initial: 0.5f, bipolar: false, scale: LINEAR_100_PERCENT }
+  },
+  &MACRO_TIME {
+    <<: *MACRO,
+    type: Macro_Time,
+    control_position: { coarse: 100, fine: 1000, unit: millisecond, initial: 0.4f, bipolar: false, scale: ENVELOPE_TIME_MS }
+  }
+]
+
+group: Macro
+
+parameters:
+  - <<: *MACRO_CONTROL
+    id: 243
+    token: MC_A
+    label_long: "@MC:A"
+    label_short: "@MC:A"
+    info: The info text of Macro Control A is user-definable and defaults to an empty string.
+  - <<: *MACRO_TIME
+    id: 324
+    token: MC_TIME_A
+    label_long: "@MC:A Smoothing"
+    label_short: Smoothing
+    rendering_args: { scaling: "Expon_Env_Time", factor: 1.0f, offset: -20.0f, section: None, clock: None, signal: None }
+    info: >
+      Sets the smoothing time [in milliseconds] for modulations on target parameters assigned to Macro Control A.
+      At zero, assigned target parameters will follow the Macro Control immediately.
+  - <<: *MACRO_CONTROL
+    id: 244
+    token: MC_B
+    label_long: "@MC:B"
+    label_short: "@MC:B"
+    info: The info text of Macro Control B is user-definable and defaults to an empty string.
+  - <<: *MACRO_TIME
+    id: 325
+    token: MC_TIME_B
+    label_long: "@MC:B Smoothing"
+    label_short: Smoothing
+    rendering_args: { scaling: "Expon_Env_Time", factor: 1.0f, offset: -20.0f, section: None, clock: None, signal: None }
+    info: >
+      Sets the smoothing time [in milliseconds] for modulations on target parameters assigned to Macro Control B.
+      At zero, assigned target parameters will follow the Macro Control immediately.
+  - <<: *MACRO_CONTROL
+    id: 245
+    token: MC_C
+    label_long: "@MC:C"
+    label_short: "@MC:C"
+    info: The info text of Macro Control C is user-definable and defaults to an empty string.
+  - <<: *MACRO_TIME
+    id: 326
+    token: MC_TIME_C
+    label_long: "@MC:C Smoothing"
+    label_short: Smoothing
+    rendering_args: { scaling: "Expon_Env_Time", factor: 1.0f, offset: -20.0f, section: None, clock: None, signal: None }
+    info: >
+      Sets the smoothing time [in milliseconds] for modulations on target parameters assigned to Macro Control C.
+      At zero, assigned target parameters will follow the Macro Control immediately.
+  - <<: *MACRO_CONTROL
+    id: 246
+    token: MC_D
+    label_long: "@MC:D"
+    label_short: "@MC:D"
+    info: The info text of Macro Control D is user-definable and defaults to an empty string.
+  - <<: *MACRO_TIME
+    id: 327
+    token: MC_TIME_D
+    label_long: "@MC:D Smoothing"
+    label_short: Smoothing
+    rendering_args: { scaling: "Expon_Env_Time", factor: 1.0f, offset: -20.0f, section: None, clock: None, signal: None }
+    info: >
+      Sets the smoothing time [in milliseconds] for modulations on target parameters assigned to Macro Control D.
+      At zero, assigned target parameters will follow the Macro Control immediately.
+  - <<: *MACRO_CONTROL
+    id: 369
+    token: MC_E
+    label_long: "@MC:E"
+    label_short: "@MC:E"
+    info: The info text of Macro Control E is user-definable and defaults to an empty string.
+  - <<: *MACRO_TIME
+    id: 370
+    token: MC_TIME_E
+    label_long: "@MC:E Smoothing"
+    label_short: Smoothing
+    rendering_args: { scaling: "Expon_Env_Time", factor: 1.0f, offset: -20.0f, section: None, clock: None, signal: None }
+    info: >
+      Sets the smoothing time [in milliseconds] for modulations on target parameters assigned to Macro Control E.
+      At zero, assigned target parameters will follow the Macro Control immediately.
+  - <<: *MACRO_CONTROL
+    id: 371
+    token: MC_F
+    label_long: "@MC:F"
+    label_short: "@MC:F"
+    info: The info text of Macro Control F is user-definable and defaults to an empty string.
+  - <<: *MACRO_TIME
+    id: 372
+    token: MC_TIME_F
+    label_long: "@MC:F Smoothing"
+    label_short: Smoothing
+    rendering_args: { scaling: "Expon_Env_Time", factor: 1.0f, offset: -20.0f, section: None, clock: None, signal: None }
+    info: >
+      Sets the smoothing time [in milliseconds] for modulations on target parameters assigned to Macro Control F.
+      At zero, assigned target parameters will follow the Macro Control immediately.

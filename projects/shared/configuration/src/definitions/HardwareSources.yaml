@@ -4,7 +4,6 @@
 
 static: [
   &SHARED {
-    type: Hardware_Source,
     availability: {
       Single: &AVAILABILITY { hidden: false, disabled: false, count: 1 },
       Split: *AVAILABILITY,
@@ -14,25 +13,71 @@ static: [
   &CONTROL_POSITION {
     coarse: 100, fine: 1000, unit: percent, initial: 0.0f
   },
-  &PEDAL {
+  &SOURCE {
     <<: *SHARED,
-    control_position: { <<: *CONTROL_POSITION, scale: LINEAR_100_PERCENT },
+    type: Hardware_Source,
+  },
+  &SEND {
+    <<: *SHARED,
+    type: Display_Parameter
+  },
+  &PEDAL {
+    <<: *SOURCE,
+    <<: &PEDAL_CP {
+      control_position: {
+        <<: *CONTROL_POSITION,
+        scale: LINEAR_100_PERCENT
+      }
+    },
     return_behavior: [ None, Zero, Center ]
   },
+  &PEDAL_SEND {
+    <<: *SEND,
+    <<: *PEDAL_CP
+  },
   &BENDER {
-    <<: *SHARED,
-    control_position: { <<: *CONTROL_POSITION, bipolar: true, scale: LINEAR_BIPOLAR_100_PERCENT },
+    <<: *SOURCE,
+    <<: &BENDER_CP {
+      control_position: {
+        <<: *CONTROL_POSITION,
+        bipolar: true,
+        scale: LINEAR_BIPOLAR_100_PERCENT
+      }
+    },
     return_behavior: [ Center ]
   },
+  &BENDER_SEND {
+    <<: *SEND,
+    <<: *BENDER_CP
+  },
   &AFTERTOUCH {
-    <<: *SHARED,
-    control_position: { <<: *CONTROL_POSITION, bipolar: false, scale: LINEAR_100_PERCENT },
+    <<: *SOURCE,
+    <<: &AFTERTOUCH_CP {
+      control_position: {
+        <<: *CONTROL_POSITION,
+        bipolar: false,
+        scale: LINEAR_100_PERCENT
+      }
+    },
     return_behavior: [ Zero ]
   },
+  &AFTERTOUCH_SEND {
+    <<: *SEND,
+    <<: *AFTERTOUCH_CP
+  },
   &RIBBON {
-    <<: *SHARED,
-    control_position: { <<: *CONTROL_POSITION, scale: LINEAR_100_PERCENT },
+    <<: *SOURCE,
+    <<: &RIBBON_CP {
+      control_position: {
+        <<: *CONTROL_POSITION,
+        scale: LINEAR_100_PERCENT
+      }
+    },
     return_behavior: [ None, Center ]
+  },
+  &RIBBON_SEND {
+    <<: *SEND,
+    <<: *RIBBON_CP
   }
 ]
 
@@ -48,3 +93,152 @@ parameters:
       This control is the parameter representation of the \"Pedal 1\" Hardware Source.
       If a pedal is connected, it will directly follow the external control.
       If the source's return behavior is set to \"Center\", the parameter will be bipolar.
+  - <<: *PEDAL_SEND
+    id: 398
+    token: Pedal_1_Send
+    label_long: Pedal 1 Send
+    label_short: Pedal 1 Snd
+    info: >
+      When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Pedal 1\" Hardware Source.
+      It reflects changes that will be sent via MIDI without affecting the Synth.
+      This parameter will be visible next to the internal representation of \"Pedal 1\"
+      (which reflects changes from the User Interface or MIDI Input, only affecting the Synth).
+      Editing the actual \"Pedal 1\" parameter will not be reflected.
+  - <<: *PEDAL
+    id: 259
+    token: Pedal_2
+    label_long: Pedal 2
+    label_short: Pedal 2
+    info: >
+      This control is the parameter representation of the \"Pedal 2\" Hardware Source.
+      If a pedal is connected, it will directly follow the external control.
+      If the source's return behavior is set to \"Center\", the parameter will be bipolar.
+  - <<: *PEDAL_SEND
+    id: 399
+    token: Pedal_2_Send
+    label_long: Pedal 2 Send
+    label_short: Pedal 2 Snd
+    info: >
+      When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Pedal 2\" Hardware Source.
+      It reflects changes that will be sent via MIDI without affecting the Synth.
+      This parameter will be visible next to the internal representation of \"Pedal 2\"
+      (which reflects changes from the User Interface or MIDI Input, only affecting the Synth).
+      Editing the actual \"Pedal 2\" parameter will not be reflected.
+  - <<: *PEDAL
+    id: 264
+    token: Pedal_3
+    label_long: Pedal 3
+    label_short: Pedal 3
+    info: >
+      This control is the parameter representation of the \"Pedal 3\" Hardware Source.
+      If a pedal is connected, it will directly follow the external control.
+      If the source's return behavior is set to \"Center\", the parameter will be bipolar.
+  - <<: *PEDAL_SEND
+    id: 400
+    token: Pedal_3_Send
+    label_long: Pedal 3 Send
+    label_short: Pedal 3 Snd
+    info: >
+      When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Pedal 3\" Hardware Source.
+      It reflects changes that will be sent via MIDI without affecting the Synth.
+      This parameter will be visible next to the internal representation of \"Pedal 3\"
+      (which reflects changes from the User Interface or MIDI Input, only affecting the Synth).
+      Editing the actual \"Pedal 3\" parameter will not be reflected.
+  - <<: *PEDAL
+    id: 269
+    token: Pedal_4
+    label_long: Pedal 4
+    label_short: Pedal 4
+    info: >
+      This control is the parameter representation of the \"Pedal 4\" Hardware Source.
+      If a pedal is connected, it will directly follow the external control.
+      If the source's return behavior is set to \"Center\", the parameter will be bipolar.
+  - <<: *PEDAL_SEND
+    id: 401
+    token: Pedal_4_Send
+    label_long: Pedal 4 Send
+    label_short: Pedal 4 Snd
+    info: >
+      When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Pedal 4\" Hardware Source.
+      It reflects changes that will be sent via MIDI without affecting the Synth.
+      This parameter will be visible next to the internal representation of \"Pedal 4\"
+      (which reflects changes from the User Interface or MIDI Input, only affecting the Synth).
+      Editing the actual \"Pedal 1\" parameter will not be reflected.
+  - <<: *BENDER
+    id: 274
+    token: Bender
+    label_long: Bender
+    label_short: Bender
+    info: >
+      This control is the parameter representation of the \"Bender\" Hardware Source.
+      If a pedal is connected, it will directly follow the Bender.
+  - <<: *BENDER_SEND
+    id: 402
+    token: Bender_Send
+    label_long: Bender Send
+    label_short: Bender Snd
+    info: >
+      When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Bender\" Hardware Source.
+      It reflects changes that will be sent via MIDI without affecting the Synth.
+      This parameter will be visible next to the internal representation of \"Bender\"
+      (which reflects changes from the User Interface or MIDI Input, only affecting the Synth).
+      Editing the actual \"Bender\" parameter will not be reflected.
+  - <<: *AFTERTOUCH
+    id: 279
+    token: Aftertouch
+    label_long: Aftertouch
+    label_short: Aftertouch
+    info: >
+      This control is the parameter representation of the \"Aftertouch\" Hardware Source.
+      It will directly follow aftertouch gestures.
+  - <<: *AFTERTOUCH_SEND
+    id: 403
+    token: Aftertouch_Send
+    label_long: Aftertouch Send
+    label_short: Aftertouch Snd
+    info: >
+      When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Aftertouch\" Hardware Source.
+      It reflects changes that will be sent via MIDI without affecting the Synth.
+      This parameter will be visible next to the internal representation of \"Aftertouch\"
+      (which reflects changes from the User Interface or MIDI Input, only affecting the Synth).
+      Editing the actual \"Aftertouch\" parameter will not be reflected.
+  - <<: *RIBBON
+    id: 284
+    token: Ribbon_1
+    label_long: Ribbon 1
+    label_short: Ribbon 1
+    info: >
+      This control is the parameter representation of the \"Ribbon 1\" Hardware Source.
+      If a pedal is connected, it will directly follow the Ribbon and vice versa.
+      If the source's return behavior is set to \"Center\", the parameter will be bipolar.
+  - <<: *RIBBON_SEND
+    id: 404
+    token: Ribbon_1_Send
+    label_long: Ribbon 1 Send
+    label_short: Ribbon 1 Snd
+    info: >
+      When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Ribbonl 1\" Hardware Source.
+      It reflects changes that will be sent via MIDI without affecting the Synth.
+      This parameter will be visible next to the internal representation of \"Ribbon 1\"
+      (which reflects changes from the User Interface or MIDI Input, only affecting the Synth).
+      Editing the actual \"Ribbon 1\" parameter will not be reflected.
+  - <<: *RIBBON
+    id: 289
+    token: Ribbon_2
+    label_long: Ribbon 2
+    label_short: Ribbon 2
+    info: >
+      This control is the parameter representation of the \"Ribbon 2\" Hardware Source.
+      If a pedal is connected, it will directly follow the Ribbon and vice versa.
+      If the source's return behavior is set to \"Center\", the parameter will be bipolar.
+  - <<: *RIBBON_SEND
+    id: 405
+    token: Ribbon_2_Send
+    label_long: Ribbon 2 Send
+    label_short: Ribbon 2 Snd
+    info: >
+      When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Ribbon 2\" Hardware Source.
+      It reflects changes that will be sent via MIDI without affecting the Synth.
+      This parameter will be visible next to the internal representation of \"Ribbon 2\"
+      (which reflects changes from the User Interface or MIDI Input, only affecting the Synth).
+      Editing the actual \"Ribbon 2\" parameter will not be reflected.

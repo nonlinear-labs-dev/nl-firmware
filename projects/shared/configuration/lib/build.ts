@@ -172,12 +172,23 @@ function processDefinitions(result: Result) {
                 const
                     { scaling, factor, offset, section, clock, signal } = rendering_args,
                     sectionType = `${section}_${clock}`;
-                // renderingArgs property sanity checks
-                if(!smootherType[sectionType]) {
-                    throw new Error(`${err}: invalid smoother "${sectionType}" in parameter id ${id}`);
+                // optional smootherSection handling
+                if(section !== "None") {
+                    // clock sanity checks
+                    if(clock === "None") {
+                        throw new Error(`${err}: invalid smoother clock "${clock}" in parameter id ${id}`);
+                    }
+                    // renderingArgs property sanity checks
+                    if(!smootherType[sectionType]) {
+                        throw new Error(`${err}: invalid smoother "${sectionType}" in parameter id ${id}`);
+                    }
+                    // feed SmootherDescriptor
+                    smootherDescriptor.push(`Smoothers::${sectionType}::${tokenStr}`);
+                    // smootherType, parameter scaling
+                    smootherType[sectionType][id] = tokenStr;
+                } else {
+                    smootherDescriptor.push("None");
                 }
-                // feed SmootherDescriptor
-                smootherDescriptor.push(`Smoothers::${sectionType}::${tokenStr}`);
                 // optional parameterSignal, feeding SmootherDescriptor
                 if(signal) {
                     if(signal !== "None") {
@@ -190,8 +201,6 @@ function processDefinitions(result: Result) {
                         smootherDescriptor.push("None");
                     }
                 }
-                // smootherType, parameter scaling
-                smootherType[sectionType][id] = tokenStr;
                 smootherDescriptor.push(
                     `Properties::SmootherScale::${scaling}`,
                     factor,
