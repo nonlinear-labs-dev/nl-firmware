@@ -132,7 +132,7 @@ function processDefinitions(result: Result) {
                 playgroundDescriptor.push("None", "None");
             }
             playgroundDescriptor.push(...[
-                group.data.label_long, group.data.label_short, label_long, label_short, info
+                group.data.label_long, group.data.label_short, label_long, label_short, info.trim().replace(/\n/g, "\\n")
             ].map((entry) => `"${entry}"`));
             if(type.data.includes("rendering_args")) {
                 if(rendering_args === undefined) {

@@ -44,4 +44,7 @@ parameters:
     token: Pedal_1
     label_long: Pedal 1
     label_short: Pedal 1
-    info: ""
+    info: >
+      This control is the parameter representation of the \"Pedal 1\" Hardware Source.
+      If a pedal is connected, it will directly follow the external control.
+      If the source's return behavior is set to \"Center\", the parameter will be bipolar.

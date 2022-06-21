@@ -29,7 +29,7 @@ parameters:
     control_position: { coarse: 100, fine: 1000, unit: millisecond, scale: ENVELOPE_TIME_MS, initial: 0.0f, bipolar: false }
     modulation_aspects: { coarse: 100, fine: 1000, unit: percent, scale: LINEAR_BIPOLAR_100_PERCENT }
     rendering_args: { scaling: "Expon_Env_Time", factor: 1.0f, offset: -20.0f, section: Poly, clock: Slow, signal: None }
-    info: ""
+    info: Time of the (polynomial) Attack segment in milliseconds.
 
 signals:
   Truepoly_Signal: [ Mag, Tmb ]
