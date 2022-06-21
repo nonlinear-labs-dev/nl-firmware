@@ -40,8 +40,7 @@ group: Mod_HW
 
 parameters:
   - <<: *PEDAL
-    # id: 254
-    id: 4
+    id: 254
     token: Pedal_1
     label_long: Pedal 1
     label_short: Pedal 1
