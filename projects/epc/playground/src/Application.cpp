@@ -186,11 +186,6 @@ void Application::quit()
   DebugLevel::warning(__PRETTY_FUNCTION__);
 }
 
-bool Application::isQuit() const
-{
-  return m_isQuit;
-}
-
 Glib::RefPtr<Glib::MainContext> Application::getMainContext()
 {
   return m_theMainLoop->get_context();

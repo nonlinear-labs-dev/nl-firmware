@@ -58,8 +58,6 @@ class Application
   HardwareFeatures* getHardwareFeatures();
 
   void quit();
-  [[nodiscard]] bool isQuit() const;
-
   void runWatchDog();
   void stopWatchDog();
 
@@ -70,6 +68,7 @@ class Application
   static std::unique_ptr<Options> initStatic(Application *app, std::unique_ptr<Options> options);
 
   static Application *theApp;
+
   std::unique_ptr<Options> m_options;
   Glib::RefPtr<Glib::MainLoop> m_theMainLoop;
 
