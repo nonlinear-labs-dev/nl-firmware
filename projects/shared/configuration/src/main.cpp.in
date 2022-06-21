@@ -8,7 +8,7 @@
 *******************************************************************************/
 
 #include "definitions.h"
-#include "placeholder.h"
+// #include "placeholder.h" // placeholder requires nltools and therefore cmake(lists)
 #include <iostream>
 
 int main() {
