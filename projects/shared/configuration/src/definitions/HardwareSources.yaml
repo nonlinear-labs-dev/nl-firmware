@@ -5,32 +5,45 @@
 static: [
   &SHARED {
     type: Hardware_Source,
-    control_position: { coarse: 100, fine: 1000, unit: percent, initial: 500, scale: LINEAR_100_PERCENT }
+    availability: {
+      Single: &AVAILABILITY { hidden: false, disabled: false, count: 1 },
+      Split: *AVAILABILITY,
+      Layer: *AVAILABILITY
+    }
+  },
+  &CONTROL_POSITION {
+    coarse: 100, fine: 1000, unit: percent, initial: 0.0f
   },
   &PEDAL {
+    <<: *SHARED,
+    control_position: { <<: *CONTROL_POSITION, scale: LINEAR_100_PERCENT },
     return_behavior: [ None, Zero, Center ]
   },
   &BENDER {
+    <<: *SHARED,
+    control_position: { <<: *CONTROL_POSITION, scale: LINEAR_BIPOLAR_100_PERCENT },
     return_behavior: [ Center ],
     bipolar: true
   },
   &AFTERTOUCH {
+    <<: *SHARED,
+    control_position: { <<: *CONTROL_POSITION, scale: LINEAR_100_PERCENT },
     return_behavior: [ Zero ],
     bipolar: false
   },
   &RIBBON {
+    <<: *SHARED,
+    control_position: { <<: *CONTROL_POSITION, scale: LINEAR_100_PERCENT },
     return_behavior: [ None, Center ]
   }
 ]
 
 group: Mod_HW
 
-parameters: [
-  {
-    id: 254,
-    token: Pedal_1, label_long: Pedal 1, label_short: Pedal 1,
-    info: "",
-    <<: *SHARED,
-    <<: *PEDAL,
-  }
-]
+parameters:
+  - <<: *PEDAL
+    id: 254
+    token: Pedal_1
+    label_long: Pedal 1
+    label_short: Pedal 1
+    info: ""

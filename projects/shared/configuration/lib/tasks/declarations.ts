@@ -2,12 +2,8 @@ import { Type, Parser } from "../yaml";
 
 export type DeclarationsType = {
     declarations: {
-        parameter_type: {
-            [key: string]: {
-                combined_label: boolean,
-                rendering_args: boolean
-            }
-        };
+        parameter_properties: Array<string>;
+        parameter_type: Array<string>;
         parameter_signal: {
             [key: string]: null;
         };
@@ -22,11 +18,11 @@ export type DeclarationsType = {
         };
         parameter_group: {
             [key: string]: {
-                label_long: string,
-                label_short: string,
-                color: Array<number>,
-                token_java: string,
-                global_group: boolean
+                label_long: string;
+                label_short: string;
+                color: Array<number>;
+                token_java: string;
+                global_group: boolean;
             }
         };
         smoother_section: {
@@ -42,8 +38,8 @@ export type DeclarationsType = {
             round: string;
             unit: string;
             reference: string;
-            inf: boolean
-            values: Array<number>
+            inf: boolean;
+            values: Array<number>;
         };
     };
     enums: {
@@ -56,7 +52,7 @@ export const DeclarationsParser = new Parser<DeclarationsType>(
         kind: "mapping",
         keys: [
             "sound_type", "layer_id", "return_behavior",
-            "parameter_type", "parameter_signal", "parameter_unit",
+            "parameter_properties", "parameter_type", "parameter_signal", "parameter_unit",
             "parameter_rounding", "parameter_reference", "parameter_group",
             "smoother_section", "smoother_clock", "smoother_scale",
             "display_scaling_type"

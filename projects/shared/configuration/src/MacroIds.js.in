@@ -1,0 +1,8 @@
+/******************************************************************************/
+/** @file       MacroIds.js
+    @date       ${timestamp}
+    @version    ${config.milestone}-${config.version}
+    @author     M. Seeber
+    @brief      all Macro IDs named and provided in immutable structure
+    @todo       
+*******************************************************************************/

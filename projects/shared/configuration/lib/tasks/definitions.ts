@@ -4,7 +4,7 @@ type ValueType = {
     coarse: number;
     fine: number;
     unit: string;
-    initial: number;
+    initial: string;
     scale: string;
 };
 
@@ -18,10 +18,17 @@ type ParameterType = {
         inactive?: number
     };
     info: string;
+    availability: {
+        [key: string]: {
+            hidden: boolean;
+            disabled: boolean;
+            count: number;
+        };
+    };
     bipolar?: boolean;
     return_behavior?: Array<string>;
     modulation_amount?: ValueType;
-    rendering?: {
+    rendering_args?: {
         scale: string;
         factor: number;
         offset: number;
@@ -31,15 +38,17 @@ type ParameterType = {
     };
 };
 
-type SignalType = {
-    token: string;
-    signal: string;
+export type SignalType = {
+    [key: string]: Array<{
+        token: string;
+        signal: string;
+    }>;
 };
 
 export type DefinitionsType = {
     group: string;
     parameters: Array<ParameterType>;
-    signals?: Array<SignalType>;
+    signals?: SignalType;
 };
 
 export const DefinitionsParser = new Parser<DefinitionsType>(

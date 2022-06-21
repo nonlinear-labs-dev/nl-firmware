@@ -19,17 +19,25 @@ return_behavior: {
   Center
 }
 
+parameter_properties: [
+  &CONTROL_POSITION control_position,
+  &MODULATION_ASPECTS modulation_aspects,
+  &RETURN_BEHAVIOR return_behavior,
+  &GROUP_LABEL group_label,
+  &RENDERING_ARGS rendering_args
+]
+
 parameter_type: {
-  None: &SOURCE_PARAM { combined_label: false, rendering_args: false },
-  Hardware_Source: *SOURCE_PARAM,
-  Display_Parameter: *SOURCE_PARAM,
-  Hardware_Amount: *SOURCE_PARAM,
-  Macro_Control: *SOURCE_PARAM,
-  Macro_Time: { combined_label: false, rendering_args: true },
-  Global_Modulateable: &ORDINARY_PARAM { combined_label: true, rendering_args: true },
-  Global_Unmodulateable: *ORDINARY_PARAM,
-  Local_Modulateable: *ORDINARY_PARAM,
-  Local_Unmodulateable: *ORDINARY_PARAM
+  None,
+  Hardware_Source: [*CONTROL_POSITION, *RETURN_BEHAVIOR],
+  Display_Parameter: [*CONTROL_POSITION],
+  Hardware_Amount: [*CONTROL_POSITION],
+  Macro_Control: [*CONTROL_POSITION],
+  Macro_Time: [*CONTROL_POSITION, *RENDERING_ARGS],
+  Global_Modulateable: [*GROUP_LABEL, *CONTROL_POSITION, *MODULATION_ASPECTS, *RENDERING_ARGS],
+  Global_Unmodulateable: [*GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS],
+  Local_Modulateable: [*GROUP_LABEL, *CONTROL_POSITION, *MODULATION_ASPECTS, *RENDERING_ARGS],
+  Local_Unmodulateable: [*GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS]
 }
 
 parameter_signal: {
