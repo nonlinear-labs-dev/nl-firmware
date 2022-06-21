@@ -8,26 +8,22 @@
 #include "http/UndoScope.h"
 #include "Options.h"
 #include "presets/PresetManager.h"
-#include "profiling/Profiler.h"
 #include "proxies/hwui/HWUI.h"
 #include "proxies/playcontroller/PlaycontrollerProxy.h"
 #include "proxies/audio-engine/AudioEngineProxy.h"
 #include <tools/WatchDog.h>
 #include <unistd.h>
 #include <clipboard/Clipboard.h>
-#include <cassert>
-#include <proxies/hwui/debug-oled/DebugLayout.h>
 #include <tools/ExceptionTools.h>
 #include <nltools/messaging/Messaging.h>
 #include <presets/EditBuffer.h>
 #include <giomm.h>
 #include <proxies/usb/USBChangeListener.h>
 #include <http/WebUISupport.h>
-#include <presets/PresetManagerActions.h>
-#include <presets/BankActions.h>
 #include <presets/EditBufferActions.h>
 #include <use-cases/SettingsUseCases.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
+#include <proxies/hwui/HardwareFeatures.h>
 
 using namespace std::chrono_literals;
 
@@ -70,16 +66,18 @@ std::unique_ptr<Options> Application::initStatic(Application *app, std::unique_p
 
 void quitApp(int sig)
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__, sig);
   Application::get().quit();
 }
 
 Application::Application(int numArgs, char **argv)
     : m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
     , m_theMainLoop(Glib::MainLoop::create(Glib::MainContext::get_default()))
+    , m_hwFeatures(new HardwareFeatures())
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_options->getSettingsFile(), m_http->getUpdateDocumentMaster()))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
+    , m_http(new HTTPServer())
+    , m_settings(new Settings(m_options->getSettingsFile(), m_http->getUpdateDocumentMaster(), *m_hwFeatures))
     , m_presetManager(
           new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
@@ -250,6 +248,11 @@ Clipboard *Application::getClipboard()
 WebUISupport *Application::getWebUISupport()
 {
   return m_webUISupport.get();
+}
+
+HardwareFeatures *Application::getHardwareFeatures()
+{
+  return m_hwFeatures.get();
 }
 
 const Options *Application::getOptions() const

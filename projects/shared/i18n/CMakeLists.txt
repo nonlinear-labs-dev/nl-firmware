@@ -9,6 +9,6 @@ ADD_CUSTOM_COMMAND(
   COMMAND locale-gen en_US@nonlinear.UTF-8
 )
 
-install(FILES en_US@nonlinear DESTINATION /usr/share/i18n/locales/)
+install(FILES en_US@nonlinear DESTINATION ${CMAKE_INSTALL_PREFIX}/share/i18n/locales/)
 
 ADD_CUSTOM_TARGET(install-nl-locale DEPENDS .install-nl-locale)

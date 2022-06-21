@@ -242,6 +242,12 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       {
         Application::get().getPresetManager()->incAllParamsFine();
       }
+      else if(line == "epc-info")
+      {
+        auto hwInfo = Application::get().getHardwareFeatures();
+        nltools::Log::error("epc model:", toString(hwInfo->getModel()));
+        nltools::Log::error("has epc wifi:", hwInfo->hasEPCWiFi());
+      }
       else if(line.at(0) == '!')
       {
         onButtonPressed(Buttons::BUTTON_SHIFT, true);

@@ -48,6 +48,8 @@ ENUM(HWChangeSource, int8_t, TCD = 0, MIDI = 1, UI = 2)
 
 ENUM(MidiHWChangeSpecialCases, uint16_t, ChannelPitchbend, Aftertouch, PitchbendUp, PitchbendDown, CC)
 
+ENUM(EPC_MODEL, uint16_t, UNKNOWN, i3_5, i3_7, i3_10, i3_11)
+
 template <typename T> inline typename std::enable_if<std::is_floating_point<T>::value, bool>::type differs(T a, T b)
 {
   return std::abs(a - b) > std::numeric_limits<T>::epsilon();

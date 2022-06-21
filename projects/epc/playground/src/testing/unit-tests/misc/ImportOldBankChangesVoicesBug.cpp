@@ -13,6 +13,7 @@
 #include <parameters/scale-converters/EnvelopeAttackDecayTimeMSScaleConverter.h>
 #include <sync/SyncMasterMockRoot.h>
 #include <testing/unit-tests/mock/MockSettingsObject.h>
+#include <proxies/hwui/HardwareFeatures.h>
 
 TEST_CASE("Import Bank Fresh Results in Correct Voices", "[Unison]")
 {
@@ -62,7 +63,8 @@ TEST_CASE("MC Smoothing A-D set to 20ms")
 
 TEST_CASE("UnisonVoices Conversion rules")
 {
-  MockSettingsObject mockSettings("", &SyncMasterMockRoot::get());
+  HardwareFeatures hw;
+  MockSettingsObject mockSettings("", &SyncMasterMockRoot::get(), hw);
   std::unique_ptr<AudioEngineProxy> aeContainer;
   PresetManager pm(&SyncMasterMockRoot::get(), false, TestHelper::getOptions(), mockSettings, aeContainer);
   Bank bank(&pm);
