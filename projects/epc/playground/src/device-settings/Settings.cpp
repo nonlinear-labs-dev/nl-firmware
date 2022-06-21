@@ -69,8 +69,9 @@
 #include <device-settings/flac/FlacRecorderVirgin.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/AlsaFramesPerPeriod.h>
+#include <proxies/hwui/HardwareFeatures.h>
 
-Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master)
+Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, HardwareFeatures& hwFeatures)
     : UpdateDocumentContributor(master)
     , m_file(file)
     , m_saveJob(5000, [this] { save(); })
@@ -99,8 +100,8 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master)
   addSetting("BenderCurve", new BenderCurve(*this));
   addSetting("EditSmoothingTime", new EditSmoothingTime(*this));
 
-  auto localWifi = std::make_shared<EpcWifi>();
-  addSetting("SSID", new SSID(*this, localWifi));
+  auto localWifi = std::make_shared<EpcWifi>(hwFeatures);
+  addSetting("SSID", new SSID(*this, localWifi, hwFeatures));
   addSetting("Passphrase", new Passphrase(*this, localWifi));
   addSetting("WifiSetting", new WifiSetting(*this, localWifi));
 

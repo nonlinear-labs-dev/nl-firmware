@@ -18,7 +18,7 @@ namespace nltools
     template <typename... Args> std::string concatWithDelimiter(char delim, Args... args)
     {
       std::stringstream s;
-      auto printWithDelim = [&](auto a) { s << a << delim; };
+      auto printWithDelim = [&](auto a) -> void { s << a << delim; };
       std::initializer_list<bool> { (printWithDelim(args), false)... };
       return s.str();
     }

@@ -6,10 +6,12 @@
 #include <parameters/scale-converters/Linear100PercentScaleConverter.h>
 #include <sync/SyncMasterMockRoot.h>
 #include "testing/unit-tests/mock/MockSettingsObject.h"
+#include "proxies/hwui/HardwareFeatures.h"
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Modulateable Parameter")
 {
-  MockSettingsObject settings("/tmp/dksakda.xml", &SyncMasterMockRoot::get());
+  HardwareFeatures hw;
+  MockSettingsObject settings("/tmp/dksakda.xml", &SyncMasterMockRoot::get(), hw);
   TestGroupSet groupSet(&SyncMasterMockRoot::get());
   groupSet.init(&settings);
   TestGroup group(&groupSet, VoiceGroup::Global);
