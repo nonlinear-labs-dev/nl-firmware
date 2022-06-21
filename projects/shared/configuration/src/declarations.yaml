@@ -59,7 +59,7 @@ parameter_unit: {
   semitone: &UNIT_ST st,
   voice: &UNIT_V "",
   percent: &UNIT_% "%",
-  keys: &UNIT_KEY ""
+  none: &UNIT_NONE ""
 }
 
 parameter_rounding: {
@@ -174,7 +174,7 @@ display_scaling_type: {
 #   FINE_BIPOLAR_80_ST: { round: , unit: , reference: , inf: , values: [] },
   LINEAR_12_KEYS: {
     round: *ROUNDING_NO_DECIMALS,
-    unit: *UNIT_KEY,
+    unit: *UNIT_NONE,
     reference: *REFERENCE_INT,
     inf: false,
     values: [ C, D#, F#, G#, B ]
@@ -183,7 +183,20 @@ display_scaling_type: {
 #   LINEAR_50_DB: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_60_DB: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_60_DBT: { round: , unit: , reference: , inf: , values: [] }, # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3176
-#   LINEAR_61_KEYS: { round: , unit: , reference: , inf: , values: [] },
+  LINEAR_61_KEYS: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_INT,
+    inf: false,
+    values: [ C1, D#2, F#3, A4, C6 ]
+  },
+  LINEAR_BIPOLAR_60_ST: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_INT,
+    inf: false,
+    values: [ "-60", "-30", "0", "30", "60" ]
+  },
 #   LINEAR_96_ST: { round: , unit: , reference: , inf: , values: [] },
   LINEAR_100_PERCENT: {
     round: *ROUNDING_ONE_DECIMAL,
@@ -253,12 +266,30 @@ display_scaling_type: {
 #   PARABOLIC_50_MS: { round: , unit: , reference: , inf: , values: [] },
 #   PARABOLIC_2000_MS: { round: , unit: , reference: , inf: , values: [] },
 #   PARABOLIC_BIP_100_PERCENT: { round: , unit: , reference: , inf: , values: [] },
-#   SWITCH_ON_OFF: { round: , unit: , reference: , inf: , values: [] },
+  SWITCH_ON_OFF: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_INT,
+    inf: false,
+    values: [ "Off", "On" ]
+  },
 #   SWITCH_PRIO: { round: , unit: , reference: , inf: , values: [] },
 #   VERY_FINE_24_ST: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_70_DB: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_0_60_ST: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_0_60_KEY: { round: , unit: , reference: , inf: , values: [] },
+  LINEAR_0_60_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_INT,
+    inf: false,
+    values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ]
+  },
+  LINEAR_0_60_KEY: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_INT,
+    inf: false,
+    values: [ C1, D#2, F#3, A4, C6 ]
+  },
 #   MODES_LEGATO: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_BIPOLAR_60_DB: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_200_PERCENT: { round: , unit: , reference: , inf: , values: [] },

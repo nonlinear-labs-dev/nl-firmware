@@ -37,7 +37,7 @@ parameters:
     token: Base_Key
     label_long: Base Key
     label_short: Base Key
-    control_position: { coarse: 11, fine: 11, unit: key, scale: LINEAR_12_KEYS, initial: 0.0f, bipolar: false }
+    control_position: { coarse: 11, fine: 11, unit: none, scale: LINEAR_12_KEYS, initial: 0.0f, bipolar: false }
     rendering_args: { scaling: Linear, factor: 11.0f, offset: 0.0f, section: Global, clock: Slow, signal: None }
     info: >
       Sets the base key for the custom scale.

@@ -15,6 +15,14 @@ static: [
       Layer: *AVAILABILITY
     }
   },
+  &MODULATEABLE_NO_SINGLE {
+    availability: {
+      Single: { hidden: true, disabled: false, count: 0 },
+      Split: *AVAILABILITY,
+      Layer: *AVAILABILITY
+    },
+    type: Global_Modulateable
+  },
   &MODULATEABLE {
     <<: *SHARED,
     type: Global_Modulateable
@@ -42,7 +50,7 @@ parameters:
     rendering_args: { scaling: Linear, factor: 48.0f, offset: 0.0f, section: Global, clock: Slow, signal: Global_Signal }
     info: >
       Global pitch transposition [in semitones].
-  - <<: *MODULATEABLE
+  - <<: *MODULATEABLE_NO_SINGLE
     id: 406
     token: Pan
     label_long: "@ST:Pan Pan"
@@ -56,7 +64,7 @@ parameters:
       -100%: Part I is panned completely to the right, Part II is panned completely to the left.\n
       0%: no additional panning, both Parts equally feed the resulting stereo signal.\n
       100%: Part I is panned completely to the left, Part II is panned completely to the right.
-  - <<: *MODULATEABLE
+  - <<: *MODULATEABLE_NO_SINGLE
     id: 408
     token: Serial_FX
     label_long: Serial FX

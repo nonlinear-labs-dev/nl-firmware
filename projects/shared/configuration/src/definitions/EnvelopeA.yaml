@@ -22,17 +22,22 @@ static: [
   &UNMODULATEABLE {
     <<: *SHARED,
     type: Local_Unmodulateable
+  },
+  &ENV_CP_FINITE { coarse: 100, fine: 1000, unit: millisecond, scale: ENVELOPE_TIME_MS, bipolar: false },
+  &ENV_CP_INFINITE { coarse: 101, fine: 1010, unit: millisecond, scale: ENVELOPE_TIME_MS_INF, bipolar: false },
+  &ENV_TIME_FINITE {
+    <<: *MODULATEABLE,
+    modulation_aspects: { coarse: 100, fine: 1000, unit: percent, scale: LINEAR_BIPOLAR_100_PERCENT },
+    rendering_args: { scaling: Expon_Env_Time, factor: 1.0f, offset: -20.0f, section: Poly, clock: Slow, signal: None }
   }
 ]
 
 parameters:
-  - <<: *MODULATEABLE
+  - <<: *ENV_TIME_FINITE
     id: 0
     token: Attack
     label_long: Attack Time
     label_short: Attack
-    control_position: { coarse: 100, fine: 1000, unit: millisecond, scale: ENVELOPE_TIME_MS, initial: 0.0f, bipolar: false }
-    modulation_aspects: { coarse: 100, fine: 1000, unit: percent, scale: LINEAR_BIPOLAR_100_PERCENT }
-    rendering_args: { scaling: Expon_Env_Time, factor: 1.0f, offset: -20.0f, section: Poly, clock: Slow, signal: None }
+    control_position: { <<: *ENV_CP_FINITE, initial: 0.0f }
     info: >
       Time of the (polynomial) Attack segment in milliseconds.

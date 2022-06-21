@@ -1,0 +1,9 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Mono_Grp
+
+static: []
+
+parameters: []
