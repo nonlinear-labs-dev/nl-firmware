@@ -2,6 +2,8 @@
 %TAG ! tag:nonlinear-labs.de,2022:js-yaml:
 --- !definitions
 
+group: Mod_HW
+
 static: [
   &SHARED {
     availability: {
@@ -80,8 +82,6 @@ static: [
     <<: *RIBBON_CP
   }
 ]
-
-group: Mod_HW
 
 parameters:
   - <<: *PEDAL

@@ -58,7 +58,8 @@ parameter_unit: {
   millisecond: &UNIT_MS ms,
   semitone: &UNIT_ST st,
   voice: &UNIT_V "",
-  percent: &UNIT_% "%"
+  percent: &UNIT_% "%",
+  keys: &UNIT_KEY ""
 }
 
 parameter_rounding: {
@@ -156,9 +157,28 @@ display_scaling_type: {
   },
 #   ENVELOPE_TIME_MS_INF: { round: , unit: , reference: , inf: , values: [] },
 #   FINE_200_PERCENT: { round: , unit: , reference: , inf: , values: [] },
-#   FINE_BIPOLAR_48_ST: { round: , unit: , reference: , inf: , values: [] },
+  FINE_BIPOLAR_48_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "-48.00", "-24.00", "0.00", "24.00", "48.00" ]
+  },
+  FINE_BIPOLAR_96_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "-96.00", "-48.00", "0.00", "48.00", "96.00" ]
+  },
 #   FINE_BIPOLAR_80_ST: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_12_KEYS: { round: , unit: , reference: , inf: , values: [] },
+  LINEAR_12_KEYS: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_KEY,
+    reference: *REFERENCE_INT,
+    inf: false,
+    values: [ C, D#, F#, G#, B ]
+  },
 #   LINEAR_24_COUNT: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_50_DB: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_60_DB: { round: , unit: , reference: , inf: , values: [] },
@@ -197,12 +217,38 @@ display_scaling_type: {
     inf: false,
     values: [ "-100.0", "-50.0", "0.0", "50.0", "100.0" ]
   },
+  LINEAR_BIPOLAR_200_PERCENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_%,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "-200.0", "-100.0", "0.0", "100.0", "200.0" ]
+  },
 #   LINEAR_BIPOLAR_100_ST: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_BIPOLAR_180_DEG: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_BIPOLAR_1200_CENT: { round: , unit: , reference: , inf: , values: [] },
+  LINEAR_BIPOLAR_1200_CENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_CT,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "-1200.0", "-600.0", "0.0", "600.0", "1200.0" ]
+  },
+  LINEAR_BIPOLAR_2400_CENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_CT,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "-2400.0", "-1200.0", "0.0", "1200.0", "2400.0" ]
+  },
 #   NUMERIC_120_ST: { round: , unit: , reference: , inf: , values: [] },
 #   NUMERIC_150_ST: { round: , unit: , reference: , inf: , values: [] },
-#   PARABOLIC_GAIN_DB: { round: , unit: , reference: , inf: , values: [] },
+  PARABOLIC_GAIN_DB: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_GAIN,
+    inf: min,
+    values: [ "-108", "-12.0", "0.000", "7.04", "12.0" ]
+  },
 #   PARABOLIC_10_HZ: { round: , unit: , reference: , inf: , values: [] },
 #   PARABOLIC_50_MS: { round: , unit: , reference: , inf: , values: [] },
 #   PARABOLIC_2000_MS: { round: , unit: , reference: , inf: , values: [] },

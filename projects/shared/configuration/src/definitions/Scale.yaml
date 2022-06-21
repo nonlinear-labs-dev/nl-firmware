@@ -1,0 +1,140 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Scale
+
+signals:
+  Global_Signal: [ Base_Key_Pos, Base_Key_Start, Base_Key_Dest ]
+
+static: [
+  &SHARED {
+    availability: {
+      Single: &AVAILABILITY { hidden: false, disabled: false, count: 1 },
+      Split: *AVAILABILITY,
+      Layer: *AVAILABILITY
+    }
+  },
+  &MODULATEABLE {
+    <<: *SHARED,
+    type: Global_Modulateable
+  },
+  &UNMODULATEABLE {
+    <<: *SHARED,
+    type: Global_Unmodulateable
+  },
+  &OFFSET {
+    <<: *MODULATEABLE,
+    control_position: { coarse: 1200, fine: 12000, unit: cent, scale: LINEAR_BIPOLAR_1200_CENT, initial: 0.0f, bipolar: true },
+    modulation_aspects: { coarse: 1200, fine: 12000, unit: cent, scale: LINEAR_BIPOLAR_2400_CENT },
+    rendering_args: { scaling: Linear, factor: 12.0f, offset: 0.0f, section: Global, clock: Slow, signal: Global_Signal }
+  }
+]
+
+parameters:
+  - <<: *UNMODULATEABLE
+    id: 312
+    token: Base_Key
+    label_long: Base Key
+    label_short: Base Key
+    control_position: { coarse: 11, fine: 11, unit: key, scale: LINEAR_12_KEYS, initial: 0.0f, bipolar: false }
+    rendering_args: { scaling: Linear, factor: 11.0f, offset: 0.0f, section: Global, clock: Slow, signal: None }
+    info: >
+      Sets the base key for the custom scale.
+      The scale is defined for the eleven keys above the base key andwill be applied to all octaves accordingly.
+  - <<: *OFFSET
+    id: 391
+    token: Offset_0
+    label_long: Offset +0
+    label_short: Offset +0
+    info: >
+      Offset of the base key [in cents].
+      At zero, the interval to the base key would be perfect identity.
+  - <<: *OFFSET
+    id: 313
+    token: Offset_1
+    label_long: Offset +1
+    label_short: Offset +1
+    info: >
+      Offset of the first key following the base key [in cents].
+      At zero, the interval to the base key would be the minor second of the equally tempered scale.
+  - <<: *OFFSET
+    id: 314
+    token: Offset_2
+    label_long: Offset +2
+    label_short: Offset +2
+    info: >
+      Offset of the second key following the base key [in cents].
+      At zero, the interval to the base key would be the major second of the equally tempered scale.
+  - <<: *OFFSET
+    id: 315
+    token: Offset_3
+    label_long: Offset +3
+    label_short: Offset +3
+    info: >
+      Offset of the third key following the base key [in cents].
+      At zero, the interval to the base key would be the minor third of the equally tempered scale.
+  - <<: *OFFSET
+    id: 316
+    token: Offset_4
+    label_long: Offset +4
+    label_short: Offset +4
+    info: >
+      Offset of the fourth key following the base key [in cents].
+      At zero, the interval to the base key would be the major third of the equally tempered scale.
+  - <<: *OFFSET
+    id: 317
+    token: Offset_5
+    label_long: Offset +5
+    label_short: Offset +5
+    info: >
+      Offset of the fifth key following the base key [in cents].
+      At zero, the interval to the base key would be the fourth of the equally tempered scale.
+  - <<: *OFFSET
+    id: 318
+    token: Offset_6
+    label_long: Offset +6
+    label_short: Offset +6
+    info: >
+      Offset of the sixth key following the base key [in cents].
+      At zero, the interval to the base key would be the tritone of the equally tempered scale.
+  - <<: *OFFSET
+    id: 319
+    token: Offset_7
+    label_long: Offset +7
+    label_short: Offset +7
+    info: >
+      Offset of the seventh key following the base key [in cents].
+      At zero,the interval to the base key would be the fifth of the equally tempered scale.
+  - <<: *OFFSET
+    id: 320
+    token: Offset_8
+    label_long: Offset +8
+    label_short: Offset +8
+    info: >
+      Offset of the eighth key following the base key [in cents].
+      At zero, the interval to the base key would be the minor sixth of the equally tempered scale.
+  - <<: *OFFSET
+    id: 321
+    token: Offset_9
+    label_long: Offset +9
+    label_short: Offset +9
+    info: >
+      Offset of the ninth key following the base key [in cents].
+      At zero, the interval to the base key would be the major sixth of the equally tempered scale.
+  - <<: *OFFSET
+    id: 322
+    token: Offset_10
+    label_long: Offset +10
+    label_short: Offset +10
+    info: >
+      Offset of the tenth key following the base key [in cents].
+      At zero, the interval to the base key would be the minor seventh of the equally tempered scale.
+  - <<: *OFFSET
+    id: 323
+    token: Offset_11
+    label_long: Offset +11
+    label_short: Offset +11
+    info: >
+      Offset of the eleventh key following the base key [in cents].
+      At zero, the interval to the base key would be the major seventh of the equally tempered scale.

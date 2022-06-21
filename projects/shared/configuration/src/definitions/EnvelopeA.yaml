@@ -2,23 +2,28 @@
 %TAG ! tag:nonlinear-labs.de,2022:js-yaml:
 --- !definitions
 
+group: Env_A
+
+signals:
+  Truepoly_Signal: [ Mag, Tmb ]
+
 static: [
-  &AVAILABILITY {
-    single: { hidden: false, disabled: false, count: 1 },
-    split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
-    layer: *AVAILABILITY_DUAL
+  &SHARED {
+    availability: {
+      Single: &AVAILABILITY { hidden: false, disabled: false, count: 1 },
+      Split: *AVAILABILITY,
+      Layer: *AVAILABILITY
+    }
   },
   &MODULATEABLE {
-    availability: *AVAILABILITY,
+    <<: *SHARED,
     type: Local_Modulateable
   },
   &UNMODULATEABLE {
-    availability: *AVAILABILITY,
+    <<: *SHARED,
     type: Local_Unmodulateable
   }
 ]
-
-group: Env_A
 
 parameters:
   - <<: *MODULATEABLE
@@ -28,8 +33,6 @@ parameters:
     label_short: Attack
     control_position: { coarse: 100, fine: 1000, unit: millisecond, scale: ENVELOPE_TIME_MS, initial: 0.0f, bipolar: false }
     modulation_aspects: { coarse: 100, fine: 1000, unit: percent, scale: LINEAR_BIPOLAR_100_PERCENT }
-    rendering_args: { scaling: "Expon_Env_Time", factor: 1.0f, offset: -20.0f, section: Poly, clock: Slow, signal: None }
-    info: Time of the (polynomial) Attack segment in milliseconds.
-
-signals:
-  Truepoly_Signal: [ Mag, Tmb ]
+    rendering_args: { scaling: Expon_Env_Time, factor: 1.0f, offset: -20.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Time of the (polynomial) Attack segment in milliseconds.

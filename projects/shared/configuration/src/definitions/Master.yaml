@@ -1,0 +1,72 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Master
+
+signals:
+  Global_Signal: [ FX_I_to_II, FX_II_to_I ]
+
+static: [
+  &SHARED {
+    availability: {
+      Single: &AVAILABILITY { hidden: false, disabled: false, count: 1 },
+      Split: *AVAILABILITY,
+      Layer: *AVAILABILITY
+    }
+  },
+  &MODULATEABLE {
+    <<: *SHARED,
+    type: Global_Modulateable
+  }
+]
+
+parameters:
+  - <<: *MODULATEABLE
+    id: 247
+    token: Volume
+    label_long: Master Volume
+    label_short: Volume
+    control_position: { coarse: 100, fine: 1000, unit: millisecond, scale: PARABOLIC_GAIN_DB, initial: 0.5f, bipolar: false }
+    modulation_aspects: { coarse: 100, fine: 1000, unit: percent, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 4.0f, offset: 0.0f, section: Global, clock: Fast, signal: None }
+    info: >
+      Master volume [in dB], applied at the end of the effect chain, before the soft clipper.
+  - <<: *MODULATEABLE
+    id: 248
+    token: Tune
+    label_long: Master Tune
+    label_short: Tune
+    control_position: { coarse: 48, fine: 4800, unit: semitone, scale: FINE_BIPOLAR_48_ST, initial: 0.0f, bipolar: true }
+    modulation_aspects: { coarse: 48, fine: 4800, unit: semitone, scale: FINE_BIPOLAR_96_ST }
+    rendering_args: { scaling: Linear, factor: 48.0f, offset: 0.0f, section: Global, clock: Slow, signal: Global_Signal }
+    info: >
+      Global pitch transposition [in semitones].
+  - <<: *MODULATEABLE
+    id: 406
+    token: Pan
+    label_long: "@ST:Pan Pan"
+    label_short: "@ST:Pan Pan"
+    control_position: { coarse: 100, fine: 1000, unit: percent, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, bipolar: true }
+    modulation_aspects: { coarse: 100, fine: 1000, unit: percent, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Global, clock: Fast, signal: None }
+    info: >
+      Panning of the dual effect chain (not available in Single Sounds).
+      The stereo signals of both \"FX \" Parts can be panned against each other:\n
+      -100%: Part I is panned completely to the right, Part II is panned completely to the left.\n
+      0%: no additional panning, both Parts equally feed the resulting stereo signal.\n
+      100%: Part I is panned completely to the left, Part II is panned completely to the right.
+  - <<: *MODULATEABLE
+    id: 408
+    token: Serial_FX
+    label_long: Serial FX
+    label_short: Serial FX
+    control_position: { coarse: 48, fine: 4800, unit: percent, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, bipolar: true }
+    modulation_aspects: { coarse: 48, fine: 4800, unit: percent, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Global, clock: Fast, signal: None }
+    info: >
+      The output of an FX chain can be routed to the input of the other FX chain,
+      thus creating a series of 10 effects (not available in Single Sounds).\n
+      Negative values: the FX II output signals are routed to FX I (with absolute amount)\n
+      0.0%: no routing of signals between the FX chains\n
+      Positive values: the FX I output signals are routed to FX II (with absolute amount)

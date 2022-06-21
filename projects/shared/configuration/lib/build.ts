@@ -113,6 +113,7 @@ function processDefinitions(result: Result) {
             pid[id] = `${tokenStr} = ${id}`;
             parameterType[typeStr].push(tokenStr);
             // controlPosition properties
+            // note: unit is redundant, as it is defined in declarations.display_scaling_type
             const
                 { coarse, fine, unit, scale, initial, inactive, bipolar } = control_position,
                 displayScalingType = result.declarations.display_scaling_type[scale];
@@ -142,6 +143,7 @@ function processDefinitions(result: Result) {
                     throw new Error(`${err}: parameter id ${id} of type "${type.name}" requires modulation_aspects`);
                 }
                 // modulationAspects properties
+                // note: unit is redundant, as it is defined in declarations.display_scaling_type
                 const
                     { coarse, fine, unit, scale } = modulation_aspects,
                     displayScalingType = result.declarations.display_scaling_type[scale];

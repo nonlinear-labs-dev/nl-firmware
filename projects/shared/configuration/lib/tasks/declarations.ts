@@ -38,8 +38,8 @@ export type DeclarationsType = {
             round: string;
             unit: string;
             reference: string;
-            inf: boolean;
             values: Array<string>;
+            inf: boolean | string;
         };
     };
     enums: {

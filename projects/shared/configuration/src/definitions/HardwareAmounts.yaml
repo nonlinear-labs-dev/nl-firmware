@@ -2,6 +2,8 @@
 %TAG ! tag:nonlinear-labs.de,2022:js-yaml:
 --- !definitions
 
+group: Mod_HA
+
 static: [
   &HARDWARE_AMOUNT {
     type: Hardware_Amount,
@@ -20,8 +22,6 @@ static: [
     }
   }
 ]
-
-group: Mod_HA
 
 parameters:
   - <<: *HARDWARE_AMOUNT
