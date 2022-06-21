@@ -6,7 +6,8 @@ milestone: 1.7B
 version: 9
 
 max_voices: 24
-params: 410
+# params: 410
+params: 5
 
 clock_rates:
   sd: [ 48000, 9600, 400 ]

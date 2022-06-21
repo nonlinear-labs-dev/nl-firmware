@@ -4,7 +4,6 @@ type ValueType = {
     coarse: number;
     fine: number;
     unit: string;
-    initial: string;
     scale: string;
 };
 
@@ -15,7 +14,9 @@ type ParameterType = {
     type: string;
     id: number;
     control_position: ValueType & {
-        inactive?: number
+        initial: string;
+        inactive?: number;
+        bipolar?: boolean;
     };
     info: string;
     availability: {
@@ -25,13 +26,12 @@ type ParameterType = {
             count: number;
         };
     };
-    bipolar?: boolean;
     return_behavior?: Array<string>;
     modulation_amount?: ValueType;
     rendering_args?: {
-        scale: string;
-        factor: number;
-        offset: number;
+        scaling: string;
+        factor: string;
+        offset: string;
         section: string;
         clock: string;
         signal: string;
@@ -39,10 +39,7 @@ type ParameterType = {
 };
 
 export type SignalType = {
-    [key: string]: Array<{
-        token: string;
-        signal: string;
-    }>;
+    [key: string]: Array<string>;
 };
 
 export type DefinitionsType = {

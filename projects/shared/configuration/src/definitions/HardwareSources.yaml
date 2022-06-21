@@ -21,15 +21,13 @@ static: [
   },
   &BENDER {
     <<: *SHARED,
-    control_position: { <<: *CONTROL_POSITION, scale: LINEAR_BIPOLAR_100_PERCENT },
-    return_behavior: [ Center ],
-    bipolar: true
+    control_position: { <<: *CONTROL_POSITION, bipolar: true, scale: LINEAR_BIPOLAR_100_PERCENT },
+    return_behavior: [ Center ]
   },
   &AFTERTOUCH {
     <<: *SHARED,
-    control_position: { <<: *CONTROL_POSITION, scale: LINEAR_100_PERCENT },
-    return_behavior: [ Zero ],
-    bipolar: false
+    control_position: { <<: *CONTROL_POSITION, bipolar: false, scale: LINEAR_100_PERCENT },
+    return_behavior: [ Zero ]
   },
   &RIBBON {
     <<: *SHARED,
@@ -42,7 +40,8 @@ group: Mod_HW
 
 parameters:
   - <<: *PEDAL
-    id: 254
+    # id: 254
+    id: 4
     token: Pedal_1
     label_long: Pedal 1
     label_short: Pedal 1

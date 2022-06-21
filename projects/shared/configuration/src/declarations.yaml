@@ -49,32 +49,32 @@ parameter_signal: {
 }
 
 parameter_unit: {
-  cent: ct,
-  decibel: dB,
-  decibel_time: dB_T,
-  decibel_per_semitone: dB/st,
-  degree: deg,
-  hertz: Hz,
-  millisecond: ms,
-  semitone: st,
-  voice: "",
-  percent: "%"
+  cent: &UNIT_CT ct,
+  decibel: &UNIT_DB dB,
+  decibel_time: &UNIT_DBR dB_T,
+  decibel_per_semitone: &UNIT_DBST dB/st,
+  degree: &UNIT_DEG deg,
+  hertz: &UNIT_HZ Hz,
+  millisecond: &UNIT_MS ms,
+  semitone: &UNIT_ST st,
+  voice: &UNIT_V "",
+  percent: &UNIT_% "%"
 }
 
 parameter_rounding: {
-  no_decimals: 1,
-  one_decimal: 0.1,
-  two_decimals: 0.01,
-  three_decimals: 0.001,
-  three_significand_digits: 3 St
+  no_decimals: &ROUNDING_NO_DECIMALS 1,
+  one_decimal: &ROUNDING_ONE_DECIMAL 0.1,
+  two_decimals: &ROUNDING_TWO_DECIMALS 0.01,
+  three_decimals: &ROUNDING_THREE_DECIMALS 0.001,
+  three_significant_digits: &ROUNDING_THREE_SIGNIFICANT_DIGITS 3 St
 }
 
 parameter_reference: {
-  linear: linear,
-  parabolic: parabolic,
-  exponential: exponential,
-  gain: (exponential) gain,
-  integer: integer
+  linear: &REFERENCE_LIN linear,
+  parabolic: &REFERENCE_PAR parabolic,
+  exponential: &REFERENCE_EXP exponential,
+  gain: &REFERENCE_GAIN (exponential) gain,
+  integer: &REFERENCE_INT integer
 }
 
 parameter_rgb: {
@@ -147,7 +147,13 @@ smoother_scale: {
 
 display_scaling_type: {
 #   COMB_DECAY_BIPOLAR_MS: { round: , unit: , reference: , inf: , values: [] },
-#   ENVELOPE_TIME_MS: { round: , unit: , reference: , inf: , values: [] },
+  ENVELOPE_TIME_MS: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_MS,
+    reference: *REFERENCE_EXP,
+    inf: false,
+    values: [ "0.000", "2.00", "40.0", "800", "16000" ]
+  },
 #   ENVELOPE_TIME_MS_INF: { round: , unit: , reference: , inf: , values: [] },
 #   FINE_200_PERCENT: { round: , unit: , reference: , inf: , values: [] },
 #   FINE_BIPOLAR_48_ST: { round: , unit: , reference: , inf: , values: [] },
@@ -159,7 +165,13 @@ display_scaling_type: {
 #   LINEAR_60_DBT: { round: , unit: , reference: , inf: , values: [] }, # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3176
 #   LINEAR_61_KEYS: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_96_ST: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_100_PERCENT: { round: , unit: , reference: , inf: , values: [] },
+  LINEAR_100_PERCENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_%,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "0.0", "25.0", "50.0", "75.0", "100.0" ]
+  },
 #   LINEAR_180_DEG: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_360_DEG: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_0_140_ST: { round: , unit: , reference: , inf: , values: [] },

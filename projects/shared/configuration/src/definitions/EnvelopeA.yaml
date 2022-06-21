@@ -1,0 +1,24 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+static: [
+  &AVAILABILITY {
+    single: { hidden: false, disabled: false, count: 1 },
+    split: { hidden: false, disabled: false, count: 2 },
+    layer: { hidden: false, disabled: false, count: 2 }
+  }
+]
+
+group: Env_A
+
+parameters:
+  - id: 2
+    token: Attack
+    label_long: Attack Time
+    label_short: Attack
+    type: Local_Modulateable
+    availability: *AVAILABILITY
+    control_position: { coarse: 100, fine: 1000, unit: millisecond, initial: 0.0f, bipolar: false, scale: ENVELOPE_TIME_MS }
+    rendering_args: { scaling: "Linear", factor: 1.0f, offset: -20.0f, section: Poly, clock: Slow, signal: Quasipoly_Signal }
+    info: ""

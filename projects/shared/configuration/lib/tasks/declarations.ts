@@ -39,7 +39,7 @@ export type DeclarationsType = {
             unit: string;
             reference: string;
             inf: boolean;
-            values: Array<number>;
+            values: Array<string>;
         };
     };
     enums: {
