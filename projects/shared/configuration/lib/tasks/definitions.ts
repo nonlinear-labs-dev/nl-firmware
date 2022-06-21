@@ -27,7 +27,7 @@ type ParameterType = {
         };
     };
     return_behavior?: Array<string>;
-    modulation_amount?: ValueType;
+    modulation_aspects?: ValueType;
     rendering_args?: {
         scaling: string;
         factor: string;

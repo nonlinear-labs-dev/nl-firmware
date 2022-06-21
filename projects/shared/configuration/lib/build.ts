@@ -43,6 +43,7 @@ function processDefinitions(result: Result) {
             return out;
         }, {}),
         parameterList: Array<string> = new Array<string>(result.config.params).fill("{None}");
+    let explicitSignalIndex = result.config.params;
     result.definitions.forEach((definition) => {
         const
             group = {
@@ -59,7 +60,7 @@ function processDefinitions(result: Result) {
                     // required
                     token, id, label_long, label_short, control_position, info, availability,
                     // optional
-                    return_behavior, modulation_amount, rendering_args
+                    return_behavior, modulation_aspects, rendering_args
                 } = parameter;
             if(type.data === undefined) {
                 throw new Error(`${err}: unknown parameter type "${type.name}"`);
@@ -97,19 +98,42 @@ function processDefinitions(result: Result) {
             const
                 { coarse, fine, unit, scale, initial, inactive, bipolar } = control_position,
                 displayScalingType = result.declarations.display_scaling_type[scale];
+            [coarse, fine, unit, scale, initial].forEach((property) => {
+                if(property === undefined) {
+                    throw new Error(`${err}: insufficient control_position definition in paramter id ${id}`);
+                }
+            });
             if(displayScalingType === undefined) {
                 throw new Error(`${err}: unknown DisplayScalingType "${scale}" in parameter id ${id}`);
             }
+            playgroundDescriptor.push(coarse.toString(), fine.toString());
             if(type.data.includes("return_behavior")) {
                 if(return_behavior === undefined) {
                     throw new Error(`${err}: parameter id ${id} of type "${type.name}" requires return_behavior`);
                 }
             }
-            if(type.data.includes("modulation_amount")) {
-                if(modulation_amount === undefined) {
-                    throw new Error(`${err}: parameter id ${id} of type "${type.name}" requires modulation_amount`);
+            if(type.data.includes("modulation_aspects")) {
+                if(modulation_aspects === undefined) {
+                    throw new Error(`${err}: parameter id ${id} of type "${type.name}" requires modulation_aspects`);
                 }
+                const
+                    { coarse, fine, unit, scale } = modulation_aspects,
+                    displayScalingType = result.declarations.display_scaling_type[scale];
+                [coarse, fine, unit, scale].forEach((property) => {
+                    if(property === undefined) {
+                        throw new Error(`${err}: insufficient modulation_aspects definition in paramter id ${id}`);
+                    }
+                });
+                if(displayScalingType === undefined) {
+                    throw new Error(`${err}: unknown DisplayScalingType "${scale}" in modulation_aspects of parameter id ${id}`);
+                }
+                playgroundDescriptor.push(coarse.toString(), fine.toString());
+            } else {
+                playgroundDescriptor.push("None", "None");
             }
+            playgroundDescriptor.push(...[
+                group.data.label_long, group.data.label_short, label_long, label_short, info
+            ].map((entry) => `"${entry}"`));
             if(type.data.includes("rendering_args")) {
                 if(rendering_args === undefined) {
                     throw new Error(`${err}: parameter id ${id} of type "${type.name}" requires rendering_args`);
@@ -122,9 +146,9 @@ function processDefinitions(result: Result) {
                 }
                 smootherDescriptor.push(`Smoothers::${sectionType}::${tokenStr}`);
                 if(signal) {
-                    const signalStr = `${signal}s`;
-                    if(signalType[signalStr] === undefined) throw new Error(`${err}: unknown signal "${signal}" in parameter id ${id}`);
                     if(signal !== "None") {
+                        const signalStr = `${signal}s`;
+                        if(signalType[signalStr] === undefined) throw new Error(`${err}: unknown signal "${signal}" in parameter id ${id}`);
                         signalType[signalStr][id] = tokenStr;
                         smootherDescriptor.push(`Signals::${signalStr}::${tokenStr}`);
                     } else {
@@ -147,7 +171,7 @@ function processDefinitions(result: Result) {
                     rendering_args === undefined ? "{}" :
                     `{\n${indent.repeat(2)}${smootherDescriptor.join(`,\n${indent.repeat(2)}`)}\n${indent}}`
                 ),
-                `{}`
+                `{\n${indent.repeat(2)}${playgroundDescriptor.join(`,\n${indent.repeat(2)}`)}\n${indent}}`
             ];
             parameterList[id] = [
                 "{",
@@ -155,6 +179,17 @@ function processDefinitions(result: Result) {
                 "}"
             ].join("\n");
         });
+        if(definition.signals !== undefined) {
+            Object.entries(definition.signals).forEach(([key, value]) => {
+                const signalStr = `${key}s`;
+                if(signalType[signalStr] === undefined) {
+                    throw new Error(`${err}: unknown signal type "${key}" in group "${group.name}"`);
+                }
+                value.forEach((signal) => {
+                    signalType[signalStr][explicitSignalIndex++] = `${group.name}_${signal}`;
+                });
+            });
+        }
     });
     result.parameter_list = parameterList.join(",\n");
     result.parameters = Object.entries(parameterType).reduce((out: Array<string>, [key, entries]) => {

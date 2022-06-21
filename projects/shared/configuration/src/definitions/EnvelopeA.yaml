@@ -5,20 +5,31 @@
 static: [
   &AVAILABILITY {
     single: { hidden: false, disabled: false, count: 1 },
-    split: { hidden: false, disabled: false, count: 2 },
-    layer: { hidden: false, disabled: false, count: 2 }
+    split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+    layer: *AVAILABILITY_DUAL
+  },
+  &MODULATEABLE {
+    availability: *AVAILABILITY,
+    type: Local_Modulateable
+  },
+  &UNMODULATEABLE {
+    availability: *AVAILABILITY,
+    type: Local_Unmodulateable
   }
 ]
 
 group: Env_A
 
 parameters:
-  - id: 2
+  - <<: *MODULATEABLE
+    id: 0
     token: Attack
     label_long: Attack Time
     label_short: Attack
-    type: Local_Modulateable
-    availability: *AVAILABILITY
-    control_position: { coarse: 100, fine: 1000, unit: millisecond, initial: 0.0f, bipolar: false, scale: ENVELOPE_TIME_MS }
-    rendering_args: { scaling: "Linear", factor: 1.0f, offset: -20.0f, section: Poly, clock: Slow, signal: Quasipoly_Signal }
+    control_position: { coarse: 100, fine: 1000, unit: millisecond, scale: ENVELOPE_TIME_MS, initial: 0.0f, bipolar: false }
+    modulation_aspects: { coarse: 100, fine: 1000, unit: percent, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: "Expon_Env_Time", factor: 1.0f, offset: -20.0f, section: Poly, clock: Slow, signal: None }
     info: ""
+
+signals:
+  Truepoly_Signal: [ Mag, Tmb ]

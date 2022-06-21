@@ -190,7 +190,13 @@ display_scaling_type: {
 #   LINEAR_BIPOLAR_60_ST: { round: , unit: , reference: , inf: , values: [] }, # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3182
 #   LINEAR_BIPOLAR_60_DBT: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_BIPOLAR_80_ST: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_BIPOLAR_100_PERCENT: { round: , unit: , reference: , inf: , values: [] },
+  LINEAR_BIPOLAR_100_PERCENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_%,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "-100.0", "-50.0", "0.0", "50.0", "100.0" ]
+  },
 #   LINEAR_BIPOLAR_100_ST: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_BIPOLAR_180_DEG: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_BIPOLAR_1200_CENT: { round: , unit: , reference: , inf: , values: [] },
