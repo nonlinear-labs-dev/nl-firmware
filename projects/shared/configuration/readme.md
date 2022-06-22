@@ -1,4 +1,4 @@
-# [YAML Experiments] C15 Configuration
+# C15 Configuration
 
 An attempt to re-implement (and extend) the "parameter-db" sub-project on a [YAML](https://yaml.org/) basis, providing essential C15 definitions as shared header files (usable wherever they are needed). The current project name is "configuration", as we define more than just parameters here.
 
@@ -26,11 +26,18 @@ The process consists of four distinct phases, each of which can fail on invalid 
 3. G++ compilation _(validating generated headers, providing executable based on generated files)_
 4. "Main" execution _(additional validation of generated structures)_
 
+## Compatibility with ParameterDb
+
+The content of provided files aims for seamless exchange. However, there is one file in the ParameterDb that is deprecated/removed here:
+`parameter_info.h` moved into `declarations.h`. Besides that, the provided and validated code should match the ParameterDb.
+
 ## Status
+
 - [x] config.yaml --> config.h
 - [x] declarations.yaml --> declarations.h
-- [x] handling of several *.in.* files
+- [x] handling of several `*.in.*` files
 - [x] handling of several definition.yaml files --> definitions.h
+- [x] auto-counting of parameters
 - [ ] content for java and js resources
 - [ ] integration of other shared resources (f.e. nltools) in generated output?
 
@@ -38,7 +45,24 @@ The process consists of four distinct phases, each of which can fail on invalid 
 
 - [x] working proof of concept
 - [ ] complete C15 definition
+  - [x] Global: ModMatrix (HW Sources and Amounts, Macro Controls and Times), Master, Scale
+  - [x] Split, Part, Unison, Mono
+  - [x] Envelopes A, B, C, (G)
+  - [ ] Oscillators and Shapers
+  - [ ] Comb and SV Filter
+  - [ ] Feedback and Output Mixer
+  - [ ] Effects: Flanger, Cabinet, Gap Filter, Echo, Reverb
 - [ ] "dockerize" project and integrate into make process
 - [ ] review:
   - can code be simplified/generalized further?
   - can validation and generation of error messages be more informative?
+    - [x] yaml parsing and g++ errors give decent indication of what went wrong
+    - [x] typescript validation already does lots of sanity checks
+    - [x] parameter definition errors at least provide a filename and reason
+- possible project enhancements
+  - [ ] integrate clang-format ?
+  - [ ] more PlayGround definitions _(descriptors: DisplayScalingType, ParameterGroup)_
+  - [ ] provide hw sources as c header for PlayController
+  - [ ] generate html artifacts for parameter-reference (manual, webui)?
+  - [ ] generate css artifacts _(parameter-group colors)_
+  - [ ] potentially delegate Configuration <--> NlTools _(enums: MC, SoundType, VoiceGroup, Preset Messages, Settings?)_
