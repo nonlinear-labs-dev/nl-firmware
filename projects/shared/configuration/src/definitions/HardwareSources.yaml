@@ -13,7 +13,7 @@ static: [
     }
   },
   &CONTROL_POSITION {
-    coarse: 100, fine: 1000, unit: percent, initial: 0.0f
+    coarse: 100, fine: 1000, initial: 0.0f
   },
   &SOURCE {
     <<: *SHARED,

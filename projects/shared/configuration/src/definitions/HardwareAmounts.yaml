@@ -15,7 +15,6 @@ static: [
     control_position: {
       coarse: 100,
       fine: 1000,
-      unit: percent,
       scale: LINEAR_BIPOLAR_100_PERCENT,
       initial: 0.0f,
       bipolar: true

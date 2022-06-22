@@ -15,12 +15,12 @@ static: [
   &MACRO_CONTROL {
     <<: *SHARED,
     type: Macro_Control,
-    control_position: { coarse: 100, fine: 1000, unit: percent, initial: 0.5f, bipolar: false, scale: LINEAR_100_PERCENT }
+    control_position: { coarse: 100, fine: 1000, initial: 0.5f, bipolar: false, scale: LINEAR_100_PERCENT }
   },
   &MACRO_TIME {
     <<: *SHARED,
     type: Macro_Time,
-    control_position: { coarse: 100, fine: 1000, unit: millisecond, initial: 0.4f, bipolar: false, scale: ENVELOPE_TIME_MS }
+    control_position: { coarse: 100, fine: 1000, initial: 0.4f, bipolar: false, scale: ENVELOPE_TIME_MS }
   }
 ]
 

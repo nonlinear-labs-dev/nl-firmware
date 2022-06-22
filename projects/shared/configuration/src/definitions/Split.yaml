@@ -15,8 +15,8 @@ parameters:
     token: Split_Point
     label_long: Split Point
     label_short: Split Pnt
-    control_position: { coarse: 60, fine: 60, unit: none, scale: LINEAR_61_KEYS, initial: 30.0f / 60.0f, bipolar: false }
-    modulation_aspects: { coarse: 60, fine: 60, unit: none, scale: LINEAR_BIPOLAR_60_ST }
+    control_position: { coarse: 60, fine: 60, scale: LINEAR_61_KEYS, initial: 30.0f / 60.0f, bipolar: false }
+    modulation_aspects: { coarse: 60, fine: 60, scale: LINEAR_BIPOLAR_60_ST }
     rendering_args: { scaling: Linear, factor: 60.0f, offset: 0.05f, section: None, clock: None, signal: None }
     info: >
       Determines the split position of a sound as a key number.

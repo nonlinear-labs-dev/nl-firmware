@@ -113,12 +113,11 @@ function processDefinitions(result: Result) {
             pid[id] = `${tokenStr} = ${id}`;
             parameterType[typeStr].push(tokenStr);
             // controlPosition properties
-            // note: unit is redundant, as it is defined in declarations.display_scaling_type
             const
-                { coarse, fine, unit, scale, initial, inactive, bipolar } = control_position,
+                { coarse, fine, scale, initial, inactive, bipolar } = control_position,
                 displayScalingType = result.declarations.display_scaling_type[scale];
             // controlPosition sanity checks
-            [coarse, fine, unit, scale, initial].forEach((property) => {
+            [coarse, fine, scale, initial].forEach((property) => {
                 if(property === undefined) {
                     throw new Error(`${err}: insufficient control_position definition in paramter id ${id}`);
                 }
@@ -143,12 +142,11 @@ function processDefinitions(result: Result) {
                     throw new Error(`${err}: parameter id ${id} of type "${type.name}" requires modulation_aspects`);
                 }
                 // modulationAspects properties
-                // note: unit is redundant, as it is defined in declarations.display_scaling_type
                 const
-                    { coarse, fine, unit, scale } = modulation_aspects,
+                    { coarse, fine, scale } = modulation_aspects,
                     displayScalingType = result.declarations.display_scaling_type[scale];
                 // modulationAspect property sanity checks
-                [coarse, fine, unit, scale].forEach((property) => {
+                [coarse, fine, scale].forEach((property) => {
                     if(property === undefined) {
                         throw new Error(`${err}: insufficient modulation_aspects definition in paramter id ${id}`);
                     }

@@ -3,7 +3,6 @@ import { Type, Parser } from "../yaml";
 type ValueType = {
     coarse: number;
     fine: number;
-    unit: string;
     scale: string;
 };
 
