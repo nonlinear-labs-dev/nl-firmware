@@ -2,10 +2,6 @@
 
 An attempt to re-implement (and extend) the "parameter-db" sub-project on a [YAML](https://yaml.org/) basis, providing essential C15 definitions as shared header files (usable wherever they are needed). The current project name is "configuration", as we define more than just parameters here.
 
-## Validation
-
-Yaml possesses features for custom tags and validation. However, implementing a validation would result in quite complex and verbose typescript and yaml files, which doesn't seem to provide any benefit. Therefore, the strategy is to perform an additional gcc compilation with the generated headers, which provides validation and raises informative errors when failing.
-
 ## Prerequisites
 
 - required programs: `node` _(currently using v16.15.1)_, `npm` _(8.10.0)_, `tsc` _(4.6.4)_, `g++` _(11.2.0)_
@@ -19,12 +15,30 @@ Yaml possesses features for custom tags and validation. However, implementing a 
 bash process.sh
 ```
 
+## Process Validation
+
+Yaml possesses features for custom tags and validation. However, implementing a validation based on Yaml would result in quite complex and verbose typescript and yaml files, which doesn't seem to provide any benefit. Therefore, the strategy is to perform an additional g++ compilation with the generated headers, which provides validation and raises informative errors when failing.
+
+The process consists of four distinct phases, each of which can fail on invalid input:
+
+1. Typescript compilation _(validating the generation process)_
+2. Node execution _(parsing and validating yaml files, generating usable output files)_
+3. G++ compilation _(validating generated headers, providing executable based on generated files)_
+4. "Main" execution _(additional validation of generated structures)_
+
 ## Status
-- &#x2611; src/config.yaml, src/config.in.h --> generated/config.h
-- &#x2610; src/classification.yaml, src/definitions.yaml --> ?
+- [x] config.yaml --> config.h
+- [x] declarations.yaml --> declarations.h
+- [x] handling of several *.in.* files
+- [x] handling of several definition.yaml files --> definitions.h
+- [ ] content for java and js resources
+- [ ] integration of other shared resources (f.e. nltools) in generated output?
 
 ## Roadmap
 
-- &#x2610; working proof of concept
-- &#x2610; "dockerize" project and integrate into make process
-- &#x2610; provide process safety (by yaml types) and detailed error messages
+- [x] working proof of concept
+- [ ] complete C15 definition
+- [ ] "dockerize" project and integrate into make process
+- [ ] review:
+  - can code be simplified/generalized further?
+  - can validation and generation of error messages be more informative?
