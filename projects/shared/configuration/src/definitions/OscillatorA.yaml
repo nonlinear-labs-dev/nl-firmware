@@ -1,0 +1,30 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Osc_A
+
+signals:
+  Truepoly_Signal: [ Freq, Fluct_Env_C, PM_Self_Env_A, PM_B_Env_B, PM_FB_Env_C ]
+  Quasipoly_Signal: [ Chirp ]
+
+static: [
+  &SHARED {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 1 },
+      Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &VALUE_PERCENT { coarse: 100, fine: 1000 },
+  &MODULATEABLE {
+    <<: *SHARED,
+    type: Local_Modulateable
+  },
+  &UNMODULATEABLE {
+    <<: *SHARED,
+    type: Local_Unmodulateable
+  }
+]
+
+parameters: []

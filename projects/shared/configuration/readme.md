@@ -37,6 +37,7 @@ The content of provided files aims for seamless exchange. However, there is one 
 - [x] handling of several `*.in.*` files
 - [x] handling of several definition.yaml files --> definitions.h
 - [x] auto-counting of parameters
+- [x] good-enough error messages
 - [ ] currently unclear: integration of other shared resources (f.e. nltools) in generated output?
 
 ## Roadmap
@@ -50,10 +51,11 @@ The content of provided files aims for seamless exchange. However, there is one 
   - [ ] Comb and SV Filter
   - [ ] Feedback and Output Mixer
   - [ ] Effects: Flanger, Cabinet, Gap Filter, Echo, Reverb
+- [ ] verification: every (non-empty) ParameterDescriptor of ParameterDb should be identical to Configuration clone
 - [ ] "dockerize" project and integrate into make process
 - [ ] review:
   - can code be simplified/generalized further?
-    - [ ] yaml anchors (`&ANCHOR`) are currently used for keeping yaml as concise as possible --> use custom yaml.Type instead and delegate boilerplate to typescript
+    - [ ] yaml anchors (`&ANCHOR`) are currently used for keeping yaml as concise as possible --> use custom yaml.Type instead and delegate boilerplate to typescript? _(unclear where to draw the line between ./src and ./lib)_
   - can validation and generation of error messages be more informative?
     - [x] yaml parsing and g++ errors give decent indication of what went wrong
     - [x] typescript validation already does lots of sanity checks
