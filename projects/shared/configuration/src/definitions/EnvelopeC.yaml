@@ -2,10 +2,10 @@
 %TAG ! tag:nonlinear-labs.de,2022:js-yaml:
 --- !definitions
 
-group: Env_A
+group: Env_C
 
 signals:
-  Truepoly_Signal: [ Mag, Tmb ]
+  Truepoly_Signal: [ Clip, Uncl ]
 
 static: [
   &SHARED {
@@ -29,7 +29,6 @@ static: [
   &ENV_CP_INFINITE { coarse: 101, fine: 1010, scale: ENVELOPE_TIME_MS_INF, bipolar: false },
   &ENV_CP_VELOCITY { coarse: 60, fine: 600, bipolar: true },
   &ENV_CP_KEYTRACKING { <<: *ENV_CP_LEVEL, bipolar: true },
-  &ENV_CP_GAIN { coarse: 48, fine: 480 },
   &ENV_TIME_FINITE {
     <<: *MODULATEABLE,
     modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT },
@@ -56,7 +55,7 @@ static: [
 
 parameters:
   - <<: *ENV_TIME_FINITE
-    id: 0
+    id: 38
     token: Att
     label_long: Attack Time
     label_short: Attack
@@ -64,7 +63,7 @@ parameters:
     info: >
       Time of the (polynomial) Attack segment in milliseconds.
   - <<: *ENV_TIME_FINITE
-    id: 2
+    id: 40
     token: Dec_1
     label_long: Decay 1 Time
     label_short: Decay 1
@@ -72,16 +71,16 @@ parameters:
     info: >
       Time of the first (linear) Decay segment in milliseconds.
   - <<: *ENV_LEVEL
-    id: 4
+    id: 42
     token: BP
     label_long: Breakpoint Level
     label_short: Breakpoint
-    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_100_PERCENT, initial: 0.5f, bipolar: false }
+    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.5f, bipolar: true }
     modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT }
     info: >
       Level of the Breakpoint between the two Decay segments.
   - <<: *ENV_TIME_FINITE
-    id: 6
+    id: 44
     token: Dec_2
     label_long: Decay 2 Time
     label_short: Decay 2
@@ -89,36 +88,24 @@ parameters:
     info: >
       Time of the second (exponential) Decay segment in milliseconds.
   - <<: *ENV_LEVEL
-    id: 8
+    id: 297
     token: Sus
     label_long: Sustain Level
     label_short: Sustain
-    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_100_PERCENT, initial: 0.0f, bipolar: false, inactive: 0 }
-    modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT }
+    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, bipolar: true, inactive: 0 }
+    modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_200_PERCENT }
     info: >
-      Sustain level (target of the second Decay segment).
+      Sustain level (bipolar, target of the second Decay segment).
   - <<: *ENV_TIME_INFINITE
-    id: 10
+    id: 46
     token: Rel
     label_long: Release Time
     label_short: Release
     control_position: { <<: *ENV_CP_INFINITE, initial: 0.53f }
     info: >
       Time of the (exponential) Release segment in milliseconds (infinite at maximum).
-  - <<: *MODULATEABLE
-    id: 12
-    token: Gain
-    label_long: Gain
-    label_short: Gain
-    control_position: { <<: *ENV_CP_GAIN, scale: LINEAR_BIPOLAR_24_DB, initial: 0.0f, bipolar: true, inactive: 0 }
-    modulation_aspects: { <<: *ENV_CP_GAIN, scale: LINEAR_BIPOLAR_48_DB }
-    rendering_args: { scaling: Expon_Gain, factor: 24.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
-    info: >
-      Gain [in dB] of the envelope signal.
-      As this signal modulates the Oscillator and Shaper A,
-      the Gain influences the level and the amount of phase modulation and distortion.
   - <<: *ENV_VELOCITY
-    id: 14
+    id: 48
     token: Lvl_Vel
     label_long: Level Velocity
     label_short: Level Vel
@@ -126,7 +113,7 @@ parameters:
     info: >
       Influence of the key velocity on the peak, breakpoint and sustain levels of the envelope [maximum dynamic range in dB].
   - <<: *ENV_VELOCITY
-    id: 15
+    id: 49
     token: Att_Vel
     label_long: Attack Velocity
     label_short: Velocity
@@ -136,27 +123,7 @@ parameters:
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Attack time by high Note-On velocities.
   - <<: *ENV_VELOCITY
-    id: 328
-    token: Dec_1_Vel
-    label_long: Decay 1 Velocity
-    label_short: Velocity
-    control_position: { <<: *ENV_CP_VELOCITY, scale: LINEAR_BIPOLAR_INVERTED_60_DBT, initial: 0.0f }
-    info: >
-      Velocity influence on the Decay 1 time.
-      The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
-      of the Decay 1 time by high Note-On velocities.
-  - <<: *ENV_VELOCITY
-    id: 330
-    token: Dec_2_Vel
-    label_long: Decay 2 Velocity
-    label_short: Velocity
-    control_position: { <<: *ENV_CP_VELOCITY, scale: LINEAR_BIPOLAR_INVERTED_60_DBT, initial: 0.0f }
-    info: >
-      Velocity influence on the Decay 2 time.
-      The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
-      of the Decay 2 time by high Note-On velocities.
-  - <<: *ENV_VELOCITY
-    id: 16
+    id: 50
     token: Rel_Vel
     label_long: Release Velocity
     label_short: Velocity
@@ -166,7 +133,7 @@ parameters:
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Release time by high Note-Off velocities.
   - <<: *ENV_KEYTRACKING
-    id: 17
+    id: 51
     token: Lvl_KT
     label_long: Level Key Trk
     label_short: Level KT
@@ -177,7 +144,7 @@ parameters:
       Negative values: lower levels for higher notes (-1.0 = -12 dB per octave).\n
       Origin at C3 = 60 semitones.
   - <<: *ENV_KEYTRACKING
-    id: 18
+    id: 52
     token: Time_KT
     label_long: Time Key Trk
     label_short: Time KT
@@ -186,7 +153,7 @@ parameters:
       Key tracking of the attack, decay and release times.
       The value determines time reduction (positive values) or gain (negative values) for higher notes.
   - <<: *MODULATEABLE
-    id: 294
+    id: 296
     token: Att_Curve
     label_long: Attack Curve
     label_short: Curve
@@ -196,15 +163,14 @@ parameters:
     info: >
       Curvature of the (polynomial) Attack segment.
       (negative: decelerating slope, zero: linear, positive: accelerating slope)
-  - <<: *MODULATEABLE
-    id: 332
-    token: Elevate
-    label_long: Elevate T - A
-    label_short: Elevate
-    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, bipolar: true }
-    modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_200_PERCENT }
+  - <<: *UNMODULATEABLE
+    id: 340
+    token: Retr_H
+    label_long: Retrig Hardness
+    label_short: Retrig
+    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_100_PERCENT, initial: 0.0f, bipolar: false }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
-      Transforms the breakpoints of the Envelope signal, becoming more and more a flat organ-like curve towards the control's edges.
-      At negative values, the Timbre part will be affected, controlling Phase Modulations and Shaper Drives.
-      At positive values, the Amplitude part will be affected.
+      Determines how much the Envelope signal is forced to start at zero instead of the current level
+      (usually from the Release phase).
+      At 100.0 % the Envelope always starts at zero, independant from the previous signal level.

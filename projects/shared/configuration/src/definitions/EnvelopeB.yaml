@@ -2,7 +2,7 @@
 %TAG ! tag:nonlinear-labs.de,2022:js-yaml:
 --- !definitions
 
-group: Env_A
+group: Env_B
 
 signals:
   Truepoly_Signal: [ Mag, Tmb ]
@@ -56,7 +56,7 @@ static: [
 
 parameters:
   - <<: *ENV_TIME_FINITE
-    id: 0
+    id: 19
     token: Att
     label_long: Attack Time
     label_short: Attack
@@ -64,7 +64,7 @@ parameters:
     info: >
       Time of the (polynomial) Attack segment in milliseconds.
   - <<: *ENV_TIME_FINITE
-    id: 2
+    id: 21
     token: Dec_1
     label_long: Decay 1 Time
     label_short: Decay 1
@@ -72,7 +72,7 @@ parameters:
     info: >
       Time of the first (linear) Decay segment in milliseconds.
   - <<: *ENV_LEVEL
-    id: 4
+    id: 23
     token: BP
     label_long: Breakpoint Level
     label_short: Breakpoint
@@ -81,7 +81,7 @@ parameters:
     info: >
       Level of the Breakpoint between the two Decay segments.
   - <<: *ENV_TIME_FINITE
-    id: 6
+    id: 25
     token: Dec_2
     label_long: Decay 2 Time
     label_short: Decay 2
@@ -89,7 +89,7 @@ parameters:
     info: >
       Time of the second (exponential) Decay segment in milliseconds.
   - <<: *ENV_LEVEL
-    id: 8
+    id: 27
     token: Sus
     label_long: Sustain Level
     label_short: Sustain
@@ -98,7 +98,7 @@ parameters:
     info: >
       Sustain level (target of the second Decay segment).
   - <<: *ENV_TIME_INFINITE
-    id: 10
+    id: 29
     token: Rel
     label_long: Release Time
     label_short: Release
@@ -106,7 +106,7 @@ parameters:
     info: >
       Time of the (exponential) Release segment in milliseconds (infinite at maximum).
   - <<: *MODULATEABLE
-    id: 12
+    id: 31
     token: Gain
     label_long: Gain
     label_short: Gain
@@ -118,7 +118,7 @@ parameters:
       As this signal modulates the Oscillator and Shaper A,
       the Gain influences the level and the amount of phase modulation and distortion.
   - <<: *ENV_VELOCITY
-    id: 14
+    id: 33
     token: Lvl_Vel
     label_long: Level Velocity
     label_short: Level Vel
@@ -126,7 +126,7 @@ parameters:
     info: >
       Influence of the key velocity on the peak, breakpoint and sustain levels of the envelope [maximum dynamic range in dB].
   - <<: *ENV_VELOCITY
-    id: 15
+    id: 34
     token: Att_Vel
     label_long: Attack Velocity
     label_short: Velocity
@@ -136,7 +136,7 @@ parameters:
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Attack time by high Note-On velocities.
   - <<: *ENV_VELOCITY
-    id: 328
+    id: 334
     token: Dec_1_Vel
     label_long: Decay 1 Velocity
     label_short: Velocity
@@ -146,7 +146,7 @@ parameters:
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Decay 1 time by high Note-On velocities.
   - <<: *ENV_VELOCITY
-    id: 330
+    id: 336
     token: Dec_2_Vel
     label_long: Decay 2 Velocity
     label_short: Velocity
@@ -156,7 +156,7 @@ parameters:
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Decay 2 time by high Note-On velocities.
   - <<: *ENV_VELOCITY
-    id: 16
+    id: 35
     token: Rel_Vel
     label_long: Release Velocity
     label_short: Velocity
@@ -166,7 +166,7 @@ parameters:
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Release time by high Note-Off velocities.
   - <<: *ENV_KEYTRACKING
-    id: 17
+    id: 36
     token: Lvl_KT
     label_long: Level Key Trk
     label_short: Level KT
@@ -177,7 +177,7 @@ parameters:
       Negative values: lower levels for higher notes (-1.0 = -12 dB per octave).\n
       Origin at C3 = 60 semitones.
   - <<: *ENV_KEYTRACKING
-    id: 18
+    id: 37
     token: Time_KT
     label_long: Time Key Trk
     label_short: Time KT
@@ -186,7 +186,7 @@ parameters:
       Key tracking of the attack, decay and release times.
       The value determines time reduction (positive values) or gain (negative values) for higher notes.
   - <<: *MODULATEABLE
-    id: 294
+    id: 295
     token: Att_Curve
     label_long: Attack Curve
     label_short: Curve
@@ -197,7 +197,7 @@ parameters:
       Curvature of the (polynomial) Attack segment.
       (negative: decelerating slope, zero: linear, positive: accelerating slope)
   - <<: *MODULATEABLE
-    id: 332
+    id: 338
     token: Elevate
     label_long: Elevate T - A
     label_short: Elevate

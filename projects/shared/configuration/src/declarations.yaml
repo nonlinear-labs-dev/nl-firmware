@@ -51,7 +51,7 @@ parameter_signal: {
 parameter_unit: {
   cent: &UNIT_CT ct,
   decibel: &UNIT_DB dB,
-  decibel_time: &UNIT_DBR dB_T,
+  decibel_time: &UNIT_DBT dB_T,
   decibel_per_semitone: &UNIT_DBST dB/st,
   degree: &UNIT_DEG deg,
   hertz: &UNIT_HZ Hz,
@@ -155,7 +155,13 @@ display_scaling_type: {
     inf: false,
     values: [ "0.000", "2.00", "40.0", "800", "16000" ]
   },
-#   ENVELOPE_TIME_MS_INF: { round: , unit: , reference: , inf: , values: [] },
+  ENVELOPE_TIME_MS_INF: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_MS,
+    reference: *REFERENCE_EXP,
+    inf: max,
+    values: [ "0.000", "2.00", "40.0", "800", "16000" ]
+  },
 #   FINE_200_PERCENT: { round: , unit: , reference: , inf: , values: [] },
   FINE_BIPOLAR_48_ST: {
     round: *ROUNDING_TWO_DECIMALS,
@@ -187,8 +193,22 @@ display_scaling_type: {
     values: [ "1", "7", "13", "18", "24" ]
   },
 #   LINEAR_50_DB: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_60_DB: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_60_DBT: { round: , unit: , reference: , inf: , values: [] }, # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3176
+  # LINEAR_60_DB: {
+  #   # unused
+  #   round: *ROUNDING_ONE_DECIMAL,
+  #   unit: *UNIT_DB,
+  #   reference: *REFERENCE_LIN,
+  #   inf: false,
+  #   values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ]
+  # },
+  # LINEAR_60_DBT: {
+  #   # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3176
+  #   round: *ROUNDING_ONE_DECIMAL,
+  #   unit: *UNIT_DBT,
+  #   reference: *REFERENCE_LIN,
+  #   inf: false,
+  #   values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ]
+  # },
   LINEAR_61_KEYS: {
     round: *ROUNDING_NO_DECIMALS,
     unit: *UNIT_NONE,
@@ -234,13 +254,40 @@ display_scaling_type: {
 #   LINEAR_60_140_ST: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_80_140_ST: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_MINUS_50_0_DB: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_BIPOLAR_1_DBST: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_BIPOLAR_24_DB: { round: , unit: , reference: , inf: , values: [] },
+  LINEAR_BIPOLAR_1_DBST: {
+    round: *ROUNDING_THREE_DECIMALS,
+    unit: *UNIT_DBST,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "-1.000", "-0.500", "0.000", "0.500", "1.000" ]
+  },
+  LINEAR_BIPOLAR_24_DB: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "-24.0", "-12.0", "0.0", "12.0", "24.0" ]
+  },
+  LINEAR_BIPOLAR_48_DB: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "-48.0", "-24.0", "0.0", "24.0", "48.0" ]
+  },
 #   LINEAR_BIPOLAR_33_PERCENT: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_BIPOLAR_36_ST: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_BIPOLAR_50_PERCENT: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_BIPOLAR_60_ST: { round: , unit: , reference: , inf: , values: [] }, # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3182
-#   LINEAR_BIPOLAR_60_DBT: { round: , unit: , reference: , inf: , values: [] },
+#   LINEAR_BIPOLAR_60_ST: { round: , unit: , reference: , inf: , values: [] },
+  LINEAR_BIPOLAR_60_DBT: {
+    # with https://github.com/nonlinear-labs-dev/C15/issues/3182,
+    # only Envelope Level Velocities remain using this scaling
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DBT,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ]
+  },
 #   LINEAR_BIPOLAR_80_ST: { round: , unit: , reference: , inf: , values: [] },
   LINEAR_BIPOLAR_100_PERCENT: {
     round: *ROUNDING_ONE_DECIMAL,
@@ -335,8 +382,27 @@ display_scaling_type: {
     inf: false,
     values: [ None, Env, Glide, Env&Gld ]
   },
-#   LINEAR_BIPOLAR_60_DB: { round: , unit: , reference: , inf: , values: [] },
+  LINEAR_BIPOLAR_60_DB: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ]
+  },
 #   LINEAR_200_PERCENT: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_INVERTED_60_DBT: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_BIPOLAR_INVERTED_60_DBT: { round: , unit: , reference: , inf: , values: [] }
+  # LINEAR_INVERTED_60_DBT: {
+  #   # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3176
+  #   round: *ROUNDING_ONE_DECIMAL,
+  #   unit: *UNIT_DBT,
+  #   reference: *REFERENCE_LIN,
+  #   inf: false,
+  #   values: [ "-60.0", "-45.0", "-30.0", "-15.0", "0.0" ]
+  # },
+  LINEAR_BIPOLAR_INVERTED_60_DBT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DBT,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ]
+  }
 }
