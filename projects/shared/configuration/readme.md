@@ -33,13 +33,11 @@ The content of provided files aims for seamless exchange. However, there is one 
 
 ## Status
 
-- [x] config.yaml --> config.h
-- [x] declarations.yaml --> declarations.h
+- [x] parse yaml to desired output: .h, .cpp
 - [x] handling of several `*.in.*` files
 - [x] handling of several definition.yaml files --> definitions.h
 - [x] auto-counting of parameters
-- [ ] content for java and js resources
-- [ ] integration of other shared resources (f.e. nltools) in generated output?
+- [ ] currently unclear: integration of other shared resources (f.e. nltools) in generated output?
 
 ## Roadmap
 
@@ -55,11 +53,13 @@ The content of provided files aims for seamless exchange. However, there is one 
 - [ ] "dockerize" project and integrate into make process
 - [ ] review:
   - can code be simplified/generalized further?
+    - [ ] yaml anchors (`&ANCHOR`) are currently used for keeping yaml as concise as possible --> use custom yaml.Type instead and delegate boilerplate to typescript
   - can validation and generation of error messages be more informative?
     - [x] yaml parsing and g++ errors give decent indication of what went wrong
     - [x] typescript validation already does lots of sanity checks
     - [x] parameter definition errors at least provide a filename and reason
 - possible project enhancements
+  - [ ] content for java and js resources
   - [ ] integrate clang-format ?
   - [ ] more PlayGround definitions _(descriptors: DisplayScalingType, ParameterGroup)_
   - [ ] provide hw sources as c header for PlayController
