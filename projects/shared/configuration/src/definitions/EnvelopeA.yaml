@@ -25,10 +25,10 @@ static: [
   },
   &ENV_CP_LEVEL { coarse: 100, fine: 1000 },
   &ENV_MA_LEVEL { <<: *ENV_CP_LEVEL },
-  &ENV_CP_FINITE { <<: *ENV_CP_LEVEL, scale: ENVELOPE_TIME_MS, bipolar: false },
-  &ENV_CP_INFINITE { coarse: 101, fine: 1010, scale: ENVELOPE_TIME_MS_INF, bipolar: false },
-  &ENV_CP_VELOCITY { coarse: 60, fine: 600, bipolar: true },
-  &ENV_CP_KEYTRACKING { <<: *ENV_CP_LEVEL, bipolar: true },
+  &ENV_CP_FINITE { <<: *ENV_CP_LEVEL, scale: ENVELOPE_TIME_MS },
+  &ENV_CP_INFINITE { coarse: 101, fine: 1010, scale: ENVELOPE_TIME_MS_INF },
+  &ENV_CP_VELOCITY { coarse: 60, fine: 600 },
+  &ENV_CP_KEYTRACKING { <<: *ENV_CP_LEVEL },
   &ENV_CP_GAIN { coarse: 48, fine: 480 },
   &ENV_TIME_FINITE {
     <<: *MODULATEABLE,
@@ -76,7 +76,7 @@ parameters:
     token: BP
     label_long: Breakpoint Level
     label_short: Breakpoint
-    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_100_PERCENT, initial: 0.5f, bipolar: false }
+    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_100_PERCENT, initial: 0.5f }
     modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT }
     info: >
       Level of the Breakpoint between the two Decay segments.
@@ -93,7 +93,7 @@ parameters:
     token: Sus
     label_long: Sustain Level
     label_short: Sustain
-    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_100_PERCENT, initial: 0.0f, bipolar: false, inactive: 0 }
+    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_100_PERCENT, initial: 0.0f, inactive: 0 }
     modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT }
     info: >
       Sustain level (target of the second Decay segment).
@@ -110,7 +110,7 @@ parameters:
     token: Gain
     label_long: Gain
     label_short: Gain
-    control_position: { <<: *ENV_CP_GAIN, scale: LINEAR_BIPOLAR_24_DB, initial: 0.0f, bipolar: true, inactive: 0 }
+    control_position: { <<: *ENV_CP_GAIN, scale: LINEAR_BIPOLAR_24_DB, initial: 0.0f, inactive: 0 }
     modulation_aspects: { <<: *ENV_CP_GAIN, scale: LINEAR_BIPOLAR_48_DB }
     rendering_args: { scaling: Expon_Gain, factor: 24.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
@@ -190,7 +190,7 @@ parameters:
     token: Att_Curve
     label_long: Attack Curve
     label_short: Curve
-    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, bipolar: true }
+    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
     info: >
@@ -201,7 +201,7 @@ parameters:
     token: Elevate
     label_long: Elevate T - A
     label_short: Elevate
-    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, bipolar: true }
+    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >

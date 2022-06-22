@@ -42,7 +42,6 @@ static: [
     <<: &BENDER_CP {
       control_position: {
         <<: *CONTROL_POSITION,
-        bipolar: true,
         scale: LINEAR_BIPOLAR_100_PERCENT
       }
     },
@@ -57,7 +56,6 @@ static: [
     <<: &AFTERTOUCH_CP {
       control_position: {
         <<: *CONTROL_POSITION,
-        bipolar: false,
         scale: LINEAR_100_PERCENT
       }
     },

@@ -40,6 +40,7 @@ export type DeclarationsType = {
             reference: string;
             values: Array<string>;
             inf: boolean | string;
+            bipolar: boolean;
         };
     };
     enums: {

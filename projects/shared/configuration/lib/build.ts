@@ -96,6 +96,9 @@ function processDefinitions(result: Result) {
                 smootherDescriptor: Array<string> = [],
                 playgroundDescriptor: Array<string> = [];
             // parameterId sanity checks
+            if(!Number.isInteger(id)) {
+                throw new Error(`${err}: parameter id ${id} is invalid`);
+            }
             if(id < 0 || id > 16382) {
                 throw new Error(`${err}: parameter id ${id} is out of tcd range [0 ... 16382]`);
             }
@@ -114,7 +117,7 @@ function processDefinitions(result: Result) {
             parameterType[typeStr].push(tokenStr);
             // controlPosition properties
             const
-                { coarse, fine, scale, initial, inactive, bipolar } = control_position,
+                { coarse, fine, scale, initial, inactive } = control_position,
                 displayScalingType = result.declarations.display_scaling_type[scale];
             // controlPosition sanity checks
             [coarse, fine, scale, initial].forEach((property) => {
@@ -126,6 +129,7 @@ function processDefinitions(result: Result) {
             if(displayScalingType === undefined) {
                 throw new Error(`${err}: unknown DisplayScalingType "${scale}" in parameter id ${id}`);
             }
+            const bipolar = displayScalingType.bipolar;
             // feed playgroundDescriptor
             playgroundDescriptor.push(coarse.toString(), fine.toString());
             // optional returnBehavior - currently unused

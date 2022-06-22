@@ -16,8 +16,7 @@ static: [
       coarse: 100,
       fine: 1000,
       scale: LINEAR_BIPOLAR_100_PERCENT,
-      initial: 0.0f,
-      bipolar: true
+      initial: 0.0f
     }
   }
 ]

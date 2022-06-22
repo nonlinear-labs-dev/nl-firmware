@@ -15,7 +15,6 @@ type ParameterType = {
     control_position: ValueType & {
         initial: string;
         inactive?: number;
-        bipolar?: boolean;
     };
     info: string;
     availability: {

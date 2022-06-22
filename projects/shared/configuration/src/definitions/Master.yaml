@@ -35,7 +35,7 @@ parameters:
     token: Volume
     label_long: Master Volume
     label_short: Volume
-    control_position: { coarse: 100, fine: 1000, scale: PARABOLIC_GAIN_DB, initial: 0.5f, bipolar: false }
+    control_position: { coarse: 100, fine: 1000, scale: PARABOLIC_GAIN_DB, initial: 0.5f }
     modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT }
     rendering_args: { scaling: Parabolic, factor: 4.0f, offset: 0.0f, section: Global, clock: Fast, signal: None }
     info: >
@@ -45,7 +45,7 @@ parameters:
     token: Tune
     label_long: Master Tune
     label_short: Tune
-    control_position: { coarse: 48, fine: 4800, scale: FINE_BIPOLAR_48_ST, initial: 0.0f, bipolar: true }
+    control_position: { coarse: 48, fine: 4800, scale: FINE_BIPOLAR_48_ST, initial: 0.0f }
     modulation_aspects: { coarse: 48, fine: 4800, scale: FINE_BIPOLAR_96_ST }
     rendering_args: { scaling: Linear, factor: 48.0f, offset: 0.0f, section: Global, clock: Slow, signal: Global_Signal }
     info: >
@@ -55,7 +55,7 @@ parameters:
     token: Pan
     label_long: "@ST:Pan Pan"
     label_short: "@ST:Pan Pan"
-    control_position: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, bipolar: true }
+    control_position: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Global, clock: Fast, signal: None }
     info: >
@@ -69,7 +69,7 @@ parameters:
     token: Serial_FX
     label_long: Serial FX
     label_short: Serial FX
-    control_position: { coarse: 48, fine: 4800, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, bipolar: true }
+    control_position: { coarse: 48, fine: 4800, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { coarse: 48, fine: 4800, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Global, clock: Fast, signal: None }
     info: >
