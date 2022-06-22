@@ -7,7 +7,9 @@ import { DefinitionsType, SignalType, DefinitionsParser } from "./tasks/definiti
 
 // yaml parsing result type
 type Result = ConfigType & DeclarationsType & {
-    definitions: Array<DefinitionsType>;
+    definitions: Array<DefinitionsType & {
+        filename: string;
+    }>;
     timestamp: Date;
     parameters: string;
     smoothers: string;
@@ -22,23 +24,36 @@ type ParamType = {
 
 const indent = " ".repeat(4);
 
+function validateToken(token: string): boolean {
+    return /^\w+$/.test(token);
+}
+
 // validate (essential sanity checks) and transform parsed yaml output
 function processDefinitions(result: Result) {
     const
-        err = "processDefinitions error",
+        errmsg = "processDefinitions error",
         // parameter validation: unique id/token
         params: Array<number | string> = [],
         // parameterID collection (resulting in enum)
         pid: Array<string | undefined> = [],
         // parameterType collection (resulting in enum)
         parameterType = Object.keys(result.declarations.parameter_type).reduce((out: ParamType, type: string) => {
+            if(!validateToken(type)) {
+                throw new Error(`${errmsg}: invalid token for parameterType "${type}"`);
+            }
             if(type !== "None") out[`${type}s`] = []; // every type !== None can collect tokens
             return out;
         }, {}),
         // smootherType collection (resulting in enum)
         smootherType = Object.keys(result.declarations.smoother_section).reduce((out: SignalType, section: string) => {
+            if(!validateToken(section)) {
+                throw new Error(`${errmsg}: invalid token for smootherSection "${section}"`);
+            }
             if(section !== "None") {
                 Object.keys(result.declarations.smoother_clock).forEach((clock: string) => {
+                    if(!validateToken(clock)) {
+                        throw new Error(`${errmsg}: invalid token for smootherClock "${clock}"`);
+                    }
                     out[`${section}_${clock}`] = [];
                 });
             }
@@ -46,6 +61,9 @@ function processDefinitions(result: Result) {
         }, {}),
         // signalType collection (resulting in enum)
         signalType = Object.keys(result.declarations.parameter_signal).reduce((out: SignalType, type: string) => {
+            if(!validateToken(type)) {
+                throw new Error(`${errmsg}: invalid token for parameterSignal "${type}"`);
+            }
             if(type !== "None") out[`${type}s`] = [];
             return out;
         }, {}),
@@ -54,8 +72,9 @@ function processDefinitions(result: Result) {
     // explicit signals
     let explicitSignalIndex = result.config.params;
     // for every yaml resource of ./src/definitions, providing a parameter group
-    result.definitions.forEach((definition) => {
+    result.definitions.forEach(({filename, ...definition}) => {
         const
+            err = `${errmsg} in ${filename}`,
             group = {
                 name: definition.group,
                 data: result.declarations.parameter_group[definition.group]
@@ -191,7 +210,7 @@ function processDefinitions(result: Result) {
                     }
                     // feed SmootherDescriptor
                     smootherDescriptor.push(`Smoothers::${sectionType}::${tokenStr}`);
-                    // smootherType, parameter scaling
+                    // smootherType
                     smootherType[sectionType][id] = tokenStr;
                 } else {
                     smootherDescriptor.push("None");
@@ -208,6 +227,7 @@ function processDefinitions(result: Result) {
                         smootherDescriptor.push("None");
                     }
                 }
+                // parameter scaling
                 smootherDescriptor.push(
                     `Properties::SmootherScale::${scaling}`,
                     factor,
@@ -278,7 +298,9 @@ try {
             timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "", parameter_list: "",
             ...ConfigParser.parse("./src/config.yaml"),
             ...DeclarationsParser.parse("./src/declarations.yaml"),
-            definitions: DefinitionsParser.parseAll(...definitions)
+            definitions: DefinitionsParser.parseAll(...definitions).map((definition, index) => {
+                return { ...definition, filename: definitions[index] }
+            })
         };
     // processing of parsed yaml (sanity checks, enum sorting/filtering, providing strings for replacements)
     processDefinitions(result);
