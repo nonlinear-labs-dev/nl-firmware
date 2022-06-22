@@ -66,11 +66,25 @@ function processDefinitions(result: Result) {
             }
             if(type !== "None") out[`${type}s`] = [];
             return out;
-        }, {}),
-        // parameterList collection
-        parameterList: Array<string> = new Array<string>(result.config.params).fill("{None}");
-    // explicit signals
-    let explicitSignalIndex = result.config.params;
+        }, {});
+    // explicit signals, automatic detection of number of params (highest parameter id)
+    let explicitSignalIndex = result.config.params = 1 + result.definitions.reduce((max, definition) => {
+        return Math.max(max, Math.max(...definition.parameters.map((parameter) => {
+            if(!Number.isInteger(parameter.id)) {
+                throw new Error(
+                    `${errmsg} in ${definition.filename}: parameter id ${parameter.id} is invalid`
+                );
+            }
+            if(parameter.id < 0 || parameter.id > 16382) {
+                throw new Error(
+                    `${errmsg} in ${definition.filename}: parameter id ${parameter.id} is out of tcd range [0 ... 16382]`
+                );
+            }
+            return parameter.id;
+        })));
+    }, 0);
+    // parameterList collection
+    const parameterList: Array<string> = new Array<string>(result.config.params).fill("{None}");
     // for every yaml resource of ./src/definitions, providing a parameter group
     result.definitions.forEach(({filename, ...definition}) => {
         const
@@ -103,7 +117,7 @@ function processDefinitions(result: Result) {
                 }
             });
             // property sanity checks
-            [token, id, label_long, label_short, control_position, info, availability].forEach((property) => {
+            [token, label_long, label_short, control_position, info, availability].forEach((property) => {
                 if(property === undefined) {
                     throw new Error(`${err}: insufficient parameter definition in group "${group.name}" element ${index + 1}`);
                 }
@@ -118,15 +132,6 @@ function processDefinitions(result: Result) {
                 smootherDescriptor: Array<string> = [],
                 playgroundDescriptor: Array<string> = [];
             // parameterId sanity checks
-            if(!Number.isInteger(id)) {
-                throw new Error(`${err}: parameter id ${id} is invalid`);
-            }
-            if(id < 0 || id > 16382) {
-                throw new Error(`${err}: parameter id ${id} is out of tcd range [0 ... 16382]`);
-            }
-            if(id >= result.config.params) {
-                throw new Error(`${err}: parameter id ${id} is out of range [0 ... ${result.config.params - 1}]`);
-            }
             if(params.includes(id)) {
                 throw new Error(`${err}: parameter id ${id} is already defined`);
             }
@@ -264,6 +269,9 @@ function processDefinitions(result: Result) {
                     throw new Error(`${err}: unknown signal type "${key}" in group "${group.name}"`);
                 }
                 value.forEach((signal) => {
+                    if(!validateToken(signal)) {
+                        throw new Error(`${err}: invalid explicit signal token "${signal}"`);
+                    }
                     signalType[signalStr][explicitSignalIndex++] = `${group.name}_${signal}`;
                 });
             });
