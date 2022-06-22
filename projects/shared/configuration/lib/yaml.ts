@@ -47,17 +47,27 @@ export class Parser<Result> {
     }
 };
 
-export function generateOutputFile(infile: string, outfile: string, result: any) {
-    fsTestFile(infile);
-    fs.writeFileSync(outfile, fs.readFileSync(infile, "utf-8").replace(/([ \t]*)\$\{([^\}]*)\}/g, (_, ws = "", keys) => {
+export function performReplacement(str: string, result: any, filename?: string) {
+    return str.replace(/([ \t]*)\$\{([^\}]*)\}/g, (_, ws = "", keys) => {
         let known = result;
         keys.split(".").forEach((key) => {
             if(key in known) {
                 known = known[key];
             } else {
-                throw new Error(`generateOutputFile error: ${infile}: unknown key "${key}" in ${keys}`);
+                const msg = `unknown key "${key}" in ${keys}`;
+                if(filename) {
+                    throw new Error(`generateOutputFile error in ${filename}: ${msg}`);
+                } else {
+                    throw new Error(`generateOutputFile error: ${msg}`);
+                }
+                
             }
         });
         return ws + known.toString().split("\n").join(`\n${ws}`);
-    }));
+    })
+}
+
+export function generateOutputFile(infile: string, outfile: string, result: any) {
+    fsTestFile(infile);
+    fs.writeFileSync(outfile, performReplacement(fs.readFileSync(infile, "utf-8"), result, infile));
 };
