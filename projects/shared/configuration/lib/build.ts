@@ -67,12 +67,12 @@ function processDefinitions(result: Result) {
             if(type !== "None") out[`${type}s`] = [];
             return out;
         }, {});
-    // explicit signals, automatic detection of number of params (highest parameter id)
-    let explicitSignalIndex = result.config.params = 1 + result.definitions.reduce((max, definition) => {
+    // automatic detection of number of params (highest parameter id)
+    result.config.params = 1 + result.definitions.reduce((max, definition) => {
         return Math.max(max, Math.max(...definition.parameters.map((parameter) => {
             if(!Number.isInteger(parameter.id)) {
                 throw new Error(
-                    `${errmsg} in ${definition.filename}: parameter id ${parameter.id} is invalid`
+                    `${errmsg} in ${definition.filename}: parameter id "${parameter.id}" is invalid`
                 );
             }
             if(parameter.id < 0 || parameter.id > 16382) {
@@ -83,6 +83,8 @@ function processDefinitions(result: Result) {
             return parameter.id;
         })));
     }, 0);
+    // explicit signals (appended to implicit parameter signals)
+    let explicitSignalIndex = result.config.params;
     // parameterList collection
     const parameterList: Array<string> = new Array<string>(result.config.params).fill("{None}");
     // for every yaml resource of ./src/definitions, providing a parameter group
