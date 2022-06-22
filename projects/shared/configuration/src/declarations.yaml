@@ -179,7 +179,13 @@ display_scaling_type: {
     inf: false,
     values: [ C, D#, F#, G#, B ]
   },
-#   LINEAR_24_COUNT: { round: , unit: , reference: , inf: , values: [] },
+  LINEAR_24_COUNT: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_V,
+    reference: *REFERENCE_INT,
+    inf: false,
+    values: [ "1", "7", "13", "18", "24" ]
+  },
 #   LINEAR_50_DB: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_60_DB: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_60_DBT: { round: , unit: , reference: , inf: , values: [] }, # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3176
@@ -206,7 +212,20 @@ display_scaling_type: {
     values: [ "0.0", "25.0", "50.0", "75.0", "100.0" ]
   },
 #   LINEAR_180_DEG: { round: , unit: , reference: , inf: , values: [] },
-#   LINEAR_360_DEG: { round: , unit: , reference: , inf: , values: [] },
+  LINEAR_360_DEG: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DEG,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "0.0", "90.0", "180.0", "270.0", "360.0" ]
+  },
+  LINEAR_BIPOLAR_360_DEG: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DEG,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "-360.0", "-180.0", "0.0", "180.0", "360.0" ]
+  },
 #   LINEAR_0_140_ST: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_20_100_ST: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_20_140_ST: { round: , unit: , reference: , inf: , values: [] },
@@ -273,8 +292,27 @@ display_scaling_type: {
     inf: false,
     values: [ "Off", "On" ]
   },
-#   SWITCH_PRIO: { round: , unit: , reference: , inf: , values: [] },
-#   VERY_FINE_24_ST: { round: , unit: , reference: , inf: , values: [] },
+  SWITCH_PRIO: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_INT,
+    inf: false,
+    values: [ Latest, Highest, Lowest ]
+  },
+  VERY_FINE_24_ST: {
+    round: *ROUNDING_THREE_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "0.000", "6.000", "12.000", "18.000", "24.000" ]
+  },
+  VERY_FINE_BIPOLAR_24_ST: {
+    round: *ROUNDING_THREE_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LIN,
+    inf: false,
+    values: [ "-24.000", "-12.000", "0.000", "12.000", "24.000" ]
+  },
 #   LINEAR_70_DB: { round: , unit: , reference: , inf: , values: [] },
   LINEAR_0_60_ST: {
     round: *ROUNDING_ONE_DECIMAL,
@@ -290,7 +328,13 @@ display_scaling_type: {
     inf: false,
     values: [ C1, D#2, F#3, A4, C6 ]
   },
-#   MODES_LEGATO: { round: , unit: , reference: , inf: , values: [] },
+  MODES_LEGATO: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_INT,
+    inf: false,
+    values: [ None, Env, Glide, Env&Gld ]
+  },
 #   LINEAR_BIPOLAR_60_DB: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_200_PERCENT: { round: , unit: , reference: , inf: , values: [] },
 #   LINEAR_INVERTED_60_DBT: { round: , unit: , reference: , inf: , values: [] },
