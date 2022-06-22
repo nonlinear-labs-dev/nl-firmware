@@ -108,6 +108,9 @@ function processDefinitions(result: Result) {
                     throw new Error(`${err}: insufficient parameter definition in group "${group.name}" element ${index + 1}`);
                 }
             });
+            if(!validateToken(token)) {
+                throw new Error(`${err}: invalid parameter token "${token}" in parameter id ${id}`);
+            }
             // token and descriptor generation
             const
                 tokenStr = type.data.includes("group_label") ? `${group.name}_${token}` : token,
