@@ -158,6 +158,9 @@ function processDefinitions(result: Result) {
                 if(displayScalingType === undefined) {
                     throw new Error(`${err}: unknown DisplayScalingType "${scale}" in modulation_aspects of parameter id ${id}`);
                 }
+                if(displayScalingType.bipolar !== true) {
+                    throw new Error(`${err}: DisplayScalingType "${scale}" in modulation_aspects of parameter id ${id} can only be bipolar`);
+                }
                 playgroundDescriptor.push(coarse.toString(), fine.toString());
             } else {
                 playgroundDescriptor.push("None", "None");
