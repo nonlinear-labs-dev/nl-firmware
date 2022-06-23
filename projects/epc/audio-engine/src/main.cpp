@@ -20,6 +20,7 @@
 
 static Glib::RefPtr<Glib::MainLoop> theMainLoop;
 static std::unique_ptr<AudioEngineOptions> theOptions;
+static nltools::msg::BufferUnderrunsChangedMessage lastSent = { 0, 0 };
 
 static void quit(int)
 {
@@ -114,7 +115,6 @@ static std::unique_ptr<MidiInput> createTCDIn(const std::string &name, Synth *sy
 static bool checkBufferUnderruns(AudioOutput *out)
 {
   using namespace nltools::msg;
-  static BufferUnderrunsChangedMessage lastSent = { 0, 0 };
   BufferUnderrunsChangedMessage msg { out->getNumUnderruns(), theOptions->getFramesPerPeriod() };
 
   if(lastSent.numUnderruns != msg.numUnderruns || lastSent.framesPerPeriod != msg.framesPerPeriod)
@@ -163,6 +163,7 @@ template <typename... A> static void stop(A &... a)
 
 int main(int args, char *argv[])
 {
+  sigc::connection playgroundConnection;
   Glib::init();
   connectSignals();
 
@@ -189,8 +190,15 @@ int main(int args, char *argv[])
     auto c = connectFramesPerPeriodMessage(dynamic_cast<AlsaAudioOutput *>(audioOut.get()));
 
     theMainLoop = Glib::MainLoop::create();
-    theMainLoop->get_context()->signal_timeout().connect_seconds(
-        sigc::bind(sigc::ptr_fun(&checkBufferUnderruns), audioOut.get()), 1);
+
+    auto oc = nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playground, [&]() {
+      lastSent = { 0, 0 };
+      if(playgroundConnection)
+        playgroundConnection.disconnect();
+      playgroundConnection = theMainLoop->get_context()->signal_timeout().connect_seconds(
+          sigc::bind(sigc::ptr_fun(&checkBufferUnderruns), audioOut.get()), 1);
+    });
+
     theMainLoop->run();
   }
   stop(audioOut, midiIn, tcdIn);
