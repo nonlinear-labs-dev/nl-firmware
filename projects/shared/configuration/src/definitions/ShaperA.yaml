@@ -1,0 +1,117 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Shp_A
+
+signals:
+  Truepoly_Signal: [ Drive_Env_A, FB_Env_C ]
+
+static: [
+  &SHARED {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 1 },
+      Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &VALUE_PERCENT { coarse: 100, fine: 1000 },
+  &MODULATEABLE {
+    <<: *SHARED,
+    type: Local_Modulateable
+  },
+  &UNMODULATEABLE {
+    <<: *SHARED,
+    type: Local_Unmodulateable
+  }
+]
+
+parameters:
+  - <<: *MODULATEABLE
+    id: 71
+    token: Drive
+    label_long: Drive
+    label_short: Drive
+    control_position: { coarse: 100, fine: 500, scale: LINEAR_50_DB, initial: 0.2f }
+    modulation_aspects: { coarse: 50, fine: 500, scale: LINEAR_BIPOLAR_50_DB }
+    rendering_args: { scaling: Expon_Shaper_Drive, factor: 50.0f, offset: 0.18f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Input gain [in dB] of the sine shaper stage. Higher gains will create more distortion and harmonics.
+  - <<: *MODULATEABLE
+    id: 73
+    token: Drive_Env_A
+    label_long: Drive - Env A
+    label_short: Env A
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Envelope (A) amount for the Drive factor.
+      At zero, the gain stays constant, at higher values, the envelope applies a time-variant attenuation.
+  - <<: *MODULATEABLE
+    id: 74
+    token: Fold
+    label_long: Fold
+    label_short: Fold
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.5f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      Amount of folding back of the shaper curve for high input amplitudes.\n
+      0.0 %: flat saturation, no folding\n
+      100.0 %: fully folded back (periodic sine curve)\n
+      A higher amount of folding leads to a softer but more nasal sound.
+  - <<: *MODULATEABLE
+    id: 75
+    token: Asym
+    label_long: Asymmetry
+    label_short: Asym
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics.
+      At higher values it becomes a parabolic curve that shifts the frequency of the fundamental to its double.
+  - <<: *MODULATEABLE
+    id: 76
+    token: Mix
+    label_long: Mix
+    label_short: Mix
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      Mix amount of Shaper A in the signal sent to the Filters and to the Output Mixer.
+      At zero, it is the input signal of the Shaper - behind FB Mix. At negative values, the signal from the Shaper is inverted.
+  - <<: *MODULATEABLE
+    id: 78
+    token: FB_Mix
+    label_long: FB Mix
+    label_short: FB Mix
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Cubic, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      Crossfades between Oscillator & Shaper A (at zero) and the Feedback signal for the signal A.
+  - <<: *MODULATEABLE
+    id: 80
+    token: FB_Env_C
+    label_long: FB - Gate-Env C
+    label_short: G-Env C
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Envelope (C) amount for the Feedback Mix.
+      At zero, only a Gate signal is applied, at higher values, Envelope C is faded in.
+      At negative values, the Gate signal is faded out, allowing for permanent feedback at the minimum.
+  - <<: *MODULATEABLE
+    id: 81
+    token: Ring_Mod
+    label_long: Ring Mod
+    label_short: Ring Mod
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      Mix amount of the ring modulation between both Oscillators & Shapers.

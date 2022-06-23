@@ -38,6 +38,7 @@ The content of provided files aims for seamless exchange. However, there is one 
 - [x] handling of several definition.yaml files --> definitions.h
 - [x] auto-counting of parameters
 - [x] good-enough error messages
+- [ ] generate overview _(similar to spreadsheet: parameter counts, parameter id table)_
 - [ ] currently unclear: integration of other shared resources (f.e. nltools) in generated output?
 
 ## Roadmap
@@ -62,8 +63,8 @@ The content of provided files aims for seamless exchange. However, there is one 
     - [x] parameter definition errors at least provide a filename and reason
 - possible project enhancements
   - [ ] content for java and js resources
-  - [ ] integrate clang-format ?
-  - [ ] more PlayGround definitions _(descriptors: DisplayScalingType, ParameterGroup)_
+  - [ ] integrate clang-format _(for generated output)_?
+  - [ ] more PlayGround definitions _(descriptors: DisplayScalingType, ParameterGroup, ParameterAppearance?)_
   - [ ] provide hw sources as c header for PlayController
   - [ ] generate html artifacts for parameter-reference (manual, webui)?
   - [ ] generate css artifacts _(parameter-group colors)_

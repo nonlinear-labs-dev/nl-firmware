@@ -86,7 +86,9 @@ function processDefinitions(result: Result) {
     // explicit signals (appended to implicit parameter signals)
     let explicitSignalIndex = result.config.params;
     // parameterList collection
-    const parameterList: Array<string> = new Array<string>(result.config.params).fill("{None}");
+    const
+        processedGroups: Array<string> = [],
+        parameterList: Array<string> = new Array<string>(result.config.params).fill("{None}");
     // for every yaml resource of ./src/definitions, providing a parameter group
     result.definitions.forEach(({filename, ...definition}) => {
         const
@@ -99,6 +101,10 @@ function processDefinitions(result: Result) {
         if(group.data === undefined) {
             throw new Error(`${err}: unknown group token "${group.name}"`);
         }
+        if(processedGroups.includes(group.name)) {
+            throw new Error(`${err}: group "${group.name}" is already defined`);
+        }
+        processedGroups.push(group.name);
         // for every parameter of the group
         definition.parameters.forEach((parameter, index) => {
             const
@@ -230,7 +236,12 @@ function processDefinitions(result: Result) {
                     if(signal !== "None") {
                         const signalStr = `${signal}s`;
                         // signalType sanity checks
-                        if(signalType[signalStr] === undefined) throw new Error(`${err}: unknown signal "${signal}" in parameter id ${id}`);
+                        if(signalType[signalStr] === undefined) {
+                            throw new Error(`${err}: unknown signal "${signal}" in parameter id ${id}`);
+                        }
+                        if(signalType[signalStr].includes(tokenStr)) {
+                            throw new Error(`${err}: signal "${signal}" in parameter id ${id} is already defined`);
+                        }
                         signalType[signalStr][id] = tokenStr;
                         smootherDescriptor.push(`Signals::${signalStr}::${tokenStr}`);
                     } else {
@@ -266,15 +277,20 @@ function processDefinitions(result: Result) {
         // collect explicitly defined signals of parameter group
         if(definition.signals !== undefined) {
             Object.entries(definition.signals).forEach(([key, value]) => {
-                const signalStr = `${key}s`;
-                if(signalType[signalStr] === undefined) {
+                const signalGroup = `${key}s`;
+                if(signalType[signalGroup] === undefined) {
                     throw new Error(`${err}: unknown signal type "${key}" in group "${group.name}"`);
                 }
                 value.forEach((signal) => {
                     if(!validateToken(signal)) {
                         throw new Error(`${err}: invalid explicit signal token "${signal}"`);
                     }
-                    signalType[signalStr][explicitSignalIndex++] = `${group.name}_${signal}`;
+                    const signalStr = `${group.name}_${signal}`;
+                    if(signalType[signalGroup].includes(signalStr)) {
+                        throw new Error(`${err}: signal "${signalStr}" in in group "${group.name}" is already defined`);
+                    }
+                    // append explicit signal (behind any potential implicit parameter signal)
+                    signalType[signalGroup][explicitSignalIndex++] = signalStr;
                 });
             });
         }
@@ -317,6 +333,17 @@ try {
         };
     // processing of parsed yaml (sanity checks, enum sorting/filtering, providing strings for replacements)
     processDefinitions(result);
+    // validate declaration tokens
+    Object.keys(result.declarations).forEach((enumeration) => {
+        if(!validateToken(enumeration)) {
+            throw new Error(`declarations error: invalid enumeration token "${enumeration}"`);
+        }
+        Object.keys(result.declarations[enumeration]).forEach((token) => {
+            if(!validateToken(token)) {
+                throw new Error(`declarations error: invalid token "${token}" in enumeration ${enumeration}`);
+            }
+        });
+    });
     // transformations of ./src/*.in.* files into usable resources in ./generated via string replacements
     generateOutputFile("./src/config.h.in", "./generated/config.h", result);
     generateOutputFile("./src/declarations.h.in", "./generated/declarations.h", result);
