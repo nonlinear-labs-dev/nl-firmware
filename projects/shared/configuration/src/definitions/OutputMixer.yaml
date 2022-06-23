@@ -1,0 +1,34 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Out_Mix
+
+signals:
+  Truepoly_Signal: [ A_Left, A_Right, B_Left, B_Right, Comb_Left, Comb_Right, SVF_Left, SVF_Right ]
+
+static: [
+  &SINGLE_HIDDEN {
+    availability: {
+      Single: { hidden: true, disabled: false, count: 0 },
+      Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &SHARED {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 1 },
+      Split: *AVAILABILITY_DUAL,
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &VALUE_PERCENT { coarse: 100, fine: 1000 },
+  &MODULATEABLE {
+    type: Local_Modulateable
+  },
+  &UNMODULATEABLE {
+    type: Local_Unmodulateable
+  }
+]
+
+parameters: []
