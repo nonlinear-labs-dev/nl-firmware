@@ -49,7 +49,7 @@ The content of provided files aims for seamless exchange. However, there is one 
   - [x] Split, Part, Unison, Mono
   - [x] Envelopes A, B, C, (G)
   - [x] Oscillators and Shapers
-  - [ ] Comb and SV Filter
+  - [x] Comb and SV Filter
   - [ ] Feedback and Output Mixer
   - [ ] Effects: Flanger, Cabinet, Gap Filter, Echo, Reverb
 - [ ] verification: every (non-empty) ParameterDescriptor of ParameterDb should be identical to Configuration clone

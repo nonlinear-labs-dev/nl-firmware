@@ -1,0 +1,175 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: SV_Flt
+
+signals:
+  Truepoly_Signal: [ F1_Cut, F2_Cut, F1_FM, F2_FM, Res_Damp, Res_FMax ]
+  Quasipoly_Signal: [ LBH_1, LBH_2, Par_1, Par_2, Par_3, Par_4 ]
+
+static: [
+  &SHARED {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 1 },
+      Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &VALUE_PERCENT { coarse: 100, fine: 1000 },
+  &MODULATEABLE {
+    <<: *SHARED,
+    type: Local_Modulateable
+  },
+  &UNMODULATEABLE {
+    <<: *SHARED,
+    type: Local_Unmodulateable
+  }
+]
+
+parameters:
+  - <<: *MODULATEABLE
+    id: 136
+    token: In_A_B
+    label_long: A - B
+    label_short: A - B
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: -1.0f, offset: 1.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      The signal for the State Variable Filter as a crossfade between the outputs of Oscillator & Shaper A and Oscillator & Shaper B.
+  - <<: *MODULATEABLE
+    id: 138
+    token: Comb_Mix
+    label_long: Comb Mix
+    label_short: Comb Mix
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      The input signal for the State Variable Filter as mix of the signals from the A-B mixer and from the Comb Filter.
+      Negative mix amounts will create different Comb Filter (cancellation) effects.
+  - <<: *MODULATEABLE
+    id: 140
+    token: Cut
+    label_long: Cutoff
+    label_short: Cutoff
+    control_position: { coarse: 120, fine: 12000, scale: LINEAR_20_140_ST, initial: 0.5f }
+    modulation_aspects: { coarse: 120, fine: 12000, scale: LINEAR_BIPOLAR_100_ST }
+    rendering_args: { scaling: Expon_Lin_Pitch, factor: 120.0f, offset: 20.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Static value of the filter cutoff frequency at C3 [in semitones], applies to both stages of the filter.
+      The offsets between their individual cutoffs is controlled by \"Spread\".
+  - <<: *UNMODULATEABLE
+    id: 142
+    token: Cut_KT
+    label_long: Cutoff - Key Trk
+    label_short: Key Trk
+    control_position: { coarse: 200, fine: 2000, scale: LINEAR_200_PERCENT, initial: 0.5f }
+    rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Key scaling of the filter cutoffs.\n
+      0.0 %: no influence\n
+      100.0 %: full tracking with the keys, origin at C3 = 60 semitones
+  - <<: *MODULATEABLE
+    id: 143
+    token: Cut_Env_C
+    label_long: Cutoff - Env C
+    label_short: Env C
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_ST, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_ST }
+    rendering_args: { scaling: Linear, factor: 100.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Amount of cutoff modulation by Envelope C [in semitones].
+  - <<: *MODULATEABLE
+    id: 144
+    token: Res
+    label_long: Resonance
+    label_short: Reson
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.5f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Amount of filter resonance, creating peaks at the cutoff frequencies.
+  - <<: *UNMODULATEABLE
+    id: 146
+    token: Res_KT
+    label_long: Reson - Key Trk
+    label_short: Key Trk
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_ST, initial: 0.0f }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Key scaling of the filter resonance.\n
+      0.0 %: no influence\n
+      100.0 %: full tracking with the keys, origin at C3 = 60 semitones
+  - <<: *MODULATEABLE
+    id: 147
+    token: Res_Env_C
+    label_long: Reson - Env C
+    label_short: Env C
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Amount of resonance modulation by Envelope C.
+  - <<: *MODULATEABLE
+    id: 148
+    token: Spread
+    label_long: Spread
+    label_short: Spread
+    control_position: { coarse: 60, fine: 600, scale: LINEAR_BIPOLAR_60_ST, initial: 0.2f }
+    modulation_aspects: { coarse: 60, fine: 600, scale: LINEAR_BIPOLAR_120_ST }
+    rendering_args: { scaling: Linear, factor: 30.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Amount of splitting of the cutoffs of the two 2-pole filters.
+      Half of the value is applied as a positive offset to the adjusted cutoff for the first stage and
+      as a negative offset for the second stage [in semitones].
+      The split reduces the strong resonance peak in the 4-pole mode and allows filter curves with two formants.
+      In bandpass/bandreject mode it controls the width of the band.
+  - <<: *MODULATEABLE
+    id: 150
+    token: LBH
+    label_long: L - B - H
+    label_short: L-B-H
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Crossfades between the lowpass, bandpass and highpass outputs of the two filter stages.\n
+      (first stage -> second stage: LP -> LP, BP -> LP, HP -> LP, HP -> BP, HP -> HP)
+  - <<: *MODULATEABLE
+    id: 152
+    token: Par
+    label_long: Parallel
+    label_short: Parallel
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 100.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      At zero, the two 2-pole filter stages are in series forming a 4-pole filter.
+      Positive values crossfade from the serial structure to a parallel structure where the filter outputs are added.
+      In bandpass mode (L-B-H = 50.0%), the parallel structure with a negative Spread works as a band-reject filter.
+      Negative values also crossfade to a parallel structure, but here the lower filter is subtracted,
+      which leads to phase cancellations.
+  - <<: *MODULATEABLE
+    id: 153
+    token: FM
+    label_long: FM
+    label_short: FM
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 5.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Amount of (phase) modulation of the comb filter pitch (delay time) by the output signals of
+      Oscillator & Shaper A and B, with the PM A-B knob determining their mix.
+  - <<: *MODULATEABLE
+    id: 155
+    token: FM_A_B
+    label_long: FM - A-B
+    label_short: A - B
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: Quasipoly_Signal }
+    info: >
+      The signal for the FM (cutoff frequency modulation) of the State Variable Filter as a
+      crossfade between the outputs of Oscillator & Shaper A and Oscillator & Shaper B.

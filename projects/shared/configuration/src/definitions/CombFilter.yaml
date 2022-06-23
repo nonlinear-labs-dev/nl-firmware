@@ -1,0 +1,201 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Comb_Flt
+
+signals:
+  Truepoly_Signal: [ Freq, Bypass, Freq_Env_C, Decay, AP_Freq, LP_Freq ]
+
+static: [
+  &SHARED {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 1 },
+      Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &VALUE_PERCENT { coarse: 100, fine: 1000 },
+  &MODULATEABLE {
+    <<: *SHARED,
+    type: Local_Modulateable
+  },
+  &UNMODULATEABLE {
+    <<: *SHARED,
+    type: Local_Unmodulateable
+  }
+]
+
+parameters:
+  - <<: *MODULATEABLE
+    id: 113
+    token: In_A_B
+    label_long: A - B
+    label_short: A - B
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: S_Curve, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      The signal for the Comb Filter as a crossfade between the outputs of Oscillator & Shaper A and Oscillator & Shaper B.
+  - <<: *MODULATEABLE
+    id: 115
+    token: Pitch
+    label_long: Pitch
+    label_short: Pitch
+    control_position: { coarse: 120, fine: 12000, scale: NUMERIC_120_ST, initial: 0.5f }
+    modulation_aspects: { coarse: 120, fine: 12000, scale: NUMERIC_BIPOLAR_120_ST }
+    rendering_args: { scaling: Expon_Lin_Pitch, factor: 120.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Coarse pitch of the Comb Filter (delay) at C3 (MIDI note 60) [in semitones, based on MIDI note numbers].
+  - <<: *UNMODULATEABLE
+    id: 117
+    token: Pitch_KT
+    label_long: Pitch - Key Trk
+    label_short: Key Trk
+    control_position: { coarse: 200, fine: 20000, scale: FINE_200_PERCENT, initial: 0.5f }
+    rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Key scaling of the tuning of the Comb Filter (delay).\n
+      0.0 %: same tuning for all keys\n
+      100.0 %: full tracking with keys, origin at C3 = 60 semitones
+  - <<: *MODULATEABLE
+    id: 118
+    token: Pitch_Env_C
+    label_long: Pitch - Env C
+    label_short: Env C
+    control_position: { coarse: 80, fine: 8000, scale: FINE_BIPOLAR_80_ST, initial: 0.0f }
+    modulation_aspects: { coarse: 80, fine: 8000, scale: FINE_BIPOLAR_160_ST }
+    rendering_args: { scaling: Linear, factor: 80.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Amount of modulation of the Comb Filter pitch by Envelope C [in semitones].
+  - <<: *MODULATEABLE
+    id: 119
+    token: Decay
+    label_long: Decay
+    label_short: Decay
+    control_position: { <<: *VALUE_PERCENT, scale: COMB_DECAY_BIPOLAR_MS, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 100.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Amount of the internal feedback noticeable as the decay time of the impules response [logarithmic scaling].
+      At negative values, the feedback signal is inverted, which shifts the fundamental resonance down by one octave.
+  - <<: *UNMODULATEABLE
+    id: 121
+    token: Decay_KT
+    label_long: Decay - Key Trk
+    label_short: Key Trk
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.33f }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Key scaling of the decay time.\n
+      0.0 %: equal time for all keys\n
+      100.0 %: shortening to half time per octave, origin at C3 = 60 semitones
+  - <<: *MODULATEABLE
+    id: 305
+    token: Decay_Gate
+    label_long: Decay - Gate
+    label_short: Gate
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Amount of gating applied to the decay time.
+      It reduces the decay time when the key is released (Note-off).\n
+      0.0 % same decay time in the release phase\n
+      100.0 %: the decay time is set to zero at the release of the key
+  - <<: *MODULATEABLE
+    id: 123
+    token: AP_Tune
+    label_long: Allpass - Tune
+    label_short: AP Tune
+    control_position: { coarse: 140, fine: 1400, scale: LINEAR_0_140_ST, initial: 1.0f }
+    modulation_aspects: { coarse: 140, fine: 1400, scale: LINEAR_BIPOLAR_140_ST }
+    rendering_args: { scaling: Expon_Lin_Pitch, factor: 140.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Center frequency of the 2-pole allpass filter [in semitones].
+      It is the frequency where the phase is shifted by 180 degrees.
+      The allpass is in series with the delay. At the maximum position (140 semitones), the allpass has no effect.
+  - <<: *UNMODULATEABLE
+    id: 125
+    token: AP_KT
+    label_long: Allpass - Key Trk
+    label_short: Key Trk
+    control_position: { coarse: 200, fine: 2000, scale: LINEAR_200_PERCENT, initial: 0.5f }
+    rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Key scaling of the allpass filter frequency.\n
+      0.0 %: same tuning for all keys\n
+      100.0 %: full tracking with the keys, origin at C3 = 60 semitones
+  - <<: *MODULATEABLE
+    id: 126
+    token: AP_Env_C
+    label_long: Allpass - Env C
+    label_short: Env C
+    control_position: { coarse: 80, fine: 800, scale: LINEAR_BIPOLAR_80_ST, initial: 0.0f }
+    modulation_aspects: { coarse: 80, fine: 800, scale: LINEAR_BIPOLAR_160_ST }
+    rendering_args: { scaling: Linear, factor: 80.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Amount of modulation of the allpass center frequency by Envelope C [in semitones].
+  - <<: *MODULATEABLE
+    id: 127
+    token: AP_Res
+    label_long: Allpass - Reson
+    label_short: Reson
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.5f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: Quasipoly_Signal }
+    info: >
+      Resonance of the 2-pole allpass. Determines how much the phase shift increases around the center frequency.
+  - <<: *MODULATEABLE
+    id: 129
+    token: LP_Tune
+    label_long: Hi Cut
+    label_short: Hi Cut
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_40_140_ST, initial: 1.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_ST }
+    rendering_args: { scaling: Expon_Lin_Pitch, factor: 100.0f, offset: 40.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Cutoff frequency [in semitones] of the lowpass filter that damps the higher frequencies in the comb filter's signal path.
+  - <<: *UNMODULATEABLE
+    id: 131
+    token: LP_KT
+    label_long: Hi Cut - Key Trk
+    label_short: Key Trk
+    control_position: { coarse: 200, fine: 2000, scale: LINEAR_200_PERCENT, initial: 0.5f }
+    rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Key scaling of the lowpass cutoff frequency.\n
+      0.0 %: same cutoff for all keys\n
+      100.0 %: full tracking with the keys, origin at C3 = 60 semitones
+  - <<: *MODULATEABLE
+    id: 132
+    token: LP_Env_C
+    label_long: Hi Cut - Env C
+    label_short: Env C
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_ST, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_ST }
+    rendering_args: { scaling: Linear, factor: 100.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Amount of modulation of the cutoff frequency of the lowpass filter by Envelope C [in semitones].
+  - <<: *MODULATEABLE
+    id: 133
+    token: PM
+    label_long: PM
+    label_short: PM
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 0.9f, offset: 0.0f, section: Poly, clock: Slow, signal: Quasipoly_Signal }
+    info: >
+      Amount of (phase) modulation of the comb filter pitch (delay time) by the output signals of
+      Oscillator & Shaper A and B, with the PM A-B knob determining their mix.
+  - <<: *MODULATEABLE
+    id: 135
+    token: PM_A_B
+    label_long: PM - A-B
+    label_short: A - B
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: Quasipoly_Signal }
+    info: >
+      The (phase) modulation signal for the Comb Filter as a crossfade between
+      the outputs of Oscillator & Shaper A and Oscillator & Shaper B.
