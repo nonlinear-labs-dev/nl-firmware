@@ -48,7 +48,7 @@ The content of provided files aims for seamless exchange. However, there is one 
   - [x] Global: ModMatrix (HW Sources and Amounts, Macro Controls and Times), Master, Scale
   - [x] Split, Part, Unison, Mono
   - [x] Envelopes A, B, C, (G)
-  - [ ] Oscillators and Shapers
+  - [x] Oscillators and Shapers
   - [ ] Comb and SV Filter
   - [ ] Feedback and Output Mixer
   - [ ] Effects: Flanger, Cabinet, Gap Filter, Echo, Reverb
