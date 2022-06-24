@@ -245,7 +245,14 @@ display_scaling_type: {
   #   values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ],
   #   bipolar: false
   # },
-#   LINEAR_MINUS_50_0_DB: { round: , unit: , reference: , inf: , values: [], bipolar: },
+  LINEAR_MINUS_50_0_DB: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_LINEAR,
+    inf: false,
+    values: [ "-50.0", "-37.5", "-25.0", "-12.5", "0.0" ],
+    bipolar: false
+  },
   LINEAR_BIPOLAR_24_DB: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DB,
@@ -499,6 +506,14 @@ display_scaling_type: {
     values: [ "0.0", "24.0", "48.0", "72.0", "96.0" ],
     bipolar: false
   },
+  LINEAR_BIPOLAR_96_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: false,
+    values: [ "-96.0", "-48.0", "0.0", "48.0", "96.0" ],
+    bipolar: true
+  },
   LINEAR_0_140_ST: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
@@ -514,6 +529,14 @@ display_scaling_type: {
     inf: false,
     values: [ "-140.0", "-70.0", "0.0", "70.0", "140.0" ],
     bipolar: true
+  },
+  LINEAR_20_100_ST: {
+    round: ,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: false,
+    values: [ "20.0", "40.0", "60.0", "80.0", "100.0" ],
+    bipolar: false
   },
   LINEAR_20_140_ST: {
     round: ,
@@ -553,6 +576,14 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: false,
     values: [ "80.0", "95.0", "110.0", "125.0", "140.0" ],
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_72_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: false,
+    values: [ "-72.0", "-36.0", "0.0", "36.0", "72.0" ],
     bipolar: true
   },
   LINEAR_BIPOLAR_80_ST: {
@@ -695,6 +726,14 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: false,
     values: [ "-50.0", "-25.0", "0.0", "25.0", "50.0" ],
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_66_PERCENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: false,
+    values: [ "-66.0", "-33.0", "0.0", "33.0", "66.0" ],
     bipolar: true
   },
   PARABOLIC_BIP_100_PERCENT: {

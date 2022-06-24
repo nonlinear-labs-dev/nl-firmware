@@ -44,24 +44,26 @@ The content of provided files aims for seamless exchange. However, there is one 
 ## Roadmap
 
 - [x] working proof of concept
-- [ ] complete C15 definition
+- [x] complete C15 definition
   - [x] Global: ModMatrix (HW Sources and Amounts, Macro Controls and Times), Master, Scale
   - [x] Split, Part, Unison, Mono
   - [x] Envelopes A, B, C, (G)
   - [x] Oscillators and Shapers
   - [x] Comb and SV Filter
   - [x] Feedback and Output Mixer
-  - [ ] Effects: Flanger, Cabinet, Gap Filter, Echo, Reverb
+  - [x] Effects: Flanger, Cabinet, Gap Filter, Echo, Reverb
 - [ ] verification: every (non-empty) ParameterDescriptor of ParameterDb should be identical to Configuration clone
+- [ ] there seems to be a `LF/CR` "problem", on github the last empty line in each file is omitted
 - [ ] "dockerize" project and integrate into make process
 - [ ] review:
   - can code be simplified/generalized further?
     - [ ] yaml anchors (`&ANCHOR`) are currently used for keeping yaml as concise as possible --> use custom yaml.Type instead and delegate boilerplate to typescript? _(unclear where to draw the line between ./src and ./lib)_
   - can validation and generation of error messages be more informative?
     - [x] yaml parsing and g++ errors give decent indication of what went wrong
-    - [x] typescript validation already does lots of sanity checks
+    - [x] node validation already does lots of sanity checks
     - [x] parameter definition errors at least provide a filename and reason
 - possible project enhancements
+  - [ ] turn descriptors into constexpr decscriptors
   - [ ] content for java and js resources
   - [ ] integrate clang-format _(for generated output)_?
   - [ ] more PlayGround definitions _(descriptors: DisplayScalingType, ParameterGroup, ParameterAppearance?)_
