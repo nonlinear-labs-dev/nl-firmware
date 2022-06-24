@@ -8,7 +8,7 @@ signals:
   Global_Signal: [ Base_Key_Pos, Base_Key_Start, Base_Key_Dest ]
 
 static: [
-  &SHARED {
+  &ALL_EXPOSED {
     availability: {
       Single: &AVAILABILITY { hidden: false, disabled: false, count: 1 },
       Split: *AVAILABILITY,
@@ -16,11 +16,11 @@ static: [
     }
   },
   &MODULATEABLE {
-    <<: *SHARED,
+    <<: *ALL_EXPOSED,
     type: Global_Modulateable
   },
   &UNMODULATEABLE {
-    <<: *SHARED,
+    <<: *ALL_EXPOSED,
     type: Global_Unmodulateable
   },
   &OFFSET {

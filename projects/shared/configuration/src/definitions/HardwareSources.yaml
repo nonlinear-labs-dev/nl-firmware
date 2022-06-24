@@ -5,7 +5,7 @@
 group: Mod_HW
 
 static: [
-  &SHARED {
+  &ALL_EXPOSED {
     availability: {
       Single: &AVAILABILITY { hidden: false, disabled: false, count: 1 },
       Split: *AVAILABILITY,
@@ -16,11 +16,11 @@ static: [
     coarse: 100, fine: 1000, initial: 0.0f
   },
   &SOURCE {
-    <<: *SHARED,
+    <<: *ALL_EXPOSED,
     type: Hardware_Source,
   },
   &SEND {
-    <<: *SHARED,
+    <<: *ALL_EXPOSED,
     type: Display_Parameter
   },
   &PEDAL {

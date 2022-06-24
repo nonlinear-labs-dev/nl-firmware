@@ -8,7 +8,7 @@ signals:
   Global_Signal: [ FX_I_to_II, FX_II_to_I ]
 
 static: [
-  &SHARED {
+  &ALL_EXPOSED {
     availability: {
       Single: &AVAILABILITY { hidden: false, disabled: false, count: 1 },
       Split: *AVAILABILITY,
@@ -24,7 +24,7 @@ static: [
     type: Global_Modulateable
   },
   &MODULATEABLE {
-    <<: *SHARED,
+    <<: *ALL_EXPOSED,
     type: Global_Modulateable
   }
 ]

@@ -5,7 +5,7 @@
 group: Macro
 
 static: [
-  &SHARED {
+  &ALL_EXPOSED {
     availability: {
       Single: &AVAILABILITY { hidden: false, disabled: false, count: 1 },
       Split: *AVAILABILITY,
@@ -13,12 +13,12 @@ static: [
     }
   },
   &MACRO_CONTROL {
-    <<: *SHARED,
+    <<: *ALL_EXPOSED,
     type: Macro_Control,
     control_position: { coarse: 100, fine: 1000, initial: 0.5f, scale: LINEAR_100_PERCENT }
   },
   &MACRO_TIME {
-    <<: *SHARED,
+    <<: *ALL_EXPOSED,
     type: Macro_Time,
     control_position: { coarse: 100, fine: 1000, initial: 0.4f, scale: ENVELOPE_TIME_MS }
   }

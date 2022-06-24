@@ -9,7 +9,7 @@ signals:
   Quasipoly_Signal: [ LBH_1, LBH_2, Par_1, Par_2, Par_3, Par_4 ]
 
 static: [
-  &SHARED {
+  &ALL_EXPOSED {
     availability: {
       Single: { hidden: false, disabled: false, count: 1 },
       Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
@@ -18,11 +18,11 @@ static: [
   },
   &VALUE_PERCENT { coarse: 100, fine: 1000 },
   &MODULATEABLE {
-    <<: *SHARED,
+    <<: *ALL_EXPOSED,
     type: Local_Modulateable
   },
   &UNMODULATEABLE {
-    <<: *SHARED,
+    <<: *ALL_EXPOSED,
     type: Local_Unmodulateable
   }
 ]

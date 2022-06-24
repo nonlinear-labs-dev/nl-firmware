@@ -5,7 +5,7 @@
 group: Mono_Grp
 
 static: [
-  &SHARED {
+  &ALL_EXPOSED {
     availability: {
       Single: &AVAILABILITY { hidden: false, disabled: false, count: 1},
       Split: { hidden: false, disabled: false, count: 2},
@@ -13,11 +13,11 @@ static: [
     }
   },
   &MODULATEABLE {
-    <<: *SHARED,
+    <<: *ALL_EXPOSED,
     type: Local_Modulateable
   },
   &UNMODULATEABLE {
-    <<: *SHARED,
+    <<: *ALL_EXPOSED,
     type: Local_Unmodulateable
   }
 ]
