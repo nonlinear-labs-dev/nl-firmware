@@ -2,6 +2,15 @@ import { Type, Parser } from "../yaml";
 
 export type DeclarationsType = {
     declarations: {
+        sound_type: {
+            [key: string]: null;
+        };
+        layer_id: {
+            [key: string]: null;
+        };
+        return_behavior: {
+            [key: string]: null;
+        };
         parameter_properties: Array<string>;
         parameter_type: Array<string>;
         parameter_signal: {

@@ -312,8 +312,8 @@ function processDefinitions(result: Result) {
     result.enums.pid = ["None = -1", ...pid.filter((id) => id !== undefined)].join(",\n");
 }
 
-// main process
-try {
+// main function
+function main() {
     const
         // scan definitions folder to collect contained yaml resources for automatical parsing
         definitionsPath = "./src/definitions",
@@ -331,8 +331,6 @@ try {
                 return { ...definition, filename: definitions[index] }
             })
         };
-    // processing of parsed yaml (sanity checks, enum sorting/filtering, providing strings for replacements)
-    processDefinitions(result);
     // validate declaration tokens
     Object.keys(result.declarations).forEach((enumeration) => {
         if(!validateToken(enumeration)) {
@@ -344,16 +342,29 @@ try {
             }
         });
     });
+    // processing of parsed yaml (sanity checks, enum sorting/filtering, providing strings for replacements)
+    processDefinitions(result);
     // transformations of ./src/*.in.* files into usable resources in ./generated via string replacements
-    generateOutputFile("./src/config.h.in", "./generated/config.h", result);
-    generateOutputFile("./src/declarations.h.in", "./generated/declarations.h", result);
-    generateOutputFile("./src/definitions.h.in", "./generated/definitions.h", result);
-    generateOutputFile("./src/descriptor.h.in", "./generated/descriptor.h", result);
-    generateOutputFile("./src/main.cpp.in", "./generated/main.cpp", result);
-    // transformations not covered by g++ and therefore unsafe
-    generateOutputFile("./src/placeholder.h.in", "./generated/placeholder.h", result);
-    generateOutputFile("./src/ParameterFactory.java.in", "./generated/ParameterFactory.java", result);
-    generateOutputFile("./src/MacroIds.js.in", "./generated/MacroIds.js", result);
+    [
+        // transformations covered by g++ and therefore safe
+        "./src/config.h.in",
+        "./src/declarations.h.in",
+        "./src/definitions.h.in",
+        "./src/descriptor.h.in",
+        "./src/main.cpp.in",
+        // transformations not covered by g++ and therefore unsafe
+        "./src/placeholder.h.in",
+        "./src/ParameterFactory.java.in",
+        "./src/MacroIds.js.in"
+    ].forEach((infile: string) => {
+        const outfile = infile.replace("./src/", "./generated/").replace(/.in$/, "");
+        generateOutputFile(infile, outfile, result);
+    });
+}
+
+// process
+try {
+    main();
     // if no error was raised, node is done
     process.exit(0);
 } catch(err) {
