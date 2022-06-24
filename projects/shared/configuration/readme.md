@@ -50,7 +50,7 @@ The content of provided files aims for seamless exchange. However, there is one 
   - [x] Envelopes A, B, C, (G)
   - [x] Oscillators and Shapers
   - [x] Comb and SV Filter
-  - [ ] Feedback and Output Mixer
+  - [x] Feedback and Output Mixer
   - [ ] Effects: Flanger, Cabinet, Gap Filter, Echo, Reverb
 - [ ] verification: every (non-empty) ParameterDescriptor of ParameterDb should be identical to Configuration clone
 - [ ] "dockerize" project and integrate into make process
