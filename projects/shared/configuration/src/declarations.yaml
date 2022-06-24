@@ -346,7 +346,14 @@ display_scaling_type: {
 
   # - - - - - - - - - - - - - - - - Unit::DEG - - - - - - - - - - - - - - - - #
 
-#   LINEAR_180_DEG: { round: , unit: , reference: , inf: , values: [], bipolar: },
+  LINEAR_180_DEG: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DEG,
+    reference: *REFERENCE_LINEAR,
+    inf: false,
+    values: [ "0.0", "45.0", "90.0", "135.0", "180.0" ],
+    bipolar: false
+  },
   LINEAR_360_DEG: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DEG,
@@ -374,7 +381,14 @@ display_scaling_type: {
 
   # - - - - - - - - - - - - - - - - Unit::HZ - - - - - - - - - - - - - - - - #
 
-#   PARABOLIC_10_HZ: { round: , unit: , reference: , inf: , values: [], bipolar: },
+  PARABOLIC_10_HZ: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_HZ,
+    reference: *REFERENCE_PARABOLIC,
+    inf: false,
+    values: [ "0.000", "0.625", "2.50", "5.63", "10.0" ],
+    bipolar: false
+  },
 
   # - - - - - - - - - - - - - - - - Unit::MS - - - - - - - - - - - - - - - - #
 
@@ -402,8 +416,22 @@ display_scaling_type: {
     values: [ "0.000", "2.00", "40.0", "800", "16000" ],
     bipolar: false
   },
-#   PARABOLIC_50_MS: { round: , unit: , reference: , inf: , values: [], bipolar: },
-#   PARABOLIC_2000_MS: { round: , unit: , reference: , inf: , values: [], bipolar: },
+  PARABOLIC_50_MS: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_MS,
+    reference: *REFERENCE_PARABOLIC,
+    inf: false,
+    values: [ "0.000", "3.14", "12.5", "28.2", "50.0" ],
+    bipolar: false
+  },
+  PARABOLIC_2000_MS: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_MS,
+    reference: *REFERENCE_PARABOLIC,
+    inf: false,
+    values: [ "0.000", "125", "500", "1130", "2000" ],
+    bipolar: false
+  },
 
   # - - - - - - - - - - - - - - - - Unit::ST - - - - - - - - - - - - - - - - #
 
@@ -447,7 +475,14 @@ display_scaling_type: {
     values: [ "-60", "-30", "0", "30", "60" ],
     bipolar: true
   },
-#   LINEAR_BIPOLAR_36_ST: { round: , unit: , reference: , inf: , values: [], bipolar: },
+  LINEAR_BIPOLAR_36_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: false,
+    values: [ "-36.0", "-18.0", "0.0", "18.0", "36.0" ],
+    bipolar: true
+  },
   LINEAR_BIPOLAR_60_ST: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
@@ -456,7 +491,14 @@ display_scaling_type: {
     values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
     bipolar: true
   },
-#   LINEAR_96_ST: { round: , unit: , reference: , inf: , values: [], bipolar: },
+  LINEAR_96_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: false,
+    values: [ "0.0", "24.0", "48.0", "72.0", "96.0" ],
+    bipolar: false
+  },
   LINEAR_0_140_ST: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
@@ -474,15 +516,21 @@ display_scaling_type: {
     bipolar: true
   },
   LINEAR_20_140_ST: {
-    round: *ROUNDING_ONE_DECIMAL,
+    round: ,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
     inf: false,
     values: [ "20.0", "50.0", "80.0", "110.0", "140.0" ],
     bipolar: false
   },
-#   LINEAR_20_140_ST: { round: , unit: , reference: , inf: , values: [], bipolar: },
-#   LINEAR_24_120_ST: { round: , unit: , reference: , inf: , values: [], bipolar: },
+  LINEAR_24_120_ST: {
+    round: ,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: false,
+    values: [ "24.0", "48.0", "72.0", "96.0", "120.0" ],
+    bipolar: false
+  },
   LINEAR_40_140_ST: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
@@ -491,7 +539,14 @@ display_scaling_type: {
     values: [ "40.0", "65.0", "90.0", "115.0", "140.0" ],
     bipolar: true
   },
-#   LINEAR_60_140_ST: { round: , unit: , reference: , inf: , values: [], bipolar: },
+  LINEAR_60_140_ST: {
+    round: ,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: false,
+    values: [ "60.0", "80.0", "100.0", "120.0", "140.0" ],
+    bipolar: false
+  },
   LINEAR_80_140_ST: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
@@ -626,9 +681,30 @@ display_scaling_type: {
     values: [ "0.0", "25.0", "50.0", "75.0", "100.0" ],
     bipolar: false
   },
-#   LINEAR_BIPOLAR_33_PERCENT: { round: , unit: , reference: , inf: , values: [], bipolar: },
-#   LINEAR_BIPOLAR_50_PERCENT: { round: , unit: , reference: , inf: , values: [], bipolar: },
-#   PARABOLIC_BIP_100_PERCENT: { round: , unit: , reference: , inf: , values: [], bipolar: },
+  LINEAR_BIPOLAR_33_PERCENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: false,
+    values: [ "-33.0", "-16.5", "0.0", "16.5", "33.0" ],
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_50_PERCENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: false,
+    values: [ "-50.0", "-25.0", "0.0", "25.0", "50.0" ],
+    bipolar: true
+  },
+  PARABOLIC_BIP_100_PERCENT: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_PARABOLIC,
+    inf: false,
+    values: [ "-100.0", "-25.0", "0.0", "25.0", "100.0" ],
+    bipolar: true
+  },
   LINEAR_200_PERCENT: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_PERCENT,
