@@ -38,22 +38,13 @@ function processDefinitions(result: Result) {
         pid: Array<string | undefined> = [],
         // parameterType collection (resulting in enum)
         parameterType = Object.keys(result.declarations.parameter_type).reduce((out: ParamType, type: string) => {
-            if(!validateToken(type)) {
-                throw new Error(`${errmsg}: invalid token for parameterType "${type}"`);
-            }
             if(type !== "None") out[`${type}s`] = []; // every type !== None can collect tokens
             return out;
         }, {}),
         // smootherType collection (resulting in enum)
         smootherType = Object.keys(result.declarations.smoother_section).reduce((out: SignalType, section: string) => {
-            if(!validateToken(section)) {
-                throw new Error(`${errmsg}: invalid token for smootherSection "${section}"`);
-            }
             if(section !== "None") {
                 Object.keys(result.declarations.smoother_clock).forEach((clock: string) => {
-                    if(!validateToken(clock)) {
-                        throw new Error(`${errmsg}: invalid token for smootherClock "${clock}"`);
-                    }
                     out[`${section}_${clock}`] = [];
                 });
             }
@@ -61,9 +52,6 @@ function processDefinitions(result: Result) {
         }, {}),
         // signalType collection (resulting in enum)
         signalType = Object.keys(result.declarations.parameter_signal).reduce((out: SignalType, type: string) => {
-            if(!validateToken(type)) {
-                throw new Error(`${errmsg}: invalid token for parameterSignal "${type}"`);
-            }
             if(type !== "None") out[`${type}s`] = [];
             return out;
         }, {});
