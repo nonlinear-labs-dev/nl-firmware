@@ -8,14 +8,20 @@ freeze() {
 }
 
 unpack_update() {
+    @C15_INSTALL_PATH@/text2soled/text2soled multitext "Copying C15 update...@SC1" "DO NOT SWITCH OFF!@SC2" "Copying C15 update...@BC2" "DO NOT SWITCH OFF!@BC3"
     if rm -rf /update \
         && mkdir -p /update \
         && cp /mnt/usb-stick/nonlinear-c15-update.tar /update \
-        && cd /update \
-        && tar xf nonlinear-c15-update.tar; then
-            return 0
-     fi
-     return 1
+        && cd /update;
+    then
+      @C15_INSTALL_PATH@/text2soled/text2soled multitext "Unpacking C15 update...@SC1" "DO NOT SWITCH OFF!@SC2" "Unpacking C15 update...@BC2" "DO NOT SWITCH OFF!@BC3"
+      if tar xf nonlinear-c15-update.tar; then
+        return 0
+      fi
+    fi
+    @C15_INSTALL_PATH@/text2soled/text2soled multitext "Update Media Error.@SC1" "Please retry@SC2" "Update Media Error.@BC2" "Please retry@BC3"
+    sleep 2
+    return 1
 }
 
 check_preconditions() {
@@ -39,7 +45,6 @@ main() {
     if [ -e /mnt/usb-stick/nonlinear-c15-update.tar ]; then
         unpack_update && check_preconditions && run_update
     fi
-
     return 0
 }
 
