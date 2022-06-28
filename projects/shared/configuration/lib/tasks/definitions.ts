@@ -6,7 +6,7 @@ type ValueType = {
     scale: string;
 };
 
-type ParameterType = {
+export type ParameterType = {
     token: string;
     label_long: string;
     label_short: string;

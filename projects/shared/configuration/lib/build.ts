@@ -3,7 +3,7 @@ import * as fs from "fs";
 import { generateOutputFile } from "./yaml";
 import { ConfigType, ConfigParser } from "./tasks/config";
 import { DeclarationsType, DeclarationsParser } from "./tasks/declarations";
-import { DefinitionsType, SignalType, DefinitionsParser } from "./tasks/definitions";
+import { DefinitionsType, SignalType, ParameterType, DefinitionsParser } from "./tasks/definitions";
 
 // yaml parsing result type
 type Result = ConfigType & DeclarationsType & {
@@ -311,6 +311,35 @@ function processDefinitions(result: Result) {
     result.enums.pid = ["None = -1", ...pid.filter((id) => id !== undefined)].join(",\n");
 }
 
+function generateOverview(result: Result) {
+    const
+        parameterIds = result.definitions.reduce((out, {parameters}) => {
+            parameters.forEach(({id}) => out.push(id));
+            return out;
+        }, new Array<number>()).sort((a, b) => a - b),
+        parameterCount = Object.keys(result.declarations.parameter_type).reduce((out, paramType) => {
+            if(paramType !== "None") out[paramType] = Object.keys(result.declarations.sound_type).reduce((out, soundType) => {
+                if(soundType !== "None") {
+                    const params = result.definitions.reduce((out, {parameters}) => {
+                        out.push(...parameters.filter(({type}) => type === paramType));
+                        return out;
+                    }, new Array<ParameterType>());
+                    out[soundType] = {
+                        countSimple: params.reduce((count, {availability}) => {
+                            return count + (availability[soundType].count === 0 ? 0 : 1);
+                        }, 0),
+                        countDual: params.reduce((count, {availability}) => {
+                            return count + availability[soundType].count;
+                        }, 0)
+                    };
+                }
+                return out;
+            }, {});
+            return out;
+        }, {});
+    // console.log(parameterIds, parameterCount);
+}
+
 // main function
 function main() {
     const
@@ -343,6 +372,8 @@ function main() {
     });
     // processing of parsed yaml (sanity checks, enum sorting/filtering, providing strings for replacements)
     processDefinitions(result);
+    //
+    generateOverview(result);
     // transformations of ./src/*.in.* files into usable resources in ./generated via string replacements
     [
         // transformations covered by g++ and therefore safe
