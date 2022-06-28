@@ -12,7 +12,9 @@ export type DeclarationsType = {
             [key: string]: null;
         };
         parameter_properties: Array<string>;
-        parameter_type: Array<string>;
+        parameter_type: {
+            [key: string]: Array<string>;
+        }
         parameter_signal: {
             [key: string]: null;
         };
