@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C15 Configuration - Overview</title>
+    <style>
+        body { width: 100vw; overflow-x: hidden; margin: 0; }
+        dl { display: grid; grid-template-columns: min-content max-content; padding: 0 1ch; }
+        dt, dd { margin-bottom: 1ch; }
+        dt { font-weight: bold; }
+        dd.paramIds { display: grid; grid-template-columns: repeat(50, min-content) }
+        dd.paramIds > div { border: 1px solid #888; text-align: center; padding: 0.5ch; font-size: 70%; font-weight: bold; }
+        dd.paramIds > div:empty { background-color: #ccc; }
+    </style>
+</head>
+<body>
+    <dl>
+        <dt>Date</dt>
+        <dd>${timestamp}</dd>
+        <dt>Milestone</dt>
+        <dd>${config.milestone}-${config.version}</dd>
+        <dt>Parameter IDs</dt>
+        <dd class="paramIds">${parameterIds}</dd>
+    </dl>
+</body>
+</html>

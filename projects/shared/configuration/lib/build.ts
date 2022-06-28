@@ -313,10 +313,14 @@ function processDefinitions(result: Result) {
 
 function generateOverview(result: Result) {
     const
+        { timestamp, config } = result,
         parameterIds = result.definitions.reduce((out, {parameters}) => {
             parameters.forEach(({id}) => out.push(id));
             return out;
-        }, new Array<number>()).sort((a, b) => a - b),
+        }, new Array<number>()).sort((a, b) => a - b).reduce((out, id) => {
+            out[id] = `<div>${id}</div>`;
+            return out;
+        }, new Array<string>(result.config.params).fill('<div title="unused"></div>')).join(""),
         parameterCount = Object.entries(result.declarations.parameter_type).reduce((out, [paramType, paramProps]) => {
             if(paramType !== "None") {
                 out[paramType] = Object.keys(result.declarations.sound_type).reduce((out, soundType) => {
@@ -339,7 +343,7 @@ function generateOverview(result: Result) {
             }
             return out;
         }, {});
-    // console.log(parameterIds, parameterCount);
+    generateOutputFile("./src/overview.html.in", "./generated/overview.html", { timestamp, config, parameterIds });
 }
 
 // main function
@@ -374,8 +378,6 @@ function main() {
     });
     // processing of parsed yaml (sanity checks, enum sorting/filtering, providing strings for replacements)
     processDefinitions(result);
-    //
-    generateOverview(result);
     // transformations of ./src/*.in.* files into usable resources in ./generated via string replacements
     [
         // transformations covered by g++ and therefore safe
@@ -392,6 +394,8 @@ function main() {
         const outfile = infile.replace("./src/", "./generated/").replace(/.in$/, "");
         generateOutputFile(infile, outfile, result);
     });
+    // overview
+    generateOverview(result);
 }
 
 // process
