@@ -339,7 +339,7 @@ function generateOverview(result: Result) {
             }
             return out;
         }, {});
-    console.log(parameterIds, parameterCount);
+    // console.log(parameterIds, parameterCount);
 }
 
 // main function
