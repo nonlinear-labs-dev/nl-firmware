@@ -34,6 +34,7 @@ export type DeclarationsType = {
                 color: Array<number>;
                 token_java: string;
                 global_group: boolean;
+                local_params?: boolean;
             }
         };
         smoother_section: {

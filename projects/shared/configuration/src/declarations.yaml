@@ -24,18 +24,19 @@ parameter_properties: [
   &MODULATION_ASPECTS modulation_aspects,
   &RETURN_BEHAVIOR return_behavior,
   &GROUP_LABEL group_label,
-  &RENDERING_ARGS rendering_args
+  &RENDERING_ARGS rendering_args,
+  &GLOBAL_PARAMETER global_parameter
 ]
 
 parameter_type: {
   None,
-  Hardware_Source: [*CONTROL_POSITION, *RETURN_BEHAVIOR],
-  Display_Parameter: [*CONTROL_POSITION],
-  Hardware_Amount: [*CONTROL_POSITION],
-  Macro_Control: [*CONTROL_POSITION],
-  Macro_Time: [*CONTROL_POSITION, *RENDERING_ARGS],
-  Global_Modulateable: [*GROUP_LABEL, *CONTROL_POSITION, *MODULATION_ASPECTS, *RENDERING_ARGS],
-  Global_Unmodulateable: [*GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS],
+  Hardware_Source: [*GLOBAL_PARAMETER, *CONTROL_POSITION, *RETURN_BEHAVIOR],
+  Display_Parameter: [*GLOBAL_PARAMETER, *CONTROL_POSITION],
+  Hardware_Amount: [*GLOBAL_PARAMETER, *CONTROL_POSITION],
+  Macro_Control: [*GLOBAL_PARAMETER, *CONTROL_POSITION],
+  Macro_Time: [*GLOBAL_PARAMETER, *CONTROL_POSITION, *RENDERING_ARGS],
+  Global_Modulateable: [*GLOBAL_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *MODULATION_ASPECTS, *RENDERING_ARGS],
+  Global_Unmodulateable: [*GLOBAL_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS],
   Local_Modulateable: [*GROUP_LABEL, *CONTROL_POSITION, *MODULATION_ASPECTS, *RENDERING_ARGS],
   Local_Unmodulateable: [*GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS]
 }
@@ -114,7 +115,7 @@ parameter_group: {
   Mod_HA: { label_long: Hardware Amount, label_short: HW Amount, color: *RGB_DEFAULT, token_java: "MCM", global_group: true },
   Voice_Grp: { label_long: Voices, label_short: Voices, color: *RGB_DEFAULT },
   Mono_Grp: { label_long: Mono, label_short: Mono, color: *RGB_DEFAULT, token_java: "Mono", global_group: false },
-  Split: { label_long: Split, label_short: Split, color: *RGB_DEFAULT, token_java: "Split", global_group: true },
+  Split: { label_long: Split, label_short: Split, color: *RGB_DEFAULT, token_java: "Split", global_group: true, local_params: true },
   Part: { label_long: Part, label_short: Part, color: *RGB_DEFAULT, token_java: "Part", global_group: false }
 }
 

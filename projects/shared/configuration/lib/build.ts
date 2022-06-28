@@ -112,6 +112,17 @@ function processDefinitions(result: Result) {
                     throw new Error(`${err}: unknown parameter type property "${property}"`);
                 }
             });
+            // global/local sanity checks
+            const isGlobalParam = type.data.includes("global_parameter");
+            if(group.data.global_group) {
+                if(!isGlobalParam && !group.data.local_params) {
+                    throw new Error(`${err}: global group "${group.name}" cannot contain non-global parameter id ${id}`);
+                }
+            } else {
+                if(isGlobalParam) {
+                    throw new Error(`${err}: non-global group "${group.name}" cannot contain global parameter id ${id}`);
+                }
+            }
             // property sanity checks
             [token, label_long, label_short, control_position, info, availability].forEach((property) => {
                 if(property === undefined) {
