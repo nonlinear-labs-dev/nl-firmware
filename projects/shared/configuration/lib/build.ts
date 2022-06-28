@@ -317,27 +317,29 @@ function generateOverview(result: Result) {
             parameters.forEach(({id}) => out.push(id));
             return out;
         }, new Array<number>()).sort((a, b) => a - b),
-        parameterCount = Object.keys(result.declarations.parameter_type).reduce((out, paramType) => {
-            if(paramType !== "None") out[paramType] = Object.keys(result.declarations.sound_type).reduce((out, soundType) => {
-                if(soundType !== "None") {
-                    const params = result.definitions.reduce((out, {parameters}) => {
-                        out.push(...parameters.filter(({type}) => type === paramType));
-                        return out;
-                    }, new Array<ParameterType>());
-                    out[soundType] = {
-                        countSimple: params.reduce((count, {availability}) => {
-                            return count + (availability[soundType].count === 0 ? 0 : 1);
-                        }, 0),
-                        countDual: params.reduce((count, {availability}) => {
-                            return count + availability[soundType].count;
-                        }, 0)
-                    };
-                }
-                return out;
-            }, {});
+        parameterCount = Object.entries(result.declarations.parameter_type).reduce((out, [paramType, paramProps]) => {
+            if(paramType !== "None") {
+                out[paramType] = Object.keys(result.declarations.sound_type).reduce((out, soundType) => {
+                    if(soundType !== "None") {
+                        const params = result.definitions.reduce((out, {parameters}) => {
+                            out.push(...parameters.filter(({type}) => type === paramType));
+                            return out;
+                        }, new Array<ParameterType>());
+                        out.count[soundType] = {
+                            simple: params.reduce((count, {availability}) => {
+                                return count + (availability[soundType].count === 0 ? 0 : 1);
+                            }, 0),
+                            dual: params.reduce((count, {availability}) => {
+                                return count + availability[soundType].count;
+                            }, 0)
+                        };
+                    }
+                    return out;
+                }, { ordinary: paramProps.includes("ordinary_parameter"), count: {}});
+            }
             return out;
         }, {});
-    // console.log(parameterIds, parameterCount);
+    console.log(parameterIds, parameterCount);
 }
 
 // main function
