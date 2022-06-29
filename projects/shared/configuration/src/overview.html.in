@@ -6,23 +6,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>C15 Configuration - Overview</title>
     <style>
-        body { width: 100vw; overflow-x: hidden; margin: 0; }
-        dl { display: grid; grid-template-columns: min-content max-content; padding: 0 1ch; }
-        dt, dd { margin-bottom: 1ch; }
-        dt { font-weight: bold; }
-        dd.paramIds { display: grid; grid-template-columns: repeat(50, min-content) }
-        dd.paramIds > div { border: 1px solid #888; text-align: center; padding: 0.5ch; font-size: 70%; font-weight: bold; }
-        dd.paramIds > div:empty { background-color: #ccc; }
+        body {
+            width: 100vw;
+            overflow-x: hidden;
+        }
+        dt, summary {
+            font-weight: bold;
+        }
+        summary {
+            font-size: 125%;
+        }
+        .parameter-list {
+            display: grid;
+            grid-template-columns: repeat(10, min-content);
+            gap: 0.5ch;
+            cursor: default;
+            margin: 1ch;
+        }
+        .parameter-list > div {
+            border: 1px solid #888;
+            border-radius: 1ch;
+            text-align: center;
+            padding: 0.5ch;
+            font-size: 70%;
+            font-weight: bold;
+        }
+        .parameter-list > div:empty {
+            background-color: #888;
+        }
+        .parameter-id {
+            font-size: 300%;
+        }
+        .parameter-count {
+            display: grid;
+            text-align: center;
+            margin: 1ch;
+        }
+        .parameter-count > .hdr {
+            font-weight: bold;
+            background-color: #ccc;
+        }
+        .parameter-count > div {
+            border: 1px solid #888;
+            padding: 1ch;
+        }
     </style>
 </head>
 <body>
-    <dl>
-        <dt>Date</dt>
-        <dd>${timestamp}</dd>
-        <dt>Milestone</dt>
-        <dd>${config.milestone}-${config.version}</dd>
-        <dt>Parameter IDs</dt>
-        <dd class="paramIds">${parameterIds}</dd>
-    </dl>
+    <h1>C15 Configuration - Overview</h1>
+    <details open>
+        <summary>Info</summary>
+        <dl>
+            <dt>Date</dt><dd>${timestamp}</dd>
+            <dt>Milestone</dt><dd>${config.milestone}-${config.version}</dd>
+            <dt>Voices</dt><dd>${config.max_voices}</dd>
+            <dt>Params</dt><dd>${config.params}</dd>
+        </dl>
+    </details>
+    <details open>
+        <summary>Count</summary>
+        ${parameter_count}
+    </details>
+    <details open>
+        <summary>Parameter List</summary>
+        <div class="parameter-list">${parameter_list}</div>
+    </details>
 </body>
 </html>

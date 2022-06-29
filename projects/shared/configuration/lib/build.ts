@@ -314,36 +314,60 @@ function processDefinitions(result: Result) {
 function generateOverview(result: Result) {
     const
         { timestamp, config } = result,
-        parameterIds = result.definitions.reduce((out, {parameters}) => {
-            parameters.forEach(({id}) => out.push(id));
+        parameter_list = result.definitions.reduce((out, {group, parameters}) => {
+            out.push(...parameters.map((p) => { return { ...p, group }; }));
             return out;
-        }, new Array<number>()).sort((a, b) => a - b).reduce((out, id) => {
-            out[id] = `<div>${id}</div>`;
+        }, new Array<ParameterType & { group: string }>()).sort((a, b) => a.id - b.id).reduce((out, {group, id, type, label_long}) => {
+            const
+                group_label = result.declarations.parameter_group[group].label_long,
+                rgb = result.declarations.parameter_group[group].color.join(",");
+            out[id] = [
+                `<div class="parameter" title="${group_label} / ${label_long}" style="background-color: rgb(${rgb});">`,
+                `${indent}<code class="parameter-type">${type}</code>`,
+                `${indent}<div class="group-label">${group_label}</div>`,
+                `${indent}<code class="parameter-id">${id}</code>`,
+                `${indent}<div class="parameter-label">${label_long}</div>`,
+                "</div>"
+            ].join("\n");
             return out;
-        }, new Array<string>(result.config.params).fill('<div title="unused"></div>')).join(""),
-        parameterCount = Object.entries(result.declarations.parameter_type).reduce((out, [paramType, paramProps]) => {
+        }, new Array<string>(result.config.params).fill('<div title="unused"></div>')).join("\n"),
+        parameterCountColumns = Object.keys(result.declarations.parameter_type).filter((pt) => pt !== "None").length,
+        parameter_count = Object.keys(result.declarations.parameter_type).reduce((out, paramType) => {
             if(paramType !== "None") {
-                out[paramType] = Object.keys(result.declarations.sound_type).reduce((out, soundType) => {
-                    if(soundType !== "None") {
-                        const params = result.definitions.reduce((out, {parameters}) => {
-                            out.push(...parameters.filter(({type}) => type === paramType));
-                            return out;
-                        }, new Array<ParameterType>());
-                        out.count[soundType] = {
-                            simple: params.reduce((count, {availability}) => {
-                                return count + (availability[soundType].count === 0 ? 0 : 1);
-                            }, 0),
-                            dual: params.reduce((count, {availability}) => {
-                                return count + availability[soundType].count;
-                            }, 0)
-                        };
-                    }
+                out[1].push(`<div class="hdr">${paramType.replace("_", "<br>")}</div>`);
+                const params = result.definitions.reduce((out, {parameters}) => {
+                    out.push(...parameters.filter(({type}) => type === paramType));
                     return out;
-                }, { ordinary: paramProps.includes("ordinary_parameter"), count: {}});
+                }, new Array<ParameterType>());
+                Object.keys(result.declarations.sound_type).filter((st) => st !== "None").forEach((soundType, index) => {
+                    const
+                        countSimple = params.reduce((count, {availability}) => {
+                            return count + (availability[soundType].count === 0 ? 0 : 1);
+                        }, 0),
+                        countDual = params.reduce((count, {availability}) => {
+                            return count + availability[soundType].count;
+                        }, 0);
+                    if(countSimple === countDual) {
+                        out[2 + index].push(`<div>${countSimple}</div>`);
+                    } else {
+                        out[2 + index].push(`<div>${countSimple} (${countDual})</div>`);
+                    }
+                });
             }
             return out;
-        }, {});
-    generateOutputFile("./src/overview.html.in", "./generated/overview.html", { timestamp, config, parameterIds });
+        }, [
+            [`<div class="parameter-count" style="grid-template-columns: repeat(${1 + parameterCountColumns}, max-content);">`],
+            ['<div class="hdr">Sound<br>Type</div>'],
+            ...Object.keys(result.declarations.sound_type).filter((st) => st !== "None").map((soundType) => {
+                return [`<div class="hdr">${soundType}</div>`];
+            }),
+            ["</div>"]
+        ]).map((row) => row.join("\n")).join("\n");
+    generateOutputFile(
+        "./src/overview.html.in", 
+        "./generated/overview.html",
+        { timestamp, config, parameter_list, parameter_count }
+    );
 }
 
 // main function

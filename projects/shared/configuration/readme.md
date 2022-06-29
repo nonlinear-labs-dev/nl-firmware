@@ -38,7 +38,7 @@ The content of provided files aims for seamless exchange. However, there is one 
 - [x] handling of several definition.yaml files --> definitions.h
 - [x] auto-counting of parameters
 - [x] good-enough error messages
-- [ ] generate overview _(similar to spreadsheet: parameter counts, parameter id table)_
+- [x] generate overview _(similar to spreadsheet: parameter counts, parameter id table)_
 - [ ] currently unclear: integration of other shared resources (f.e. nltools) in generated output?
 
 ## Roadmap
