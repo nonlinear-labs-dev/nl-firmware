@@ -108,7 +108,7 @@ parameters:
     <<: *LAYER_EXPOSED
     <<: *RENDER_TYPICAL
     id: 352
-    token: SVG_Src
+    token: SVF_Src
     label_long: SV Filter - From @VG:Other
     label_short: From @VG:Other
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }

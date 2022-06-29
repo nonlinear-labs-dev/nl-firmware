@@ -63,7 +63,7 @@ parameters:
     label_short: Chorus
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.25f }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
-    rendering_args: { scaling: Parabolic, factor: 1.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    rendering_args: { scaling: Parabolic, factor: 1.0f, offset: 0.0f, section: Mono, clock: Slow, signal: Mono_Signal }
     info: >
       This controls the internal modulation of the reverberation delays.
       At higher amounts, there is more movement and the diffusion is smoother.

@@ -120,14 +120,14 @@ parameters:
       At zero, the output signal of Oscillator B is used. At negative values, the signal from the Shaper is inverted.
   - <<: *MODULATEABLE
     id: 94
-    token: PM_B
-    label_long: PM B
-    label_short: PM B
+    token: PM_A
+    label_long: PM A
+    label_short: PM A
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Parabolic, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
-      Amount of phase modulation by Oscillator & Shaper B (cross feedback).
+      Amount of phase modulation by Oscillator & Shaper A (cross feedback).
   - <<: *MODULATEABLE
     id: 96
     token: PM_A_Env_A

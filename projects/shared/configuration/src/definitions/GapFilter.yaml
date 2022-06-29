@@ -65,7 +65,7 @@ parameters:
     label_short: Reson
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.5f }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
-    rendering_args: { scaling: Linear, factor: 0.9f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    rendering_args: { scaling: Linear, factor: 0.9f, offset: 0.0f, section: Mono, clock: Slow, signal: Mono_Signal }
     info: >
       Resonance of both filters. Higher values create two resonance peaks at the upper and lower end of the gap.
   - <<: *MODULATEABLE

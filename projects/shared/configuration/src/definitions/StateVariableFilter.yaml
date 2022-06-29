@@ -133,7 +133,7 @@ parameters:
     label_short: L-B-H
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
-    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       Crossfades between the lowpass, bandpass and highpass outputs of the two filter stages.\n
       (first stage -> second stage: LP -> LP, BP -> LP, HP -> LP, HP -> BP, HP -> HP)
@@ -144,7 +144,7 @@ parameters:
     label_short: Parallel
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
-    rendering_args: { scaling: Linear, factor: 100.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    rendering_args: { scaling: Linear, factor: 100.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       At zero, the two 2-pole filter stages are in series forming a 4-pole filter.
       Positive values crossfade from the serial structure to a parallel structure where the filter outputs are added.

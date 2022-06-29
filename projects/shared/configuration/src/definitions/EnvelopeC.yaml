@@ -170,7 +170,7 @@ parameters:
     label_long: Retrig Hardness
     label_short: Retrig
     control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_100_PERCENT, initial: 0.0f }
-    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
     info: >
       Determines how much the Envelope signal is forced to start at zero instead of the current level
       (usually from the Release phase).
