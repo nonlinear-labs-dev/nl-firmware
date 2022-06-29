@@ -117,13 +117,13 @@ parameters:
       Crossfades to the State Variable Filter signal of the other Part. (Only available when using Layer mode.)
   - <<: *MODULATEABLE
     <<: *ALL_EXPOSED
-    <<: *RENDER_TYPICAL
     id: 160
     token: FX
     label_long: Effects
     label_short: Effects
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
     info: >
       Feedback mix factor for the output of the Effects chain.
       The reverb amount in the feedback can be set by the \"Reverb Amount\" fader independantly.

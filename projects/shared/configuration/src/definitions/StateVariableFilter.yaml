@@ -54,8 +54,8 @@ parameters:
     token: Cut
     label_long: Cutoff
     label_short: Cutoff
-    control_position: { coarse: 120, fine: 12000, scale: LINEAR_20_140_ST, initial: 0.5f }
-    modulation_aspects: { coarse: 120, fine: 12000, scale: LINEAR_BIPOLAR_100_ST }
+    control_position: { coarse: 120, fine: 1200, scale: LINEAR_20_140_ST, initial: 0.5f }
+    modulation_aspects: { coarse: 120, fine: 1200, scale: LINEAR_BIPOLAR_100_ST }
     rendering_args: { scaling: Expon_Lin_Pitch, factor: 120.0f, offset: 20.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Static value of the filter cutoff frequency at C3 [in semitones], applies to both stages of the filter.
@@ -144,7 +144,7 @@ parameters:
     label_short: Parallel
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
-    rendering_args: { scaling: Linear, factor: 100.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       At zero, the two 2-pole filter stages are in series forming a 4-pole filter.
       Positive values crossfade from the serial structure to a parallel structure where the filter outputs are added.
@@ -158,7 +158,7 @@ parameters:
     label_short: FM
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
-    rendering_args: { scaling: Parabolic, factor: 5.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    rendering_args: { scaling: Linear, factor: 5.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Amount of (phase) modulation of the comb filter pitch (delay time) by the output signals of
       Oscillator & Shaper A and B, with the PM A-B knob determining their mix.

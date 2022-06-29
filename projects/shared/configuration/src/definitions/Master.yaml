@@ -69,8 +69,8 @@ parameters:
     token: Serial_FX
     label_long: Serial FX
     label_short: Serial FX
-    control_position: { coarse: 48, fine: 4800, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { coarse: 48, fine: 4800, scale: LINEAR_BIPOLAR_200_PERCENT }
+    control_position: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Global, clock: Fast, signal: None }
     info: >
       The output of an FX chain can be routed to the input of the other FX chain,

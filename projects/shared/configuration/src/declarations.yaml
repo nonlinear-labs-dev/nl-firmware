@@ -562,7 +562,7 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: false,
     values: [ "40.0", "65.0", "90.0", "115.0", "140.0" ],
-    bipolar: true
+    bipolar: false
   },
   LINEAR_60_140_ST: {
     round: ,
@@ -578,7 +578,7 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: false,
     values: [ "80.0", "95.0", "110.0", "125.0", "140.0" ],
-    bipolar: true
+    bipolar: false
   },
   LINEAR_BIPOLAR_72_ST: {
     round: *ROUNDING_ONE_DECIMAL,

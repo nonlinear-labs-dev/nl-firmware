@@ -28,7 +28,7 @@ parameters:
     token: Center
     label_long: Center
     label_short: Center
-    control_position: { coarse: 96, fine: 960, scale: LINEAR_24_120_ST, initial: 0.0f }
+    control_position: { coarse: 96, fine: 960, scale: LINEAR_24_120_ST, initial: 0.5f }
     modulation_aspects: { coarse: 96, fine: 960, scale: LINEAR_BIPOLAR_96_ST }
     rendering_args: { scaling: Linear, factor: 96.0f, offset: 24.0f, section: Mono, clock: Slow, signal: None }
     info: >

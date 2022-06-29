@@ -161,7 +161,7 @@ parameters:
     label_short: AP Tune
     control_position: { coarse: 140, fine: 1400, scale: LINEAR_0_140_ST, initial: 1.0f }
     modulation_aspects: { coarse: 140, fine: 1400, scale: LINEAR_BIPOLAR_140_ST }
-    rendering_args: { scaling: Expon_Lin_Pitch, factor: 80.0f, offset: 60.0f, section: Mono, clock: Slow, signal: None }
+    rendering_args: { scaling: Linear, factor: 140.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
     info: >
       Mean center frequency of the 4-pole allpass filters which are in series with the delays.
       Their frequency-dependant phase shifts can create a \"Phaser\" effect.

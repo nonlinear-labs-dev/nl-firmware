@@ -26,6 +26,8 @@ The process consists of four distinct phases, each of which can fail on invalid 
 3. G++ compilation _(validating generated headers, providing executable based on generated files)_
 4. "Main" execution _(additional validation of generated structures)_
 
+In addition, the project has passed a one-time verification, comparing the generated structures to the now deprecated parameter-db ones.
+
 ## Compatibility with ParameterDb
 
 The content of provided files aims for seamless exchange. However, there is one file in the ParameterDb that is deprecated/removed here:
@@ -52,7 +54,7 @@ The content of provided files aims for seamless exchange. However, there is one 
   - [x] Comb and SV Filter
   - [x] Feedback and Output Mixer
   - [x] Effects: Flanger, Cabinet, Gap Filter, Echo, Reverb
-- [ ] verification: every (non-empty) ParameterDescriptor of ParameterDb should be identical to Configuration clone
+- [x] verification: every (non-empty) ParameterDescriptor of ParameterDb should be identical to Configuration clone
 - [ ] there seems to be a `LF/CR` "problem", on github the last empty line in each file is omitted
 - [ ] "dockerize" project and integrate into make process
 - [ ] review:

@@ -28,6 +28,13 @@ function validateToken(token: string): boolean {
     return /^\w+$/.test(token);
 }
 
+function replaceResultInFiles(result: Result, ...files: Array<string>) {
+    files.forEach((infile: string) => {
+        const outfile = infile.replace("./src/", "./generated/").replace(/.in$/, "");
+        generateOutputFile(infile, outfile, result);
+    });
+}
+
 // validate (essential sanity checks) and transform parsed yaml output
 function processDefinitions(result: Result) {
     const
@@ -409,7 +416,8 @@ function main() {
     // processing of parsed yaml (sanity checks, enum sorting/filtering, providing strings for replacements)
     processDefinitions(result);
     // transformations of ./src/*.in.* files into usable resources in ./generated via string replacements
-    [
+    replaceResultInFiles(
+        result,
         // transformations covered by g++ and therefore safe
         "./src/config.h.in",
         "./src/declarations.h.in",
@@ -419,11 +427,11 @@ function main() {
         // transformations not covered by g++ and therefore unsafe
         "./src/placeholder.h.in",
         "./src/ParameterFactory.java.in",
-        "./src/MacroIds.js.in"
-    ].forEach((infile: string) => {
-        const outfile = infile.replace("./src/", "./generated/").replace(/.in$/, "");
-        generateOutputFile(infile, outfile, result);
-    });
+        "./src/MacroIds.js.in",
+        // validation
+        "./src/validate.h.in",
+        "./src/validate.cpp.in"
+    );
     // overview
     generateOverview(result);
 }

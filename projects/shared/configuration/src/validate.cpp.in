@@ -1,0 +1,103 @@
+/******************************************************************************/
+/** @file       validate.cpp
+    @date       ${timestamp}
+    @version    ${config.milestone}-${config.version}
+    @author     M. Seeber
+    @brief      program to validate generated resources (comparing to parameter-db resources)
+    @todo       
+*******************************************************************************/
+
+#include "definitions.h"
+#include "validate.h"
+#include <iostream>
+
+using namespace C15;
+
+constexpr bool ValidateId = true;    // should always make sense to test, given that parameter ids remain unchanged
+constexpr bool ValidateDescriptors = false; // only makes sense when definitions are identical (at time of development)
+
+bool validateDescriptors(const ParameterDescriptor& _old, const ParameterDescriptor& _new)
+{
+    bool result = true;
+    if(ValidateIdAndType)
+    {
+        // main descriptor
+        if(_old.m_param.m_type != _new.m_param.m_type)
+        {
+            std::cerr << "found differing ParameterType, ID: " << _old.m_param_id << std::endl;
+            result = false;
+        }
+    }
+    if(ValidateDescriptors)
+    {
+        // main descriptor
+        if(_old.m_param_id != _new.m_param_id)
+        {
+            std::cerr << "found differing ParameterId, ID: " << _old.m_param_id << std::endl;
+            result = false;
+        }
+        if(_old.m_initial != _new.m_initial)
+        {
+            std::cerr << "found differing initial value, ID: " << _old.m_param_id << std::endl;
+            result = false;
+        }
+        // ae descriptor
+        if(_old.m_ae.m_scaleId != _new.m_ae.m_scaleId)
+        {
+            std::cerr << "found differing SmootherScale, ID: " << _old.m_param_id << std::endl;
+            result = false;
+        }
+        if(_old.m_ae.m_scaleFactor != _new.m_ae.m_scaleFactor)
+        {
+            std::cerr << "found differing scaleFactor, ID: " << _old.m_param_id << std::endl;
+            result = false;
+        }
+        if(_old.m_ae.m_scaleOffset != _new.m_ae.m_scaleOffset)
+        {
+            std::cerr << "found differing scaleOffset, ID: " << _old.m_param_id << std::endl;
+            result = false;
+        }
+        if(_old.m_ae.m_polarity != _new.m_ae.m_polarity)
+        {
+            std::cerr << "found differing polarity, ID: " << _old.m_param_id << std::endl;
+            result = false;
+        }
+        // pg descriptor
+        if(_old.m_pg.m_coarse_cp != _new.m_pg.m_coarse_cp)
+        {
+            std::cerr << "found differing coarse_cp, ID: " << _old.m_param_id << std::endl;
+            result = false;
+        }
+        if(_old.m_pg.m_fine_cp != _new.m_pg.m_fine_cp)
+        {
+            std::cerr << "found differing fine_cp, ID: " << _old.m_param_id << std::endl;
+            result = false;
+        }
+        if(_old.m_pg.m_coarse_amt != _new.m_pg.m_coarse_amt)
+        {
+            std::cerr << "found differing coarse_amt, ID: " << _old.m_param_id << std::endl;
+            result = false;
+        }
+        if(_old.m_pg.m_fine_amt != _new.m_pg.m_fine_amt)
+        {
+            std::cerr << "found differing fine_amt, ID: " << _old.m_param_id << std::endl;
+            result = false;
+        }
+    }
+    return result;
+}
+
+int main() {
+    bool valid = true;
+    for(size_t index = 0; index < Config::tcd_elements; index++)
+    {
+        valid &= validateDescriptors(OldParameterList[index], ParameterList[index]);
+
+    }
+    if(!valid)
+    {
+        return 1;
+    }
+    std::cout << "validation succceeded" << std::endl;
+    return 0;
+}

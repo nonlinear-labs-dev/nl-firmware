@@ -51,7 +51,7 @@ parameters:
     label_short: Pan
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
-    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Poly, clock: Fast, signal: None }
     info: >
       Pan position of the signal from Oscillator & Shaper A in the output mix.
   - <<: *MODULATEABLE
@@ -73,7 +73,7 @@ parameters:
     label_short: Pan
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
-    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Poly, clock: Fast, signal: None }
     info: >
       Pan position of the signal from Oscillator & Shaper B in the output mix.
   - <<: *MODULATEABLE
@@ -95,7 +95,7 @@ parameters:
     label_short: Pan
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
-    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Poly, clock: Fast, signal: None }
     info: >
       Pan position of the signal from the Comb Filter in the output mix.
   - <<: *MODULATEABLE
@@ -117,7 +117,7 @@ parameters:
     label_short: Pan
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
-    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Poly, clock: Fast, signal: None }
     info: >
       Pan position of the signal from the State Variable Filter in the output mix.
   - <<: *MODULATEABLE
@@ -139,7 +139,7 @@ parameters:
     label_short: Fold
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.5f }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
-    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
     info: >
       Amount of folding back of the shaper curve for high input amplitudes.\n
       0.0 %: flat saturation, no folding\n
@@ -153,7 +153,7 @@ parameters:
     label_short: Asym
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
-    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
     info: >
       Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics.
       At higher values, it becomes a parabolic curve that shifts the frequency of the fundamental to its double.

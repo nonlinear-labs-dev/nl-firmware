@@ -86,7 +86,7 @@ parameters:
     token: Fade_Range
     label_long: Fade Range
     label_short: Fade Range
-    control_position: { coarse: 60, fine: 60, scale: LINEAR_0_60_ST, initial: 0.0f }
+    control_position: { coarse: 60, fine: 600, scale: LINEAR_0_60_ST, initial: 0.0f }
     rendering_args: { scaling: Linear, factor: 60.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
     info: >
       Available when using Layer mode.
