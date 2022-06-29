@@ -68,6 +68,10 @@
         ${parameter_count}
     </details>
     <details open>
+        <summary>Groups</summary>
+        <ul>${parameter_groups}</ul>
+    </details>
+    <details open>
         <summary>Parameter List</summary>
         <div class="parameter-list">${parameter_list}</div>
     </details>

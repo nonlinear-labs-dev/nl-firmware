@@ -362,11 +362,17 @@ function generateOverview(result: Result) {
                 return [`<div class="hdr">${soundType}</div>`];
             }),
             ["</div>"]
-        ]).map((row) => row.join("\n")).join("\n");
+        ]).map((row) => row.join("\n")).join("\n"),
+        parameter_groups = Object.entries(result.declarations.parameter_group).reduce((out, [_, groupProps]) => {
+            if(groupProps !== null) {
+                out.push(`<li>${groupProps.label_long}</li>`);
+            }
+            return out;
+        }, new Array<string>()).join("\n");
     generateOutputFile(
         "./src/overview.html.in", 
         "./generated/overview.html",
-        { timestamp, config, parameter_list, parameter_count }
+        { timestamp, config, parameter_list, parameter_count, parameter_groups }
     );
 }
 
