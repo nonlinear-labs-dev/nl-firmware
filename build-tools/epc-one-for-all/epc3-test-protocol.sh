@@ -57,7 +57,7 @@ function check_buffer_underruns() {
 
     echo "Now sleeping for 4 hours to look for buffer underruns..."
     DATE=$(executeAsRoot "getting time" "date +\"%y-%m-%d %T\"")
-    sleep 14 # 400
+    sleep 14400
 
     executeAsRoot \
         "Is audio-engine running without buffer underruns?" \
@@ -70,21 +70,32 @@ function check_usb_stick() {
         sleep 2
     done
 
-    sleep 2
+    set -x
+
+    sleep 5
 
     rm -f /mnt/usb-stick/test-file
 
     executeAsRoot \
         "Write to usb stick on EPC?" \
-        "touch /mnt/usb-stick/test-file"
+        "echo '1' > /mnt/usb-stick/test-file"
 
-    sleep 2
+    sleep 5
 
-    if ! test -e /mnt/usb-stick/test-file; then
-        echo "Could access file on usb stick that has been written by epc via sshfs? No!"
+    if [ "$(cat /mnt/usb-stick/test-file)" = "1" ]; then
+        echo "Could access file on usb stick that has been written by epc via sshfs? Yes!"
     else
-        echo "USB stick accessible? Yes!"
+        echo "Could access file on usb stick that has been written by epc via sshfs? No!"
     fi
+
+   echo '1' > /mnt/usb-stick/test-file
+
+   sleep 5
+
+   executeAsRoot \
+        "Read from usb stick on EPC?" \
+        "[ \"\$(cat /mnt/usb-stick/test-file)\" = '2' ]"
+
 }
 
 function check_BBB_AP() {
@@ -115,11 +126,13 @@ function check_EPC_AP() {
                 return 1
             fi
         fi
+         
+        echo "EPC1 has AP disabled? Yes!"
         return 0
     fi
 
     executeAsRoot \
-        "Is AP active on epc1?" \
+        "AP name on epc>=2 has no BBB postfix?" \
         "iw wlan0 info | grep ssid | grep -v _BBB"
 }
 
@@ -135,16 +148,8 @@ function check_iface_names() {
 
 function check_ping_timeout() {
     executeAsRoot \
-        "Mount sda1 to /mnt to check ping timeout?" \
-        "mount /dev/sda1 /mnt"
-
-    executeAsRoot \
-        "Unpack initramfs?" \
-        "lsinitcpio -x /mnt/initramfs-linux-rt.img"
-
-    executeAsRoot \
         "Ping timeout workaround is installed in initramfs?" \
-        "cat hooks/nlhook | grep ping_bbb"
+        "mkdir -p /mnt/sda1; mount /dev/sda1 /mnt/sda1; lsinitcpio -x /mnt/sda1/initramfs-linux-rt.img && cat hooks/nlhook | grep ping_bbb"
 }
 
 
