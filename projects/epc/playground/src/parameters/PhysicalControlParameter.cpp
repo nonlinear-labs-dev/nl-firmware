@@ -98,6 +98,7 @@ Glib::ustring PhysicalControlParameter::getDisplayString() const
 
 void PhysicalControlParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
+  m_changingFromHWUI = m_lastChangedFromHWUI;
   m_returnModeBeforeLastLoad = getReturnMode();
   m_valueBeforeLastLoad = getControlPositionValue();
   setIndirect(transaction, value);

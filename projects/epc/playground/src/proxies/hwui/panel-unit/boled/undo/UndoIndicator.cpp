@@ -16,3 +16,8 @@ bool UndoIndicator::redraw(FrameBuffer &fb)
   }
   return true;
 }
+
+int UndoIndicator::getZPriority() const
+{
+  return 1;
+}

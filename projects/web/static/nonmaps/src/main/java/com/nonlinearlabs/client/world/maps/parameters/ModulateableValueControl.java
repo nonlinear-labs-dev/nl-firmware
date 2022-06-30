@@ -10,6 +10,7 @@ abstract class ModulateableValueControl extends ValueControl {
 
 	private boolean drawCorona;
 	private boolean drawThicker;
+	private boolean hasBottomMargin;
 
 	ModulateableValueControl(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
@@ -67,6 +68,14 @@ abstract class ModulateableValueControl extends ValueControl {
 
 		double coronaLevel = 5;
 		drawCorona = levelOfDetail >= coronaLevel;
+
+		double marginLevel = 4.5;
+		hasBottomMargin = levelOfDetail <= marginLevel;
+	}
+
+	@Override
+	public double getBottomMargin() {
+		return hasBottomMargin ? 10 : 0;
 	}
 
 	@Override
