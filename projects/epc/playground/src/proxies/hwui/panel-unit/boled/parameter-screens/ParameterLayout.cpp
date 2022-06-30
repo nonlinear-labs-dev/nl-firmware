@@ -370,6 +370,7 @@ ParameterRecallLayout2::~ParameterRecallLayout2()
 
 void ParameterRecallLayout2::init()
 {
+  addControl(createModuleCaption());
 }
 
 bool ParameterRecallLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
