@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "version.h"
 #include "globals.h"
 #include "hardware.h"
 #include "led.h"
@@ -122,7 +123,7 @@ void Led_t::Show_Hardware_and_Firmware_ID(void)  // handle special case
       hw_blinks = 1;
       break;  // 6.0 assumed
   }
-  fw_blinks = FW5_Version_ID + 1;  // set blink counter according to firmware revision
+  fw_blinks = FW_Version_ID_Minor + 1;  // set blink counter according to firmware revision
 }
 
 static int8_t showPowerCyclingOverride(void)
