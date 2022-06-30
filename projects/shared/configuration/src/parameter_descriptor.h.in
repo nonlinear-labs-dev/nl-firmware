@@ -10,7 +10,7 @@
 *******************************************************************************/
 
 #include <stdint.h>
-#include "declarations.h"
+#include "parameter_declarations.h"
 
 namespace C15 {
     constexpr uint32_t None = 0;

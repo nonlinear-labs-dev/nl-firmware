@@ -419,10 +419,10 @@ function main() {
     replaceResultInFiles(
         result,
         // transformations covered by g++ and therefore safe
-        "./src/config.h.in",
-        "./src/declarations.h.in",
-        "./src/definitions.h.in",
-        "./src/descriptor.h.in",
+        "./src/c15_config.h.in",
+        "./src/parameter_declarations.h.in",
+        "./src/parameter_list.h.in",
+        "./src/parameter_descriptor.h.in",
         "./src/main.cpp.in",
         // transformations not covered by g++ and therefore unsafe
         "./src/placeholder.h.in",

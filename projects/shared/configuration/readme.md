@@ -65,11 +65,14 @@ The content of provided files aims for seamless exchange. However, there is one 
     - [x] node validation already does lots of sanity checks
     - [x] parameter definition errors at least provide a filename and reason
 - possible project enhancements
+  - [ ] more PlayGround definitions _(descriptors: DisplayScalingType, ParameterGroup, ParameterAppearance?)_
   - [ ] turn descriptors into constexpr decscriptors
   - [ ] content for java and js resources
   - [ ] integrate clang-format _(for generated output)_?
-  - [ ] more PlayGround definitions _(descriptors: DisplayScalingType, ParameterGroup, ParameterAppearance?)_
   - [ ] provide hw sources as c header for PlayController
   - [ ] generate html artifacts for parameter-reference (manual, webui)?
   - [ ] generate css artifacts _(parameter-group colors)_
   - [ ] potentially delegate Configuration <--> NlTools _(enums: MC, SoundType, VoiceGroup, Preset Messages, Settings?)_
+
+### how to install PodMan on ubuntu (22.04) from 22.10 onwards it should be a default package in apt
+https://www.atlantic.net/dedicated-server-hosting/how-to-install-and-use-podman-on-ubuntu-20-04/

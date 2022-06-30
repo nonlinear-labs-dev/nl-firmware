@@ -1,1 +1,1 @@
-docker build -t nl-configuration-build-container "$1"
+podman build -t nl-configuration-build-container "$1"

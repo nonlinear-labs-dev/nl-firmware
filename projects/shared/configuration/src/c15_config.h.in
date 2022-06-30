@@ -17,7 +17,7 @@ namespace C15
     {
         constexpr char const * const milestone = "${config.milestone}-${config.version}";
         constexpr uint32_t total_polyphony = ${config.max_voices};
-        constexpr uint32_t local_polyphoy = total_polyphony >> 1;
+        constexpr uint32_t local_polyphony = total_polyphony >> 1;
         constexpr uint32_t tcd_elements = ${config.params};
         constexpr uint32_t clock_rates[2][3] = { { ${config.clock_rates.sd} }, { ${config.clock_rates.hd} } };
         constexpr float fade_time_ms = ${config.fade_time_in_ms};

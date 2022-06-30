@@ -115,10 +115,11 @@ endforeach(lib)
 
 target_include_directories(${LIB_NAME} PUBLIC src)
 target_include_directories(${LIB_NAME} PUBLIC ${PROJECT_BINARY_DIR}/src)
-target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared/parameter-db/generated/)
+target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_BINARY_DIR}/projects/shared/configuration/generated/)
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/epc/playground/src)
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared)
 target_link_libraries(${LIB_NAME} PUBLIC pthread stdc++fs)
+add_dependencies(${LIB_NAME} configuration)
 
 ## BINARY
 add_executable(${BINARY_NAME} ${${BINARY_NAME}_SOURCES})

@@ -9,8 +9,8 @@
     @todo       
 *******************************************************************************/
 
-#include "config.h"
-#include "descriptor.h"
+#include "c15_config.h"
+#include "parameter_descriptor.h"
 
 namespace C15 {
     const ParameterDescriptor ParameterList[Config::tcd_elements] = {

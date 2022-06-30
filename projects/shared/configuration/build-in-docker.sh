@@ -2,10 +2,12 @@
 
 sourceDir="$1"
 binaryDir="$2"
-baseSourceDir="$3"
+userID="$4"
+groupID="$5"
 
 echo "$sourceDir"
 echo "$binaryDir"
-echo "$baseSourceDir"
+echo "$userID"
+echo "$groupID"
 
-docker run -v "$sourceDir":/sourceDir -v "$binaryDir":/binaryDir -v "$baseSourceDir":/source -it nl-configuration-build-container
+podman run -v "$sourceDir":/sourceDir -v "$binaryDir":/binaryDir -ti --privileged -e USER_ID="${userID}" -e GROUP_ID="${groupID}" nl-configuration-build-container
