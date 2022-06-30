@@ -72,6 +72,7 @@ void PresetManagerLayout::setup()
   m_presets = nullptr;
   m_loadMode = nullptr;
   m_bankButton = nullptr;
+  m_changedIndicator = nullptr;
 
   clear();
 
@@ -140,6 +141,8 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new UndoIndicator(Rect(22, 15, 10, 8)));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 36, 58, 62)));
+  m_changedIndicator = addControl(new ChangedParameterIndicator(Rect(0, 14, 64, 14)));
+  m_changedIndicator->setVisible(hwui->isModifierSet(ButtonModifier::SHIFT));
 
   auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->isDual();
 
