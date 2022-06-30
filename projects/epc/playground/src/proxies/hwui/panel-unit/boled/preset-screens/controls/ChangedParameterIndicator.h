@@ -1,5 +1,6 @@
 #pragma once
 #include "proxies/hwui/controls/Label.h"
+#include "nltools/threading/Throttler.h"
 
 class ChangedParameterIndicator : public Label
 {
@@ -9,4 +10,6 @@ class ChangedParameterIndicator : public Label
 
  private:
   void update();
+
+  Throttler m_worker;
 };

@@ -72,6 +72,7 @@ void PresetManagerLayout::setup()
   m_presets = nullptr;
   m_loadMode = nullptr;
   m_bankButton = nullptr;
+  m_changedIndicator = nullptr;
 
   clear();
 
