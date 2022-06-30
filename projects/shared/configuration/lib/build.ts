@@ -436,8 +436,19 @@ function main() {
     generateOverview(result);
 }
 
+function createDirectorys(dir) {
+    fs.mkdir(dir, (err) => {
+        if(err) {
+            console.error(err);
+        } else {
+            console.log(dir + " was created!");
+        }
+    });
+}
+
 // process
 try {
+    createDirectorys("./generated");
     main();
     // if no error was raised, node is done
     process.exit(0);
