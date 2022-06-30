@@ -20,7 +20,7 @@ bool ModMatrixSanityChecks()
     constexpr size_t hardware_amounts = (size_t) Parameters::Hardware_Amounts::_LENGTH_;
     constexpr size_t macro_controls = (size_t) Parameters::Macro_Controls::_LENGTH_;
     constexpr size_t macro_times = (size_t) Parameters::Macro_Times::_LENGTH_;
-    constexpr size_t expected_amounts = hardware_sources * macro_controls;
+    constexpr size_t expected_amounts = hardware_sources * (macro_controls - 1); // Macros have "None" element
     if(hardware_sources != hardware_sends)
     {
         std::cerr << "number of HardwareSources (" << hardware_sources;

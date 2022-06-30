@@ -44,8 +44,15 @@ function processDefinitions(result: Result) {
         // parameterID collection (resulting in enum)
         pid: Array<string | undefined> = [],
         // parameterType collection (resulting in enum)
-        parameterType = Object.keys(result.declarations.parameter_type).reduce((out: ParamType, type: string) => {
-            if(type !== "None") out[`${type}s`] = []; // every type !== None can collect tokens
+        parameterType = Object.entries(result.declarations.parameter_type).reduce((out: ParamType, [type, props]) => {
+            if(type !== "None") {
+                // every type !== None can collect tokens
+                if(!props.includes("parameter_id_none")) {
+                    out[`${type}s`] = [];
+                } else {
+                    out[`${type}s`] = ["None"];
+                }
+            }
             return out;
         }, {}),
         // smootherType collection (resulting in enum)

@@ -5,7 +5,7 @@
 group: Flanger
 
 signals:
-  Mono_Signal: []
+  Mono_Signal: [ LFO_L, LFO_R, Time_L, Time_R, FB_Local, FB_Cross, LPF, DRY, WET, APF_L, APF_R, Tremolo_L, Tremolo_R ]
 
 static: [
   &ALL_EXPOSED {
