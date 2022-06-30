@@ -163,7 +163,6 @@ template <typename... A> static void stop(A &... a)
 
 int main(int args, char *argv[])
 {
-  sigc::connection playgroundConnection;
   Glib::init();
   connectSignals();
 
@@ -191,12 +190,11 @@ int main(int args, char *argv[])
 
     theMainLoop = Glib::MainLoop::create();
 
-    auto oc = nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playground, [&]() {
+    theMainLoop->get_context()->signal_timeout().connect_seconds(
+        sigc::bind(sigc::ptr_fun(&checkBufferUnderruns), audioOut.get()), 1);
+
+    nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playground, [&]() {
       lastSent = { 0, 0 };
-      if(playgroundConnection)
-        playgroundConnection.disconnect();
-      playgroundConnection = theMainLoop->get_context()->signal_timeout().connect_seconds(
-          sigc::bind(sigc::ptr_fun(&checkBufferUnderruns), audioOut.get()), 1);
     });
 
     theMainLoop->run();
