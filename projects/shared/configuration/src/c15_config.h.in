@@ -1,7 +1,7 @@
 #pragma once
 
 /******************************************************************************/
-/** @file       config.h
+/** @file       c15_config.h
     @date       ${timestamp}
     @version    ${config.milestone}-${config.version}
     @author     M. Seeber

@@ -4,10 +4,16 @@ An attempt to re-implement (and extend) the "parameter-db" sub-project on a [YAM
 
 ## Prerequisites
 
-- required programs: `node` _(currently using v16.15.1)_, `npm` _(8.10.0)_, `tsc` _(4.6.4)_, `g++` _(11.2.0)_
+- required programs: `node` _(currently using v16.15.1)_, `npm` _(8.10.0)_, `tsc` _(4.6.4)_, `g++` _(11.2.0)_, `podman _(3.4)_`
 - required node packages: `@types/node @types/js-yaml js-yaml`
 - on first run: `npm install` _(the provided package.json should suffice to install the dependencies into the git-ignored `node_modules` folder)_
 - `mkdir ./generated` _(the current output directory - which is git-ignored)_
+
+### how to install PodMan on ubuntu (22.04)
+
+https://www.atlantic.net/dedicated-server-hosting/how-to-install-and-use-podman-on-ubuntu-20-04/
+
+from 22.10 onwards it should be a default package in apt
 
 ## Run Generation Process
 
@@ -31,20 +37,16 @@ In addition, the project has passed a one-time verification (`bash validate.sh`)
 ## Compatibility with ParameterDb
 
 The content of provided files aims for seamless exchange. However, there is one file in the ParameterDb that is deprecated/removed here:
-`parameter_info.h` moved into `declarations.h`. Besides that, the provided and validated code should match the ParameterDb.
+`parameter_info.h` moved into `parameter_declarations.h`. Besides that, the provided and validated code should match the ParameterDb.
 
-## Status
+## Status / Roadmap
 
 - [x] parse yaml to desired output: .h, .cpp
 - [x] handling of several `*.in.*` files
-- [x] handling of several definition.yaml files --> definitions.h
+- [x] handling of several definition.yaml files
 - [x] auto-counting of parameters
 - [x] good-enough error messages
 - [x] generate overview _(similar to spreadsheet: parameter counts, parameter id table)_
-- [ ] currently unclear: integration of other shared resources (f.e. nltools) in generated output?
-
-## Roadmap
-
 - [x] working proof of concept
 - [x] complete C15 definition
   - [x] Global: ModMatrix (HW Sources and Amounts, Macro Controls and Times), Master, Scale
@@ -55,6 +57,7 @@ The content of provided files aims for seamless exchange. However, there is one 
   - [x] Feedback and Output Mixer
   - [x] Effects: Flanger, Cabinet, Gap Filter, Echo, Reverb
 - [x] verification: every (non-empty) ParameterDescriptor of ParameterDb should be identical to Configuration clone
+- [ ] currently unclear: integration of other shared resources (f.e. nltools) in generated output?
 - [ ] there seems to be a `LF/CR` "problem", on github the last empty line in each file is omitted
 - [x] "dockerize" project and integrate into make process
 - [ ] review:
@@ -73,6 +76,3 @@ The content of provided files aims for seamless exchange. However, there is one 
   - [ ] generate html artifacts for parameter-reference (manual, webui)?
   - [ ] generate css artifacts _(parameter-group colors)_
   - [ ] potentially delegate Configuration <--> NlTools _(enums: MC, SoundType, VoiceGroup, Preset Messages, Settings?)_
-
-### how to install PodMan on ubuntu (22.04) from 22.10 onwards it should be a default package in apt
-https://www.atlantic.net/dedicated-server-hosting/how-to-install-and-use-podman-on-ubuntu-20-04/

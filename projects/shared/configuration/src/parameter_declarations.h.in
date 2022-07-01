@@ -1,7 +1,7 @@
 #pragma once
 
 /******************************************************************************/
-/** @file       declarations.h
+/** @file       parameter_declarations.h
     @date       ${timestamp}
     @version    ${config.milestone}-${config.version}
     @author     M. Seeber

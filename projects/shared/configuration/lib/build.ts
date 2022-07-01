@@ -403,8 +403,8 @@ function main() {
         // yaml parsing
         result: Result = {
             timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "", parameter_list: "",
-            ...ConfigParser.parse("./src/config.yaml"),
-            ...DeclarationsParser.parse("./src/declarations.yaml"),
+            ...ConfigParser.parse("./src/c15_config.yaml"),
+            ...DeclarationsParser.parse("./src/parameter_declarations.yaml"),
             definitions: DefinitionsParser.parseAll(...definitions).map((definition, index) => {
                 return { ...definition, filename: definitions[index] }
             })
