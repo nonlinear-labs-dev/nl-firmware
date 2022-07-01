@@ -1,7 +1,7 @@
 #include <stdint.h>
-#include "nl_tcd_adc_work.h"
 #include "playcontroller/lpc_lib.h"
 #include "tcd/nl_tcd_adc_work.h"
+#include "tcd/nl_tcd_bender.h"
 #include "ipc/emphase_ipc.h"
 #include "playcontroller/playcontroller-defs.h"
 #include "playcontroller/playcontroller-converters.h"
@@ -22,15 +22,13 @@ uint32_t        BNDR_GetLastBender(void)
   return BNDR_lastBender;
 }
 
-void BNDR_Reset(void);
-
 #define BNDR_LEGACY_DEFAULT (0)
 static int legacyMode = BNDR_LEGACY_DEFAULT;
-void       BNDR_SetLegacyMode(int const on)
+void       BNDR_SetLegacyMode(uint16_t const on)
 {
   int newMode = (on != 0);
-  if (newMode != legacyMode)
-    BNDR_Reset();
+  if ((newMode != legacyMode) && (newMode == 1))
+    BNDR_Reset(1);  // reset only if switching to legacy mode
   legacyMode        = newMode;
   status.legacyMode = legacyMode;
 }
@@ -522,34 +520,38 @@ void BNDR_Select_BenderSensitivity(uint16_t const sensitivity)
     settlingSensitivity = 1;
 }
 
-void BNDR_Reset(void)
+void BNDR_Reset(uint16_t const legacyMode)
 {
-  // legacy
-  lastRawPitchbend = ADC_RANGE;
-  lastPitchbend    = BIPOLAR_CENTER;
-  pitchbendZero    = ADC_CENTER;
-  pbSignalIsSmall  = 0;
-  pbTestTime       = 0;
-  pbTestMode       = 0;
-  pbRampMode       = 0;
-  pbRamp           = 0;
-  pbRampInc        = 0;
-  // end legacy
+  if (legacyMode != 0)
+  {
+    lastRawPitchbend = ADC_RANGE;
+    lastPitchbend    = BIPOLAR_CENTER;
+    pitchbendZero    = ADC_CENTER;
+    pbSignalIsSmall  = 0;
+    pbTestTime       = 0;
+    pbTestMode       = 0;
+    pbRampMode       = 0;
+    pbRamp           = 0;
+    pbRampInc        = 0;
+  }
+  else
+  {
+    *pLeftEndStop              = NOMINAL_LEFT_ENDSTOP;
+    *pCenter                   = ADC_CENTER;
+    *pRightEndStop             = NOMINAL_RIGHT_ENDSTOP;
+    status                     = BNDR_uint16ToStatus(0);
+    status.legacyMode          = legacyMode;
+    settledCoarse              = 0;
+    settledCandidateCntrCoarse = 0;
+    settledFine                = 0;
+    settledCandidateCntrFine   = 0;
+    BNDR_lastBender            = BIPOLAR_CENTER;
+    rampToZero                 = 0;
+    state                      = following;
 
-  *pLeftEndStop              = NOMINAL_LEFT_ENDSTOP;
-  *pCenter                   = ADC_CENTER;
-  *pRightEndStop             = NOMINAL_RIGHT_ENDSTOP;
-  status                     = BNDR_uint16ToStatus(0);
-  status.legacyMode          = legacyMode;
-  settledCoarse              = 0;
-  settledCandidateCntrCoarse = 0;
-  settledFine                = 0;
-  settledCandidateCntrFine   = 0;
-  BNDR_lastBender            = BIPOLAR_CENTER;
-  rampToZero                 = 0;
-  state                      = following;
+    clearValueBuffer(&windowBuffer, 2 * VALBUF_SIZE, ADC_CENTER);
+  }
 
-  clearValueBuffer(&windowBuffer, 2 * VALBUF_SIZE, ADC_CENTER);
   ADC_WORK_WriteHWValueForAE(HW_SOURCE_ID_PITCHBEND, BIPOLAR_CENTER);
   ADC_WORK_WriteHWValueForUI(HW_SOURCE_ID_PITCHBEND, BIPOLAR_CENTER);
 }
@@ -572,5 +574,6 @@ void BNDR_Init(void)
   Generate_BenderTable(2);
   BNDR_Select_BenderTable(1);
   BNDR_Select_BenderSensitivity(0);
-  BNDR_Reset();
+  BNDR_Reset(0);
+  BNDR_Reset(1);
 }

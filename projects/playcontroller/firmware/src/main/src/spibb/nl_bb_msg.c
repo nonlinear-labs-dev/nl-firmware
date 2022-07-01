@@ -442,7 +442,8 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         BB_MSG_SendTheBuffer();
         break;
       case PLAYCONTROLLER_REQUEST_ID_BNDR_RESET:  // reset bender
-        BNDR_Reset();
+        BNDR_Reset(0);
+        BNDR_Reset(1);
         BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_BNDR_RESET, 1);
         BB_MSG_SendTheBuffer();
         break;
