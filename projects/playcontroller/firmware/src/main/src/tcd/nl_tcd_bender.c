@@ -22,11 +22,16 @@ uint32_t        BNDR_GetLastBender(void)
   return BNDR_lastBender;
 }
 
+void BNDR_Reset(void);
+
 #define BNDR_LEGACY_DEFAULT (0)
 static int legacyMode = BNDR_LEGACY_DEFAULT;
 void       BNDR_SetLegacyMode(int const on)
 {
-  legacyMode        = (on != 0);
+  int newMode = (on != 0);
+  if (newMode != legacyMode)
+    BNDR_Reset();
+  legacyMode        = newMode;
   status.legacyMode = legacyMode;
 }
 
@@ -517,7 +522,7 @@ void BNDR_Select_BenderSensitivity(uint16_t const sensitivity)
     settlingSensitivity = 1;
 }
 
-void BNDR_Reset()
+void BNDR_Reset(void)
 {
   // legacy
   lastRawPitchbend = ADC_RANGE;
