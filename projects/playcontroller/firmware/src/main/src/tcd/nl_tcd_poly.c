@@ -92,6 +92,11 @@ static inline void addKeyToQueue(uint8_t const key)
   POLY_pressedKeyBF |= (uint64_t) 1 << key;
 }
 
+static inline uint8_t u8(uint8_t const x)
+{
+  return x;
+}
+
 static inline void removeKeyFromQueue(uint8_t const key)
 {
   POLY_pressedKeyBF &= ~((uint64_t) 1 << key);
@@ -110,26 +115,26 @@ static inline void removeKeyFromQueue(uint8_t const key)
         POLY_keyQueue.tail++;
         return;
       }
-      if (index == POLY_keyQueue.head - 1)
+      if (index == u8(POLY_keyQueue.head - 1u))
       {  // key found at head
         POLY_keyQueue.head--;
         return;
       }
       // key is in between
-      if ((POLY_keyQueue.head - 1 - index) <= (index - POLY_keyQueue.tail))
+      if (u8(POLY_keyQueue.head - 1u - index) <= u8(index - POLY_keyQueue.tail))
       {  // move head end down
         do
         {
-          POLY_keyQueue.pressed[index] = POLY_keyQueue.pressed[index + 1];
+          POLY_keyQueue.pressed[index] = POLY_keyQueue.pressed[u8(index + 1u)];
           index++;
-        } while (index != POLY_keyQueue.head - 1);
+        } while (index != u8(POLY_keyQueue.head - 1u));
         POLY_keyQueue.head--;
       }
       else
       {  // move tail end up
         do
         {
-          POLY_keyQueue.pressed[index] = POLY_keyQueue.pressed[index - 1];
+          POLY_keyQueue.pressed[index] = POLY_keyQueue.pressed[u8(index - 1u)];
           index--;
         } while (index != POLY_keyQueue.tail);
         POLY_keyQueue.tail++;
