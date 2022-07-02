@@ -19,7 +19,7 @@ constexpr bool ValidateDescriptors = false; // only makes sense when definitions
 bool validateDescriptors(const ParameterDescriptor& _old, const ParameterDescriptor& _new)
 {
     bool result = true;
-    if(ValidateIdAndType)
+    if(ValidateId)
     {
         // main descriptor
         if(_old.m_param.m_type != _new.m_param.m_type)

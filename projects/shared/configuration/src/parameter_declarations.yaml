@@ -92,6 +92,16 @@ parameter_rgb: {
 
 parameter_group: {
   None,
+  Mod_HW: { label_long: Hardware Source, label_short: HW Source, color: *RGB_DEFAULT, token_java: "CS", global_group: true },
+  Mod_HA: { label_long: Hardware Amount, label_short: HW Amount, color: *RGB_DEFAULT, token_java: "MCM", global_group: true },
+  Macro: { label_long: Macro Control, label_short: Macro Control, color: *RGB_DEFAULT, token_java: "MCs", global_group: true },
+  Split: { label_long: Split, label_short: Split, color: *RGB_DEFAULT, token_java: "Split", global_group: true, local_params: true },
+  Master: { label_long: Master, label_short: Master, color: *RGB_DEFAULT, token_java: "Master", global_group: true },
+  Scale: { label_long: Scale, label_short: Scale, color: *RGB_DEFAULT, token_java: "Scale", global_group: true },
+  Unison: { label_long: Unison, label_short: Unison, color: *RGB_DEFAULT, token_java: "Unison", global_group: false },
+  Voice_Grp: { label_long: Voices, label_short: Voices, color: *RGB_DEFAULT },
+  Part: { label_long: Part, label_short: Part, color: *RGB_DEFAULT, token_java: "Part", global_group: false },
+  Mono_Grp: { label_long: Mono, label_short: Mono, color: *RGB_DEFAULT, token_java: "Mono", global_group: false },
   Env_A: { label_long: Envelope A, label_short: Envelope A, color: *RGB_BRANCH_A, token_java: "Env A", global_group: false },
   Env_B: { label_long: Envelope B, label_short: Envelope B, color: *RGB_BRANCH_B, token_java: "Env B", global_group: false },
   Env_C: { label_long: Envelope C, label_short: Envelope C, color: *RGB_DEFAULT, token_java: "Env C", global_group: false },
@@ -108,17 +118,7 @@ parameter_group: {
   Cabinet: { label_long: Cabinet, label_short: Cabinet, color: *RGB_FX, token_java: "Cab", global_group: false },
   Gap_Flt: { label_long: Gap Filter, label_short: Gap Filter, color: *RGB_FX, token_java: "Gap Filt", global_group: false },
   Echo: { label_long: Echo, label_short: Echo, color: *RGB_FX, token_java: "Echo", global_group: false },
-  Reverb: { label_long: Reverb, label_short: Reverb, color: *RGB_FX, token_java: "Reverb", global_group: false },
-  Master: { label_long: Master, label_short: Master, color: *RGB_DEFAULT, token_java: "Master", global_group: true },
-  Unison: { label_long: Unison, label_short: Unison, color: *RGB_DEFAULT, token_java: "Unison", global_group: false },
-  Scale: { label_long: Scale, label_short: Scale, color: *RGB_DEFAULT, token_java: "Scale", global_group: true },
-  Macro: { label_long: Macro Control, label_short: Macro Control, color: *RGB_DEFAULT, token_java: "MCs", global_group: true },
-  Mod_HW: { label_long: Hardware Source, label_short: HW Source, color: *RGB_DEFAULT, token_java: "CS", global_group: true },
-  Mod_HA: { label_long: Hardware Amount, label_short: HW Amount, color: *RGB_DEFAULT, token_java: "MCM", global_group: true },
-  Voice_Grp: { label_long: Voices, label_short: Voices, color: *RGB_DEFAULT },
-  Mono_Grp: { label_long: Mono, label_short: Mono, color: *RGB_DEFAULT, token_java: "Mono", global_group: false },
-  Split: { label_long: Split, label_short: Split, color: *RGB_DEFAULT, token_java: "Split", global_group: true, local_params: true },
-  Part: { label_long: Part, label_short: Part, color: *RGB_DEFAULT, token_java: "Part", global_group: false }
+  Reverb: { label_long: Reverb, label_short: Reverb, color: *RGB_FX, token_java: "Reverb", global_group: false }
 }
 
 smoother_section: {

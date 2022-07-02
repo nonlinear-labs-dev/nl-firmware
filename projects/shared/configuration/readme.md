@@ -56,7 +56,8 @@ The content of provided files aims for seamless exchange. However, there is one 
   - [x] Comb and SV Filter
   - [x] Feedback and Output Mixer
   - [x] Effects: Flanger, Cabinet, Gap Filter, Echo, Reverb
-- [x] verification: every (non-empty) ParameterDescriptor of ParameterDb should be identical to Configuration clone
+- [x] order: parameter groups and signals should be in order [^1]
+- [x] verification: every (non-empty) ParameterDescriptor of ParameterDb should be identical to Configuration clone [^2]
 - [ ] currently unclear: integration of other shared resources (f.e. nltools) in generated output?
 - [ ] there seems to be a `LF/CR` "problem", on github the last empty line in each file is omitted
 - [x] "dockerize" project and integrate into make process
@@ -76,3 +77,6 @@ The content of provided files aims for seamless exchange. However, there is one 
   - [ ] generate html artifacts for parameter-reference (manual, webui)?
   - [ ] generate css artifacts _(parameter-group colors)_
   - [ ] potentially delegate Configuration <--> NlTools _(enums: MC, SoundType, VoiceGroup, Preset Messages, Settings?)_
+
+  [^1]: group order is determined by parameter_group declaration, signal order follows group order (but explicit signals are not in element order)
+  [^2]: not covered in verification: smoother/signal ids, char pointers _(playground: labels, inactive_cp - they would require string comparisons)_

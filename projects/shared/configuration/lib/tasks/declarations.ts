@@ -35,6 +35,7 @@ export type DeclarationsType = {
                 token_java: string;
                 global_group: boolean;
                 local_params?: boolean;
+                index: number;
             }
         };
         smoother_section: {

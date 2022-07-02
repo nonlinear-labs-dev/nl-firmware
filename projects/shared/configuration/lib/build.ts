@@ -86,13 +86,26 @@ function processDefinitions(result: Result) {
         })));
     }, 0);
     // explicit signals (appended to implicit parameter signals)
-    let explicitSignalIndex = result.config.params;
+    // let explicitSignalIndex = result.config.params;
     // parameterList collection
     const
         processedGroups: Array<string> = [],
         parameterList: Array<string> = new Array<string>(result.config.params).fill("{None}");
     // for every yaml resource of ./src/definitions, providing a parameter group
-    result.definitions.forEach(({filename, ...definition}) => {
+    result.definitions.sort((...defs) => {
+        return defs.reduce((out, {filename, group}, index) => {
+            const
+                err = `${errmsg} in ${filename}`,
+                found = result.declarations.parameter_group[group];
+            if(found === undefined) {
+                throw new Error(`${err}: unknown group token "${group}"`);
+            }
+            if(found === null) {
+                return Infinity;
+            }
+            return out + ([1, -1][index] * found.index);
+        }, 0);
+    }).forEach(({filename, ...definition}) => {
         const
             err = `${errmsg} in ${filename}`,
             group = {
@@ -100,9 +113,6 @@ function processDefinitions(result: Result) {
                 data: result.declarations.parameter_group[definition.group]
             };
         // group sanity checks
-        if(group.data === undefined) {
-            throw new Error(`${err}: unknown group token "${group.name}"`);
-        }
         if(processedGroups.includes(group.name)) {
             throw new Error(`${err}: group "${group.name}" is already defined`);
         }
@@ -255,7 +265,7 @@ function processDefinitions(result: Result) {
                         if(signalType[signalStr].includes(tokenStr)) {
                             throw new Error(`${err}: signal "${signal}" in parameter id ${id} is already defined`);
                         }
-                        signalType[signalStr][id] = tokenStr;
+                        signalType[signalStr].push(tokenStr);
                         smootherDescriptor.push(`Signals::${signalStr}::${tokenStr}`);
                     } else {
                         smootherDescriptor.push("None");
@@ -302,8 +312,8 @@ function processDefinitions(result: Result) {
                     if(signalType[signalGroup].includes(signalStr)) {
                         throw new Error(`${err}: signal "${signalStr}" in in group "${group.name}" is already defined`);
                     }
-                    // append explicit signal (behind any potential implicit parameter signal)
-                    signalType[signalGroup][explicitSignalIndex++] = signalStr;
+                    // append explicit signal
+                    signalType[signalGroup].push(signalStr);
                 });
             });
         }
@@ -319,7 +329,7 @@ function processDefinitions(result: Result) {
         return out;
     }, []).join("\n");
     result.signals = Object.entries(signalType).reduce((out: Array<string>, [key, entries]) => {
-        out.push(`enum class ${key} {\n${indent}${[...entries.filter((entry => entry !== undefined)), "_LENGTH_"].join(`,\n${indent}`)}\n};`);
+        out.push(`enum class ${key} {\n${indent}${[...entries, "_LENGTH_"].join(`,\n${indent}`)}\n};`);
         return out;
     }, []).join("\n");
     result.enums.pid = ["None = -1", ...pid.filter((id) => id !== undefined)].join(",\n");
@@ -419,6 +429,12 @@ function main() {
                 throw new Error(`declarations error: invalid token "${token}" in enumeration ${enumeration}`);
             }
         });
+    });
+    // order ParameterGroups
+    Object.entries(result.declarations.parameter_group).forEach(([groupName, groupProps], index) => {
+        if(groupProps !== null) {
+            Object.assign(result.declarations.parameter_group[groupName], {index});
+        }
     });
     // processing of parsed yaml (sanity checks, enum sorting/filtering, providing strings for replacements)
     processDefinitions(result);
