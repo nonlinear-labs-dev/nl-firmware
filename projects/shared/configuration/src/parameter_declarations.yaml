@@ -52,33 +52,41 @@ parameter_signal: {
 }
 
 parameter_unit: {
-  none: &UNIT_NONE "",
-  cent: &UNIT_CT ct,
-  decibel: &UNIT_DB dB,
-  decibel_time: &UNIT_DBT dB_T,
-  decibel_per_semitone: &UNIT_DBST dB/st,
-  degree: &UNIT_DEG deg,
-  hertz: &UNIT_HZ Hz,
-  millisecond: &UNIT_MS ms,
-  semitone: &UNIT_ST st,
-  voice: &UNIT_V "",
-  percent: &UNIT_PERCENT "%"
+  [&UNIT_NONE None]: "",
+  [&UNIT_CT Cent]: ct,
+  [&UNIT_DB Decibel]: dB,
+  [&UNIT_DBT Decibel_Time]: dB_T,
+  [&UNIT_DBST Decibel_Per_Semitone]: dB/st,
+  [&UNIT_DEG Degree]: deg,
+  [&UNIT_HZ Hertz]: Hz,
+  [&UNIT_MS Millisecond]: ms,
+  [&UNIT_ST Semitone]: st,
+  [&UNIT_V Voice]: "",
+  [&UNIT_PERCENT Percent]: "%"
 }
 
 parameter_rounding: {
-  no_decimals: &ROUNDING_NO_DECIMALS 1,
-  one_decimal: &ROUNDING_ONE_DECIMAL 0.1,
-  two_decimals: &ROUNDING_TWO_DECIMALS 0.01,
-  three_decimals: &ROUNDING_THREE_DECIMALS 0.001,
-  three_significant_digits: &ROUNDING_THREE_SIGNIFICANT_DIGITS 3 St
+  [&ROUNDING_NONE None],
+  [&ROUNDING_NO_DECIMALS No_Decimals],
+  [&ROUNDING_ONE_DECIMAL One_Decimal],
+  [&ROUNDING_TWO_DECIMALS Two_Decimals],
+  [&ROUNDING_THREE_DECIMALS Three_Decimals],
+  [&ROUNDING_THREE_SIGNIFICANT_DIGITS Three_Significant_Digits]
 }
 
 parameter_reference: {
-  linear: &REFERENCE_LINEAR linear,
-  parabolic: &REFERENCE_PARABOLIC parabolic,
-  exponential: &REFERENCE_EXPONENTIAL exponential,
-  gain: &REFERENCE_GAIN (exponential) gain,
-  integer: &REFERENCE_INTEGRAL integer
+  None: &REFERENCE_NONE none,
+  Linear: &REFERENCE_LINEAR linear,
+  Parabolic: &REFERENCE_PARABOLIC parabolic,
+  Exponential: &REFERENCE_EXPONENTIAL exponential,
+  Gain: &REFERENCE_GAIN (exponential) gain,
+  Integer: &REFERENCE_INTEGRAL integer
+}
+
+parameter_infinity: {
+  [&INF_FINITE None],
+  [&INF_MIN Min],
+  [&INF_MAX Max]
 }
 
 parameter_rgb: {
@@ -95,7 +103,7 @@ parameter_group: {
   Mod_HW: { label_long: Hardware Source, label_short: HW Source, color: *RGB_DEFAULT, token_java: "CS", global_group: true },
   Mod_HA: { label_long: Hardware Amount, label_short: HW Amount, color: *RGB_DEFAULT, token_java: "MCM", global_group: true },
   Macro: { label_long: Macro Control, label_short: Macro Control, color: *RGB_DEFAULT, token_java: "MCs", global_group: true },
-  Split: { label_long: Split, label_short: Split, color: *RGB_DEFAULT, token_java: "Split", global_group: true, local_params: true },
+  Split: { label_long: Split, label_short: Split, color: *RGB_DEFAULT, token_java: "Split", global_group: false },
   Master: { label_long: Master, label_short: Master, color: *RGB_DEFAULT, token_java: "Master", global_group: true },
   Scale: { label_long: Scale, label_short: Scale, color: *RGB_DEFAULT, token_java: "Scale", global_group: true },
   Unison: { label_long: Unison, label_short: Unison, color: *RGB_DEFAULT, token_java: "Unison", global_group: false },
@@ -151,13 +159,24 @@ smoother_scale: {
 
 display_scaling_type: {
 
+  # - - - - - - - - - - - - - - - - None - - - - - - - - - - - - - - - - #
+
+  None: {
+    round: *ROUNDING_NONE,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_NONE,
+    inf: *INF_FINITE,
+    values: [],
+    bipolar: false
+  },
+
   # - - - - - - - - - - - - - - - - Unit::None - - - - - - - - - - - - - - - - #
 
   LINEAR_12_KEYS: {
     round: *ROUNDING_NO_DECIMALS,
     unit: *UNIT_NONE,
     reference: *REFERENCE_INTEGRAL,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ C, D#, F#, G#, B ],
     bipolar: false
   },
@@ -165,7 +184,7 @@ display_scaling_type: {
     round: *ROUNDING_NO_DECIMALS,
     unit: *UNIT_NONE,
     reference: *REFERENCE_INTEGRAL,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ C1, D#2, F#3, A4, C6 ],
     bipolar: false
   },
@@ -173,7 +192,7 @@ display_scaling_type: {
     round: *ROUNDING_NO_DECIMALS,
     unit: *UNIT_NONE,
     reference: *REFERENCE_INTEGRAL,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ C1, D#2, F#3, A4, C6 ],
     bipolar: false
   },
@@ -181,7 +200,7 @@ display_scaling_type: {
     round: *ROUNDING_NO_DECIMALS,
     unit: *UNIT_NONE,
     reference: *REFERENCE_INTEGRAL,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "Off", "On" ],
     bipolar: false
   },
@@ -189,7 +208,7 @@ display_scaling_type: {
     round: *ROUNDING_NO_DECIMALS,
     unit: *UNIT_NONE,
     reference: *REFERENCE_INTEGRAL,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ Latest, Highest, Lowest ],
     bipolar: false
   },
@@ -197,7 +216,7 @@ display_scaling_type: {
     round: *ROUNDING_NO_DECIMALS,
     unit: *UNIT_NONE,
     reference: *REFERENCE_INTEGRAL,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ None, Env, Glide, Env&Gld ],
     bipolar: false
   },
@@ -208,7 +227,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_CT,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-1200.0", "-600.0", "0.0", "600.0", "1200.0" ],
     bipolar: true
   },
@@ -216,7 +235,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_CT,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-2400.0", "-1200.0", "0.0", "1200.0", "2400.0" ],
     bipolar: true
   },
@@ -227,7 +246,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DB,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.0", "12.5", "25.0", "37.5", "50.0" ],
     bipolar: false
   },
@@ -235,7 +254,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DB,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-50.0", "-25.0", "0.0", "25.0", "50.0" ],
     bipolar: true
   },
@@ -244,7 +263,7 @@ display_scaling_type: {
   #   round: *ROUNDING_ONE_DECIMAL,
   #   unit: *UNIT_DB,
   #   reference: *REFERENCE_LINEAR,
-  #   inf: false,
+  #   inf: *INF_FINITE,
   #   values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ],
   #   bipolar: false
   # },
@@ -252,7 +271,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DB,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-50.0", "-37.5", "-25.0", "-12.5", "0.0" ],
     bipolar: false
   },
@@ -260,7 +279,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DB,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-24.0", "-12.0", "0.0", "12.0", "24.0" ],
     bipolar: true
   },
@@ -268,7 +287,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DB,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-48.0", "-24.0", "0.0", "24.0", "48.0" ],
     bipolar: true
   },
@@ -276,7 +295,7 @@ display_scaling_type: {
     round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
     unit: *UNIT_DB,
     reference: *REFERENCE_GAIN,
-    inf: min,
+    inf: *INF_MIN,
     values: [ "-108", "-12.0", "0.000", "7.04", "12.0" ],
     bipolar: false
   },
@@ -284,7 +303,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DB,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.0", "17.5", "35.0", "52.5", "70.0" ],
     bipolar: false
   },
@@ -292,7 +311,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DB,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-70.0", "-35.0", "0.0", "35.0", "70.0" ],
     bipolar: true
   },
@@ -300,7 +319,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DB,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ],
     bipolar: true
   },
@@ -312,7 +331,7 @@ display_scaling_type: {
   #   round: *ROUNDING_ONE_DECIMAL,
   #   unit: *UNIT_DBT,
   #   reference: *REFERENCE_LINEAR,
-  #   inf: false,
+  #   inf: *INF_FINITE,
   #   values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ],
   #   bipolar: false
   # },
@@ -322,15 +341,16 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DBT,
     reference: *REFERENCE_LINEAR,
-    inf: false,
-    values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ]
+    inf: *INF_FINITE,
+    values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
+    bipolar: true
   },
   # LINEAR_INVERTED_60_DBT: {
   #   # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3176
   #   round: *ROUNDING_ONE_DECIMAL,
   #   unit: *UNIT_DBT,
   #   reference: *REFERENCE_LINEAR,
-  #   inf: false,
+  #   inf: *INF_FINITE,
   #   values: [ "-60.0", "-45.0", "-30.0", "-15.0", "0.0" ],
   #   bipolar: false
   # },
@@ -338,7 +358,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DBT,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
     bipolar: true
   },
@@ -349,7 +369,7 @@ display_scaling_type: {
     round: *ROUNDING_THREE_DECIMALS,
     unit: *UNIT_DBST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-1.000", "-0.500", "0.000", "0.500", "1.000" ],
     bipolar: true
   },
@@ -360,7 +380,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DEG,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.0", "45.0", "90.0", "135.0", "180.0" ],
     bipolar: false
   },
@@ -368,7 +388,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DEG,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.0", "90.0", "180.0", "270.0", "360.0" ],
     bipolar: false
   },
@@ -376,7 +396,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DEG,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-360.0", "-180.0", "0.0", "180.0", "360.0" ],
     bipolar: true
   },
@@ -384,7 +404,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_DEG,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-180.0", "-90.0", "0", "90.0", "180.0" ],
     bipolar: true
   },
@@ -395,7 +415,7 @@ display_scaling_type: {
     round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
     unit: *UNIT_HZ,
     reference: *REFERENCE_PARABOLIC,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.000", "0.625", "2.50", "5.63", "10.0" ],
     bipolar: false
   },
@@ -406,7 +426,7 @@ display_scaling_type: {
     round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
     unit: *UNIT_MS,
     reference: *REFERENCE_EXPONENTIAL,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-100000", "-316", "0.000", "316", "100000" ],
     bipolar: true
   },
@@ -414,7 +434,7 @@ display_scaling_type: {
     round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
     unit: *UNIT_MS,
     reference: *REFERENCE_EXPONENTIAL,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.000", "2.00", "40.0", "800", "16000" ],
     bipolar: false
   },
@@ -422,7 +442,7 @@ display_scaling_type: {
     round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
     unit: *UNIT_MS,
     reference: *REFERENCE_EXPONENTIAL,
-    inf: max,
+    inf: *INF_MAX,
     values: [ "0.000", "2.00", "40.0", "800", "16000" ],
     bipolar: false
   },
@@ -430,7 +450,7 @@ display_scaling_type: {
     round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
     unit: *UNIT_MS,
     reference: *REFERENCE_PARABOLIC,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.000", "3.14", "12.5", "28.2", "50.0" ],
     bipolar: false
   },
@@ -438,7 +458,7 @@ display_scaling_type: {
     round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
     unit: *UNIT_MS,
     reference: *REFERENCE_PARABOLIC,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.000", "125", "500", "1130", "2000" ],
     bipolar: false
   },
@@ -449,7 +469,7 @@ display_scaling_type: {
     round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-48.00", "-24.00", "0.00", "24.00", "48.00" ],
     bipolar: true
   },
@@ -457,7 +477,7 @@ display_scaling_type: {
     round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-96.00", "-48.00", "0.00", "48.00", "96.00" ],
     bipolar: true
   },
@@ -465,7 +485,7 @@ display_scaling_type: {
     round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-80.00", "-40.00", "0.00", "40.00", "80.00" ],
     bipolar: true
   },
@@ -473,7 +493,7 @@ display_scaling_type: {
     round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-160.00", "-80.00", "0.00", "80.00", "160.00" ],
     bipolar: true
   },
@@ -481,7 +501,7 @@ display_scaling_type: {
     round: *ROUNDING_NO_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_INTEGRAL,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-60", "-30", "0", "30", "60" ],
     bipolar: true
   },
@@ -489,7 +509,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-36.0", "-18.0", "0.0", "18.0", "36.0" ],
     bipolar: true
   },
@@ -497,7 +517,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
     bipolar: true
   },
@@ -505,7 +525,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.0", "24.0", "48.0", "72.0", "96.0" ],
     bipolar: false
   },
@@ -513,7 +533,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-96.0", "-48.0", "0.0", "48.0", "96.0" ],
     bipolar: true
   },
@@ -521,7 +541,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.0", "35.0", "70.0", "105.0", "140.0" ],
     bipolar: false
   },
@@ -529,31 +549,31 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-140.0", "-70.0", "0.0", "70.0", "140.0" ],
     bipolar: true
   },
   LINEAR_20_100_ST: {
-    round: ,
+    round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "20.0", "40.0", "60.0", "80.0", "100.0" ],
     bipolar: false
   },
   LINEAR_20_140_ST: {
-    round: ,
+    round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "20.0", "50.0", "80.0", "110.0", "140.0" ],
     bipolar: false
   },
   LINEAR_24_120_ST: {
-    round: ,
+    round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "24.0", "48.0", "72.0", "96.0", "120.0" ],
     bipolar: false
   },
@@ -561,15 +581,15 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "40.0", "65.0", "90.0", "115.0", "140.0" ],
     bipolar: false
   },
   LINEAR_60_140_ST: {
-    round: ,
+    round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "60.0", "80.0", "100.0", "120.0", "140.0" ],
     bipolar: false
   },
@@ -577,7 +597,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "80.0", "95.0", "110.0", "125.0", "140.0" ],
     bipolar: false
   },
@@ -585,7 +605,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-72.0", "-36.0", "0.0", "36.0", "72.0" ],
     bipolar: true
   },
@@ -593,7 +613,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-80.0", "-40.0", "0.0", "40.0", "80.0" ],
     bipolar: true
   },
@@ -601,7 +621,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-100.0", "-50.0", "0.0", "50.0", "100.0" ],
     bipolar: true
   },
@@ -609,7 +629,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-120.0", "-60.0", "0.0", "60.0", "120.0" ],
     bipolar: true
   },
@@ -617,7 +637,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-160.0", "-80.0", "0.0", "80.0", "160.0" ],
     bipolar: true
   },
@@ -625,7 +645,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-200.0", "-100.0", "0.0", "100.0", "200.0" ],
     bipolar: true
   },
@@ -633,7 +653,7 @@ display_scaling_type: {
     round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.00", "30.00", "60.00", "90.00", "120.00" ],
     bipolar: false
   },
@@ -641,7 +661,7 @@ display_scaling_type: {
     round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-120.00", "-60.00", "0.00", "60.00", "120.00" ],
     bipolar: true
   },
@@ -649,7 +669,7 @@ display_scaling_type: {
     round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-20.00", "17.50", "55.00", "92.50", "130.00" ],
     bipolar: false
   },
@@ -657,7 +677,7 @@ display_scaling_type: {
     round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-150.00", "-75.00", "0.00", "75.00", "150.00" ],
     bipolar: true
   },
@@ -665,7 +685,7 @@ display_scaling_type: {
     round: *ROUNDING_THREE_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.000", "6.000", "12.000", "18.000", "24.000" ],
     bipolar: false
   },
@@ -673,7 +693,7 @@ display_scaling_type: {
     round: *ROUNDING_THREE_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-24.000", "-12.000", "0.000", "12.000", "24.000" ],
     bipolar: true
   },
@@ -681,7 +701,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_ST,
     reference: *REFERENCE_INTEGRAL,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ],
     bipolar: false
   },
@@ -692,7 +712,7 @@ display_scaling_type: {
     round: *ROUNDING_NO_DECIMALS,
     unit: *UNIT_V,
     reference: *REFERENCE_INTEGRAL,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "1", "7", "13", "18", "24" ],
     bipolar: false
   },
@@ -703,7 +723,7 @@ display_scaling_type: {
     round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_PERCENT,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.00", "50.00", "100.00", "150.00", "200.00" ],
     bipolar: false
   },
@@ -711,7 +731,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_PERCENT,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.0", "25.0", "50.0", "75.0", "100.0" ],
     bipolar: false
   },
@@ -719,7 +739,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_PERCENT,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-33.0", "-16.5", "0.0", "16.5", "33.0" ],
     bipolar: true
   },
@@ -727,7 +747,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_PERCENT,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-50.0", "-25.0", "0.0", "25.0", "50.0" ],
     bipolar: true
   },
@@ -735,7 +755,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_PERCENT,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-66.0", "-33.0", "0.0", "33.0", "66.0" ],
     bipolar: true
   },
@@ -743,7 +763,7 @@ display_scaling_type: {
     round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
     unit: *UNIT_PERCENT,
     reference: *REFERENCE_PARABOLIC,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-100.0", "-25.0", "0.0", "25.0", "100.0" ],
     bipolar: true
   },
@@ -751,7 +771,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_PERCENT,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "0.0", "50.0", "100.0" , "150.0", "200.0"],
     bipolar: false
   },  
@@ -759,7 +779,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_PERCENT,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-100.0", "-50.0", "0.0", "50.0", "100.0" ],
     bipolar: true
   },
@@ -767,7 +787,7 @@ display_scaling_type: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_PERCENT,
     reference: *REFERENCE_LINEAR,
-    inf: false,
+    inf: *INF_FINITE,
     values: [ "-200.0", "-100.0", "0.0", "100.0", "200.0" ],
     bipolar: true
   },

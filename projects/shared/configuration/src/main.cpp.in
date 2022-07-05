@@ -8,6 +8,8 @@
 *******************************************************************************/
 
 #include "parameter_list.h"
+#include "display_scaling_type.h"
+#include "parameter_group.h"
 // #include "placeholder.h" // placeholder requires nltools and therefore cmake(lists)
 #include <iostream>
 

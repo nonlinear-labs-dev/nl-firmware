@@ -16,6 +16,9 @@ type Result = ConfigType & DeclarationsType & {
     signals: string;
     pid: string;
     parameter_list: string;
+    parameter_units: string;
+    display_scaling_types: string;
+    parameter_groups: string;
 };
 
 type ParamType = {
@@ -85,8 +88,6 @@ function processDefinitions(result: Result) {
             return parameter.id;
         })));
     }, 0);
-    // explicit signals (appended to implicit parameter signals)
-    // let explicitSignalIndex = result.config.params;
     // parameterList collection
     const
         processedGroups: Array<string> = [],
@@ -139,7 +140,7 @@ function processDefinitions(result: Result) {
             // global/local sanity checks
             const isGlobalParam = type.data.includes("global_parameter");
             if(group.data.global_group) {
-                if(!isGlobalParam && !group.data.local_params) {
+                if(!isGlobalParam) {
                     throw new Error(`${err}: global group "${group.name}" cannot contain non-global parameter id ${id}`);
                 }
             } else {
@@ -188,6 +189,10 @@ function processDefinitions(result: Result) {
                 throw new Error(`${err}: unknown DisplayScalingType "${scale}" in parameter id ${id}`);
             }
             const bipolar = displayScalingType.bipolar;
+            const displayScaling = {
+                cp: `Properties::DisplayScalingType::${scale}`,
+                ma: "Properties::DisplayScalingType::None"
+            };
             // feed playgroundDescriptor
             playgroundDescriptor.push(coarse.toString(), fine.toString());
             // optional returnBehavior - currently unused
@@ -219,14 +224,16 @@ function processDefinitions(result: Result) {
                 if(displayScalingType.bipolar !== true) {
                     throw new Error(`${err}: DisplayScalingType "${scale}" in modulation_aspects of parameter id ${id} can only be bipolar`);
                 }
+                displayScaling.ma = `Properties::DisplayScalingType::${scale}`;
                 playgroundDescriptor.push(coarse.toString(), fine.toString());
             } else {
                 playgroundDescriptor.push("None", "None");
             }
             // feed playgroundDescriptor with parameter labels and info strings
             playgroundDescriptor.push(...[
-                inactive || "", group.data.label_long, group.data.label_short, label_long, label_short, info.trim().replace(/\n/g, "\\n")
-            ].map((entry) => `"${entry}"`));
+                inactive || "", group.data.label_long, group.data.label_short, label_long, label_short,
+                info.trim().replace(/\n/g, "\\n")
+            ].map((entry) => `"${entry}"`), displayScaling.cp, displayScaling.ma);
             // optional renderingArgs (relevant for C15Synth only)
             if(type.data.includes("rendering_args")) {
                 // renderingArgs sanity checks
@@ -276,7 +283,7 @@ function processDefinitions(result: Result) {
                     `Properties::SmootherScale::${scaling}`,
                     factor,
                     offset,
-                    (bipolar || false).toString()
+                    bipolar.toString()
                 );
             }
             // final parameterDescriptor
@@ -320,6 +327,32 @@ function processDefinitions(result: Result) {
     });
     // provide string replacements
     result.parameter_list = parameterList.join(",\n");
+    result.parameter_units = Object.values(result.declarations.parameter_unit).map((entry => `"${entry}"`)).join("\n");
+    result.display_scaling_types = Object.entries(result.declarations.display_scaling_type).reduce((out, [key, props]) => {
+        out.push(`{\n${indent}${[
+            `Properties::DisplayScalingType::${key}`,
+            `Properties::ParameterRounding::${props.round}`,
+            `Properties::ParameterUnit::${props.unit}`,
+            `Properties::ParameterInfinity::${props.inf}`,
+            props.bipolar.toString()
+        ].join(`,\n${indent}`)}\n}`);
+        return out;
+    }, new Array<string>()).join(",\n");
+    result.parameter_groups = Object.entries(result.declarations.parameter_group).reduce((out, [key, props]) => {
+        if(props === null) {
+            out.push(`{\n${indent}Descriptors::ParameterGroup::${key}\n}`)
+        } else {
+            out.push(`{\n${indent}${[
+                `Descriptors::ParameterGroup::${key}`,
+                `{${props.color.join(", ")}}`,
+                `"${props.label_long}"`,
+                `"${props.label_short}"`,
+                (props.global_group || false).toString()
+            ].join(`,\n${indent}`)}\n}`);
+        }
+        
+        return out;
+    }, new Array<string>()).join(",\n");
     result.parameters = Object.entries(parameterType).reduce((out: Array<string>, [key, entries]) => {
         out.push(`enum class ${key} {\n${indent}${[...entries, "_LENGTH_"].join(`,\n${indent}`)}\n};`);
         return out;
@@ -412,7 +445,8 @@ function main() {
         }),
         // yaml parsing
         result: Result = {
-            timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "", parameter_list: "",
+            timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "",
+            parameter_list: "", parameter_units: "", display_scaling_types: "", parameter_groups: "",
             ...ConfigParser.parse("./src/c15_config.yaml"),
             ...DeclarationsParser.parse("./src/parameter_declarations.yaml"),
             definitions: DefinitionsParser.parseAll(...definitions).map((definition, index) => {
@@ -446,6 +480,8 @@ function main() {
         "./src/parameter_declarations.h.in",
         "./src/parameter_list.h.in",
         "./src/parameter_descriptor.h.in",
+        "./src/display_scaling_type.h.in",
+        "./src/parameter_group.h.in",
         "./src/main.cpp.in",
         // transformations not covered by g++ and therefore unsafe
         "./src/placeholder.h.in",

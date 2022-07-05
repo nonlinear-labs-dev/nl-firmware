@@ -69,3 +69,4 @@ projects/shared/configuration/node_modules
 projects/shared/configuration/generated
 projects/shared/configuration/lib/*.js
 projects/shared/configuration/lib/tasks/*.js
+projects/shared/configuration/.vscode

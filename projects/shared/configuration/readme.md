@@ -4,7 +4,7 @@ An attempt to re-implement (and extend) the "parameter-db" sub-project on a [YAM
 
 ## Prerequisites
 
-- required programs: `node` _(currently using v16.15.1)_, `npm` _(8.10.0)_, `tsc` _(4.6.4)_, `g++` _(11.2.0)_, `podman _(3.4)_`
+- required programs: `node` _(currently using v16.15.1)_, `npm` _(8.10.0)_, `tsc` _(4.6.4)_, `g++` _(11.2.0)_, `podman` _(3.4)_
 - required node packages: `@types/node @types/js-yaml js-yaml`
 - on first run: `npm install` _(the provided package.json should suffice to install the dependencies into the git-ignored `node_modules` folder)_
 - `mkdir ./generated` _(the current output directory - which is git-ignored)_
@@ -14,6 +14,25 @@ An attempt to re-implement (and extend) the "parameter-db" sub-project on a [YAM
 https://www.atlantic.net/dedicated-server-hosting/how-to-install-and-use-podman-on-ubuntu-20-04/
 
 from 22.10 onwards it should be a default package in apt
+
+### configuring in VS Code
+
+VS Code may have problems identifying `*.in` files, which results in syntax highlighting and other helpers not working properly.
+In order to fix that, create a (git-ignored) `.vscode/settings.json` file within this folder (projects/shared/configuration) and paste the following:
+
+```json
+{
+    "files.associations": {
+        "*.cpp.in": "cpp",
+        "*.h.in": "cpp",
+        "*.html.in": "html",
+        "*.java.in": "java",
+        "*.js.in": "javascript"
+    }
+}
+```
+
+At least, syntax highlighting should work - but the error messages do not appear to be relevant and can be ignored.
 
 ## Run Generation Process
 
@@ -69,7 +88,8 @@ The content of provided files aims for seamless exchange. However, there is one 
     - [x] node validation already does lots of sanity checks
     - [x] parameter definition errors at least provide a filename and reason
 - possible project enhancements
-  - [ ] more PlayGround definitions _(descriptors: DisplayScalingType, ParameterGroup, ParameterAppearance?)_
+  - [ ] more PlayGround definitions _(ParameterAppearance?)_
+    - [x] Enums and Descriptors: DisplayScalingType, ParameterGroup
   - [ ] turn descriptors into constexpr decscriptors
   - [ ] content for java and js resources
   - [ ] integrate clang-format _(for generated output)_?

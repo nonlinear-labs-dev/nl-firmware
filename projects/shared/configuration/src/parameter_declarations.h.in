@@ -56,6 +56,9 @@ namespace C15
         enum class ParameterRounding {
             ${enums.parameter_rounding}
         };
+        enum class ParameterInfinity {
+            ${enums.parameter_infinity}
+        };
         enum class DisplayScalingType {
             ${enums.display_scaling_type}
         };

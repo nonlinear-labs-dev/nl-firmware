@@ -27,6 +27,9 @@ export type DeclarationsType = {
         parameter_reference: {
             [key: string]: string;
         };
+        parameter_infinity: {
+            [key: string]: null;
+        }
         parameter_group: {
             [key: string]: {
                 label_long: string;
@@ -34,7 +37,6 @@ export type DeclarationsType = {
                 color: Array<number>;
                 token_java: string;
                 global_group: boolean;
-                local_params?: boolean;
                 index: number;
             }
         };
@@ -48,12 +50,14 @@ export type DeclarationsType = {
             [key: string]: null;
         };
         display_scaling_type: {
-            round: string;
-            unit: string;
-            reference: string;
-            values: Array<string>;
-            inf: boolean | string;
-            bipolar: boolean;
+            [key: string]: {
+                round: string;
+                unit: string;
+                reference: string;
+                values: Array<string>;
+                inf: boolean | string;
+                bipolar: boolean;
+            };
         };
     };
     enums: {
@@ -67,7 +71,7 @@ export const DeclarationsParser = new Parser<DeclarationsType>(
         keys: [
             "sound_type", "layer_id", "return_behavior",
             "parameter_properties", "parameter_type", "parameter_signal", "parameter_unit",
-            "parameter_rounding", "parameter_reference", "parameter_group",
+            "parameter_rounding", "parameter_reference", "parameter_infinity", "parameter_group",
             "smoother_section", "smoother_clock", "smoother_scale",
             "display_scaling_type"
         ],
@@ -83,11 +87,12 @@ export const DeclarationsParser = new Parser<DeclarationsType>(
                 parameter_signal: Object.keys(declarations.parameter_signal).join(",\n"),
                 parameter_unit: Object.keys(declarations.parameter_unit).join(",\n"),
                 parameter_rounding: Object.keys(declarations.parameter_rounding).join(",\n"),
+                parameter_infinity: Object.keys(declarations.parameter_infinity).join(",\n"),
                 parameter_group: Object.keys(declarations.parameter_group).join(",\n"),
                 smoother_section: Object.keys(declarations.smoother_section).join(",\n"),
                 smoother_clock: Object.keys(declarations.smoother_clock).join(",\n"),
                 smoother_scale: Object.keys(declarations.smoother_scale).join(",\n"),
-                display_scaling_type: Object.keys(declarations.display_scaling_type).join(",\n"),
+                display_scaling_type: Object.keys(declarations.display_scaling_type).join(",\n")
             };
             return { declarations, enums };
         }
