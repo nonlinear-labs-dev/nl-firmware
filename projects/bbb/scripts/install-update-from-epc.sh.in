@@ -23,7 +23,7 @@ pretty() {
     SOLED_LINE_2="$1"
     SOLED_LINE_3="$2"
 
-    t2s "${HEADLINE}@b1c" "${BOLED_LINE_1}@b3c" "${BOLED_LINE_2}@b4c" "${SOLED_LINE_2}@s1c" "${SOLED_LINE_3}@s2c"
+    t2s "@b1c" "${BOLED_LINE_1}@b3c" "${BOLED_LINE_2}@b4c" "${SOLED_LINE_2}@s1c" "${SOLED_LINE_3}@s2c"
 }
 
 unpack_update() {

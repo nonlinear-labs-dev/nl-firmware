@@ -7,19 +7,33 @@ freeze() {
     done
 }
 
+t2s() {
+    @C15_INSTALL_PATH@/text2soled/text2soled multitext "$1" "$2" "$3" "$4" "$5" "$6"
+}
+
+pretty() {
+    echo "$*"
+    BOLED_LINE_1="$1"
+    BOLED_LINE_2="$2"
+    SOLED_LINE_2="$1"
+    SOLED_LINE_3="$2"
+
+    t2s "@b1c" "${BOLED_LINE_1}@b3c" "${BOLED_LINE_2}@b4c" "${SOLED_LINE_2}@s1c" "${SOLED_LINE_3}@s2c"
+}
+
 unpack_update() {
-    @C15_INSTALL_PATH@/text2soled/text2soled multitext "Copying C15 update...@SC1" "DO NOT SWITCH OFF!@SC2" "Copying C15 update...@BC2" "DO NOT SWITCH OFF!@BC3"
+    pretty "Copying C15 update..." "DO NOT SWITCH OFF!"
     if rm -rf /update \
         && mkdir -p /update \
         && cp /mnt/usb-stick/nonlinear-c15-update.tar /update \
         && cd /update;
     then
-      @C15_INSTALL_PATH@/text2soled/text2soled multitext "Unpacking C15 update...@SC1" "DO NOT SWITCH OFF!@SC2" "Unpacking C15 update...@BC2" "DO NOT SWITCH OFF!@BC3"
+      pretty "Unpacking C15 update..." "DO NOT SWITCH OFF!"
       if tar xf nonlinear-c15-update.tar; then
         return 0
       fi
     fi
-    @C15_INSTALL_PATH@/text2soled/text2soled multitext "Update Media Error.@SC1" "Please retry@SC2" "Update Media Error.@BC2" "Please retry@BC3"
+    pretty "Update Media Error." "Please retry"
     sleep 2
     return 1
 }
