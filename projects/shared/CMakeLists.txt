@@ -3,8 +3,7 @@ IF(BUILD_PLAYGROUND OR BUILD_AUDIOENGINE OR BUILD_BRIDGE OR BUILD_ACCEPTANCE_TES
     add_subdirectory(nltools)
 ENDIF()
 
-add_subdirectory(i18n) 
-#add_subdirectory(parameter-db)
+add_subdirectory(i18n)
 add_subdirectory(playcontroller)
 add_subdirectory(third-party)
 add_subdirectory(configuration)

@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "typescript": "^4.7.4",
     "@types/js-yaml": "^4.0.5",
     "@types/node": "^17.0.41",
     "js-yaml": "^4.1.0"
