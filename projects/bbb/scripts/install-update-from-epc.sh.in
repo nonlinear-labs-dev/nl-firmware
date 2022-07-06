@@ -13,7 +13,7 @@ copy_from_epc() {
 }
 
 t2s() {
-    @C15_INSTALL_PATH@/text2soled/text2soled multitext "$1" "$2" "$3" "$4" "$5" "$6"
+    @C15_INSTALL_PATH@/text2soled/text2soled multitext "$1" "$2" "$3" "$4"
 }
 
 pretty() {
@@ -23,7 +23,7 @@ pretty() {
     SOLED_LINE_2="$1"
     SOLED_LINE_3="$2"
 
-    t2s "@b1c" "${BOLED_LINE_1}@b3c" "${BOLED_LINE_2}@b4c" "${SOLED_LINE_2}@s1c" "${SOLED_LINE_3}@s2c"
+    t2s "${BOLED_LINE_1}@b3c" "${BOLED_LINE_2}@b4c" "${SOLED_LINE_2}@s1c" "${SOLED_LINE_3}@s2c"
 }
 
 unpack_update() {
