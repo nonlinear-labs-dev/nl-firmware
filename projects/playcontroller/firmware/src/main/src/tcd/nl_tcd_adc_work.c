@@ -27,6 +27,7 @@ static int sendUiValues = 0;
 static uint16_t uiSendValue[NUM_HW_SOURCES];
 static uint16_t aeSendValue[NUM_HW_REAL_SOURCES];
 static int      pollDataRequest = 0;
+static int      topCoverOffline = 0;
 
 //========= ribbons ========
 static uint16_t rib_eepromHandle = 0;  // EEPROM access handle
@@ -115,6 +116,15 @@ void ClearHWValuesForAE(void)
     aeSendValue[i] = 0;
 }
 
+int CheckForAttachedTopCover(void)
+{  // unconnected top cover leads to all ADC values for bender and ribbons reading as full-scale (4095)
+   // which is never happening in normal operation -- notably ribbons never reach full-scale
+  topCoverOffline = (IPC_ReadAdcBufferAveraged(IPC_ADC_PITCHBENDER) == 4095)
+      && (IPC_ReadAdcBufferAveraged(IPC_ADC_RIBBON1) == 4095)
+      && (IPC_ReadAdcBufferAveraged(IPC_ADC_RIBBON2) == 4095);
+  return (topCoverOffline == 0);
+}
+
 /*****************************************************************************
 * @brief	ADC_WORK_Init -
 ******************************************************************************/
@@ -147,6 +157,8 @@ void ADC_WORK_Init1(void)
   RibbonCalibrationData_T tmp[2];
   if (NL_EEPROM_ReadBlock(rib_eepromHandle, tmp, EEPROM_READ_BOTH))
     memcpy(&ribbonCalibrationData, tmp, sizeof(ribbonCalibrationData));
+
+  topCoverOffline = 0;
 
   AT_Init();  // will use EEPROM, this position makes sure that EHC EEPROM Data remains valid
   BNDR_Init();
@@ -628,9 +640,14 @@ void ADC_WORK_Process4(void)
 {
   if (suspend)
     return;
+
   AT_ProcessAftertouch();
-  BNDR_ProcessBender();
-  ProcessRibbons();
+
+  if (CheckForAttachedTopCover())
+  {
+    BNDR_ProcessBender();
+    ProcessRibbons();
+  }
 
   if (pollDataRequest)
   {
