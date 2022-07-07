@@ -16,8 +16,6 @@ string(REPLACE ";" " " ALL_PACKAGES "${ALL_PACKAGES}")
 add_subdirectory(bbb)
 add_subdirectory(build-container)
 add_subdirectory(epc)
-add_subdirectory(epc2)
-add_subdirectory(epc-one-for-all)
 add_subdirectory(pacman)
 add_subdirectory(playcontroller)
 add_subdirectory(web)
@@ -27,17 +25,17 @@ file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*)
 add_custom_command(
     COMMENT "Build C15 update"
     OUTPUT ${CMAKE_BINARY_DIR}/nonlinear-c15-update.tar
-    DEPENDS epc-one-for-all-create-update
+    DEPENDS epc-create-update
     DEPENDS bbb-rootfs
     DEPENDS playcontroller-blobs
-    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc-one-for-all/update.tar
+    DEPENDS ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
     DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
     DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/MLO
     DEPENDS ${CMAKE_BINARY_DIR}/build-tools/bbb/u-boot.img
     DEPENDS ${CMAKE_BINARY_DIR}/build-tools/playcontroller/projects/playcontroller/firmware/src/main/main.bin
     DEPENDS ${SOURCE_FILES}
     COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
-        ${CMAKE_BINARY_DIR}/build-tools/epc-one-for-all/update.tar
+        ${CMAKE_BINARY_DIR}/build-tools/epc/update.tar
         ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
         ${CMAKE_BINARY_DIR}/build-tools/bbb/MLO
         ${CMAKE_BINARY_DIR}/build-tools/bbb/u-boot.img
