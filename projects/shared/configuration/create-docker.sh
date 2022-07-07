@@ -1,1 +1,0 @@
-podman build -t nl-configuration-build-container "$1"

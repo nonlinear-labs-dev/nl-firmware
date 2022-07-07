@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "fs"
 import * as yaml from "js-yaml";
 
 const namespace = "tag:nonlinear-labs.de,2022:js-yaml";
@@ -30,7 +30,7 @@ export class Type<Result> extends yaml.Type {
             }
         });
     }
-};
+}
 
 export class Parser<Result> {
     schema: yaml.Schema;
@@ -39,13 +39,12 @@ export class Parser<Result> {
     }
     parse(filename: string): Result {
         fsTestFile(filename);
-        const parsed = yaml.load(fs.readFileSync(filename, "utf-8"), { filename, schema: this.schema }) as Result;
-        return parsed;
+        return yaml.load(fs.readFileSync(filename, "utf-8"), { filename, schema: this.schema }) as Result;
     }
     parseAll(...filenames: Array<string>): Array<Result> {
         return filenames.map((filename) => this.parse(filename));
     }
-};
+}
 
 export function performReplacement(str: string, result: any, filename?: string) {
     return str.replace(/([ \t]*)\$\{([^\}]*)\}/g, (_, ws = "", keys) => {
@@ -67,7 +66,17 @@ export function performReplacement(str: string, result: any, filename?: string) 
     })
 }
 
+function createDirectoryStructure(file: string) {
+    var path = file.split('/');
+    path.splice(path.length-1,1);
+    let directory = path.join('/');
+    fs.mkdir(directory, (err) => {
+        console.error(err);
+    });
+}
+
 export function generateOutputFile(infile: string, outfile: string, result: any) {
     fsTestFile(infile);
+    createDirectoryStructure(outfile);
     fs.writeFileSync(outfile, performReplacement(fs.readFileSync(infile, "utf-8"), result, infile));
-};
+}

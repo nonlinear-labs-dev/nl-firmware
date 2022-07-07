@@ -6,9 +6,9 @@ add_custom_command(
         COMMENT "create build env"
         OUTPUT .build-env
         DEPENDS Dockerfile
-        DEPENDS build-in-docker.sh
         DEPENDS process.sh
-        COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/create-docker.sh ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS CMakeLists.txt
+        COMMAND podman build -t nl-configuration-build-container ${CMAKE_CURRENT_SOURCE_DIR}
         COMMAND touch .build-env
 )
 
@@ -20,14 +20,13 @@ add_custom_command(
         DEPENDS process.sh
         DEPENDS copy-results-to-source.sh
         OUTPUT .build-headers
+        OUTPUT ${PROJECT_BINARY_DIR}/generated
         COMMAND rm -rf ${CMAKE_CURRENT_SOURCE_DIR}/generated
-        COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/build-in-docker.sh ${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_BINARY_DIR}
+        COMMAND podman run -v ${PROJECT_SOURCE_DIR}:/sourceDir -v ${PROJECT_BINARY_DIR}:/binaryDir nl-configuration-build-container /sourceDir/process.sh /sourceDir/ /binaryDir/
         COMMAND touch .build-headers
 )
 
 add_custom_target(
         configuration
-        ALL
-        DEPENDS
-        .build-headers
+        DEPENDS .build-headers
 )

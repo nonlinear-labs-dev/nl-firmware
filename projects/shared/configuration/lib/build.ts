@@ -31,9 +31,9 @@ function validateToken(token: string): boolean {
     return /^\w+$/.test(token);
 }
 
-function replaceResultInFiles(result: Result, ...files: Array<string>) {
+function replaceResultInFiles(result: Result, sourceDir: string, outDir: string, ...files: Array<string>) {
     files.forEach((infile: string) => {
-        const outfile = infile.replace("./src/", "./generated/").replace(/.in$/, "");
+        const outfile = infile.replace(sourceDir, outDir).replace(/.in$/, "");
         generateOutputFile(infile, outfile, result);
     });
 }
@@ -368,7 +368,7 @@ function processDefinitions(result: Result) {
     result.enums.pid = ["None = -1", ...pid.filter((id) => id !== undefined)].join(",\n");
 }
 
-function generateOverview(result: Result) {
+function generateOverview(result: Result, sourceDir: string, outDir: string) {
     const
         { timestamp, config } = result,
         parameter_list = result.definitions.reduce((out, {group, parameters}) => {
@@ -427,17 +427,17 @@ function generateOverview(result: Result) {
             return out;
         }, new Array<string>()).join("\n");
     generateOutputFile(
-        "./src/overview.html.in", 
-        "./generated/overview.html",
+        sourceDir + "/src/overview.html.in",
+        outDir + "/overview.html",
         { timestamp, config, parameter_list, parameter_count, parameter_groups }
     );
 }
 
 // main function
-function main() {
+function main(outDir: string, sourceDir: string) {
     const
         // scan definitions folder to collect contained yaml resources for automatical parsing
-        definitionsPath = "./src/definitions",
+        definitionsPath = sourceDir + "/src/definitions",
         definitions = fs.readdirSync(definitionsPath).map((filename: string) => {
             return `${definitionsPath}/${filename}`;
         }).filter((filename: string) => {
@@ -447,8 +447,8 @@ function main() {
         result: Result = {
             timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "",
             parameter_list: "", parameter_units: "", display_scaling_types: "", parameter_groups: "",
-            ...ConfigParser.parse("./src/c15_config.yaml"),
-            ...DeclarationsParser.parse("./src/parameter_declarations.yaml"),
+            ...ConfigParser.parse(sourceDir + "/src/c15_config.yaml"),
+            ...DeclarationsParser.parse(sourceDir + "/src/parameter_declarations.yaml"),
             definitions: DefinitionsParser.parseAll(...definitions).map((definition, index) => {
                 return { ...definition, filename: definitions[index] }
             })
@@ -475,41 +475,42 @@ function main() {
     // transformations of ./src/*.in.* files into usable resources in ./generated via string replacements
     replaceResultInFiles(
         result,
+        sourceDir,
+        outDir,
         // transformations covered by g++ and therefore safe
-        "./src/c15_config.h.in",
-        "./src/parameter_declarations.h.in",
-        "./src/parameter_list.h.in",
-        "./src/parameter_descriptor.h.in",
-        "./src/display_scaling_type.h.in",
-        "./src/parameter_group.h.in",
-        "./src/main.cpp.in",
+        sourceDir + "/src/c15_config.h.in",
+        sourceDir + "/src/parameter_declarations.h.in",
+        sourceDir + "/src/parameter_list.h.in",
+        sourceDir + "/src/parameter_descriptor.h.in",
+        sourceDir + "/src/display_scaling_type.h.in",
+        sourceDir + "/src/parameter_group.h.in",
+        sourceDir + "/src/main.cpp.in",
         // transformations not covered by g++ and therefore unsafe
-        "./src/placeholder.h.in",
-        "./src/ParameterFactory.java.in",
-        "./src/MacroIds.js.in",
+        sourceDir + "/src/placeholder.h.in",
+        sourceDir + "/src/ParameterFactory.java.in",
+        sourceDir + "/src/MacroIds.js.in",
         // validation
-        "./src/validate.h.in",
-        "./src/validate.cpp.in"
+        sourceDir + "/src/validate.h.in",
+        sourceDir + "/src/validate.cpp.in"
     );
     // overview
-    generateOverview(result);
+    generateOverview(result, sourceDir, outDir);
 }
 
 function createDirectorys(dir) {
     fs.mkdir(dir, (err) => {
-        if(err) {
-            console.error(err);
-        } else {
-            console.log(dir + " was created!");
-        }
+        console.error(err);
     });
 }
 
 // process
 try {
-    createDirectorys("./generated");
-    main();
-    // if no error was raised, node is done
+    const myArgs = process.argv.slice(1)
+    const sourceDirectoryParts = myArgs[0].split("/");
+    const sourceDirectoryPath = "/" + sourceDirectoryParts[1];
+    const outDirectory = myArgs[1]
+    createDirectorys(outDirectory);
+    main(outDirectory, sourceDirectoryPath);
     process.exit(0);
 } catch(err) {
     console.error(err);

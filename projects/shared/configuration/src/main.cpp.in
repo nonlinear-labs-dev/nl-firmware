@@ -52,6 +52,5 @@ bool ModMatrixSanityChecks()
 int main()
 {
     if(!ModMatrixSanityChecks()) return 1;
-    std::cout << "process succeeded" << std::endl;
     return 0;
 }
