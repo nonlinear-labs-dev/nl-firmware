@@ -27,8 +27,9 @@ void GapFilterGroup::init()
       this, { C15::PID::Gap_Flt_Center, getVoiceGroup() }, ScaleConverter::get<Linear24To120StScaleConverter>(),
       ScaleConverter::get<LinearBipolar96StScaleConverterCoarse>()));
 
-  appendParameter(new ModulateableParameter(this, { C15::PID::Gap_Flt_Stereo, getVoiceGroup() },
-                                            ScaleConverter::get<LinearBipolar36StScaleConverter>()));
+  appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::Gap_Flt_Stereo, getVoiceGroup() },
+                                                              ScaleConverter::get<LinearBipolar36StScaleConverter>(),
+                                                              ScaleConverter::get<LinearBipolar72StScaleConverter>()));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
       this, { C15::PID::Gap_Flt_Gap, getVoiceGroup() }, ScaleConverter::get<Linear96StScaleConverter>(),

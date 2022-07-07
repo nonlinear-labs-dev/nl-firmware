@@ -4,6 +4,8 @@
 #include <ParameterId.h>
 #include "playground.h"
 #include <optional>
+#include <parameter_list.h>
+#include <parameter_declarations.h>
 
 class Parameter;
 class EditBuffer;
@@ -20,6 +22,9 @@ class ParameterDB : public sigc::trackable
   [[nodiscard]] std::optional<Glib::ustring> getLongGroupName(const ParameterId& id) const;
   [[nodiscard]] Glib::ustring getDescription(int parameterNumber) const;
   [[nodiscard]] tControlPositionValue getSignalPathIndication(int id) const;
+  [[nodiscard]] C15::Properties::DisplayScalingType getValueDisplayScalingType(const ParameterId& id) const;
+  [[nodiscard]] C15::Properties::DisplayScalingType getModulationAmountDisplayScalingType(const ParameterId& id) const;
+
   static constexpr tControlPositionValue getInvalidSignalPathIndication()
   {
     return std::numeric_limits<tControlPositionValue>::max();

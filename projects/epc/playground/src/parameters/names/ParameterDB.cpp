@@ -203,3 +203,15 @@ double ParameterDB::getDefaultValue(const ParameterId &id)
 
   return static_cast<double>(C15::ParameterList[id.getNumber()].m_initial);
 }
+
+C15::Properties::DisplayScalingType ParameterDB::getValueDisplayScalingType(const ParameterId& id) const
+{
+  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  return desc.m_cp_display_scaling_type;
+}
+
+C15::Properties::DisplayScalingType ParameterDB::getModulationAmountDisplayScalingType(const ParameterId &id) const
+{
+  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  return desc.m_ma_display_scaling_type;
+}

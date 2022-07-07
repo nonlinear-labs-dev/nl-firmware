@@ -42,7 +42,7 @@ void OscillatorAGroup::init()
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::Osc_A_Pitch_Env_C, getVoiceGroup() },
                                                               ScaleConverter::get<FineBipolar80StScaleConverter>(),
-                                                              ScaleConverter::get<FineBipolar80StScaleConverter>()));
+                                                              ScaleConverter::get<FineBipolar160StScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Osc_A_Fluct, getVoiceGroup() },
                                             ScaleConverter::get<Linear100PercentScaleConverter>()));

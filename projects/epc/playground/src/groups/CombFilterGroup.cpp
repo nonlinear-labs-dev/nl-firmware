@@ -44,13 +44,13 @@ void CombFilterGroup::init()
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::Comb_Flt_Pitch_Env_C, getVoiceGroup() },
                                                               SC::get<FineBipolar80StScaleConverter>(),
-                                                              ScaleConverter::get<FineBipolar80StScaleConverter>()));
+                                                              SC::get<FineBipolar160StScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Comb_Flt_Decay, getVoiceGroup() },
                                             SC::get<CombDecayBipolarMsScaleConverter>()));
 
-  appendParameter(new Parameter(this, { C15::PID::Comb_Flt_Decay_KT, getVoiceGroup() },
-                                            SC::get<Linear100PercentScaleConverter>()));
+  appendParameter(
+      new Parameter(this, { C15::PID::Comb_Flt_Decay_KT, getVoiceGroup() }, SC::get<Linear100PercentScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Comb_Flt_Decay_Gate, getVoiceGroup() },
                                             SC::get<Linear100PercentScaleConverter>()));
