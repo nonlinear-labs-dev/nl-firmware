@@ -15,8 +15,7 @@
 #include <libundo/undo/Scope.h>
 
 SplitPointParameter::SplitPointParameter(ParameterGroup* group, const ParameterId& id)
-    : ModulateableParameterWithUnusualModUnit(group, id, ScaleConverter::get<SplitPointScaleConverter>(),
-                                              ScaleConverter::get<LinearBipolar60StScaleConverter>())
+    : ModulateableParameter(group, id)
 {
 }
 

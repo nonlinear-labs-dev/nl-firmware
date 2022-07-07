@@ -5,9 +5,8 @@
 #include <groups/ParameterGroup.h>
 
 VoiceGroupMasterModulateableParameter::VoiceGroupMasterModulateableParameter(ParameterGroup *group,
-                                                                             const ParameterId &id,
-                                                                             const ScaleConverter *scaling)
-    : ModulateableParameter(group, id, scaling)
+                                                                             const ParameterId &id)
+    : ModulateableParameter(group, id)
 {
 }
 

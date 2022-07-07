@@ -33,11 +33,11 @@ static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionV
 bool wasDefaultedAndNotUnselected();
 const tControlPositionValue &getPriorDefaultValue();
 
-Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling)
+Parameter::Parameter(ParameterGroup *group, const ParameterId& id)
     : UpdateDocumentContributor(group)
     , SyncedItem(group->getRoot()->getSyncMaster(), "/parameter/" + id.toString())
     , m_id(id)
-    , m_value(this, scaling)
+    , m_value(this, ScaleConverter::getByEnum(ParameterDB::getValueDisplayScalingType(id)))
     , m_voiceGroup { group->getVoiceGroup() }
     , m_lastSnapshotedValue(c_invalidSnapshotValue)
 {

@@ -32,46 +32,21 @@ int ScaleGroup::getScaleBaseParameterNumber()
 
 void ScaleGroup::init()
 {
-  auto baseKeyParam = new BaseScaleParameter(this, { getScaleBaseParameterNumber(), VoiceGroup::Global },
-                                             ScaleConverter::get<BaseKeyScaleConverter>());
+  auto baseKeyParam = new BaseScaleParameter(this, { getScaleBaseParameterNumber(), VoiceGroup::Global });
   baseKeyParam->onParameterChanged(sigc::mem_fun(this, &ScaleGroup::onBaseKeyParameterChanged), false);
   appendParameter(baseKeyParam);
-
-  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_0, VoiceGroup::Global },
-                                     ScaleConverter::get<KeyScaleConverter>()));
-
-  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_1, VoiceGroup::Global },
-                                     ScaleConverter::get<KeyScaleConverter>()));
-
-  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_2, VoiceGroup::Global },
-                                     ScaleConverter::get<KeyScaleConverter>()));
-
-  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_3, VoiceGroup::Global },
-                                     ScaleConverter::get<KeyScaleConverter>()));
-
-  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_4, VoiceGroup::Global },
-                                     ScaleConverter::get<KeyScaleConverter>()));
-
-  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_5, VoiceGroup::Global },
-                                     ScaleConverter::get<KeyScaleConverter>()));
-
-  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_6, VoiceGroup::Global },
-                                     ScaleConverter::get<KeyScaleConverter>()));
-
-  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_7, VoiceGroup::Global },
-                                     ScaleConverter::get<KeyScaleConverter>()));
-
-  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_8, VoiceGroup::Global },
-                                     ScaleConverter::get<KeyScaleConverter>()));
-
-  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_9, VoiceGroup::Global },
-                                     ScaleConverter::get<KeyScaleConverter>()));
-
-  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_10, VoiceGroup::Global },
-                                     ScaleConverter::get<KeyScaleConverter>()));
-
-  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_11, VoiceGroup::Global },
-                                     ScaleConverter::get<KeyScaleConverter>()));
+  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_0, VoiceGroup::Global }));
+  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_1, VoiceGroup::Global }));
+  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_2, VoiceGroup::Global }));
+  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_3, VoiceGroup::Global }));
+  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_4, VoiceGroup::Global }));
+  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_5, VoiceGroup::Global }));
+  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_6, VoiceGroup::Global }));
+  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_7, VoiceGroup::Global }));
+  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_8, VoiceGroup::Global }));
+  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_9, VoiceGroup::Global }));
+  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_10, VoiceGroup::Global }));
+  appendParameter(new ScaleParameter(this, { C15::PID::Scale_Offset_11, VoiceGroup::Global }));
 }
 
 void ScaleGroup::onBaseKeyParameterChanged(const Parameter*)

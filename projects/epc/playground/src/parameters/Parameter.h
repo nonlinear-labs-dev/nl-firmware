@@ -53,7 +53,7 @@ class Parameter : public UpdateDocumentContributor,
     Dot
   };
 
-  Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling);
+  Parameter(ParameterGroup *group, const ParameterId& id);
   ~Parameter() override;
 
   tControlPositionValue expropriateSnapshotValue();
