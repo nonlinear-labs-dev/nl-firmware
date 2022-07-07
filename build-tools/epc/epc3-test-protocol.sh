@@ -70,8 +70,6 @@ function check_usb_stick() {
         sleep 2
     done
 
-    set -x
-
     sleep 5
 
     rm -f /mnt/usb-stick/test-file

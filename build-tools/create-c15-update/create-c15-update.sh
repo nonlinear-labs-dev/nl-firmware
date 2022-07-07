@@ -187,11 +187,11 @@ print_version_string() {
 print_C15_version_strings() {
     echo "Getting version strings..."
     if [ "$UPDATE_EPC" = "1" ]; then
-      FILE=$BINARY_DIR/build-tools/epc-one-for-all/tmp/usr/local/C15/playground/playground
+      FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground
       rm -f $FILE
-      mkdir -p $BINARY_DIR/build-tools/epc-one-for-all/tmp 
-      tar -C $BINARY_DIR/build-tools/epc-one-for-all/tmp --extract --file=$BINARY_DIR/build-tools/epc-one-for-all/update.tar update/c15-rootfs.tar.xz
-      tar -C $BINARY_DIR/build-tools/epc-one-for-all/tmp --extract --file=$BINARY_DIR/build-tools/epc-one-for-all/tmp/update/c15-rootfs.tar.xz ./usr/local/C15/playground/playground
+      mkdir -p $BINARY_DIR/build-tools/epc/tmp
+      tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/update.tar update/c15-rootfs.tar.xz
+      tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/tmp/update/c15-rootfs.tar.xz ./usr/local/C15/playground/playground
       print_version_string $FILE
     fi
     if [ "$UPDATE_PLAYCONTROLLER" = "1" ]; then

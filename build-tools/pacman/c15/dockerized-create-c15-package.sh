@@ -49,6 +49,7 @@ depends=(
 'glibmm>=2.4'
 'grep'
 'gzip'
+'linux-firmware'
 'libpng'
 'libsoup>=2.4'
 'lsof'
@@ -67,7 +68,7 @@ depends=(
 
 build() {
   DESTDIR="\$pkgdir" cmake -B /out/build -S /src -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off
-  DESTDIR="\$pkgdir"  cmake --build /out/build --parallel $NUM_CORES
+  DESTDIR="\$pkgdir" cmake --build /out/build --parallel $NUM_CORES
 }
 
 package() {
