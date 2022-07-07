@@ -33,7 +33,7 @@ unpack_update() {
         && copy_from_epc \
         && cd /update;
     then
-      pretty "Unpacking C15 update..." "DO NOT SWITCH OFF"
+      pretty "Unpacking C15 update..." "DO NOT SWITCH OFF!"
       if tar xf nonlinear-c15-update.tar; then
         return 0
       fi
