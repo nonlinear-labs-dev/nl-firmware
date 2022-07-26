@@ -15,6 +15,7 @@
 #include "parameters/scale-converters/IdentityScaleConverter.h"
 #include "parameters/scale-converters/FineBipolar80StScaleConverter.h"
 #include "parameter_declarations.h"
+#include "parameters/scale-converters/FineBipolar160StScaleConverter.h"
 #include <parameters/scale-converters/LinearBipolar200PercentScaleConverter.h>
 #include <parameters/scale-converters/PitchOscLinearStScaleModulationConverter.h>
 #include <parameters/ModulateableParameterWithUnusualModUnit.h>
@@ -40,7 +41,7 @@ void OscillatorBGroup::init()
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(this, { C15::PID::Osc_B_Pitch_Env_C, getVoiceGroup() },
                                                               ScaleConverter::get<FineBipolar80StScaleConverter>(),
-                                                              ScaleConverter::get<FineBipolar80StScaleConverter>()));
+                                                              ScaleConverter::get<FineBipolar160StScaleConverter>()));
 
   appendParameter(new ModulateableParameter(this, { C15::PID::Osc_B_Fluct, getVoiceGroup() },
                                             ScaleConverter::get<Linear100PercentScaleConverter>()));
@@ -55,8 +56,10 @@ void OscillatorBGroup::init()
   appendParameter(new ModulateableParameter(this, { C15::PID::Osc_B_PM_Self_Env_B, getVoiceGroup() },
                                             ScaleConverter::get<Linear100PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameter(this, { C15::PID::Osc_B_PM_Self_Shp, getVoiceGroup() },
-                                            ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
+  appendParameter(
+      new ModulateableParameterWithUnusualModUnit(this, { C15::PID::Osc_B_PM_Self_Shp, getVoiceGroup() },
+                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
+                                                  ScaleConverter::get<LinearBipolar200PercentScaleConverter>()));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
       this, { C15::PID::Osc_B_PM_A, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
@@ -65,8 +68,9 @@ void OscillatorBGroup::init()
   appendParameter(new ModulateableParameter(this, { C15::PID::Osc_B_PM_A_Env_A, getVoiceGroup() },
                                             ScaleConverter::get<Linear100PercentScaleConverter>()));
 
-  appendParameter(new ModulateableParameter(this, { C15::PID::Osc_B_PM_A_Shp, getVoiceGroup() },
-                                            ScaleConverter::get<LinearBipolar100PercentScaleConverter>()));
+  appendParameter(new ModulateableParameterWithUnusualModUnit(
+      this, { C15::PID::Osc_B_PM_A_Shp, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),
+      ScaleConverter::get<LinearBipolar200PercentScaleConverter>()));
 
   appendParameter(new ModulateableParameterWithUnusualModUnit(
       this, { C15::PID::Osc_B_PM_FB, getVoiceGroup() }, ScaleConverter::get<LinearBipolar100PercentScaleConverter>(),

@@ -5,6 +5,7 @@
 #include "use-cases/ParameterUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
 #include "groups/ScaleGroup.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAmountButton.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
@@ -42,7 +43,7 @@ ParameterLayout2::ParameterLayout2()
   addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11)));
   addControl(new LockedIndicator(Rect(65, 1, 10, 11)));
   addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), false));
-  addControl(new UndoIndicator(Rect(18, 18, 10, 8)));
+  addControl(new UndoIndicator(Rect(22, 15, 10, 8)));
   addControl(new ParameterNotAvailableInSoundInfo(Rect(64, 0, 128, 48)));
 
   Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
@@ -223,9 +224,12 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
       case Buttons::BUTTON_A:
         if(auto button = findControlOfType<SwitchVoiceGroupButton>())
         {
+          EditBufferUseCases ebUseCases(*getCurrentEditParameter()->getParentEditBuffer());
           if(SwitchVoiceGroupButton::allowToggling(getCurrentParameter(),
                                                    Application::get().getPresetManager()->getEditBuffer()))
             Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection();
+          else if(button->getText().text == "back..")
+            ebUseCases.selectParameter({C15::PID::Master_Volume, VoiceGroup::Global});
           return true;
         }
         break;
@@ -367,6 +371,7 @@ ParameterRecallLayout2::~ParameterRecallLayout2()
 
 void ParameterRecallLayout2::init()
 {
+  addControl(createModuleCaption());
 }
 
 bool ParameterRecallLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)

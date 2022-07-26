@@ -671,8 +671,11 @@ bool Parameter::isMinimum() const
 
 bool Parameter::isDisabled() const
 {
-  auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
-  return isDisabledForType(eb->getType());
+  if(auto eb = getParentEditBuffer())
+  {
+    return isDisabledForType(eb->getType());
+  }
+  return false;
 }
 
 void Parameter::stepCP(UNDO::Transaction *transaction, int incs, bool fine, bool shift)

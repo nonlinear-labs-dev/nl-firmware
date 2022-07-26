@@ -28,13 +28,11 @@ class TouchPinchStart extends TouchPinch {
 
 	@Override
 	public Control applyTo(Control receiver) {
-		Tracer.log("TouchPinchStart.applyTo -- 1");
 		Control ret = receiver.pinch(getPosition(), 0, this);
 
 		if (ret != null)
 			setReceiver(receiver);
 
-		Tracer.log("TouchPinchStart.applyTo -- 2 - " + ret);
 		return ret;
 	}
 

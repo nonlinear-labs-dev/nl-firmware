@@ -200,7 +200,6 @@ public class Header extends Label {
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		Tracer.log("down");
 		Bank parent = getParent();
 		parent.getParent().pushBankOntoTop(parent);
 		return this;
@@ -208,7 +207,6 @@ public class Header extends Label {
 
 	@Override
 	public Control mouseUp(Position eventPoint) {
-		Tracer.log("up");
 		sendPosChangeToServer = true;
 		requestLayout();
 		return this;
@@ -220,7 +218,6 @@ public class Header extends Label {
 			doubleClickWaiter.cancel();
 
 		doubleClickWaiter = new DoubleClickWaiter(point, (c) -> {
-			Tracer.log("click");
 			getParent().getParent().selectBank(getParent().getUUID(), true);
 		});
 
@@ -234,7 +231,6 @@ public class Header extends Label {
 
 		doubleClickWaiter = null;
 
-		Tracer.log("double");
 		getParent().toggleMinMax();
 		return this;
 	}

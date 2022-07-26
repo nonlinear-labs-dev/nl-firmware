@@ -18,6 +18,7 @@ class DirectLoadSetting;
 class ButtonMenu;
 class Button;
 class BankButton;
+class ChangedParameterIndicator;
 
 class PresetManagerLayout : public Layout
 {
@@ -56,6 +57,8 @@ class PresetManagerLayout : public Layout
   BankButton *m_bankButton = nullptr;
   ButtonMenu *m_menu = nullptr;
   PresetListBase *m_presets = nullptr;
+  ChangedParameterIndicator* m_changedIndicator = nullptr;
+
   FocusAndMode m_focusAndMode;
   FocusAndMode m_oldFocusAndMode;
   StoreModeData *getStoreModeData();

@@ -231,7 +231,6 @@ public class ServerProxy {
 	}
 
 	public void selectParameter(ParameterId id) {
-		GWT.log("select Parameter: " + id.toString());
 		StaticURI.Path path = new StaticURI.Path("param-editor", "select-param");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", id.toString()));
 		queueJob(uri, true);
@@ -293,7 +292,6 @@ public class ServerProxy {
 	}
 
 	public void loadPreset(String presetuuid) {
-		GWT.log("loading preset with uuid" + presetuuid);
 		StaticURI.Path path = new StaticURI.Path("banks", "load-preset");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", presetuuid));
 		queueJob(uri, false);
@@ -1188,7 +1186,7 @@ public class ServerProxy {
 
 			@Override
 			public void onError() {
-				GWT.log("Soled not correctly downloaded!");
+				Tracer.log("Soled not correctly downloaded!");
 			}
 		});
 	}
@@ -1203,7 +1201,7 @@ public class ServerProxy {
 
 			@Override
 			public void onError() {
-				GWT.log("Boled not correctly downloaded!");
+				Tracer.log("Boled not correctly downloaded!");
 			}
 		});
 	}

@@ -98,6 +98,12 @@ ParameterImportConversions::ParameterImportConversions(bool registerDefaults)
     registerConverter(C15::PID::Shp_A_FB_Env_C, 11, [=](auto v, auto, auto) { return v * 0.5; });
     registerConverter(C15::PID::Shp_B_FB_Env_C, 11, [=](auto v, auto, auto) { return v * 0.5; });
 
+    for(auto offset :
+        { C15::PID::Scale_Offset_0, C15::PID::Scale_Offset_1, C15::PID::Scale_Offset_2, C15::PID::Scale_Offset_3,
+          C15::PID::Scale_Offset_4, C15::PID::Scale_Offset_5, C15::PID::Scale_Offset_6, C15::PID::Scale_Offset_7,
+          C15::PID::Scale_Offset_8, C15::PID::Scale_Offset_9, C15::PID::Scale_Offset_10, C15::PID::Scale_Offset_11 })
+      registerConverter(offset, 11, [=](auto v, auto, auto) { return (2. / 3.) * v; });
+
     registerConverter(C15::PID::Env_A_Att_Vel, 12, [=](auto v, auto, auto) { return -v; });
     registerConverter(C15::PID::Env_B_Att_Vel, 12, [=](auto v, auto, auto) { return -v; });
     registerConverter(C15::PID::Env_C_Att_Vel, 12, [=](auto v, auto, auto) { return -v; });

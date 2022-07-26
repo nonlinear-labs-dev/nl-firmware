@@ -1,5 +1,35 @@
 # C15 Firmware
 
+## How to build iso images for epc1 and epc2
+
+### epc1
+
+To burn the iso onto a stick, connect USB stick and find the device name using lsblk, for example /dev/sde. Then type
+
+```
+cd build-dir
+cmake <SOURCE_DIR>
+EPC_INSTALL_MEDIUM=/dev/sde make epc-install-medium
+```
+
+Alternatively, you can just create the iso and burn it with your favorite disk utility or 'dd':
+```
+cd build-dir
+cmake <SOURCE_DIR>
+make epc-nonlinux-iso
+dd if=./build-tools/epc/NonLinuxAP.iso of=<usb-stick-device>
+```
+
+### epc2
+
+Create the iso and burn it with your favorite disk utility or 'dd':
+```
+cd build-dir
+cmake <SOURCE_DIR>
+make epc2-create-iso
+dd if=./build-tools/epc2/create-install-medium/epc2os.iso of=<usb-stick-device>
+```
+
 ## How to build
 
 Preconditions:
