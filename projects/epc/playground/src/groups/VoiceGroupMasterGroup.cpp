@@ -22,7 +22,7 @@ void VoiceGroupMasterGroup::init()
 {
   appendParameter(new VoiceGroupMasterModulateableParameter(this, { C15::PID::Voice_Grp_Volume, getVoiceGroup() }));
   appendParameter(new VoiceGroupMasterModulateableParameter(this, { C15::PID::Voice_Grp_Tune, getVoiceGroup() }));
-  appendParameter(new VoiceGroupMasterModulateableParameter(this, { C15::PID::Voice_Grp_Mute, getVoiceGroup() }));
+  appendParameter(new VoiceGroupMasterUnmodulateableParameter(this, { C15::PID::Voice_Grp_Mute, getVoiceGroup() }));
 
   auto fadeFromInitial = getVoiceGroup() == VoiceGroup::I ? 1 : 0;
 

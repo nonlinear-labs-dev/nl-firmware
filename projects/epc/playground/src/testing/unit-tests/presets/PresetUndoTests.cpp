@@ -159,7 +159,7 @@ TEST_CASE("PresetParameterGroup")
 
       void init()
       {
-        appendParameter(new Parameter(this, { 1, VoiceGroup::I }, ScaleConverter::get<Linear100PercentScaleConverter>()));
+        appendParameter(new Parameter(this, { 1, VoiceGroup::I }));
       }
     };
 

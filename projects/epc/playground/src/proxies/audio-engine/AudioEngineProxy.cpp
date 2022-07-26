@@ -240,6 +240,10 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
     {
       //Ignore
     }
+    else if(auto scaleGroup = dynamic_cast<ScaleGroup*>(g))
+    {
+      //Ignore
+    }
     else
     {
       for(auto p : g->getParameters())
