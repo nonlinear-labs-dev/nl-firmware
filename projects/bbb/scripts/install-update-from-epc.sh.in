@@ -12,15 +12,35 @@ copy_from_epc() {
   sshpass -p 'sscl' ssh -o StrictHostKeyChecking=no sscl@192.168.10.10 'scp -o StrictHostKeyChecking=no /tmp/nonlinear-c15-update.tar root@192.168.10.11:/update'
 }
 
+t2s() {
+    @C15_INSTALL_PATH@/text2soled/text2soled multitext "$1" "$2" "$3" "$4"
+}
+
+pretty() {
+    echo "$*"
+    BOLED_LINE_1="$1"
+    BOLED_LINE_2="$2"
+    SOLED_LINE_2="$1"
+    SOLED_LINE_3="$2"
+
+    t2s "${BOLED_LINE_1}@b3c" "${BOLED_LINE_2}@b4c" "${SOLED_LINE_2}@s1c" "${SOLED_LINE_3}@s2c"
+}
+
 unpack_update() {
+    pretty "Copying C15 update..." "DO NOT SWITCH OFF!"
     if rm -rf /update \
         && mkdir -p /update \
         && copy_from_epc \
-        && cd /update \
-        && tar xf nonlinear-c15-update.tar; then
-            return 0
-     fi
-     return 1
+        && cd /update;
+    then
+      pretty "Unpacking C15 update..." "DO NOT SWITCH OFF!"
+      if tar xf nonlinear-c15-update.tar; then
+        return 0
+      fi
+    fi
+    pretty "Update Media Error." "Please retry"
+    sleep 2
+    return 1
 }
 
 check_preconditions() {
