@@ -320,7 +320,7 @@ display_scaling_type: {
     unit: *UNIT_DB,
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
-    values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ],
+    values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
     bipolar: true
   },
 
@@ -335,16 +335,15 @@ display_scaling_type: {
   #   values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ],
   #   bipolar: false
   # },
-  LINEAR_BIPOLAR_60_DBT: {
-    # with https://github.com/nonlinear-labs-dev/C15/issues/3182,
-    # only Envelope Level Velocities remain using this scaling
-    round: *ROUNDING_ONE_DECIMAL,
-    unit: *UNIT_DBT,
-    reference: *REFERENCE_LINEAR,
-    inf: *INF_FINITE,
-    values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
-    bipolar: true
-  },
+  # LINEAR_BIPOLAR_60_DBT: {
+  #   # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3182
+  #   round: *ROUNDING_ONE_DECIMAL,
+  #   unit: *UNIT_DBT,
+  #   reference: *REFERENCE_LINEAR,
+  #   inf: *INF_FINITE,
+  #   values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
+  #   bipolar: true
+  # },
   # LINEAR_INVERTED_60_DBT: {
   #   # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3176
   #   round: *ROUNDING_ONE_DECIMAL,
