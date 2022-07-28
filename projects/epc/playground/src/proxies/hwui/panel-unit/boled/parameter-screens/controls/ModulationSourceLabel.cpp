@@ -37,7 +37,7 @@ void ModulationSourceLabel::onParamValueChanged(const Parameter *param)
   {
     auto src = modP->getModulationSource();
 
-    if(src != MacroControls::NONE)
+    if(src != MacroControls::NONE && !modP->isDisabled())
     {
       auto id = MacroControlsGroup::modSrcToParamId(src);
       if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
@@ -45,6 +45,11 @@ void ModulationSourceLabel::onParamValueChanged(const Parameter *param)
         setText(StringAndSuffix { mc->getShortName() });
         return;
       }
+    }
+    else if(modP->isDisabled())
+    {
+      setText(StringAndSuffix{"", 0});
+      return;
     }
   }
 

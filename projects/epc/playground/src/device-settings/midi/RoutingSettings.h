@@ -24,4 +24,5 @@ class RoutingSettings : public Setting
   void setAllValues(bool value);
  private:
   tData m_data;
+  bool sanitizeReceiveHWSourcesAndPC();
 };

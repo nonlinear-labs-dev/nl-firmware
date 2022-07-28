@@ -185,7 +185,6 @@ public abstract class Parameter extends LayoutResizingVertical {
 	@Override
 	public Control pinch(Position eventPoint, double touchDist, TouchPinch pinch) {
 		if (isSelected()) {
-			Tracer.log("Parameter.pinch");
 			return NonMaps.theMaps.getNonLinearWorld();
 		}
 		return super.pinch(eventPoint, touchDist, pinch);

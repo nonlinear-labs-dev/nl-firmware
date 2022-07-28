@@ -144,8 +144,6 @@ public class ParameterInfoDialog extends GWTDialog {
 										mouseMoveUpRegistration = null;
 									}
 								}
-
-								GWT.log("ParameterInfo resized to:" + infoBoxHeight);
 							}
 						}
 					});
@@ -189,14 +187,7 @@ public class ParameterInfoDialog extends GWTDialog {
 	protected void update(ParameterPresenter selectedParameter) {
 		presenter = EditBufferPresenterProvider.getPresenter().selectedParameter;
 		boolean isMC = presenter.isMacroControl;
-
-		BasicParameterModel bm = EditBufferModel.get().getSelectedParameter();
-		if (bm instanceof MacroControlParameterModel) {
-			MacroControlParameterModel mc = (MacroControlParameterModel) bm;
-			GWT.log(mc.givenName.getValue());
-			GWT.log(mc.info.getValue());
-		}
-
+		
 		infoField.setEnabled(isMC);
 		paramNameEditor.setVisible(isMC);
 		parameterNameView.setVisible(!isMC);

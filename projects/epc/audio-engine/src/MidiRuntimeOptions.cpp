@@ -153,6 +153,19 @@ std::optional<int> MidiRuntimeOptions::decodeEnumMSB(PedalCC cc)
     case PedalCC::CC68:
     case PedalCC::CC69:
       return static_cast<int>(cc) + 32;
+    case PedalCC::CC64_Continuous:
+      return static_cast<int>(PedalCC::CC64) + 32;
+    case PedalCC::CC65_Continuous:
+      return static_cast<int>(PedalCC::CC65) + 32;
+    case PedalCC::CC66_Continuous:
+      return static_cast<int>(PedalCC::CC66) + 32;
+    case PedalCC::CC67_Continuous:
+      return static_cast<int>(PedalCC::CC67) + 32;
+    case PedalCC::CC68_Continuous:
+      return static_cast<int>(PedalCC::CC68) + 32;
+    case PedalCC::CC69_Continuous:
+      return static_cast<int>(PedalCC::CC69) + 32;
+
     default:
     case PedalCC::None:
       return std::nullopt;
@@ -195,6 +208,12 @@ std::optional<int> MidiRuntimeOptions::decodeEnumLSB(PedalCC cc)
     case PedalCC::CC30:
     case PedalCC::CC31:
       return static_cast<int>(cc) + 32;
+    case PedalCC::CC64_Continuous:
+    case PedalCC::CC65_Continuous:
+    case PedalCC::CC66_Continuous:
+    case PedalCC::CC67_Continuous:
+    case PedalCC::CC68_Continuous:
+    case PedalCC::CC69_Continuous:
     case PedalCC::CC64:
     case PedalCC::CC65:
     case PedalCC::CC66:
