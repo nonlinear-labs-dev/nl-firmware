@@ -15,12 +15,9 @@ MonoGroup::MonoGroup(ParameterGroupSet* parent, VoiceGroup vg)
 
 void MonoGroup::init()
 {
-  appendParameter(new UnmodulateableMonoParameter(this, { C15::PID::Mono_Grp_Enable, getVoiceGroup() },
-                                                  ScaleConverter::get<OnOffScaleConverter>()));
-  appendParameter(new UnmodulateableMonoParameter(this, { C15::PID::Mono_Grp_Prio, getVoiceGroup() },
-                                                  ScaleConverter::get<MonoPriorityScaleConverter>()));
-  appendParameter(new UnmodulateableMonoParameter(this, { C15::PID::Mono_Grp_Legato, getVoiceGroup() },
-                                                  ScaleConverter::get<LegatoScaleConverter>()));
+  appendParameter(new UnmodulateableMonoParameter(this, { C15::PID::Mono_Grp_Enable, getVoiceGroup() }));
+  appendParameter(new UnmodulateableMonoParameter(this, { C15::PID::Mono_Grp_Prio, getVoiceGroup() }));
+  appendParameter(new UnmodulateableMonoParameter(this, { C15::PID::Mono_Grp_Legato, getVoiceGroup() }));
   appendParameter(new MonoGlideTimeParameter(this, { C15::PID::Mono_Grp_Glide, getVoiceGroup() }));
 }
 

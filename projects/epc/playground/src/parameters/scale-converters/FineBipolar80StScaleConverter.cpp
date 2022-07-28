@@ -9,3 +9,8 @@ FineBipolar80StScaleConverter::FineBipolar80StScaleConverter()
 FineBipolar80StScaleConverter::~FineBipolar80StScaleConverter()
 {
 }
+
+FineBipolar160StScaleConverter::FineBipolar160StScaleConverter()
+    : LinearScaleConverter(tTcdRange(-8000, 8000), tDisplayRange(-160, 160), PitchDimension::get())
+{
+}

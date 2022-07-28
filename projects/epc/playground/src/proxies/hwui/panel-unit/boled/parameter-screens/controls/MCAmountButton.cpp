@@ -1,7 +1,7 @@
 #include "MCAmountButton.h"
 #include "parameters/ModulateableParameter.h"
+#include "parameters/unison-parameters/UnmodulateableUnisonParameter.h"
 #include <proxies/hwui/buttons.h>
-#include <parameters/unison-parameters/ModulateableUnisonParameterWithUnusualModUnit.h>
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
 
 MCAmountButton::MCAmountButton(Buttons id)
@@ -14,7 +14,7 @@ MCAmountButton::~MCAmountButton() = default;
 void MCAmountButton::update(const Parameter* parameter)
 {
   auto getSpecialParameter = [](const Parameter* param) -> const ModulateableParameter* {
-    if(const auto* u = dynamic_cast<const ModulateableUnisonParameterWithUnusualModUnit*>(param))
+    if(const auto* u = dynamic_cast<const ModulateableUnisonParameter*>(param))
       return u;
     else
       return dynamic_cast<const ModulateableMonoParameter*>(param);

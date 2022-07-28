@@ -15,9 +15,8 @@
 
 HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* pGroup,
                                                          PhysicalControlParameter& sibling,
-                                                         const ParameterId& id, const ScaleConverter* converter,
-                                                         double def, int coarseDenominator, int fineDenominator, Settings* settings)
-    : Parameter(pGroup, id, converter)
+                                                         const ParameterId& id, Settings* settings)
+    : Parameter(pGroup, id)
     , m_sibling{sibling}
     , m_settings(settings)
 {
@@ -61,7 +60,7 @@ void HardwareSourceSendParameter::onUnselected()
   {
     m_lastChangedFromHWUI = false;
     getValue().setRawValue(Initiator::EXPLICIT_OTHER, getSiblingParameter()->getDefValueAccordingToMode());
-    sendToPlaycontroller();
+    sendToAudioEngine();
     invalidate();
   }
 }

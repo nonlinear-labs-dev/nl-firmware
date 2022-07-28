@@ -1,6 +1,6 @@
 #pragma once
 #include <tools/RecursionGuard.h>
-#include "ModulateableParameterWithUnusualModUnit.h"
+#include <parameters/ModulateableParameter.h>
 
 class Setting;
 class Preset;
@@ -32,7 +32,7 @@ class Preset;
  *                  60  |  1    |  C1-C6  |     C6   
  */
 
-class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
+class SplitPointParameter : public ModulateableParameter
 {
  public:
   SplitPointParameter(ParameterGroup* group, const ParameterId& id);

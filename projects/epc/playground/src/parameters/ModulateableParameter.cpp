@@ -23,10 +23,12 @@
 #include <presets/PresetManager.h>
 #include <http/UndoScope.h>
 
-ModulateableParameter::ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling)
-    : Parameter(group, id, scaling)
+ModulateableParameter::ModulateableParameter(ParameterGroup *group, const ParameterId &id)
+    : Parameter(group, id)
     , m_modulationAmount(0)
     , m_modSource(MacroControls::NONE)
+    , m_modulationAmountScaleConverter { ScaleConverter::getByEnum(
+          ParameterDB::getModulationAmountDisplayScalingType(id)) }
 {
 }
 
@@ -82,13 +84,15 @@ void ModulateableParameter::setModulationAmount(UNDO::Transaction *transaction, 
   {
     auto swapData = UNDO::createSwapData(clampedAmount);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      swapData->swapWith(m_modulationAmount);
-      getValue().resetSaturation();
-      DebugLevel::gassy("mod amount set to", m_modulationAmount);
-      invalidate();
-      sendToPlaycontroller();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          swapData->swapWith(m_modulationAmount);
+          getValue().resetSaturation();
+          DebugLevel::gassy("mod amount set to", m_modulationAmount);
+          invalidate();
+          sendToAudioEngine();
+        });
   }
 }
 
@@ -126,36 +130,38 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
   {
     auto swapData = UNDO::createSwapData(src);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
-      {
-        if(m_modSource != MacroControls::NONE)
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
         {
-          auto modSrc = dynamic_cast<MacroControlParameter *>(
-              groups->findParameterByID(MacroControlsGroup::modSrcToParamId(m_modSource)));
-          modSrc->unregisterTarget(this);
-        }
+          if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
+          {
+            if(m_modSource != MacroControls::NONE)
+            {
+              auto modSrc = dynamic_cast<MacroControlParameter *>(
+                  groups->findParameterByID(MacroControlsGroup::modSrcToParamId(m_modSource)));
+              modSrc->unregisterTarget(this);
+            }
 
-        swapData->swapWith(m_modSource);
+            swapData->swapWith(m_modSource);
 
-        if(m_modSource != MacroControls::NONE)
-        {
-          auto modSrc = dynamic_cast<MacroControlParameter *>(
-              groups->findParameterByID(MacroControlsGroup::modSrcToParamId(m_modSource)));
-          modSrc->registerTarget(this);
-        }
+            if(m_modSource != MacroControls::NONE)
+            {
+              auto modSrc = dynamic_cast<MacroControlParameter *>(
+                  groups->findParameterByID(MacroControlsGroup::modSrcToParamId(m_modSource)));
+              modSrc->registerTarget(this);
+            }
 
-        getValue().resetSaturation();
-        sendToPlaycontroller();
-      }
-      else
-      {
-        swapData->swapWith(m_modSource);
-        getValue().resetSaturation();
-      }
+            getValue().resetSaturation();
+            sendToAudioEngine();
+          }
+          else
+          {
+            swapData->swapWith(m_modSource);
+            getValue().resetSaturation();
+          }
 
-      invalidate();
-    });
+          invalidate();
+        });
   }
 }
 
@@ -210,6 +216,7 @@ void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRe
   {
     writer.writeTextElement("mod-amount-coarse", to_string(getModulationAmountCoarseDenominator()));
     writer.writeTextElement("mod-amount-fine", to_string(getModulationAmountFineDenominator()));
+    writer.writeTextElement("mod-amount-stringizer", m_modulationAmountScaleConverter->controlPositionToDisplayJS());
   }
 }
 
@@ -248,8 +255,8 @@ Glib::ustring ModulateableParameter::stringizeModulationAmount() const
 
 Glib::ustring ModulateableParameter::stringizeModulationAmount(tControlPositionValue amount) const
 {
-  LinearBipolar100PercentScaleConverter converter;
-  return converter.getDimension().stringize(converter.controlPositionToDisplay(amount));
+  const auto conv = m_modulationAmountScaleConverter;
+  return conv->getDimension().stringize(conv->controlPositionToDisplay(amount));
 }
 
 Layout *ModulateableParameter::createLayout(FocusAndMode focusAndMode) const
