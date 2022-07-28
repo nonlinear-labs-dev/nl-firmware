@@ -39,7 +39,6 @@
 #include "PitchOscLinearStScaleModulationConverter.h"
 #include "Fine12STScaleConverter.h"
 #include "FineBipolar12STScaleConverter.h"
-#include "parameters/scale-converters/dimension/VoicesDimension.h"
 #include "Fine105PercentScaleConverter.h"
 #include "LinearBipolar33PercentScaleConverter.h"
 #include "LinearBipolar50PercentScaleConverter.h"
@@ -47,26 +46,29 @@
 #include "BipolarParabolic100PercentScaleConverter.h"
 #include "LinearBipolar100PercentScaleConverter.h"
 #include "LinearBipolar200PercentScaleConverter.h"
+#include "LinearBipolar160StScaleConverter.h"
+#include "Linear12CountScaleConverter.h"
+#include "Linear60KeyScaleConverter.h"
+#include "Linear100PercentScaleConverter.h"
+#include "Linear0To140StScaleConverter.h"
+#include "Linear180DegreeScaleConverter.h"
+#include "Linear20To100StScaleConverter.h"
+#include "Linear20To140StScaleConverter.h"
+#include "Linear24StScaleConverter.h"
+#include "Linear24To120StScaleConverter.h"
+#include "Linear25DbScaleConverter.h"
+#include "Linear360DegreeScaleConverter.h"
+#include "Linear40To140StScaleConverter.h"
+#include "Linear50DbScaleConverter.h"
+#include "Linear60DbScaleConverter.h"
+#include "Linear60StScaleConverter.h"
+#include "Linear60To140StScaleConverter.h"
+#include "Linear70DbScaleConverter.h"
+#include "Linear80To140StScaleConverter.h"
+#include "Linear96StScaleConverter.h"
+#include "dimension/VoicesDimension.h"
 #include <parameters/value/QuantizedValue.h>
-#include <parameters/scale-converters/Linear12CountScaleConverter.h>
-#include <parameters/scale-converters/Linear60KeyScaleConverter.h>
-#include <parameters/scale-converters/Linear100PercentScaleConverter.h>
-#include <parameters/scale-converters/Linear0To140StScaleConverter.h>
-#include <parameters/scale-converters/Linear180DegreeScaleConverter.h>
-#include <parameters/scale-converters/Linear20To100StScaleConverter.h>
-#include <parameters/scale-converters/Linear20To140StScaleConverter.h>
-#include <parameters/scale-converters/Linear24StScaleConverter.h>
-#include <parameters/scale-converters/Linear24To120StScaleConverter.h>
-#include <parameters/scale-converters/Linear25DbScaleConverter.h>
-#include <parameters/scale-converters/Linear360DegreeScaleConverter.h>
-#include <parameters/scale-converters/Linear40To140StScaleConverter.h>
-#include <parameters/scale-converters/Linear50DbScaleConverter.h>
-#include <parameters/scale-converters/Linear60DbScaleConverter.h>
-#include <parameters/scale-converters/Linear60StScaleConverter.h>
-#include <parameters/scale-converters/Linear60To140StScaleConverter.h>
-#include <parameters/scale-converters/Linear70DbScaleConverter.h>
-#include <parameters/scale-converters/Linear80To140StScaleConverter.h>
-#include <parameters/scale-converters/Linear96StScaleConverter.h>
+#include "nltools/Assert.h"
 
 ScaleConverter::ScaleConverter(const Dimension &dim)
     : m_dimension(dim)
@@ -124,6 +126,8 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
 {
   switch(e)
   {
+    case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_60_DBT:
+      nltools_assertNotReached();
     case C15::Properties::DisplayScalingType::None:
       return nullptr;
     case C15::Properties::DisplayScalingType::LINEAR_12_KEYS:
@@ -160,8 +164,6 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
       return get<LinearBipolar70DbScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_60_DB:
       return get<LinearBipolar60DbScaleConverter>();
-    case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_60_DBT:
-      return get<LinearBipolar60DbTScaleConverter>(); //this scale converter is new -> and still not used
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_INVERTED_60_DBT:
       return get<LinearBipolarInverted60DbtScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_1_DBST:
@@ -193,7 +195,7 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
     case C15::Properties::DisplayScalingType::FINE_BIPOLAR_80_ST:
       return get<FineBipolar80StScaleConverter>();
     case C15::Properties::DisplayScalingType::FINE_BIPOLAR_160_ST:
-      return get<FineBipolar160StScaleConverter>(); //This ScaleConverter was new! This was never used! All mod-amounts of Parameters were using default % scale converter
+      return get<FineBipolar160StScaleConverter>();  //This ScaleConverter was new! This was never used! All mod-amounts of Parameters were using default % scale converter
     case C15::Properties::DisplayScalingType::INTEGRAL_BIPOLAR_60_ST:
       return get<LinearBipolar60StScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_36_ST:
@@ -229,7 +231,7 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_120_ST:
       return get<LinearBipolar120StScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_160_ST:
-      return get<LinearBipolar80StScaleConverter>(); //TODO check if this implementation is correct?
+      return get<LinearBipolar160StScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_200_ST:
       return get<LinearBipolar100StScaleConverter>();
     case C15::Properties::DisplayScalingType::NUMERIC_120_ST:
@@ -267,4 +269,5 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_200_PERCENT:
       return get<LinearBipolar200PercentScaleConverter>();
   }
+  return nullptr;
 }

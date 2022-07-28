@@ -154,7 +154,7 @@ class Parameter : public UpdateDocumentContributor,
   bool isDisabled() const;
 
  protected:
-  virtual void sendToPlaycontroller() const;
+  virtual void sendToAudioEngine() const;
   virtual void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
                           bool dosendToPlaycontroller);
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const;

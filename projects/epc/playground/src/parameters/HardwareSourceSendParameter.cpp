@@ -60,7 +60,7 @@ void HardwareSourceSendParameter::onUnselected()
   {
     m_lastChangedFromHWUI = false;
     getValue().setRawValue(Initiator::EXPLICIT_OTHER, getSiblingParameter()->getDefValueAccordingToMode());
-    sendToPlaycontroller();
+    sendToAudioEngine();
     invalidate();
   }
 }

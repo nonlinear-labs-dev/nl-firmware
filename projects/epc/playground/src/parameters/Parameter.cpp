@@ -244,7 +244,7 @@ void Parameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, 
             m_value.setRawValue(initiator, newVal);
 
             if(dosendToPlaycontroller)
-              sendToPlaycontroller();
+              sendToAudioEngine();
           });
     }
   }
@@ -289,7 +289,7 @@ void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, tControl
   }
 }
 
-void Parameter::sendToPlaycontroller() const
+void Parameter::sendToAudioEngine() const
 {
   sendParameterMessage();
 }

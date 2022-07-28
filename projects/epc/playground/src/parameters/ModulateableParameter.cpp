@@ -91,7 +91,7 @@ void ModulateableParameter::setModulationAmount(UNDO::Transaction *transaction, 
           getValue().resetSaturation();
           DebugLevel::gassy("mod amount set to", m_modulationAmount);
           invalidate();
-          sendToPlaycontroller();
+          sendToAudioEngine();
         });
   }
 }
@@ -152,7 +152,7 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
             }
 
             getValue().resetSaturation();
-            sendToPlaycontroller();
+            sendToAudioEngine();
           }
           else
           {

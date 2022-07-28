@@ -173,7 +173,7 @@ void PhysicalControlParameter::onUnselected()
   {
     m_lastChangedFromHWUI = false;
     getValue().setRawValue(Initiator::EXPLICIT_OTHER, 0);
-    sendToPlaycontroller();
+    sendToAudioEngine();
     onChange(Generic | DontTrustOracle);
     invalidate();
   }

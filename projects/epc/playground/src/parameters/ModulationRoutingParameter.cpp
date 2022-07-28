@@ -53,7 +53,7 @@ void ModulationRoutingParameter::onExclusiveRoutingLost()
   getValue().setRawValue(Initiator::INDIRECT, 0);
   onChange();
   invalidate();
-  sendToPlaycontroller();
+  sendToAudioEngine();
 }
 
 void ModulationRoutingParameter::applyPlaycontrollerPhysicalControl(tControlPositionValue diff)

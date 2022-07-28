@@ -119,7 +119,7 @@ void PedalParameter::sendModeToPlaycontroller() const
 {
   if(Application::exists())
   {
-    sendToPlaycontroller();
+    sendToAudioEngine();
   }
 }
 
