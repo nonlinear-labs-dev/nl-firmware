@@ -3,6 +3,8 @@
 #include <proxies/hwui/HWUI.h>
 #include <presets/PresetManager.h>
 #include <Application.h>
+#include <presets/EditBuffer.h>
+#include <presets/Preset.h>
 
 DirectLoadUseCases::DirectLoadUseCases(DirectLoadSetting *setting)
     : m_setting { setting }
@@ -15,10 +17,15 @@ void doLoadWithoutLoadToPartIfEnabled(DirectLoadSetting *s)
   {
     if(auto pm = Application::get().getPresetManager())
     {
+      auto eb = pm->getEditBuffer();
+
       if(auto selectedPreset = pm->getSelectedPreset())
       {
-        EditBufferUseCases useCase(*pm->getEditBuffer());
-        useCase.load(selectedPreset);
+        if(eb->getUUIDOfLastLoadedPreset() != selectedPreset->getUuid())
+        {
+          EditBufferUseCases useCase(*pm->getEditBuffer());
+          useCase.load(selectedPreset);
+        }
       }
     }
   }
@@ -65,29 +72,28 @@ void DirectLoadUseCases::disableDirectLoad()
 void DirectLoadUseCases::enableDirectLoadFromWebUI(Preset *pPreset, VoiceGroup from, VoiceGroup to)
 {
   auto pm = Application::get().getPresetManager();
-  EditBufferUseCases useCase(*pm->getEditBuffer());
+  auto eb = pm->getEditBuffer();
+  EditBufferUseCases useCase(*eb);
 
   m_setting->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
 
   if(pPreset)
+  {
     useCase.loadToPart(pPreset, from, to);
+  }
   else if(auto selectedPreset = pm->getSelectedPreset())
-    useCase.load(selectedPreset);
+  {
+    if(eb->getUUIDOfLastLoadedPreset() != selectedPreset->getUuid())
+    {
+      useCase.load(selectedPreset);
+    }
+  }
 }
 
 void DirectLoadUseCases::setDirectLoad(bool b)
 {
   m_setting->set(b ? BooleanSettings::BOOLEAN_SETTING_TRUE : BooleanSettings::BOOLEAN_SETTING_FALSE);
-
-  if(b)
-  {
-    auto pm = Application::get().getPresetManager();
-    if(auto selPreset = pm->getSelectedPreset())
-    {
-      EditBufferUseCases useCase(*pm->getEditBuffer());
-      useCase.load(selPreset);
-    }
-  }
+  doLoadWithoutLoadToPartIfEnabled(m_setting);
 }
 
 void DirectLoadUseCases::enableDirectLoadWithoutPreset()
