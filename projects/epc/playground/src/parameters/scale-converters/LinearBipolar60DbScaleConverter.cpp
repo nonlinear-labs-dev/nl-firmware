@@ -2,7 +2,7 @@
 #include "LinearBipolar60DbScaleConverter.h"
 
 LinearBipolar60DbScaleConverter::LinearBipolar60DbScaleConverter()
-    : LinearScaleConverter(tTcdRange(-8000, 8000), tDisplayRange(-60, 60), LevelDimension::get())
+    : LinearScaleConverter(tDisplayRange(-60, 60), LevelDimension::get())
 {
 }
 

@@ -2,9 +2,8 @@
 #include "dimension/TimeDimension.h"
 #include <math.h>
 
-TimeScaleConverter::TimeScaleConverter(const tTcdRange &tcdRange, const tDisplayRange &displayRange)
+TimeScaleConverter::TimeScaleConverter(const tDisplayRange& displayRange)
     : ScaleConverter(TimeDimension<3>::get())
-    , m_tcdRange(tcdRange)
     , m_displayRange(displayRange)
 {
 }
@@ -16,16 +15,6 @@ TimeScaleConverter::~TimeScaleConverter()
 bool TimeScaleConverter::isBiPolar() const
 {
   return false;
-}
-
-tTcdValue TimeScaleConverter::controlPositionToTcd(const tControlPositionValue &cpValue) const
-{
-  return m_tcdRange.scaleValueToRange(cpValue, getControlPositionRange(), false);
-}
-
-tControlPositionValue TimeScaleConverter::tcdToControlPosition(tTcdValue v) const
-{
-  return getControlPositionRange().scaleValueToRange(v, getTcdRange(), false);
 }
 
 tDisplayValue TimeScaleConverter::controlPositionToDisplay(const tControlPositionValue &cpValue) const
@@ -65,5 +54,5 @@ Glib::ustring TimeScaleConverter::controlPositionToDisplayJS() const
 
 size_t TimeScaleConverter::hash() const
 {
-  return super::hash() ^ m_tcdRange.hash() ^ m_displayRange.hash();
+  return super::hash() ^ m_displayRange.hash();
 }

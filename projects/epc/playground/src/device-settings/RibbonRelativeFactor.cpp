@@ -14,7 +14,7 @@ class RibbonRelFactorScaleConverter : public LinearScaleConverter
 {
  public:
   RibbonRelFactorScaleConverter()
-      : LinearScaleConverter(tTcdRange(256, 2560), tDisplayRange(1, 10), UnitlessDimension::get())
+      : LinearScaleConverter(tDisplayRange(1, 10), UnitlessDimension::get())
   {
   }
 };
@@ -57,8 +57,9 @@ void RibbonRelativeFactor::set(tControlPositionValue amount)
 
 void RibbonRelativeFactor::syncExternals(SendReason reason) const
 {
-  auto v = static_cast<uint16_t>(m_factor.getTcdValue());
-  Application::get().getPlaycontrollerProxy()->sendSetting(RIBBON_REL_FACTOR, v);
+  auto proxy = Application::get().getPlaycontrollerProxy();
+  auto tcdValue = proxy->ribbonRelativeFactorToTCDValue(m_factor.getQuantizedClipped());
+  proxy->sendSetting(RIBBON_REL_FACTOR, tcdValue);
 }
 
 void RibbonRelativeFactor::setDefault()

@@ -2,7 +2,7 @@
 #include "dimension/PitchDimensionCoarse.h"
 
 LinearBipolar150StScaleConverter::LinearBipolar150StScaleConverter()
-    : LinearScaleConverter(tTcdRange(-7500, 7500), tDisplayRange(-150, 150), PitchDimensionCoarse::get())
+    : LinearScaleConverter(tDisplayRange(-150, 150), PitchDimensionCoarse::get())
 {
 }
 

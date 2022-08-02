@@ -72,7 +72,8 @@ Glib::ustring RoutingSettings::getDisplayString() const
 void RoutingSettings::setState(RoutingSettings::tRoutingIndex hwIdx, RoutingSettings::tAspectIndex settingIdx,
                                bool state)
 {
-  auto updatePair = [](bool& toSet, bool& other, bool value) {
+  auto updatePair = [](bool& toSet, bool& other, bool value)
+  {
     if(value)
       other = false;
     toSet = value;
@@ -109,19 +110,14 @@ const RoutingSettings::tData& RoutingSettings::getRaw() const
 
 void RoutingSettings::setAllValues(bool value)
 {
-  bool anyChanged = false;
+  auto old_values = m_data;
+
   for(auto& entry : m_data)
-  {
     for(auto& aspect : entry)
-    {
-      anyChanged |= (aspect != value);
       aspect = value;
-    }
-  }
 
-  auto wasSanitized = sanitizeReceiveHWSourcesAndPC();
-
-  if(anyChanged || wasSanitized)
+  sanitizeReceiveHWSourcesAndPC();
+  if(m_data != old_values)
     notify();
 }
 

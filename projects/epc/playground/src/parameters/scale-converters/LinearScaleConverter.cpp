@@ -1,9 +1,7 @@
 #include "LinearScaleConverter.h"
 
-LinearScaleConverter::LinearScaleConverter(const tTcdRange &tcdRange, const tDisplayRange &displayRange,
-                                           const Dimension &dim)
+LinearScaleConverter::LinearScaleConverter(const tDisplayRange& displayRange, const Dimension& dim)
     : ScaleConverter(dim)
-    , m_tcdRange(tcdRange)
     , m_displayRange(displayRange)
 {
 }
@@ -22,16 +20,6 @@ tDisplayValue LinearScaleConverter::controlPositionToDisplay(const tControlPosit
   return m_displayRange.scaleValueToRange(cpValue, getControlPositionRange(), true);
 }
 
-tTcdValue LinearScaleConverter::controlPositionToTcd(const tControlPositionValue &cpValue) const
-{
-  return m_tcdRange.scaleValueToRange(cpValue, getControlPositionRange(), false);
-}
-
-tControlPositionValue LinearScaleConverter::tcdToControlPosition(tTcdValue v) const
-{
-  return getControlPositionRange().scaleValueToRange(v, getTcdRange(), false);
-}
-
 Glib::ustring LinearScaleConverter::controlPositionToDisplayJS() const
 {
   return m_displayRange.getScaleValueToRangeJS(getControlPositionRange(), getDimension());
@@ -39,5 +27,5 @@ Glib::ustring LinearScaleConverter::controlPositionToDisplayJS() const
 
 size_t LinearScaleConverter::hash() const
 {
-  return super::hash() ^ m_tcdRange.hash() ^ (m_displayRange.hash() << 1);
+  return super::hash() ^ (m_displayRange.hash() << 1);
 }
