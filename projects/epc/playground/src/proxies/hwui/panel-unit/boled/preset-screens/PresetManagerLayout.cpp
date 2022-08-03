@@ -46,7 +46,7 @@ PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode
   m_dlSettingConnection = Application::get().getSettings()->getSetting<DirectLoadSetting>()->onChange(
       sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
 
-  m_loadToPartConnection = Application::get().getHWUI()->onLoadToPartModeChanged(
+  m_loadToPartConnection = Application::get().getVGManager()->onLoadToPartModeChanged(
       sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
 }
 
@@ -144,7 +144,7 @@ void PresetManagerLayout::setupBankSelect()
 
   auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->isDual();
 
-  if(isDualEB && Application::get().getHWUI()->isInLoadToPart())
+  if(isDualEB && Application::get().getVGManager()->isInLoadToPart())
     m_presets
         = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, hwui->getPresetPartSelection(VoiceGroup::I),
                                               hwui->getPresetPartSelection(VoiceGroup::II)));
@@ -226,7 +226,7 @@ void PresetManagerLayout::setupPresetSelect()
 
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
-  if(Application::get().getHWUI()->isInLoadToPart() && isDualEditBuffer)
+  if(Application::get().getVGManager()->isInLoadToPart() && isDualEditBuffer)
     m_presets
         = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, hwui->getPresetPartSelection(VoiceGroup::I),
                                               hwui->getPresetPartSelection(VoiceGroup::II)));
@@ -335,7 +335,7 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
       case Buttons::BUTTON_ENTER:
         if(m_menu)
           m_menu->doAction();
-        else if(Application::get().getHWUI()->isInLoadToPart())
+        else if(Application::get().getVGManager()->isInLoadToPart())
         {
           return m_presets->onButton(i, down, modifiers);
         }
@@ -376,7 +376,7 @@ void PresetManagerLayout::animateSelectedPresetIfInLoadPartMode(std::function<vo
 {
   auto pm = getPresetManager();
   auto selPreset = pm->getSelectedPreset();
-  if(Application::get().getHWUI()->isInLoadToPart() && selPreset)
+  if(Application::get().getVGManager()->isInLoadToPart() && selPreset)
     m_presets->animatePreset(selPreset, std::move(cb));
   else
     cb();

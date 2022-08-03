@@ -35,15 +35,15 @@ PlaycontrollerProxy::PlaycontrollerProxy()
 
   if(Application::exists())
   {
-      nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playcontroller,
-                                            sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerConnected));
+    nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playcontroller,
+                                          sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerConnected));
 
-      nltools::msg::receive<nltools::msg::PlaycontrollerMessage>(
-              nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerMessage));
+    nltools::msg::receive<nltools::msg::PlaycontrollerMessage>(
+        nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerMessage));
 
-      nltools::msg::receive<nltools::msg::Keyboard::NoteEventHappened>(
-              nltools::msg::EndPoint::Playground,
-              sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
+    nltools::msg::receive<nltools::msg::Keyboard::NoteEventHappened>(
+        nltools::msg::EndPoint::Playground,
+        sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
   }
 }
 
@@ -236,8 +236,8 @@ void PlaycontrollerProxy::onEditControlMessageReceived(const MessageParser::NLMe
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
 
-  if(auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected(
-         Application::get().getHWUI()->getCurrentVoiceGroup()))
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  if(auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg))
   {
     auto ribbonModeBehaviour = Application::get().getSettings()->getSetting<ParameterEditModeRibbonBehaviour>()->get();
 
@@ -428,7 +428,7 @@ void PlaycontrollerProxy::sendRequestToPlaycontroller(MessageParser::Playcontrol
   queueToPlaycontroller(cmp);
 }
 
-sigc::connection PlaycontrollerProxy::onUHIDChanged(const sigc::slot<void, uint64_t>& s)
+sigc::connection PlaycontrollerProxy::onUHIDChanged(const sigc::slot<void, uint64_t> &s)
 {
   return m_signalUHIDChanged.connectAndInit(s, m_uhid);
 }

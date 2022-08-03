@@ -12,9 +12,9 @@ ModulationSourceLabel::ModulationSourceLabel(const Rect &r, Font::Justification 
     : super(r)
     , m_justification(justification)
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &ModulationSourceLabel::onParameterSelected)),
-      getHWUI()->getCurrentVoiceGroup());
+      sigc::hide<0>(sigc::mem_fun(this, &ModulationSourceLabel::onParameterSelected)), vg);
 }
 
 ModulationSourceLabel::~ModulationSourceLabel()
@@ -48,7 +48,7 @@ void ModulationSourceLabel::onParamValueChanged(const Parameter *param)
     }
     else if(modP->isDisabled())
     {
-      setText(StringAndSuffix{"", 0});
+      setText(StringAndSuffix { "", 0 });
       return;
     }
   }

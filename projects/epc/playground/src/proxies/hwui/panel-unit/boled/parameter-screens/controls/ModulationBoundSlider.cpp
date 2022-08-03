@@ -9,8 +9,9 @@
 ModulationBoundSlider::ModulationBoundSlider(const Rect &pos)
     : super(pos)
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      mem_fun(this, &ModulationBoundSlider::onSelectionChanged), getHWUI()->getCurrentVoiceGroup());
+      mem_fun(this, &ModulationBoundSlider::onSelectionChanged), vg);
 }
 
 ModulationBoundSlider::~ModulationBoundSlider()

@@ -16,7 +16,7 @@ SpecialParameterCarousel::SpecialParameterCarousel(const Rect &rect)
   m_editbufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &SpecialParameterCarousel::rebuild));
 
-  m_voiceGroupConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  m_voiceGroupConnection = Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::hide(sigc::mem_fun(this, &SpecialParameterCarousel::rebuild)));
 }
 
@@ -40,7 +40,8 @@ void SpecialParameterCarousel::setup(Parameter *selectedParameter)
 
 void SpecialParameterCarousel::rebuild()
 {
-  auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
   setup(s);
 }
 

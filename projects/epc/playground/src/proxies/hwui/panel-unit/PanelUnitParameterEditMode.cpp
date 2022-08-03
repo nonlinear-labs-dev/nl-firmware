@@ -126,7 +126,7 @@ void PanelUnitParameterEditMode::setup()
 
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::mem_fun(this, &PanelUnitParameterEditMode::onParamSelectionChanged),
-      Application::get().getHWUI()->getCurrentVoiceGroup());
+      Application::get().getVGManager()->getCurrentVoiceGroup());
 
   Glib::MainContext::get_default()->signal_idle().connect_once([=]() {
     auto hwui = Application::get().getHWUI();
@@ -151,7 +151,7 @@ bool PanelUnitParameterEditMode::handleMacroControlButton(bool state, int mcPara
   bool isAlreadySelected = Application::get()
                                .getPresetManager()
                                ->getEditBuffer()
-                               ->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup())
+                               ->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup())
                                ->getID()
                                .getNumber()
           == mcParamId
@@ -260,7 +260,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
   if(cleanedParameterIdForType.empty())
     return true;
 
-  auto voiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto voiceGroup = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto firstParameterInList = editBuffer->findParameterByID({ cleanedParameterIdForType.front(), voiceGroup });
 
   auto &mcStateMachine = getMacroControlAssignmentStateMachine();
@@ -279,7 +279,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
 
   if(state)
   {
-    Parameter *selParam = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
+    Parameter *selParam = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
 
     if(tryParameterToggleOnMacroControl(cleanedParameterIdForType, selParam))
       return true;
@@ -315,7 +315,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
         setParameterSelection({ cleanedParameterIdForType.front(), VoiceGroup::Global }, state);
       else
         setParameterSelection(
-            { cleanedParameterIdForType.front(), Application::get().getHWUI()->getCurrentVoiceGroup() }, state);
+            { cleanedParameterIdForType.front(), Application::get().getVGManager()->getCurrentVoiceGroup() }, state);
     }
     else
     {
@@ -323,7 +323,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
       {
         for(auto paramId : cleanedParameterIdForType)
         {
-          auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+          auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
           if(ParameterId::isGlobal(paramId))
             vg = VoiceGroup::Global;
 
@@ -336,7 +336,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
         }
       }
 
-      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
       setParameterSelection({ cleanedParameterIdForType.front(), vg }, state);
     }
   }
@@ -438,7 +438,7 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
-  if(Parameter *selParam = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup()))
+  if(Parameter *selParam = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup()))
   {
     auto selParamID = selParam->getID();
 
@@ -574,8 +574,8 @@ void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
 {
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  Parameter *selParam = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  Parameter *selParam = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
 
   if(auto modTime = dynamic_cast<MacroControlSmoothingParameter *>(selParam))
   {
@@ -607,12 +607,12 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
 
   for(auto targetID : targets)
   {
-    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
     const auto currentParam = editBuffer->findParameterByID({ targetID, vg });
 
     if(isSignalFlowingThrough(currentParam))
     {
-      auto state = editBuffer->getSelected(hwui->getCurrentVoiceGroup()) == currentParam ? TwoStateLED::ON
+      auto state = editBuffer->getSelected(vg) == currentParam ? TwoStateLED::ON
                                                                                          : TwoStateLED::BLINK;
       panelUnit.getLED(m_mappings.findButton(targetID))->setState(state);
     }
@@ -626,7 +626,7 @@ bool PanelUnitParameterEditMode::isSignalFlowingThrough(const Parameter *p) cons
 
 void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &targets)
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
@@ -668,7 +668,7 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
 
 void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &targets)
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
@@ -710,7 +710,7 @@ void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &tar
 
 void PanelUnitParameterEditMode::letReverbBlink(const std::vector<int> &targets)
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 

@@ -19,11 +19,13 @@
 ModuleCaption::ModuleCaption(const Rect &pos)
     : super(pos)
 {
-  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &ModuleCaption::onParameterSelected)), getHWUI()->getCurrentVoiceGroup());
+  auto vgManager = Application::get().getVGManager();
+  auto currentVG = vgManager->getCurrentVoiceGroup();
 
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
-      sigc::hide(sigc::mem_fun(this, &ModuleCaption::onSelectionChanged)));
+  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      sigc::hide<0>(sigc::mem_fun(this, &ModuleCaption::onParameterSelected)), currentVG);
+
+  vgManager->onCurrentVoiceGroupChanged(sigc::hide(sigc::mem_fun(this, &ModuleCaption::onSelectionChanged)));
 
   Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
       sigc::hide(sigc::mem_fun(this, &ModuleCaption::onSoundTypeChanged)));
@@ -52,15 +54,15 @@ void ModuleCaption::updateText(Parameter *newOne)
 
 void ModuleCaption::onSelectionChanged()
 {
-  auto selected
-      = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
   updateText(selected);
 }
 
 void ModuleCaption::onSoundTypeChanged()
 {
-  auto selected
-      = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
   updateText(selected);
 }
 

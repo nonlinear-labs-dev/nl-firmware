@@ -43,7 +43,7 @@ void ParameterEditButtonMenu::setup()
 void ParameterEditButtonMenu::addActions()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
 
   if(eb->getSelected(vg)->lockingEnabled())
   {
@@ -130,7 +130,7 @@ void ParameterEditButtonMenu::selectButton(size_t i)
 void ParameterEditButtonMenu::toggleGroupLock()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto vg = getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto group = eb->getSelected(vg)->getParentGroup();
   EditBufferUseCases useCases(*eb);
 

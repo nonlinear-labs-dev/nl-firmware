@@ -27,10 +27,11 @@ void doLoadWithoutLoadToPartIfEnabled(DirectLoadSetting *s)
 void DirectLoadUseCases::toggleDirectLoadFromHWUI(HWUI *pHwui)
 {
   auto pm = Application::get().getPresetManager();
+  auto vgManager = Application::get().getVGManager();
 
-  if(pHwui->isInLoadToPart())
+  if(vgManager->isInLoadToPart())
   {
-    auto vg = pHwui->getCurrentVoiceGroup();
+    auto vg = vgManager->getCurrentVoiceGroup();
     auto load = pHwui->getPresetPartSelection(vg);
 
     m_setting->toggle();

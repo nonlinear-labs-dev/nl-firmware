@@ -8,8 +8,6 @@
 
 using namespace DescriptiveLayouts;
 
-#warning "IMPROVEMENT: maybe add inversion to condition rules, so we do not need IsModulateable AND IsNotModulateable"
-
 namespace conditiondetail
 {
   const EditBuffer &getEditBuffer()
@@ -24,7 +22,7 @@ namespace conditiondetail
 
   const Parameter *getCurrentParameter()
   {
-    return getEditBuffer().getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
+    return getEditBuffer().getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
   }
 
   const ModulateableParameter *getModulateableParameter()
@@ -51,7 +49,7 @@ ParameterConditions::ParameterCondition::ParameterCondition()
 {
   m_paramChangedConnection = Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::mem_fun(this, &ParameterCondition::onParameterSelectionChanged),
-      Application::get().getHWUI()->getCurrentVoiceGroup());
+      Application::get().getVGManager()->getCurrentVoiceGroup());
 }
 
 ParameterConditions::ParameterCondition::~ParameterCondition()

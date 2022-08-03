@@ -6,8 +6,10 @@
 #include <http/SectionAndActionManager.h>
 #include "HWUI.h"
 
+class Application;
+
 class HWUIActions : public SectionAndActionManager
 {
  public:
-  HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuffer& eb);
+  HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuffer& eb, Application* app);
 };

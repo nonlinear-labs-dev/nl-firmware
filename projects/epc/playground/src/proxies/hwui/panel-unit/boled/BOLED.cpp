@@ -45,7 +45,7 @@ void BOLED::toggleScreenSaver(bool enabled)
   {
     installScreenSaver(new BOLEDScreenSaver(*this));
   }
-  else if(dynamic_cast<BOLEDScreenSaver *>(getScreenSaver()) != nullptr)
+  else if(dynamic_cast<BOLEDScreenSaver*>(getScreenSaver()) != nullptr)
   {
     removeScreenSaver();
   }
@@ -109,14 +109,14 @@ void BOLED::setupSoundScreen(FocusAndMode focusAndMode)
 
 void BOLED::setupParameterScreen(FocusAndMode focusAndMode)
 {
-  if(auto selParam = Application::get().getPresetManager()->getEditBuffer()->getSelected(
-         Application::get().getHWUI()->getCurrentVoiceGroup()))
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  if(auto selParam = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg))
   {
     auto layout = selParam->createLayout(focusAndMode);
 
     if(auto currentLayout = getLayout().get())
     {
-      auto descriptiveLayout = dynamic_cast<DescriptiveLayouts::GenericLayout *>(currentLayout) != nullptr;
+      auto descriptiveLayout = dynamic_cast<DescriptiveLayouts::GenericLayout*>(currentLayout) != nullptr;
 
       if(descriptiveLayout && currentLayout && typeid(*layout) == typeid(*currentLayout))
       {

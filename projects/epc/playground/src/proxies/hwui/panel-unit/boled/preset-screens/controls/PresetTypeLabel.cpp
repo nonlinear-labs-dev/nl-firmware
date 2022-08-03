@@ -15,7 +15,7 @@ PresetTypeLabel::PresetTypeLabel(const Rect &pos)
   m_editbufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &PresetTypeLabel::onEditBufferChanged));
 
-  m_voiceGroupChanged = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  m_voiceGroupChanged = Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &PresetTypeLabel::onVoiceGroupChanged));
 }
 
@@ -55,7 +55,7 @@ void PresetTypeLabel::update(const Preset *newSelection)
   selectedPreset = newSelection;
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->isDual();
 
-  if(Application::get().getHWUI()->isInLoadToPart() && isDualEditBuffer)
+  if(Application::get().getVGManager()->isInLoadToPart() && isDualEditBuffer)
   {
     auto pos = Rect { position.getLeft(), position.getTop(), 10, 10 };
     m_currentControl = std::make_unique<DualPresetTypeLabel>(pos);
@@ -75,7 +75,7 @@ void PresetTypeLabel::drawBackground(FrameBuffer &fb)
 {
 
   auto hwui = Application::get().getHWUI();
-
+  auto vgManager = Application::get().getVGManager();
   if(selectedPreset
      && Application::get().getPresetManager()->getEditBuffer()->getUUIDOfLastLoadedPreset()
          == selectedPreset->getUuid())
@@ -85,9 +85,9 @@ void PresetTypeLabel::drawBackground(FrameBuffer &fb)
 
     bool selected = false;
 
-    if(hwui->isInLoadToPart())
+    if(vgManager->isInLoadToPart())
     {
-      auto currentVGFocus = hwui->getCurrentVoiceGroup();
+      auto currentVGFocus = vgManager->getCurrentVoiceGroup();
       if(auto selection = hwui->getPresetPartSelection(currentVGFocus))
       {
         selected = selection->m_preset == selectedPreset;
@@ -242,10 +242,10 @@ void DualPresetTypeLabel::update(const Preset *selected)
   if(selected)
   {
     auto hwui = Application::get().getHWUI();
-    auto currentVGFocus = hwui->getCurrentVoiceGroup();
-    const auto origin = Application::get().getPresetManager()->getEditBuffer()->getPartOrigin(currentVGFocus);
+    auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+    const auto origin = Application::get().getPresetManager()->getEditBuffer()->getPartOrigin(vg);
 
-    auto selection = hwui->getPresetPartSelection(currentVGFocus);
+    auto selection = hwui->getPresetPartSelection(vg);
 
     const auto &presetUUID = selected->getUuid();
 

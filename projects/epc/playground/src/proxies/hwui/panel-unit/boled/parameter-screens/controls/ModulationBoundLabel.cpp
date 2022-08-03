@@ -12,8 +12,9 @@
 ModulationBoundLabel::ModulationBoundLabel(const Rect &r)
     : super(r)
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      mem_fun(this, &ModulationBoundLabel::onParameterSelectionChanged), getHWUI()->getCurrentVoiceGroup());
+      mem_fun(this, &ModulationBoundLabel::onParameterSelectionChanged), vg);
 
   Application::get().getHWUI()->onModifiersChanged(
       sigc::mem_fun(this, &ModulationBoundLabel::onButtonModifiersChanged));

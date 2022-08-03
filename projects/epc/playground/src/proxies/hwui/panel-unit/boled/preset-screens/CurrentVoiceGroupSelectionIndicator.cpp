@@ -7,14 +7,14 @@
 
 inline static Glib::ustring currentVoiceGroupToString()
 {
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
   return toString(currentVG);
 }
 
 CurrentVoiceGroupSelectionIndicator::CurrentVoiceGroupSelectionIndicator(const Rect &r)
     : LabelRegular8(currentVoiceGroupToString(), r)
 {
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::hide(sigc::mem_fun(this, &CurrentVoiceGroupSelectionIndicator::focusChanged)));
 
   Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(

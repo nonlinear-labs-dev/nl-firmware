@@ -76,9 +76,9 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
 
   setMode(Mode::ParameterValue);
 
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onSelectedParameterChanged),
-      getHWUI()->getCurrentVoiceGroup());
+      sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onSelectedParameterChanged), vg);
 
   Application::get().getHWUI()->onModifiersChanged(
       sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onModfiersChanged));
@@ -232,16 +232,16 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
           if(MasterGroup::isMasterParameter(modParam))
           {
             EditBufferUseCases ebUseCases(*modParam->getParentEditBuffer());
-            ebUseCases.selectParameter({C15::PID::Scale_Base_Key, VoiceGroup::Global}, true);
+            ebUseCases.selectParameter({ C15::PID::Scale_Base_Key, VoiceGroup::Global }, true);
           }
           else if(ScaleGroup::isScaleParameter(modParam))
           {
             EditBufferUseCases ebUseCases(*modParam->getParentEditBuffer());
-            ebUseCases.selectParameter({C15::PID::Master_Volume, VoiceGroup::Global}, true);
+            ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global }, true);
           }
           else
           {
-            Application::get().getHWUI()->toggleCurrentVoiceGroup();
+            Application::get().getVGManager()->toggleCurrentVoiceGroup();
           }
           return true;
         }
@@ -269,15 +269,15 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
         {
           if(c->getText().text == "back..")
           {
-            if(getCurrentParameter() && dynamic_cast<const ScaleGroup*>(getCurrentParameter()->getParentGroup()))
+            if(getCurrentParameter() && dynamic_cast<const ScaleGroup *>(getCurrentParameter()->getParentGroup()))
             {
               EditBufferUseCases ebUseCases(*getCurrentParameter()->getParentEditBuffer());
-              ebUseCases.selectParameter({C15::PID::Master_Volume, VoiceGroup::Global});
+              ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global });
             }
             else
             {
               SettingsUseCases sus(*Application::get().getSettings());
-              sus.setFocusAndMode({UIFocus::Sound, UIMode::Select, UIDetail::Init});
+              sus.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
             }
             return true;
           }

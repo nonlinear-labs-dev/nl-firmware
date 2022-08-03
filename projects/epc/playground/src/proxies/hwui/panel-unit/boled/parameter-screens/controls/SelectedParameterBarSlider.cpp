@@ -10,8 +10,9 @@
 SelectedParameterBarSlider::SelectedParameterBarSlider(const Rect& rect)
     : super(rect)
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &SelectedParameterBarSlider::setParameter)), getHWUI()->getCurrentVoiceGroup());
+      sigc::hide<0>(sigc::mem_fun(this, &SelectedParameterBarSlider::setParameter)), vg);
 }
 
 SelectedParameterBarSlider::~SelectedParameterBarSlider()

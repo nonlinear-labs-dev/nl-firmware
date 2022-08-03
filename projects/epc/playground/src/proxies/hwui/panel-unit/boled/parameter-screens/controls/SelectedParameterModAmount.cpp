@@ -16,8 +16,9 @@ SelectedParameterModAmount::SelectedParameterModAmount(const Rect &rect)
     , m_from(0)
     , m_to(0)
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &SelectedParameterModAmount::setParameter)), getHWUI()->getCurrentVoiceGroup());
+      sigc::hide<0>(sigc::mem_fun(this, &SelectedParameterModAmount::setParameter)), vg);
 }
 
 void SelectedParameterModAmount::setParameter(Parameter *param)

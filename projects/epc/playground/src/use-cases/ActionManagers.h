@@ -8,12 +8,13 @@ class PresetManager;
 class AudioEngineProxy;
 class HWUI;
 class Settings;
+class Application;
 
 class ActionManagers
 {
  public:
   ActionManagers(UpdateDocumentContributor* parent, PresetManager& pm, AudioEngineProxy& aeProx, HWUI& hwui,
-                 Settings& settings);
+                 Settings& settings, Application* app);
 
  private:
   typedef std::shared_ptr<SectionAndActionManager> tManagerPtr;

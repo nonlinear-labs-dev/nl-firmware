@@ -12,9 +12,10 @@ ParameterInfoText::ParameterInfoText(ControlOwner *parent)
     : super("")
     , m_parent(parent)
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   setPosition(Rect(2, 0, 0, 0));
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      mem_fun(this, &ParameterInfoText::onParameterSelected), getHWUI()->getCurrentVoiceGroup());
+      mem_fun(this, &ParameterInfoText::onParameterSelected), vg);
 }
 
 void ParameterInfoText::onParameterSelected(Parameter *oldParam, Parameter *newParam)

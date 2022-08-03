@@ -28,7 +28,7 @@ class MCAssignedIndicator : public ControlWithChildren
 
     [[nodiscard]] bool affected(SoundType s) const
     {
-      auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
       int partIdx = currentVG == VoiceGroup::I ? 0 : 1;
 
       switch(s)

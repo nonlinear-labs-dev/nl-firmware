@@ -24,5 +24,5 @@ void DescriptiveLayouts::CurrentParameterGroupLockStatus::onSelectedParameterCha
 void DescriptiveLayouts::CurrentParameterGroupLockStatus::onLockChanged()
 {
   onSelectedParameterChanged(Application::get().getPresetManager()->getEditBuffer()->getSelected(
-      Application::get().getHWUI()->getCurrentVoiceGroup()));
+      Application::get().getVGManager()->getCurrentVoiceGroup()));
 }

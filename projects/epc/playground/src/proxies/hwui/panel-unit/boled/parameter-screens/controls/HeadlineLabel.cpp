@@ -10,13 +10,10 @@
 HeadlineLabel::HeadlineLabel(const Rect &pos)
     : super(pos)
 {
-  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::mem_fun(this, &HeadlineLabel::updateText), getHWUI()->getCurrentVoiceGroup());
-  Application::get()
-      .getPresetManager()
-      ->getEditBuffer()
-      ->getSelected(getHWUI()->getCurrentVoiceGroup())
-      ->onParameterChanged(mem_fun(this, &HeadlineLabel::updateMc));
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  eb->onSelectionChanged(sigc::mem_fun(this, &HeadlineLabel::updateText), vg);
+  eb->getSelected(vg)->onParameterChanged(mem_fun(this, &HeadlineLabel::updateMc));
 }
 
 std::shared_ptr<Font> HeadlineLabel::getFont() const

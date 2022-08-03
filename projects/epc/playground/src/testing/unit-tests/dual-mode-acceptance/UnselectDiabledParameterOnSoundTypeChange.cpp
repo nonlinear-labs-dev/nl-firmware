@@ -12,7 +12,7 @@ TEST_CASE("FROM Layer")
   EditBufferUseCases ebUseCases(*eb);
   ebUseCases.load(presets.getLayerPreset());
 
-  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+  Application::get().getVGManager()->setCurrentVoiceGroup(VoiceGroup::II);
 
   CHECK(eb->getType() == SoundType::Layer);
 
@@ -281,7 +281,7 @@ TEST_CASE("Split Loaded")
 
   ebUseCases.load(presets.getSplitPreset());
 
-  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+  Application::get().getVGManager()->setCurrentVoiceGroup(VoiceGroup::II);
   CHECK(eb->getType() == SoundType::Split);
 
   WHEN("OUT: To FX x selected")
