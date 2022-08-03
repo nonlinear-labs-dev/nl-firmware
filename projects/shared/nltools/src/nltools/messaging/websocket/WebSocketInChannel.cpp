@@ -43,8 +43,7 @@ namespace nltools
       {
         pthread_setname_np(pthread_self(), "WebSockIn");
         threading::setThisThreadPrio(p);
-
-        m_backgroundCtx->push_thread_default();
+        g_main_context_push_thread_default(m_backgroundCtx->gobj());
 
         GError *error = nullptr;
 
@@ -63,7 +62,7 @@ namespace nltools
             g_spawn_command_line_sync(script.c_str(), &output, nullptr, nullptr, nullptr);
 
             m_conditionEstablishedThreadWaiter.notify();
-            m_backgroundCtx->pop_thread_default();
+            g_main_context_pop_thread_default(m_backgroundCtx->gobj());
 
             if(output)
               nltools::throwException("Could not listen to port ", m_port, ", because '", output, "' already owns it.");

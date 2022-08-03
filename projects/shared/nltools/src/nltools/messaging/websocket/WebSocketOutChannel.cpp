@@ -111,7 +111,7 @@ namespace nltools
         auto mainContext = m_mainThreadContextQueue->getContext();
 
         auto m = Glib::MainContext::create();
-        m->push_thread_default();
+        g_main_context_push_thread_default(m->gobj());
 
         m_backgroundContextQueue = std::make_unique<threading::ContextBoundMessageQueue>(m);
         m_messageLoop = Glib::MainLoop::create(m);
@@ -121,7 +121,7 @@ namespace nltools
         connect();
         m_messageLoop->run();
 
-        m->pop_thread_default();
+        g_main_context_pop_thread_default(m->gobj());
       }
 
       bool WebSocketOutChannel::ping()
