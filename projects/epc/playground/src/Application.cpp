@@ -63,7 +63,7 @@ void setupMessaging(const Options *options, Glib::RefPtr<Glib::MainContext> pCon
 
 std::unique_ptr<Options> Application::initStatic(Application *app, std::unique_ptr<Options> options)
 {
-  app->m_theMainContext->push_thread_default();
+  g_main_context_push_thread_default(app->m_theMainContext->gobj());
   theApp = app;
   setupMessaging(options.get(), app->m_theMainContext);
   return options;
@@ -134,7 +134,7 @@ Application::Application(int numArgs, char **argv)
   ::signal(SIGTERM, quitApp);
   ::signal(SIGINT, quitApp);
 
-  m_theMainContext->pop_thread_default();
+  g_main_context_pop_thread_default(m_theMainContext->gobj());
 }
 
 Application::~Application()

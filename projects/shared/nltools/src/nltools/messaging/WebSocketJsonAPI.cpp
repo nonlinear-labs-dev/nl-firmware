@@ -78,7 +78,7 @@ namespace nltools
     {
       std::unique_lock<std::recursive_mutex> l(m_mutex);
 
-      m_messageLoop->get_context()->push_thread_default();
+      g_main_context_push_thread_default(m_messageLoop->get_context()->gobj());
 
       GError *error = nullptr;
 
@@ -98,7 +98,7 @@ namespace nltools
         m_messageLoop->run();
       }
 
-      m_messageLoop->get_context()->pop_thread_default();
+      g_main_context_pop_thread_default(m_messageLoop->get_context()->gobj());
     }
 
     bool WebSocketJsonAPI::doSend(SoupWebsocketConnection *c, const nlohmann::json &msg)

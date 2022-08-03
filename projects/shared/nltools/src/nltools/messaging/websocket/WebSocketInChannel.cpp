@@ -77,7 +77,7 @@ namespace nltools
         m_conditionEstablishedThreadWaiter.notify();
         m_backgroundCtx->signal_idle().connect_once([&] { m_bgLoopRunning = true; });
         m_backgroundLoop->run();
-        m_backgroundCtx->pop_thread_default();
+        g_main_context_pop_thread_default(m_backgroundCtx->gobj());
       }
 
       void WebSocketInChannel::webSocket(SoupServer *, SoupWebsocketConnection *c, const char *, SoupClientContext *,
