@@ -125,7 +125,7 @@ licenses 20220125-1
 linux-api-headers 5.16.8-1
 linux-firmware 20220411.705f19a-1
 linux-firmware-whence 20220411.705f19a-1
-linux-rt 5.17.1.17.realtime2-1
+linux-rt 5.17.1.17.realtime2-3
 lz4 1:1.9.3-2
 mc 4.8.28-1
 mkinitcpio 31-2
