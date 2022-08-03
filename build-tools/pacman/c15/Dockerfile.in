@@ -10,4 +10,4 @@ RUN pacman --noconfirm -S @HOST_REQUIREMENTS@ @C15_REQUIREMENTS@
 RUN mkdir -p /packages
 RUN mkdir -p /tmp/blankdb
 WORKDIR /packages
-RUN pacman --noconfirm -Syw --cachedir . --dbpath /tmp/blankdb $C15_REQUIREMENTS
+RUN pacman --noconfirm -Syw --cachedir . --dbpath /tmp/blankdb @C15_REQUIREMENTS@

@@ -6,8 +6,8 @@
 setup_package_database() { # Create a database containing c15 package and all its dependencies
   set -e
   mkdir -p /nl
-  repo-add -q /nl/nl.db.tar.gz /var/cache/pacman/pkg/*.pkg.tar.zst /var/cache/pacman/pkg/*.pkg.tar.xz /out/c15-1.0.0-1-any.pkg.tar.zst
-  cp /var/cache/pacman/pkg/* /nl/
+  repo-add -q /nl/nl.db.tar.gz /packages/*.pkg.tar.zst /packages/*.pkg.tar.xz /out/c15-1.0.0-1-any.pkg.tar.zst
+  cp /packages/* /nl/
   cp /out/c15-1.0.0-1-any.pkg.tar.zst /nl/
   echo "[nl]" > /etc/pacman.conf
   echo "Server = file:///nl/" >> /etc/pacman.conf
