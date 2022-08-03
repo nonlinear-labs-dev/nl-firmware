@@ -11,6 +11,7 @@ file(GLOB_RECURSE EPC3_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
 # COMMANDS
 ADD_CUSTOM_COMMAND(
+    COMMENT "Building Docker Container for epc3 OS"
     OUTPUT .arch-docker
     DEPENDS Dockerfile
     COMMAND docker build --pull --no-cache ${CMAKE_CURRENT_SOURCE_DIR} -t epc3-arch-docker
@@ -28,13 +29,13 @@ ADD_CUSTOM_COMMAND(
     DEPENDS packages.txt
     DEPENDS dockerized-create-epc3-base-meta-package.sh
     VERBATIM
-    COMMAND docker run 
-        -ti --rm
-        -v ${CMAKE_CURRENT_SOURCE_DIR}:/src 
-        -v ${DOWNLOAD_DIR}/os/epc3:/packages
-        -v ${CMAKE_CURRENT_BINARY_DIR}:/out
-        epc3-arch-docker 
-        /src/dockerized-create-epc3-base-meta-package.sh
+    COMMAND docker run
+    -ti --rm
+    -v ${CMAKE_CURRENT_SOURCE_DIR}:/src
+    -v ${DOWNLOAD_DIR}/os/epc3:/packages
+    -v ${CMAKE_CURRENT_BINARY_DIR}:/out
+    epc3-arch-docker
+    /src/dockerized-create-epc3-base-meta-package.sh
 )
 
 ADD_CUSTOM_COMMAND(
@@ -45,13 +46,13 @@ ADD_CUSTOM_COMMAND(
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/epc3-base-meta-1.0.0-1-any.pkg.tar.zst
     VERBATIM
     COMMAND docker run
-        -ti --rm
-        -v ${CMAKE_CURRENT_SOURCE_DIR}:/src
-        -v ${DOWNLOAD_DIR}/os/epc3:/packages
-        -v ${CMAKE_CURRENT_BINARY_DIR}:/out
-        epc3-arch-docker
-        /src/dockerized-create-epc3-base-package-database.sh
-    )
+    -ti --rm
+    -v ${CMAKE_CURRENT_SOURCE_DIR}:/src
+    -v ${DOWNLOAD_DIR}/os/epc3:/packages
+    -v ${CMAKE_CURRENT_BINARY_DIR}:/out
+    epc3-arch-docker
+    /src/dockerized-create-epc3-base-package-database.sh
+)
 
 ADD_CUSTOM_COMMAND(
     OUTPUT .fetch-base-packages
@@ -59,9 +60,9 @@ ADD_CUSTOM_COMMAND(
     VERBATIM
     COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/fetched-packages
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/fetch.sh
-        "https://archive.archlinux.org/packages/.all https://pkgbuild.com/~dvzrv/repos/realtime/x86_64/"
-        ${CMAKE_CURRENT_BINARY_DIR}/fetched-packages
-        ${CMAKE_CURRENT_SOURCE_DIR}/packages.txt
+    "https://archive.archlinux.org/packages/.all https://pkgbuild.com/~dvzrv/repos/realtime/x86_64/"
+    ${CMAKE_CURRENT_BINARY_DIR}/fetched-packages
+    ${CMAKE_CURRENT_SOURCE_DIR}/packages.txt
 )
 
 ADD_CUSTOM_COMMAND(
@@ -70,22 +71,22 @@ ADD_CUSTOM_COMMAND(
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/epc3-base.db.tar.zst
     VERBATIM
     COMMAND docker run
-        -ti --rm
-        --privileged
-        -v ${CMAKE_CURRENT_SOURCE_DIR}:/src
-        -v ${DOWNLOAD_DIR}/os/epc3:/packages
-        -v ${CMAKE_CURRENT_BINARY_DIR}:/out
-        epc3-arch-docker
-        /src/dockerized-create-iso.sh
+    -ti --rm
+    --privileged
+    -v ${CMAKE_CURRENT_SOURCE_DIR}:/src
+    -v ${DOWNLOAD_DIR}/os/epc3:/packages
+    -v ${CMAKE_CURRENT_BINARY_DIR}:/out
+    epc3-arch-docker
+    /src/dockerized-create-iso.sh
 )
 
 ADD_CUSTOM_COMMAND(
     OUTPUT .download-base-packages
     COMMAND mkdir -p ${DOWNLOAD_DIR}/os/epc3
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/fetch.sh
-        http://${NL_SERVER}/os/epc3
-        ${DOWNLOAD_DIR}/os/epc3
-        ${CMAKE_CURRENT_SOURCE_DIR}/packages.txt
+    http://${NL_SERVER}/os/epc3
+    ${DOWNLOAD_DIR}/os/epc3
+    ${CMAKE_CURRENT_SOURCE_DIR}/packages.txt
 )
 
 # TARGETS
@@ -121,4 +122,4 @@ ADD_CUSTOM_TARGET(
     epc3-iso
     DEPENDS epc3-create-base-package-database
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/epc3-base.iso
-    )
+)
