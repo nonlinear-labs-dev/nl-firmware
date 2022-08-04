@@ -32,7 +32,7 @@ void DirectLoadUseCases::toggleDirectLoadFromHWUI(HWUI *pHwui)
   if(vgManager->isInLoadToPart())
   {
     auto vg = vgManager->getCurrentVoiceGroup();
-    auto load = pHwui->getPresetPartSelection(vg);
+    auto load = vgManager->getPresetPartSelection(vg);
 
     m_setting->toggle();
 

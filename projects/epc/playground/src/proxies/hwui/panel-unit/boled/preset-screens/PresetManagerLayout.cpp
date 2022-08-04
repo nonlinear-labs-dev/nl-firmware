@@ -129,6 +129,7 @@ void PresetManagerLayout::setupBankEdit()
 void PresetManagerLayout::setupBankSelect()
 {
   auto hwui = Application::get().getHWUI();
+  auto vgManager = Application::get().getVGManager();
 
   if(getStoreModeData() != nullptr)
   {
@@ -144,10 +145,10 @@ void PresetManagerLayout::setupBankSelect()
 
   auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->isDual();
 
-  if(isDualEB && Application::get().getVGManager()->isInLoadToPart())
+  if(isDualEB && vgManager->isInLoadToPart())
     m_presets
-        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, hwui->getPresetPartSelection(VoiceGroup::I),
-                                              hwui->getPresetPartSelection(VoiceGroup::II)));
+        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, vgManager->getPresetPartSelection(VoiceGroup::I),
+                                              vgManager->getPresetPartSelection(VoiceGroup::II)));
   else
     m_presets = addControl(new PresetList({ 64, 0, 128, 63 }, true));
 
@@ -214,6 +215,7 @@ void PresetManagerLayout::setupPresetEdit()
 void PresetManagerLayout::setupPresetSelect()
 {
   auto hwui = Application::get().getHWUI();
+  auto vgManager = Application::get().getVGManager();
   if(getStoreModeData() != nullptr)
   {
     setStoreModeData(nullptr);
@@ -226,10 +228,10 @@ void PresetManagerLayout::setupPresetSelect()
 
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
-  if(Application::get().getVGManager()->isInLoadToPart() && isDualEditBuffer)
+  if(vgManager->isInLoadToPart() && isDualEditBuffer)
     m_presets
-        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, hwui->getPresetPartSelection(VoiceGroup::I),
-                                              hwui->getPresetPartSelection(VoiceGroup::II)));
+        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, vgManager->getPresetPartSelection(VoiceGroup::I),
+                                              vgManager->getPresetPartSelection(VoiceGroup::II)));
   else
     m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
 

@@ -3,6 +3,7 @@
 #include <nltools/Types.h>
 #include <libundo/undo/Transaction.h>
 #include <tools/Signal.h>
+#include <presets/PresetPartSelection.h>
 
 class Settings;
 class EditBuffer;
@@ -14,11 +15,11 @@ class VoiceGroupAndLoadToPartManager : public sigc::trackable
   void init();
   void toggleLoadToPart();
   void setLoadToPart(bool state);
-  bool isInLoadToPart() const; //MOVE
+  bool isInLoadToPart() const;
   void setCurrentVoiceGroup(VoiceGroup v);
   void setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v);
 
-  VoiceGroup getCurrentVoiceGroup() const; //MOVE
+  VoiceGroup getCurrentVoiceGroup() const;
 
   void toggleCurrentVoiceGroupAndUpdateParameterSelection();
   void toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction);
@@ -26,6 +27,8 @@ class VoiceGroupAndLoadToPartManager : public sigc::trackable
 
   sigc::connection onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb);
   sigc::connection onLoadToPartModeChanged(const sigc::slot<void, bool> &cb);
+
+  PresetPartSelection *getPresetPartSelection(VoiceGroup vg);
  private:
   void onPresetLoaded();
   void onEditBufferSoundTypeChanged(SoundType type);
@@ -39,4 +42,6 @@ class VoiceGroupAndLoadToPartManager : public sigc::trackable
 
   bool m_loadToPartActive = false;
   VoiceGroup m_currentVoiceGroup = VoiceGroup::I;
+  std::array<PresetPartSelection, 2> m_partLoad { PresetPartSelection { VoiceGroup::I },
+                                                  PresetPartSelection { VoiceGroup::II } };
 };

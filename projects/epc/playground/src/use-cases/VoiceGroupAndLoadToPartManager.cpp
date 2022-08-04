@@ -117,3 +117,8 @@ void VoiceGroupAndLoadToPartManager::onPresetLoaded()
 {
   setLoadToPart(false);
 }
+
+PresetPartSelection *VoiceGroupAndLoadToPartManager::getPresetPartSelection(VoiceGroup vg)
+{
+  return &m_partLoad[static_cast<int>(vg)];
+}

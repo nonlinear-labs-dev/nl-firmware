@@ -30,7 +30,6 @@
 #include <serialization/EditBufferSerializer.h>
 #include <iostream>
 #include <giomm.h>
-#include <presets/PresetPartSelection.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include "UsageMode.h"
 #include "use-cases/SettingsUseCases.h"
@@ -490,17 +489,6 @@ bool HWUI::onBlinkTimeout()
   m_blinkTimer.send(++m_blinkCount);
   return true;
 }
-
-
-
-PresetPartSelection *HWUI::getPresetPartSelection(VoiceGroup vg)
-{
-  static std::array<PresetPartSelection, 2> s_partLoad { PresetPartSelection { VoiceGroup::I },
-                                                         PresetPartSelection { VoiceGroup::II } };
-  return &s_partLoad[static_cast<int>(vg)];
-}
-
-
 
 std::string HWUI::exportBoled()
 {

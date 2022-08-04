@@ -313,7 +313,7 @@ void EditBufferUseCases::undoableLoadAccordingToType(Preset* pPreset, HWUI* hwui
 
     if(loadToPartActive)
     {
-      auto load = hwui->getPresetPartSelection(currentVoiceGroup);
+      auto load = vgManager->getPresetPartSelection(currentVoiceGroup);
       loadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
     }
     else

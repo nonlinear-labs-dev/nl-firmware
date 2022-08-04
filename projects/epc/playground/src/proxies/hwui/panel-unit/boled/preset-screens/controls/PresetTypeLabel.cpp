@@ -88,7 +88,7 @@ void PresetTypeLabel::drawBackground(FrameBuffer &fb)
     if(vgManager->isInLoadToPart())
     {
       auto currentVGFocus = vgManager->getCurrentVoiceGroup();
-      if(auto selection = hwui->getPresetPartSelection(currentVGFocus))
+      if(auto selection = vgManager->getPresetPartSelection(currentVGFocus))
       {
         selected = selection->m_preset == selectedPreset;
       }
@@ -242,10 +242,10 @@ void DualPresetTypeLabel::update(const Preset *selected)
   if(selected)
   {
     auto hwui = Application::get().getHWUI();
-    auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+    auto vgManager = Application::get().getVGManager();
+    auto vg = vgManager->getCurrentVoiceGroup();
     const auto origin = Application::get().getPresetManager()->getEditBuffer()->getPartOrigin(vg);
-
-    auto selection = hwui->getPresetPartSelection(vg);
+    auto selection = vgManager->getPresetPartSelection(vg);
 
     const auto &presetUUID = selected->getUuid();
 

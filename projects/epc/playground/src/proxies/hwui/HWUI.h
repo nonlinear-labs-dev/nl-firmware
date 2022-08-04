@@ -53,8 +53,6 @@ class HWUI
   sigc::connection connectToBlinkTimer(const sigc::slot<void, int> &cb);
   void deInit();
 
-  PresetPartSelection *getPresetPartSelection(VoiceGroup vg);
-
   std::string exportSoled();
   std::string exportBoled();
 
