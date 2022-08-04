@@ -5,7 +5,7 @@ template <int tCount, typename tDimension> class LinearCountScaleConverter : pub
 {
  public:
   LinearCountScaleConverter()
-      : LinearScaleConverter(tTcdRange(0, tCount - 1), tDisplayRange(0, tCount - 1), tDimension::get())
+      : LinearScaleConverter(tDisplayRange(0, tCount - 1), tDimension::get())
   {
   }
 };

@@ -18,6 +18,7 @@
 #include "device-settings/DebugLevel.h"
 #include "device-settings/VelocityCurve.h"
 #include "use-cases/ParameterUseCases.h"
+#include "parameters/ValueRange.h"
 #include <device-settings/ParameterEditModeRibbonBehaviour.h>
 #include <memory.h>
 #include <nltools/messaging/Message.h>
@@ -440,4 +441,36 @@ void PlaycontrollerProxy::setUHID(uint64_t uhid)
     m_uhid = uhid;
     m_signalUHIDChanged.send(m_uhid);
   }
+}
+
+template <typename tRet, typename tInValue>
+tRet scaleValueToRange(const ValueRange<tTcdValue> &tcdRange, const tInValue &in, const ValueRange<tInValue> &inRange,
+                       bool clip)
+{
+  tInValue inRangeWidth = inRange.getRangeWidth();
+  tRet outRangeWidth = tcdRange.getRangeWidth();
+  tInValue clippedIn = clip ? inRange.clip(in) : in;
+  auto res = (clippedIn - inRange.getMin()) * outRangeWidth / inRangeWidth + tcdRange.getMin();
+
+  if(std::numeric_limits<tRet>::is_integer)
+    return lround(res);
+
+  return res;
+}
+
+int16_t PlaycontrollerProxy::ribbonRelativeFactorToTCDValue(tControlPositionValue d)
+{
+  static ValueRange<tTcdValue> m_ribbonRelativeFactorTcdRange { 256, 2560 };
+  return scaleValueToRange<int16_t>(m_ribbonRelativeFactorTcdRange, d, ValueRange<tControlPositionValue>(0, 1), false);
+}
+
+int16_t PlaycontrollerProxy::ribbonCPValueToTCDValue(tControlPositionValue d, bool bipolar)
+{
+  static ValueRange<tTcdValue> m_ribbonValueTcdRangeBipolar { -8000, 8000 };
+  static ValueRange<tTcdValue> m_ribbonValueTcdRangeUnipolar { 0, 16000 };
+
+  if(bipolar)
+    return scaleValueToRange<int16_t>(m_ribbonValueTcdRangeBipolar, d, ValueRange<tControlPositionValue>(-1, 1), false);
+  else
+    return scaleValueToRange<int16_t>(m_ribbonValueTcdRangeUnipolar, d, ValueRange<tControlPositionValue>(0, 1), false);
 }

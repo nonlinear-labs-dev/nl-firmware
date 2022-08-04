@@ -20,21 +20,6 @@ tDisplayValue EnvelopeReleaseTimeMSScaleConverter::controlPositionToDisplay(cons
   return 0.1 * exp((log(16000) - log(0.1)) * cpValue * 1.01);
 }
 
-tTcdValue EnvelopeReleaseTimeMSScaleConverter::controlPositionToTcd(const tControlPositionValue &cpValue) const
-{
-  tTcdRange tcdRange(0, 16160);
-  tControlPositionRange cpRange(0.0, 1.01);
-  return tcdRange.scaleValueToRange(cpValue * 1.01, cpRange, true);
-}
-
-tControlPositionValue EnvelopeReleaseTimeMSScaleConverter::tcdToControlPosition(tTcdValue v) const
-{
-  tTcdRange tcdRange(0, 16160);
-  tControlPositionRange cpRange(0.0, 1.01);
-  auto r = cpRange.scaleValueToRange(v, tcdRange, true);
-  return r / 1.01;
-}
-
 Glib::ustring EnvelopeReleaseTimeMSScaleConverter::controlPositionToDisplayJS() const
 {
   std::stringstream s;

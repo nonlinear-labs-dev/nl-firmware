@@ -2,7 +2,7 @@
 #include "dimension/PitchDimensionCoarse.h"
 
 Linear96StScaleConverter::Linear96StScaleConverter()
-    : LinearScaleConverter(tTcdRange(0, 9600), tDisplayRange(0, 96), PitchDimensionCoarse::get())
+    : LinearScaleConverter(tDisplayRange(0, 96), PitchDimensionCoarse::get())
 {
 }
 

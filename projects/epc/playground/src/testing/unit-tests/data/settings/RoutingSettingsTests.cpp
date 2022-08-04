@@ -14,9 +14,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"setAllValues will not notify if
 
   WHEN("All Values are initialy true")
   {
-    auto allValuesAreTrue = std::all_of(data.begin(), data.end(), [](const auto& row) {
-      return std::all_of(row.begin(), row.end(), [](auto b) { return b == true; });
-    });
+    auto allValuesAreTrue = std::all_of(
+        data.begin(), data.end(),
+        [](const auto& row) { return std::all_of(row.begin(), row.end(), [](auto b) { return b == true; }); });
 
     CHECK(allValuesAreTrue);
 

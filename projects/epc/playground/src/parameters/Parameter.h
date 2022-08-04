@@ -92,7 +92,6 @@ class Parameter : public UpdateDocumentContributor,
 
   virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount);
 
-  void undoableLoadValue(UNDO::Transaction *transaction, const Glib::ustring &value);
   virtual void loadDefault(UNDO::Transaction *transaction, Defaults mode);
   void undoableSetDefaultValue(UNDO::Transaction *transaction, const PresetParameter *values);
 
@@ -100,9 +99,6 @@ class Parameter : public UpdateDocumentContributor,
   void undoableUnlock(UNDO::Transaction *transaction);
   virtual bool isLocked() const;
 
-  virtual void exportReaktorParameter(std::stringstream &target) const;
-
-  tTcdValue getTcdValue() const;
   tDisplayValue getDisplayValue() const;
   virtual tControlPositionValue getControlPositionValue() const;
   virtual Glib::ustring getDisplayString() const;
@@ -115,7 +111,6 @@ class Parameter : public UpdateDocumentContributor,
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
   virtual void writeDiff(Writer &writer, Parameter *other) const;
   virtual void writeDifferences(Writer &writer, Parameter *other) const;
-  virtual void writeToPlaycontroller(MessageComposer &cmp) const;
   void invalidate();
 
   virtual Glib::ustring getLongName() const;

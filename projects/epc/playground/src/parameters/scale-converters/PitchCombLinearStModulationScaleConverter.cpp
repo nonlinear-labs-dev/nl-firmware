@@ -2,7 +2,7 @@
 #include "dimension/PitchDimension.h"
 
 PitchCombLinearStModulationScaleConverter::PitchCombLinearStModulationScaleConverter()
-    : LinearScaleConverter(tTcdRange(0, 12000), tDisplayRange(-120, 120), PitchDimension::get())
+    : LinearScaleConverter(tDisplayRange(-120, 120), PitchDimension::get())
 {
 }
 

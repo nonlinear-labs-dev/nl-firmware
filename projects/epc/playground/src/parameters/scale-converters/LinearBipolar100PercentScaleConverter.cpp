@@ -2,7 +2,7 @@
 #include "dimension/PercentageDimension.h"
 
 LinearBipolar100PercentScaleConverter::LinearBipolar100PercentScaleConverter()
-    : LinearScaleConverter(tTcdRange(-8000, 8000), tDisplayRange(-100, 100), PercentageDimension::get())
+    : LinearScaleConverter(tDisplayRange(-100, 100), PercentageDimension::get())
 {
 }
 
