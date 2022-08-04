@@ -28,8 +28,8 @@
 
 PlaycontrollerProxy::PlaycontrollerProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
-    , m_throttledRelativeParameterChange(std::chrono::milliseconds(1))
-    , m_throttledAbsoluteParameterChange(std::chrono::milliseconds(1))
+    , m_throttledRelativeParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
+    , m_throttledAbsoluteParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
 {
   m_msgParser.reset(new MessageParser());
 
@@ -191,8 +191,7 @@ void PlaycontrollerProxy::sendCalibrationData()
 
 Parameter *PlaycontrollerProxy::findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const
 {
-  auto paramId = [](uint16_t id)
-  {
+  auto paramId = [](uint16_t id) {
     switch(id)
     {
       case HW_SOURCE_ID_PEDAL_1:
@@ -258,37 +257,33 @@ void PlaycontrollerProxy::onRelativeEditControlMessageReceived(Parameter *p, gin
 {
   m_throttledRelativeParameterAccumulator += value;
 
-  m_throttledRelativeParameterChange.doTask(
-      [this, p]()
-      {
-        if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
-          m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
+  m_throttledRelativeParameterChange.doTask([this, p]() {
+    if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
+      m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
 
-        auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
-        IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
-        useCase.changeBy(amount, false);
-        m_throttledRelativeParameterAccumulator = 0;
-      });
+    auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
+    IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
+    useCase.changeBy(amount, false);
+    m_throttledRelativeParameterAccumulator = 0;
+  });
 }
 
 void PlaycontrollerProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gint16 value)
 {
   m_throttledAbsoluteParameterValue = value;
 
-  m_throttledAbsoluteParameterChange.doTask(
-      [this, p]()
-      {
-        ParameterUseCases useCase(p);
+  m_throttledAbsoluteParameterChange.doTask([this, p]() {
+    ParameterUseCases useCase(p);
 
-        if(p->isBiPolar())
-        {
-          useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
-        }
-        else
-        {
-          useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
-        }
-      });
+    if(p->isBiPolar())
+    {
+      useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
+    }
+    else
+    {
+      useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
+    }
+  });
 }
 
 void PlaycontrollerProxy::notifyRibbonTouch(int ribbonsParameterID)

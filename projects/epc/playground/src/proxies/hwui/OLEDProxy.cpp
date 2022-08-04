@@ -6,11 +6,19 @@
 #include <proxies/hwui/Oleds.h>
 
 #include <utility>
+#include <Application.h>
+#include <proxies/hwui/HWUI.h>
 
-OLEDProxy::OLEDProxy(const Rect &posInFrameBuffer)
-    : m_posInFrameBuffer(posInFrameBuffer)
+OLEDProxy::OLEDProxy(const Rect &posInFrameBuffer, Oleds &oleds)
+    : m_fb(oleds.getFrameBuffer())
+    , m_posInFrameBuffer(posInFrameBuffer)
 {
-  Oleds::get().registerProxy(this);
+  oleds.registerProxy(this);
+}
+
+FrameBuffer &OLEDProxy::getFrameBuffer()
+{
+  return m_fb;
 }
 
 OLEDProxy::~OLEDProxy() = default;
@@ -105,9 +113,8 @@ bool OLEDProxy::redraw()
 
   if(auto l = getLayout())
   {
-    auto &fb = FrameBuffer::get();
-    auto clip = fb.clip(m_posInFrameBuffer);
-    auto offset = fb.offset(m_posInFrameBuffer.getPosition());
+    auto clip = m_fb.clip(m_posInFrameBuffer);
+    auto offset = m_fb.offset(m_posInFrameBuffer.getPosition());
     ret = l->redrawLayout();
   }
 
@@ -116,9 +123,8 @@ bool OLEDProxy::redraw()
 
 void OLEDProxy::clear()
 {
-  auto &fb = FrameBuffer::get();
-  fb.setColor(FrameBufferColors::C43);
-  fb.fillRect(Rect(0, 0, m_posInFrameBuffer.getWidth(), m_posInFrameBuffer.getHeight()));
+  m_fb.setColor(FrameBufferColors::C43);
+  m_fb.fillRect(Rect(0, 0, m_posInFrameBuffer.getWidth(), m_posInFrameBuffer.getHeight()));
 }
 
 sigc::connection OLEDProxy::onLayoutInstalled(const sigc::slot<void, Layout *> &slot)

@@ -14,4 +14,5 @@ class FreeDiscSpaceInformation : public DeviceInformationItem
   bool refresh();
 
   Glib::ustring m_value;
+  sigc::connection m_signalRefresh;
 };

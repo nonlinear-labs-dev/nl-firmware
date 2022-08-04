@@ -12,7 +12,7 @@
 
 using EBL = EditBufferLogicalParts;
 
-TEST_CASE("Load Part I of Split into Split Part I")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Split Part I")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;
@@ -175,7 +175,7 @@ TEST_CASE("Load Part I of Split into Split Part I")
   }
 }
 
-TEST_CASE("Load Part I of Split into Split Part II")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Split Part II")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;
@@ -340,7 +340,7 @@ TEST_CASE("Load Part I of Split into Split Part II")
   }
 }
 
-TEST_CASE("Load Part I of Layer into Split Part I")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Layer into Split Part I")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;
@@ -485,7 +485,7 @@ TEST_CASE("Load Part I of Layer into Split Part I")
   }
 }
 
-TEST_CASE("Load Part II of Layer into Split Part II")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part II of Layer into Split Part II")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;
@@ -632,7 +632,7 @@ TEST_CASE("Load Part II of Layer into Split Part II")
   }
 }
 
-TEST_CASE("Split EditBuffer With Split Modulation Load into Part of already Modulated Split")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split EditBuffer With Split Modulation Load into Part of already Modulated Split")
 {
   MockPresetStorage presets;
 
@@ -702,7 +702,7 @@ TEST_CASE("Split EditBuffer With Split Modulation Load into Part of already Modu
   }
 }
 
-TEST_CASE("Single EditBuffer Load into Part of already Modulated Split")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Single EditBuffer Load into Part of already Modulated Split")
 {
   MockPresetStorage presets;
 
@@ -773,7 +773,7 @@ TEST_CASE("Single EditBuffer Load into Part of already Modulated Split")
   }
 }
 
-TEST_CASE("Load To Part of Split could lead to missing assignements")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load To Part of Split could lead to missing assignements")
 {
   MockPresetStorage presets;
   TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);

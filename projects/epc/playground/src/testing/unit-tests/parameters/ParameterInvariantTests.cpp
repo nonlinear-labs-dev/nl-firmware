@@ -20,7 +20,7 @@ namespace GroupAffiliation
   }
 }
 
-TEST_CASE("Parameter Dual/Global affiliation - Single-Sound")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Parameter Dual/Global affiliation - Single-Sound")
 {
   TestHelper::forEachParameter(
       [](const Parameter* parameter) {
@@ -29,7 +29,7 @@ TEST_CASE("Parameter Dual/Global affiliation - Single-Sound")
       TestHelper::getEditBuffer());
 }
 
-TEST_CASE("Parameter Dual/Global affiliation - Split Sound")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Parameter Dual/Global affiliation - Split Sound")
 {
   TestHelper::forEachParameter(
       [](const Parameter* parameter) {
@@ -43,7 +43,7 @@ TEST_CASE("Parameter Dual/Global affiliation - Split Sound")
       TestHelper::getEditBuffer());
 }
 
-TEST_CASE("Parameter Dual/Global affiliation - Layer Sound")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Parameter Dual/Global affiliation - Layer Sound")
 {
   TestHelper::forEachParameter(
       [](const Parameter* parameter) {

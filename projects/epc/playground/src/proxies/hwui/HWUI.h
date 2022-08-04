@@ -14,10 +14,12 @@
 #include <glibmm/refptr.h>
 #include <png++/image.hpp>
 #include <tools/ScopedGuard.h>
+#include "Oleds.h"
 
 class Application;
 class UsageMode;
 class Settings;
+class LayoutFolderMonitor;
 
 namespace UNDO
 {
@@ -30,6 +32,7 @@ namespace nltools::msg
 }
 
 class PresetPartSelection;
+class SplashLayout;
 
 class HWUI
 {
@@ -56,8 +59,23 @@ class HWUI
   std::string exportSoled();
   std::string exportBoled();
 
+  Oleds &getOleds();
+
+  //SplashScreen
+  void startSplash();
+  void finishSplash();
+  void setSplashStatus(const std::string &msg);
+  void addSplashStatus(const std::string &msg);
+  void registerSplash(SplashLayout *l);
+  void unregisterSplash(SplashLayout *l);
+
  private:
   void exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std::string &fileName) const;
+
+  void onFocusAndModeChanged(const Setting *s);
+  void onPresetLoaded();
+  void onEditBufferSoundTypeChanged(SoundType type);
+  void undoableUpdateParameterSelection(UNDO::Transaction *transaction);
   void onButtonMessage(const nltools::msg::ButtonChangedMessage &msg);
   void onButtonPressed(Buttons buttonID, bool state);
 
@@ -76,6 +94,11 @@ class HWUI
   void onParameterReselection(Parameter *parameter);
   void onParameterSelection(Parameter *oldParameter, Parameter *newParameter);
 
+
+  Oleds m_oleds;
+
+  sigc::connection m_editBufferSoundTypeConnection;
+  sigc::connection m_editBufferPresetLoadedConnection;
   sigc::connection m_rotaryChangedConnection;
   sigc::connection m_focusAndModeConnection;
   sigc::connection m_blinkTimerConnection;
@@ -85,6 +108,7 @@ class HWUI
   void onRotaryChanged();
   Signal<void> m_inputSignal;
 
+  std::unique_ptr<LayoutFolderMonitor> m_layoutFolderMonitor;
   PanelUnit m_panelUnit;
   BaseUnit m_baseUnit;
 
@@ -103,8 +127,9 @@ class HWUI
   int m_blinkCount;
   Expiration m_switchOffBlockingMainThreadIndicator;
   ScopedGuard m_parameterFocusLock;
-  Settings& m_settings;
-  FocusAndModeSetting & m_famSetting;
+  Settings &m_settings;
+  FocusAndModeSetting &m_famSetting;
+  SplashLayout *m_splashLayout = nullptr;
 
   bool m_currentParameterIsFineAllowed = false;
 };

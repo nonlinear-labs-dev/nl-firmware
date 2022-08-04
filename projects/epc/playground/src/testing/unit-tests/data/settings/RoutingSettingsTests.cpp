@@ -4,7 +4,7 @@
 #include <testing/unit-tests/mock/MockSettingsObject.h>
 #include <sync/SyncMasterMockRoot.h>
 
-TEST_CASE("setAllValues will not notify if no values Changed")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"setAllValues will not notify if no values Changed")
 {
   MockSettingsObject settings("", &SyncMasterMockRoot::get());
 
@@ -22,6 +22,7 @@ TEST_CASE("setAllValues will not notify if no values Changed")
 
     WHEN("All elements are set to current Value again")
     {
+      setting->setAllValues(true);
       bool didNotifyArrive = false;
       auto connection = setting->onChange([&](auto) { didNotifyArrive = true; });
 
@@ -61,6 +62,7 @@ TEST_CASE("setAllValues will not notify if no values Changed")
 
     WHEN("on elements is set to current value again")
     {
+      setting->setAllValues(true);
       bool didNotifyArrive = false;
       auto connection = setting->onChange([&](auto) { didNotifyArrive = true; });
 

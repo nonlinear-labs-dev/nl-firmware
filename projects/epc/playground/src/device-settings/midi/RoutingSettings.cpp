@@ -109,19 +109,14 @@ const RoutingSettings::tData& RoutingSettings::getRaw() const
 
 void RoutingSettings::setAllValues(bool value)
 {
-  bool anyChanged = false;
+  auto oldData = m_data;
   for(auto& entry : m_data)
-  {
     for(auto& aspect : entry)
-    {
-      anyChanged |= (aspect != value);
       aspect = value;
-    }
-  }
 
-  auto wasSanitized = sanitizeReceiveHWSourcesAndPC();
+  sanitizeReceiveHWSourcesAndPC();
 
-  if(anyChanged || wasSanitized)
+  if(m_data != oldData)
     notify();
 }
 

@@ -34,17 +34,22 @@
 #include "UsageMode.h"
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
+#include "device-settings/ScreenSaverTimeoutSetting.h"
+#include <Options.h>
+#include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 
 HWUI::HWUI(Settings &settings)
-    : m_panelUnit { settings }
-    , m_baseUnit { settings }
+    : m_layoutFolderMonitor(std::make_unique<LayoutFolderMonitor>())
+    , m_panelUnit { settings, m_oleds, m_layoutFolderMonitor.get() }
+    , m_baseUnit { settings, m_oleds }
     , m_readersCancel(Gio::Cancellable::create())
     , m_buttonStates { false }
     , m_blinkCount(0)
+    , m_switchOffBlockingMainThreadIndicator(Application::get().getMainContext())
     , m_settings { settings }
     , m_famSetting(*settings.getSetting<FocusAndModeSetting>())
 {
-  if(isatty(fileno(stdin)))
+  if(isatty(fileno(stdin)) && Options::s_acceptanceTests == false)
   {
     m_keyboardInput = Gio::DataInputStream::create(Gio::UnixInputStream::create(0, true));
     m_keyboardInput->read_line_async(mem_fun(this, &HWUI::onKeyboardLineRead), m_readersCancel);
@@ -56,13 +61,15 @@ HWUI::HWUI(Settings &settings)
 
 HWUI::~HWUI()
 {
+  deInit();
+  m_blinkTimerConnection.disconnect();
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   m_readersCancel->cancel();
 }
 
 void HWUI::deInit()
 {
-  Oleds::get().deInit();
+  m_oleds.deInit();
 }
 
 void HWUI::onButtonMessage(const nltools::msg::ButtonChangedMessage &msg)
@@ -72,6 +79,7 @@ void HWUI::onButtonMessage(const nltools::msg::ButtonChangedMessage &msg)
 
 void HWUI::init()
 {
+  m_layoutFolderMonitor->start();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
   m_panelUnit.init();
@@ -85,7 +93,7 @@ void HWUI::init()
 
   m_rotaryChangedConnection = getPanelUnit().getEditPanel().getKnob().onRotaryChanged(
       sigc::hide(sigc::mem_fun(this, &HWUI::onRotaryChanged)));
-  Oleds::get().syncRedraw();
+  m_oleds.syncRedraw();
 }
 
 void HWUI::onRotaryChanged()
@@ -111,7 +119,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
     {
       if(line == "r")
       {
-        LayoutFolderMonitor::get().bruteForce();
+        m_layoutFolderMonitor->bruteForce();
       }
       if(line == "t")
       {
@@ -517,7 +525,7 @@ void HWUI::exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std:
   constexpr auto frameBufferDimX = 256;
   constexpr auto frameBufferDimY = 96;
 
-  auto &fb = FrameBuffer::get();
+  auto &fb = m_oleds.getFrameBuffer();
   auto &buffer = fb.getBackBuffer();
   png::image<png::rgb_pixel> boledFile(w, h);
 
@@ -576,4 +584,60 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
       useCases.setFocusAndMode(FocusAndMode { UIFocus::Parameters });
     }
   }
+}
+
+Oleds &HWUI::getOleds()
+{
+  return m_oleds;
+}
+
+void HWUI::startSplash()
+{
+  auto screensaver = m_settings.getSetting<ScreenSaverTimeoutSetting>();
+  auto &boled = getPanelUnit().getEditPanel().getBoled();
+  screensaver->endAndReschedule();
+  boled.setOverlay(new SplashLayout(this));
+}
+
+void HWUI::finishSplash()
+{
+  auto &boled = getPanelUnit().getEditPanel().getBoled();
+  if(boled.getOverlay().get() == m_splashLayout)
+    boled.resetOverlay();
+}
+
+void HWUI::addSplashStatus(const std::string &msg)
+{
+  auto screensaver = m_settings.getSetting<ScreenSaverTimeoutSetting>();
+  screensaver->endAndReschedule();
+  if(m_splashLayout)
+  {
+    m_splashLayout->addMessage(msg);
+  }
+}
+
+void HWUI::setSplashStatus(const std::string &msg)
+{
+  auto screensaver = m_settings.getSetting<ScreenSaverTimeoutSetting>();
+  screensaver->endAndReschedule();
+  if(m_splashLayout)
+  {
+    m_splashLayout->setMessage(msg);
+  }
+}
+
+void HWUI::registerSplash(SplashLayout *l)
+{
+  if(m_splashLayout != nullptr)
+  {
+    nltools::Log::error("overwriting m_splashLayout");
+  }
+  m_splashLayout = l;
+}
+
+void HWUI::unregisterSplash(SplashLayout *l)
+{
+  nltools_detailedAssertAlways(l == m_splashLayout,
+                               "unregisterSplash called with different Splashscreen pointer than installed");
+  m_splashLayout = nullptr;
 }

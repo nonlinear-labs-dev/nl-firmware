@@ -17,7 +17,7 @@
 #include <parameter-db/generated/parameter_list.h>
 
 PanelUnitPresetMode::PanelUnitPresetMode()
-    : m_bruteForceLedThrottler(std::chrono::milliseconds(40))
+    : m_bruteForceLedThrottler(Application::get().getMainContext(), std::chrono::milliseconds(40))
 {
   DebugLevel::gassy(__PRETTY_FUNCTION__);
 
@@ -208,7 +208,6 @@ void PanelUnitSoundMode::setup()
                         {
                           if(state)
                           {
-                            auto hwui = Application::get().getHWUI();
                             auto& settings = *Application::get().getSettings();
                             SettingsUseCases useCases(settings);
                             auto& famSetting = *settings.getSetting<FocusAndModeSetting>();

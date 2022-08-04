@@ -4,7 +4,7 @@
 #include <testing/unit-tests/mock/MockSettingsObject.h>
 #include <sync/SyncMasterMockRoot.h>
 
-TEST_CASE("MockSettingsObject onChange is called when Setting calls notify")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MockSettingsObject onChange is called when Setting calls notify")
 {
   MockSettingsObject settings("", &SyncMasterMockRoot::get());
   auto setting = settings.getSetting<RoutingSettings>();

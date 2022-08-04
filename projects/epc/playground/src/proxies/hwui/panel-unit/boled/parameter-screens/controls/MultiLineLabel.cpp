@@ -5,25 +5,27 @@
 #include <proxies/hwui/controls/LeftAlignedLabel.h>
 #include <proxies/hwui/FrameBuffer.h>
 
+#include <utility>
+
 namespace DETAIL
 {
   class ChildLabel : public LeftAlignedLabel
   {
    public:
-    ChildLabel(const Glib::ustring &line, FrameBufferColors color, Oleds::tFont font, const Rect &pos)
+    ChildLabel(const Glib::ustring &line, FrameBufferColors color, Fonts::tFont font, const Rect &pos)
         : LeftAlignedLabel(line, pos)
-        , m_font(font)
+        , m_font(std::move(font))
     {
       setFontColor(color);
     }
 
-    virtual std::shared_ptr<Font> getFont() const override
+    std::shared_ptr<Font> getFont() const override
     {
       return m_font;
     }
 
    private:
-    Oleds::tFont m_font;
+    Fonts::tFont m_font;
   };
 }
 
@@ -71,7 +73,7 @@ void MultiLineLabel::setPosition(const Rect &rect)
 
 std::shared_ptr<Font> MultiLineLabel::getFont()
 {
-  return Oleds::get().getFont("Emphase-8-Regular", 8);
+  return Fonts::get().getFont("Emphase-8-Regular", 8);
 }
 
 void MultiLineLabel::updateLines()
