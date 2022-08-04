@@ -6,7 +6,7 @@ string(STRIP ${USER_ID} USER_ID)
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_SOURCE_DIR}/projects/epc/*)
 
 SET(ARCH_VERSION 20220424.0.54084)
-SET(C15_PACKAGES_VERSION "2022-08-03")
+SET(C15_PACKAGES_VERSION "2022-08-04")
 SET(BUILD_SETUP_VERSION "arch-${ARCH_VERSION}-packages-${C15_PACKAGES_VERSION}")
 SET(DOCKERNAME pacman-c15-fetch-${BUILD_SETUP_VERSION}-docker)
 SET(NL_DOWNLOAD_PATH /build-tools/pacman/c15) # used with http
@@ -16,7 +16,7 @@ SET(DOCKER_TAR c15-build-docker-${BUILD_SETUP_VERSION}.tar)
 SET(HOST_REQUIREMENTS binutils ccache cmake fakeroot gcc git linux make nano ninja pacman pacman-contrib pkgconfig sudo squashfs-tools xz)
 STRING(REPLACE ";" " " HOST_REQUIREMENTS "${HOST_REQUIREMENTS}")
 
-SET(C15_REQUIREMENTS alsa alsa-tools alsa-utils arch-install-scripts base boost cpupower flac freetype2 glibmm linux-firmware libpng libsoup mc nano networkmanager png++ shared-mime-info sudo sshfs lsof systemd-sysvcompat vi)
+SET(C15_REQUIREMENTS alsa alsa-tools alsa-utils arch-install-scripts base boost cpupower dnsmasq flac freetype2 glibmm linux-firmware libpng libsoup lm_sensors mc nano networkmanager png++ shared-mime-info sudo sshfs lsof systemd-sysvcompat vi)
 STRING(REPLACE ";" " " C15_REQUIREMENTS "${C15_REQUIREMENTS}")
 
 configure_file(dockerized-create-c15-package.sh dockerized-create-c15-package.sh @ONLY)
