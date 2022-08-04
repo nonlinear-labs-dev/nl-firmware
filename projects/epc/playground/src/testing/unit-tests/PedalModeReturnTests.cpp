@@ -12,7 +12,7 @@
 #include <parameters/RibbonParameter.h>
 #include <parameters/ModulationRoutingParameter.h>
 
-SCENARIO("Ribbon Return Mode")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Ribbon Return Mode")
 {
   auto eb = TestHelper::getEditBuffer();
   auto ribbon
@@ -56,7 +56,7 @@ SCENARIO("Ribbon Return Mode")
   }
 }
 
-SCENARIO("Local Enable - Disable BiDi Modulation")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Local Enable - Disable BiDi Modulation")
 {
   auto eb = TestHelper::getEditBuffer();
 

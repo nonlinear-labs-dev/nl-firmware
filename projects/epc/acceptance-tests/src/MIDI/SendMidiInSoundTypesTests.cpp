@@ -6,7 +6,7 @@
 #include <AudioEngineOptions.h>
 #include <mock/DspHostDualTester.h>
 
-TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send HW-Change only in Split Sound on Split Channel")
 {
   constexpr static uint8_t BASE_TCD = 0b11100000;
   constexpr static uint8_t Aftertouch = 0b00000101;
@@ -119,7 +119,7 @@ TEST_CASE("Send HW-Change only in Split Sound on Split Channel")
   }
 }
 
-TEST_CASE("Send Note Off with real Synth when local is off")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send Note Off with real Synth when local is off")
 {
   using namespace std::chrono_literals;
 
@@ -207,7 +207,7 @@ TEST_CASE("Send Note Off with real Synth when local is off")
   }
 }
 
-TEST_CASE("Send Note Off when local is off Split")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send Note Off when local is off Split")
 {
   auto config = nltools::msg::getConfig();
   config.useEndpoints
@@ -292,7 +292,7 @@ TEST_CASE("Send Note Off when local is off Split")
   }
 }
 
-TEST_CASE("Send Note Off when local is off Layer")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send Note Off when local is off Layer")
 {
   auto config = nltools::msg::getConfig();
   config.useEndpoints
@@ -360,7 +360,7 @@ TEST_CASE("Send Note Off when local is off Layer")
 }
 
 
-TEST_CASE("Send Note Off when local is off Single")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send Note Off when local is off Single")
 {
   auto config = nltools::msg::getConfig();
   config.useEndpoints

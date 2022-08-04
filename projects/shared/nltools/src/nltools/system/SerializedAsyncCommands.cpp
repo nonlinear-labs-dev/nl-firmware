@@ -1,7 +1,11 @@
 #include "nltools/system/SerializedAsyncCommands.h"
 #include "nltools/system/AsyncCommandLine.h"
 
-SerializedAsyncCommands::SerializedAsyncCommands() = default;
+SerializedAsyncCommands::SerializedAsyncCommands(Glib::RefPtr<Glib::MainContext> ctx)
+    : m_ctx(ctx)
+{
+}
+
 SerializedAsyncCommands::~SerializedAsyncCommands() = default;
 
 void SerializedAsyncCommands::schedule(const Command &command, const SuccessCB &onSuccess, const ErrorCB &onError)
@@ -21,14 +25,15 @@ void SerializedAsyncCommands::doCommand()
     auto cmd = std::move(m_records.front());
     m_records.pop_front();
 
-    m_currentCommand = std::make_unique<AsyncCommandLine>(cmd.cmd,
-                                                          [this, success = std::move(cmd.success)](const std::string& a) {
-                                                            success(a);
-                                                            doCommand();
-                                                          },
-                                                          [this, error = std::move(cmd.error)](const std::string& a) {
-                                                            error(a);
-                                                            doCommand();
-                                                          });
+    m_currentCommand = std::make_unique<AsyncCommandLine>(
+        m_ctx, cmd.cmd,
+        [this, success = std::move(cmd.success)](const std::string &a) {
+          success(a);
+          doCommand();
+        },
+        [this, error = std::move(cmd.error)](const std::string &a) {
+          error(a);
+          doCommand();
+        });
   }
 }

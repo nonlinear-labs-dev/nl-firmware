@@ -20,6 +20,7 @@ namespace nltools
         Mock
       };
 
+      virtual ~API() = default;
       virtual void send(ClientConnection *c, const nlohmann::json &msg) = 0;
       virtual void sendAll(const nlohmann::json &msg) = 0;
       virtual void sendAllUpdating(const nlohmann::json &msg) = 0;

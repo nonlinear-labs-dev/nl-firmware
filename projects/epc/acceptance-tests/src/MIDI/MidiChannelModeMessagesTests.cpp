@@ -4,7 +4,7 @@
 #include <synth/input/MidiChannelModeMessages.h>
 #include <mock/MockDSPHosts.h>
 
-TEST_CASE("Special Midi functions are recognises as such when received via midi")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Special Midi functions are recognises as such when received via midi")
 {
   auto createCCMidiMessage = [](uint8_t channel, uint8_t cc, uint8_t value) {
       return MidiEvent{ {static_cast<uint8_t>(0xB0 | channel), cc, value} };

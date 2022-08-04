@@ -7,7 +7,7 @@
 #include "parameters/MacroControlParameter.h"
 #include "parameters/ModulateableParameter.h"
 
-TEST_CASE("Load Single Preset Without MacroControl E and F defaults MC E and F")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single Preset Without MacroControl E and F defaults MC E and F")
 {
   auto mockPreset = PreDualModePresetBank::createMockPreset();
 

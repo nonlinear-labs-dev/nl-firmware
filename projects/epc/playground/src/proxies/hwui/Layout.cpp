@@ -40,12 +40,7 @@ bool Layout::redrawLayout()
     m_oled.clear();
   }
 
-  return redraw(getFrameBuffer());
-}
-
-FrameBuffer &Layout::getFrameBuffer()
-{
-  return FrameBuffer::get();
+  return redraw(getOLEDProxy().getFrameBuffer());
 }
 
 bool Layout::onButton(Buttons i, bool down, ::ButtonModifiers modifiers)
@@ -78,7 +73,7 @@ bool Layout::onRotary(int inc, ButtonModifiers modifiers)
 void Layout::setDirty()
 {
   m_clear = true;
-  Oleds::get().setDirty();
+  Application::get().getHWUI()->getOleds().setDirty();
 }
 
 void Layout::installButtonRepeat(std::function<void()> cb)

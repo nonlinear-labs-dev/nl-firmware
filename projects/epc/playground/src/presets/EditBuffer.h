@@ -82,6 +82,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   std::vector<double> setHWSourcesToDefaultValues(UNDO::Transaction *transaction);
   void setHWSourcesToOldPositions(UNDO::Transaction *transaction, const std::vector<double>& oldPositions);
 
+  bool hasLocks() const;
   bool hasLocks(VoiceGroup vg) const;
   bool findAnyParameterChanged() const;
   void resetOriginIf(const Preset *p);

@@ -8,7 +8,7 @@ class DebugOLED : public OLEDProxy
   typedef OLEDProxy super;
 
  public:
-  DebugOLED();
+  DebugOLED(Oleds& oleds);
   ~DebugOLED() override;
   DebugOLED(const DebugOLED& other) = delete;
   DebugOLED& operator=(const DebugOLED&) = delete;

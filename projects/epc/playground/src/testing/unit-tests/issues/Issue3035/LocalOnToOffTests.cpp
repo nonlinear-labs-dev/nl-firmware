@@ -11,7 +11,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-TEST_CASE("Issue 3035, Pedal [Stay] Local On to Local Off", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Stay] Local On to Local Off", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -53,7 +53,7 @@ TEST_CASE("Issue 3035, Pedal [Stay] Local On to Local Off", "[3035]")
   }
 }
 
-TEST_CASE("Issue 3035, Pedal [Returning Zero] Local On to Local Off", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Zero] Local On to Local Off", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -94,7 +94,7 @@ TEST_CASE("Issue 3035, Pedal [Returning Zero] Local On to Local Off", "[3035]")
   }
 }
 
-TEST_CASE("Issue 3035, Pedal [Returning Center] Local On to Local Off", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Center] Local On to Local Off", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -137,7 +137,7 @@ TEST_CASE("Issue 3035, Pedal [Returning Center] Local On to Local Off", "[3035]"
   }
 }
 
-TEST_CASE("Issue 3035, Ribbon [Returning] Local On to Local Off", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Ribbon [Returning] Local On to Local Off", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -178,7 +178,7 @@ TEST_CASE("Issue 3035, Ribbon [Returning] Local On to Local Off", "[3035]")
   }
 }
 
-TEST_CASE("Issue 3035, Ribbon [Stay] Local On to Local Off", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Ribbon [Stay] Local On to Local Off", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -220,7 +220,7 @@ TEST_CASE("Issue 3035, Ribbon [Stay] Local On to Local Off", "[3035]")
 }
 
 //Bender
-TEST_CASE("Issue 3035, Bender Local On to Local Off", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Bender Local On to Local Off", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();

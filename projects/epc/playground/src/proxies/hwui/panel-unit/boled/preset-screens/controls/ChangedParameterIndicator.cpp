@@ -6,7 +6,7 @@
 
 ChangedParameterIndicator::ChangedParameterIndicator(const Rect& pos)
     : Label(StringAndSuffix { "" }, pos)
-    , m_worker(std::chrono::milliseconds { 50 })
+    , m_worker(Glib::MainContext::get_default(), std::chrono::milliseconds { 50 })
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   eb->onChange(sigc::mem_fun(this, &ChangedParameterIndicator::update));

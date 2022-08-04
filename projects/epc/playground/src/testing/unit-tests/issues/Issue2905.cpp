@@ -1,9 +1,12 @@
 #include <testing/TestHelper.h>
 #include <presets/Bank.h>
 #include "CompileTimeOptions.h"
+#include <iostream>
 
-TEST_CASE("Sort Bank Numbers deletes Banks!")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Sort Bank Numbers deletes Banks!", "[2905]")
 {
+  Application::get().stopWatchDog();
+
   auto pm = TestHelper::getPresetManager();
   {
     auto trash = UNDO::Scope::startTrashTransaction();
@@ -14,7 +17,8 @@ TEST_CASE("Sort Bank Numbers deletes Banks!")
   PresetManagerUseCases uc(*pm, *settings);
 
   {
-    FileInStream stream(getSourceDir() + "/projects/epc/playground/test-resources/issue-2905-nonlinear-c15-banks.xml.tar", true);
+    FileInStream stream(
+        getSourceDir() + "/projects/epc/playground/test-resources/issue-2905-nonlinear-c15-banks.xml.tar", true);
     uc.importBackupFile(stream, {}, TestHelper::getAudioEngineProxy());
   }
 
@@ -29,11 +33,8 @@ TEST_CASE("Sort Bank Numbers deletes Banks!")
     CHECK(bankThatWillBeLost->getName(false) == "David Bank 1");
     CHECK(bankThatWillBeLost2->getName(false) == "David Work 2");
 
-    THEN("Sort Banks")
-    {
-      uc.sortBankNumbers();
-      const auto numBanksAfterSort = pm->getNumBanks();
-      CHECK(numBanksAfterSort == numBanksPreSort);
-    }
+    uc.sortBankNumbers();
+    const auto numBanksAfterSort = pm->getNumBanks();
+    CHECK(numBanksAfterSort == numBanksPreSort);
   }
 }

@@ -22,6 +22,11 @@ SpawnCommandLine::SpawnCommandLine(const std::string &cmd)
   }
 }
 
+SpawnCommandLine::~SpawnCommandLine()
+{
+
+}
+
 std::string SpawnCommandLine::getStdOutputOrFallback(const std::string &fallbackIfEmpty) const
 {
   return m_stdOutput.empty() ? fallbackIfEmpty : m_stdOutput;

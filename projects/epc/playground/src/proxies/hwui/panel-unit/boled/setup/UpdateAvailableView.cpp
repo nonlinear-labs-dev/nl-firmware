@@ -1,5 +1,5 @@
 #include <proxies/hwui/panel-unit/boled/setup/UpdateAvailableView.h>
-#include <glibmm/main.h>
+#include <Application.h>
 
 bool UpdateAvailableView::m_updateAvailable = false;
 
@@ -7,7 +7,7 @@ UpdateAvailableView::UpdateAvailableView()
     : super("", Rect(0, 0, 0, 0))
 {
   poll();
-  Glib::MainContext::get_default()->signal_timeout().connect_seconds(mem_fun(this, &UpdateAvailableView::poll), 5);
+  Application::get().getMainContext()->signal_timeout().connect_seconds(mem_fun(this, &UpdateAvailableView::poll), 5);
 }
 
 UpdateAvailableView::~UpdateAvailableView() = default;

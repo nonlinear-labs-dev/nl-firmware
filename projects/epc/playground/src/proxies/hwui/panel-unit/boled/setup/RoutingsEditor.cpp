@@ -185,7 +185,7 @@ class SetupModuleHeader : public Label
 
   std::shared_ptr<Font> getFont() const override
   {
-    return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
+    return Fonts::get().getFont("Emphase-8-Regular", getFontHeight());
   }
 
   int getFontHeight() const override

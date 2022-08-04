@@ -1,26 +1,25 @@
 #include <fstream>
 #include <giomm.h>
 #include "WiFiManager.h"
+#include <glibmm.h>
 
 WiFiManager::WiFiManager()
+    : m_asyncCommands(Glib::MainContext::get_default())
 {
   nltools::msg::receive<nltools::msg::WiFi::SetWiFiSSIDMessage>(nltools::msg::EndPoint::BeagleBone,
-                                                                [this](const auto& msg)
-                                                                {
+                                                                [this](const auto& msg) {
                                                                   m_lastSeenSSID = msg.m_ssid.get();
                                                                   saveConfig();
                                                                 });
 
   nltools::msg::receive<nltools::msg::WiFi::SetWiFiPasswordMessage>(nltools::msg::EndPoint::BeagleBone,
-                                                                    [this](const auto& msg)
-                                                                    {
+                                                                    [this](const auto& msg) {
                                                                       m_lastSeenPassword = msg.m_password.get();
                                                                       saveConfig();
                                                                     });
 
   nltools::msg::receive<nltools::msg::WiFi::EnableWiFiMessage>(nltools::msg::EndPoint::BeagleBone,
-                                                               [this](const auto& msg)
-                                                               {
+                                                               [this](const auto& msg) {
                                                                  if(msg.m_state)
                                                                    enableAndStartAP();
                                                                  else

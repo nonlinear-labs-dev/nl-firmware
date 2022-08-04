@@ -5,13 +5,14 @@
 #include <functional>
 #include <list>
 #include <memory>
+#include <glibmm.h>
 
 class AsyncCommandLine;
 
 class SerializedAsyncCommands
 {
  public:
-  SerializedAsyncCommands();
+  SerializedAsyncCommands(Glib::RefPtr<Glib::MainContext> ctx);
   ~SerializedAsyncCommands();
 
   using Command = std::vector<std::string>;
@@ -30,6 +31,7 @@ class SerializedAsyncCommands
     ErrorCB error;
   };
 
+  Glib::RefPtr<Glib::MainContext> m_ctx;
   std::list<Record> m_records;
   std::unique_ptr<AsyncCommandLine> m_currentCommand;
 };

@@ -22,6 +22,7 @@ class Options
 
  private:
   void setDefaults();
+  void setDefaultsForTests();
 
   bool setPMPathName(const Glib::ustring &optionName, const Glib::ustring &path, bool hasValue);
   bool setLayoutFolder(const Glib::ustring &optionName, const Glib::ustring &path, bool hasValue);

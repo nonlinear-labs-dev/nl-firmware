@@ -1,7 +1,7 @@
-#include <glibmm/main.h>
 #include <proxies/hwui/controls/Rect.h>
 #include <proxies/hwui/panel-unit/boled/setup/USBStickAvailableView.h>
 #include <sigc++/functors/mem_fun.h>
+#include <Application.h>
 
 bool USBStickAvailableView::m_usbAvailable = false;
 
@@ -9,8 +9,8 @@ USBStickAvailableView::USBStickAvailableView()
     : SetupLabel("", Rect(0, 0, 0, 0))
 {
   updateLabel();
-  Glib::MainContext::get_default()->signal_timeout().connect_seconds(mem_fun(this, &USBStickAvailableView::updateLabel),
-                                                                     2);
+  Application::get().getMainContext()->signal_timeout().connect_seconds(
+      mem_fun(this, &USBStickAvailableView::updateLabel), 2);
 }
 
 USBStickAvailableView::~USBStickAvailableView() = default;
