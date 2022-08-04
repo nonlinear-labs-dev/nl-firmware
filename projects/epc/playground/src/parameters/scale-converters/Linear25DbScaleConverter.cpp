@@ -2,7 +2,7 @@
 #include "dimension/LevelDimension.h"
 
 Linear25DbScaleConverter::Linear25DbScaleConverter()
-    : LinearScaleConverter(tTcdRange(0, 10000), tDisplayRange(0, 25), LevelDimension::get())
+    : LinearScaleConverter(tDisplayRange(0, 25), LevelDimension::get())
 {
 }
 

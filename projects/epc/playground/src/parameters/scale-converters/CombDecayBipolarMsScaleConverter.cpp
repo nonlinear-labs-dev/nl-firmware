@@ -4,7 +4,6 @@
 CombDecayBipolarMsScaleConverter::CombDecayBipolarMsScaleConverter()
     : ScaleConverter(TimeDimension<3>::get())
     , m_displayRange(1, 100000)
-    , m_tcdRange(-8000, 8000)
 {
 }
 
@@ -15,22 +14,6 @@ CombDecayBipolarMsScaleConverter::~CombDecayBipolarMsScaleConverter()
 bool CombDecayBipolarMsScaleConverter::isBiPolar() const
 {
   return true;
-}
-
-tTcdValue CombDecayBipolarMsScaleConverter::controlPositionToTcd(const tControlPositionValue &cpValue) const
-{
-  if(cpValue == 0)
-    return 0;
-
-  return m_tcdRange.scaleValueToRange(cpValue, getControlPositionRange(), false);
-}
-
-tControlPositionValue CombDecayBipolarMsScaleConverter::tcdToControlPosition(tTcdValue v) const
-{
-  if(v == 0)
-    return 0;
-
-  return getControlPositionRange().scaleValueToRange(v, m_tcdRange, false);
 }
 
 tDisplayValue CombDecayBipolarMsScaleConverter::controlPositionToDisplay(const tControlPositionValue &cpValue) const

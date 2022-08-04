@@ -12,7 +12,6 @@ class ModulateableParameter : public Parameter
   ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling);
   ~ModulateableParameter() override;
 
-  void writeToPlaycontroller(MessageComposer &cmp) const override;
   size_t getHash() const override;
 
   tDisplayValue getModulationAmount() const;
@@ -35,8 +34,6 @@ class ModulateableParameter : public Parameter
 
   void copyFrom(UNDO::Transaction *transaction, const PresetParameter *other) override;
   void copyTo(UNDO::Transaction *transaction, PresetParameter *other) const override;
-
-  void exportReaktorParameter(std::stringstream &target) const override;
 
   virtual Glib::ustring stringizeModulationAmount() const;
   virtual Glib::ustring stringizeModulationAmount(tControlPositionValue amt) const;

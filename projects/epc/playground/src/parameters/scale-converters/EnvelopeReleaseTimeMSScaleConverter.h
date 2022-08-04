@@ -17,8 +17,6 @@ class EnvelopeReleaseTimeMSScaleConverter : public ScaleConverter
   EnvelopeReleaseTimeMSScaleConverter &operator=(const EnvelopeReleaseTimeMSScaleConverter &) = delete;
 
   [[nodiscard]] tDisplayValue controlPositionToDisplay(const tControlPositionValue &cpValue) const override;
-  [[nodiscard]] tTcdValue controlPositionToTcd(const tControlPositionValue &cpValue) const override;
-  [[nodiscard]] tControlPositionValue tcdToControlPosition(tTcdValue v) const override;
   [[nodiscard]] Glib::ustring controlPositionToDisplayJS() const override;
   [[nodiscard]] bool isBiPolar() const override;
 };

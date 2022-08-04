@@ -32,12 +32,6 @@ const ScaleConverter::tControlPositionRange &ScaleConverter::getControlPositionR
   return s;
 }
 
-ScaleConverter::tTcdRange ScaleConverter::getTcdRange() const
-{
-  ScaleConverter::tControlPositionRange cpRange = getControlPositionRange();
-  return tTcdRange(controlPositionToTcd(cpRange.getMin()), controlPositionToTcd(cpRange.getMax()));
-}
-
 tControlPositionValue ScaleConverter::getCoarseDenominator(const QuantizedValue &v) const
 {
   return v.getCoarseDenominator();
@@ -48,7 +42,7 @@ tControlPositionValue ScaleConverter::getFineDenominator(const QuantizedValue &v
   return v.getFineDenominator();
 }
 
-const ScaleConverter::tControlPositionRange ScaleConverter::getControlPositionRange() const
+ScaleConverter::tControlPositionRange ScaleConverter::getControlPositionRange() const
 {
   return isBiPolar() ? getControlPositionRangeBipolar() : getControlPositionRangeUnipolar();
 }

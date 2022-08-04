@@ -3,7 +3,7 @@
 #include "dimension/NoteDimensionIgnoreOctave.h"
 
 BaseKeyScaleConverter::BaseKeyScaleConverter()
-    : LinearScaleConverter(tTcdRange(0, 11), tDisplayRange(0, 11), NoteDimensionIgnoreOctave::get())
+    : LinearScaleConverter(tDisplayRange(0, 11), NoteDimensionIgnoreOctave::get())
 {
 }
 
