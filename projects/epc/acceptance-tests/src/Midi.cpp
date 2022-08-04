@@ -20,7 +20,7 @@
 //  using namespace nltools::msg::Midi;
 //  using namespace std::chrono_literals;
 //
-//  TEST_CASE("MIDI PC sends only one message", "[MIDI]")
+//  TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MIDI PC sends only one message", "[MIDI]")
 //  {
 //    Configuration conf;
 //    conf.offerEndpoints = { { EndPoint::AudioEngine },
@@ -112,7 +112,7 @@
 //    playgroundApp.run();
 //  }
 //
-//  TEST_CASE("MIDI Program change is not returned to sender", "[MIDI]")
+//  TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MIDI Program change is not returned to sender", "[MIDI]")
 //  {
 //    Configuration conf;
 //    conf.offerEndpoints = { { EndPoint::AudioEngine },
@@ -182,7 +182,7 @@
 //    playgroundApp.run();
 //  }
 //
-//  TEST_CASE("MIDI Program change is forwarded to playground", "[MIDI]")
+//  TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MIDI Program change is forwarded to playground", "[MIDI]")
 //  {
 //    Configuration conf;
 //    conf.offerEndpoints = { { EndPoint::AudioEngine },

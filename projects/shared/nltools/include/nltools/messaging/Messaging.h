@@ -8,7 +8,9 @@
 #include <nltools/enums/EnumTools.h>
 #include <nltools/threading/Threading.h>
 #include <glibmm/bytes.h>
+#include <glibmm/main.h>
 #include <string.h>
+#include <set>
 
 namespace nltools
 {
@@ -93,6 +95,11 @@ namespace nltools
 
       ChannelConfiguration(EndPoint p, threading::Priority prio);
 
+      bool operator<(const ChannelConfiguration &other) const
+      {
+        return peer < other.peer;
+      }
+
       EndPoint peer;
       std::string uri;
       threading::Priority prio = threading::Priority::Normal;
@@ -100,12 +107,14 @@ namespace nltools
 
     struct Configuration
     {
-      std::vector<ChannelConfiguration> offerEndpoints;
-      std::vector<ChannelConfiguration> useEndpoints;
+      std::set<ChannelConfiguration> offerEndpoints;
+      std::set<ChannelConfiguration> useEndpoints;
+      Glib::RefPtr<Glib::MainContext> mainContext;
     };
 
     void init(const Configuration &conf);
     void deInit();
+    void addTestEndpoint(EndPoint e);
     const Configuration &getConfig();
 
     // wait at most timeOut for the sigc::connection to be established

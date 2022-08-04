@@ -257,6 +257,11 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, const P
     throw std::runtime_error("could not select parameter: " + id.toString());
 }
 
+bool EditBuffer::hasLocks() const
+{
+  return hasLocks(VoiceGroup::I) || hasLocks(VoiceGroup::II) || hasLocks(VoiceGroup::Global);
+}
+
 bool EditBuffer::hasLocks(VoiceGroup vg) const
 {
   return searchForAnyParameterWithLock(vg) != nullptr;
@@ -312,6 +317,9 @@ namespace nlohmann
 nlohmann::json EditBuffer::serialize() const
 {
   auto pm = static_cast<const PresetManager *>(getParent());
+  if(pm->isLoading())
+    return {};
+
   auto origin = pm->findPreset(getUUIDOfLastLoadedPreset());
   auto zombie = isZombie();
   auto bank = origin ? dynamic_cast<const Bank *>(origin->getParent()) : nullptr;
@@ -931,12 +939,18 @@ Glib::ustring EditBuffer::getVoiceGroupNameWithSuffix(VoiceGroup vg, bool addSpa
 
 bool EditBuffer::hasMoreThanOneUnisonVoice(const VoiceGroup &vg) const
 {
-  return findParameterByID({ C15::PID::Unison_Voices, vg })->getControlPositionValue() > 0;
+  if(auto p = findParameterByID({ C15::PID::Unison_Voices, vg }))
+    return p->getControlPositionValue() > 0;
+  nltools::Log::error(__PRETTY_FUNCTION__, "parameter not found!");
+  return false;
 }
 
 bool EditBuffer::isMonoEnabled(const VoiceGroup &vg) const
 {
-  return findParameterByID({ C15::PID::Mono_Grp_Enable, vg })->getControlPositionValue() > 0;
+  if(auto p = findParameterByID({ C15::PID::Mono_Grp_Enable, vg }))
+    return p->getControlPositionValue() > 0;
+  nltools::Log::error(__PRETTY_FUNCTION__, "parameter not found!");
+  return false;
 }
 
 Glib::ustring EditBuffer::getNameWithSuffix() const

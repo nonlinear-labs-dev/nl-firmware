@@ -3,7 +3,7 @@
 #include "groups/MonoGroup.h"
 #include "presets/EditBuffer.h"
 
-TEST_CASE("Mono Parameter Helper")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Mono Parameter Helper")
 {
   auto eb = TestHelper::getEditBuffer();
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })

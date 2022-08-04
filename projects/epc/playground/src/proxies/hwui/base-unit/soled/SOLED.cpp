@@ -13,8 +13,8 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 
-SOLED::SOLED()
-    : OLEDProxy(Rect(0, 64, 128, 32))
+SOLED::SOLED(Oleds &oleds)
+    : OLEDProxy(Rect(0, 64, 128, 32), oleds)
 {
   Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(
       sigc::mem_fun(this, &SOLED::onBaseUnitUIModeChange));

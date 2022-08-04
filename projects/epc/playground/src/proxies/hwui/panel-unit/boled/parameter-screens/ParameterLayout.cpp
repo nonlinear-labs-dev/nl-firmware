@@ -38,7 +38,7 @@
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
-    , m_soundTypeRedrawThrottler { std::chrono::milliseconds(50) }
+    , m_soundTypeRedrawThrottler { Application::get().getMainContext(), std::chrono::milliseconds(50) }
 {
   addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11)));
   addControl(new LockedIndicator(Rect(65, 1, 10, 11)));
@@ -137,11 +137,9 @@ void ParameterLayout2::setDefault()
 
 void ParameterLayout2::onSoundTypeChanged()
 {
-  m_soundTypeRedrawThrottler.doTask(
-      [&] {
-        Application::get().getMainContext()->signal_idle().connect_once(
-            sigc::mem_fun(this, &ParameterLayout2::setDirty));
-      });
+  m_soundTypeRedrawThrottler.doTask([&] {
+    Application::get().getMainContext()->signal_idle().connect_once(sigc::mem_fun(this, &ParameterLayout2::setDirty));
+  });
 }
 
 bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)

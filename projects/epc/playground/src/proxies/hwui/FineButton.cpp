@@ -1,5 +1,6 @@
 #include <proxies/hwui/FineButton.h>
 #include <glibmm/main.h>
+#include <Application.h>
 
 FineButton::FineButton()
     : m_shifted(false)
@@ -23,8 +24,8 @@ void FineButton::setButtonState(bool pressed)
   if(pressed)
   {
     traverse(DEPRESSED);
-    m_timeout
-        = Glib::MainContext::get_default()->signal_timeout().connect(sigc::mem_fun(this, &FineButton::onTimeout), 250);
+    m_timeout = Application::get().getMainContext()->signal_timeout().connect(
+        sigc::mem_fun(this, &FineButton::onTimeout), 250);
   }
   else
   {

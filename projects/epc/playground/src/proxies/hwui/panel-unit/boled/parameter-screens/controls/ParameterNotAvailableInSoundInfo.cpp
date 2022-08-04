@@ -20,7 +20,7 @@ namespace detail
     using CenterAlignedLabel::CenterAlignedLabel;
     std::shared_ptr<Font> getFont() const override
     {
-      return Oleds::get().getFont("Emphase-8-Bold", getFontHeight());
+      return Fonts::get().getFont("Emphase-8-Bold", getFontHeight());
     }
   };
 }

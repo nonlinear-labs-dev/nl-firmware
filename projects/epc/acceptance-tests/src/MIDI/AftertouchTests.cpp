@@ -3,7 +3,7 @@
 #include <mock/MockDSPHosts.h>
 #include <testing/TestHelper.h>
 
-TEST_CASE("Aftertouch Mappings", "[MIDI][TCD]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Aftertouch Mappings", "[MIDI][TCD]")
 {
   constexpr static uint8_t BASE_TCD = 0b11100000;
   constexpr static uint8_t Aftertouch = 0b00000101;

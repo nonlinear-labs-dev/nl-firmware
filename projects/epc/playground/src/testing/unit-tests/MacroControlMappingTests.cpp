@@ -5,7 +5,7 @@
 #include "parameters/MacroControlParameter.h"
 #include "presets/EditBuffer.h"
 
-TEST_CASE("Macro Control Mapping initialized")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Macro Control Mapping initialized")
 {
   auto eb = TestHelper::getEditBuffer();
   auto mcm = eb->getParameterGroupByID({ "MCM", VoiceGroup::Global });

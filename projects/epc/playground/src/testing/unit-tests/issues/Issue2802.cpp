@@ -4,7 +4,7 @@
 #include "use-cases/PresetUseCases.h"
 #include <parameter_declarations.h>
 
-TEST_CASE("Ticket 2802")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Ticket 2802")
 {
   auto& eb = *TestHelper::getEditBuffer();
   auto& pm = *TestHelper::getPresetManager();
