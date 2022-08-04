@@ -2,7 +2,7 @@
 #include "dimension/PitchDimensionCoarse.h"
 
 Linear24To120StScaleConverter::Linear24To120StScaleConverter()
-    : LinearScaleConverter(tTcdRange(0, 9600), tDisplayRange(24, 120), PitchDimensionCoarse::get())
+    : LinearScaleConverter(tDisplayRange(24, 120), PitchDimensionCoarse::get())
 {
 }
 

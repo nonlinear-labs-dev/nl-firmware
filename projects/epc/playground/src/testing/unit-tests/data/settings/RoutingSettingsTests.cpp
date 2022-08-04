@@ -14,14 +14,16 @@ TEST_CASE("setAllValues will not notify if no values Changed")
 
   WHEN("All Values are initialy true")
   {
-    auto allValuesAreTrue = std::all_of(data.begin(), data.end(), [](const auto& row) {
-      return std::all_of(row.begin(), row.end(), [](auto b) { return b == true; });
-    });
+    auto allValuesAreTrue = std::all_of(
+        data.begin(), data.end(),
+        [](const auto& row) { return std::all_of(row.begin(), row.end(), [](auto b) { return b == true; }); });
 
     CHECK(allValuesAreTrue);
 
     WHEN("All elements are set to current Value again")
     {
+      setting->setAllValues(true);  //sanitize values first
+
       bool didNotifyArrive = false;
       auto connection = setting->onChange([&](auto) { didNotifyArrive = true; });
 
@@ -61,6 +63,8 @@ TEST_CASE("setAllValues will not notify if no values Changed")
 
     WHEN("on elements is set to current value again")
     {
+      setting->setAllValues(true);  //sanitize values first!
+
       bool didNotifyArrive = false;
       auto connection = setting->onChange([&](auto) { didNotifyArrive = true; });
 

@@ -3,7 +3,6 @@
 
 EnvelopeDecayTimeMSScaleConverter::EnvelopeDecayTimeMSScaleConverter()
     : ScaleConverter(TimeDimension<3>::get())
-    , m_tcdRange(0, 16000)
     , m_displayRange(0.0, 16000.0)
 {
 }
@@ -18,16 +17,6 @@ tDisplayValue EnvelopeDecayTimeMSScaleConverter::controlPositionToDisplay(const 
     return 11.3 * cpValue;
 
   return 0.1 * exp(log(16000) - log(0.1) * cpValue);
-}
-
-tTcdValue EnvelopeDecayTimeMSScaleConverter::controlPositionToTcd(const tControlPositionValue &cpValue) const
-{
-  return m_tcdRange.scaleValueToRange(cpValue, getControlPositionRange(), true);
-}
-
-tControlPositionValue EnvelopeDecayTimeMSScaleConverter::tcdToControlPosition(tTcdValue v) const
-{
-  return getControlPositionRange().scaleValueToRange(v, m_tcdRange, true);
 }
 
 Glib::ustring EnvelopeDecayTimeMSScaleConverter::controlPositionToDisplayJS() const
