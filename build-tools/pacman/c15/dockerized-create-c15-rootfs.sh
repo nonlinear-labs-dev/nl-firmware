@@ -24,6 +24,7 @@ create_rootfs() { # Create clean folder and install c15 package and all its depe
 tweak_rootfs() { # Tweak the resulting rootfs
   sed -i "s/#governor=.*$/governor='performance'/" $DIR/etc/default/cpupower
   echo "root@192.168.10.11:/mnt/usb-stick  /mnt/usb-stick  fuse.sshfs  sshfs_sync,direct_io,cache=no,reconnect,defaults,_netdev,ServerAliveInterval=2,ServerAliveCountMax=3,StrictHostKeyChecking=off  0  0" >> $DIR/etc/fstab
+  echo "options snd_hda_intel power_save=0" >> $DIR/etc/modprobe.d/snd_hda_intel.conf
   arch-chroot $DIR ssh-keygen -A
   arch-chroot $DIR systemctl enable cpupower
   arch-chroot $DIR systemctl enable sshd

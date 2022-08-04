@@ -23,7 +23,7 @@ else
 fi
 
 if [ "$FIX_BUFFER_UNDERRUNS" = "1" ]; then
-  echo "options snd_hda_intel bdl_pos_adj=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1" > $ROOT_FS/etc/modprobe.d/snd_hda_intel.conf
+  echo "options snd_hda_intel bdl_pos_adj=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1" >> $ROOT_FS/etc/modprobe.d/snd_hda_intel.conf
   chmod 600 $ROOT_FS/etc/modprobe.d/snd_hda_intel.conf
 fi
 
