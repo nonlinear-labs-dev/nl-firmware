@@ -3,275 +3,277 @@
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <proxies/hwui/HWUI.h>
 
-TEST_CASE("FROM Layer")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"FROM Layer")
 {
+  using namespace C15::PID;
   MockPresetStorage presets;
 
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
   ebUseCases.load(presets.getLayerPreset());
 
-  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+  Application::get().getVGManager()->setCurrentVoiceGroup(VoiceGroup::II);
 
   CHECK(eb->getType() == SoundType::Layer);
 
   WHEN("FB A/B x selected")
   {
-    ebUseCases.selectParameter({ 346, VoiceGroup::II });
+    ebUseCases.selectParameter({ FB_Mix_Osc, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { 346, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { FB_Mix_Osc, VoiceGroup::I });
     }
 
     THEN("Split Preset Loaded")
     {
       ebUseCases.load(presets.getSplitPreset());
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 346, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_Osc, VoiceGroup::II });
     }
 
     THEN("Split converted")
     {
       ebUseCases.convertToSplit(VoiceGroup::I);
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 346, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_Osc, VoiceGroup::II });
     }
 
     THEN("Single converted")
     {
       ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { 346, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { FB_Mix_Osc, VoiceGroup::I });
     }
   }
 
   WHEN("FB A/B x - A-B selected")
   {
-    ebUseCases.selectParameter({ 348, VoiceGroup::II });
+    ebUseCases.selectParameter({ FB_Mix_Osc, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { 346, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { FB_Mix_Osc, VoiceGroup::I });
     }
 
     THEN("Split Preset Loaded")
     {
       ebUseCases.load(presets.getSplitPreset());
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 346, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_Osc, VoiceGroup::II });
     }
 
     THEN("Split converted")
     {
       ebUseCases.convertToSplit(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 346, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_Osc, VoiceGroup::II });
     }
 
     THEN("Single converted")
     {
       ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 346, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_Osc, VoiceGroup::I });
     }
   }
 
   WHEN("FB: Comb - From x selected")
   {
-    ebUseCases.selectParameter({ 350, VoiceGroup::II });
+    ebUseCases.selectParameter({ FB_Mix_Comb_Src, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { 156, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { FB_Mix_Comb, VoiceGroup::I });
     }
 
     THEN("Split Preset Loaded")
     {
       ebUseCases.load(presets.getSplitPreset());
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 156, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_Comb, VoiceGroup::II });
     }
 
     THEN("Split converted")
     {
       ebUseCases.convertToSplit(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 156, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_Comb, VoiceGroup::II });
     }
 
     THEN("Single converted")
     {
       ebUseCases.convertToSingle(VoiceGroup::I);
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { 156, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { FB_Mix_Comb, VoiceGroup::I });
     }
   }
 
   WHEN("FB: SV Filter - From x selected")
   {
-    ebUseCases.selectParameter({ 352, VoiceGroup::II });
+    ebUseCases.selectParameter({ FB_Mix_SVF_Src, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { 158, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { FB_Mix_SVF, VoiceGroup::I });
     }
 
     THEN("Split Preset Loaded")
     {
       ebUseCases.load(presets.getSplitPreset());
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 158, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_SVF, VoiceGroup::II });
     }
 
     THEN("Split converted")
     {
       ebUseCases.convertToSplit(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 158, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_SVF, VoiceGroup::II });
     }
 
     THEN("Single converted")
     {
       ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { 158, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { FB_Mix_SVF, VoiceGroup::I });
     }
   }
 
   WHEN("FB: Effects - From x selected")
   {
-    ebUseCases.selectParameter({ 354, VoiceGroup::II });
+    ebUseCases.selectParameter({ FB_Mix_FX_Src, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { 160, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { FB_Mix_FX, VoiceGroup::I });
     }
 
     THEN("Split Preset Loaded")
     {
       ebUseCases.load(presets.getSplitPreset());
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 160, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_FX_Src, VoiceGroup::II });
     }
 
     THEN("Split converted")
     {
       ebUseCases.convertToSplit(VoiceGroup::I);
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 160, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_FX_Src, VoiceGroup::II });
     }
 
     THEN("Single converted")
     {
       ebUseCases.convertToSingle(VoiceGroup::I);
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { 160, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { FB_Mix_FX, VoiceGroup::I });
     }
   }
 
   WHEN("OUT: To FX x selected")
   {
-    ebUseCases.selectParameter({ 362, VoiceGroup::II });
+    ebUseCases.selectParameter({ Out_Mix_To_FX, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { 185, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { Out_Mix_Lvl, VoiceGroup::I });
     }
 
     THEN("Single converted")
     {
       ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { 185, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { Out_Mix_Lvl, VoiceGroup::I });
     }
   }
 
   WHEN("Part: Volume selected")
   {
-    ebUseCases.selectParameter({ 358, VoiceGroup::II });
+    ebUseCases.selectParameter({ Voice_Grp_Volume, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { 247, VoiceGroup::Global });
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { Master_Volume, VoiceGroup::Global });
     }
 
     THEN("Single converted")
     {
       ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { 247, VoiceGroup::Global });
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { Master_Volume, VoiceGroup::Global });
     }
   }
 
   WHEN("Part: Tune selected")
   {
-    ebUseCases.selectParameter({ 360, VoiceGroup::II });
+    ebUseCases.selectParameter({ Voice_Grp_Tune, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { 248, VoiceGroup::Global });
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { Master_Tune, VoiceGroup::Global });
     }
 
     THEN("Single converted")
     {
       ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { 248, VoiceGroup::Global });
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { Master_Tune, VoiceGroup::Global });
     }
   }
 
   WHEN("Part: Fade From selected")
   {
-    ebUseCases.selectParameter({ 396, VoiceGroup::II });
+    ebUseCases.selectParameter({ Voice_Grp_Fade_From, VoiceGroup::II });
 
     THEN("Split Preset Loaded")
     {
       ebUseCases.load(presets.getSplitPreset());
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ 358, VoiceGroup::II }));
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ Voice_Grp_Volume, VoiceGroup::II }));
     }
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId({ 247, VoiceGroup::Global }));
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId({ Master_Volume, VoiceGroup::Global }));
     }
 
     THEN("Split converted")
     {
       ebUseCases.convertToSplit(VoiceGroup::I);
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ 358, VoiceGroup::II }));
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ Voice_Grp_Volume, VoiceGroup::II }));
     }
 
     THEN("Single converted")
     {
       ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId({ 247, VoiceGroup::Global }));
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId({ Master_Volume, VoiceGroup::Global }));
     }
   }
 
   WHEN("Part: Fade Range selected")
   {
-    ebUseCases.selectParameter({ 397, VoiceGroup::II });
+    ebUseCases.selectParameter({ Voice_Grp_Fade_Range, VoiceGroup::II });
 
     THEN("Split Preset Loaded")
     {
       ebUseCases.load(presets.getSplitPreset());
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ 358, VoiceGroup::II }));
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ Voice_Grp_Volume, VoiceGroup::II }));
     }
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId({ 247, VoiceGroup::Global }));
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId({ Master_Volume, VoiceGroup::Global }));
     }
 
     THEN("Split Convert")
     {
       ebUseCases.convertToSplit(VoiceGroup::I);
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ 358, VoiceGroup::II }));
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ Voice_Grp_Volume, VoiceGroup::II }));
     }
 
     THEN("Single Convert")
     {
       ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId({ 247, VoiceGroup::Global }));
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId({ Master_Volume, VoiceGroup::Global }));
     }
   }
 }
 
-TEST_CASE("Split Loaded")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Loaded")
 {
+  using namespace C15::PID;
   MockPresetStorage presets;
 
   auto eb = TestHelper::getEditBuffer();
@@ -279,86 +281,86 @@ TEST_CASE("Split Loaded")
 
   ebUseCases.load(presets.getSplitPreset());
 
-  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+  Application::get().getVGManager()->setCurrentVoiceGroup(VoiceGroup::II);
   CHECK(eb->getType() == SoundType::Split);
 
   WHEN("OUT: To FX x selected")
   {
-    ebUseCases.selectParameter({ 362, VoiceGroup::II });
+    ebUseCases.selectParameter({ Out_Mix_To_FX, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { 185, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { Out_Mix_Lvl, VoiceGroup::I });
     }
 
     THEN("Single Convert")
     {
       ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { 185, VoiceGroup::I });
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { Out_Mix_Lvl, VoiceGroup::I });
     }
   }
 
   WHEN("Part: Volume selected")
   {
-    ebUseCases.selectParameter({ 358, VoiceGroup::II });
+    ebUseCases.selectParameter({ Voice_Grp_Volume, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { 247, VoiceGroup::Global });
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { Master_Volume, VoiceGroup::Global });
     }
 
     THEN("Single Convert")
     {
       ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { 247, VoiceGroup::Global });
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { Master_Volume, VoiceGroup::Global });
     }
   }
 
   WHEN("Part: Tune selected")
   {
-    ebUseCases.selectParameter({ 360, VoiceGroup::II });
+    ebUseCases.selectParameter({ Voice_Grp_Tune, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { 248, VoiceGroup::Global });
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { Master_Tune, VoiceGroup::Global });
     }
 
     THEN("Single Convert")
     {
       ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { 248, VoiceGroup::Global });
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { Master_Tune, VoiceGroup::Global });
     }
   }
 
   WHEN("Split Point selected")
   {
-    ebUseCases.selectParameter({ 356, VoiceGroup::I });
+    ebUseCases.selectParameter({ Split_Split_Point, VoiceGroup::I });
 
     THEN("Single Preset Loaded")
     {
       ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { 247, VoiceGroup::Global });
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { Master_Volume, VoiceGroup::Global });
     }
 
     THEN("Layer Preset Loaded")
     {
       ebUseCases.load(presets.getLayerPreset());
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 358, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { Voice_Grp_Volume, VoiceGroup::II });
     }
 
     THEN("Layer Convert")
     {
       ebUseCases.convertToLayer(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { 358, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { Voice_Grp_Volume, VoiceGroup::II });
     }
 
     THEN("Single Convert")
     {
       ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { 247, VoiceGroup::Global });
+      CHECK(eb->getSelected(VoiceGroup::Global)->getID() == ParameterId { Master_Volume, VoiceGroup::Global });
     }
   }
 }

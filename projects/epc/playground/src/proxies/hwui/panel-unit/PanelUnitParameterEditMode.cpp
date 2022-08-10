@@ -17,6 +17,7 @@
 #include <proxies/hwui/TwoStateLED.h>
 #include "PanelUnitParameterEditMode.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <device-settings/LayoutMode.h>
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <sigc++/sigc++.h>
@@ -60,13 +61,6 @@ void PanelUnitParameterEditMode::setupFocusAndMode(FocusAndMode focusAndMode)
   bruteForceUpdateLeds();
 }
 
-static EditPanel &getEditPanel()
-{
-  auto hwui = Application::get().getHWUI();
-  auto &panelUnit = hwui->getPanelUnit();
-  return panelUnit.getEditPanel();
-}
-
 void PanelUnitParameterEditMode::setup()
 {
   m_mappings.forEachButton([=](Buttons buttonID, std::list<int> parameterIDs) {
@@ -77,32 +71,31 @@ void PanelUnitParameterEditMode::setup()
       setupButtonConnection(buttonID, createParameterSelectAction(para));
   });
 
+  using namespace C15::PID;
+
   setupButtonConnection(Buttons::BUTTON_75,
-                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 243));
-  FOR_TESTS(assignedAudioIDs.insert(243));
+                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_A); });
+  FOR_TESTS(assignedAudioIDs.insert(MC_A));
 
   setupButtonConnection(Buttons::BUTTON_79,
-                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 244));
-  FOR_TESTS(assignedAudioIDs.insert(244));
+                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_B); });
+  FOR_TESTS(assignedAudioIDs.insert(MC_B));
 
   setupButtonConnection(Buttons::BUTTON_83,
-                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 245));
-  FOR_TESTS(assignedAudioIDs.insert(245));
+                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_C); });
+  FOR_TESTS(assignedAudioIDs.insert(MC_C));
 
   setupButtonConnection(Buttons::BUTTON_87,
-                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 246));
-
-  FOR_TESTS(assignedAudioIDs.insert(246));
+                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_D); });
+  FOR_TESTS(assignedAudioIDs.insert(MC_D));
 
   setupButtonConnection(Buttons::BUTTON_91,
-                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 369));
-
-  FOR_TESTS(assignedAudioIDs.insert(369));
+                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_E); });
+  FOR_TESTS(assignedAudioIDs.insert(MC_E));
 
   setupButtonConnection(Buttons::BUTTON_95,
-                        bind(&PanelUnitParameterEditMode::handleMacroControlButton, this, std::placeholders::_3, 371));
-
-  FOR_TESTS(assignedAudioIDs.insert(371));
+                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_F); });
+  FOR_TESTS(assignedAudioIDs.insert(MC_F));
 
   setupButtonConnection(Buttons::BUTTON_UNDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
     m_undoStateMachine.traverse(state ? UNDO_PRESSED : UNDO_RELEASED);
@@ -133,12 +126,12 @@ void PanelUnitParameterEditMode::setup()
 
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::mem_fun(this, &PanelUnitParameterEditMode::onParamSelectionChanged),
-      Application::get().getHWUI()->getCurrentVoiceGroup());
+      Application::get().getVGManager()->getCurrentVoiceGroup());
 
-  Glib::MainContext::get_default()->signal_idle().connect_once([=]() {
+  Application::get().getMainContext()->signal_idle().connect_once([=]() {
     auto hwui = Application::get().getHWUI();
     auto &panelUnit = hwui->getPanelUnit();
-    auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+    auto &famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
 
     if(panelUnit.getUsageMode().get() == this)
     {
@@ -153,12 +146,12 @@ bool PanelUnitParameterEditMode::handleMacroControlButton(bool state, int mcPara
   auto &mcStateMachine = getMacroControlAssignmentStateMachine();
   mcStateMachine.setCurrentMCParameter(mcParamId);
 
-  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+  auto &famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
 
   bool isAlreadySelected = Application::get()
                                .getPresetManager()
                                ->getEditBuffer()
-                               ->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup())
+                               ->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup())
                                ->getID()
                                .getNumber()
           == mcParamId
@@ -228,7 +221,7 @@ std::list<int> PanelUnitParameterEditMode::getButtonAssignments(Buttons button, 
   return ret;
 }
 
-UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(std::vector<gint32> toggleAudioIDs)
+UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(const std::vector<gint32>& toggleAudioIDs)
 {
   return std::bind(&PanelUnitParameterEditMode::toggleParameterSelection, this, toggleAudioIDs, std::placeholders::_3);
 }
@@ -242,11 +235,11 @@ OutContainer cleanParameterIDSForType(const InContainer &ids, SoundType type)
   {
     case SoundType::Single:
       std::copy_if(ids.begin(), ids.end(), std::back_inserter(ret),
-                   [](int id) { return id != 350 && id != 352 && id != 354 && id != 362; });
+                   [](int id) { return id != C15::PID::FB_Mix_Comb_Src && id != C15::PID::FB_Mix_SVF_Src && id != C15::PID::FB_Mix_FX_Src && id != C15::PID::Out_Mix_To_FX; });
       break;
     case SoundType::Split:
       std::copy_if(ids.begin(), ids.end(), std::back_inserter(ret),
-                   [](int id) { return id != 350 && id != 352 && id != 354; });
+                   [](int id) { return id != C15::PID::FB_Mix_Comb_Src && id != C15::PID::FB_Mix_SVF_Src; });
       break;
     case SoundType::Layer:
     case SoundType::Invalid:
@@ -255,7 +248,7 @@ OutContainer cleanParameterIDSForType(const InContainer &ids, SoundType type)
   return ret;
 }
 
-bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint32> ids, bool state)
+bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint32>& ids, bool state)
 {
   if(ids.empty())
     return true;
@@ -267,7 +260,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
   if(cleanedParameterIdForType.empty())
     return true;
 
-  auto voiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto voiceGroup = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto firstParameterInList = editBuffer->findParameterByID({ cleanedParameterIdForType.front(), voiceGroup });
 
   auto &mcStateMachine = getMacroControlAssignmentStateMachine();
@@ -286,7 +279,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
 
   if(state)
   {
-    Parameter *selParam = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
+    Parameter *selParam = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
 
     if(tryParameterToggleOnMacroControl(cleanedParameterIdForType, selParam))
       return true;
@@ -309,7 +302,11 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
           if(next == cleanedParameterIdForType.end())
             next = cleanedParameterIdForType.begin();
 
-          setParameterSelection({ *next, selParamID.getVoiceGroup() }, state);
+          if(auto newP = editBuffer->findParameterByID({*next, selParamID.getVoiceGroup()}))
+          {
+            if(!newP->isDisabled())
+              setParameterSelection({ *next, selParamID.getVoiceGroup() }, state);
+          }
           return true;
         }
       }
@@ -318,7 +315,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
         setParameterSelection({ cleanedParameterIdForType.front(), VoiceGroup::Global }, state);
       else
         setParameterSelection(
-            { cleanedParameterIdForType.front(), Application::get().getHWUI()->getCurrentVoiceGroup() }, state);
+            { cleanedParameterIdForType.front(), Application::get().getVGManager()->getCurrentVoiceGroup() }, state);
     }
     else
     {
@@ -326,7 +323,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
       {
         for(auto paramId : cleanedParameterIdForType)
         {
-          auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+          auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
           if(ParameterId::isGlobal(paramId))
             vg = VoiceGroup::Global;
 
@@ -339,7 +336,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
         }
       }
 
-      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
       setParameterSelection({ cleanedParameterIdForType.front(), vg }, state);
     }
   }
@@ -358,7 +355,7 @@ bool PanelUnitParameterEditMode::switchToNormalModeInCurrentParameterLayout()
   return false;
 }
 
-bool PanelUnitParameterEditMode::tryParameterToggleOnMacroControl(std::vector<gint32> ids, Parameter *selParam)
+bool PanelUnitParameterEditMode::tryParameterToggleOnMacroControl(const std::vector<gint32>& ids, Parameter *selParam)
 {
   if(auto mc = dynamic_cast<MacroControlParameter *>(selParam))
   {
@@ -366,12 +363,12 @@ bool PanelUnitParameterEditMode::tryParameterToggleOnMacroControl(std::vector<gi
     for(auto x : ids)
     {
       auto mcVg = mc->getVoiceGroup();
-      a.push_back({ x, mcVg });
+      a.emplace_back( x, mcVg );
     }
 
     if(mc->isSourceOfTargetIn(a))
     {
-      for(auto targetId : a)
+      for(const auto& targetId : a)
       {
         if(mc->isSourceOf(targetId))
         {
@@ -441,7 +438,7 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
 
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
-  if(Parameter *selParam = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup()))
+  if(Parameter *selParam = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup()))
   {
     auto selParamID = selParam->getID();
 
@@ -483,56 +480,58 @@ void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam)
   auto group = selParam->getParentGroup();
   auto groupName = group->getID().getName();
 
+  using namespace C15::PID;
+
   if(groupName == "Env A")
   {
-    letOtherTargetsBlink({ 62, 73, 96 });
+    letOtherTargetsBlink({ Osc_A_PM_Self_Env_A, Shp_A_Drive_Env_A, Osc_B_PM_A_Env_A });
   }
   else if(groupName == "Env B")
   {
-    letOtherTargetsBlink({ 66, 92, 103 });
+    letOtherTargetsBlink({ Osc_A_PM_B_Env_B, Osc_B_PM_Self_Env_B, Shp_B_Drive_Env_B });
   }
   else if(groupName == "Env C")
   {
-    letOtherTargetsBlink({ 56, 59, 70, 80, 86, 89, 100, 110, 118, 126, 132, 143, 147 });
+    letOtherTargetsBlink({ Osc_A_Pitch_Env_C, Osc_A_Fluct_Env_C, Osc_A_PM_FB_Env_C, Shp_A_FB_Env_C, Osc_B_Pitch_Env_C,
+                           Osc_B_Fluct_Env_C, Osc_B_PM_FB_Env_C, Shp_B_FB_Env_C, Comb_Flt_Pitch_Env_C, Comb_Flt_AP_Env_C,
+                           Comb_Flt_LP_Env_C, SV_Flt_Cut_Env_C, SV_Flt_Res_Env_C });
   }
   else if(groupName == "Osc A" || groupName == "Sh A")
   {
-    letOscAShaperABlink({ 94, 111, 113, 133, 136, 153, 169 });
+    letOscAShaperABlink({ Osc_B_PM_A, Shp_B_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_A_Lvl });
   }
   else if(groupName == "Osc B" || groupName == "Sh B")
   {
-    letOscBShaperBBlink({ 64, 81, 113, 133, 136, 153, 172 });
+    letOscBShaperBBlink({ Osc_A_PM_B, Shp_A_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_B_Lvl });
   }
   else if(groupName == "Comb")
   {
-    letOtherTargetsBlink({ 138, 175, 156 });
+    letOtherTargetsBlink({ SV_Flt_Comb_Mix, Out_Mix_Comb_Lvl, FB_Mix_Comb });
   }
   else if(groupName == "FB")
   {
-    letOtherTargetsBlink({ 68, 78, 98, 108 });
+    letOtherTargetsBlink({ Osc_A_PM_FB, Shp_A_FB_Mix, Osc_B_PM_FB, Shp_B_FB_Mix });
   }
   else if(groupName == "SVF")
   {
-    letOtherTargetsBlink({ 178, 158 });
+    letOtherTargetsBlink({ Out_Mix_SVF_Lvl, FB_Mix_SVF });
   }
   else if(groupName == "Gap Filt" || groupName == "Cab" || groupName == "Echo" || groupName == "Reverb"
           || groupName == "Flang")
   {
-    letOtherTargetsBlink({ 160 });
+    letOtherTargetsBlink({ FB_Mix_FX });
 
     if(groupName == "Reverb")
     {
-      letReverbBlink({ 162 });
+      letReverbBlink({ FB_Mix_Rvb });
     }
   }
 }
 
 bool isScaleParameter(const ParameterId &paramID)
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-  return dynamic_cast<ScaleParameter *>(
-             Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramID))
-      != nullptr;
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  return eb->findAndCastParameterByID<ScaleParameter>(paramID) != nullptr;
 }
 
 void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, ParameterId selectedParameterID)
@@ -575,8 +574,8 @@ void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
 {
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  Parameter *selParam = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  Parameter *selParam = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
 
   if(auto modTime = dynamic_cast<MacroControlSmoothingParameter *>(selParam))
   {
@@ -608,12 +607,12 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
 
   for(auto targetID : targets)
   {
-    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
     const auto currentParam = editBuffer->findParameterByID({ targetID, vg });
 
     if(isSignalFlowingThrough(currentParam))
     {
-      auto state = editBuffer->getSelected(hwui->getCurrentVoiceGroup()) == currentParam ? TwoStateLED::ON
+      auto state = editBuffer->getSelected(vg) == currentParam ? TwoStateLED::ON
                                                                                          : TwoStateLED::BLINK;
       panelUnit.getLED(m_mappings.findButton(targetID))->setState(state);
     }
@@ -627,14 +626,13 @@ bool PanelUnitParameterEditMode::isSignalFlowingThrough(const Parameter *p) cons
 
 void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &targets)
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
   const auto stateVariableFilterFMAB = editBuffer->findParameterByID({ SVFilterFMAB, vg });
   const auto combFilterPMAB = editBuffer->findParameterByID({ CombFilterPMAB, vg });
-  constexpr const auto IdCombMix = 138;
-  const auto SVCombMix = editBuffer->findParameterByID({ IdCombMix, vg });
+  const auto SVCombMix = editBuffer->findParameterByID({ C15::PID::SV_Flt_Comb_Mix, vg });
   const auto combMax = SVCombMix->getValue().getUpperBorder();
   const auto combMin = SVCombMix->getValue().getLowerBorder();
 
@@ -670,14 +668,13 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
 
 void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &targets)
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
   const auto combFilterPMAB = editBuffer->findParameterByID({ CombFilterPMAB, vg });
   const auto stateVariableFilterFMAB = editBuffer->findParameterByID({ SVFilterFMAB, vg });
-  constexpr const auto IdCombMix = 138;
-  const auto SVCombMix = editBuffer->findParameterByID({ IdCombMix, vg });
+  const auto SVCombMix = editBuffer->findParameterByID({ C15::PID::SV_Flt_Comb_Mix, vg });
   const auto combMax = SVCombMix->getValue().getUpperBorder();
   const auto combMin = SVCombMix->getValue().getLowerBorder();
 
@@ -713,7 +710,7 @@ void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &tar
 
 void PanelUnitParameterEditMode::letReverbBlink(const std::vector<int> &targets)
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 

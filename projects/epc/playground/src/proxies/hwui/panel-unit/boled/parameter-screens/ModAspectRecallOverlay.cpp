@@ -9,6 +9,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationSourceLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallModulationSourceLabel.h>
 #include "ModAspectRecallOverlay.h"
+#include "use-cases/ModParameterUseCases.h"
 #include <proxies/hwui/FrameBuffer.h>
 #include <groups/MacroControlsGroup.h>
 #include <Application.h>

@@ -2,6 +2,10 @@
 #include "StaticKnubbelSlider.h"
 #include "StaticBarSlider.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/ParameterUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
+#include "groups/ScaleGroup.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAmountButton.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
@@ -34,12 +38,12 @@
 
 ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
-    , m_soundTypeRedrawThrottler { std::chrono::milliseconds(50) }
+    , m_soundTypeRedrawThrottler { Application::get().getMainContext(), std::chrono::milliseconds(50) }
 {
   addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11)));
   addControl(new LockedIndicator(Rect(65, 1, 10, 11)));
   addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), false));
-  addControl(new UndoIndicator(Rect(18, 18, 10, 8)));
+  addControl(new UndoIndicator(Rect(22, 15, 10, 8)));
   addControl(new ParameterNotAvailableInSoundInfo(Rect(64, 0, 128, 48)));
 
   Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
@@ -73,7 +77,8 @@ void ParameterLayout2::showRecallScreenIfAppropriate()
 
 Parameter *ParameterLayout2::getCurrentParameter() const
 {
-  return Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  return Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
 }
 
 Parameter *ParameterLayout2::getCurrentEditParameter() const
@@ -133,11 +138,9 @@ void ParameterLayout2::setDefault()
 
 void ParameterLayout2::onSoundTypeChanged()
 {
-  m_soundTypeRedrawThrottler.doTask(
-      [&] {
-        Application::get().getMainContext()->signal_idle().connect_once(
-            sigc::mem_fun(this, &ParameterLayout2::setDirty));
-      });
+  m_soundTypeRedrawThrottler.doTask([&] {
+    Application::get().getMainContext()->signal_idle().connect_once(sigc::mem_fun(this, &ParameterLayout2::setDirty));
+  });
 }
 
 bool ParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
@@ -189,7 +192,15 @@ void ParameterSelectLayout2::init()
 
 Carousel *ParameterSelectLayout2::createCarousel(const Rect &rect)
 {
-  return new ParameterCarousel(rect);
+  auto parameter = getCurrentParameter();
+  if(!ScaleGroup::isScaleParameter(parameter))
+  {
+    return new ParameterCarousel(rect);
+  }
+  else
+  {
+    return new ScaleParameterCarousel(rect);
+  }
 }
 
 void ParameterSelectLayout2::setCarousel(Carousel *c)
@@ -214,9 +225,12 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
       case Buttons::BUTTON_A:
         if(auto button = findControlOfType<SwitchVoiceGroupButton>())
         {
+          EditBufferUseCases ebUseCases(*getCurrentEditParameter()->getParentEditBuffer());
           if(SwitchVoiceGroupButton::allowToggling(getCurrentParameter(),
                                                    Application::get().getPresetManager()->getEditBuffer()))
-            Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection();
+            Application::get().getVGManager()->toggleCurrentVoiceGroupAndUpdateParameterSelection();
+          else if(button->getText().text == "back..")
+            ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global });
           return true;
         }
         break;
@@ -344,8 +358,9 @@ ParameterRecallLayout2::ParameterRecallLayout2()
 
   m_recallValue = getCurrentParameter()->getControlPositionValue();
 
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::mem_fun(this, &ParameterRecallLayout2::onParameterSelectionChanged), getHWUI()->getCurrentVoiceGroup());
+      sigc::mem_fun(this, &ParameterRecallLayout2::onParameterSelectionChanged), vg);
 
   updateUI(false);
 }
@@ -358,6 +373,7 @@ ParameterRecallLayout2::~ParameterRecallLayout2()
 
 void ParameterRecallLayout2::init()
 {
+  addControl(createModuleCaption());
 }
 
 bool ParameterRecallLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
@@ -484,7 +500,7 @@ void ParameterRecallLayout2::onParameterChanged(const Parameter *)
 PartMasterRecallLayout2::PartMasterRecallLayout2()
     : ParameterRecallLayout2()
     , m_muteParameter { Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-          { C15::PID::Voice_Grp_Mute, Application::get().getHWUI()->getCurrentVoiceGroup() }) }
+          { C15::PID::Voice_Grp_Mute, Application::get().getVGManager()->getCurrentVoiceGroup() }) }
 {
   m_muteParameterConnection
       = m_muteParameter->onParameterChanged(sigc::hide(sigc::mem_fun(this, &PartMasterRecallLayout2::onMuteChanged)));

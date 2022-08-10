@@ -3,7 +3,7 @@
 #include <mock/MockDSPHosts.h>
 #include <nltools/messaging/Message.h>
 
-TEST_CASE("When Notes Local is turned off All Notes off gets send", "[MIDI][TCD]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"When Notes Local is turned off All Notes off gets send", "[MIDI][TCD]")
 {
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidi;
   std::vector<MidiChannelModeMessages> messages;
@@ -61,7 +61,7 @@ TEST_CASE("When Notes Local is turned off All Notes off gets send", "[MIDI][TCD]
   }
 }
 
-TEST_CASE("When Send Channels change Note off gets send on previous Channels", "[MIDI][TCD]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"When Send Channels change Note off gets send on previous Channels", "[MIDI][TCD]")
 {
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidi;
   std::vector<MidiChannelModeMessages> messages;

@@ -30,25 +30,28 @@
 #include <serialization/EditBufferSerializer.h>
 #include <iostream>
 #include <giomm.h>
-#include <presets/PresetPartSelection.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include "UsageMode.h"
 #include "use-cases/SettingsUseCases.h"
 #include <device-info/AftertouchCalibratedStatus.h>
 #include <device-info/DeviceInformation.h>
+#include "use-cases/EditBufferUseCases.h"
+#include "device-settings/ScreenSaverTimeoutSetting.h"
+#include <Options.h>
+#include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 
 HWUI::HWUI(Settings &settings)
-    : m_voiceGoupSignal {}
-    , m_currentVoiceGroup { VoiceGroup::I }
-    , m_panelUnit { settings }
-    , m_baseUnit { settings }
+    : m_layoutFolderMonitor(std::make_unique<LayoutFolderMonitor>())
+    , m_panelUnit { settings, m_oleds, m_layoutFolderMonitor.get() }
+    , m_baseUnit { settings, m_oleds }
     , m_readersCancel(Gio::Cancellable::create())
     , m_buttonStates { false }
     , m_blinkCount(0)
-    , m_settings{ settings }
+    , m_switchOffBlockingMainThreadIndicator(Application::get().getMainContext())
+    , m_settings { settings }
     , m_famSetting(*settings.getSetting<FocusAndModeSetting>())
 {
-  if(isatty(fileno(stdin)))
+  if(isatty(fileno(stdin)) && Options::s_acceptanceTests == false)
   {
     m_keyboardInput = Gio::DataInputStream::create(Gio::UnixInputStream::create(0, true));
     m_keyboardInput->read_line_async(mem_fun(this, &HWUI::onKeyboardLineRead), m_readersCancel);
@@ -60,13 +63,15 @@ HWUI::HWUI(Settings &settings)
 
 HWUI::~HWUI()
 {
+  deInit();
+  m_blinkTimerConnection.disconnect();
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
   m_readersCancel->cancel();
 }
 
 void HWUI::deInit()
 {
-  Oleds::get().deInit();
+  m_oleds.deInit();
 }
 
 void HWUI::onButtonMessage(const nltools::msg::ButtonChangedMessage &msg)
@@ -76,12 +81,8 @@ void HWUI::onButtonMessage(const nltools::msg::ButtonChangedMessage &msg)
 
 void HWUI::init()
 {
-
+  m_layoutFolderMonitor->start();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-
-  m_editBufferSoundTypeConnection = eb->onSoundTypeChanged(sigc::mem_fun(this, &HWUI::onEditBufferSoundTypeChanged));
-
-  m_editBufferPresetLoadedConnection = eb->onPresetLoaded(sigc::mem_fun(this, &HWUI::onPresetLoaded));
 
   m_panelUnit.init();
   m_baseUnit.init();
@@ -94,7 +95,7 @@ void HWUI::init()
 
   m_rotaryChangedConnection = getPanelUnit().getEditPanel().getKnob().onRotaryChanged(
       sigc::hide(sigc::mem_fun(this, &HWUI::onRotaryChanged)));
-  Oleds::get().syncRedraw();
+  m_oleds.syncRedraw();
 }
 
 void HWUI::onRotaryChanged()
@@ -120,7 +121,7 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
     {
       if(line == "r")
       {
-        LayoutFolderMonitor::get().bruteForce();
+        m_layoutFolderMonitor->bruteForce();
       }
       if(line == "t")
       {
@@ -239,6 +240,11 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
           Application::get().getPresetManager()->stressBlocking(1000);
         }
         Application::get().runWatchDog();
+      }
+      else if(line == "mod-all")
+      {
+        EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
+        ebUseCases.setModulationSourceOfAll(MacroControls::MC1);
       }
       else if(line == "inc-all-fine")
       {
@@ -402,7 +408,7 @@ void HWUI::setModifiers(Buttons buttonID, bool state)
 bool HWUI::isFineAllowed()
 {
   auto uiFocus = m_famSetting.getState().focus;
-  return uiFocus == UIFocus::Parameters || uiFocus == UIFocus::Sound;
+  return (uiFocus == UIFocus::Parameters || uiFocus == UIFocus::Sound) && m_currentParameterIsFineAllowed;
 }
 
 bool HWUI::detectAffengriff(Buttons buttonID, bool state)
@@ -500,122 +506,6 @@ bool HWUI::onBlinkTimeout()
   return true;
 }
 
-VoiceGroup HWUI::getCurrentVoiceGroup() const
-{
-  return m_currentVoiceGroup;
-}
-
-void HWUI::setLoadToPart(bool state)
-{
-  if(std::exchange(m_loadToPartActive, state) != state)
-    m_loadToPartSignal.send(m_loadToPartActive);
-}
-
-void HWUI::setCurrentVoiceGroup(VoiceGroup v)
-{
-  auto oldGroup = m_currentVoiceGroup;
-  if(v == VoiceGroup::I || v == VoiceGroup::II)
-    if(std::exchange(m_currentVoiceGroup, v) != v)
-    {
-      m_voiceGoupSignal.send(m_currentVoiceGroup);
-      auto eb = Application::get().getPresetManager()->getEditBuffer();
-      eb->fakeParameterSelectionSignal(oldGroup, m_currentVoiceGroup);
-      eb->onChange(UpdateDocumentContributor::ChangeFlags::Generic);
-    }
-}
-
-void HWUI::setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v)
-{
-  setCurrentVoiceGroup(v);
-  undoableUpdateParameterSelection(transaction);
-}
-
-void HWUI::undoableUpdateParameterSelection(UNDO::Transaction *transaction)
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto selected = eb->getSelected(getCurrentVoiceGroup());
-  auto id = selected->getID();
-
-  if(id.getVoiceGroup() != VoiceGroup::Global)
-  {
-    eb->undoableSelectParameter(transaction, { id.getNumber(), m_currentVoiceGroup }, false);
-  }
-}
-
-void HWUI::toggleCurrentVoiceGroupAndUpdateParameterSelection()
-{
-  auto currentVG = getCurrentVoiceGroup();
-  auto partName = currentVG == VoiceGroup::I ? "II" : "I";
-  auto scope = Application::get().getPresetManager()->getUndoScope().startTransaction("Select Part "
-                                                                                      + std::to_string(partName));
-  toggleCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction());
-}
-
-void HWUI::toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction)
-{
-  if(Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Single)
-    return;
-
-  if(m_currentVoiceGroup == VoiceGroup::I)
-    setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::II);
-  else if(m_currentVoiceGroup == VoiceGroup::II)
-    setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::I);
-}
-
-void HWUI::toggleCurrentVoiceGroup()
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto scope = eb->getParameterFocusLockGuard();
-
-  if(eb->getType() == SoundType::Single)
-    return;
-
-  if(m_currentVoiceGroup == VoiceGroup::I)
-    setCurrentVoiceGroup(VoiceGroup::II);
-  else if(m_currentVoiceGroup == VoiceGroup::II)
-    setCurrentVoiceGroup(VoiceGroup::I);
-}
-
-sigc::connection HWUI::onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb)
-{
-  return m_voiceGoupSignal.connectAndInit(cb, m_currentVoiceGroup);
-}
-
-sigc::connection HWUI::onLoadToPartModeChanged(const sigc::slot<void, bool> &cb)
-{
-  return m_loadToPartSignal.connectAndInit(cb, m_loadToPartActive);
-}
-
-bool HWUI::isInLoadToPart() const
-{
-  return m_loadToPartActive;
-}
-
-void HWUI::toggleLoadToPart()
-{
-  setLoadToPart(!isInLoadToPart());
-}
-
-void HWUI::onEditBufferSoundTypeChanged(SoundType type)
-{
-  if(type == SoundType::Single)
-  {
-    setLoadToPart(false);
-  }
-}
-
-PresetPartSelection *HWUI::getPresetPartSelection(VoiceGroup vg)
-{
-  static std::array<PresetPartSelection, 2> s_partLoad { PresetPartSelection { VoiceGroup::I },
-                                                         PresetPartSelection { VoiceGroup::II } };
-  return &s_partLoad[static_cast<int>(vg)];
-}
-
-void HWUI::onPresetLoaded()
-{
-  setLoadToPart(false);
-}
-
 std::string HWUI::exportBoled()
 {
   std::string name
@@ -643,7 +533,7 @@ void HWUI::exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std:
   constexpr auto frameBufferDimX = 256;
   constexpr auto frameBufferDimY = 96;
 
-  auto &fb = FrameBuffer::get();
+  auto &fb = m_oleds.getFrameBuffer();
   auto &buffer = fb.getBackBuffer();
   png::image<png::rgb_pixel> boledFile(w, h);
 
@@ -680,7 +570,12 @@ void HWUI::onParameterReselection(Parameter *parameter)
 
 void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter)
 {
+  m_currentParameterIsFineAllowed = newParameter->isFineAllowed();
+
+  if(!m_currentParameterIsFineAllowed)
+    m_fineButton.setState(FineButtonStates::TOGGLED_OFF);
   unsetFineMode();
+
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   if(!eb->isParameterFocusLocked())
   {
@@ -697,4 +592,60 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
       useCases.setFocusAndMode(FocusAndMode { UIFocus::Parameters });
     }
   }
+}
+
+Oleds &HWUI::getOleds()
+{
+  return m_oleds;
+}
+
+void HWUI::startSplash()
+{
+  auto screensaver = m_settings.getSetting<ScreenSaverTimeoutSetting>();
+  auto &boled = getPanelUnit().getEditPanel().getBoled();
+  screensaver->endAndReschedule();
+  boled.setOverlay(new SplashLayout(this));
+}
+
+void HWUI::finishSplash()
+{
+  auto &boled = getPanelUnit().getEditPanel().getBoled();
+  if(boled.getOverlay().get() == m_splashLayout)
+    boled.resetOverlay();
+}
+
+void HWUI::addSplashStatus(const std::string &msg)
+{
+  auto screensaver = m_settings.getSetting<ScreenSaverTimeoutSetting>();
+  screensaver->endAndReschedule();
+  if(m_splashLayout)
+  {
+    m_splashLayout->addMessage(msg);
+  }
+}
+
+void HWUI::setSplashStatus(const std::string &msg)
+{
+  auto screensaver = m_settings.getSetting<ScreenSaverTimeoutSetting>();
+  screensaver->endAndReschedule();
+  if(m_splashLayout)
+  {
+    m_splashLayout->setMessage(msg);
+  }
+}
+
+void HWUI::registerSplash(SplashLayout *l)
+{
+  if(m_splashLayout != nullptr)
+  {
+    nltools::Log::error("overwriting m_splashLayout");
+  }
+  m_splashLayout = l;
+}
+
+void HWUI::unregisterSplash(SplashLayout *l)
+{
+  nltools_detailedAssertAlways(l == m_splashLayout,
+                               "unregisterSplash called with different Splashscreen pointer than installed");
+  m_splashLayout = nullptr;
 }

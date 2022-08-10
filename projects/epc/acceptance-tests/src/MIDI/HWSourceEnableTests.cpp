@@ -2,7 +2,7 @@
 #include <mock/MockDSPHosts.h>
 #include <mock/InputEventStageTester.h>
 
-TEST_CASE("HW Source Enable Tests")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"HW Source Enable Tests")
 {
   //Setup
   ConfigureableDSPHost dsp {};
@@ -68,7 +68,6 @@ TEST_CASE("HW Source Enable Tests")
 
     bool didReceive = false;
     dsp.setOnHWChangedCB([&didReceive](auto id, auto, auto) {
-                           nltools::Log::error("id", id);
                            didReceive = true;
                          });
 
@@ -193,7 +192,7 @@ TEST_CASE("HW Source Enable Tests")
   }
 }
 
-TEST_CASE("Aftertouch & Bender Enable/Disable Tests")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Aftertouch & Bender Enable/Disable Tests")
 {
   //Setup
   ConfigureableDSPHost dsp {};

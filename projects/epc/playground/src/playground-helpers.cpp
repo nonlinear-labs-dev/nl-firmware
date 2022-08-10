@@ -6,6 +6,9 @@
 #include <glib.h>
 #include <iomanip>
 #include <limits>
+#include <dirent.h>
+#include <stddef.h>
+#include <sys/types.h>
 
 std::string to_string(double d)
 {
@@ -23,7 +26,7 @@ namespace Environment
 {
   void printStackTrace(int i)
   {
-    nltools::Log::warning("Crash signal caught!");
+    nltools::Log::error("Crash signal caught!");
 
     const size_t max_frames = 64;
     void* addrlist[max_frames + 1];
@@ -37,14 +40,14 @@ namespace Environment
       return;
     }
 
-    nltools::Log::warning("\n\nThe stack trace:");
+    nltools::Log::error("\n\nThe stack trace:");
 
     // create readable strings to each frame. __attribute__((no_instrument_function))
     char** symbollist = backtrace_symbols(addrlist, addrlen);
 
     // print the stack trace.
     for(guint32 i = 0; i < addrlen; i++)
-      nltools::Log::warning(symbollist[i]);
+      nltools::Log::error(symbollist[i]);
 
     free(symbollist);
     exit(EXIT_FAILURE);
@@ -85,7 +88,7 @@ namespace Environment
       nltools::Log::error("You could be missing some frames from your backtrace. Try to increase your maxFrames");
     }
 
-    auto symbols = backtrace_symbols(stack.data(), numFrames); //symbols is mallocced here
+    auto symbols = backtrace_symbols(stack.data(), numFrames);  //symbols is mallocced here
 
     for(auto i = 0; i < numFrames; i++)
     {

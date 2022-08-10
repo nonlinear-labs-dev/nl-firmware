@@ -6,6 +6,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
 #include "parameters/scale-converters/Linear100PercentScaleConverter.h"
 #include "scale-converters/LinearBipolar100PercentScaleConverter.h"
+#include "use-cases/ModParameterUseCases.h"
 #include <libundo/undo/Transaction.h>
 #include <device-settings/DebugLevel.h>
 #include <xml/Writer.h>
@@ -22,10 +23,8 @@
 #include <presets/PresetManager.h>
 #include <http/UndoScope.h>
 
-ModulateableParameter::ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
-                                             tDisplayValue def, tControlPositionValue coarseDenominator,
-                                             tControlPositionValue fineDenominator)
-    : Parameter(group, id, scaling, def, coarseDenominator, fineDenominator)
+ModulateableParameter::ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling)
+    : Parameter(group, id, scaling)
     , m_modulationAmount(0)
     , m_modSource(MacroControls::NONE)
 {
@@ -44,12 +43,6 @@ size_t ModulateableParameter::getHash() const
 tDisplayValue ModulateableParameter::getModulationAmount() const
 {
   return m_modulationAmount;
-}
-
-void ModulateableParameter::writeToPlaycontroller(MessageComposer &cmp) const
-{
-  Parameter::writeToPlaycontroller(cmp);
-  cmp << getModulationSourceAndAmountPacked();
 }
 
 uint16_t ModulateableParameter::getModulationSourceAndAmountPacked() const
@@ -223,28 +216,12 @@ void ModulateableParameter::loadDefault(UNDO::Transaction *transaction, Defaults
 
 double ModulateableParameter::getModulationAmountFineDenominator() const
 {
-  auto fineDenominator = getValue().getFineDenominator();
-
-  while(fineDenominator > 8000)
-    fineDenominator /= 2;
-
-  return fineDenominator;
+  return ParameterDB::getFineModulationDenominator(getID());
 }
 
 double ModulateableParameter::getModulationAmountCoarseDenominator() const
 {
-  return getValue().getCoarseDenominator();
-}
-
-void ModulateableParameter::exportReaktorParameter(std::stringstream &target) const
-{
-  super::exportReaktorParameter(target);
-  auto packedModulationInfo = getModulationSourceAndAmountPacked();
-
-  if(m_modSource == MacroControls::NONE)
-    packedModulationInfo = 0x2000;
-
-  target << packedModulationInfo << std::endl;
+  return ParameterDB::getCourseModulationDenominator(getID());
 }
 
 Glib::ustring ModulateableParameter::stringizeModulationAmount() const

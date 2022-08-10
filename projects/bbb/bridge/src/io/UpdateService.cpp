@@ -11,6 +11,5 @@ UpdateService::UpdateService()
 
 void UpdateService::onUpdateNotificationReceived()
 {
-  nltools::Log::error("onUpdateNotificationReceived");
   SpawnCommandLine cmd("systemd-run /bin/sh /usr/C15/scripts/install-update-from-epc.sh");
 }

@@ -61,8 +61,11 @@ void TuneReference::writeDocument(Writer& writer, tUpdateID knownRevision) const
 
 void TuneReference::syncExternals(SendReason reason) const
 {
-  nltools::msg::Setting::TuneReference msg { m_value.getQuantizedClipped() };
-  Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::TuneReference>(msg);
+  if(Application::exists())
+  {
+    nltools::msg::Setting::TuneReference msg { m_value.getQuantizedClipped() };
+    Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::TuneReference>(msg);
+  }
 }
 
 Glib::ustring TuneReference::getName() const

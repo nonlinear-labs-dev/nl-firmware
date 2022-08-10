@@ -7,6 +7,7 @@
 
 DeviceName::DeviceName(Settings &parent)
     : super(parent)
+    , m_settings(parent)
 {
 }
 
@@ -29,7 +30,7 @@ void DeviceName::set(Glib::ustring name)
   if(m_name != name || m_name.empty())
   {
     m_name = name;
-    sanitize();
+    sanitize(m_settings.getSetting<DateTimeAdjustment>());
     notify();
   }
 }
@@ -39,11 +40,11 @@ const Glib::ustring &DeviceName::get() const
   return m_name;
 }
 
-void DeviceName::sanitize()
+void DeviceName::sanitize(DateTimeAdjustment *adj)
 {
   if(m_name.empty())
   {
-    guint16 u = TimeTools::getAdjustedTimestamp();
+    guint16 u = TimeTools::getAdjustedTimestamp(adj);
 
     try
     {

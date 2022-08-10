@@ -7,6 +7,7 @@
 #include <cmath>
 #include <math.h>
 #include <parameters/scale-converters/ScaleConverter.h>
+#include <parameters/names/ParameterDB.h>
 
 size_t QuantizedValue::getHash() const
 {
@@ -70,6 +71,14 @@ Parameter *QuantizedValue::IncrementalChanger::getOwner()
   return m_value.m_owner;
 }
 
+QuantizedValue::QuantizedValue(Parameter* owner, const ScaleConverter* scale)
+  : super(scale, ParameterDB::getDefaultValue(owner->getID()))
+  , m_owner(owner)
+  , m_coarseDenominator(ParameterDB::getCourseDenominator(owner->getID()))
+  , m_fineDenominator(ParameterDB::getFineDenominator(owner->getID()))
+{
+}
+
 QuantizedValue::QuantizedValue(Parameter *owner, const ScaleConverter *scale, tControlPositionValue def,
                                tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator)
     : super(scale, def)
@@ -81,17 +90,6 @@ QuantizedValue::QuantizedValue(Parameter *owner, const ScaleConverter *scale, tC
 
 QuantizedValue::~QuantizedValue()
 {
-}
-
-tTcdValue QuantizedValue::getTcdValue() const
-{
-  return getScaleConverter()->controlPositionToTcd(getQuantizedClipped());
-}
-
-void QuantizedValue::setTcdValue(tTcdValue v)
-{
-  auto cp = getScaleConverter()->tcdToControlPosition(v);
-  setRawValue(Initiator::INDIRECT, cp);
 }
 
 tDisplayValue QuantizedValue::getDisplayValue() const
@@ -263,7 +261,6 @@ void QuantizedValue::onRawValueChanged(Initiator initiator, tValueType oldRawVal
 
   super::onRawValueChanged(initiator, oldRawValue, newRawValue);
 }
-
 void QuantizedValue::onClippedValueChanged(Initiator initiator, tControlPositionValue oldClippedValue,
                                            tControlPositionValue newClippedValue)
 {
@@ -273,9 +270,15 @@ void QuantizedValue::onClippedValueChanged(Initiator initiator, tControlPosition
   if(oldFine != newFine)
     onFineQuantizedChanged(initiator, oldFine, newFine);
 }
+
 void QuantizedValue::onFineQuantizedChanged(Initiator initiator, tControlPositionValue oldFine,
                                             tControlPositionValue newFine)
 {
   if(m_owner)
     m_owner->onValueFineQuantizedChanged(initiator, oldFine, newFine);
+}
+
+void QuantizedValue::setFactoryDefault(double factoryDefault)
+{
+  super::setFactoryDefaultValue(factoryDefault);
 }

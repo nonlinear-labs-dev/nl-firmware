@@ -59,8 +59,8 @@ run_update() {
     freeze
 }
 
-
 main() {
+    @C15_INSTALL_PATH@/text2soled/text2soled multitext "Unpacking C15 update...@SC1" "DO NOT SWITCH OFF!@SC2" "Unpacking C15 update...@BC2" "DO NOT SWITCH OFF!@BC3"
     echo "install-update-from-epc.sh" >> /tmp/update.log
     unpack_update && check_preconditions && run_update
     return 0

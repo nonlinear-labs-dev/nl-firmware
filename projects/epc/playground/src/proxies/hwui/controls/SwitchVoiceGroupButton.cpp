@@ -1,4 +1,6 @@
 #include "SwitchVoiceGroupButton.h"
+#include "groups/MasterGroup.h"
+#include "groups/ScaleGroup.h"
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
@@ -18,10 +20,11 @@
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button("", pos)
 {
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::mem_fun(this, &SwitchVoiceGroupButton::onParameterSelectionChanged), getHWUI()->getCurrentVoiceGroup());
+      sigc::mem_fun(this, &SwitchVoiceGroupButton::onParameterSelectionChanged), currentVG);
 
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &SwitchVoiceGroupButton::onVoiceGroupChanged));
 
   Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
@@ -31,12 +34,23 @@ SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
 void SwitchVoiceGroupButton::rebuild()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto selected = eb->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto selected = eb->getSelected(vg);
 
   if(allowToggling(selected, eb))
     setText(StringAndSuffix { "I / II", 0 });
+  else if(MasterGroup::isMasterParameter(selected))
+  {
+    setText(StringAndSuffix { "Scale...", 0 });
+  }
+  else if(ScaleGroup::isScaleParameter(selected))
+  {
+    setText(StringAndSuffix { "back..", 0 });
+  }
   else
+  {
     setText(StringAndSuffix { "", 0 });
+  }
 }
 
 void SwitchVoiceGroupButton::onParameterSelectionChanged(Parameter* oldSelected, Parameter* newSelection)

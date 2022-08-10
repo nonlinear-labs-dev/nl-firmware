@@ -49,15 +49,10 @@ class TouchClick extends Click {
 		});
 
 		if (longPress != null) {
-			Tracer.log("TouchClick detected log press");
 			Control ret = receiver.onContextMenu(getPosition());
 
 			if (ret != null)
 				return ret;
-			else
-				Tracer.log("TouchClick receiver didn't handle context menu event");
-		} else {
-			Tracer.log("TouchClick no log press detected");
 		}
 
 		return super.applyTo(receiver);

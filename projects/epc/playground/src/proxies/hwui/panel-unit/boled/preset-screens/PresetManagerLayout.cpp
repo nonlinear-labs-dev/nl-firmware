@@ -35,6 +35,8 @@
 #include "RenameBankLayout.h"
 #include "clipboard/Clipboard.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
+#include "proxies/hwui/panel-unit/boled/preset-screens/controls/ChangedParameterIndicator.h"
 
 PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode oldFocusAndMode)
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
@@ -44,7 +46,7 @@ PresetManagerLayout::PresetManagerLayout(FocusAndMode focusAndMode, FocusAndMode
   m_dlSettingConnection = Application::get().getSettings()->getSetting<DirectLoadSetting>()->onChange(
       sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
 
-  m_loadToPartConnection = Application::get().getHWUI()->onLoadToPartModeChanged(
+  m_loadToPartConnection = Application::get().getVGManager()->onLoadToPartModeChanged(
       sigc::hide(sigc::mem_fun(this, &PresetManagerLayout::setup)));
 }
 
@@ -70,6 +72,7 @@ void PresetManagerLayout::setup()
   m_presets = nullptr;
   m_loadMode = nullptr;
   m_bankButton = nullptr;
+  m_changedIndicator = nullptr;
 
   clear();
 
@@ -126,6 +129,7 @@ void PresetManagerLayout::setupBankEdit()
 void PresetManagerLayout::setupBankSelect()
 {
   auto hwui = Application::get().getHWUI();
+  auto vgManager = Application::get().getVGManager();
 
   if(getStoreModeData() != nullptr)
   {
@@ -135,16 +139,16 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
 
   addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), true));
-  addControl(new UndoIndicator(Rect(18, 18, 10, 8)));
+  addControl(new UndoIndicator(Rect(22, 15, 10, 8)));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 36, 58, 62)));
 
   auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->isDual();
 
-  if(isDualEB && Application::get().getHWUI()->isInLoadToPart())
+  if(isDualEB && vgManager->isInLoadToPart())
     m_presets
-        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, hwui->getPresetPartSelection(VoiceGroup::I),
-                                              hwui->getPresetPartSelection(VoiceGroup::II)));
+        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, vgManager->getPresetPartSelection(VoiceGroup::I),
+                                              vgManager->getPresetPartSelection(VoiceGroup::II)));
   else
     m_presets = addControl(new PresetList({ 64, 0, 128, 63 }, true));
 
@@ -161,7 +165,7 @@ void PresetManagerLayout::setupBankStore()
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
 
-  addControl(new UndoIndicator(Rect(18, 18, 10, 8)));
+  addControl(new UndoIndicator(Rect(22, 15, 10, 8)));
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
   m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true, getStoreModeData()));
   m_presets->setBankFocus();
@@ -211,6 +215,7 @@ void PresetManagerLayout::setupPresetEdit()
 void PresetManagerLayout::setupPresetSelect()
 {
   auto hwui = Application::get().getHWUI();
+  auto vgManager = Application::get().getVGManager();
   if(getStoreModeData() != nullptr)
   {
     setStoreModeData(nullptr);
@@ -223,15 +228,17 @@ void PresetManagerLayout::setupPresetSelect()
 
   auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
 
-  if(Application::get().getHWUI()->isInLoadToPart() && isDualEditBuffer)
+  if(vgManager->isInLoadToPart() && isDualEditBuffer)
     m_presets
-        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, hwui->getPresetPartSelection(VoiceGroup::I),
-                                              hwui->getPresetPartSelection(VoiceGroup::II)));
+        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, vgManager->getPresetPartSelection(VoiceGroup::I),
+                                              vgManager->getPresetPartSelection(VoiceGroup::II)));
   else
     m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
 
   addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), true));
-  addControl(new UndoIndicator(Rect(18, 18, 10, 8)));
+  addControl(new UndoIndicator(Rect(22, 15, 10, 8)));
+  m_changedIndicator = addControl(new ChangedParameterIndicator(Rect(0, 14, 64, 14)));
+  m_changedIndicator->setVisible(hwui->isModifierSet(ButtonModifier::SHIFT));
 }
 
 void PresetManagerLayout::setupPresetStore()
@@ -244,13 +251,16 @@ void PresetManagerLayout::setupPresetStore()
   addControl(new InvertedLabel("Store", Rect(8, 26, 48, 12)))->setHighlight(true);
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
 
-  addControl(new UndoIndicator(Rect(18, 18, 10, 8)));
+  addControl(new UndoIndicator(Rect(22, 15, 10, 8)));
   m_presets = addControl(new PresetListSelectStorePosition(Rect(64, 0, 128, 63), true, getStoreModeData()));
   m_menu = addControl(new AppendOverwriteInsertButtonMenu(*this, Rect(195, 1, 58, 62)));
 }
 
 bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(m_changedIndicator)
+    m_changedIndicator->setVisible(modifiers[ButtonModifier::SHIFT]);
+
   if(m_loadMode)
     if(m_loadMode->onButton(i, down, modifiers))
       return true;
@@ -327,7 +337,7 @@ bool PresetManagerLayout::onButton(Buttons i, bool down, ButtonModifiers modifie
       case Buttons::BUTTON_ENTER:
         if(m_menu)
           m_menu->doAction();
-        else if(Application::get().getHWUI()->isInLoadToPart())
+        else if(Application::get().getVGManager()->isInLoadToPart())
         {
           return m_presets->onButton(i, down, modifiers);
         }
@@ -368,7 +378,7 @@ void PresetManagerLayout::animateSelectedPresetIfInLoadPartMode(std::function<vo
 {
   auto pm = getPresetManager();
   auto selPreset = pm->getSelectedPreset();
-  if(Application::get().getHWUI()->isInLoadToPart() && selPreset)
+  if(Application::get().getVGManager()->isInLoadToPart() && selPreset)
     m_presets->animatePreset(selPreset, std::move(cb));
   else
     cb();

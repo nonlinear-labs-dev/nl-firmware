@@ -231,7 +231,7 @@ void Settings::save()
 
 void Settings::sanitize()
 {
-  getSetting<DeviceName>()->sanitize();
+  getSetting<DeviceName>()->sanitize(getSetting<DateTimeAdjustment>());
 }
 
 void Settings::addSetting(const Glib::ustring &key, Setting *s)

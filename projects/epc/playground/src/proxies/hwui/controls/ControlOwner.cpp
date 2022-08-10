@@ -79,6 +79,13 @@ void ControlOwner::forEach(const tIfCallback &cb) const
       return;
 }
 
+void ControlOwner::forEachReversed(const ControlOwner::tIfCallback &cb) const
+{
+  for(auto it = m_controls.rbegin(); it != m_controls.rend(); it++)
+    if(!cb(*it))
+      return;
+}
+
 void ControlOwner::forEach(const tCallback &cb) const
 {
   for(const auto &c : m_controls)
@@ -118,7 +125,6 @@ void ControlOwner::highlightButtonWithCaption(const Glib::ustring &caption)
     }
   });
 }
-
 void ControlOwner::highlightButtonWithCaption(const Glib::ustring &caption, bool desiredHighlight)
 {
   forEach([&caption, &desiredHighlight](tControlPtr ctrl) {

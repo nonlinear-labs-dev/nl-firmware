@@ -36,4 +36,9 @@ class DriveExtColumn extends ParameterColumn {
 		addChild(new Fold(this));
 		addChild(new Asym(this));
 	}
+
+	@Override
+	protected boolean shouldDisplayHeaderOnFirstParameter() {
+		return false;
+	}
 }

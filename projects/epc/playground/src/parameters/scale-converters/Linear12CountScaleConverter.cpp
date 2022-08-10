@@ -2,7 +2,7 @@
 #include "dimension/VoicesDimension.h"
 
 Linear12CountScaleConverter::Linear12CountScaleConverter()
-    : LinearScaleConverter(tTcdRange(1, 12), tDisplayRange(1, 12), VoicesDimension::get())
+    : LinearScaleConverter(tDisplayRange(1, 12), VoicesDimension::get())
 {
 }
 

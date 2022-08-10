@@ -1,6 +1,7 @@
 #include <Application.h>
 #include <parameter_declarations.h>
 #include <device-settings/SyncSplitSettingUseCases.h>
+#include <device-settings/DateTimeAdjustment.h>
 #include <presets/ClusterEnforcement.h>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string.hpp>
@@ -88,14 +89,19 @@ Bank* PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring
   return bank;
 }
 
-Bank* PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring& y)
+Bank* PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring& y, const Uuid& uuid)
 {
   auto scope = m_presetManager.getUndoScope().startTransaction("New Bank");
   auto transaction = scope->getTransaction();
   auto bank = m_presetManager.addBank(transaction);
   bank->setX(transaction, x);
   bank->setY(transaction, y);
-  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer()));
+  auto modified = m_presetManager.getEditBuffer()->isModified();
+  auto preset = bank->appendPreset(transaction, std::make_unique<Preset>(bank, *m_presetManager.getEditBuffer(), uuid));
+
+  if(modified)
+    preset->guessName(transaction);
+  
   bank->selectPreset(transaction, preset->getUuid());
   m_presetManager.selectBank(transaction, bank->getUuid());
   m_presetManager.getEditBuffer()->undoableLoad(transaction, preset, false);
@@ -698,7 +704,9 @@ bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InS
       reader.read<PresetManagerSerializer>(&pm, pg._update);
       ae.sendEditBuffer();
     }
-    pg.finish();
+
+    if(pg._finish)
+      pg.finish();
   });
 
   // fill preset manager with trash transaction, as snapshot above will
@@ -928,6 +936,7 @@ Bank* PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y
   auto transaction = scope->getTransaction();
 
   auto dlSetting = m_settings.getSetting<DirectLoadSetting>();
+  auto adj = m_settings.getSetting<DateTimeAdjustment>();
   std::shared_ptr<BooleanSettings> autoLoadOff = dlSetting->scopedOverlay(BooleanSettings::BOOLEAN_SETTING_FALSE);
   auto newBank = m_presetManager.addBank(transaction, std::make_unique<Bank>(&m_presetManager));
 
@@ -942,7 +951,7 @@ Bank* PresetManagerUseCases::importBankFromStream(InStream& stream, int x, int y
 
   newBank->ensurePresetSelection(transaction);
   newBank->setAttribute(transaction, "Name of Import File", fileName);
-  newBank->setAttribute(transaction, "Date of Import File", TimeTools::getAdjustedIso());
+  newBank->setAttribute(transaction, "Date of Import File", TimeTools::getAdjustedIso(adj));
   newBank->setAttribute(transaction, "Name of Export File", "");
   newBank->setAttribute(transaction, "Date of Export File", "");
 

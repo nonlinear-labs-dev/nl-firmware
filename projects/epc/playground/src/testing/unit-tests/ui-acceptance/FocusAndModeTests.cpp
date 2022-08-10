@@ -24,14 +24,14 @@ inline void traverseFocusAndMode()
   });
 }
 
-TEST_CASE("Mixed - HWUI has no Exception Screen on FocusAndMode Traversal")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Mixed - HWUI has no Exception Screen on FocusAndMode Traversal")
 {
   auto layoutMode = Application::get().getSettings()->getSetting<LayoutMode>();
   layoutMode->set(LayoutVersionMode::Mixed);
   traverseFocusAndMode();
 }
 
-TEST_CASE("Old - HWUI does not crash on FocusAndMode Traversal")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Old - HWUI does not crash on FocusAndMode Traversal")
 {
   auto layoutMode = Application::get().getSettings()->getSetting<LayoutMode>();
   layoutMode->set(LayoutVersionMode::Old);

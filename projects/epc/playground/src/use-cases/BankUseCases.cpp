@@ -15,10 +15,11 @@
 #include <tools/TimeTools.h>
 #include <xml/FileOutStream.h>
 #include <xml/VersionAttribute.h>
+#include <device-settings/DateTimeAdjustment.h>
 
 BankUseCases::BankUseCases(Bank* bank, Settings& settings)
     : m_bank { bank }
-    , m_settings{ settings }
+    , m_settings { settings }
 {
   nltools_assertAlways(m_bank != nullptr);
 }
@@ -113,10 +114,12 @@ void BankUseCases::dropBank(const Bank* source)
       auto transaction = scope->getTransaction();
       size_t i = 0;
 
-      source->forEachPreset([&](auto p) {
-        m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p));
-        i++;
-      });
+      source->forEachPreset(
+          [&](auto p)
+          {
+            m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p));
+            i++;
+          });
     }
   }
 }
@@ -240,7 +243,8 @@ void BankUseCases::exportBankToFile(const std::string& outFile)
 {
   GenericScopeGuard syncAfterAllFileOperation([] {}, FileSystem::syncAll);
   auto scope = UNDO::Scope::startTrashTransaction();
-  m_bank->setAttribute(scope->getTransaction(), "Date of Export File", TimeTools::getAdjustedIso());
+  auto adj = m_settings.getSetting<DateTimeAdjustment>();
+  m_bank->setAttribute(scope->getTransaction(), "Date of Export File", TimeTools::getAdjustedIso(adj));
   m_bank->setAttribute(scope->getTransaction(), "Name of Export File", outFile);
   PresetBankSerializer serializer(m_bank, {}, false);
   FileOutStream stream(outFile, false);
@@ -255,9 +259,9 @@ void BankUseCases::insertBank(Bank* toInsert, size_t insertPosition)
                                                    m_bank->getName(true));
   auto transaction = scope->getTransaction();
 
-  toInsert->forEachPreset([&, i = 0](auto p) mutable {
-    m_bank->insertPreset(transaction, insertPosition + (i++), std::make_unique<Preset>(m_bank, *p));
-  });
+  toInsert->forEachPreset(
+      [&, i = 0](auto p) mutable
+      { m_bank->insertPreset(transaction, insertPosition + (i++), std::make_unique<Preset>(m_bank, *p)); });
 }
 
 Preset* BankUseCases::insertEditBufferAtPosition(int anchor)
@@ -337,4 +341,41 @@ PresetManager* BankUseCases::getPresetManager() const
   auto pm = m_bank->getPresetManager();
   nltools_assertOnDevPC(pm != nullptr);
   return pm;
+}
+
+void BankUseCases::selectFirstOrLastPreset(int inc)
+{
+  Preset* newPreset = nullptr;
+
+  if(inc < 0)
+    newPreset = m_bank->getPresetAt(0);
+  else if(inc > 0)
+    newPreset = m_bank->getPresetAt(m_bank->getNumPresets() - 1);
+
+  if(auto presetManager = getPresetManager())
+  {
+    const bool directLoad = isDirectLoadActive();
+    if(auto current = m_bank->getSelectedPreset())
+    {
+      if(auto selectedPreset = presetManager->getSelectedPreset())
+      {
+        if(newPreset != selectedPreset && newPreset != nullptr)
+        {
+          Glib::ustring name {};
+          if(directLoad)
+            name = newPreset->buildUndoTransactionTitle("Select and Load Preset");
+          else
+            name = newPreset->buildUndoTransactionTitle("Select Preset");
+
+          auto scope = m_bank->getUndoScope().startContinuousTransaction(m_bank, std::chrono::hours(1), name);
+          m_bank->selectPreset(scope->getTransaction(), newPreset->getUuid());
+
+          if(directLoad)
+          {
+            presetManager->getEditBuffer()->undoableLoad(scope->getTransaction(), newPreset, true);
+          }
+        }
+      }
+    }
+  }
 }

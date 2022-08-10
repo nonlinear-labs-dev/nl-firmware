@@ -11,8 +11,9 @@
 #include <xml/ZippedMemoryOutStream.h>
 #include <xml/VersionAttribute.h>
 #include <libundo/undo/TrashTransaction.h>
+#include <iostream>
 
-TEST_CASE("Import PresetManager consumes memory as expected")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Import PresetManager consumes memory as expected")
 {
   auto pm = TestHelper::getPresetManager();
   {
@@ -28,10 +29,10 @@ TEST_CASE("Import PresetManager consumes memory as expected")
     uc.importBackupFile(stream, {}, TestHelper::getAudioEngineProxy());
   }
 
-  CHECK(memUsage.getUsage() < 8 * 1024 * 1024);
+  CHECK(memUsage.getUsage() < 9 * 1024 * 1024);
 }
 
-TEST_CASE("Import PresetManager overwrites banks")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Import PresetManager overwrites banks")
 {
   auto pm = TestHelper::getPresetManager();
   auto settings = TestHelper::getSettings();
@@ -49,10 +50,10 @@ TEST_CASE("Import PresetManager overwrites banks")
   REQUIRE(pm->getBanks().size() == 1);
   REQUIRE(pm->getBanks().front()->getName(false) == "NL Weird 06");
 
-  CHECK(memUsage.getUsage() < 4 * 1024 * 1024);
+  CHECK(memUsage.getUsage() < 4.5 * 1024 * 1024);
 }
 
-TEST_CASE("Import PresetManager is undoable")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Import PresetManager is undoable")
 {
   auto pm = TestHelper::getPresetManager();
   auto settings = TestHelper::getSettings();
@@ -80,5 +81,5 @@ TEST_CASE("Import PresetManager is undoable")
   REQUIRE(pm->getBanks().size() == 1);
   REQUIRE(pm->getBanks().front()->getName(false) == "NL Weird 06");
 
-  CHECK(memUsage.getUsage() < 4 * 1024 * 1024);
+  CHECK(memUsage.getUsage() < 4.5 * 1024 * 1024);
 }

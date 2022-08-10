@@ -12,9 +12,10 @@ ParameterInfoText::ParameterInfoText(ControlOwner *parent)
     : super("")
     , m_parent(parent)
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   setPosition(Rect(2, 0, 0, 0));
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      mem_fun(this, &ParameterInfoText::onParameterSelected), getHWUI()->getCurrentVoiceGroup());
+      mem_fun(this, &ParameterInfoText::onParameterSelected), vg);
 }
 
 void ParameterInfoText::onParameterSelected(Parameter *oldParam, Parameter *newParam)
@@ -34,9 +35,12 @@ void ParameterInfoText::onParameterSelected(Parameter *oldParam, Parameter *newP
 
 void ParameterInfoText::onParameterChanged(const Parameter *newParameter)
 {
-  auto &db = ParameterDB::get();
-  onTextLoaded(db.getDescription(newParameter->getID()));
-  scrollTop();
+  if(auto eb = newParameter->getParentEditBuffer())
+  {
+    auto &db = eb->getParameterDB();
+    onTextLoaded(db.getDescription(newParameter->getID()));
+    scrollTop();
+  }
 }
 
 void ParameterInfoText::onTextLoaded(const Glib::ustring &text)
@@ -62,5 +66,5 @@ void ParameterInfoText::setDirty()
 
 std::shared_ptr<Font> ParameterInfoText::getFont()
 {
-  return Oleds::get().getFont("Emphase-8-TXT-Regular", 8);
+  return Fonts::get().getFont("Emphase-8-TXT-Regular", 8);
 }

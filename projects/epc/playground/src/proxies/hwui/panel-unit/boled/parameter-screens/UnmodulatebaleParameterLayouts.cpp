@@ -1,4 +1,8 @@
 #include "UnmodulatebaleParameterLayouts.h"
+#include "groups/ScaleGroup.h"
+#include "use-cases/EditBufferUseCases.h"
+#include "parameter_declarations.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAmountButton.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterBarSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
@@ -7,6 +11,9 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 #include <proxies/hwui/HWUI.h>
+#include <Application.h>
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 UnmodulateableParameterLayout2::UnmodulateableParameterLayout2()
     : super()
@@ -31,6 +38,9 @@ UnmodulateableParameterSelectLayout2::UnmodulateableParameterSelectLayout2()
     , super1()
     , super2()
 {
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
+  m_signalParameterSelectionChanged = Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      sigc::mem_fun(this, &UnmodulateableParameterSelectLayout2::onParameterSelectionChanged), currentVG);
 }
 
 void UnmodulateableParameterSelectLayout2::init()
@@ -57,6 +67,15 @@ void UnmodulateableParameterSelectLayout2::init()
   highlight<SelectedParameterBarSlider>();
   highlight<SelectedParameterValue>();
   highlight<ParameterNameLabel>();
+}
+
+bool UnmodulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
+{
+  return ParameterSelectLayout2::onButton(i, down, modifiers);
+}
+
+void UnmodulateableParameterSelectLayout2::onParameterSelectionChanged(Parameter *oldP, Parameter *newP)
+{
 }
 
 UnmodulateableParameterEditLayout2::UnmodulateableParameterEditLayout2()

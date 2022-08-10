@@ -10,12 +10,17 @@ public class SmallModulateableParameter extends ModulatableParameterWithoutName 
 
     public SmallModulateableParameter(MapsLayout parent, int num) {
         super(parent, num);
-        addChild(new UnModulateableParameterName(this));
+        addChild(new UnModulateableParameterName(this) {
+            @Override
+            public double getLevelOfDetailForFullVisibility() {
+                return getParent().getLevelOfDetailForFullVisibility() + 1;
+            }
+        });
 
         modSrcLabel = addChild(new ModulationSourceLabel(this, getParameterNumber()) {
             @Override
             public double getLevelOfDetailForFullVisibility() {
-                return getParent().getLevelOfDetailForFullVisibility() + 1;
+                return 0;
             }
         });
 
@@ -28,6 +33,16 @@ public class SmallModulateableParameter extends ModulatableParameterWithoutName 
             @Override
             protected double getBasicHeight() {
                 return 14;
+            }
+
+            @Override
+            protected double getMinHeight() {
+                return 0;
+            }
+
+            @Override
+            public double getLevelOfDetailForFullVisibility() {
+                return getParent().getLevelOfDetailForFullVisibility() + 1;
             }
         });
 

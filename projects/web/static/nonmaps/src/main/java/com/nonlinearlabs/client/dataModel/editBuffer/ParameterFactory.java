@@ -2,6 +2,7 @@ package com.nonlinearlabs.client.dataModel.editBuffer;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
@@ -21,24 +22,27 @@ public class ParameterFactory {
 			307, 308, 310, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 330,
 			332, 334, 336, 338, 340, 342, 344, 346, 348, 350, 352, 354, 356, 358, 360, 362, 364, 365, 366, 367, 369,
 			370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 391,
-			393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405 };
+			393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 408 };
 
 	static private int[] globalParameters = { 243, 244, 245, 246, 247, 248, 254, 255, 256, 257, 258, 259, 260, 261, 262,
 			263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283,
 			284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322,
 			323, 324, 325, 326, 327, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383,	384, 
-			385, 386, 387, 388, 391, 398, 399, 400, 401, 402, 403, 404, 405 };
+			385, 386, 387, 388, 391, 398, 399, 400, 401, 402, 403, 404, 405, 406, 408 };
 
 	static private int[] modulateableParameters = { 0, 2, 4, 6, 8, 10, 12, 19, 21, 23, 25, 27, 29, 31, 38, 40, 42, 44,
-			46, 53, 57, 60, 64, 68, 71, 76, 78, 81, 83, 87, 90, 94, 98, 101, 106, 108, 111, 113, 115, 119, 123, 127,
-			129, 133, 136, 138, 140, 144, 148, 150, 153, 156, 158, 160, 162, 164, 169, 172, 175, 178, 181, 185, 188,
-			192, 194, 197, 199, 201, 204, 207, 209, 211, 214, 216, 219, 223, 225, 227, 229, 233, 235, 238, 241, 247,
-			248, 250, 297, 299, 301, 302, 305, 308, 310, 342, 344, 346, 348, 350, 352, 354, 356, 358, 360, 362, 367,
-			389 };
+			46, 53, 56, 57, 59, 60, 62, 63, 64, 66, 67, 68, 70, 71, 73, 74, 75, 76, 78, 80, 81, 83, 86, 87, 89, 90, 92,
+			93, 94, 96, 97, 98, 100, 101, 103, 104, 105, 106, 108, 110, 111, 113, 115, 118, 119, 123, 126, 127,	129, 132, 
+			133, 135, 136, 138, 140, 143, 144, 147, 148, 150, 152, 153, 155, 156, 158, 160, 162, 164, 166, 167, 169, 171,
+			172, 174, 175, 177, 178, 180, 181, 183, 184, 185, 188, 190, 191, 192, 194, 196, 197, 199, 201, 203, 204, 206,
+			207, 209, 211, 213, 214, 216, 218, 219, 221, 222, 223, 225, 227, 229, 231, 232, 233, 235, 237, 238, 240, 241,
+			247, 248, 250, 252, 253, 294, 295, 296, 297, 299, 301, 302, 303, 304, 305, 307, 308, 310, 313, 314, 315, 316,
+			317, 318, 319, 320, 321, 322, 323, 332, 338, 342, 344, 346, 348, 350, 352, 354, 356, 358, 360, 362, 367, 389,
+			391, 406, 408 };
 
 	static private int[] pedals = { 254, 259, 264, 269 };
 	static private int[] ribbons = { 284, 289 };
-	static private int[] physicalControls = { 254, 259, 264, 269, 274, 279, 284, 289 }; //
+	static private int[] physicalControls = { 254, 259, 264, 269, 274, 279, 284, 289 };
 
 	static private int[] sendParams = { 398, 399, 400, 401, 402, 403, 404, 405 };
 
@@ -63,9 +67,9 @@ public class ParameterFactory {
 	static {
 		final int[] layerHidden = { 356 };
 		hiddenParametersBySoundType.put(SoundType.Layer, layerHidden);
-		final int[] singleHidden = { 362, 348, 350, 352, 354, 396, 397 };
+		final int[] singleHidden = { 362, 348, 350, 352, 354, 396, 397, 406, 408 };
 		hiddenParametersBySoundType.put(SoundType.Single, singleHidden);
-		final int[] splitHidden = { 348, 350, 352, 354, 396, 397 };
+		final int[] splitHidden = { 348, 350, 352, 396, 397 };
 		hiddenParametersBySoundType.put(SoundType.Split, splitHidden);
 	}
 
@@ -82,6 +86,9 @@ public class ParameterFactory {
 	static public BasicParameterModel create(ParameterId id) {
 		if (Arrays.binarySearch(parameters, id.getNumber()) < 0)
 			throw new NoSuchElementException();
+
+		if (Arrays.binarySearch(scaleOffsetParameters, id.getNumber()) >= 0)
+			return new ScaleOffsetParameterModel(id);
 
 		if (Arrays.binarySearch(modulateableParameters, id.getNumber()) >= 0)
 			return new ModulateableParameterModel(id);
@@ -106,9 +113,6 @@ public class ParameterFactory {
 
 		if (Arrays.binarySearch(modulationRouters, id.getNumber()) >= 0)
 			return new ModulationRouterParameterModel(id);
-
-		if (Arrays.binarySearch(scaleOffsetParameters, id.getNumber()) >= 0)
-			return new ScaleOffsetParameterModel(id);
 
 		return new BasicParameterModel(id);
 	}
@@ -209,6 +213,18 @@ public class ParameterFactory {
 		return true;
 	}
 
+
+	private static boolean noDouble(int[] a) {
+		HashSet<Integer> h = new HashSet<Integer>();
+		for (int i = 0; i < a.length; i++)
+		{
+			if (h.contains(a[i]))
+				return false;
+			h.add(a[i]);
+		}
+		return true;
+	}
+
 	public static void assertSorted() {
 		assert (isSorted(parameters));
 		assert (isSorted(globalParameters));
@@ -224,4 +240,15 @@ public class ParameterFactory {
 		assert (isSorted(globalParameterGroups));
 	}
 
+	public static void assertNoDouble() {
+		assert (noDouble(parameters));
+		assert (noDouble(globalParameters));
+		assert (noDouble(modulateableParameters));
+		assert (noDouble(pedals));
+		assert (noDouble(ribbons));
+		assert (noDouble(macroControls));
+		assert (noDouble(modulationRouters));
+		assert (noDouble(scaleOffsetParameters));
+		assert (noDouble(voicesParameters));
+	}
 }

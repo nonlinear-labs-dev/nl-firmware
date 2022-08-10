@@ -43,6 +43,11 @@ void RoutingSettings::load(const Glib::ustring& text, Initiator initiator)
       idx++;
     }
   }
+
+  if(initiator == Initiator::EXPLICIT_LOAD)
+  {
+    sanitizeReceiveHWSourcesAndPC();
+  }
 }
 
 Glib::ustring RoutingSettings::save() const
@@ -67,10 +72,33 @@ Glib::ustring RoutingSettings::getDisplayString() const
 void RoutingSettings::setState(RoutingSettings::tRoutingIndex hwIdx, RoutingSettings::tAspectIndex settingIdx,
                                bool state)
 {
-  auto& val = m_data.at(static_cast<size_t>(hwIdx)).at(static_cast<size_t>(settingIdx));
+  auto updatePair = [](bool& toSet, bool& other, bool value)
+  {
+    if(value)
+      other = false;
+    toSet = value;
+  };
+
+  auto idx = static_cast<size_t>(hwIdx);
+  auto& val = m_data.at(idx).at(static_cast<size_t>(settingIdx));
+  auto changed = false;
+
   if(val != state)
   {
-    val = state;
+    if(hwIdx != tRoutingIndex::Notes && settingIdx == tAspectIndex::RECEIVE_SPLIT)
+      updatePair(val, m_data.at(idx).at(static_cast<size_t>(tAspectIndex::RECEIVE_PRIMARY)), state);
+    else if(hwIdx != tRoutingIndex::Notes && settingIdx == tAspectIndex::RECEIVE_PRIMARY)
+      updatePair(val, m_data.at(idx).at(static_cast<size_t>(tAspectIndex::RECEIVE_SPLIT)), state);
+    else
+      val = state;
+
+    changed = true;
+  }
+
+  auto wasSanitized = sanitizeReceiveHWSourcesAndPC();
+
+  if(changed || wasSanitized)
+  {
     notify();
   }
 }
@@ -82,17 +110,14 @@ const RoutingSettings::tData& RoutingSettings::getRaw() const
 
 void RoutingSettings::setAllValues(bool value)
 {
-  bool anyChanged = false;
-  for(auto& entry : m_data)
-  {
-    for(auto& aspect : entry)
-    {
-      anyChanged |= (aspect != value);
-      aspect = value;
-    }
-  }
+  auto old_values = m_data;
 
-  if(anyChanged)
+  for(auto& entry : m_data)
+    for(auto& aspect : entry)
+      aspect = value;
+
+  sanitizeReceiveHWSourcesAndPC();
+  if(m_data != old_values)
     notify();
 }
 
@@ -101,32 +126,32 @@ bool RoutingSettings::getState(int hwId, RoutingSettings::tAspectIndex aspect) c
   tRoutingIndex idx = tRoutingIndex::LENGTH;
   switch(hwId)
   {
-      case HW_SOURCE_ID_PEDAL_1:
-        idx = tRoutingIndex::Pedal1;
-        break;
-      case HW_SOURCE_ID_PEDAL_2:
-        idx = tRoutingIndex::Pedal2;
-        break;
-      case HW_SOURCE_ID_PEDAL_3:
-        idx = tRoutingIndex::Pedal3;
-        break;
-      case HW_SOURCE_ID_PEDAL_4:
-        idx = tRoutingIndex::Pedal4;
-        break;
-      case HW_SOURCE_ID_PITCHBEND:
-        idx = tRoutingIndex::Bender;
-        break;
-      case HW_SOURCE_ID_AFTERTOUCH:
-        idx = tRoutingIndex::Aftertouch;
-        break;
-      case HW_SOURCE_ID_RIBBON_1:
-        idx = tRoutingIndex::Ribbon1;
-        break;
-      case HW_SOURCE_ID_RIBBON_2:
-        idx = tRoutingIndex::Ribbon2;
-        break;
-      default:
-        break;
+    case HW_SOURCE_ID_PEDAL_1:
+      idx = tRoutingIndex::Pedal1;
+      break;
+    case HW_SOURCE_ID_PEDAL_2:
+      idx = tRoutingIndex::Pedal2;
+      break;
+    case HW_SOURCE_ID_PEDAL_3:
+      idx = tRoutingIndex::Pedal3;
+      break;
+    case HW_SOURCE_ID_PEDAL_4:
+      idx = tRoutingIndex::Pedal4;
+      break;
+    case HW_SOURCE_ID_PITCHBEND:
+      idx = tRoutingIndex::Bender;
+      break;
+    case HW_SOURCE_ID_AFTERTOUCH:
+      idx = tRoutingIndex::Aftertouch;
+      break;
+    case HW_SOURCE_ID_RIBBON_1:
+      idx = tRoutingIndex::Ribbon1;
+      break;
+    case HW_SOURCE_ID_RIBBON_2:
+      idx = tRoutingIndex::Ribbon2;
+      break;
+    default:
+      break;
   }
   return getState(idx, aspect);
 }
@@ -141,6 +166,32 @@ void RoutingSettings::setAllAspectsForIndex(RoutingSettings::tRoutingIndex hwIdx
     aspect = state;
   }
 
-  if(anyChanged)
+  auto changed = sanitizeReceiveHWSourcesAndPC();
+
+  if(anyChanged || changed)
     notify();
+}
+
+bool RoutingSettings::sanitizeReceiveHWSourcesAndPC()
+{
+  using HW = RoutingSettings::tRoutingIndex;
+
+  auto changed = false;
+
+  for(auto idx : { HW::Aftertouch, HW::Bender, HW::Ribbon1, HW::Ribbon2, HW::Pedal1, HW::Pedal2, HW::Pedal3, HW::Pedal4,
+                   HW::ProgramChange })
+  {
+    auto i = static_cast<size_t>(idx);
+    auto rP = static_cast<size_t>(tAspectIndex::RECEIVE_PRIMARY);
+    auto rS = static_cast<size_t>(tAspectIndex::RECEIVE_SPLIT);
+    auto receivePrim = m_data[i][rP];
+    auto receiveSplit = m_data[i][rS];
+    if(receivePrim && receiveSplit)
+    {
+      m_data[i][rS] = false;
+      changed = true;
+    }
+  }
+
+  return changed;
 }

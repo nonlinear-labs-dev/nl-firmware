@@ -6,6 +6,7 @@
 #include <presets/EditBuffer.h>
 #include <libundo/undo/Scope.h>
 #include <proxies/hwui/HWUI.h>
+#include "use-cases/ModParameterUseCases.h"
 
 bool ModulationBoundControl::onButton(Buttons i, bool down, ButtonModifiers)
 {
@@ -15,8 +16,8 @@ bool ModulationBoundControl::onButton(Buttons i, bool down, ButtonModifiers)
       if(down)
       {
         auto eb = Application::get().getPresetManager()->getEditBuffer();
-        if(auto modulatedParam
-           = dynamic_cast<ModulateableParameter *>(eb->getSelected(getHWUI()->getCurrentVoiceGroup())))
+        auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+        if(auto modulatedParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(vg)))
         {
           ModParameterUseCases useCase(modulatedParam);
           useCase.setModulationAmount(0);

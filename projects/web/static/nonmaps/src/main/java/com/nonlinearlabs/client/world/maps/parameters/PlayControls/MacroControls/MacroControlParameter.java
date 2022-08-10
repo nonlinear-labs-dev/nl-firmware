@@ -19,6 +19,7 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 
 	private String info = "";
 
+
 	private class MacroControlValueDisplay extends ValueDisplayLarge {
 		private MacroControlValueDisplay(MapsLayout parent, int parameterID) {
 			super(parent, parameterID);
@@ -26,8 +27,24 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 	}
 
 	private class MacroControlSlider extends SliderHorizontalWithHandle {
+		private boolean hasBottomMargin = false;
+
 		private MacroControlSlider(MapsLayout parent, int parameterID) {
 			super(parent, parameterID);
+		}
+
+		@Override
+		public void doFirstLayoutPass(double levelOfDetail) {
+			super.doFirstLayoutPass(levelOfDetail);
+			
+			double marginLevel = 4.5;
+			hasBottomMargin = levelOfDetail <= marginLevel;
+		}
+
+		@Override
+		public double getBottomMargin()
+		{
+			return hasBottomMargin ? 10 : 0;
 		}
 	}
 

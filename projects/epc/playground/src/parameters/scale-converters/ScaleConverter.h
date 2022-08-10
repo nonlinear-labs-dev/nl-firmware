@@ -10,7 +10,6 @@ class QuantizedValue;
 class ScaleConverter
 {
  public:
-  typedef ValueRange<tTcdValue> tTcdRange;
   typedef ValueRange<tDisplayValue> tDisplayRange;
   typedef ValueRange<tControlPositionValue> tControlPositionRange;
 
@@ -20,20 +19,16 @@ class ScaleConverter
   [[nodiscard]] virtual tControlPositionValue getFineDenominator(const QuantizedValue &v) const;
 
   [[nodiscard]] virtual tDisplayValue controlPositionToDisplay(const tControlPositionValue &cpValue) const = 0;
-  [[nodiscard]] virtual tTcdValue controlPositionToTcd(const tControlPositionValue &cpValue) const = 0;
-  [[nodiscard]] virtual tControlPositionValue tcdToControlPosition(tTcdValue v) const = 0;
-
   [[nodiscard]] virtual Glib::ustring controlPositionToDisplayJS() const = 0;
 
-  [[nodiscard]] const ScaleConverter::tControlPositionRange getControlPositionRange() const;
+  [[nodiscard]] ScaleConverter::tControlPositionRange getControlPositionRange() const;
   [[nodiscard]] virtual bool isBiPolar() const = 0;
 
   [[nodiscard]] const Dimension &getDimension() const;
-  [[nodiscard]] tTcdRange getTcdRange() const;
 
   template <typename T> static const ScaleConverter *get()
   {
-    static std::map<int, std::unique_ptr<ScaleConverter>> s_converters;
+    static std::map<size_t, std::unique_ptr<ScaleConverter>> s_converters;
 
     auto key = typeid(T).hash_code();
     auto it = s_converters.find(key);

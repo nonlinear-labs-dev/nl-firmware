@@ -12,6 +12,7 @@
 #include <http/UndoScope.h>
 #include <groups/MacroControlsGroup.h>
 #include <groups/ParameterGroup.h>
+#include "use-cases/EditBufferUseCases.h"
 
 int MacroControlEditButtonMenu::s_lastAction = 0;
 
@@ -35,7 +36,8 @@ void MacroControlEditButtonMenu::setup()
   addButton("Rename", std::bind(&MacroControlEditButtonMenu::rename, this));
   addButton("Edit Info", std::bind(&MacroControlEditButtonMenu::editInfo, this));
 
-  if(eb->getSelected(getHWUI()->getCurrentVoiceGroup())->getParentGroup()->areAllParametersLocked())
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  if(eb->getSelected(vg)->getParentGroup()->areAllParametersLocked())
     addButton("Unlock Group", std::bind(&MacroControlEditButtonMenu::unlockGroup, this));
   else
     addButton("Lock Group", std::bind(&MacroControlEditButtonMenu::lockGroup, this));
@@ -79,14 +81,16 @@ void MacroControlEditButtonMenu::unlockGroup()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
-  ebUseCases.unlockGroup(eb->getSelected(getHWUI()->getCurrentVoiceGroup())->getParentGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  ebUseCases.unlockGroup(eb->getSelected(vg)->getParentGroup());
 }
 
 void MacroControlEditButtonMenu::lockGroup()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
-  ebUseCases.lockGroup(eb->getSelected(getHWUI()->getCurrentVoiceGroup())->getParentGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  ebUseCases.lockGroup(eb->getSelected(vg)->getParentGroup());
 }
 
 void MacroControlEditButtonMenu::unlockAll()

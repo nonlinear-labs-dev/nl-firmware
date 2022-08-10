@@ -78,6 +78,42 @@ ParameterImportConversions::ParameterImportConversions(bool registerDefaults)
     registerConverter(C15::PID::MC_Time_D, 5, [=](auto v, auto, auto) { return 0.442; });
     registerConverter(C15::PID::MC_Time_E, 5, [=](auto v, auto, auto) { return 0.442; });
     registerConverter(C15::PID::MC_Time_F, 5, [=](auto v, auto, auto) { return 0.442; });
+
+    registerConverter(C15::PID::Out_Mix_Key_Pan, 11, [=](auto v, auto, auto) { return v * 0.5; });
+    registerConverter(C15::PID::Osc_A_Pitch_KT, 11, [=](auto v, auto, auto) { return pitchKTV11ToV12(v); });
+    registerConverter(C15::PID::Osc_B_Pitch_KT, 11, [=](auto v, auto, auto) { return pitchKTV11ToV12(v); });
+    registerConverter(C15::PID::Comb_Flt_Pitch_KT, 11, [=](auto v, auto, auto) { return pitchKTV11ToV12(v); });
+    registerConverter(C15::PID::Comb_Flt_AP_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
+    registerConverter(C15::PID::Comb_Flt_LP_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
+    registerConverter(C15::PID::SV_Flt_Cut_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
+    registerConverter(C15::PID::Unison_Detune, 11, [=](auto v, auto, auto) { return v * 0.5; });
+    registerMCAmountConverter(C15::PID::Unison_Detune, 11, [=](auto v, auto, auto) { return v * 0.5; });
+
+    registerConverter(C15::PID::Env_A_Att_Vel, 11, [=](auto v, auto, auto) { return v * 0.5; });
+    registerConverter(C15::PID::Env_B_Att_Vel, 11, [=](auto v, auto, auto) { return v * 0.5; });
+    registerConverter(C15::PID::Env_C_Att_Vel, 11, [=](auto v, auto, auto) { return v * 0.5; });
+    registerConverter(C15::PID::Env_A_Time_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
+    registerConverter(C15::PID::Env_B_Time_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
+    registerConverter(C15::PID::Env_C_Time_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
+    registerConverter(C15::PID::Shp_A_FB_Env_C, 11, [=](auto v, auto, auto) { return v * 0.5; });
+    registerConverter(C15::PID::Shp_B_FB_Env_C, 11, [=](auto v, auto, auto) { return v * 0.5; });
+
+    for(auto offset :
+        { C15::PID::Scale_Offset_0, C15::PID::Scale_Offset_1, C15::PID::Scale_Offset_2, C15::PID::Scale_Offset_3,
+          C15::PID::Scale_Offset_4, C15::PID::Scale_Offset_5, C15::PID::Scale_Offset_6, C15::PID::Scale_Offset_7,
+          C15::PID::Scale_Offset_8, C15::PID::Scale_Offset_9, C15::PID::Scale_Offset_10, C15::PID::Scale_Offset_11 })
+      registerConverter(offset, 11, [=](auto v, auto, auto) { return (2. / 3.) * v; });
+
+    registerConverter(C15::PID::Env_A_Att_Vel, 12, [=](auto v, auto, auto) { return -v; });
+    registerConverter(C15::PID::Env_B_Att_Vel, 12, [=](auto v, auto, auto) { return -v; });
+    registerConverter(C15::PID::Env_C_Att_Vel, 12, [=](auto v, auto, auto) { return -v; });
+    registerConverter(C15::PID::Env_A_Rel_Vel, 12, [=](auto v, auto, auto) { return 1 - v; });
+    registerConverter(C15::PID::Env_B_Rel_Vel, 12, [=](auto v, auto, auto) { return 1 - v; });
+    registerConverter(C15::PID::Env_C_Rel_Vel, 12, [=](auto v, auto, auto) { return 1 - v; });
+
+    registerConverter(C15::PID::Env_A_Rel_Vel, 13, [=](auto v, auto, auto) { return v - 1; });
+    registerConverter(C15::PID::Env_B_Rel_Vel, 13, [=](auto v, auto, auto) { return v - 1; });
+    registerConverter(C15::PID::Env_C_Rel_Vel, 13, [=](auto v, auto, auto) { return v - 1; });
   }
 }
 
@@ -217,4 +253,10 @@ tControlPositionValue ParameterImportConversions::reverbColorV4ToV5(tControlPosi
     return d;
 
   return d * d * d * 4.0;
+}
+
+tControlPositionValue ParameterImportConversions::pitchKTV11ToV12(tControlPositionValue v) const
+{
+  auto displayValueIn = v * 105.0;
+  return displayValueIn / 200.0;
 }

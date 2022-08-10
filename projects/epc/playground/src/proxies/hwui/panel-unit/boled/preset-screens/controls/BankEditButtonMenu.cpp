@@ -21,6 +21,7 @@
 #include <nltools/GenericScopeGuard.h>
 #include <device-settings/Settings.h>
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/PresetManagerUseCases.h"
 
 static size_t s_lastSelectedButton = 0;
 
@@ -140,12 +141,12 @@ void BankEditButtonMenu::importBankFromPath(const std::filesystem::directory_ent
 
   if(file != std::filesystem::directory_entry())
   {
-    SplashLayout::start();
+    hwui->startSplash();
     auto pm = Application::get().getPresetManager();
     auto settings = Application::get().getSettings();
     PresetManagerUseCases useCase(*pm, *settings);
-    useCase.importBankFromPath(file, [](const std::string& name) { SplashLayout::addStatus("Importing " + name); });
-    SplashLayout::finish();
+    useCase.importBankFromPath(file, [hwui](const std::string& name) { hwui->addSplashStatus("Importing " + name); });
+    hwui->finishSplash();
   }
 
   hwui->getPanelUnit().getEditPanel().getBoled().resetOverlay();
@@ -174,11 +175,12 @@ void BankEditButtonMenu::exportBank()
   if(auto selBank = Application::get().getPresetManager()->getSelectedBank())
   {
     boled.setOverlay(new RenameExportLayout(selBank, [](Glib::ustring newExportName, auto bank) {
-      auto& panelunit = Application::get().getHWUI()->getPanelUnit();
+      auto hwui = Application::get().getHWUI();
+      auto& panelunit = hwui->getPanelUnit();
       auto& boled = panelunit.getEditPanel().getBoled();
       auto outPath = BankEditButtonMenu::createValidOutputPath(newExportName);
       boled.resetOverlay();
-      boled.setOverlay(new SplashLayout());
+      boled.setOverlay(new SplashLayout(hwui));
       BankEditButtonMenu::writeSelectedBankToFile(bank, outPath);
       boled.resetOverlay();
     }));
@@ -189,7 +191,7 @@ void BankEditButtonMenu::writeSelectedBankToFile(Bank* selBank, const std::strin
 {
   if(selBank)
   {
-    SplashLayout::addStatus("Exporting " + selBank->getName(true));
+    Application::get().getHWUI()->addSplashStatus("Exporting " + selBank->getName(true));
     BankUseCases useCase(selBank, *Application::get().getSettings());
     useCase.exportBankToFile(outFile);
   }

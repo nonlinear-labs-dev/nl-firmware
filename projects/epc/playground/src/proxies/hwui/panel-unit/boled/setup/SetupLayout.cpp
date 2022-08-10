@@ -72,6 +72,8 @@
 #include "device-settings/BenderLegacyMode.h"
 #include "device-settings/SensitiveBenderSettling.h"
 #include "device-info/AftertouchCalibratedStatus.h"
+#include "use-cases/SoundUseCases.h"
+#include "use-cases/PresetManagerUseCases.h"
 
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
 #include <device-settings/midi/MidiChannelSettings.h>
@@ -1138,8 +1140,7 @@ namespace NavTree
 
     Node *getDesiredFocusChangeOnEditModeExited() override
     {
-      auto at = [](auto &list, auto n)
-      {
+      auto at = [](auto &list, auto n) {
         auto it = list.begin();
         std::advance(it, n);
         return it->get();
@@ -1332,8 +1333,8 @@ class Breadcrumb : public Control
         title = title + " > ";
       }
 
-      auto font = Oleds::get().getFont("Emphase-9-Regular", 9);
-      auto width = font->draw(title, left, getPosition().getBottom() - 1);
+      auto font = Fonts::get().getFont("Emphase-9-Regular", 9);
+      auto width = font->draw(fb, title, left, getPosition().getBottom() - 1);
       return left + width;
     }
     return 5;

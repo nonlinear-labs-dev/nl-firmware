@@ -1,5 +1,6 @@
 CMakeLists.txt.user
 *.class
+
 # Package Files #
 *.jar
 *.war
@@ -51,7 +52,7 @@ projects/web/static/nonmaps/cmake_install.cmake
 projects/web/static/nonmaps/target
 cmake-build-debug
 cmake-build-release
-cmake-build-relwithdebinfo/
+cmake-build-relwithdebinfo
 projects/playground/CMakeCache.txt
 projects/playground/CMakeFiles
 projects/playground/.idea
@@ -63,3 +64,4 @@ projects/epc/web-ui/target
 projects/epc/web-ui/.classpath
 projects/epc/web-ui/.settings/
 projects/epc/web-ui/.vscode/settings.json
+projects/shared/parameter-db/src/.~lock.ParameterList_1.7B.ods#

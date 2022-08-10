@@ -15,7 +15,7 @@ VoiceGroupMasterParameterCarousel::VoiceGroupMasterParameterCarousel(const Rect 
   m_editbufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &VoiceGroupMasterParameterCarousel::rebuild));
 
-  m_selectConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  m_selectConnection = Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::hide(sigc::mem_fun(this, &VoiceGroupMasterParameterCarousel::rebuild)));
 }
 
@@ -29,7 +29,7 @@ void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
 {
   clear();
 
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
 
   switch(Application::get().getPresetManager()->getEditBuffer()->getType())
   {
@@ -60,20 +60,25 @@ void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
 
 void VoiceGroupMasterParameterCarousel::rebuild()
 {
-  auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
   setup(s);
 }
 
 void VoiceGroupMasterParameterCarousel::setupMasterParameters(const std::vector<ParameterId> &parameters)
 {
+  m_currentCarouselContentIDs = {};
+  for(auto &i : parameters)
+    m_currentCarouselContentIDs.emplace_back(i.getNumber());
+
   const int ySpacing = 3;
   const int miniParamHeight = 12;
   const int miniParamWidth = 56;
   const auto numMissing = 4 - parameters.size();
   auto yPos = ySpacing + (numMissing * (miniParamHeight + ySpacing));
 
-  const auto selected
-      = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  const auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
 
   for(const auto &p : parameters)
   {

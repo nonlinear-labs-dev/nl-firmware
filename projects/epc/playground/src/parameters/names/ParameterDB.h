@@ -6,12 +6,12 @@
 #include <optional>
 
 class Parameter;
+class EditBuffer;
 
-class ParameterDB
+class ParameterDB : public sigc::trackable
 {
  public:
-  static ParameterDB& get();
-
+  explicit ParameterDB(EditBuffer& eb);
   virtual ~ParameterDB();
 
   [[nodiscard]] Glib::ustring getLongName(const ParameterId& id) const;
@@ -20,13 +20,19 @@ class ParameterDB
   [[nodiscard]] std::optional<Glib::ustring> getLongGroupName(const ParameterId& id) const;
   [[nodiscard]] Glib::ustring getDescription(int parameterNumber) const;
   [[nodiscard]] tControlPositionValue getSignalPathIndication(int id) const;
-
   static constexpr tControlPositionValue getInvalidSignalPathIndication()
   {
     return std::numeric_limits<tControlPositionValue>::max();
   }
 
+  static tControlPositionValue getCourseDenominator(const ParameterId& id);
+  static tControlPositionValue getFineDenominator(const ParameterId& id);
+  static tControlPositionValue getCourseModulationDenominator(const ParameterId& id);
+  static tControlPositionValue getFineModulationDenominator(const ParameterId& id);
+  static double getDefaultValue(const ParameterId& id);
+
  private:
-  [[nodiscard]] Glib::ustring replaceVoiceGroupInDynamicLabels(Glib::ustring name, VoiceGroup originGroup) const;
-  ParameterDB();
+  [[nodiscard]] Glib::ustring replaceInDynamicLabels(const Glib::ustring& name, const ParameterId& parameterID, SoundType type) const;
+
+  EditBuffer& m_editBuffer;
 };

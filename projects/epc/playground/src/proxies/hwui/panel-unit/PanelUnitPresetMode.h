@@ -20,7 +20,6 @@ class PanelUnitPresetMode : public PanelUnitParameterEditMode
   Throttler m_bruteForceLedThrottler;
 
   static constexpr auto numLeds = 96;
-  static constexpr auto invalidSignalFlowIndicator = ParameterDB::getInvalidSignalPathIndication();
 
   void setStateForButton(Buttons buttonId, const std::list<int>& parameters,
                          std::array<TwoStateLED::LedState, numLeds>& states);

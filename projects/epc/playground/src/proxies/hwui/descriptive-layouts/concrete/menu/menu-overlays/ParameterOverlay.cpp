@@ -3,6 +3,7 @@
 #include "presets/EditBuffer.h"
 #include "presets/PresetManager.h"
 #include "ParameterOverlay.h"
+#include "use-cases/ParameterUseCases.h"
 #include <libundo/undo/Scope.h>
 #include <parameters/Parameter.h>
 

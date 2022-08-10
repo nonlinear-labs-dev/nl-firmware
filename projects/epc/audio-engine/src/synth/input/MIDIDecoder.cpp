@@ -124,19 +124,14 @@ void MIDIDecoder::handleIncommingCC(const MidiEvent& event)
 
   const auto isMSB = controlChangeID > 0 && controlChangeID < 32;
   const auto isLSB = controlChangeID > 32 && controlChangeID < 64;
-  const auto isSwitching = controlChangeID > 63 && controlChangeID < 70;
+  const auto isSwitchingOrContCC = controlChangeID > 63 && controlChangeID < 70;
   const auto isChannelModeMessage = MidiRuntimeOptions::isCCMappedToChannelModeMessage(controlChangeID);
 
-  if(isMSB || isSwitching || isChannelModeMessage)
+  if(isMSB || isChannelModeMessage || isSwitchingOrContCC)
   {
     hwResult.cases = MidiHWChangeSpecialCases::CC;
     hwResult.receivedCC = controlChangeID;
-
-    if(isSwitching)
-      hwResult.undecodedValueBytes = { static_cast<uint8_t>(_data1 > 63 ? 127 : 0), 0 };
-    else
-      hwResult.undecodedValueBytes = { _data1, m_MidiLSB };
-
+    hwResult.undecodedValueBytes = { _data1, m_MidiLSB };
     m_midiChannel = statusToChannel(status);
     m_type = DecoderEventType::HardwareChange;
   }

@@ -11,7 +11,7 @@
 
 using EBL = EditBufferLogicalParts;
 
-TEST_CASE("Convert Split (II) to Single")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Split (II) to Single")
 {
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();
@@ -58,6 +58,19 @@ TEST_CASE("Convert Split (II) to Single")
 
     TestHelper::randomizeCrossFBAndToFX(transaction);
     TestHelper::randomizeFadeParams(transaction);
+  }
+
+  WHEN("FB From FX Selected")
+  {
+    EditBufferUseCases ebUseCases(*TestHelper::getEditBuffer());
+    ebUseCases.selectParameter({C15::PID::FB_Mix_FX_Src, VoiceGroup::I}, true);
+    ebUseCases.convertToSingle(VoiceGroup::I);
+
+    THEN("FB Effects selected")
+    {
+      auto eb = TestHelper::getEditBuffer();
+      CHECK(eb->getSelectedParameterNumber() == C15::PID::FB_Mix_FX);
+    }
   }
 
   WHEN("Converted")
@@ -167,7 +180,7 @@ TEST_CASE("Convert Split (II) to Single")
   }
 }
 
-TEST_CASE("Convert Layer (II) to Single")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Layer (II) to Single")
 {
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();
@@ -298,7 +311,7 @@ TEST_CASE("Convert Layer (II) to Single")
   }
 }
 
-TEST_CASE("Convert Layer (I) to Single")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Layer (I) to Single")
 {
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();

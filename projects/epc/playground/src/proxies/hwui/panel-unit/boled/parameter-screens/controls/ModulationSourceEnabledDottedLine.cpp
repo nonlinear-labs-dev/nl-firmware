@@ -10,9 +10,9 @@ ModulationSourceEnabledDottedLine::ModulationSourceEnabledDottedLine(const Rect 
     : super(rect)
     , m_enabled(false)
 {
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &ModulationSourceEnabledDottedLine::onParameterSelected)),
-      getHWUI()->getCurrentVoiceGroup());
+      sigc::hide<0>(sigc::mem_fun(this, &ModulationSourceEnabledDottedLine::onParameterSelected)), currentVG);
 }
 
 ModulationSourceEnabledDottedLine::~ModulationSourceEnabledDottedLine()
@@ -32,7 +32,7 @@ void ModulationSourceEnabledDottedLine::onParameterSelected(Parameter *parameter
 void ModulationSourceEnabledDottedLine::onParamValueChanged(const Parameter *param)
 {
   if(const ModulateableParameter *modP = dynamic_cast<const ModulateableParameter *>(param))
-    setEnabled(modP->getModulationSource() != MacroControls::NONE);
+    setEnabled(modP->getModulationSource() != MacroControls::NONE && !modP->isDisabled());
   else
     setEnabled(false);
 }

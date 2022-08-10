@@ -30,6 +30,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include <sigc++/adaptors/hide.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAssignedIndicator.h>
+#include "use-cases/EditBufferUseCases.h"
 
 MacroControlParameterLayout2::MacroControlParameterLayout2()
     : super()
@@ -135,7 +136,7 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
         }
         else if(buttonText == "I / II")
         {
-          Application::get().getHWUI()->toggleCurrentVoiceGroup();
+          Application::get().getVGManager()->toggleCurrentVoiceGroup();
         }
       }
         return true;

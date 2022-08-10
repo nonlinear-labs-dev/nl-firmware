@@ -1,5 +1,6 @@
 #include "EditMCInfoLayout.h"
 #include "Application.h"
+#include "use-cases/MacroControlParameterUseCases.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>
@@ -31,6 +32,7 @@ Glib::ustring EditMCInfoLayout::getInitialText() const
 
 MacroControlParameter *EditMCInfoLayout::getMacroControl() const
 {
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
   return dynamic_cast<MacroControlParameter *>(
-      Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup()));
+      Application::get().getPresetManager()->getEditBuffer()->getSelected(currentVG));
 }

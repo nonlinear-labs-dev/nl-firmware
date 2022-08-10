@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
@@ -18,6 +19,13 @@ public class ModulationSourceLabel extends Label {
 			presenter = p;
 			return true;
 		});
+	}
+
+	
+
+	@Override
+	public double getLevelOfDetailForFullVisibility() {
+		return 0;
 	}
 
 	@Override
@@ -44,6 +52,11 @@ public class ModulationSourceLabel extends Label {
 	}
 
 	@Override
+	protected double getMinHeight() {
+		return getBasicHeight();
+	}
+
+	@Override
 	protected String getDisplayText() {
 		return presenter.modulation.modulationSourceLabel;
 	}
@@ -61,10 +74,12 @@ public class ModulationSourceLabel extends Label {
 	@Override
 	public RGB getColorFont() {
 		Parameter p = Parameter.findInParents(getParent());
-		if (p instanceof ModulatableParameter) {
-			ModulatableParameter m = (ModulatableParameter) p;
+		if (p instanceof ModulatableParameterWithoutName) {
+			ModulatableParameterWithoutName m = (ModulatableParameterWithoutName) p;
 			if (m.isSelectedParameterMyMacroControl())
+			{
 				return ColorTable.getMacroControlTargetColor();
+			}
 		}
 		return super.getColorFont();
 	}

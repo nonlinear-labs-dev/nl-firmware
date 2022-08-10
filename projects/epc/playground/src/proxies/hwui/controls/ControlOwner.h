@@ -121,6 +121,7 @@ class ControlOwner : public Uncopyable
 
   typedef std::function<bool(tControlPtr)> tIfCallback;
   void forEach(const tIfCallback &cb) const;
+  void forEachReversed(const tIfCallback &cb) const;
 
   typedef std::function<void(tControlPtr)> tCallback;
   void forEach(const tCallback &cb) const;

@@ -22,6 +22,7 @@ class MiniParameter : public ControlWithChildren
   const Parameter* getParameter() const;
   void setSelected(bool selected);
   bool isSelected() const;
+  MiniParameterLabel* getLabel();
 
  private:
   Parameter* m_param = nullptr;

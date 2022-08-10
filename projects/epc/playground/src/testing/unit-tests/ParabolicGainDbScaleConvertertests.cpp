@@ -2,7 +2,7 @@
 #include <catch.hpp>
 #include "parameters/scale-converters/ParabolicGainDbScaleConverter.h"
 
-TEST_CASE("to display value and back")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"to display value and back")
 {
   ParabolicGainDbScaleConverter converter;
 

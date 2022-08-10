@@ -6,11 +6,12 @@
 
 class Application;
 class BOLED;
+class LayoutFolderMonitor;
 
 class EditPanel
 {
  public:
-  EditPanel();
+  EditPanel(Oleds &oleds, LayoutFolderMonitor *mon);
   virtual ~EditPanel();
 
   void init();

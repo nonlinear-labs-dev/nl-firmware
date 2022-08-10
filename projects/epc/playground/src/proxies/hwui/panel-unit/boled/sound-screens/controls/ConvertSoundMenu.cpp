@@ -6,6 +6,7 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <libundo/undo/Scope.h>
 
 ConvertSoundMenu::ConvertSoundMenu(const Rect &rect)
@@ -16,11 +17,11 @@ ConvertSoundMenu::ConvertSoundMenu(const Rect &rect)
 
 void ConvertSoundMenu::convertSoundTo(SoundType newType)
 {
-  auto hwui = Application::get().getHWUI();
+  auto vgManager = Application::get().getVGManager();
   auto pm = Application::get().getPresetManager();
   EditBufferUseCases useCases(*pm->getEditBuffer());
 
-  const auto currentVG = hwui->getCurrentVoiceGroup();
+  const auto currentVG = vgManager->getCurrentVoiceGroup();
 
   switch(newType)
   {

@@ -4,10 +4,11 @@ import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
+import com.nonlinearlabs.client.world.maps.parameters.ModulatableHorizontalSlider;
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.ModulateableNumericalControl;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSlider;
-import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSwitch;
+import com.nonlinearlabs.client.world.maps.parameters.UnmodulateableNumericDisplay;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 
 class PitchColumn extends ParameterColumn {
@@ -52,7 +53,7 @@ class PitchColumn extends ParameterColumn {
 	PitchColumn(MapsLayout parent) {
 		super(parent);
 		addChild(new Pitch(this));
-		addChild(new ModulationSourceSlider(this, 86));
-		addChild(new ModulationSourceSwitch(this, 85));
+		addChild(new ModulatableHorizontalSlider(this, 86));
+		addChild(new UnmodulateableNumericDisplay(this, 85));
 	}
 }

@@ -1,6 +1,7 @@
 #include <Application.h>
 #include "InitSound.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
@@ -31,7 +32,7 @@ InitPart::InitPart(const Rect& r)
                               {
                                 auto pm = Application::get().getPresetManager();
                                 EditBufferUseCases useCases { *pm->getEditBuffer() };
-                                auto currentPart = Application::get().getHWUI()->getCurrentVoiceGroup();
+                                auto currentPart = Application::get().getVGManager()->getCurrentVoiceGroup();
                                 useCases.initPart(currentPart, Defaults::UserDefault);
                               }),
                           OneShotTypes::FinishCB(

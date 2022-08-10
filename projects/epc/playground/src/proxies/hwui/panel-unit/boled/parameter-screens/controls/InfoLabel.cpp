@@ -9,7 +9,7 @@ InfoLabel::InfoLabel(const Rect &pos, const Glib::ustring &text)
 
 std::shared_ptr<Font> InfoLabel::getFont() const
 {
-  return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
+  return Fonts::get().getFont("Emphase-8-Regular", getFontHeight());
 }
 
 int InfoLabel::getFontHeight() const

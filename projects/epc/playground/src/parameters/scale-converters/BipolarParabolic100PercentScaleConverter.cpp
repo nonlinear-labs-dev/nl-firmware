@@ -3,7 +3,6 @@
 
 BipolarParabolic100PercentScaleConverter::BipolarParabolic100PercentScaleConverter()
     : ScaleConverter(PercentageDimension3Digits::get())
-    , m_tcdRange(-8000, 8000)
     , m_displayRange(-100, 100)
 {
 }
@@ -15,16 +14,6 @@ BipolarParabolic100PercentScaleConverter::~BipolarParabolic100PercentScaleConver
 bool BipolarParabolic100PercentScaleConverter::isBiPolar() const
 {
   return true;
-}
-
-tTcdValue BipolarParabolic100PercentScaleConverter::controlPositionToTcd(const tControlPositionValue &cpValue) const
-{
-  return m_tcdRange.scaleValueToRange(cpValue, getControlPositionRange(), false);
-}
-
-tControlPositionValue BipolarParabolic100PercentScaleConverter::tcdToControlPosition(tTcdValue v) const
-{
-  return getControlPositionRange().scaleValueToRange(v, m_tcdRange, false);
 }
 
 tDisplayValue

@@ -11,7 +11,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-TEST_CASE("Issue 3035, [Pedal] Set Return-Behaviour does lead to jump of value to return value but MC is same", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, [Pedal] Set Return-Behaviour does lead to jump of value to return value but MC is same", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -142,7 +142,7 @@ TEST_CASE("Issue 3035, [Pedal] Set Return-Behaviour does lead to jump of value t
   }
 }
 
-TEST_CASE("Issue 3035, [Ribbon] Set Return-Behaviour does lead to jump of value to return value but MC is same", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, [Ribbon] Set Return-Behaviour does lead to jump of value to return value but MC is same", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -254,7 +254,7 @@ TEST_CASE("Issue 3035, [Ribbon] Set Return-Behaviour does lead to jump of value 
   }
 }
 
-TEST_CASE("Issue 3035, [Pedal] Set Return-Behaviour (non-ret to ret) leads to HW-Amount set to 100%", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, [Pedal] Set Return-Behaviour (non-ret to ret) leads to HW-Amount set to 100%", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();

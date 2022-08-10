@@ -10,19 +10,25 @@ using namespace nltools::msg;
 using namespace std::chrono_literals;
 
 #warning "This Test is unreliable and leads to hung playground-test process if unlucky"
-TEST_CASE("Notify on discovery", "[Messaging][nltools]")
+TEST_CASE_METHOD(TestHelper::MainContextFixture, "Notify on discovery", "[Messaging][nltools]")
 {
-  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint {
+    { { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint }, m_context }
+  };
 
   bool received = false;
   auto c = onConnectionEstablished(EndPoint::TestEndPoint, [&] { received = true; });
-  TestHelper::doMainLoop(1s, 1s, [&] { return received; });
+  TestHelper::doMainLoop(
+      10ms, 1s, [&] { return received; }, m_context);
   c.disconnect();
 }
 
-TEST_CASE("Send Receive", "[Messaging][nltools]")
+TEST_CASE_METHOD(TestHelper::MainContextFixture, "Send Receive", "[Messaging][nltools]")
 {
-  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
+  REQUIRE(g_main_context_default() != nullptr);
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint {
+    { { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint }, m_context }
+  };
 
   int numMessages = 0;
   UnmodulateableParameterChangedMessage msgToSend { 12, 0.3, VoiceGroup::I };
@@ -30,14 +36,18 @@ TEST_CASE("Send Receive", "[Messaging][nltools]")
   auto c
       = receive<UnmodulateableParameterChangedMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numMessages++; });
   send(EndPoint::TestEndPoint, msgToSend);
-  TestHelper::doMainLoop(1s, 1s, [&] { return numMessages == 1; });
+  TestHelper::doMainLoop(
+      10ms, 1s, [&] { return numMessages == 1; }, m_context);
   c.disconnect();
 }
 
 #warning "unreliable test-case I aborted after 7 Minutes"
-TEST_CASE("No packet lost if bombed", "[Messaging][nltools]")
+TEST_CASE_METHOD(TestHelper::MainContextFixture, "No packet lost if bombed", "[Messaging][nltools]")
 {
-  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
+  REQUIRE(g_main_context_default() != nullptr);
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint {
+    { { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint }, m_context }
+  };
 
   int numRecMessages = 0;
   int numSendMessages = 1000;
@@ -50,13 +60,17 @@ TEST_CASE("No packet lost if bombed", "[Messaging][nltools]")
   for(int i = 0; i < numSendMessages; i++)
     send(EndPoint::TestEndPoint, msgToSend);
 
-  TestHelper::doMainLoop(1s, 1s, [&] { return numRecMessages == numSendMessages; });
+  TestHelper::doMainLoop(
+      10ms, 1s, [&] { return numRecMessages == numSendMessages; }, m_context);
   c.disconnect();
 }
 
-TEST_CASE("No packet doubles", "[Messaging][nltools]")
+TEST_CASE_METHOD(TestHelper::MainContextFixture, "No packet doubles", "[Messaging][nltools]")
 {
-  TestHelper::ScopedMessagingConfiguration scopeEndPoint { {{EndPoint::TestEndPoint}, {EndPoint::TestEndPoint}} };
+  REQUIRE(g_main_context_default() != nullptr);
+  TestHelper::ScopedMessagingConfiguration scopeEndPoint {
+    { { EndPoint::TestEndPoint }, { EndPoint::TestEndPoint }, m_context }
+  };
 
   int numRecMessages = 0;
   int numSendMessages = 100;
@@ -69,7 +83,8 @@ TEST_CASE("No packet doubles", "[Messaging][nltools]")
   for(int i = 0; i < numSendMessages; i++)
     send(EndPoint::TestEndPoint, msgToSend);
 
-  TestHelper::doMainLoop(1s, 1s, [&] { return numRecMessages <= numSendMessages; });
+  TestHelper::doMainLoop(
+      10ms, 1s, [&] { return numRecMessages <= numSendMessages; }, m_context);
   c.disconnect();
 }
 

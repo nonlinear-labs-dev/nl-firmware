@@ -12,6 +12,7 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/LowerModulationBoundSlider.h>
 #include <math.h>
 #include <parameters/scale-converters/ScaleConverter.h>
+#include "use-cases/ModParameterUseCases.h"
 
 LowerModulationBoundControl::LowerModulationBoundControl(const Rect &r)
     : super(r)
@@ -21,8 +22,9 @@ LowerModulationBoundControl::LowerModulationBoundControl(const Rect &r)
   addControl(new LowerModulationBoundLabel(Rect(0, 0, r.getWidth(), height)));
   addControl(new LowerModulationBoundSlider(Rect(0, height, r.getWidth(), height)));
 
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      mem_fun(this, &LowerModulationBoundControl::onSelectionChanged), getHWUI()->getCurrentVoiceGroup());
+      mem_fun(this, &LowerModulationBoundControl::onSelectionChanged), vg);
 }
 
 void LowerModulationBoundControl::onSelectionChanged(Parameter *, Parameter *newParam)
@@ -41,9 +43,8 @@ void LowerModulationBoundControl::onParameterChanged(const Parameter *p)
 bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-
-  if(auto modulatedParam
-     = dynamic_cast<ModulateableParameter *>(editBuffer->getSelected(getHWUI()->getCurrentVoiceGroup())))
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  if(auto modulatedParam = dynamic_cast<ModulateableParameter *>(editBuffer->getSelected(vg)))
   {
     auto mc = modulatedParam->getModulationSource();
     auto mcID = MacroControlsGroup::modSrcToParamId(mc);

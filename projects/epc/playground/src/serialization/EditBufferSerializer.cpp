@@ -12,6 +12,7 @@
 #include "SplitGroupsFromOldGlobalGroupSerializer.h"
 #include <groups/ParameterGroup.h>
 #include <nltools/logging/Log.h>
+#include <parameter_list.h>
 
 EditBufferSerializer::EditBufferSerializer(EditBuffer *editBuffer, Progress progress)
     : Serializer(getTagName(), progress)
@@ -104,7 +105,12 @@ void EditBufferSerializer::readTagContent(Reader &reader) const
     catch(const std::invalid_argument &err)
     {
       nltools::Log::error(err.what(), "Selecting default Parameter..");
-      m_editBuffer->undoableSelectParameter(reader.getTransaction(), { 0, VoiceGroup::I }, false);
+      m_editBuffer->undoableSelectParameter(reader.getTransaction(), {C15::PID::Env_A_Att, VoiceGroup::I}, false);
+    }
+    catch(const std::runtime_error& e)
+    {
+      nltools::Log::error(e.what(), "Selecting default Parameter..");
+      m_editBuffer->undoableSelectParameter(reader.getTransaction(), {C15::PID::Env_A_Att, VoiceGroup::I}, false);
     }
   });
 

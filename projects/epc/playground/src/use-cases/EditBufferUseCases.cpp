@@ -12,6 +12,7 @@
 #include <device-settings/DirectLoadSetting.h>
 #include <proxies/hwui/HWUI.h>
 #include <presets/PresetPartSelection.h>
+#include <Application.h>
 
 EditBufferUseCases::EditBufferUseCases(EditBuffer& eb)
     : m_editBuffer { eb }
@@ -303,15 +304,16 @@ void EditBufferUseCases::renamePart(VoiceGroup part, const Glib::ustring& name)
 
 void EditBufferUseCases::undoableLoadAccordingToType(Preset* pPreset, HWUI* hwui)
 {
-  auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
+  auto vgManager = Application::get().getVGManager();
+  auto currentVoiceGroup = vgManager->getCurrentVoiceGroup();
 
   if(pPreset)
   {
-    auto loadToPartActive = hwui->isInLoadToPart();
+    auto loadToPartActive = vgManager->isInLoadToPart();
 
     if(loadToPartActive)
     {
-      auto load = hwui->getPresetPartSelection(currentVoiceGroup);
+      auto load = vgManager->getPresetPartSelection(currentVoiceGroup);
       loadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
     }
     else
@@ -382,4 +384,25 @@ void EditBufferUseCases::randomizePart(VoiceGroup part, double amount)
 {
   auto scope = m_editBuffer.getUndoScope().startTransaction("Randomize Part");
   m_editBuffer.undoableRandomizePart(scope->getTransaction(), part, Initiator::EXPLICIT_WEBUI, amount);
+}
+
+void EditBufferUseCases::setModulationSourceOfAll(MacroControls controls)
+{
+  auto scope = m_editBuffer.getUndoScope().startTransaction("Set all Modulation Sources to %s", toString(controls));
+  auto trans = scope->getTransaction();
+
+  for(auto& groups: m_editBuffer.getParameters())
+  {
+    for(auto& g: groups)
+    {
+      for(auto& p: g->getParameters())
+      {
+        if(auto mod = dynamic_cast<ModulateableParameter*>(p))
+        {
+          mod->setModulationSource(trans, controls);
+          mod->setModulationAmount(trans, 1);
+        }
+      }
+    }
+  }
 }

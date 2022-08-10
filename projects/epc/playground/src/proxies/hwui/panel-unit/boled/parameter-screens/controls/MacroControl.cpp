@@ -16,8 +16,9 @@ MacroControl::MacroControl(const Rect &pos)
   m_name = addControl(new LabelRegular8("", Rect(0, 0, 48, 13)));
   m_slider = addControl(new Slider(Rect(0, 13, 48, 4)));
 
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &MacroControl::onSelectionChanged)), getHWUI()->getCurrentVoiceGroup());
+      sigc::hide<0>(sigc::mem_fun(this, &MacroControl::onSelectionChanged)), vg);
 }
 
 MacroControl::~MacroControl()

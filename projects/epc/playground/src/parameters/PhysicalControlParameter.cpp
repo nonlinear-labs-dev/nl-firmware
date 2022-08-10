@@ -20,7 +20,7 @@
 
 PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
                                                    tDisplayValue def, int coarseDenominator, int fineDenominator)
-    : super(group, id, scaling, def, coarseDenominator, fineDenominator)
+    : super(group, id, scaling)
 {
 }
 
@@ -98,6 +98,7 @@ Glib::ustring PhysicalControlParameter::getDisplayString() const
 
 void PhysicalControlParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
+  m_changingFromHWUI = m_lastChangedFromHWUI;
   m_returnModeBeforeLastLoad = getReturnMode();
   m_valueBeforeLastLoad = getControlPositionValue();
   setIndirect(transaction, value);

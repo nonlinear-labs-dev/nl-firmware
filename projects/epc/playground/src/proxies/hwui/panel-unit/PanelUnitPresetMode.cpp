@@ -14,9 +14,10 @@
 #include <device-settings/HighlightChangedParametersSetting.h>
 #include <sigc++/sigc++.h>
 #include <device-settings/Settings.h>
+#include <parameter-db/generated/parameter_list.h>
 
 PanelUnitPresetMode::PanelUnitPresetMode()
-    : m_bruteForceLedThrottler(std::chrono::milliseconds(40))
+    : m_bruteForceLedThrottler(Application::get().getMainContext(), std::chrono::milliseconds(40))
 {
   DebugLevel::gassy(__PRETTY_FUNCTION__);
 
@@ -26,7 +27,7 @@ PanelUnitPresetMode::PanelUnitPresetMode()
   Application::get().getPresetManager()->getEditBuffer()->onChange(
       mem_fun(this, &PanelUnitPresetMode::bruteForceUpdateLeds));
 
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::hide(sigc::mem_fun(this, &PanelUnitPresetMode::bruteForceUpdateLeds)));
 }
 
@@ -39,34 +40,40 @@ PanelUnitPresetMode::~PanelUnitPresetMode()
 
 void PanelUnitPresetMode::bruteForceUpdateLeds()
 {
-  m_bruteForceLedThrottler.doTask([this]() {
-    if(Application::get().getHWUI()->getPanelUnit().getUsageMode().get() != this)
-      return;
+  m_bruteForceLedThrottler.doTask(
+      [this]()
+      {
+        if(Application::get().getHWUI()->getPanelUnit().getUsageMode().get() != this)
+          return;
 
-    std::array<TwoStateLED::LedState, numLeds> states { TwoStateLED::OFF };
+        std::array<TwoStateLED::LedState, numLeds> states { TwoStateLED::OFF };
 
-    if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
-      getMappings().forEachButton([&](Buttons buttonId, const std::list<int>& parameters) {
-        Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
-            BooleanSetting::tEnum::BOOLEAN_SETTING_TRUE);
-        letChangedButtonsBlink(buttonId, parameters, states);
+        if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
+          getMappings().forEachButton(
+              [&](Buttons buttonId, const std::list<int>& parameters)
+              {
+                Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
+                    BooleanSetting::tEnum::BOOLEAN_SETTING_TRUE);
+                letChangedButtonsBlink(buttonId, parameters, states);
+              });
+        else
+          getMappings().forEachButton(
+              [&](Buttons buttonId, const std::list<int>& parameters)
+              {
+                Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
+                    BooleanSetting::tEnum::BOOLEAN_SETTING_FALSE);
+                setStateForButton(buttonId, parameters, states);
+              });
+
+        applyStateToLeds(states);
       });
-    else
-      getMappings().forEachButton([&](Buttons buttonId, const std::list<int>& parameters) {
-        Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
-            BooleanSetting::tEnum::BOOLEAN_SETTING_FALSE);
-        setStateForButton(buttonId, parameters, states);
-      });
-
-    applyStateToLeds(states);
-  });
 }
 
 void PanelUnitPresetMode::letChangedButtonsBlink(Buttons buttonId, const std::list<int>& parameters,
                                                  std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto currentParams = getMappings().findParameters(buttonId);
   auto ebParameters = editBuffer->getParametersSortedByNumber(vg);
   auto globalParameters = editBuffer->getParametersSortedByNumber(VoiceGroup::Global);
@@ -90,11 +97,12 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
                                             std::array<TwoStateLED::LedState, numLeds>& states)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto db = editBuffer->getParameterDB();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
 
   for(const auto i : parameters)
   {
-    auto signalFlowIndicator = ParameterDB::get().getSignalPathIndication(i);
+    auto signalFlowIndicator = editBuffer->getParameterDB().getSignalPathIndication(i);
 
     Parameter* parameter = nullptr;
 
@@ -124,7 +132,7 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
           break;
         }
       }
-      else if(signalFlowIndicator != invalidSignalFlowIndicator)
+      else if(signalFlowIndicator != ParameterDB::getInvalidSignalPathIndication())
       {
         if(parameter->getControlPositionValue() != signalFlowIndicator)
         {
@@ -147,38 +155,35 @@ void PanelUnitPresetMode::applyStateToLeds(std::array<TwoStateLED::LedState, num
 
 std::pair<bool, bool> PanelUnitPresetMode::trySpecialCaseParameter(const Parameter* selParam) const
 {
+  using namespace C15::PID;
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   if(selParam)
   {
     switch(selParam->getID().getNumber())
     {
-      //Env A/B Sustain
-      case 8:
+      case Env_A_Sus:
       {
-        auto splitLevel = eb->findParameterByID({ 332, selParam->getVoiceGroup() });
+        auto splitLevel = eb->findParameterByID({ Env_A_Elevate, selParam->getVoiceGroup() });
         return { true, splitLevel->getControlPositionValue() != 0 || selParam->getControlPositionValue() > 0 };
       }
-      case 27:
+      case Env_B_Sus:
       {
-        auto splitLevel = eb->findParameterByID({ 338, selParam->getVoiceGroup() });
+        auto splitLevel = eb->findParameterByID({ Env_B_Elevate, selParam->getVoiceGroup() });
         return { true, splitLevel->getControlPositionValue() != 0 || selParam->getControlPositionValue() > 0 };
       }
-        //Flanger Mix
-      case 223:
+      case Flanger_Mix:
       {
-        auto tremolo = eb->findParameterByID({ 389, selParam->getVoiceGroup() });
+        auto tremolo = eb->findParameterByID({ Flanger_Tremolo, selParam->getVoiceGroup() });
         return { true, tremolo->getControlPositionValue() > 0 || selParam->getControlPositionValue() != 0 };
       }
-        //Echo Mix
-      case 233:
+      case Echo_Mix:
       {
-        auto echoSend = eb->findParameterByID({ 342, selParam->getVoiceGroup() });
+        auto echoSend = eb->findParameterByID({ Echo_Send, selParam->getVoiceGroup() });
         return { true, echoSend->getControlPositionValue() > 0 && selParam->getControlPositionValue() > 0 };
       }
-        //Reverb Mix
-      case 241:
+      case Reverb_Mix:
       {
-        auto reverbSend = eb->findParameterByID({ 344, selParam->getVoiceGroup() });
+        auto reverbSend = eb->findParameterByID({ Reverb_Send, selParam->getVoiceGroup() });
         return { true, reverbSend->getControlPositionValue() > 0 && selParam->getControlPositionValue() > 0 };
       }
       default:
@@ -198,24 +203,25 @@ void PanelUnitSoundMode::setup()
 
   removeButtonConnection(Buttons::BUTTON_SOUND);
 
-  setupButtonConnection(Buttons::BUTTON_SOUND, [&](Buttons button, ButtonModifiers modifiers, bool state) {
-    if(state)
-    {
-      auto hwui = Application::get().getHWUI();
-      auto& settings = *Application::get().getSettings();
-      SettingsUseCases useCases(settings);
-      auto& famSetting = *settings.getSetting<FocusAndModeSetting>();
+  setupButtonConnection(Buttons::BUTTON_SOUND,
+                        [&](Buttons button, ButtonModifiers modifiers, bool state)
+                        {
+                          if(state)
+                          {
+                            auto& settings = *Application::get().getSettings();
+                            SettingsUseCases useCases(settings);
+                            auto& famSetting = *settings.getSetting<FocusAndModeSetting>();
 
-      auto focusAndMode = famSetting.getState();
-      if(focusAndMode.focus == UIFocus::Sound)
-        if(focusAndMode.mode == UIMode::Edit || focusAndMode.detail == UIDetail::Voices)
-          useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-        else
-          useCases.setFocusAndMode(famSetting.getOldState());
-      else
-         useCases.setFocusAndMode(FocusAndMode { UIFocus::Sound });
-    }
+                            auto focusAndMode = famSetting.getState();
+                            if(focusAndMode.focus == UIFocus::Sound)
+                              if(focusAndMode.mode == UIMode::Edit || focusAndMode.detail == UIDetail::Voices)
+                                useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+                              else
+                                useCases.setFocusAndMode(famSetting.getOldState());
+                            else
+                              useCases.setFocusAndMode(FocusAndMode { UIFocus::Sound });
+                          }
 
-    return true;
-  });
+                          return true;
+                        });
 }

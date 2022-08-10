@@ -11,7 +11,7 @@
 
 SelectedParamValueWithFrame::SelectedParamValueWithFrame(const Rect &rect)
     : super(rect)
-    , m_showParameterName(std::bind(&SelectedParamValueWithFrame::showName, this))
+    , m_showParameterName(Application::get().getMainContext(), std::bind(&SelectedParamValueWithFrame::showName, this))
 {
 }
 
@@ -35,7 +35,7 @@ bool SelectedParamValueWithFrame::redraw(FrameBuffer &fb)
 
 std::shared_ptr<Font> SelectedParamValueWithFrame::getFont() const
 {
-  return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
+  return Fonts::get().getFont("Emphase-8-Regular", getFontHeight());
 }
 
 int SelectedParamValueWithFrame::getFontHeight() const
@@ -68,7 +68,8 @@ void SelectedParamValueWithFrame::onParamValueChanged(const Parameter *param)
 
 void SelectedParamValueWithFrame::showName()
 {
-  if(auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup()))
+  if(auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected(
+         Application::get().getVGManager()->getCurrentVoiceGroup()))
   {
     setText(StringAndSuffix { p->getShortName() });
   }

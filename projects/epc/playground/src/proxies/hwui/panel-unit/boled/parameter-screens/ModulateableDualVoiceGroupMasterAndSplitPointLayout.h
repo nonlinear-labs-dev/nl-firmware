@@ -10,6 +10,7 @@ class ModulateableDualVoiceGroupMasterAndSplitPointLayout : public ModulateableP
   using ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2;
 
  protected:
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
   Carousel* createCarousel(const Rect& rect) override;
   ModuleCaption* createModuleCaption() const override;
 };
@@ -20,8 +21,10 @@ class UnmodulateableDualVoiceGroupMasterAndSplitPointLayout : public Unmodulatea
   using UnmodulateableParameterSelectLayout2::UnmodulateableParameterSelectLayout2;
 
  protected:
+  void init() override;
   Carousel* createCarousel(const Rect& rect) override;
   ModuleCaption* createModuleCaption() const override;
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
 };
 
 class SplitPointParameterLayout : public ModulateableDualVoiceGroupMasterAndSplitPointLayout

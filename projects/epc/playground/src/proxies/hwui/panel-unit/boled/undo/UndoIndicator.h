@@ -7,4 +7,6 @@ class UndoIndicator : public Label
  public:
   explicit UndoIndicator(const Rect &pos);
   bool redraw(FrameBuffer &fb) override;
+
+  int getZPriority() const override;
 };

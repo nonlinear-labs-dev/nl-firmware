@@ -38,7 +38,7 @@ class PresetManagerUseCases
   void createBankFromPresets(const std::string& csv, const std::string& x, const std::string& y);
 
   Bank* newBank(const Glib::ustring& x, const Glib::ustring& y, const std::optional<Glib::ustring>& name);
-  Bank* newBank(const Glib::ustring& x, const Glib::ustring& y);
+  Bank* newBank(const Glib::ustring& x, const Glib::ustring& y, const Uuid& uuid);
 
   void selectPreset(const Uuid& uuid);
   void selectPreset(const Preset* preset);
@@ -84,6 +84,15 @@ class PresetManagerUseCases
 
   struct ProgressIndication
   {
+    static ProgressIndication getMock()
+    {
+      ProgressIndication ret {};
+      ret._start = []() {};
+      ret._update = [](auto) {};
+      ret._finish = []() {};
+      return ret;
+    }
+
     void start() const
     {
       if(_start)
@@ -102,9 +111,9 @@ class PresetManagerUseCases
         _finish();
     }
 
-    StartProgressIndication _start;
-    UpdateProgressIndication _update;
-    FinishProgressIndication _finish;
+    StartProgressIndication _start = std::function<void(void)>();
+    UpdateProgressIndication _update = std::function<void(std::string)>();
+    FinishProgressIndication _finish = std::function<void(void)>();
   };
 
   PresetManagerUseCases::ImportExitCode importBackupFile(FileInStream& in, const ProgressIndication& progress,

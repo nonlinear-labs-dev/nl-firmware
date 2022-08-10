@@ -1,4 +1,5 @@
 #include "UnisonVoicesParameter.h"
+#include "parameter_declarations.h"
 #include <parameters/scale-converters/LinearCountScaleConverter.h>
 #include <parameters/scale-converters/dimension/VoicesDimension.h>
 #include <presets/EditBuffer.h>
@@ -7,8 +8,8 @@
 #include <algorithm>
 
 UnisonVoicesParameter::UnisonVoicesParameter(ParameterGroup *group, VoiceGroup vg)
-    : UnmodulateableUnisonParameter(group, ParameterId { 249, vg },
-                                    ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>(), 0, 23, 23)
+    : UnmodulateableUnisonParameter(group, ParameterId { C15::PID::Unison_Voices, vg },
+                                    ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>())
 {
 }
 

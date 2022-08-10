@@ -12,17 +12,20 @@
 #include <device-settings/midi/mappings/PedalCCMapping.h>
 #include <device-settings/midi/mappings/AftertouchCCMapping.h>
 #include <device-settings/midi/mappings/BenderCCMapping.h>
+#include <parameters/PhysicalControlParameter.h>
+#include <parameters/HardwareSourceSendParameter.h>
+#include "parameter_declarations.h"
 
 SelectedParameterValue::SelectedParameterValue(const Rect &rect)
     : super(rect)
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &SelectedParameterValue::onParameterSelected)),
-      getHWUI()->getCurrentVoiceGroup());
+      Application::get().getVGManager()->getCurrentVoiceGroup());
 
   Application::get().getHWUI()->onModifiersChanged(sigc::mem_fun(this, &SelectedParameterValue::onModifiersChanged));
 
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &SelectedParameterValue::onVoiceGroupSelectionChanged));
 
   Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
@@ -35,8 +38,8 @@ SelectedParameterValue::~SelectedParameterValue()
 
 void SelectedParameterValue::onModifiersChanged(ButtonModifiers mods)
 {
-  onParamValueChanged(
-      Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup()));
+  onParamValueChanged(Application::get().getPresetManager()->getEditBuffer()->getSelected(
+      Application::get().getVGManager()->getCurrentVoiceGroup()));
 }
 
 void SelectedParameterValue::onParameterSelected(Parameter *parameter)
@@ -62,7 +65,7 @@ bool SelectedParameterValue::redraw(FrameBuffer &fb)
   auto amount = Application::get()
                     .getPresetManager()
                     ->getEditBuffer()
-                    ->getSelected(getHWUI()->getCurrentVoiceGroup())
+                    ->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup())
                     ->getDisplayString();
 
   if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
@@ -89,8 +92,8 @@ void SelectedParameterValue::onVoiceGroupSelectionChanged(VoiceGroup v)
 
 void SelectedParameterValue::onSoundTypeChanged()
 {
-  auto selected
-      = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(
+      Application::get().getVGManager()->getCurrentVoiceGroup());
   setVisible(!selected->isDisabled());
 }
 
@@ -102,7 +105,7 @@ PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
   auto left = Rect(0, 0, hW, pos.getHeight());
   auto right = Rect(hW, 0, hW, pos.getHeight());
 
-  LabelStyle style { .size = FontSize::Size8,
+  LabelStyle style { .size = FontSize::Size9,
                      .decoration = FontDecoration::Regular,
                      .justification = Font::Justification::Center,
                      .backgroundColor = FrameBufferColors::Transparent };
@@ -113,6 +116,7 @@ PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
   m_localEnabledLabel->setLabelStyle(style);
   m_localDisabledLabelSnd->setLabelStyle(style);
   m_localDisabledLabelRcv->setLabelStyle(style);
+  m_localEnabledLabel->setHighlight(true);
 
   auto settings = Application::get().getSettings();
   auto eb = Application::get().getPresetManager()->getEditBuffer();

@@ -10,6 +10,7 @@
 #include "http/UpdateDocumentMaster.h"
 #include "proxies/playcontroller/PlaycontrollerProxy.h"
 #include "proxies/audio-engine/AudioEngineProxy.h"
+#include "parameter_list.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/UnmodulatebaleParameterLayouts.h>
 #include <presets/EditBuffer.h>
@@ -31,20 +32,26 @@ static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionV
 
 bool wasDefaultedAndNotUnselected();
 const tControlPositionValue &getPriorDefaultValue();
-Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tControlPositionValue def,
-                     tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator)
+
+Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling)
     : UpdateDocumentContributor(group)
     , SyncedItem(group->getRoot()->getSyncMaster(), "/parameter/" + id.toString())
     , m_id(id)
-    , m_value(this, scaling, def, coarseDenominator, fineDenominator)
-    , m_lastSnapshotedValue(c_invalidSnapshotValue)
+    , m_value(this, scaling)
     , m_voiceGroup { group->getVoiceGroup() }
+    , m_lastSnapshotedValue(c_invalidSnapshotValue)
 {
+  if(auto eb = getParentEditBuffer())
+  {
+    m_onSoundTypeChangedConnection = eb->onSoundTypeChanged(sigc::mem_fun(this, &Parameter::onSoundTypeChanged));
+  }
 }
 
 Parameter::~Parameter()
 {
+  m_onSoundTypeChangedConnection.disconnect();
 }
+
 nlohmann::json Parameter::serialize() const
 {
   return { { "id", getID() }, { "name", getLongName() }, { "value", getDisplayString() } };
@@ -320,6 +327,13 @@ bool Parameter::isBiPolar() const
   return m_value.isBiPolar();
 }
 
+bool Parameter::isFineAllowed() const
+{
+  auto coarse = getValue().getCoarseDenominator();
+  auto fine = getValue().getFineDenominator();
+  return coarse != fine;
+}
+
 const ParameterGroup *Parameter::getParentGroup() const
 {
   return static_cast<const ParameterGroup *>(getParent());
@@ -330,7 +344,7 @@ ParameterGroup *Parameter::getParentGroup()
   return static_cast<ParameterGroup *>(getParent());
 }
 
-EditBuffer* Parameter::getParentEditBuffer() const
+EditBuffer *Parameter::getParentEditBuffer() const
 {
   return dynamic_cast<EditBuffer *>(getParentGroup()->getParent());
 }
@@ -348,11 +362,6 @@ tControlPositionValue Parameter::getDefaultValue() const
 tControlPositionValue Parameter::getFactoryDefaultValue() const
 {
   return m_value.getFactoryDefaultValue();
-}
-
-tTcdValue Parameter::getTcdValue() const
-{
-  return m_value.getTcdValue();
 }
 
 tDisplayValue Parameter::getDisplayValue() const
@@ -392,17 +401,29 @@ void Parameter::invalidate()
 
 Glib::ustring Parameter::getLongName() const
 {
-  return ParameterDB::get().getLongName(getID());
+  if(auto eb = getParentEditBuffer())
+  {
+    return eb->getParameterDB().getLongName(getID());
+  }
+  return getID().toString();
 }
 
 Glib::ustring Parameter::getShortName() const
 {
-  return ParameterDB::get().getShortName(getID());
+  if(auto eb = getParentEditBuffer())
+  {
+    return eb->getParameterDB().getShortName(getID());
+  }
+  return getID().toString();
 }
 
 Glib::ustring Parameter::getInfoText() const
 {
-  return ParameterDB::get().getDescription(getID());
+  if(auto eb = getParentEditBuffer())
+  {
+    return eb->getParameterDB().getDescription(getID());
+  }
+  return getID().toString();
 }
 
 Glib::ustring Parameter::getMiniParameterEditorName() const
@@ -439,14 +460,14 @@ void Parameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) cons
   writer.writeTextElement("value", to_string(m_value.getRawValue()));
   writer.writeTextElement("default", to_string(m_value.getDefaultValue()));
   writer.writeTextElement("boolean", to_string(m_value.isBoolean()));
+  writer.writeTextElement("long-name", getLongName());
+  writer.writeTextElement("short-name", getShortName());
+  writer.writeTextElement("info-text", getInfoText());
 
   if(shouldWriteDocProperties(knownRevision))
   {
     writer.writeTextElement("bipolar", to_string(m_value.isBiPolar()));
     writer.writeTextElement("scaling", m_value.getScaleConverter()->controlPositionToDisplayJS());
-    writer.writeTextElement("long-name", getLongName());
-    writer.writeTextElement("short-name", getShortName());
-    writer.writeTextElement("info-text", getInfoText());
     writer.writeTextElement("coarse-denominator", to_string(m_value.getCoarseDenominator()));
     writer.writeTextElement("fine-denominator", to_string(m_value.getFineDenominator()));
   }
@@ -476,19 +497,6 @@ bool Parameter::shouldWriteDocProperties(UpdateDocumentContributor::tUpdateID kn
   return knownRevision == 0;
 }
 
-void Parameter::writeToPlaycontroller(MessageComposer &cmp) const
-{
-  gint16 v = getTcdValue();
-  cmp << v;
-}
-
-void Parameter::undoableLoadValue(UNDO::Transaction *transaction, const Glib::ustring &value)
-{
-  auto tcdValue = std::stoi(value);
-  auto cpValue = m_value.getScaleConverter()->tcdToControlPosition(tcdValue);
-  loadFromPreset(transaction, cpValue);
-}
-
 void Parameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
   auto rnd = g_random_double_range(0.0, 1.0);
@@ -498,11 +506,6 @@ void Parameter::undoableRandomize(UNDO::Transaction *transaction, Initiator init
 
   auto quantized = getValue().getQuantizedValue(newPos, true);
   setCpValue(transaction, initiator, quantized, false);
-}
-
-void Parameter::exportReaktorParameter(std::stringstream &target) const
-{
-  target << getTcdValue() << std::endl;
 }
 
 Layout *Parameter::createLayout(FocusAndMode focusAndMode) const
@@ -645,11 +648,19 @@ bool Parameter::isMinimum() const
 
 bool Parameter::isDisabled() const
 {
-  auto eb = static_cast<EditBuffer *>(getParentGroup()->getParent());
-  return isDisabledForType(eb->getType());
+  if(auto eb = getParentEditBuffer())
+  {
+    return isDisabledForType(eb->getType());
+  }
+  return false;
 }
 
 void Parameter::stepCP(UNDO::Transaction *transaction, int incs, bool fine, bool shift)
 {
   setCPFromHwui(transaction, getNextStepValue(incs, fine, shift));
+}
+
+void Parameter::onSoundTypeChanged(SoundType t)
+{
+  invalidate();
 }

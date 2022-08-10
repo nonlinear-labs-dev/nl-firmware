@@ -80,11 +80,20 @@ void GlobalSection::start_base_key(const float _dx, const float _dest)
                 m_smoothers.get(C15::Smoothers::Global_Slow::Scale_Base_Key));
 }
 
-void GlobalSection::render_audio(const float _left, const float _right)
+void GlobalSection::render_audio(const float _leftI, const float _rightI, const float _leftII, const float _rightII)
 {
   // common dsp: smoothers, signal post processing
   m_smoothers.render_audio();
   postProcess_audio();
+  // #3003: FX/Part Pan
+  auto panned = StereoPanning::fromDualStereoSignal(_leftI, _rightI, _leftII, _rightII);
+  panned *= StereoPanning::fromPanning(m_smoothers.get(C15::Smoothers::Global_Fast::Master_Pan));
+  render_stereo_audio(StereoPanning::getChannel<StereoPanning::Left>(panned),
+                      StereoPanning::getChannel<StereoPanning::Right>(panned));
+}
+
+void GlobalSection::render_stereo_audio(const float _left, const float _right)
+{
   // main dsp:
   const float vol = m_smoothers.get(C15::Smoothers::Global_Fast::Master_Volume);
   // (note: master volume seems to not require a signal!)
@@ -183,6 +192,10 @@ void GlobalSection::postProcess_fast()
   {
     m_signals.set(traversal->m_signalId[i], m_smoothers.get_fast(traversal->m_smootherId[i]));
   }
+  // #2996: Serial FX
+  const float serialFX = m_smoothers.get(C15::Smoothers::Global_Fast::Master_Serial_FX);
+  m_signals.set(C15::Signals::Global_Signals::Master_FX_I_to_II, std::max(0.f, serialFX));
+  m_signals.set(C15::Signals::Global_Signals::Master_FX_II_to_I, std::max(0.f, -serialFX));
 }
 
 void GlobalSection::postProcess_slow()

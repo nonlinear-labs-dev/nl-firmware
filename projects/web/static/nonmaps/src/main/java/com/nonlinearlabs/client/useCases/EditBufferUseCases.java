@@ -17,6 +17,9 @@ import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterMod
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.SendParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
+import com.nonlinearlabs.client.presenters.ParameterPresenter;
+import com.nonlinearlabs.client.presenters.ParameterPresenterProvider;
+import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.tools.NLMath;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.PhysicalControlSendParameter;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
@@ -234,6 +237,9 @@ public class EditBufferUseCases {
 
 	public void incDecParameter(ParameterId id, boolean fine, int inc) {
 		BasicParameterModel p = EditBufferModel.get().getParameter(id);
+		ParameterPresenter pp = ParameterPresenterProviders.get().getParameterPresenter(id.getVoiceGroup(), id.getNumber());
+		if(pp.isFine == false)
+			fine = false;
 		double v = p.getIncDecValue(fine, inc);
 		setParameterValue(id, v, true);
 	}

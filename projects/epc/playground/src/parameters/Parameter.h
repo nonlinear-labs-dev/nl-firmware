@@ -53,8 +53,7 @@ class Parameter : public UpdateDocumentContributor,
     Dot
   };
 
-  Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling, tControlPositionValue def,
-            tControlPositionValue coarseDenominator, tControlPositionValue fineDenominator);
+  Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling);
   ~Parameter() override;
 
   tControlPositionValue expropriateSnapshotValue();
@@ -65,6 +64,7 @@ class Parameter : public UpdateDocumentContributor,
   ParameterId getID() const;
 
   bool isBiPolar() const;
+  bool isFineAllowed() const;
   tControlPositionValue getDefaultValue() const;
   tControlPositionValue getFactoryDefaultValue() const;
 
@@ -92,7 +92,6 @@ class Parameter : public UpdateDocumentContributor,
 
   virtual void undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount);
 
-  void undoableLoadValue(UNDO::Transaction *transaction, const Glib::ustring &value);
   virtual void loadDefault(UNDO::Transaction *transaction, Defaults mode);
   void undoableSetDefaultValue(UNDO::Transaction *transaction, const PresetParameter *values);
 
@@ -100,9 +99,6 @@ class Parameter : public UpdateDocumentContributor,
   void undoableUnlock(UNDO::Transaction *transaction);
   virtual bool isLocked() const;
 
-  virtual void exportReaktorParameter(std::stringstream &target) const;
-
-  tTcdValue getTcdValue() const;
   tDisplayValue getDisplayValue() const;
   virtual tControlPositionValue getControlPositionValue() const;
   virtual Glib::ustring getDisplayString() const;
@@ -115,7 +111,6 @@ class Parameter : public UpdateDocumentContributor,
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
   virtual void writeDiff(Writer &writer, Parameter *other) const;
   virtual void writeDifferences(Writer &writer, Parameter *other) const;
-  virtual void writeToPlaycontroller(MessageComposer &cmp) const;
   void invalidate();
 
   virtual Glib::ustring getLongName() const;
@@ -167,6 +162,7 @@ class Parameter : public UpdateDocumentContributor,
 
   void undoableSetDefaultValue(UNDO::Transaction *transaction, tControlPositionValue value);
   nlohmann::json serialize() const override;
+  void onSoundTypeChanged(SoundType t);
 
  private:
   mutable Signal<void, const Parameter *> m_signalParamChanged;
@@ -174,6 +170,7 @@ class Parameter : public UpdateDocumentContributor,
   ParameterId m_id;
   QuantizedValue m_value;
   sigc::connection m_valueChangedConnection;
+  sigc::connection m_onSoundTypeChangedConnection;
   VoiceGroup m_voiceGroup;
 
   std::optional<tControlPositionValue> m_cpBeforeDefault = std::nullopt;

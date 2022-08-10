@@ -6,6 +6,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/EditBankInfoLayout.h>
+#include "use-cases/BankUseCases.h"
 
 EditBankInfoLayout::EditBankInfoLayout()
     : super()

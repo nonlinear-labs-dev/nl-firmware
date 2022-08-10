@@ -3,6 +3,7 @@
 #include "playground.h"
 #include "MessageParser.h"
 #include "MessageComposer.h"
+#include "parameters/ValueRange.h"
 #include <parameters/value/QuantizedValue.h>
 #include <memory>
 #include <nltools/threading/Throttler.h>
@@ -45,6 +46,8 @@ class PlaycontrollerProxy
   Parameter *findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const;
   void notifyRibbonTouch(int ribbonsParameterID);
   void setUHID(uint64_t uhid);
+  int16_t ribbonRelativeFactorToTCDValue(tControlPositionValue d);
+  int16_t ribbonCPValueToTCDValue(tControlPositionValue d, bool bipolar);
 
   sigc::connection onCalibrationStatusChanged(const sigc::slot<void, bool> &slot);
 

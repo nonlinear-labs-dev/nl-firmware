@@ -28,7 +28,7 @@ void Control::setPosition(const Rect &rect)
 
 void Control::setDirty()
 {
-  Oleds::get().setDirty();
+  Application::get().getHWUI()->getOleds().setDirty();
 }
 
 bool Control::isVisible() const
@@ -93,4 +93,9 @@ int Control::getWidth() const
 HWUI *Control::getHWUI() const
 {
   return Application::get().getHWUI();
+}
+
+void Control::toggleHighlight()
+{
+  setHighlight(!isHighlight());
 }

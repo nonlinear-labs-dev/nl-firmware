@@ -6,16 +6,20 @@
 #include <nltools/system/SpawnAsyncCommandLine.h>
 #include <nltools/logging/Log.h>
 #include <tools/StringTools.h>
+#include <device-settings/Settings.h>
 
 UsedRAM::UsedRAM(UpdateDocumentContributor& parent)
     : Setting(parent)
-    , m_scheduleThrottler { Expiration::Duration { std::chrono::minutes { 1 } } }
+    , m_scheduleThrottler(Application::get().getMainContext(), Expiration::Duration { std::chrono::minutes { 1 } })
 {
 }
 
 void UsedRAM::init()
 {
-  Application::get().getUndoScope()->onUndoScopeChanged(sigc::mem_fun(this, &UsedRAM::scheduleReload));
+  if(Application::exists())
+  {
+    Application::get().getUndoScope()->onUndoScopeChanged(sigc::mem_fun(this, &UsedRAM::scheduleReload));
+  }
 }
 
 void UsedRAM::load(const Glib::ustring& text, Initiator initiator)
@@ -42,7 +46,7 @@ void UsedRAM::scheduleReload()
 {
   m_scheduleThrottler.doTask([&] {
     SpawnAsyncCommandLine::spawn(
-        std::vector<std::string> { "free", "--mega" },
+        Application::get().getMainContext(), std::vector<std::string> { "free", "--mega" },
         [](const std::string& s) {
           if(Application::exists())
           {
@@ -53,7 +57,8 @@ void UsedRAM::scheduleReload()
             if(auto setting = Application::get().getSettings()->getSetting<UsedRAM>())
               setting->load(used, Initiator::EXPLICIT_LOAD);
           }
-          else {
+          else
+          {
             nltools::Log::error("Nasty Async Bug Happened!");
           }
         },

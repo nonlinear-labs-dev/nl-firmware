@@ -10,7 +10,7 @@ class SOLED : public OLEDProxy
   typedef OLEDProxy super;
 
  public:
-  SOLED();
+  SOLED(Oleds& oleds);
   ~SOLED() override;
   void init();
   void resetSplash();

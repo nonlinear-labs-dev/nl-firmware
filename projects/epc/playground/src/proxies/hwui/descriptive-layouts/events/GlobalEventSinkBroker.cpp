@@ -15,6 +15,10 @@
 #include "proxies/hwui/HWUI.h"
 #include "proxies/hwui/Layout.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/ParameterUseCases.h"
+#include "use-cases/MacroControlParameterUseCases.h"
+#include "use-cases/ModParameterUseCases.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableDualVoiceGroupMasterAndSplitPointLayout.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
@@ -30,11 +34,12 @@ namespace DescriptiveLayouts
   {
     auto eb = Application::get().getPresetManager()->getEditBuffer();
     auto hwui = Application::get().getHWUI();
+    auto vgManager = Application::get().getVGManager();
 
     registerEvent(EventSinks::Swallow, []() { return; });
 
-    registerEvent(EventSinks::IncParam, [eb, hwui]() {
-      if(auto p = eb->getSelected(hwui->getCurrentVoiceGroup()))
+    registerEvent(EventSinks::IncParam, [eb, hwui, vgManager]() {
+      if(auto p = eb->getSelected(vgManager->getCurrentVoiceGroup()))
       {
         auto modifiers = hwui->getButtonModifiers();
         ParameterUseCases useCase(p);
@@ -42,8 +47,8 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::DecParam, [eb, hwui]() {
-      if(auto p = eb->getSelected(hwui->getCurrentVoiceGroup()))
+    registerEvent(EventSinks::DecParam, [eb, hwui, vgManager]() {
+      if(auto p = eb->getSelected(vgManager->getCurrentVoiceGroup()))
       {
         auto modifiers = hwui->getButtonModifiers();
         ParameterUseCases useCase(p);
@@ -51,40 +56,40 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::IncMCSel, [eb, hwui]() {
-      if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())))
+    registerEvent(EventSinks::IncMCSel, [eb, hwui, vgManager]() {
+      if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(vgManager->getCurrentVoiceGroup())))
       {
         ModParameterUseCases useCase(modParam);
         useCase.incMCSelection(1);
       }
     });
 
-    registerEvent(EventSinks::DecMCSel, [eb, hwui]() {
-      if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())))
+    registerEvent(EventSinks::DecMCSel, [eb, hwui, vgManager]() {
+      if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(vgManager->getCurrentVoiceGroup())))
       {
         ModParameterUseCases useCase(modParam);
         useCase.incMCSelection(-1);
       }
     });
 
-    registerEvent(EventSinks::IncMCAmt, [eb, hwui]() {
-      if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())))
+    registerEvent(EventSinks::IncMCAmt, [eb, hwui, vgManager]() {
+      if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(vgManager->getCurrentVoiceGroup())))
       {
         ModParameterUseCases useCase(modParam);
         useCase.incModAmount(1, false);
       }
     });
 
-    registerEvent(EventSinks::DecMCAmt, [eb, hwui]() {
-      if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())))
+    registerEvent(EventSinks::DecMCAmt, [eb, hwui, vgManager]() {
+      if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(vgManager->getCurrentVoiceGroup())))
       {
         ModParameterUseCases useCase(modParam);
         useCase.incModAmount(-1, false);
       }
     });
 
-    registerEvent(EventSinks::IncMCPos, [eb, hwui]() {
-      if(auto modP = dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())))
+    registerEvent(EventSinks::IncMCPos, [eb, hwui, vgManager]() {
+      if(auto modP = dynamic_cast<ModulateableParameter *>(eb->getSelected(vgManager->getCurrentVoiceGroup())))
       {
         if(auto mc = modP->getMacroControl())
         {
@@ -97,8 +102,8 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::DecMCPos, [eb, hwui]() {
-      if(auto modP = dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())))
+    registerEvent(EventSinks::DecMCPos, [eb, hwui, vgManager]() {
+      if(auto modP = dynamic_cast<ModulateableParameter *>(eb->getSelected(vgManager->getCurrentVoiceGroup())))
       {
         if(auto mc = modP->getMacroControl())
         {
@@ -111,9 +116,9 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::ToggleVoiceGroupWithParameterSelection, [hwui]() { hwui->toggleCurrentVoiceGroup(); });
+    registerEvent(EventSinks::ToggleVoiceGroupWithParameterSelection, [vgManager]() { vgManager->toggleCurrentVoiceGroup(); });
 
-    registerEvent(EventSinks::ToggleVoiceGroup, [hwui]() { hwui->toggleCurrentVoiceGroup(); });
+    registerEvent(EventSinks::ToggleVoiceGroup, [vgManager]() { vgManager->toggleCurrentVoiceGroup(); });
 
     /*
        * UIFocus
@@ -190,8 +195,8 @@ namespace DescriptiveLayouts
       useCase.toggleDirectLoadFromHWUI(hwui);
     });
 
-    registerEvent(EventSinks::SwitchToMCAmtDetail, [hwui, eb]() {
-      if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())))
+    registerEvent(EventSinks::SwitchToMCAmtDetail, [hwui, eb, vgManager]() {
+      if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(vgManager->getCurrentVoiceGroup())))
       {
         if(modParam->getModulationSource() != MacroControls::NONE)
         {
@@ -201,8 +206,8 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::SwitchToMCModRangeDetail, [hwui, eb]() {
-      if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())))
+    registerEvent(EventSinks::SwitchToMCModRangeDetail, [hwui, eb, vgManager]() {
+      if(auto modParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(vgManager->getCurrentVoiceGroup())))
       {
         if(modParam->getModulationSource() != MacroControls::NONE)
         {
@@ -212,8 +217,8 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::SwitchToMCSelectDetail, [hwui, eb]() {
-      if(dynamic_cast<ModulateableParameter *>(eb->getSelected(hwui->getCurrentVoiceGroup())) != nullptr)
+    registerEvent(EventSinks::SwitchToMCSelectDetail, [hwui, eb, vgManager]() {
+      if(dynamic_cast<ModulateableParameter *>(eb->getSelected(vgManager->getCurrentVoiceGroup())) != nullptr)
       {
         SettingsUseCases useCases(*Application::get().getSettings());
         useCases.setFocusAndMode(UIDetail::MCSelect);
@@ -297,18 +302,18 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::OpenMonoParameterScreen, [eb]() {
+    registerEvent(EventSinks::OpenMonoParameterScreen, [eb, vgManager]() {
       EditBufferUseCases useCase(*eb);
-      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+      auto vg = vgManager->getCurrentVoiceGroup();
       if(eb->getType() == SoundType::Split)
         useCase.selectParameter(ParameterId { 364, vg }, true);
       else
         useCase.selectParameter(ParameterId { 364, VoiceGroup::I }, true);
     });
 
-    registerEvent(EventSinks::OpenPartScreen, [eb]() {
+    registerEvent(EventSinks::OpenPartScreen, [eb, vgManager]() {
       EditBufferUseCases ebUseCases { *eb };
-      ebUseCases.selectParameter({ 358, Application::get().getHWUI()->getCurrentVoiceGroup() }, true);
+      ebUseCases.selectParameter({ 358, vgManager->getCurrentVoiceGroup() }, true);
     });
 
     registerEvent(EventSinks::OpenMasterParameter, [eb] {
@@ -323,24 +328,24 @@ namespace DescriptiveLayouts
       useCase.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
     });
 
-    registerEvent(EventSinks::OpenUnisonParameter, [eb]() {
-      auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    registerEvent(EventSinks::OpenUnisonParameter, [eb, vgManager]() {
+      auto vg = vgManager->getCurrentVoiceGroup();
       EditBufferUseCases ebUseCases { *eb };
       ebUseCases.selectParameter({ 249, vg }, true);
     });
 
-    registerEvent(EventSinks::IncSplitPoint, [hwui, eb]() {
+    registerEvent(EventSinks::IncSplitPoint, [hwui, eb, vgManager]() {
       EditBufferUseCases ebUseCases(*eb);
-      auto currentVG = hwui->getCurrentVoiceGroup();
+      auto currentVG = vgManager->getCurrentVoiceGroup();
       if(auto parameterUseCases = ebUseCases.getUseCase({ C15::PID::Split_Split_Point, currentVG }))
       {
         parameterUseCases->incDec(1, false, false);
       }
     });
 
-    registerEvent(EventSinks::DecSplitPoint, [hwui, eb]() {
+    registerEvent(EventSinks::DecSplitPoint, [hwui, eb, vgManager]() {
       EditBufferUseCases ebUseCases(*eb);
-      auto currentVG = hwui->getCurrentVoiceGroup();
+      auto currentVG = vgManager->getCurrentVoiceGroup();
       if(auto parameterUseCases = ebUseCases.getUseCase({ C15::PID::Split_Split_Point, currentVG }))
       {
         parameterUseCases->incDec(-1, false, false);

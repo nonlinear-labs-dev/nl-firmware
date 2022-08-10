@@ -41,6 +41,12 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include "ModulateableParameterLayouts.h"
 #include "ModAspectRecallOverlay.h"
+#include "use-cases/ModParameterUseCases.h"
+#include "groups/ScaleGroup.h"
+#include "use-cases/EditBufferUseCases.h"
+#include "groups/MasterGroup.h"
+#include "parameter_declarations.h"
+#include "use-cases/SettingsUseCases.h"
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
 {
@@ -62,7 +68,7 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
     , super1()
     , super2()
 {
-  m_mcPosButton = addControl(new SwitchVoiceGroupButton(Buttons::BUTTON_A));
+  m_buttonA = addControl(new SwitchVoiceGroupButton(Buttons::BUTTON_A));
   m_mcSelButton = addControl(new MCSelectButton(Buttons::BUTTON_B));
   m_mcAmtButton = addControl(new MCAmountButton(Buttons::BUTTON_C));
 
@@ -70,9 +76,9 @@ ModulateableParameterSelectLayout2::ModulateableParameterSelectLayout2()
 
   setMode(Mode::ParameterValue);
 
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onSelectedParameterChanged),
-      getHWUI()->getCurrentVoiceGroup());
+      sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onSelectedParameterChanged), vg);
 
   Application::get().getHWUI()->onModifiersChanged(
       sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onModfiersChanged));
@@ -83,27 +89,33 @@ void ModulateableParameterSelectLayout2::onSelectedParameterChanged(Parameter *,
   m_paramConnection.disconnect();
 
   if(newParam)
+  {
     m_paramConnection = newParam->onParameterChanged(
         sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onCurrentParameterChanged));
+    m_isScaleParameter = ScaleGroup::isScaleParameter(newParam);
+  }
 }
 
 void ModulateableParameterSelectLayout2::handleSelectPartButton()
 {
-  if(m_mcPosButton)
+  if(m_buttonA)
   {
-    remove(m_mcPosButton);
-    m_mcPosButton = nullptr;
+    remove(m_buttonA);
+    m_buttonA = nullptr;
   }
 
-  if(!m_mcPosButton)
+  if(!m_buttonA)
   {
     if(m_mode == Mode::ParameterValue)
     {
-      m_mcPosButton = addControl(new SwitchVoiceGroupButton(Buttons::BUTTON_A));
+      if(m_isScaleParameter)
+        m_buttonA = addControl(new Button("", Buttons::BUTTON_A));
+      else
+        m_buttonA = addControl(new SwitchVoiceGroupButton(Buttons::BUTTON_A));
     }
     else
     {
-      m_mcPosButton = addControl(new MCPositionButton(Buttons::BUTTON_A));
+      m_buttonA = addControl(new MCPositionButton(Buttons::BUTTON_A));
     }
   }
 }
@@ -217,7 +229,20 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
       case Buttons::BUTTON_A:
         if(m_mode == Mode::ParameterValue && !isCurrentParameterDisabled())
         {
-          Application::get().getHWUI()->toggleCurrentVoiceGroup();
+          if(MasterGroup::isMasterParameter(modParam))
+          {
+            EditBufferUseCases ebUseCases(*modParam->getParentEditBuffer());
+            ebUseCases.selectParameter({ C15::PID::Scale_Base_Key, VoiceGroup::Global }, true);
+          }
+          else if(ScaleGroup::isScaleParameter(modParam))
+          {
+            EditBufferUseCases ebUseCases(*modParam->getParentEditBuffer());
+            ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global }, true);
+          }
+          else
+          {
+            Application::get().getVGManager()->toggleCurrentVoiceGroup();
+          }
           return true;
         }
         else if(!isCurrentParameterDisabled() && m_mode != Mode::MacroControlPosition && isAssigned)
@@ -240,6 +265,23 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
       case Buttons::BUTTON_C:
         if(hasModulationSource() && !isCurrentParameterDisabled())
           toggleMode(Mode::MacroControlAmount);
+        else if(auto c = m_mcAmtButton)
+        {
+          if(c->getText().text == "back..")
+          {
+            if(getCurrentParameter() && dynamic_cast<const ScaleGroup *>(getCurrentParameter()->getParentGroup()))
+            {
+              EditBufferUseCases ebUseCases(*getCurrentParameter()->getParentEditBuffer());
+              ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global });
+            }
+            else
+            {
+              SettingsUseCases sus(*Application::get().getSettings());
+              sus.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+            }
+            return true;
+          }
+        }
         return true;
 
       case Buttons::BUTTON_D:
@@ -406,14 +448,14 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
 
   if(isCurrentParameterDisabled())
   {
-    m_mcPosButton->setText(StringAndSuffix { "" });
+    m_buttonA->setText(StringAndSuffix { "" });
     m_mcAmtButton->setText(StringAndSuffix { "" });
     m_mcSelButton->setText(StringAndSuffix { "" });
   }
 
   handleSelectPartButton();
 
-  m_mcPosButton->setVisible(true);
+  m_buttonA->setVisible(true);
 
   noHighlight();
   setDirty();
@@ -527,6 +569,8 @@ void ModulateableParameterSelectLayout2::setMode(Mode desiredMode)
       setCarousel(new ModulationCarousel(ModulationCarousel::Mode::LowerBound, Rect(195, 1, 58, 62)));
       break;
   }
+
+  updateMasterButton();
 }
 
 bool ModulateableParameterSelectLayout2::isCurrentParameterDisabled() const
@@ -618,6 +662,14 @@ void ModulateableParameterSelectLayout2::cleanMode()
 ModulateableParameterSelectLayout2::Mode ModulateableParameterSelectLayout2::getMode() const
 {
   return m_mode;
+}
+
+void ModulateableParameterSelectLayout2::updateMasterButton()
+{
+  if(m_isScaleParameter)
+    m_buttonA->setText(StringAndSuffix { "back.." });
+  else
+    m_buttonA->setText(StringAndSuffix { "" });
 }
 
 ModulateableParameterEditLayout2::ModulateableParameterEditLayout2()

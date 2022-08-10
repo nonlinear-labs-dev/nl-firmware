@@ -34,16 +34,6 @@ tControlPositionValue ParabolicGainDbScaleConverter::displayToControlPosition(co
   return getControlPositionRange().clip(cp);
 }
 
-tTcdValue ParabolicGainDbScaleConverter::controlPositionToTcd(const tControlPositionValue &cpValue) const
-{
-  return 16000 * cpValue;
-}
-
-tControlPositionValue ParabolicGainDbScaleConverter::tcdToControlPosition(tTcdValue v) const
-{
-  return v / 16000.0;
-}
-
 Glib::ustring ParabolicGainDbScaleConverter::controlPositionToDisplayJS() const
 {
   std::stringstream s;

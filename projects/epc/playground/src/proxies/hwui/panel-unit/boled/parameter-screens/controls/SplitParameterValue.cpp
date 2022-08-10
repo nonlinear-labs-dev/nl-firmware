@@ -65,7 +65,7 @@ void SplitParameterValue::drawParts(FrameBuffer& fb, const std::vector<Glib::ust
   {
     auto part = parts[i];
     fb.setColor(getColorForSplit(i));
-    getFont()->draw(part, x, y);
+    getFont()->draw(fb, part, x, y);
     x += getFont()->getStringWidth(part);
   }
 }
@@ -84,7 +84,7 @@ inline VoiceGroup invert(VoiceGroup vg)
 
 FrameBufferColors SplitParameterValue::getColorForSplit(int i)
 {
-  VoiceGroup selectedVg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  VoiceGroup selectedVg = Application::get().getVGManager()->getCurrentVoiceGroup();
   const FrameBufferColors highlighted = FrameBufferColors::C255;
   const FrameBufferColors unhighlighted = FrameBufferColors::C128;
 

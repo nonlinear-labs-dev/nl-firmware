@@ -16,7 +16,7 @@ SpecialParameterCarousel::SpecialParameterCarousel(const Rect &rect)
   m_editbufferConnection = Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &SpecialParameterCarousel::rebuild));
 
-  m_voiceGroupConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  m_voiceGroupConnection = Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::hide(sigc::mem_fun(this, &SpecialParameterCarousel::rebuild)));
 }
 
@@ -40,7 +40,8 @@ void SpecialParameterCarousel::setup(Parameter *selectedParameter)
 
 void SpecialParameterCarousel::rebuild()
 {
-  auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto s = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
   setup(s);
 }
 
@@ -58,7 +59,14 @@ void SpecialParameterCarousel::setupControls(Parameter *parameter)
   int yPos = ySpaceing;
 
   const auto soundType = Application::get().getPresetManager()->getEditBuffer()->getType();
-  for(const auto &id : getParameterIdsForMode(soundType))
+  auto ids = getParameterIdsForMode(soundType);
+
+  m_currentCarouselContentIDs = {};
+  for(auto id: ids) {
+    m_currentCarouselContentIDs.emplace_back(id.getNumber());
+  }
+
+  for(const auto &id : ids)
   {
     auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id);
     auto miniParam = new MiniParameter(param, Rect(0, yPos, miniParamWidth, miniParamHeight));

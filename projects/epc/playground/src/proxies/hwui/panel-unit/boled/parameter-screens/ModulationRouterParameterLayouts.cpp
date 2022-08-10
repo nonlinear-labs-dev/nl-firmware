@@ -11,6 +11,7 @@
 #include <parameters/MacroControlParameter.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulationRouterParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
+#include "use-cases/EditBufferUseCases.h"
 
 ModulationRouterParameterSelectLayout2::ModulationRouterParameterSelectLayout2()
     : super()

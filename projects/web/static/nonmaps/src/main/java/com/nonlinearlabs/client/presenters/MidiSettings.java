@@ -49,7 +49,8 @@ public class MidiSettings {
             "CC 21/53", "CC 22/54", "CC 23/55", "CC 24/56", "CC 25/57",
             "CC 26/58", "CC 27/59", "CC 28/60", "CC 29/61", "CC 30/62",
             "CC 31/63", "CC 64 (sw.)",  "CC 65 (sw.)",  "CC 66 (sw.)",  "CC 67 (sw.)",
-            "CC 68 (sw.)",  "CC 69 (sw.)"
+            "CC 68 (sw.)",  "CC 69 (sw.)", "CC 64 (cont.)",  "CC 65 (cont.)",  "CC 66 (cont.)",  "CC 67 (cont.)",
+            "CC 68 (cont.)",  "CC 69 (cont.)"
         };
 
         static public String[] optionsWithoutLSB = { 
@@ -60,7 +61,8 @@ public class MidiSettings {
             "CC 21", "CC 22", "CC 23", "CC 24", "CC 25",
             "CC 26", "CC 27", "CC 28", "CC 29", "CC 30",
             "CC 31", "CC 64 (sw.)",  "CC 65 (sw.)",  "CC 66 (sw.)",  "CC 67 (sw.)",
-            "CC 68 (sw.)",  "CC 69 (sw.)"
+            "CC 68 (sw.)",  "CC 69 (sw.)", "CC 64 (cont.)",  "CC 65 (cont.)",  "CC 66 (cont.)",  "CC 67 (cont.)",
+            "CC 68 (cont.)",  "CC 69 (cont.)"
         };
 
         public int selected = 0;

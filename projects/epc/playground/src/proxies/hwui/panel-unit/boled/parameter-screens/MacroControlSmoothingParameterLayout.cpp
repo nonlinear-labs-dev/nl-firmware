@@ -1,5 +1,6 @@
 #include "MacroControlSmoothingParameterLayout.h"
 #include "proxies/hwui/controls/Button.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <parameters/MacroControlParameter.h>
 #include <Application.h>
 #include <presets/PresetManager.h>
@@ -47,9 +48,10 @@ bool MacroControlSmoothingParameterLayout::onButton(Buttons i, bool down, Button
 void MacroControlSmoothingParameterLayout::resetMod()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   EditBufferUseCases ebUseCases { *eb };
 
-  if(auto modTime = dynamic_cast<MacroControlSmoothingParameter *>(eb->getSelected(getHWUI()->getCurrentVoiceGroup())))
+  if(auto modTime = dynamic_cast<MacroControlSmoothingParameter *>(eb->getSelected(vg)))
   {
     if(auto mcUseCases = ebUseCases.getMCUseCase(modTime->getMC()))
     {
@@ -63,8 +65,9 @@ void MacroControlSmoothingParameterLayout::resetMod()
 void MacroControlSmoothingParameterLayout::selectMacroControl()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   EditBufferUseCases ebUseCases { *eb };
-  if(auto modTime = dynamic_cast<MacroControlSmoothingParameter *>(eb->getSelected(getHWUI()->getCurrentVoiceGroup())))
+  if(auto modTime = dynamic_cast<MacroControlSmoothingParameter *>(eb->getSelected(vg)))
   {
     ebUseCases.selectParameter(modTime->getMC(), true);
   }

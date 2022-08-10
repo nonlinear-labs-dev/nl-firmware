@@ -5,6 +5,7 @@
 #include <nltools/messaging/Message.h>
 
 FourStateLED::FourStateLED()
+    : m_syncThrottler(Application::get().getMainContext(), std::chrono::milliseconds(5))
 {
 }
 
@@ -24,11 +25,15 @@ void FourStateLED::setState(State state)
 
 void FourStateLED::syncHWUI()
 {
-  using namespace nltools::msg;
-  SetRibbonLEDMessage msg;
-  msg.id = static_cast<uint8_t>(getID());
-  msg.brightness = static_cast<uint8_t>(m_state & 0x03);
-  send(EndPoint::RibbonLed, msg);
+  m_syncThrottler.doTask(
+      [this]()
+      {
+        using namespace nltools::msg;
+        SetRibbonLEDMessage msg;
+        msg.id = static_cast<uint8_t>(getID());
+        msg.brightness = static_cast<uint8_t>(m_state & 0x03);
+        send(EndPoint::RibbonLed, msg);
+      });
 }
 
 FourStateLED::State FourStateLED::getState() const
