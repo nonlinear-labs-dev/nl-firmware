@@ -77,7 +77,8 @@ void ParameterLayout2::showRecallScreenIfAppropriate()
 
 Parameter *ParameterLayout2::getCurrentParameter() const
 {
-  return Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  return Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
 }
 
 Parameter *ParameterLayout2::getCurrentEditParameter() const
@@ -227,9 +228,9 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
           EditBufferUseCases ebUseCases(*getCurrentEditParameter()->getParentEditBuffer());
           if(SwitchVoiceGroupButton::allowToggling(getCurrentParameter(),
                                                    Application::get().getPresetManager()->getEditBuffer()))
-            Application::get().getHWUI()->toggleCurrentVoiceGroupAndUpdateParameterSelection();
+            Application::get().getVGManager()->toggleCurrentVoiceGroupAndUpdateParameterSelection();
           else if(button->getText().text == "back..")
-            ebUseCases.selectParameter({C15::PID::Master_Volume, VoiceGroup::Global});
+            ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global });
           return true;
         }
         break;
@@ -357,8 +358,9 @@ ParameterRecallLayout2::ParameterRecallLayout2()
 
   m_recallValue = getCurrentParameter()->getControlPositionValue();
 
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::mem_fun(this, &ParameterRecallLayout2::onParameterSelectionChanged), getHWUI()->getCurrentVoiceGroup());
+      sigc::mem_fun(this, &ParameterRecallLayout2::onParameterSelectionChanged), vg);
 
   updateUI(false);
 }
@@ -498,7 +500,7 @@ void ParameterRecallLayout2::onParameterChanged(const Parameter *)
 PartMasterRecallLayout2::PartMasterRecallLayout2()
     : ParameterRecallLayout2()
     , m_muteParameter { Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-          { C15::PID::Voice_Grp_Mute, Application::get().getHWUI()->getCurrentVoiceGroup() }) }
+          { C15::PID::Voice_Grp_Mute, Application::get().getVGManager()->getCurrentVoiceGroup() }) }
 {
   m_muteParameterConnection
       = m_muteParameter->onParameterChanged(sigc::hide(sigc::mem_fun(this, &PartMasterRecallLayout2::onMuteChanged)));

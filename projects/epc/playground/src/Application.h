@@ -1,6 +1,7 @@
 #pragma once
 
 #include "playground.h"
+#include "use-cases/VoiceGroupAndLoadToPartManager.h"
 #include <memory>
 #include <glibmm/refptr.h>
 #include <proxies/usb/USBChangeListener.h>
@@ -51,6 +52,7 @@ class Application
   DeviceInformation *getDeviceInformation();
   Clipboard *getClipboard();
   WebUISupport *getWebUISupport();
+  VoiceGroupAndLoadToPartManager* getVGManager();
 
   void quit();
   [[nodiscard]] bool isQuit() const;
@@ -76,6 +78,8 @@ class Application
   std::unique_ptr<UndoScope> m_undoScope;
   std::unique_ptr<PlaycontrollerProxy> m_playcontrollerProxy;
   std::unique_ptr<AudioEngineProxy> m_audioEngineProxy;
+
+  std::unique_ptr<VoiceGroupAndLoadToPartManager> m_voiceGroupManager;
 
   std::unique_ptr<WatchDog> m_watchDog;
   std::unique_ptr<WatchDog> m_aggroWatchDog;

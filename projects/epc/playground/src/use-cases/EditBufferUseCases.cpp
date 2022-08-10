@@ -12,6 +12,7 @@
 #include <device-settings/DirectLoadSetting.h>
 #include <proxies/hwui/HWUI.h>
 #include <presets/PresetPartSelection.h>
+#include <Application.h>
 
 EditBufferUseCases::EditBufferUseCases(EditBuffer& eb)
     : m_editBuffer { eb }
@@ -303,15 +304,16 @@ void EditBufferUseCases::renamePart(VoiceGroup part, const Glib::ustring& name)
 
 void EditBufferUseCases::undoableLoadAccordingToType(Preset* pPreset, HWUI* hwui)
 {
-  auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
+  auto vgManager = Application::get().getVGManager();
+  auto currentVoiceGroup = vgManager->getCurrentVoiceGroup();
 
   if(pPreset)
   {
-    auto loadToPartActive = hwui->isInLoadToPart();
+    auto loadToPartActive = vgManager->isInLoadToPart();
 
     if(loadToPartActive)
     {
-      auto load = hwui->getPresetPartSelection(currentVoiceGroup);
+      auto load = vgManager->getPresetPartSelection(currentVoiceGroup);
       loadToPart(load->m_preset, load->m_voiceGroup, currentVoiceGroup);
     }
     else

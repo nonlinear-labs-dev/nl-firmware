@@ -109,8 +109,8 @@ void BOLED::setupSoundScreen(FocusAndMode focusAndMode)
 
 void BOLED::setupParameterScreen(FocusAndMode focusAndMode)
 {
-  if(auto selParam = Application::get().getPresetManager()->getEditBuffer()->getSelected(
-         Application::get().getHWUI()->getCurrentVoiceGroup()))
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  if(auto selParam = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg))
   {
     if(auto currentLayout = getLayout().get())
     {

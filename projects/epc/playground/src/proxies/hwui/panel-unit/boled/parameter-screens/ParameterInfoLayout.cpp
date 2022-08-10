@@ -44,10 +44,10 @@ Scrollable *ParameterInfoLayout::createScrollableContent()
 
 bool ParameterInfoLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   if(i == Buttons::BUTTON_EDIT && down)
   {
-    if(dynamic_cast<MacroControlParameter *>(
-           Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup())))
+    if(dynamic_cast<MacroControlParameter *>(Application::get().getPresetManager()->getEditBuffer()->getSelected(vg)))
     {
       Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(new EditMCInfoLayout());
       return true;

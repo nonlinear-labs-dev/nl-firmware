@@ -84,7 +84,7 @@ inline VoiceGroup invert(VoiceGroup vg)
 
 FrameBufferColors SplitParameterValue::getColorForSplit(int i)
 {
-  VoiceGroup selectedVg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  VoiceGroup selectedVg = Application::get().getVGManager()->getCurrentVoiceGroup();
   const FrameBufferColors highlighted = FrameBufferColors::C255;
   const FrameBufferColors unhighlighted = FrameBufferColors::C128;
 

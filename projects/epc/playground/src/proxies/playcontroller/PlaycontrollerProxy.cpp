@@ -236,8 +236,8 @@ void PlaycontrollerProxy::onEditControlMessageReceived(const MessageParser::NLMe
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
 
-  if(auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected(
-         Application::get().getHWUI()->getCurrentVoiceGroup()))
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  if(auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg))
   {
     auto ribbonModeBehaviour = Application::get().getSettings()->getSetting<ParameterEditModeRibbonBehaviour>()->get();
 

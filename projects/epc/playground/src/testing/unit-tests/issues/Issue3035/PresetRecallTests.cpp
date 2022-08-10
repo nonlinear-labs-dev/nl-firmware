@@ -192,7 +192,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Preset with differing Retu
     CHECK(pedal1->getDisplayString() == "25.0 %");
     ebUseCases.load(ped1_retzero);
     TestHelper::doMainLoopIteration();
-    CHECK(pedal1->getDisplayString() == "! 25.0 %");
+    CHECK(pedal1->getDisplayString() == "25.0 %");
   }
 
   WHEN("Non Ret Pedal Load should not set MC Pos")
@@ -217,7 +217,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Preset with differing Retu
     ribbonUseCase.changeFromAudioEngine(1, HWChangeSource::TCD);
     TestHelper::doMainLoopIteration();
 
-    CHECK(ribbon1->getDisplayString() == "! 100.0 %");
+    CHECK(ribbon1->getDisplayString() == "100.0 %");
     CHECK(mc1->getDisplayString() == "100.0 %");
 
     ebUseCases.load(rib1_stay);
@@ -237,13 +237,13 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Preset with differing Retu
     ribbonUseCase.changeFromAudioEngine(1, HWChangeSource::TCD);
     TestHelper::doMainLoopIteration();
 
-    CHECK(ribbon1->getDisplayString() == "! 100.0 %");
+    CHECK(ribbon1->getDisplayString() == "100.0 %");
     CHECK(mc1->getDisplayString() == "100.0 %");
 
     ebUseCases.load(rib1_retcenter_2);
     TestHelper::doMainLoopIteration();
 
-    CHECK(ribbon1->getDisplayString() == "! 100.0 %");
+    CHECK(ribbon1->getDisplayString() == "100.0 %");
     CHECK(mc1->getDisplayString() == "100.0 %");
   }
 

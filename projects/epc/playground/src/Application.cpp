@@ -99,13 +99,14 @@ Application::Application(int numArgs, char **argv)
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
     , m_audioEngineProxy(new AudioEngineProxy(*m_presetManager, *m_settings, *m_playcontrollerProxy))
+    , m_voiceGroupManager(std::make_unique<VoiceGroupAndLoadToPartManager>(*m_presetManager->getEditBuffer()))
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
     , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster()))
     , m_clipboard(new Clipboard(m_http->getUpdateDocumentMaster()))
     , m_usbChangeListener(std::make_unique<USBChangeListener>())
     , m_webUISupport(std::make_unique<WebUISupport>(m_http->getUpdateDocumentMaster()))
-    , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui, *m_settings)
+    , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui, *m_settings, *m_voiceGroupManager)
     , m_heartbeatState(false)
     , m_isQuit(false)
 {
@@ -118,6 +119,7 @@ Application::Application(int numArgs, char **argv)
   m_http->init();
   m_presetManager->init(m_audioEngineProxy.get(), *m_settings, [this](auto str) { m_hwui->addSplashStatus(str); });
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
+  m_voiceGroupManager->init();
 
   auto focusAndMode = m_settings->getSetting<FocusAndModeSetting>();
   SettingsUseCases useCases(*m_settings);
@@ -340,4 +342,9 @@ bool Application::heartbeat()
 ActionManagers *Application::getActionManagers()
 {
   return &m_actionManagers;
+}
+
+VoiceGroupAndLoadToPartManager *Application::getVGManager()
+{
+  return m_voiceGroupManager.get();
 }

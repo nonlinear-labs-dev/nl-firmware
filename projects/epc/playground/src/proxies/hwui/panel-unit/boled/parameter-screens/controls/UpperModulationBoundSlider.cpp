@@ -16,8 +16,9 @@ UpperModulationBoundSlider::~UpperModulationBoundSlider()
 
 UpperModulationBoundSlider::BoundPosition UpperModulationBoundSlider::getBoundPosition() const
 {
-  if(auto p = dynamic_cast<ModulateableParameter *>(
-         Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup())))
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  if(auto p
+     = dynamic_cast<ModulateableParameter *>(Application::get().getPresetManager()->getEditBuffer()->getSelected(vg)))
     return p->getModulationAmount() >= 0 ? BoundPosition::Right : BoundPosition::Left;
 
   return BoundPosition::Right;

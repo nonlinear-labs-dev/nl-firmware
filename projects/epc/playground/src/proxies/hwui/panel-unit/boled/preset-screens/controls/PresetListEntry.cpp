@@ -19,7 +19,7 @@ PresetListEntry::PresetListEntry(const Rect &pos)
     : super(pos)
     , m_animationProgress(0)
 {
-  auto inLoadToPart = Application::get().getHWUI()->isInLoadToPart();
+  auto inLoadToPart = Application::get().getVGManager()->isInLoadToPart();
 
   m_number = addControl(new PresetNumberLabel(Rect(0, 0, 19, 16)));
 

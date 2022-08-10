@@ -42,22 +42,6 @@ class HWUI
   void init();
   void indicateBlockingMainThread();
 
-  VoiceGroup getCurrentVoiceGroup() const;
-
-  bool isInLoadToPart() const;
-
-  //TODO Remove all non HWUI Related things! -> VoiceGroup, LoadToPart etc
-  void setLoadToPart(bool state);
-  void setCurrentVoiceGroup(VoiceGroup v);
-  void setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v);
-
-  void toggleCurrentVoiceGroupAndUpdateParameterSelection();
-  void toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction);
-  void toggleCurrentVoiceGroup();
-
-  sigc::connection onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb);
-  sigc::connection onLoadToPartModeChanged(const sigc::slot<void, bool> &cb);
-
   PanelUnit &getPanelUnit();
   const PanelUnit &getPanelUnit() const;
 
@@ -71,10 +55,6 @@ class HWUI
   sigc::connection onModifiersChanged(const sigc::slot<void, ButtonModifiers> &cb);
   sigc::connection connectToBlinkTimer(const sigc::slot<void, int> &cb);
   void deInit();
-
-  void toggleLoadToPart();
-
-  PresetPartSelection *getPresetPartSelection(VoiceGroup vg);
 
   std::string exportSoled();
   std::string exportBoled();
@@ -106,7 +86,6 @@ class HWUI
   void setModifiers(ButtonModifiers m);
 
   bool onBlinkTimeout();
-  void setupFocusAndMode();
 
   void setModifiers(Buttons buttonID, bool state);
   bool detectAffengriff(Buttons buttonID, bool state);
@@ -114,6 +93,7 @@ class HWUI
 
   void onParameterReselection(Parameter *parameter);
   void onParameterSelection(Parameter *oldParameter, Parameter *newParameter);
+
 
   Oleds m_oleds;
 
@@ -126,13 +106,8 @@ class HWUI
   sigc::connection m_editBufferParameterSelectionConnection;
 
   void onRotaryChanged();
-  Signal<void, VoiceGroup> m_voiceGoupSignal;
-  Signal<void, bool> m_loadToPartSignal;
   Signal<void> m_inputSignal;
 
-  bool m_loadToPartActive = false;
-
-  VoiceGroup m_currentVoiceGroup = VoiceGroup::I;
   std::unique_ptr<LayoutFolderMonitor> m_layoutFolderMonitor;
   PanelUnit m_panelUnit;
   BaseUnit m_baseUnit;

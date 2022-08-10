@@ -22,8 +22,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"setAllValues will not notify if
 
     WHEN("All elements are set to current Value again")
     {
-      setting->setAllValues(true);  //sanitize values first
-
+      setting->setAllValues(true);
       bool didNotifyArrive = false;
       auto connection = setting->onChange([&](auto) { didNotifyArrive = true; });
 
@@ -63,8 +62,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"setAllValues will not notify if
 
     WHEN("on elements is set to current value again")
     {
-      setting->setAllValues(true);  //sanitize values first!
-
+      setting->setAllValues(true);
       bool didNotifyArrive = false;
       auto connection = setting->onChange([&](auto) { didNotifyArrive = true; });
 

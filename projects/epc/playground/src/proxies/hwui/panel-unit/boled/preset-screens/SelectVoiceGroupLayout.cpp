@@ -58,13 +58,12 @@ void SelectVoiceGroupLayout::toggleSelection()
 void SelectVoiceGroupLayout::load()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto hwui = Application::get().getHWUI();
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto from = m_loadFrom;
 
   eb->undoableLoadSelectedToPart(from, currentVG);
 
-  m_parent->animateSelectedPresetIfInLoadPartMode([hwui]() {
+  m_parent->animateSelectedPresetIfInLoadPartMode([]() {
     SettingsUseCases useCases(*Application::get().getSettings());
     useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Select, UIDetail::Init });
   });

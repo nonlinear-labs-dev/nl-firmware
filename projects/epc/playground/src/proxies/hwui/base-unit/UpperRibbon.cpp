@@ -59,7 +59,7 @@ Parameter* UpperRibbon::getResponsibleParameter()
 
   if(s->get() == BaseUnitUIModes::ParameterEdit)
     return Application::get().getPresetManager()->getEditBuffer()->getSelected(
-        Application::get().getHWUI()->getCurrentVoiceGroup());
+        Application::get().getVGManager()->getCurrentVoiceGroup());
 
   return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
       HardwareSourcesGroup::getUpperRibbonParameterID());

@@ -10,9 +10,9 @@
 PhysicalControlBehaviorLabel::PhysicalControlBehaviorLabel(const Rect &pos)
     : Label(pos)
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &PhysicalControlBehaviorLabel::setParameter)),
-      getHWUI()->getCurrentVoiceGroup());
+      sigc::hide<0>(sigc::mem_fun(this, &PhysicalControlBehaviorLabel::setParameter)), vg);
 }
 
 void PhysicalControlBehaviorLabel::setParameter(Parameter *param)

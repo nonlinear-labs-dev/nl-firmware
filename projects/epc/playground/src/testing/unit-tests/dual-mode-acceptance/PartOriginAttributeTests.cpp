@@ -128,9 +128,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Step Direct Load and Load to Pa
   auto eb = TestHelper::getEditBuffer();
   auto settings = TestHelper::getSettings();
   auto pm = Application::get().getPresetManager();
-
-  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vgManager = Application::get().getVGManager();
+  vgManager->setCurrentVoiceGroup(VoiceGroup::I);
+  auto currentVG = vgManager->getCurrentVoiceGroup();
 
   CHECK(currentVG == VoiceGroup::I);
 
@@ -162,7 +162,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Step Direct Load and Load to Pa
       return uuid == bank->getPresetAt(0)->getUuid();
     });
 
-    hwui->setLoadToPart(true);
+    vgManager->setLoadToPart(true);
 
     detail::pressButton(Buttons::BUTTON_INC);
 

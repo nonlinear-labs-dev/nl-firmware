@@ -24,7 +24,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Split
     TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
+    Application::get().getVGManager()->setCurrentVoiceGroup(VoiceGroup::I);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
     envAAttack->setValue(transaction, 0.666);
@@ -187,7 +187,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Split
     TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+    Application::get().getVGManager()->setCurrentVoiceGroup(VoiceGroup::II);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
     envAAttack->setValue(transaction, 0.666);
@@ -352,7 +352,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Layer into Split
     TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+    Application::get().getVGManager()->setCurrentVoiceGroup(VoiceGroup::II);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
     envAAttack->setValue(transaction, 0.666);

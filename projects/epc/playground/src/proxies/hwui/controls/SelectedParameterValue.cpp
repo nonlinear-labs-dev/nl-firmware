@@ -21,11 +21,11 @@ SelectedParameterValue::SelectedParameterValue(const Rect &rect)
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &SelectedParameterValue::onParameterSelected)),
-      getHWUI()->getCurrentVoiceGroup());
+      Application::get().getVGManager()->getCurrentVoiceGroup());
 
   Application::get().getHWUI()->onModifiersChanged(sigc::mem_fun(this, &SelectedParameterValue::onModifiersChanged));
 
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &SelectedParameterValue::onVoiceGroupSelectionChanged));
 
   Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
@@ -38,8 +38,8 @@ SelectedParameterValue::~SelectedParameterValue()
 
 void SelectedParameterValue::onModifiersChanged(ButtonModifiers mods)
 {
-  onParamValueChanged(
-      Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup()));
+  onParamValueChanged(Application::get().getPresetManager()->getEditBuffer()->getSelected(
+      Application::get().getVGManager()->getCurrentVoiceGroup()));
 }
 
 void SelectedParameterValue::onParameterSelected(Parameter *parameter)
@@ -65,7 +65,7 @@ bool SelectedParameterValue::redraw(FrameBuffer &fb)
   auto amount = Application::get()
                     .getPresetManager()
                     ->getEditBuffer()
-                    ->getSelected(getHWUI()->getCurrentVoiceGroup())
+                    ->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup())
                     ->getDisplayString();
 
   if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
@@ -92,8 +92,8 @@ void SelectedParameterValue::onVoiceGroupSelectionChanged(VoiceGroup v)
 
 void SelectedParameterValue::onSoundTypeChanged()
 {
-  auto selected
-      = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(
+      Application::get().getVGManager()->getCurrentVoiceGroup());
   setVisible(!selected->isDisabled());
 }
 

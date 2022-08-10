@@ -100,7 +100,7 @@ void ParameterCarousel::setupChildControlsThatFit(Parameter* selectedParameter, 
 
   for(int i : buttonAssignments)
   {
-    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
     auto eb = Application::get().getPresetManager()->getEditBuffer();
 
     auto param = eb->findParameterByID({ i, vg });
@@ -159,7 +159,7 @@ void ParameterCarousel::antiTurn()
   if(!handled)
   {
     auto idToSelect = lastParameterIDOfCarousel();
-    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
     if(ParameterId::isGlobal(idToSelect))
       ebUseCases.selectParameter({ idToSelect, VoiceGroup::Global }, true);
     else
@@ -198,7 +198,7 @@ void ParameterCarousel::turn()
   if(!handled)
   {
     auto idToSelect = firstParameterIDOfCarousel();
-    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
     if(ParameterId::isGlobal(idToSelect))
       ebUseCases.selectParameter({ idToSelect, VoiceGroup::Global }, true);
     else
@@ -237,7 +237,7 @@ void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Param
 void ParameterCarousel::setupChildControlsThatDontFit(Parameter* selectedParameter,
                                                       const std::list<int>& buttonAssignments)
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
   const int ySpaceing = 3;

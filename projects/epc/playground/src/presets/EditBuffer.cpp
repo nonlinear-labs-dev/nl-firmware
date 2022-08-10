@@ -1566,8 +1566,8 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
   if(Application::exists())
   {
     auto hwui = Application::get().getHWUI();
-
-    auto currentVg = hwui->getCurrentVoiceGroup();
+    auto vgManager = Application::get().getVGManager();
+    auto currentVg = vgManager->getCurrentVoiceGroup();
 
     auto itMap = conversions.find({ oldType, newType });
     if(itMap != conversions.end())
@@ -1583,7 +1583,7 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
           vg = VoiceGroup::I;
 
         undoableSelectParameter(transaction, { itConv->second, vg }, false);
-        hwui->setCurrentVoiceGroup(vg);
+        vgManager->setCurrentVoiceGroup(vg);
       }
     }
 
@@ -1593,7 +1593,7 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
       if(!ParameterId::isGlobal(selNum))
         undoableSelectParameter(transaction, { selNum, VoiceGroup::I }, false);
 
-      hwui->setCurrentVoiceGroup(VoiceGroup::I);
+      vgManager->setCurrentVoiceGroup(VoiceGroup::I);
     }
   }
 }

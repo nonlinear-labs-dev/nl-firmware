@@ -18,7 +18,7 @@ void LoadVoiceGroupPresetList::action()
   {
     EditBufferUseCases useCase(*Application::get().getPresetManager()->getEditBuffer());
     SettingsUseCases useCases(*Application::get().getSettings());
-    useCase.loadToPart(preset, VoiceGroup::I, Application::get().getHWUI()->getCurrentVoiceGroup());
+    useCase.loadToPart(preset, VoiceGroup::I, Application::get().getVGManager()->getCurrentVoiceGroup());
     useCases.setFocusAndMode(UIDetail::Init);
   }
 }

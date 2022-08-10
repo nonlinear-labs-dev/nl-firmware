@@ -17,11 +17,11 @@ ConvertSoundMenu::ConvertSoundMenu(const Rect &rect)
 
 void ConvertSoundMenu::convertSoundTo(SoundType newType)
 {
-  auto hwui = Application::get().getHWUI();
+  auto vgManager = Application::get().getVGManager();
   auto pm = Application::get().getPresetManager();
   EditBufferUseCases useCases(*pm->getEditBuffer());
 
-  const auto currentVG = hwui->getCurrentVoiceGroup();
+  const auto currentVG = vgManager->getCurrentVoiceGroup();
 
   switch(newType)
   {
