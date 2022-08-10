@@ -106,7 +106,7 @@ Application::Application(int numArgs, char **argv)
     , m_clipboard(new Clipboard(m_http->getUpdateDocumentMaster()))
     , m_usbChangeListener(std::make_unique<USBChangeListener>())
     , m_webUISupport(std::make_unique<WebUISupport>(m_http->getUpdateDocumentMaster()))
-    , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui, *m_settings, this)
+    , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui, *m_settings, *m_voiceGroupManager)
     , m_heartbeatState(false)
     , m_isQuit(false)
 {

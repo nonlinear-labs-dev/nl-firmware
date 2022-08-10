@@ -4,6 +4,7 @@
 #include "EditBufferEvent.h"
 #include <proxies/hwui/HWUI.h>
 #include <presets/PresetManager.h>
+#include <use-cases/VoiceGroupAndLoadToPartManager.h>
 
 namespace DescriptiveLayouts
 {

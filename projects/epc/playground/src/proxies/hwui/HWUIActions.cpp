@@ -5,7 +5,8 @@
 #include <libundo/undo/Scope.h>
 #include <Application.h>
 
-HWUIActions::HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuffer& eb, Application* app)
+HWUIActions::HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuffer& eb,
+                         VoiceGroupAndLoadToPartManager& vgManager)
     : SectionAndActionManager(parent, "/hwui/")
 {
   addAction("download-soled-as-png",
@@ -27,15 +28,14 @@ HWUIActions::HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuff
             });
 
   addAction("select-part-from-webui",
-            [&, application=app](const std::shared_ptr<NetworkRequest>& request)
+            [&](const std::shared_ptr<NetworkRequest>& request)
             {
-              auto vgManager = application->getVGManager();
               auto part = to<VoiceGroup>(request->get("part"));
-              if(vgManager->getCurrentVoiceGroup() != part && eb.isDual())
+              if(vgManager.getCurrentVoiceGroup() != part && eb.isDual())
               {
                 auto str = toString(part);
                 auto scope = eb.getParent()->getUndoScope().startTransaction("Select Part " + str);
-                vgManager->setCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction(), part);
+                vgManager.setCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction(), part);
               }
             });
 

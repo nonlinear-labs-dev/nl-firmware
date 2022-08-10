@@ -3,6 +3,7 @@
 #include <http/RPCActionManager.h>
 #include <list>
 #include <http/SectionAndActionManager.h>
+#include <use-cases/VoiceGroupAndLoadToPartManager.h>
 
 class PresetManager;
 class AudioEngineProxy;
@@ -14,7 +15,7 @@ class ActionManagers
 {
  public:
   ActionManagers(UpdateDocumentContributor* parent, PresetManager& pm, AudioEngineProxy& aeProx, HWUI& hwui,
-                 Settings& settings, Application* app);
+                 Settings& settings, VoiceGroupAndLoadToPartManager& vgManager);
 
  private:
   typedef std::shared_ptr<SectionAndActionManager> tManagerPtr;
