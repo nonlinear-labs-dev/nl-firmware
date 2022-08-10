@@ -5,9 +5,8 @@
 #include <http/ContentSection.h>
 #include <http/SectionAndActionManager.h>
 #include "HWUI.h"
-#include "use-cases/VoiceGroupAndLoadToPartManager.h"
 
-class Application;
+class VoiceGroupAndLoadToPartManager;
 
 class HWUIActions : public SectionAndActionManager
 {

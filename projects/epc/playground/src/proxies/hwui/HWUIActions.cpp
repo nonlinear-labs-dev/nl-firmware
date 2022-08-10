@@ -4,6 +4,7 @@
 #include <presets/PresetManager.h>
 #include <libundo/undo/Scope.h>
 #include <Application.h>
+#include <use-cases/VoiceGroupAndLoadToPartManager.h>
 
 HWUIActions::HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuffer& eb,
                          VoiceGroupAndLoadToPartManager& vgManager)
