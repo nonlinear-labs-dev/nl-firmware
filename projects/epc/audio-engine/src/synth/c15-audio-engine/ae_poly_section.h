@@ -66,9 +66,9 @@ class PolySection
   Engine::Handle::Time_Handle *m_time;
   LayerSignalCollection *m_z_self;
   UnisonSpreadTable<C15::Config::total_polyphony> m_spread;
-  Engine::Envelopes::SplitEnvelope<C15::Config::local_polyphony> m_env_a, m_env_b;
-  Engine::Envelopes::RetriggerEnvelope<C15::Config::local_polyphony> m_env_c;
-  Engine::Envelopes::GateEnvelope<C15::Config::local_polyphony> m_env_g;
+  Engine::LegacyEnvelopes::SplitEnvelope<C15::Config::local_polyphony> m_env_a, m_env_b;
+  Engine::LegacyEnvelopes::RetriggerEnvelope<C15::Config::local_polyphony> m_env_c;
+  Engine::LegacyEnvelopes::GateEnvelope<C15::Config::local_polyphony> m_env_g;
   Engine::PolySoundGenerator m_soundgenerator;
   Engine::PolyCombFilter m_combfilter;
   Engine::PolyStateVariableFilter m_svfilter;

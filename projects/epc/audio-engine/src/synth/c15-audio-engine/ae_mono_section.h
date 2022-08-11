@@ -50,7 +50,7 @@ class MonoSection
       m_smoothers;
   exponentiator *m_convert;
   LayerSignalCollection *m_z_self;
-  Engine::Envelopes::DecayEnvelope<1> m_flanger_env;
+  Engine::LegacyEnvelopes::DecayEnvelope<1> m_flanger_env;
   Engine::MonoFlanger m_flanger;
   Engine::MonoCabinet m_cabinet;
   Engine::MonoGapFilter m_gapfilter;
