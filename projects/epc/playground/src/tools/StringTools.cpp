@@ -58,14 +58,6 @@ namespace StringTools
     return ret;
   }
 
-  Glib::ustring grepFirstLineWithOccurrence(const Glib::ustring& in, const Glib::ustring& pattern)
-  {
-    for(const auto& line: splitStringOnAnyDelimiter(in, '\n'))
-      if(contains(line, pattern))
-        return line;
-    return "";
-  }
-
   bool contains(const Glib::ustring& in, const Glib::ustring& pattern)
   {
     return in.find(pattern) != Glib::ustring::npos;
