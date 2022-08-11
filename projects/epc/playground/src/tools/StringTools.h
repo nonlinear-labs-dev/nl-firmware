@@ -9,7 +9,6 @@ namespace StringTools
   std::vector<std::string> splitStringOnStringDelimiter(std::string s, std::string delimiter);
   Glib::ustring replaceAll(const Glib::ustring& in, const Glib::ustring& pattern, const Glib::ustring& replace);
   Glib::ustring removeSpaces(const Glib::ustring& in);
-  Glib::ustring grepFirstLineWithOccurrence(const Glib::ustring& in, const Glib::ustring& pattern);
   bool contains(const Glib::ustring& in, const Glib::ustring& pattern);
 
   std::vector<std::string> splitStringAtSpacesAndTrimSpaces(const Glib::ustring& in);

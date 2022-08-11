@@ -1,28 +1,34 @@
-#include <glibmm/ustring.h>
 #include "HardwareFeatures.h"
-#include "nltools/system/SpawnCommandLine.h"
 #include <tools/StringTools.h>
+#include <fstream>
+
+template <typename tEnum, typename tValue>
+void matchAndSetEnum(std::vector<std::pair<tValue, tEnum>> stringEnumMapping, tEnum& e, tValue line)
+{
+  for(const auto& v : stringEnumMapping)
+  {
+    if(StringTools::contains(line, v.first))
+    {
+      e = v.second;
+      break;
+    }
+  }
+}
 
 HardwareFeatures::HardwareFeatures()
 {
-  SpawnCommandLine cmd("cat /proc/cpuinfo");
-  Glib::ustring cpuInfo = cmd.getStdOutput();
-  auto modelName = StringTools::grepFirstLineWithOccurrence(cpuInfo, "model name");
-  if(StringTools::contains(modelName, "i3-5010"))
+  std::ifstream cpuInfo("/proc/cpuinfo");
+  for(std::string line; std::getline(cpuInfo, line);)
   {
-    m_model = EPC_MODEL::i3_5;
-  }
-  else if(StringTools::contains(modelName, "i3-7100"))
-  {
-    m_model = EPC_MODEL::i3_7;
-  }
-  else if(StringTools::contains(modelName, "i3-1011"))
-  {
-    m_model = EPC_MODEL::i3_10;
-  }
-  else if(StringTools::contains(modelName, "i3-1115"))
-  {
-    m_model = EPC_MODEL::i3_11;
+    if(StringTools::contains(line, "model name"))
+    {
+      matchAndSetEnum({ { "i3-5010", EPC_MODEL::i3_5 },
+                        { "i3-7100", EPC_MODEL::i3_7 },
+                        { "i3-1011", EPC_MODEL::i3_10 },
+                        { "i3-1115", EPC_MODEL::i3_11 } },
+                      m_model, line);
+      break;
+    }
   }
 
   switch(m_model)
@@ -30,6 +36,7 @@ HardwareFeatures::HardwareFeatures()
     case EPC_MODEL::UNKNOWN:
     case EPC_MODEL::i3_5:
     case EPC_MODEL::i3_7:
+    default:
       m_hasEPCWifi = false;
       break;
     case EPC_MODEL::i3_10:
