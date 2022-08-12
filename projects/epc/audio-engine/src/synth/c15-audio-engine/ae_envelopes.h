@@ -284,7 +284,7 @@ protected: // exposing required types for inheritance
   using ChannelScalar = typename ChannelData::Scalar;
   using MarkerId = typename SegmentData::Marker;
 
-public: // exposing requires types and configuration for access
+public: // exposing required types and configuration for access
   using ChannelId = typename ChannelData::ChannelId;
   using SegmentId = SID;
   static constexpr Unsigned sVoices = WrapperType::sVoices;
@@ -302,9 +302,8 @@ protected:
   // State: rendering state
   struct State {
     ChannelData mSignal = {}, mStart = {};
-    WrapperData mX = {}, mY = {};
+    WrapperData mX = {}, mY = {}, mPeakLevel = {};
     SegmentId mSegmentId[sVoices] = {};
-    WrapperData mPeakLevel = {};
   };
   // Constructor: requires segment definition
   inline Envelope(const SegmentData *const &_segments)
@@ -416,7 +415,7 @@ private:
                                   mSegments[_segmentId].mInit.mStart,
                                   mTransitions[_segmentId].mRetriggerHardness);
     });
-    const float dx = mTransitions[_segmentId].mDx[_voiceId];
+    const ScalarValue &dx = mTransitions[_segmentId].mDx[_voiceId];
     mState.mX[_voiceId] = dx;
     mState.mY[_voiceId] = 1.0f - dx;
   }
