@@ -36,11 +36,19 @@ template <class M> class MonoSignalStorage
 {
  public:
   // numeric and enum-class-based getters
-  inline const float& get(const uint32_t _id)
+  inline float& get(const uint32_t _id)
   {
     return m_data[_id];
   }
-  inline const float& get(const M _id)
+  inline const float& get(const uint32_t _id) const
+  {
+    return m_data[_id];
+  }
+  inline float& get(const M _id)
+  {
+    return m_data[static_cast<uint32_t>(_id)];
+  }
+  inline const float& get(const M _id) const
   {
     return m_data[static_cast<uint32_t>(_id)];
   }
@@ -71,27 +79,51 @@ template <class P, class M> class PolySignalStorage
 {
  public:
   // numeric and enum-class-based getters (mono, poly)
-  inline const float& get_mono(const uint32_t _id)
+  inline float& get_mono(const uint32_t _id)
   {
     return m_mono[_id];
   }
-  inline const float& get(const M _id)
+  inline const float& get_mono(const uint32_t _id) const
+  {
+    return m_mono[_id];
+  }
+  inline float& get(const M _id)
   {
     return m_mono[static_cast<uint32_t>(_id)];
   }
-  inline const float& get_poly(const uint32_t _id, const uint32_t _voiceId)
+  inline const float& get(const M _id) const
+  {
+    return m_mono[static_cast<uint32_t>(_id)];
+  }
+  inline float& get_poly(const uint32_t _id, const uint32_t _voiceId)
   {
     return m_poly[_id][_voiceId];
   }
-  inline const float& get(const P _id, const uint32_t _voiceId)
+  inline const float& get_poly(const uint32_t _id, const uint32_t _voiceId) const
+  {
+    return m_poly[_id][_voiceId];
+  }
+  inline float& get(const P _id, const uint32_t _voiceId)
   {
     return m_poly[static_cast<uint32_t>(_id)][_voiceId];
   }
-  inline const PolyValue& get_poly(const uint32_t _id)
+  inline const float& get(const P _id, const uint32_t _voiceId) const
+  {
+    return m_poly[static_cast<uint32_t>(_id)][_voiceId];
+  }
+  inline PolyValue& get_poly(const uint32_t _id)
   {
     return m_poly[_id];
   }
-  inline const PolyValue& get(const P _id)
+  inline const PolyValue& get_poly(const uint32_t _id) const
+  {
+    return m_poly[_id];
+  }
+  inline PolyValue& get(const P _id)
+  {
+    return m_poly[static_cast<uint32_t>(_id)];
+  }
+  inline const PolyValue& get(const P _id) const
   {
     return m_poly[static_cast<uint32_t>(_id)];
   }
