@@ -305,6 +305,21 @@ protected:
     WrapperData mX = {}, mY = {}, mPeakLevel = {};
     SegmentId mSegmentId[sVoices] = {};
   };
+  // ClipFactor, TimeFactor: optional State enhancements
+  struct ClipFactor {
+      WrapperData mClipFactor = {};
+  };
+  class TimeFactor {
+      class Data {
+          WrapperData mData[sSegments] = {};
+      public:
+          inline WrapperData& operator[](const SegmentId& _segmentId) {
+              return mData[(Unsigned)_segmentId];
+          }
+      };
+  public:
+      Data mTimeFactor = {};
+  };
   // Constructor: requires segment definition
   inline Envelope(const SegmentData *const &_segments)
       : mSegments{_segments}, mTransitions{}, mState{} {
@@ -422,7 +437,7 @@ private:
 
 public:
   // render function
-  inline void tick(const VoiceId &_voiceId, const ScalarValue &_mute) {
+  inline void tick(const VoiceId &_voiceId, const ScalarValue &_mute = 1.0f) {
     const Unsigned segmentId = (Unsigned)mState.mSegmentId[_voiceId];
     const ChannelScalar difference = determineDifference(_voiceId, segmentId);
     const bool isComplete = render(_voiceId, segmentId, difference, _mute);
@@ -529,6 +544,10 @@ public:
   class Impl : public Super {
   public:
     inline Impl() : Super{sSegments} {}
+    inline void init(const ScalarValue &_dx) {
+        for(VoiceId v = 0; v < Super::sVoices; v++)
+            Super::setSegmentDx(Stage::Release, v, _dx);
+    }
   };
 };
 
@@ -557,7 +576,7 @@ class Envelopes::ElevatingADBDSR {
                                                   false};
 
 public:
-  class Impl : public Super {
+  class Impl : public Super, public Super::TimeFactor {
     ScalarValue mElevation[Super::sChannels] = {};
 
   public:
@@ -636,7 +655,7 @@ class Envelopes::LoopableADBDSR {
   };
 
 public:
-  class Impl : public Super {
+  class Impl : public Super, public Super::ClipFactor, public Super::TimeFactor {
     using ChannelScalar = typename Super::ChannelScalar;
     using WrapperData = typename Super::WrapperData;
     struct LoopState {
@@ -681,7 +700,7 @@ public:
     inline void setLoopFactor(const ScalarValue &_loopFactor) {
       mLoopState.mValue = _loopFactor;
     }
-    inline void tick(const VoiceId &_voiceId, const ScalarValue &_mute) {
+    inline void tick(const VoiceId &_voiceId, const ScalarValue &_mute = 1.0f) {
       const Unsigned segmentId = (Unsigned)Super::mState.mSegmentId[_voiceId];
       const ChannelScalar difference =
           determineDifference(_voiceId, segmentId, _mute);
@@ -717,20 +736,20 @@ public:
       } else {
         mLoopState.mLoop[_voiceId] = Loop::Hold;
         mLoopState.mFactor[_voiceId] =
-            _loopScaleCb(mLoopState.mValue > 1.0f ? 1.0f : mLoopState.mValue);
+            _loopScaleCb(mLoopState.mValue > 100.0f ? 100.0f : mLoopState.mValue);
         Super::start(_voiceId, MarkerId::LoopStart);
       }
     }
     inline void stop(const VoiceId &_voiceId,
                      const LoopScaleCb &_loopScaleCb) {
-      if (mLoopState.mValue <= 1.0f) {
+      if (mLoopState.mValue <= 100.0f) {
         mLoopState.mLoop[_voiceId] = Loop::None;
         mLoopState.mFactor[_voiceId] = 1.0f;
         mLoopState.mDecay[_voiceId] = 1.0f;
         Super::stop(_voiceId, MarkerId::Stop);
       } else {
         mLoopState.mLoop[_voiceId] = Loop::Release;
-        mLoopState.mFactor[_voiceId] = _loopScaleCb(mLoopState.mValue - 1.0f);
+        mLoopState.mFactor[_voiceId] = _loopScaleCb(mLoopState.mValue - 100.0f);
       }
     }
     inline void setSegmentDx(const Stage &_stage, const VoiceId &_voiceId,
@@ -754,6 +773,8 @@ public:
 };
 
 } // namespace Engine
+
+#if 0
 
 /******************************************************************************/
 /** @version    1.7-0
@@ -1289,3 +1310,5 @@ template <uint32_t Size> struct DecayEnvelope {
 };
 } // namespace LegacyEnvelopes
 } // namespace Engine
+
+#endif
