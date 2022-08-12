@@ -151,19 +151,19 @@ public: // exposed usable envelope types
 
 // impl Retrigger
 template <>
-ScalarValue Envelopes::applyRetrigger<Envelopes::RetriggerType::Soft>(
+inline ScalarValue Envelopes::applyRetrigger<Envelopes::RetriggerType::Soft>(
     const ScalarValue &_signal, const ScalarValue &, const ScalarValue &) {
   // soft: result is current signal
   return _signal;
 }
 template <>
-ScalarValue Envelopes::applyRetrigger<Envelopes::RetriggerType::Hard>(
+inline ScalarValue Envelopes::applyRetrigger<Envelopes::RetriggerType::Hard>(
     const ScalarValue &, const ScalarValue &_from, const ScalarValue &) {
   // hard: result is predefined position
   return _from;
 }
 template <>
-ScalarValue Envelopes::applyRetrigger<Envelopes::RetriggerType::Variable>(
+inline ScalarValue Envelopes::applyRetrigger<Envelopes::RetriggerType::Variable>(
     const ScalarValue &_signal, const ScalarValue &_from,
     const ScalarValue &_fade) {
   // variable: result is crossfade between signal and predefined position
@@ -172,7 +172,7 @@ ScalarValue Envelopes::applyRetrigger<Envelopes::RetriggerType::Variable>(
 
 // impl Curve
 template <>
-ScalarValue Envelopes::renderCurve<Envelopes::CurveType::Linear>(
+inline ScalarValue Envelopes::renderCurve<Envelopes::CurveType::Linear>(
     ScalarValue &_x, ScalarValue &, const ScalarValue &_dx,
     const ScalarValue &) {
   const ScalarValue ret = _x;
@@ -180,7 +180,7 @@ ScalarValue Envelopes::renderCurve<Envelopes::CurveType::Linear>(
   return ret;
 }
 template <>
-ScalarValue Envelopes::renderCurve<Envelopes::CurveType::Exponential>(
+inline ScalarValue Envelopes::renderCurve<Envelopes::CurveType::Exponential>(
     ScalarValue &, ScalarValue &_y, const ScalarValue &_dx,
     const ScalarValue &) {
   const ScalarValue ret = 1.0f - _y;
@@ -188,7 +188,7 @@ ScalarValue Envelopes::renderCurve<Envelopes::CurveType::Exponential>(
   return ret;
 }
 template <>
-ScalarValue Envelopes::renderCurve<Envelopes::CurveType::Polynomial>(
+inline ScalarValue Envelopes::renderCurve<Envelopes::CurveType::Polynomial>(
     ScalarValue &_x, ScalarValue &, const ScalarValue &_dx,
     const ScalarValue &_curvature) {
   const ScalarValue ret = applyCurvature<sPolynomialExponent>(_x, _curvature);
@@ -196,17 +196,17 @@ ScalarValue Envelopes::renderCurve<Envelopes::CurveType::Polynomial>(
   return ret;
 }
 template <>
-bool Envelopes::isTransitionIncomplete<Envelopes::CurveType::Linear>(
+inline bool Envelopes::isTransitionIncomplete<Envelopes::CurveType::Linear>(
     const ScalarValue &_x, const ScalarValue &) {
   return 1.0f > _x;
 };
 template <>
-bool Envelopes::isTransitionIncomplete<Envelopes::CurveType::Exponential>(
+inline bool Envelopes::isTransitionIncomplete<Envelopes::CurveType::Exponential>(
     const ScalarValue &, const ScalarValue &_y) {
   return _y > sRenderMin;
 };
 template <>
-bool Envelopes::isTransitionIncomplete<Envelopes::CurveType::Polynomial>(
+inline bool Envelopes::isTransitionIncomplete<Envelopes::CurveType::Polynomial>(
     const ScalarValue &_x, const ScalarValue &) {
   return 1.0f > _x;
 };

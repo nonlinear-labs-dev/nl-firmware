@@ -22,6 +22,8 @@
 #include "ae_poly_out_mix.h"
 #include "nltoolbox.h"
 
+namespace Engine {
+
 class PolySection
 {
  public:
@@ -107,3 +109,5 @@ class PolySection
   void setSlowFilterCoefs(const uint32_t _voiceId);
   void testVoiceFadeTable();
 };
+
+} // namespace Engine

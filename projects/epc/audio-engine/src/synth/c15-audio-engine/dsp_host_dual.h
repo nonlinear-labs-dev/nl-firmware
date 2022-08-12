@@ -269,15 +269,15 @@ class dsp_host_dual : public DSPInterface
   // layer handling
   LayerMode m_layer_mode;
   // global dsp components
-  GlobalSection m_global;
+  Engine::GlobalSection m_global;
   VoiceAllocation<C15::Config::total_polyphony, C15::Config::local_polyphony, C15::Config::virtual_key_count,
                   C15::Config::generic_key_pivot, LayerMode>
       m_alloc;
   // dsp components
   atomic_fade_table m_fade;
-  PolySection m_poly[2];
-  MonoSection m_mono[2];
-  LayerSignalCollection m_z_layers[2];
+  Engine::PolySection m_poly[2];
+  Engine::MonoSection m_mono[2];
+  Engine::LayerSignalCollection m_z_layers[2];
   // helper values
   const float m_format_vel = 16383.0f / 127.0f, m_format_hw = 16000.0f / 127.0f, m_format_pb = 16000.0f / 16383.0f,
               m_norm_vel = 1.0f / 16383.0f, m_norm_hw = 1.0f / 16000.0f;

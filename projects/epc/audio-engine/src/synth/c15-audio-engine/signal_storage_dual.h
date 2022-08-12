@@ -10,11 +10,15 @@
     @todo
 *******************************************************************************/
 
-#include <c15_config.h>
-#include "ParallelData.h"
+//#include <c15_config.h>
+//#include "ParallelData.h"
 
-using PolyValue = ParallelData<float, C15::Config::local_polyphony>;
-using PolyInt = ParallelData<int32_t, C15::Config::local_polyphony>;
+//using PolyValue = ParallelData<float, C15::Config::local_polyphony>;
+//using PolyInt = ParallelData<int32_t, C15::Config::local_polyphony>;
+
+#include "engine.h"
+
+namespace Engine {
 
 struct LayerSignalCollection
 {
@@ -137,3 +141,5 @@ template <class P, class M> class PolySignalStorage
   PolyValue m_poly[static_cast<uint32_t>(P::_LENGTH_)] = {};
   float m_mono[static_cast<uint32_t>(M::_LENGTH_)] = {};
 };
+
+} // namespace Engine

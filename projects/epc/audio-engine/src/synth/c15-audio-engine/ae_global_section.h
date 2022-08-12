@@ -16,6 +16,8 @@
 // specify if soft clipping should be applied
 constexpr bool APPLY_SOFT_CLIP = true;
 
+namespace Engine {
+
 class GlobalSection
 {
  public:
@@ -85,3 +87,5 @@ class GlobalSection
   void postProcess_fast();
   void postProcess_slow();
 };
+
+}

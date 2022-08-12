@@ -21,6 +21,8 @@
 #include "pe_exponentiator.h"
 #include "pe_lfo_engine.h"
 
+namespace Engine {
+
 class MonoSection
 {
  public:
@@ -67,3 +69,5 @@ class MonoSection
   void postProcess_fast();
   void postProcess_slow();
 };
+
+} // namespace Engine
