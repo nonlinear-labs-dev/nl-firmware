@@ -52,7 +52,6 @@ class MonoSection
       m_smoothers;
   exponentiator *m_convert;
   LayerSignalCollection *m_z_self;
-//  LegacyEnvelopes::DecayEnvelope<1> m_flanger_env;
   using FlangerEnv = Envelopes::Decay<ScalarValue>::Impl;
   FlangerEnv m_flanger_env;
   MonoFlanger m_flanger;

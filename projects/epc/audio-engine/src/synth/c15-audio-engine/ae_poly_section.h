@@ -48,6 +48,7 @@ class PolySection
   void render_feedback(const LayerSignalCollection &_z_other);
   void render_fast();
   void render_slow();
+  void onBeforeKeyDown();
   bool keyDown(PolyKeyEvent *_event);
   void keyUp(PolyKeyEvent *_event);
   void resetEnvelopes();
