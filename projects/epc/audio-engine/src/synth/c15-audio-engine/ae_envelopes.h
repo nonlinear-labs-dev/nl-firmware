@@ -668,31 +668,26 @@ public:
                                              const Unsigned &_segmentId,
                                              const ScalarValue &_mute) const {
       ChannelScalar ret;
+      const ScalarValue mute =
+          mLoopState.mLoop[_voiceId] == Loop::Release ? _mute : 1.0f;
+      const ScalarValue decay =
+          Super::mSegments[_segmentId].mMarker == MarkerId::LoopBegin
+              ? mLoopState.mDecay[_voiceId]
+              : 1.0f;
       ret.apply(_voiceId, [this, &_voiceId, &_segmentId,
-                           &_mute](const Unsigned &_channelId) {
-        const ScalarValue mute =
-            mLoopState.mLoop[_voiceId] == Loop::Release ? _mute : 1.0f;
+                           &mute, &decay](const Unsigned &_channelId) {
         const ScalarValue dest =
             Super::mTransitions[_segmentId].mDest.mData[_channelId][_voiceId] *
             mLoopState.mRelease[_voiceId] * mute;
         const ScalarValue start =
             Super::mState.mStart.mData[_channelId][_voiceId];
-        const ScalarValue decay =
-            Super::mSegments[_segmentId].mMarker == MarkerId::LoopBegin
-                ? mLoopState.mDecay[_voiceId]
-                : 1.0f;
-        const ScalarValue diff = dest - start;
-        return diff * decay;
+        return (dest - start) * decay;
       });
       return ret;
     }
     inline void applyLoopDecay(ScalarValue &_value,
                                const ScalarValue &_factor) {
-      if (_value > sRenderMin) {
-        _value *= _factor;
-      } else {
-        _value = 0.0f;
-      }
+        _value *= (_value > sRenderMin ? _factor : 0.0f);
     }
 
   public:
@@ -709,20 +704,11 @@ public:
       const bool isComplete =
           Super::render(_voiceId, segmentId, difference, _mute);
       if (isComplete) {
-        switch (mLoopState.mLoop[_voiceId]) {
-        case Loop::Hold:
-          if (markerId == MarkerId::LoopBegin)
-            applyLoopDecay(mLoopState.mDecay[_voiceId],
-                           mLoopState.mFactor[_voiceId]);
-          break;
-        case Loop::Release:
-          if (markerId == MarkerId::LoopEnd)
-            applyLoopDecay(mLoopState.mRelease[_voiceId],
-                           mLoopState.mFactor[_voiceId]);
-          break;
-        default:
-          break;
-        }
+          if(markerId > MarkerId::LoopStart) {
+              const bool holdOrRelease = mLoopState.mLoop[_voiceId] == Loop::Hold;
+              applyLoopDecay(holdOrRelease ? mLoopState.mDecay[_voiceId] : mLoopState.mRelease[_voiceId],
+                             mLoopState.mFactor[_voiceId]);
+          }
         Super::nextTransition(_voiceId,
                               (Unsigned)Super::mSegments[segmentId].mNext);
       }
