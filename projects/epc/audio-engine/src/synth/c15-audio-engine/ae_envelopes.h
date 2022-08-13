@@ -296,13 +296,14 @@ protected:
   // Transition: parameterized state for each segment
   struct Transition {
     ChannelData mDest = {};
-    WrapperData mDx = {}, mCurvature = {};
+    WrapperData mDx = {};
     ScalarValue mRetriggerHardness = {};
   };
   // State: rendering state
   struct State {
+    // Note: Curvature parameter is currently not segment-bound
     ChannelData mSignal = {}, mStart = {};
-    WrapperData mX = {}, mY = {}, mPeakLevel = {};
+    WrapperData mX = {}, mY = {}, mCurvature = {}, mPeakLevel = {};
     SegmentId mSegmentId[sVoices] = {};
   };
   // ClipFactor, TimeFactor: optional State enhancements
@@ -386,7 +387,7 @@ protected:
                mState.mX[_voiceId], mState.mY[_voiceId]))) {
         rendered = renderCurve<CurveType::Polynomial>(
             mState.mX[_voiceId], mState.mY[_voiceId], transition.mDx[_voiceId],
-            transition.mCurvature[_voiceId]);
+            mState.mCurvature[_voiceId]);
       }
       break;
     default: // idle
@@ -468,10 +469,9 @@ public:
           return peakLevel * _dest;
         });
   }
-  inline void setSegmentCurvature(const SegmentId &_segmentId,
-                                  const VoiceId &_voiceId,
-                                  const ScalarValue &_curvature) {
-    mTransitions[(Unsigned)_segmentId].mCurvature[_voiceId] = _curvature;
+  inline void setCurvature(const VoiceId &_voiceId,
+                           const ScalarValue &_curvature) {
+    mState.mCurvature[_voiceId] = _curvature;
   }
   // update start segment retrigger hardness (usually attack)
   inline void setRetriggerHardness(const ScalarValue &_retriggerHardness) {

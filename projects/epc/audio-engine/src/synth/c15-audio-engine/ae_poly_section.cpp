@@ -1047,9 +1047,8 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch,
                  env_clip_peak);
   }
   m_env_a.setPeakLevel(_voiceId, peak);
-  m_env_a.setSegmentCurvature(
-      ElevatingEnv::SegmentId::Attack, _voiceId,
-      m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Att_Curve));
+  m_env_a.setCurvature(
+      _voiceId, m_smoothers.get(C15::Smoothers::Poly_Sync::Env_A_Att_Curve));
   m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Attack][_voiceId] =
       m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Decay1][_voiceId] =
@@ -1096,9 +1095,8 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch,
                  env_clip_peak);
   }
   m_env_b.setPeakLevel(_voiceId, peak);
-  m_env_b.setSegmentCurvature(
-      ElevatingEnv::SegmentId::Attack, _voiceId,
-      m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Att_Curve));
+  m_env_b.setCurvature(
+      _voiceId, m_smoothers.get(C15::Smoothers::Poly_Sync::Env_B_Att_Curve));
   m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Attack][_voiceId] =
       m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Decay1][_voiceId] =
@@ -1144,9 +1142,8 @@ void PolySection::startEnvelopes(const uint32_t _voiceId, const float _pitch,
   m_env_c.setLoopFactor(0.0f); // TODO: implement new Parameter EnvC::LoopFactor
   m_env_c.mClipFactor[_voiceId] = unclipped / peak;
   m_env_c.setPeakLevel(_voiceId, peak);
-  m_env_c.setSegmentCurvature(
-      LoopableEnv::SegmentId::Attack, _voiceId,
-      m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Att_Curve));
+  m_env_c.setCurvature(
+      _voiceId, m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Att_Curve));
   m_env_c.mTimeFactor[LoopableEnv::SegmentId::Attack][_voiceId] =
       m_convert->eval_level(timeKT + attackVel) * m_millisecond;
   m_env_c.mTimeFactor[LoopableEnv::SegmentId::Decay1][_voiceId] =
