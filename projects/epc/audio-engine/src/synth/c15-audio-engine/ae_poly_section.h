@@ -102,6 +102,7 @@ class PolySection
   float evalNyquist(const float _value);
   float evalScale(const uint32_t _voiceId);
   void postProcess_poly_audio(const uint32_t _voiceId, const float _mute);
+  void postProcess_mono_audio();
   void postProcess_poly_fast(const uint32_t _voiceId);
   void postProcess_mono_fast();
   void postProcess_poly_slow(const uint32_t _voiceId);

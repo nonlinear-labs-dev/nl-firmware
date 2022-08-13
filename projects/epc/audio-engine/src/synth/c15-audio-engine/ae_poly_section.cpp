@@ -113,6 +113,7 @@ void PolySection::render_audio(const float _mute) {
                        m_smoothers.get_audio(traversal->m_smootherId[i]));
   }
 #if POTENTIAL_IMPROVEMENT_GAIN_CURVE == __POTENTIAL_IMPROVEMENT_DISABLED__
+  postProcess_mono_audio();
   for (uint32_t v = 0; v < m_voices; v++) {
     postProcess_poly_audio(v, _mute);
   }
@@ -126,6 +127,7 @@ void PolySection::render_audio(const float _mute) {
                         m_soundgenerator.m_out_B, m_combfilter.m_out,
                         m_svfilter.m_out);
 #elif POTENTIAL_IMPROVEMENT_GAIN_CURVE == __POTENTIAL_IMPROVEMENT_ENABLED__
+  postProcess_mono_audio();
   PolyValue tmp_voice_level;
   for (uint32_t v = 0; v < m_voices; v++) {
     postProcess_poly_audio(v, _mute);
@@ -502,32 +504,6 @@ float PolySection::evalScale(const uint32_t _voiceId) {
 
 void PolySection::postProcess_poly_audio(const uint32_t _voiceId,
                                          const float _mute) {
-  // provide poly env signals
-  // NOTE: with the new envelopes, this code seems simd-compliant
-  float gain = m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_Gain);
-  m_signals.set_poly(
-      C15::Signals::Truepoly_Signals::Env_A_Mag, _voiceId,
-      gain * m_env_a.getSignal(ElevatingEnv::ChannelId::Magnitude, _voiceId));
-  m_signals.set_poly(
-      C15::Signals::Truepoly_Signals::Env_A_Tmb, _voiceId,
-      gain * m_env_a.getSignal(ElevatingEnv::ChannelId::Timbre, _voiceId));
-  gain = m_smoothers.get(C15::Smoothers::Poly_Fast::Env_B_Gain);
-  m_signals.set_poly(
-      C15::Signals::Truepoly_Signals::Env_B_Mag, _voiceId,
-      gain * m_env_b.getSignal(ElevatingEnv::ChannelId::Magnitude, _voiceId));
-  m_signals.set_poly(
-      C15::Signals::Truepoly_Signals::Env_B_Tmb, _voiceId,
-      gain * m_env_b.getSignal(ElevatingEnv::ChannelId::Timbre, _voiceId));
-  m_signals.set_poly(
-      C15::Signals::Truepoly_Signals::Env_C_Clip, _voiceId,
-      m_env_c.getSignal(LoopableEnv::ChannelId::Magnitude, _voiceId));
-  m_signals.set_poly(
-      C15::Signals::Truepoly_Signals::Env_C_Uncl, _voiceId,
-      m_env_c.getSignal(LoopableEnv::ChannelId::Magnitude, _voiceId) *
-          m_env_c.mClipFactor[_voiceId]);
-  m_signals.set_poly(
-      C15::Signals::Truepoly_Signals::Env_G_Sig, _voiceId,
-      m_env_g.getSignal(GateEnv::ChannelId::Magnitude, _voiceId));
   // temporary variables
   float tmp_amt, tmp_env;
   // poly osc a signals
@@ -650,6 +626,30 @@ void PolySection::postProcess_poly_audio(const uint32_t _voiceId,
       m_spread.m_phase[m_uVoice][m_unison_index[_voiceId]];
   m_signals.set(C15::Signals::Truepoly_Signals::Unison_PolyPhase, _voiceId,
                 phase);
+}
+
+void PolySection::postProcess_mono_audio() {
+  // provide poly env signals
+  // polyphony envelope signals are now simd compliant
+  const ScalarValue gainA =
+                        m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_Gain),
+                    gainB =
+                        m_smoothers.get(C15::Smoothers::Poly_Fast::Env_B_Gain);
+  m_signals.get(C15::Signals::Truepoly_Signals::Env_A_Mag) =
+      gainA * m_env_a.getSignal(ElevatingEnv::ChannelId::Magnitude);
+  m_signals.get(C15::Signals::Truepoly_Signals::Env_A_Tmb) =
+      gainA * m_env_a.getSignal(ElevatingEnv::ChannelId::Timbre);
+  m_signals.get(C15::Signals::Truepoly_Signals::Env_B_Mag) =
+      gainB * m_env_b.getSignal(ElevatingEnv::ChannelId::Magnitude);
+  m_signals.get(C15::Signals::Truepoly_Signals::Env_B_Tmb) =
+      gainB * m_env_b.getSignal(ElevatingEnv::ChannelId::Timbre);
+  m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Clip) =
+      m_env_c.getSignal(LoopableEnv::ChannelId::Magnitude);
+  m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl) =
+      m_env_c.mClipFactor *
+      m_env_c.getSignal(LoopableEnv::ChannelId::Magnitude);
+  m_signals.get(C15::Signals::Truepoly_Signals::Env_G_Sig) =
+      m_env_g.getSignal(GateEnv::ChannelId::Magnitude);
 }
 
 void PolySection::postProcess_poly_fast(const uint32_t _voiceId) {
