@@ -224,12 +224,12 @@ struct Envelopes::Channel::Data {
   // acccessible via index enum (ChannelId)
   using ChannelId = typename Id<C>::ChannelId;
   // a specific voice can be transformed per channel via Scalar type and
-  // callbacks
-  using TransformCb = std::function<ScalarValue(const Unsigned &)>;
   struct Scalar {
     ScalarValue mData[ChannelId::_Length_] = {};
+    // callbacks (without std::function)
+    template<typename CB>
     inline void apply(const VoiceId &_voiceId,
-                      const TransformCb &_transformCb) {
+                      const CB &_transformCb) {
       for (Unsigned c = 0; c < ChannelId::_Length_; c++)
         mData[c] = _transformCb(c);
     }
@@ -243,7 +243,8 @@ struct Envelopes::Channel::Data {
   };
   using Value = T[ChannelId::_Length_];
   Value mData = {};
-  inline void apply(const VoiceId &_voiceId, const TransformCb &_transformCb) {
+  template<typename CB>
+  inline void apply(const VoiceId &_voiceId, const CB &_transformCb) {
     for (Unsigned c = 0; c < ChannelId::_Length_; c++)
       mData[c][_voiceId] = _transformCb(c);
   }
@@ -691,7 +692,6 @@ public:
     }
 
   public:
-    using LoopScaleCb = std::function<ScalarValue(const ScalarValue &)>;
     inline Impl() : Super{sSegments} {}
     inline void setLoopFactor(const ScalarValue &_loopFactor) {
       mLoopState.mValue = _loopFactor;
@@ -713,8 +713,9 @@ public:
                               (Unsigned)Super::mSegments[segmentId].mNext);
       }
     }
+    template<typename CB>
     inline void start(const VoiceId &_voiceId,
-                      const LoopScaleCb &_loopScaleCb) {
+                      const CB &_loopScaleCb) {
       mLoopState.mDecay[_voiceId] = mLoopState.mRelease[_voiceId] = 1.0f;
       if (mLoopState.mValue == 0.0f) {
         mLoopState.mLoop[_voiceId] = Loop::None;
@@ -727,8 +728,9 @@ public:
         Super::start(_voiceId, MarkerId::LoopStart);
       }
     }
+    template<typename CB>
     inline void stop(const VoiceId &_voiceId,
-                     const LoopScaleCb &_loopScaleCb) {
+                     const CB &_loopScaleCb) {
       if (mLoopState.mValue <= 100.0f) {
         mLoopState.mLoop[_voiceId] = Loop::None;
         mLoopState.mFactor[_voiceId] = 1.0f;
