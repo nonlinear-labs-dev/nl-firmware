@@ -652,7 +652,6 @@ void PolySection::postProcess_mono_audio() {
 }
 
 void PolySection::postProcess_poly_fast(const uint32_t _voiceId) {
-  updateEnvLevels(_voiceId);
 #if POTENTIAL_IMPROVEMENT_FAST_PITCH_PROCESSING ==                             \
     __POTENTIAL_IMPROVEMENT_ENABLED__
   postProcess_poly_pitch(
@@ -715,10 +714,7 @@ void PolySection::postProcess_poly_fast(const uint32_t _voiceId) {
 
 void PolySection::postProcess_mono_fast() {
   // envelopes
-  m_env_a.setElevation(
-      m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_Elevate));
-  m_env_b.setElevation(
-      m_smoothers.get(C15::Smoothers::Poly_Fast::Env_B_Elevate));
+  updateEnvLevels();
   // temporary variables
   float tmp_lvl, tmp_abs, tmp_inv;
   // state variable filter
@@ -738,8 +734,6 @@ void PolySection::postProcess_mono_fast() {
 }
 
 void PolySection::postProcess_poly_slow(const uint32_t _voiceId) {
-  // envelopes
-  updateEnvTimes(_voiceId);
 #if POTENTIAL_IMPROVEMENT_FAST_PITCH_PROCESSING ==                             \
     __POTENTIAL_IMPROVEMENT_DISABLED__
   postProcess_poly_pitch(
@@ -822,6 +816,8 @@ void PolySection::postProcess_poly_slow(const uint32_t _voiceId) {
 }
 
 void PolySection::postProcess_mono_slow() {
+  // envelopes
+  updateEnvTimes();
   // osc a
   m_signals.set(
       C15::Signals::Quasipoly_Signals::Osc_A_Chirp,
@@ -1232,89 +1228,72 @@ void PolySection::stopEnvelopes(const uint32_t _voiceId, const float _pitch,
   m_env_g.stop(_voiceId);
 }
 
-void PolySection::updateEnvLevels(const uint32_t _voiceId) {
+void PolySection::updateEnvLevels() {
   // env a
-  m_env_a.setSegmentDest(ElevatingEnv::SegmentId::Decay1, _voiceId,
+  m_env_a.setSegmentDest(ElevatingEnv::SegmentId::Decay1,
                          m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_BP));
-  m_env_a.setSegmentDest(ElevatingEnv::SegmentId::Decay2, _voiceId,
+  m_env_a.setSegmentDest(ElevatingEnv::SegmentId::Decay2,
                          m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_Sus));
   // env b
-  m_env_b.setSegmentDest(ElevatingEnv::SegmentId::Decay1, _voiceId,
+  m_env_b.setSegmentDest(ElevatingEnv::SegmentId::Decay1,
                          m_smoothers.get(C15::Smoothers::Poly_Fast::Env_B_BP));
-  m_env_b.setSegmentDest(ElevatingEnv::SegmentId::Decay2, _voiceId,
+  m_env_b.setSegmentDest(ElevatingEnv::SegmentId::Decay2,
                          m_smoothers.get(C15::Smoothers::Poly_Fast::Env_B_Sus));
   // env c
-  m_env_c.setSegmentDest(LoopableEnv::SegmentId::Decay1, _voiceId,
+  m_env_c.setSegmentDest(LoopableEnv::SegmentId::Decay1,
                          m_smoothers.get(C15::Smoothers::Poly_Fast::Env_C_BP));
-  m_env_c.setSegmentDest(LoopableEnv::SegmentId::Decay2, _voiceId,
+  m_env_c.setSegmentDest(LoopableEnv::SegmentId::Decay2,
                          m_smoothers.get(C15::Smoothers::Poly_Fast::Env_C_Sus));
 }
 
-void PolySection::updateEnvTimes(const uint32_t _voiceId) {
-  float time;
+void PolySection::updateEnvTimes() {
+  PolyValue time, inf;
   // env a
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_A_Att) *
-         m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Attack][_voiceId];
-  m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Attack, _voiceId,
-                       1.0f / (time + 1.0f));
+         m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Attack];
+  m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Attack, 1.0f / (time + 1.0f));
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_A_Dec_1) *
-         m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Decay1][_voiceId];
-  m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Decay1, _voiceId,
-                       1.0f / (time + 1.0f));
+         m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Decay1];
+  m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Decay1, 1.0f / (time + 1.0f));
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_A_Dec_2) *
-         m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Decay2][_voiceId];
-  m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Decay2, _voiceId,
-                       1.0f / (time + 1.0f));
+         m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Decay2];
+  m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Decay2, 1.0f / (time + 1.0f));
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_A_Rel);
-  if (time <= env_highest_finite_time) {
-    time *= m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Release][_voiceId];
-    m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Release, _voiceId,
-                         1.0f / (time + 1.0f));
-  } else {
-    m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Release, _voiceId, 0.0f);
-  }
+  inf = (PolyValue)(-1 * PolyInt(time <= env_highest_finite_time));
+  time *= m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Release];
+  m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Release, inf / (time + 1.0f));
+  m_env_a.setElevation(
+      m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_Elevate));
   // env b
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_B_Att) *
-         m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Attack][_voiceId];
-  m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Attack, _voiceId,
-                       1.0f / (time + 1.0f));
+         m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Attack];
+  m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Attack, 1.0f / (time + 1.0f));
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_B_Dec_1) *
-         m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Decay1][_voiceId];
-  m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Decay1, _voiceId,
-                       1.0f / (time + 1.0f));
+         m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Decay1];
+  m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Decay1, 1.0f / (time + 1.0f));
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_B_Dec_2) *
-         m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Decay2][_voiceId];
-  m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Decay2, _voiceId,
-                       1.0f / (time + 1.0f));
+         m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Decay2];
+  m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Decay2, 1.0f / (time + 1.0f));
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_B_Rel);
-  if (time <= env_highest_finite_time) {
-    time *= m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Release][_voiceId];
-    m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Release, _voiceId,
-                         1.0f / (time + 1.0f));
-  } else {
-    m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Release, _voiceId, 0.0f);
-  }
+  inf = (PolyValue)(-1 * PolyInt(time <= env_highest_finite_time));
+  time *= m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Release];
+  m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Release, inf / (time + 1.0f));
+  m_env_b.setElevation(
+      m_smoothers.get(C15::Smoothers::Poly_Fast::Env_B_Elevate));
   // env c
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Att) *
-         m_env_c.mTimeFactor[LoopableEnv::SegmentId::Attack][_voiceId];
-  m_env_c.setSegmentDx(LoopableEnv::SegmentId::Attack, _voiceId,
-                       1.0f / (time + 1.0f));
+         m_env_c.mTimeFactor[LoopableEnv::SegmentId::Attack];
+  m_env_c.setSegmentDx(LoopableEnv::SegmentId::Attack, 1.0f / (time + 1.0f));
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Dec_1) *
-         m_env_c.mTimeFactor[LoopableEnv::SegmentId::Decay1][_voiceId];
-  m_env_c.setSegmentDx(LoopableEnv::SegmentId::Decay1, _voiceId,
-                       1.0f / (time + 1.0f));
+         m_env_c.mTimeFactor[LoopableEnv::SegmentId::Decay1];
+  m_env_c.setSegmentDx(LoopableEnv::SegmentId::Decay1, 1.0f / (time + 1.0f));
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Dec_2) *
-         m_env_c.mTimeFactor[LoopableEnv::SegmentId::Decay2][_voiceId];
-  m_env_c.setSegmentDx(LoopableEnv::SegmentId::Decay2, _voiceId,
-                       1.0f / (time + 1.0f));
+         m_env_c.mTimeFactor[LoopableEnv::SegmentId::Decay2];
+  m_env_c.setSegmentDx(LoopableEnv::SegmentId::Decay2, 1.0f / (time + 1.0f));
   time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Rel);
-  if (time <= env_highest_finite_time) {
-    time *= m_env_c.mTimeFactor[LoopableEnv::SegmentId::Release][_voiceId];
-    m_env_c.setSegmentDx(LoopableEnv::SegmentId::Release, _voiceId,
-                         1.0f / (time + 1.0f));
-  } else {
-    m_env_c.setSegmentDx(LoopableEnv::SegmentId::Release, _voiceId, 0.0f);
-  }
+  inf = (PolyValue)(-1 * PolyInt(time <= env_highest_finite_time));
+  time *= m_env_c.mTimeFactor[LoopableEnv::SegmentId::Release];
+  m_env_c.setSegmentDx(LoopableEnv::SegmentId::Release, inf / (time + 1.0f));
 }
 
 void PolySection::updateNotePitch(const uint32_t _voiceId) {

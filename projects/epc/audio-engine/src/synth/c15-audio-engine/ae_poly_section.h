@@ -110,8 +110,8 @@ class PolySection
   void postProcess_poly_key(const uint32_t _voiceId);
   void startEnvelopes(const uint32_t _voiceId, const float _pitch, const float _vel);
   void stopEnvelopes(const uint32_t _voiceId, const float _pitch, const float _vel);
-  void updateEnvLevels(const uint32_t _voiceId);
-  void updateEnvTimes(const uint32_t _voiceId);
+  void updateEnvLevels();
+  void updateEnvTimes();
   void updateNotePitch(const uint32_t _voiceId);
   void setSlowFilterCoefs(const uint32_t _voiceId);
   void testVoiceFadeTable();

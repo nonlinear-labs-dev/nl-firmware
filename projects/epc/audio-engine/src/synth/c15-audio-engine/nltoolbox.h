@@ -78,7 +78,8 @@ namespace NlToolbox
  *  @return   a mix of both samples
 ******************************************************************************/
 
-    inline float unipolarCrossFade(float _sample1, float _sample2, float _mix)
+    template<typename T = float>
+    inline T unipolarCrossFade(T _sample1, float _sample2, float _mix)
     {
       _sample1 = (1.f - _mix) * _sample1;
       _sample2 = _mix * _sample2;

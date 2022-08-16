@@ -283,6 +283,11 @@ struct Envelopes::Channel::Data {
     for (Unsigned c = 0; c < ChannelId::_Length_; c++)
       mData[c][_voiceId] = _transformCb(c);
   }
+  template<typename CB>
+  inline void apply(const CB &_transformCb) {
+    for (Unsigned c = 0; c < ChannelId::_Length_; c++)
+      mData[c] = _transformCb(c);
+  }
 };
 
 // impl Wrapper
@@ -318,6 +323,7 @@ protected: // exposing required types for inheritance
   using WrapperData = typename WrapperType::Data;
   using ChannelData = Channel::Data<WrapperData, C>;
   using ChannelScalar = typename ChannelData::Scalar;
+  using ChannelValue = typename ChannelData::Value;
   using MarkerId = typename SegmentData::Marker;
 
 public: // exposing required types and configuration for access
@@ -449,6 +455,12 @@ public: // exposing required types and configuration for access
           return peakLevel * _dest[_channelId];
         });
   }
+  inline void setSegmentDest(const SegmentId &_segmentId,
+                             const ChannelValue &_dest) {
+    mTransitions[(Unsigned)_segmentId].mDest.apply([this, &_dest](const Unsigned &_channelId) {
+          return mState.mPeakLevel * _dest[_channelId];
+        });
+  }
   // progress to next transition/segment
   inline void nextTransition(const VoiceId &_voiceId,
                              const Unsigned &_segmentId) {
@@ -497,6 +509,9 @@ public:
                            const ScalarValue &_dx) {
     mTransitions[(Unsigned)_segmentId].mDx[_voiceId] = _dx;
   }
+  inline void setSegmentDx(const SegmentId &_segmentId, const WrapperData &_dx) {
+    mTransitions[(Unsigned)_segmentId].mDx = _dx;
+  }
   inline void setSegmentDest(const SegmentId &_segmentId,
                              const VoiceId &_voiceId,
                              const ScalarValue &_dest) {
@@ -504,6 +519,13 @@ public:
     mTransitions[(Unsigned)_segmentId].mDest.apply(
         _voiceId, [&_dest, &peakLevel](const Unsigned &_channelId) {
           return peakLevel * _dest;
+        });
+  }
+  inline void setSegmentDest(const SegmentId &_segmentId,
+                             const WrapperData &_dest) {
+    mTransitions[(Unsigned)_segmentId].mDest.apply(
+        [this, &_dest](const Unsigned &_channelId) {
+          return mState.mPeakLevel * _dest;
         });
   }
   inline void setCurvature(const VoiceId &_voiceId,
@@ -573,6 +595,7 @@ class Envelopes::ElevatingADBDSR {
 
 public:
   class Impl : public Super, public Super::TimeFactor {
+    using WrapperData = typename Super::WrapperData;
     ScalarValue mElevation[Super::sChannels] = {};
 
   public:
@@ -593,6 +616,20 @@ public:
                  _dest, 1.0f, mElevation[ChannelId::Timbre])});
       } else {
         Super::setSegmentDest(_segmentId, _voiceId, _dest);
+      }
+    }
+    inline void setSegmentDest(const Stage &_segmentId,
+                               const WrapperData &_dest) {
+      const Unsigned segmentId = (Unsigned)_segmentId;
+      if (sElevateableSegments[segmentId]) {
+        Super::setSegmentDest(
+            _segmentId,
+            {NlToolbox::Crossfades::unipolarCrossFade(
+                 _dest, 1.0f, mElevation[ChannelId::Magnitude]),
+             NlToolbox::Crossfades::unipolarCrossFade(
+                 _dest, 1.0f, mElevation[ChannelId::Timbre])});
+      } else {
+        Super::setSegmentDest(_segmentId, _dest);
       }
     }
   };
@@ -742,12 +779,26 @@ public:
       if (sibling != Stage::Idle)
         Super::setSegmentDx(sibling, _voiceId, _dx);
     }
+    inline void setSegmentDx(const Stage &_stage,
+                             const WrapperData &_dx) {
+      Super::setSegmentDx(_stage, _dx);
+      const Stage &sibling = Super::mSegments[(Unsigned)_stage].mSibling;
+      if (sibling != Stage::Idle)
+        Super::setSegmentDx(sibling, _dx);
+    }
     inline void setSegmentDest(const Stage &_stage, const VoiceId &_voiceId,
                                const ScalarValue &_dest) {
       Super::setSegmentDest(_stage, _voiceId, _dest);
       const Stage &sibling = Super::mSegments[(Unsigned)_stage].mSibling;
       if (sibling != Stage::Idle)
         Super::setSegmentDest(sibling, _voiceId, _dest);
+    }
+    inline void setSegmentDest(const Stage &_stage,
+                               const WrapperData &_dest) {
+      Super::setSegmentDest(_stage, _dest);
+      const Stage &sibling = Super::mSegments[(Unsigned)_stage].mSibling;
+      if (sibling != Stage::Idle)
+        Super::setSegmentDest(sibling, _dest);
     }
 
   private:
