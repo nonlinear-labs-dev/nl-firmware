@@ -328,7 +328,6 @@ public: // exposing required types and configuration for access
   static constexpr Unsigned sSegments = (Unsigned)SegmentId::_Length_;
   static constexpr RetriggerType sRetrigger = R;
 
-protected:
   // Transition: parameterized state for each segment
   struct Transition {
     ChannelData mDest = {};
@@ -357,6 +356,8 @@ protected:
   public:
       Data mTimeFactor = {};
   };
+
+ protected:
   // Constructor: requires segment definition
   inline Envelope(const SegmentData *const &_segments)
       : mSegments{_segments}, mTransitions{}, mState{} {
