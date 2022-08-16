@@ -141,10 +141,6 @@ private: // internal trait declarations
 
 public: // exposed usable envelope types
         // (template parameters: mono/poly type, [retrigger type])
-  /*
-  template <typename> class Decay;
-  template <typename> class Gate;
-  */
   template <typename, RetriggerType> class ElevatingADBDSR;
   template <typename, RetriggerType> class LoopableADBDSR;
 
@@ -548,51 +544,7 @@ public:
   }
 };
 
-// usable envelopes
-
-/*
-// impl Decay Envelope
-template <typename T> class Envelopes::Decay {
-  Decay() = delete;
-  enum class Stage : Unsigned { Idle, Trigger, Decay, _Length_ };
-  using Segment = Envelopes::Segment<Stage, Stage::Trigger, Stage::Idle>;
-  using Super =
-      Envelope<T, Stage, Segment, ChannelType::Singular, RetriggerType::Soft>;
-  static constexpr Segment sSegments[] = {
-      {},
-      {CurveType::Linear, Segment::Start, Stage::Decay, {1.0f, 1.0f}},
-      {CurveType::Exponential, Segment::None, Stage::Idle}};
-
-public:
-  class Impl : public Super {
-  public:
-    inline Impl() : Super{sSegments} {}
-  };
-};
-
-// impl Gate Envelope
-template <typename T> class Envelopes::Gate {
-  Gate() = delete;
-  enum class Stage : Unsigned { Idle, Hold, Release, _Length_ };
-  using Segment = Envelopes::Segment<Stage, Stage::Hold, Stage::Release>;
-  using Super =
-      Envelope<T, Stage, Segment, ChannelType::Singular, RetriggerType::Hard>;
-  static constexpr Segment sSegments[] = {
-      {},
-      {CurveType::None, Segment::Start, Stage::Idle, {0.0f, 1.0f, 1.0f}},
-      {CurveType::Exponential, Segment::Stop, Stage::Idle}};
-
-public:
-  class Impl : public Super {
-  public:
-    inline Impl() : Super{sSegments} {}
-    inline void init(const ScalarValue &_dx) {
-        for(VoiceId v = 0; v < Super::sVoices; v++)
-            Super::setSegmentDx(Stage::Release, v, _dx);
-    }
-  };
-};
-*/
+// usable (poly multi-segment) envelopes
 
 // impl ElevatingADBDSR Envelope
 template <typename T, Envelopes::RetriggerType R>
