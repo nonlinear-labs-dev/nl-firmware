@@ -38,7 +38,7 @@ void PolySection::init(GlobalSignals *_globalsignals, exponentiator *_convert,
   m_svf_LBH2Curve.setCurve(-1.0f, 1.0f, 1.0f);
   m_svf_resCurve.setCurve(0.0f, 0.49f, 0.79f, 0.94f);
   // init dsp components
-  m_env_g.init(1.0f / ((_ms * _gateRelease) + 1.0f));
+  m_env_g.setDx(1.0f / ((_ms * _gateRelease) + 1.0f));
   m_soundgenerator.init(m_voices, _samplerate);
   m_combfilter.init(_samplerate, _upsampleFactor);
   m_svfilter.init(_samplerate);
@@ -170,8 +170,8 @@ void PolySection::render_audio(const float _mute) {
     m_env_a.tick(v, _mute);
     m_env_b.tick(v, _mute);
     m_env_c.tick(v, _mute);
-    m_env_g.tick(v);
   }
+  m_env_g.tick(); // now simd-compliant
 }
 
 void PolySection::render_feedback(const LayerSignalCollection &_z_other) {
@@ -648,8 +648,7 @@ void PolySection::postProcess_mono_audio() {
   m_signals.get(C15::Signals::Truepoly_Signals::Env_C_Uncl) =
       m_env_c.mClipFactor *
       m_env_c.getSignal(LoopableEnv::ChannelId::Magnitude);
-  m_signals.get(C15::Signals::Truepoly_Signals::Env_G_Sig) =
-      m_env_g.getSignal(GateEnv::ChannelId::Magnitude);
+  m_signals.get(C15::Signals::Truepoly_Signals::Env_G_Sig) = m_env_g.mMagnitude;
 }
 
 void PolySection::postProcess_poly_fast(const uint32_t _voiceId) {

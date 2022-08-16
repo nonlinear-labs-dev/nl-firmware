@@ -119,9 +119,7 @@ void MonoSection::render_slow() {
 }
 
 void MonoSection::keyDown(PolyKeyEvent *_event) {
-  m_flanger_env.setSegmentDest(FlangerEnv::SegmentId::Trigger, 0,
-                               _event->m_velocity);
-  m_flanger_env.start(0);
+  m_flanger_env.start(_event->m_velocity);
 }
 
 void MonoSection::flushDSP() {
@@ -148,11 +146,9 @@ void MonoSection::postProcess_audio() {
                   m_smoothers.get_audio(traversal->m_smootherId[i]));
   }
   // flanger
-  m_flanger_env.tick(0);
+  m_flanger_env.tick();
   m_flanger_lfo.tick();
-  const float tmp_env = (m_flanger_env.getSignal(
-                            FlangerEnv::ChannelId::Magnitude, 0)) -
-                        1.f,
+  const float tmp_env = (m_flanger_env.mMagnitude * 2.0f) - 1.f,
               tmp_wet =
                   m_smoothers.get(C15::Smoothers::Mono_Slow::Flanger_Envelope),
               tmp_dry = 1.0f - tmp_wet;
@@ -292,7 +288,7 @@ void MonoSection::postProcess_slow() {
   tmp_Rate = m_smoothers.get(C15::Smoothers::Mono_Slow::Flanger_Rate);
   m_flanger_lfo.m_increment = m_reciprocal_samplerate * tmp_Rate;
   tmp_Rate *= m_flanger_rate_to_decay;
-  m_flanger_env.setSegmentDx(FlangerEnv::SegmentId::Decay, 0, tmp_Rate);
+  m_flanger_env.setDx(tmp_Rate);
   tmp_Center = m_smoothers.get(C15::Smoothers::Mono_Slow::Flanger_Time) *
                1.e-3f * m_samplerate;
   tmp_Stereo =

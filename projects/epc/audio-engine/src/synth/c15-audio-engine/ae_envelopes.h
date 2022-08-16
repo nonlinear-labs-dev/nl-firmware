@@ -141,10 +141,49 @@ private: // internal trait declarations
 
 public: // exposed usable envelope types
         // (template parameters: mono/poly type, [retrigger type])
+  /*
   template <typename> class Decay;
   template <typename> class Gate;
+  */
   template <typename, RetriggerType> class ElevatingADBDSR;
   template <typename, RetriggerType> class LoopableADBDSR;
+
+  // simplest conceivable but highly specialized implementations for better performance (?)
+  class MonoDecay {
+    // ("low hanging fruit")
+    // monophonic, starts with peak, exponentially approaches zero
+  public:
+    inline void start(const ScalarValue& _dest) { mMagnitude = _dest; }
+    inline void tick() { mMagnitude *= mDx * (float)(mMagnitude > sRenderMin); }
+    inline void setDx(const ScalarValue &_dx) { mDx = 1.0f - _dx; }
+    inline void reset() { mMagnitude = 0.0f; }
+    ScalarValue mMagnitude = {};
+
+  private:
+    ScalarValue mDx = {};
+  };
+  class PolyGate {
+    // ("low hanging fruit")
+    // polyphonic, starts with (and holds) peak,
+    // stops by exponentially approaching zero
+  public:
+    inline void start(const VoiceId &_voiceId) {
+      mMagnitude[_voiceId] = 1.0f;
+      mDx[_voiceId] = 1.0f;
+    }
+    inline void stop(const VoiceId &_voiceId) { mDx[_voiceId] = mSetDx; }
+    inline void tick() {
+      mDx *= static_cast<PolyValue>(-1 * PolyInt(mMagnitude > sRenderMin));
+      mMagnitude *= mDx;
+    }
+    inline void reset() { mMagnitude = 0.0f; }
+    inline void setDx(const ScalarValue &_dx) { mSetDx = 1.0f - _dx; }
+    PolyValue mMagnitude = {};
+
+  private:
+    PolyValue mDx = {};
+    ScalarValue mSetDx = {};
+  };
 };
 
 // implementation details
@@ -511,6 +550,7 @@ public:
 
 // usable envelopes
 
+/*
 // impl Decay Envelope
 template <typename T> class Envelopes::Decay {
   Decay() = delete;
@@ -552,6 +592,7 @@ public:
     }
   };
 };
+*/
 
 // impl ElevatingADBDSR Envelope
 template <typename T, Envelopes::RetriggerType R>

@@ -52,8 +52,7 @@ class MonoSection
       m_smoothers;
   exponentiator *m_convert;
   LayerSignalCollection *m_z_self;
-  using FlangerEnv = Envelopes::Decay<ScalarValue>::Impl;
-  FlangerEnv m_flanger_env;
+  Envelopes::MonoDecay m_flanger_env;
   MonoFlanger m_flanger;
   MonoCabinet m_cabinet;
   MonoGapFilter m_gapfilter;

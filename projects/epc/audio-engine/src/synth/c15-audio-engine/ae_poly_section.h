@@ -76,8 +76,7 @@ class PolySection
   ElevatingEnv m_env_a, m_env_b;
   using LoopableEnv = Envelopes::LoopableADBDSR<PolyValue, Envelopes::RetriggerType::Variable>::Impl;
   LoopableEnv m_env_c;
-  using GateEnv = Envelopes::Gate<PolyValue>::Impl;
-  GateEnv m_env_g;
+  Envelopes::PolyGate m_env_g;
   PolySoundGenerator m_soundgenerator;
   PolyCombFilter m_combfilter;
   PolyStateVariableFilter m_svfilter;
