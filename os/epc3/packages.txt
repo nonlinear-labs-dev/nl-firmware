@@ -122,10 +122,10 @@ libunistring 0.9.10-3
 libxcrypt 4.4.28-2
 libxml2 2.9.13-2
 licenses 20220125-1
-linux-api-headers 5.16.8-1
-linux-firmware 20220411.705f19a-1
-linux-firmware-whence 20220411.705f19a-1
-linux-rt 5.17.1.17.realtime2-3
+linux-api-headers 5.18.15-1
+linux-firmware 20220708.be7798e-1
+linux-firmware-whence 20220708.be7798e-1
+linux-rt 5.19.0.10.realtime1-1
 lz4 1:1.9.3-2
 mc 4.8.28-1
 mkinitcpio 31-2
