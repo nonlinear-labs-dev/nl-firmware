@@ -18,8 +18,7 @@
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <libundo/undo/Scope.h>
 
-PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
-                                                   tDisplayValue def, int coarseDenominator, int fineDenominator)
+PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling)
     : super(group, id, scaling)
 {
 }

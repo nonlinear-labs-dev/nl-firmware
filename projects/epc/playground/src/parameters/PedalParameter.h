@@ -10,8 +10,9 @@ class PedalParameter : public PhysicalControlParameter
   typedef PhysicalControlParameter super;
 
  public:
-  using super::super;
+  PedalParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling);
   void onLocalEnableChanged(bool localEnableState) override;
+  void init(Settings& s);
 
  public:
   void undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode, Initiator initiator);
@@ -23,6 +24,8 @@ class PedalParameter : public PhysicalControlParameter
   void loadDefault(UNDO::Transaction *transaction, Defaults mode) override;
 
   PedalType *getAssociatedPedalTypeSetting() const;
+  Glib::ustring getLongName() const override;
+  Glib::ustring getShortName() const override;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
@@ -37,6 +40,7 @@ class PedalParameter : public PhysicalControlParameter
   tControlPositionValue getDefValueAccordingToMode() const override;
 
  private:
+  void onPedalTypeChanged(const Setting* s);
   const ScaleConverter *createScaleConverter() const;
   void sendModeToPlaycontroller() const;
   void setRoutersModeAccordingToReturnMode();
@@ -44,4 +48,5 @@ class PedalParameter : public PhysicalControlParameter
 
   PedalModes m_mode = PedalModes::STAY;
   tUpdateID m_updateIdWhenModeChanged = 0;
+  bool m_isHardwareDisabled = false;
 };

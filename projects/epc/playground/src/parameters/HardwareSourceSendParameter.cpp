@@ -14,14 +14,19 @@
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
 
 HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* pGroup,
-                                                         PhysicalControlParameter& sibling,
-                                                         const ParameterId& id, const ScaleConverter* converter,
-                                                         double def, int coarseDenominator, int fineDenominator, Settings* settings)
+                                                         PhysicalControlParameter& sibling, const ParameterId& id,
+                                                         const ScaleConverter* converter)
     : Parameter(pGroup, id, converter)
-    , m_sibling{sibling}
-    , m_settings(settings)
+    , m_sibling { sibling }
 {
-  if(m_settings)
+  m_sibling.onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);
+}
+
+void HardwareSourceSendParameter::init(Settings* settings)
+{
+  m_settings = settings;
+
+  if(settings)
   {
     auto local = settings->getSetting<GlobalLocalEnableSetting>();
     auto routings = settings->getSetting<RoutingSettings>();
@@ -33,8 +38,6 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
     local->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onLocalChanged));
     routings->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onRoutingsChanged));
   }
-
-  m_sibling.onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);
 }
 
 void HardwareSourceSendParameter::loadFromPreset(UNDO::Transaction* transaction, const tControlPositionValue& value)
@@ -155,8 +158,8 @@ RoutingSettings::tRoutingIndex HardwareSourceSendParameter::getIndex(const Param
 nlohmann::json HardwareSourceSendParameter::serialize() const
 {
   auto param = Parameter::serialize();
-  param.push_back({"is-enabled", isLocalEnabled() });
-  param.push_back({"return-mode", static_cast<int>(m_returnMode) });
+  param.push_back({ "is-enabled", isLocalEnabled() });
+  param.push_back({ "return-mode", static_cast<int>(m_returnMode) });
   return param;
 }
 

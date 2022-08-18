@@ -26,6 +26,11 @@
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
 
+PedalParameter::PedalParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling)
+    : PhysicalControlParameter(group, id, scaling)
+{
+}
+
 void PedalParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   Parameter::writeDocProperties(writer, knownRevision);
@@ -41,19 +46,21 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
   {
     auto swapData = UNDO::createSwapData(mode);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      swapData->swapWith(m_mode);
-      getValue().setScaleConverter(createScaleConverter());
-      getValue().setDefaultValue(getDefValueAccordingToMode());
-      if(m_mode != PedalModes::STAY && initiator == Initiator::EXPLICIT_USECASE)
-        getValue().setToDefault(Initiator::INDIRECT);
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          swapData->swapWith(m_mode);
+          getValue().setScaleConverter(createScaleConverter());
+          getValue().setDefaultValue(getDefValueAccordingToMode());
+          if(m_mode != PedalModes::STAY && initiator == Initiator::EXPLICIT_USECASE)
+            getValue().setToDefault(Initiator::INDIRECT);
 
-      setRoutersModeAccordingToReturnMode();
+          setRoutersModeAccordingToReturnMode();
 
-      invalidate();
-      sendModeToPlaycontroller();
-      m_updateIdWhenModeChanged = getUpdateIDOfLastChange();
-    });
+          invalidate();
+          sendModeToPlaycontroller();
+          m_updateIdWhenModeChanged = getUpdateIDOfLastChange();
+        });
   }
   else
   {
@@ -105,7 +112,8 @@ const ScaleConverter *PedalParameter::createScaleConverter() const
   return ScaleConverter::get<Linear100PercentScaleConverter>();
 }
 
-void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode, Initiator initiator)
+void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode,
+                                          Initiator initiator)
 {
   if(mode == "stay")
     undoableSetPedalMode(transaction, PedalModes::STAY, initiator);
@@ -294,5 +302,47 @@ void PedalParameter::onLocalEnableChanged(bool localEnableState)
     getSendParameter()->setCPFromSetting(scope->getTransaction(), getControlPositionValue());
     if(isReturning)
       PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
+  }
+}
+
+Glib::ustring PedalParameter::getLongName() const
+{
+  if(m_isHardwareDisabled)
+    return Parameter::getLongName() + " (Off)";
+  return Parameter::getLongName();
+}
+
+Glib::ustring PedalParameter::getShortName() const
+{
+  if(m_isHardwareDisabled)
+    return Parameter::getShortName() + " (Off)";
+  return Parameter::getShortName();
+}
+
+void PedalParameter::onPedalTypeChanged(const Setting *s)
+{
+  if(auto pedalType = dynamic_cast<const PedalType *>(s))
+  {
+    m_isHardwareDisabled = pedalType->get() == PedalTypes::OFF;
+    invalidate();
+  }
+}
+
+void PedalParameter::init(Settings &settings)
+{
+  switch(getID().getNumber())
+  {
+    case C15::PID::Pedal_1:
+      settings.getSetting("Pedal1Type")->onChange(sigc::mem_fun(this, &PedalParameter::onPedalTypeChanged));
+      break;
+    case C15::PID::Pedal_2:
+      settings.getSetting("Pedal2Type")->onChange(sigc::mem_fun(this, &PedalParameter::onPedalTypeChanged));
+      break;
+    case C15::PID::Pedal_3:
+      settings.getSetting("Pedal3Type")->onChange(sigc::mem_fun(this, &PedalParameter::onPedalTypeChanged));
+      break;
+    case C15::PID::Pedal_4:
+      settings.getSetting("Pedal4Type")->onChange(sigc::mem_fun(this, &PedalParameter::onPedalTypeChanged));
+      break;
   }
 }
