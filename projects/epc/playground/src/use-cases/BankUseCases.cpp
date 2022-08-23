@@ -199,7 +199,7 @@ void BankUseCases::selectPreset(int pos)
         auto scope = m_bank->getUndoScope().startContinuousTransaction(m_bank, std::chrono::hours(1), name);
         m_bank->selectPreset(scope->getTransaction(), pos);
 
-        if(isDirectLoadActive())
+        if(directLoad)
         {
           auto eb = pm->getEditBuffer();
           eb->undoableLoad(scope->getTransaction(), presetToSelect, true);

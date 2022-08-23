@@ -18,12 +18,12 @@ MacroControlMappingGroup::~MacroControlMappingGroup() = default;
 
 void MacroControlMappingGroup::init()
 {
-  auto mc_a = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 243, VoiceGroup::Global }));
-  auto mc_b = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 244, VoiceGroup::Global }));
-  auto mc_c = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 245, VoiceGroup::Global }));
-  auto mc_d = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 246, VoiceGroup::Global }));
-  auto mc_e = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 369, VoiceGroup::Global }));
-  auto mc_f = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ 371, VoiceGroup::Global }));
+  auto mc_a = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ C15::PID::MC_A, VoiceGroup::Global }));
+  auto mc_b = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ C15::PID::MC_B, VoiceGroup::Global }));
+  auto mc_c = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ C15::PID::MC_C, VoiceGroup::Global }));
+  auto mc_d = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ C15::PID::MC_D, VoiceGroup::Global }));
+  auto mc_e = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ C15::PID::MC_E, VoiceGroup::Global }));
+  auto mc_f = dynamic_cast<MacroControlParameter *>(m_mc->getParameterByID({ C15::PID::MC_F, VoiceGroup::Global }));
 
   auto pedal1
       = dynamic_cast<PhysicalControlParameter *>(m_hw->getParameterByID(HardwareSourcesGroup::getPedal1ParameterID()));
