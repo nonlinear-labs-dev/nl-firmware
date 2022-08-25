@@ -692,7 +692,7 @@ public:
     using ChannelScalar = typename Super::ChannelScalar;
     using WrapperData = typename Super::WrapperData;
     struct LoopState {
-      WrapperData mFactor = {}, mDecay = {}, mRelease = {};
+      WrapperData mFactor = {}, mDecayAndRelease = {};
       Loop mLoop[Super::sVoices] = {};
       ScalarValue mValue = {};
     };
@@ -702,21 +702,14 @@ public:
       ChannelScalar ret;
       const ScalarValue mute =
           mLoopState.mLoop[_voiceId] == Loop::Release ? _mute : 1.0f;
-      // allowing for loop decay 2 to approach sustain level
-//      const ScalarValue decay =
-//          Super::mSegments[_segmentId].mMarker == MarkerId::LoopBegin
-//              ? mLoopState.mDecay[_voiceId]
-//              : 1.0f;
-      const ScalarValue decay = mLoopState.mDecay[_voiceId]; // let any loop decay approach zero
+      const ScalarValue decay = mute * mLoopState.mDecayAndRelease[_voiceId];
       ret.apply(_voiceId, [this, &_voiceId, &_segmentId,
-                           &mute, &decay](const Unsigned &_channelId) {
+                           &decay](const Unsigned &_channelId) {
         const ScalarValue dest =
-            Super::mTransitions[_segmentId].mDest.mData[_channelId][_voiceId] *
-            mLoopState.mRelease[_voiceId] * mute;
+            Super::mTransitions[_segmentId].mDest.mData[_channelId][_voiceId];
         const ScalarValue start =
             Super::mState.mStart.mData[_channelId][_voiceId];
-//        return (dest - start) * decay; // allowing for loop decay 2 to approach sustain level
-        return (dest * decay) - start; // let any loop decay approach zero
+        return (dest * decay) - start;
       });
       return ret;
     }
@@ -738,9 +731,8 @@ public:
       const bool isComplete =
           Super::render(_voiceId, segmentId, difference, _mute);
       if (isComplete) {
-          if(markerId > MarkerId::LoopStart) {
-              const bool holdOrRelease = mLoopState.mLoop[_voiceId] == Loop::Hold;
-              applyLoopDecay(holdOrRelease ? mLoopState.mDecay[_voiceId] : mLoopState.mRelease[_voiceId],
+          if(markerId == MarkerId::LoopEnd) {
+              applyLoopDecay(mLoopState.mDecayAndRelease[_voiceId],
                              mLoopState.mFactor[_voiceId]);
           }
         Super::nextTransition(_voiceId,
@@ -750,7 +742,7 @@ public:
     template<typename CB>
     inline void start(const VoiceId &_voiceId,
                       const CB &_loopScaleCb) {
-      mLoopState.mDecay[_voiceId] = mLoopState.mRelease[_voiceId] = 1.0f;
+      mLoopState.mDecayAndRelease[_voiceId] = 1.0f;
       if (mLoopState.mValue == 0.0f) {
         mLoopState.mLoop[_voiceId] = Loop::None;
         mLoopState.mFactor[_voiceId] = 1.0f;
@@ -768,7 +760,7 @@ public:
       if (mLoopState.mValue <= 100.0f) {
         mLoopState.mLoop[_voiceId] = Loop::None;
         mLoopState.mFactor[_voiceId] = 1.0f;
-        mLoopState.mDecay[_voiceId] = 1.0f;
+        mLoopState.mDecayAndRelease[_voiceId] = 1.0f;
         Super::stop(_voiceId, MarkerId::Stop);
       } else {
         mLoopState.mLoop[_voiceId] = Loop::Release;
