@@ -48,6 +48,7 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
   bool inDefaultSplitBehaviour() const;
   void updateCPFromSyncChange(UNDO::Transaction* transaction, double cp);
   void loadDefault(UNDO::Transaction* transaction, Defaults mode) override;
+  bool isSynced() const;
 
  protected:
   void setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
@@ -55,7 +56,6 @@ class SplitPointParameter : public ModulateableParameterWithUnusualModUnit
 
   bool inModAmountSet = false;
   bool inModSrcSet = false;
-  void preventNegativeOverlap(UNDO::Transaction* transaction, tControlPositionValue value, bool dosendToPlaycontroller);
   bool isAtExtremes(tControlPositionValue value);
 
   void clampToExtremes(UNDO::Transaction* transaction, bool dosendToPlaycontroller);

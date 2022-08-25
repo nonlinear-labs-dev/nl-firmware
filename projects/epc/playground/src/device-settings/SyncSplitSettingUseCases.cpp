@@ -23,6 +23,18 @@ void SyncSplitSettingUseCases::enableSyncSetting(UNDO::Transaction* t)
   auto cpI = m_splitI->getControlPositionValue();
   auto cpII = m_splitII->getValue().getNextStepValue(cpI, 1, false, false);
   m_splitII->updateCPFromSyncChange(t, cpII);
+
+  //TODO implement rules to copy ModAspects from I into II or vice versa
+  if(m_splitI->getModulationSource() != MacroControls::NONE)
+  {
+    m_splitII->setModulationAmount(t, m_splitI->getModulationAmount());
+    m_splitII->setModulationSource(t, m_splitI->getModulationSource());
+  }
+  else if(m_splitII->getModulationSource() != MacroControls::NONE)
+  {
+    m_splitI->setModulationAmount(t, m_splitII->getModulationAmount());
+    m_splitI->setModulationSource(t, m_splitII->getModulationSource());
+  }
 }
 
 void SyncSplitSettingUseCases::disableSyncSetting(UNDO::Transaction* t)
