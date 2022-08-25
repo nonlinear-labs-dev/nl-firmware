@@ -702,10 +702,12 @@ public:
       ChannelScalar ret;
       const ScalarValue mute =
           mLoopState.mLoop[_voiceId] == Loop::Release ? _mute : 1.0f;
-      const ScalarValue decay =
-          Super::mSegments[_segmentId].mMarker == MarkerId::LoopBegin
-              ? mLoopState.mDecay[_voiceId]
-              : 1.0f;
+      // allowing for loop decay 2 to approach sustain level
+//      const ScalarValue decay =
+//          Super::mSegments[_segmentId].mMarker == MarkerId::LoopBegin
+//              ? mLoopState.mDecay[_voiceId]
+//              : 1.0f;
+      const ScalarValue decay = mLoopState.mDecay[_voiceId]; // let any loop decay approach zero
       ret.apply(_voiceId, [this, &_voiceId, &_segmentId,
                            &mute, &decay](const Unsigned &_channelId) {
         const ScalarValue dest =
@@ -713,7 +715,8 @@ public:
             mLoopState.mRelease[_voiceId] * mute;
         const ScalarValue start =
             Super::mState.mStart.mData[_channelId][_voiceId];
-        return (dest - start) * decay;
+//        return (dest - start) * decay; // allowing for loop decay 2 to approach sustain level
+        return (dest * decay) - start; // let any loop decay approach zero
       });
       return ret;
     }
