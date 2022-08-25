@@ -19,6 +19,7 @@
 #include "use-cases/MacroControlParameterUseCases.h"
 #include "use-cases/ModParameterUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
+#include "use-cases/VoiceGroupUseCases.h"
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableDualVoiceGroupMasterAndSplitPointLayout.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
@@ -116,9 +117,15 @@ namespace DescriptiveLayouts
       }
     });
 
-    registerEvent(EventSinks::ToggleVoiceGroupWithParameterSelection, [vgManager]() { vgManager->toggleCurrentVoiceGroup(); });
+    registerEvent(EventSinks::ToggleVoiceGroupWithParameterSelection, [vgManager, eb]() {
+                    VoiceGroupUseCases vgUseCases(vgManager, eb);
+                    vgUseCases.toggleVoiceGroupSelection();
+                  });
 
-    registerEvent(EventSinks::ToggleVoiceGroup, [vgManager]() { vgManager->toggleCurrentVoiceGroup(); });
+    registerEvent(EventSinks::ToggleVoiceGroup, [vgManager, eb]() {
+                    VoiceGroupUseCases vgUseCases(vgManager, eb);
+                    vgUseCases.toggleVoiceGroupSelection();
+    });
 
     /*
        * UIFocus

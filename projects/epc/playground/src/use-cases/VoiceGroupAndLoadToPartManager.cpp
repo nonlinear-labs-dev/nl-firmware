@@ -20,6 +20,18 @@ void VoiceGroupAndLoadToPartManager::setLoadToPart(bool state)
     m_loadToPartSignal.send(m_loadToPartActive);
 }
 
+void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(UNDO::Transaction *t, VoiceGroup v)
+{
+  auto swap = UNDO::createSwapData(v);
+  t->addSimpleCommand([this, swap](auto) {
+                                  auto oldVG = m_currentVoiceGroup;
+                                  swap->swapWith(m_currentVoiceGroup);
+                                  m_voiceGoupSignal.send(m_currentVoiceGroup);
+                                  m_editBuffer.fakeParameterSelectionSignal(oldVG, m_currentVoiceGroup);
+                                  m_editBuffer.onChange(UpdateDocumentContributor::ChangeFlags::Generic);
+                                });
+}
+
 void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(VoiceGroup v)
 {
   auto oldGroup = m_currentVoiceGroup;
@@ -35,7 +47,7 @@ void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(VoiceGroup v)
 void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction,
                                                                                      VoiceGroup v)
 {
-  setCurrentVoiceGroup(v);
+  setCurrentVoiceGroup(transaction, v);
   auto selected = m_editBuffer.getSelected(getCurrentVoiceGroup());
   auto id = selected->getID();
 
@@ -62,19 +74,6 @@ void VoiceGroupAndLoadToPartManager::toggleCurrentVoiceGroupAndUpdateParameterSe
     setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::II);
   else if(m_currentVoiceGroup == VoiceGroup::II)
     setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::I);
-}
-
-void VoiceGroupAndLoadToPartManager::toggleCurrentVoiceGroup()
-{
-  auto scope = m_editBuffer.getParameterFocusLockGuard();
-
-  if(m_editBuffer.getType() == SoundType::Single)
-    return;
-
-  if(m_currentVoiceGroup == VoiceGroup::I)
-    setCurrentVoiceGroup(VoiceGroup::II);
-  else if(m_currentVoiceGroup == VoiceGroup::II)
-    setCurrentVoiceGroup(VoiceGroup::I);
 }
 
 sigc::connection VoiceGroupAndLoadToPartManager::onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb)
