@@ -138,7 +138,7 @@ parameters:
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
     info: >
-      Crossfades to the Effects signal of the other Part. (Only available when using Layer mode.)
+      Crossfades to the Effects signal of the other Part. (Only available when using Split or Layer mode.)
   - <<: *MODULATEABLE
     <<: *ALL_EXPOSED
     <<: *RENDER_TYPICAL
