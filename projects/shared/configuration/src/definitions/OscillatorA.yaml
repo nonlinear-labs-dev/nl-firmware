@@ -39,12 +39,13 @@ parameters:
     info: >
       Pitch (logarithmic frequency) of Oscillator A at C3 (MIDI note 60) [in semitones, based on MIDI note numbers].
       The range below zero is shaped in the way that -20 corresponds to 0 Hz.
-  - <<: *UNMODULATEABLE
+  - <<: *MODULATEABLE
     id: 55
     token: Pitch_KT
     label_long: Pitch - Key Trk
     label_short: Key Trk
     control_position: { coarse: 200, fine: 20000, scale: FINE_200_PERCENT, initial: 0.5f }
+    modulation_aspects: { coarse: 200, fine: 20000, scale: FINE_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Key tracking of the oscillator pitch.
