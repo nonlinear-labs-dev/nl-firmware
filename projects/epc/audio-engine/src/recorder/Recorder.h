@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Types.h"
+#include "nltools/threading/Throttler.h"
 #include <nltools/nlohmann/json.hpp>
 #include <memory>
 #include <sigc++/connection.h>
+#include <future>
 
 class FlacFrameStorage;
 class RecorderInput;
@@ -35,6 +37,8 @@ class Recorder
   void notifyStateChange();
   
 private:
+ void checkAndSendNoClientsStatus();
+
   nlohmann::json generateInfo() const;
   nlohmann::json prepareDownload(FrameId begin, FrameId end) const;
   nlohmann::json queryFrames(FrameId begin, FrameId end) const;
@@ -45,4 +49,9 @@ private:
   std::unique_ptr<nltools::msg::WebSocketJsonAPI> m_api;
   std::unique_ptr<NetworkServer> m_http;
   sigc::connection m_settingConnection;
+  sigc::connection m_stopConnection;
+
+  bool m_hadClientsAtLastCheck = false;
+  Throttler m_checkClientThrottler;
+  std::future<void> m_checkForStop;
 };

@@ -112,7 +112,7 @@ public class Setup extends Composite {
 	TextArea deviceName, passphrase;
 
 	@UiField
-	Button saveDeviceName, storeInitSound, resetInitSound, classicMidi, highResMidi, panicAE, routingsOn, routingsOff, savePassphrase, dicePassphrase, defaultPassphrase;
+	Button saveDeviceName, storeInitSound, resetInitSound, classicMidi, highResMidi, panicAE, stopRecorderPlayback, routingsOn, routingsOff, savePassphrase, dicePassphrase, defaultPassphrase;
 
 	Range editSmoothingTimeRange;
 	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
@@ -414,6 +414,7 @@ public class Setup extends Composite {
 		disable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.off));	
 		
 		panicAE.addClickHandler(e -> settings.panic());
+		stopRecorderPlayback.addClickHandler(e -> settings.stopRecorderPlayback());
 
 		classicMidi.addClickHandler(e -> settings.resetToClassicMidi());
 		highResMidi.addClickHandler(e -> settings.resetToHighResMidi());

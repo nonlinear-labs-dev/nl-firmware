@@ -24,13 +24,20 @@ Recorder::Recorder(int sr)
     , m_api(std::make_unique<nltools::msg::WebSocketJsonAPI>(Glib::MainContext::get_default(), RECORDER_WEBSOCKET_PORT,
                                                              [this](auto, const auto &msg) { return api(msg); }))
     , m_http(std::make_unique<NetworkServer>(RECORDER_HTTPSERVER_PORT, m_storage.get()))
+    , m_checkClientThrottler(Glib::MainContext::get_default(), Expiration::Duration(std::chrono::milliseconds(1000)))
+    , m_checkForStop(std::async(std::launch::async, [=] { this->checkAndSendNoClientsStatus(); }))
 {
   m_in->setPaused(true);
-  m_settingConnection = nltools::msg::receive<nltools::msg::Setting::FlacRecorderAutoStart>(
-      nltools::msg::EndPoint::AudioEngine, [this](const auto &msg) {
-        if(msg.enabled)
-          m_in->setPaused(false);
-      });
+  m_settingConnection
+      = nltools::msg::receive<nltools::msg::Setting::FlacRecorderAutoStart>(nltools::msg::EndPoint::AudioEngine,
+                                                                            [this](const auto &msg)
+                                                                            {
+                                                                              if(msg.enabled)
+                                                                                m_in->setPaused(false);
+                                                                            });
+
+  m_stopConnection = nltools::msg::receive<nltools::msg::Setting::FlacRecorderStop>(
+      nltools::msg::EndPoint::AudioEngine, [this](const auto &msg) { m_out->pause(); });
 }
 
 Recorder::~Recorder() = default;
@@ -129,12 +136,14 @@ nlohmann::json Recorder::prepareDownload(FrameId begin, FrameId end) const
 
   auto stream = m_storage->startStream(begin, end);
 
-  stream->getFirstAndLast([&](const auto &first, const auto &last) {
-    ret["range"] = { { "from", first.recordTime.time_since_epoch().count() },
-                     { "to", last.recordTime.time_since_epoch().count() } };
+  stream->getFirstAndLast(
+      [&](const auto &first, const auto &last)
+      {
+        ret["range"] = { { "from", first.recordTime.time_since_epoch().count() },
+                         { "to", last.recordTime.time_since_epoch().count() } };
 
-    numFlacBytes = last.summedUpFlacMemUsage - first.summedUpFlacMemUsage + first.buffer.size();
-  });
+        numFlacBytes = last.summedUpFlacMemUsage - first.summedUpFlacMemUsage + first.buffer.size();
+      });
 
   ret["flac"] = { { "size", numFlacBytes } };
   ret["wave"] = { { "size", numWaveBytes } };
@@ -156,7 +165,8 @@ nlohmann::json Recorder::queryFrames(FrameId begin, FrameId end) const
   system_clock::time_point recordTimeOfLastFrame = invalidTime;
   uint8_t maxOfLastFrame = 0;
 
-  auto cb = [&](const auto &f, auto isLast) {
+  auto cb = [&](const auto &f, auto isLast)
+  {
     bool skipFrame = false;
 
     if(!isLast && recordTimeOfLastFrame != invalidTime)
@@ -186,4 +196,24 @@ nlohmann::json Recorder::queryFrames(FrameId begin, FrameId end) const
   }
 
   return ret;
+}
+
+void Recorder::checkAndSendNoClientsStatus()
+{
+  while(true)
+  {
+    m_checkClientThrottler.doTask(
+        [this]
+        {
+          auto hasClients = m_api->hasClients();
+          if(!hasClients and m_hadClientsAtLastCheck and m_out->isPlaying())
+          {
+            nltools::msg::Setting::NotifyNoRecorderClients msg {};
+            nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
+          }
+          m_hadClientsAtLastCheck = hasClients;
+        });
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(990));
+  }
 }

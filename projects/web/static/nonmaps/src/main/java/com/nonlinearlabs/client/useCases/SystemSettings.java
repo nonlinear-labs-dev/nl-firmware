@@ -241,6 +241,10 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().triggerPanic();
 	}
 
+	public void stopRecorderPlayback() {
+		NonMaps.theMaps.getServerProxy().stopRecorderPlayback();
+	}
+
     public void resetRoutings(boolean b) {
 		NonMaps.theMaps.getServerProxy().resetRoutings(b);
 	}

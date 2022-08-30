@@ -273,6 +273,22 @@ namespace nltools
         bool enabled;
       };
 
+      struct FlacRecorderStop
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::StopRecorderMessage;
+        }
+      };
+
+      struct NotifyNoRecorderClients
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::NotifyNoRecorderClients;
+        }
+      };
+
       struct PresetGlitchMessage
       {
         constexpr static MessageType getType()

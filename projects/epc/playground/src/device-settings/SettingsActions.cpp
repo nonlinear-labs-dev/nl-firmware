@@ -92,6 +92,7 @@ SettingsActions::SettingsActions(UpdateDocumentContributor* parent, Settings& se
   });
 
   addAction("panic-audio-engine", [](auto request) { SettingsUseCases::panicAudioEngine(); });
+  addAction("stop-recorder-playback", [](auto) { RecorderManager::stopRecorder(); });
 
   addAction("set-all-routings-to-value", [&](auto request) {
     auto requestedState = request->get("state") == "1";
