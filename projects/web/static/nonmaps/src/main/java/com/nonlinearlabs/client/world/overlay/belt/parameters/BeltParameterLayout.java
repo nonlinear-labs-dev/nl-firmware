@@ -232,6 +232,7 @@ public class BeltParameterLayout extends OverlayLayout {
 		final double undoWidth = Millimeter.toPixels(30);
 		final double undoRedoMargin = Millimeter.toPixels(4.5);
 
+		final double half = h / 2.0;
 		final double third = h / 3.0;
 		final double buttonDim = Millimeter.toPixels(10);
 
@@ -287,8 +288,7 @@ public class BeltParameterLayout extends OverlayLayout {
 		layouter.push(mcUpperBoundRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, 0, sliderWidth, 0, 2);
 		layouter.push(null, margin, margin, 0, 0);
-		layouter.push(fineButton, margin, margin, 1, 2);
-
+		
 		double walkerX = sliderLeft;
 
 		final double modAndParamValueYValue = h / 2.3;
@@ -318,6 +318,8 @@ public class BeltParameterLayout extends OverlayLayout {
 
 		dottedLine.doLayout(mcSourceDisplay.getRelativePosition().getRight() - dottedLineInset, 0, lineWidth, h);
 		infoButton.doLayout(undoRedoMargin + undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
+		fineButton.doLayout(sliderLeft, h - modSrcDim * 1.4, modSrcDim, modSrcDim);
+		
 		contextMenu.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
 				modSrcDim);
 
