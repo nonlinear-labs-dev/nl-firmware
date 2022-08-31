@@ -44,8 +44,6 @@ public class DeviceSettings {
 
 	public VelocityCurve velocityCurve = new VelocityCurve();
 	public boolean legacyAftertouch = false;
-	public boolean legacyBender = false;
-	public boolean benderSensitivity = false;
 	
 	public AftertouchCurve aftertouchCurve = new AftertouchCurve();
 	public BenderCurve benderCurve = new BenderCurve();

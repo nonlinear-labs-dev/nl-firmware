@@ -69,8 +69,6 @@
 #include "RoutingsView.h"
 #include "RoutingsEditor.h"
 #include "OneShotEntryTypes.h"
-#include "device-settings/BenderLegacyMode.h"
-#include "device-settings/SensitiveBenderSettling.h"
 #include "device-info/AftertouchCalibratedStatus.h"
 #include "use-cases/SoundUseCases.h"
 #include "use-cases/PresetManagerUseCases.h"
@@ -361,14 +359,11 @@ namespace NavTree
   struct StoreInitSound : OneShotEntry
   {
     explicit StoreInitSound(InnerNode *p)
-        : OneShotEntry(p, "Store Init Sound",
-                       OneShotTypes::StartCB(
-                           []
-                           {
-                             auto pm = Application::get().getPresetManager();
-                             SoundUseCases useCases(pm->getEditBuffer(), pm);
-                             useCases.storeInitSound();
-                           }))
+        : OneShotEntry(p, "Store Init Sound", OneShotTypes::StartCB([] {
+                         auto pm = Application::get().getPresetManager();
+                         SoundUseCases useCases(pm->getEditBuffer(), pm);
+                         useCases.storeInitSound();
+                       }))
     {
     }
   };
@@ -376,14 +371,11 @@ namespace NavTree
   struct ResetInitSound : OneShotEntry
   {
     explicit ResetInitSound(InnerNode *p)
-        : OneShotEntry(p, "Reset Init Sound",
-                       OneShotTypes::StartCB(
-                           []
-                           {
-                             auto pm = Application::get().getPresetManager();
-                             SoundUseCases useCases(pm->getEditBuffer(), pm);
-                             useCases.resetInitSound();
-                           }))
+        : OneShotEntry(p, "Reset Init Sound", OneShotTypes::StartCB([] {
+                         auto pm = Application::get().getPresetManager();
+                         SoundUseCases useCases(pm->getEditBuffer(), pm);
+                         useCases.resetInitSound();
+                       }))
     {
     }
   };
@@ -895,13 +887,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToHighRes(InnerNode *parent)
-        : OneShotEntry(parent, "Set to High-Res. Defaults",
-                       OneShotTypes::StartCB(
-                           []()
-                           {
-                             SettingsUseCases useCases(*Application::get().getSettings());
-                             useCases.setMappingsToHighRes();
-                           }))
+        : OneShotEntry(parent, "Set to High-Res. Defaults", OneShotTypes::StartCB([]() {
+                         SettingsUseCases useCases(*Application::get().getSettings());
+                         useCases.setMappingsToHighRes();
+                       }))
     {
     }
   };
@@ -910,13 +899,10 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToClassic(InnerNode *parent)
-        : OneShotEntry(parent, "Set to Classic MIDI Defaults",
-                       OneShotTypes::StartCB(
-                           []()
-                           {
-                             SettingsUseCases useCases(*Application::get().getSettings());
-                             useCases.setMappingsToClassicMidi();
-                           }))
+        : OneShotEntry(parent, "Set to Classic MIDI Defaults", OneShotTypes::StartCB([]() {
+                         SettingsUseCases useCases(*Application::get().getSettings());
+                         useCases.setMappingsToClassicMidi();
+                       }))
     {
     }
   };
@@ -1099,13 +1085,10 @@ namespace NavTree
   {
 
     explicit SetRoutingsTo(InnerNode *parent)
-        : OneShotEntry(parent, getName(),
-                       OneShotTypes::StartCB(
-                           []()
-                           {
-                             SettingsUseCases useCases(*Application::get().getSettings());
-                             useCases.setAllRoutingEntries(value);
-                           }))
+        : OneShotEntry(parent, getName(), OneShotTypes::StartCB([]() {
+                         SettingsUseCases useCases(*Application::get().getSettings());
+                         useCases.setAllRoutingEntries(value);
+                       }))
     {
     }
 

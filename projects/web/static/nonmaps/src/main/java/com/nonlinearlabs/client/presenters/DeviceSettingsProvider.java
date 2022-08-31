@@ -146,18 +146,6 @@ public class DeviceSettingsProvider {
 			notifyClients();
 			return true;
 		});
-
-		SetupModel.get().systemSettings.legacyBender.onChange(t -> {
-			settings.legacyBender = t.equals(BooleanValues.on);
-			notifyClients();
-			return true;
-		});
-
-		SetupModel.get().systemSettings.benderSensitivity.onChange(t -> {
-			settings.benderSensitivity = t.equals(BooleanValues.on);
-			notifyClients();
-			return true;
-		});
 	}
 
 	public void connectToPedal(int id, Pedal target) {

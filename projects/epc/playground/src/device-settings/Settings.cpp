@@ -50,8 +50,6 @@
 #include "GlobalLocalEnableSetting.h"
 #include "FocusAndModeSetting.h"
 #include "AftertouchLegacyMode.h"
-#include "BenderLegacyMode.h"
-#include "SensitiveBenderSettling.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>

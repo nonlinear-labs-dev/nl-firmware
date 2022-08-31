@@ -382,8 +382,6 @@ public class SetupModel {
 		public BooleanDataModelEntity localEnabled = new BooleanDataModelEntity();
 
 		public BooleanDataModelEntity legacyAftertouch = new BooleanDataModelEntity();
-		public BooleanDataModelEntity legacyBender = new BooleanDataModelEntity();
-		public BooleanDataModelEntity benderSensitivity = new BooleanDataModelEntity();
 	};
 
 	public class LocalSettings {

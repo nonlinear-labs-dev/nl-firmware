@@ -95,8 +95,7 @@ public class Setup extends Composite {
 	RadioButton presetGlitchSuppressionOn, presetGlitchSuppressionOff, showContextMenusOn, showContextMenusOff,
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
 			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, globalLocalOn, globalLocalOff, 
-			highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff, legacyAftertouchOn, legacyAftertouchOff,
-			legacyBenderOn, legacyBenderOff, sensitiveBenderOn, sensitiveBenderOff;
+                        highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff, legacyAftertouchOn, legacyAftertouchOff;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -239,8 +238,6 @@ public class Setup extends Composite {
 		fillRadioButtons(globalLocalOn, globalLocalOff, MidiSettings.OnOffOption.options);
 
 		fillRadioButtons(legacyAftertouchOn, legacyAftertouchOff, MidiSettings.OnOffOption.options);
-		fillRadioButtons(legacyBenderOn, legacyBenderOff, MidiSettings.OnOffOption.options);
-		fillRadioButtons(sensitiveBenderOn, sensitiveBenderOff, MidiSettings.OnOffOption.options);
 	}
 
 	private void setupMappings(boolean showLSB)
@@ -332,12 +329,6 @@ public class Setup extends Composite {
 
 		legacyAftertouchOn.addClickHandler(e -> settings.setLegacyAftertouch(BooleanValues.on));
 		legacyAftertouchOff.addClickHandler(e -> settings.setLegacyAftertouch(BooleanValues.off));
-
-		legacyBenderOn.addClickHandler(e -> settings.setLegacyBender(BooleanValues.on));
-		legacyBenderOff.addClickHandler(e -> settings.setLegacyBender(BooleanValues.off));
-
-		sensitiveBenderOn.addClickHandler(e -> settings.setBenderSensitive(BooleanValues.on));
-		sensitiveBenderOff.addClickHandler(e -> settings.setBenderSensitive(BooleanValues.off));
 
 		showContextMenusOn.addClickHandler(e -> locals.setContextMenus(BooleanValues.on));
 		showContextMenusOff.addClickHandler(e -> locals.setContextMenus(BooleanValues.off));
