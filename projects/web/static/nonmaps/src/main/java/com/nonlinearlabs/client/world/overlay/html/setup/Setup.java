@@ -607,12 +607,6 @@ public class Setup extends Composite {
 
 		legacyAftertouchOn.setValue(t.legacyAftertouch);
 		legacyAftertouchOff.setValue(!t.legacyAftertouch);
-
-		legacyBenderOn.setValue(t.legacyBender);
-		legacyBenderOff.setValue(!t.legacyBender);
-
-		sensitiveBenderOn.setValue(t.benderSensitivity);
-		sensitiveBenderOff.setValue(!t.benderSensitivity);
 	}
 
 	public void applyPedalValues(DeviceSettings.Pedal src, ListBox type, Range slider, Label text) {

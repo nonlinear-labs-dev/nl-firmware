@@ -457,8 +457,6 @@ namespace NavTree
         children.emplace_back(new EnumSettingItem<AftertouchLegacyMode>(this, "Legacy Aftertouch mode"));
       }
       children.emplace_back(new BenderCurveSetting(this));
-      children.emplace_back(new EnumSettingItem<BenderLegacyMode>(this, "Legacy Bender mode"));
-      children.emplace_back(new EnumSettingItem<SensitiveBenderSettling>(this, "Sensitive Bender Settling"));
       children.emplace_back(new PedalSettings(this));
       children.emplace_back(new EnumSettingItem<PresetGlitchSuppression>(this, "Preset Glitch Suppression"));
       children.emplace_back(new EnumSettingItem<SyncVoiceGroupsAcrossUIS>(this, "Sync Parts across UIs"));
