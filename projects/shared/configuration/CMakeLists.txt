@@ -10,7 +10,7 @@ add_custom_command(
         DEPENDS copy-results-to-source.sh
         OUTPUT ${PROJECT_BINARY_DIR}/generated
         COMMAND rm -rf ${CMAKE_CURRENT_SOURCE_DIR}/generated
-        COMMAND ${PROJECT_SOURCE_DIR}/process.sh ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR}
+        COMMAND ${PROJECT_SOURCE_DIR}/process.sh ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR} ${DEV_PC}
         COMMAND touch .build-headers
 )
 
