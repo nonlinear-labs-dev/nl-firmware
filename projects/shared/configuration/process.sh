@@ -3,6 +3,10 @@
 sourceDir=$1
 binaryDir=$2
 
+cd "$sourceDir"
+npm install -g typescript
+npm install
+
 # 1/5 - compile typescript via tsc
 echo "1/5 - starting typescript compilation";
 tsc "$sourceDir"/lib/build.ts
@@ -28,9 +32,13 @@ if [ $? -ne 0 ]; then
     exit 3
 fi
 
+#make test-application executeable
+
+chmod +x /tmp/generated/build/tests
+
 # 4/5 - run generated test-application
 echo "4/5 - starting tests";
-./tmp/generated/build/tests
+/tmp/generated/build/tests
 if [ $? -ne 0 ]; then
     echo "4/5 - tests failed";
     exit 4
@@ -38,7 +46,7 @@ fi
 
 #copy sources
 echo "5/5 - copy generated headers into appropriate directories"
-/sourceDir/copy-results-to-source.sh /tmp "$binaryDir"
+"$sourceDir"/copy-results-to-source.sh /tmp "$binaryDir"
 if [ $? -ne 0 ]; then
   echo "5/5 - copying of headers to build-dir failed";
   exit 5

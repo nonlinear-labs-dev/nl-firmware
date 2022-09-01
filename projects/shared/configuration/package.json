@@ -14,5 +14,8 @@
     "@types/js-yaml": "~4.0.5",
     "@types/node": "~18.0.3",
     "js-yaml": "~4.1.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node10": "^1.0.9"
   }
 }

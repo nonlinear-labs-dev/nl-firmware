@@ -507,7 +507,10 @@ function createDirectorys(dir) {
 try {
     const myArgs = process.argv.slice(1)
     const sourceDirectoryParts = myArgs[0].split("/");
-    const sourceDirectoryPath = "/" + sourceDirectoryParts[1];
+    sourceDirectoryParts.pop()
+    sourceDirectoryParts.pop() //assuming that the current script is running in /lib/build.js and sources reside under /src...
+    console.log(sourceDirectoryParts)
+    const sourceDirectoryPath = "/" + sourceDirectoryParts.join("/");
     const outDirectory = myArgs[1]
     createDirectorys(outDirectory);
     main(outDirectory, sourceDirectoryPath);
