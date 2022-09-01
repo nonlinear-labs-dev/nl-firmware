@@ -136,7 +136,7 @@ install_update() {
   echo "LANG=en_US@nonlinear.UTF-8" > /internal/epc-update-partition/etc/locale.conf
   touch /internal/epc-update-partition/usr/share/locale/locale.alias
 
-	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "cd /build && make install && make install-nl-locale"
+	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "cd /build && make install -j8 && make install-nl-locale"
     mkdir -p /internal/epc-update-partition/usr/local/C15/web
     tar -xzf /bindir/projects/web/web.tar.gz -C /internal/epc-update-partition/usr/local/C15/web
 	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\

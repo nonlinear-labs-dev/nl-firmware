@@ -6,7 +6,13 @@ isDevPC=$3
 
 cd "$sourceDir" || exit 6
 
+echo "is Dev PC: $isDevPC"
+
+uname -a
+cat /etc/os-release
+
 if [ "$isDevPC" == "OFF" ]; then
+  whereis libicui18n.so.71
   npm install -g typescript
   npm install
 fi

@@ -6,6 +6,11 @@ RUN mkdir -p /extracted-packages
 RUN cd /extracted-packages && tar -xzf /packages/${tar}
 RUN ls -la /extracted-packages/
 
+RUN pacman-key --init
+RUN pacman --noconfirm -Sy
+RUN pacman --noconfirm -S archlinux-keyring
+RUN pacman-key --populate
+
 RUN echo "" > /etc/pacman.d/mirrorlist
 
 RUN sed -i 's/\[core\]//g' /etc/pacman.conf
