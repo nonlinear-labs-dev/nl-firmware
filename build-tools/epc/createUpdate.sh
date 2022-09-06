@@ -97,6 +97,7 @@ download_packages() {
 
 install_packages() {
   /workdir/overlay-fs/bin/arch-chroot /workdir/overlay-fs /bin/bash -c "\
+  set -x
   cd /update-packages
   rm /var/lib/pacman/db.lck
   for package in $PACKAGES_TO_INSTALL; do
@@ -104,9 +105,20 @@ install_packages() {
 	    exit 1
     fi
   done
+  
+  echo \"Server = https://archive.archlinux.org/repos/2020/09/08/\$repo/os/\$arch\" > /etc/pacman.d/mirrorlist
 
-  echo 'Server=https://archive.archlinux.org/repos/2017/04/16/\$repo/os/\$arch' > /etc/pacman.d/mirrorlist
-  pacman --noconfirm -S typescript
+  sed \"s/^\[core\]/[core]\nSigLevel = Optional TrustAll/g\" -i /etc/pacman.conf
+  sed \"s/^\[extra\]/[extra]\nSigLevel = Optional TrustAll/g\" -i /etc/pacman.conf
+  sed \"s/^\[community\]/[community]\nSigLevel = Optional TrustAll/g\" -i /etc/pacman.conf
+
+  rm -R /etc/pacman.d/gnupg/
+  rm -R /root/.gnupg/  # only if the directory exists
+  gpg --refresh-keys
+  pacman-key --init && pacman-key --populate
+  pacman-key --refresh-keys
+
+  pacman --noconfirm -S typescript npm nodejs
 "
   
     return $?
