@@ -116,7 +116,7 @@ PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
   m_localEnabledLabel->setLabelStyle(style);
   m_localDisabledLabelSnd->setLabelStyle(style);
   m_localDisabledLabelRcv->setLabelStyle(style);
-  m_localEnabledLabel->setHighlight(true);
+  m_localEnabledLabel->setHighlight(m_allowHighlights);
 
   auto settings = Application::get().getSettings();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
@@ -126,6 +126,12 @@ PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
 
 void PhysicalControlValueLabel::setHighlight(bool isHighlight)
 {
+  m_allowHighlights = isHighlight;
+}
+
+bool PhysicalControlValueLabel::isHighlight() const
+{
+  return m_allowHighlights;
 }
 
 void PhysicalControlValueLabel::onParameterSelectionHappened(const Parameter *old, Parameter *newP)
@@ -135,13 +141,13 @@ void PhysicalControlValueLabel::onParameterSelectionHappened(const Parameter *ol
     m_hw = hw;
     m_snd = hw->getSendParameter();
     m_localDisabledLabelSnd->setHighlight(false);
-    m_localDisabledLabelRcv->setHighlight(true);
+    m_localDisabledLabelRcv->setHighlight(m_allowHighlights);
   }
   else if(auto snd = dynamic_cast<HardwareSourceSendParameter *>(newP))
   {
     m_hw = snd->getSiblingParameter();
     m_snd = snd;
-    m_localDisabledLabelSnd->setHighlight(true);
+    m_localDisabledLabelSnd->setHighlight(m_allowHighlights);
     m_localDisabledLabelRcv->setHighlight(false);
   }
 

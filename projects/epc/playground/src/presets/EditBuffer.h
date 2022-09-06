@@ -39,6 +39,8 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   int getSelectedParameterNumber() const;
   std::string getPresetOriginDescription() const;
 
+  ParameterId getLastSelectedMacroId() const;
+
   LoadedPresetLog *getLoadedPresetLog() const;
 
   bool isZombie() const;
@@ -265,6 +267,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   ScopedGuard m_parameterFocusLock;
   Settings& m_settings;
   std::unique_ptr<AudioEngineProxy>& m_audioEngineProxyContainer;
+  ParameterId m_lastSelectedMacroControl;
 
   friend class EditBufferUseCases;
   friend class BankUseCases;

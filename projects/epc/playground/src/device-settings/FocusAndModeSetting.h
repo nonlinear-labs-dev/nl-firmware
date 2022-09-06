@@ -18,7 +18,6 @@ class FocusAndModeSetting : public Setting
   Glib::ustring getDisplayString() const override;
   bool persistent() const override;
 
-  void setUndoable(UNDO::Transaction* transaction, FocusAndMode newFam);
   bool isFocusAndModeFrozen() const;
   void setFocusAndModeFreeze(bool state);
 

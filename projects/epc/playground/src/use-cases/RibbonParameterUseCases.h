@@ -15,6 +15,8 @@ class RibbonParameterUseCases : public PhysicalControlParameterUseCases
 
   void incTouchBehaviour();
 
+  void stepTouchBehaviour(int i);
+
  private:
   RibbonParameter* m_param;
 };

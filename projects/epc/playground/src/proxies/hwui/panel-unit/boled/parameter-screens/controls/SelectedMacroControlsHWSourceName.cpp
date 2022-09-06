@@ -3,6 +3,7 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/MacroControlParameter.h"
+#include "parameters/ModulationRoutingParameter.h"
 #include <sigc++/sigc++.h>
 #include <proxies/hwui/HWUI.h>
 
@@ -21,8 +22,17 @@ SelectedMacroControlsHWSourceName::~SelectedMacroControlsHWSourceName()
 
 void SelectedMacroControlsHWSourceName::onParameterSelected(Parameter *newOne)
 {
+
   m_mcChanged.disconnect();
-  m_mcChanged = newOne->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceName::onMCChanged));
+  if(auto mc = dynamic_cast<MacroControlParameter*>(newOne))
+  {
+    m_mcChanged = newOne->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceName::onMCChanged));
+  }
+  else if(auto modRouter = dynamic_cast<ModulationRoutingParameter*>(newOne))
+  {
+    auto mc = modRouter->getTargetParameter();
+    m_mcChanged = mc->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceName::onMCChanged));
+  }
 }
 
 void SelectedMacroControlsHWSourceName::onMCChanged(const Parameter *param)

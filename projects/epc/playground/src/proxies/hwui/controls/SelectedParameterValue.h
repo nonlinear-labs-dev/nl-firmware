@@ -43,6 +43,7 @@ class PhysicalControlValueLabel : public ControlWithChildren
   explicit PhysicalControlValueLabel(const Rect& rect);
   bool redraw(FrameBuffer& fb) override;
   void setHighlight(bool isHighlight) override;
+  bool isHighlight() const override;
 
  private:
   void onParameterSelectionHappened(const Parameter* old, Parameter* newP);
@@ -60,6 +61,7 @@ class PhysicalControlValueLabel : public ControlWithChildren
   sigc::connection m_hwChanged;
 
   bool m_isLocalEnabled = true;
+  bool m_allowHighlights = false;
 };
 
 class HardwareSourceCCLabel : public LabelStyleable

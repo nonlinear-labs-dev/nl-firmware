@@ -17,6 +17,7 @@
 #include <presets/EditBuffer.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <libundo/undo/Scope.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/PlayControlParameterLayouts.h>
 
 PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling,
                                                    tDisplayValue def, int coarseDenominator, int fineDenominator)
@@ -148,8 +149,12 @@ Layout *PhysicalControlParameter::createLayout(FocusAndMode focusAndMode) const
     case UIMode::Info:
       return new ParameterInfoLayout();
 
+    case UIMode::Select:
     default:
-      return super::createLayout(focusAndMode);
+      return new PlayControlParameterLayout2();
+
+    case UIMode::Edit:
+      return new PlayControlParameterLayout2();
   }
 
   g_return_val_if_reached(nullptr);

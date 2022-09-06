@@ -12,7 +12,7 @@ class ModuleCaption : public Label
   typedef Label super;
 
  public:
-  explicit ModuleCaption(const Rect &pos);
+  explicit ModuleCaption(const Rect &pos, bool subscribeToSignals = true);
   bool redraw(FrameBuffer &fb) override;
 
  protected:

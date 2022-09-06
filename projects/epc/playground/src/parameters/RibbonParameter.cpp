@@ -82,6 +82,22 @@ std::list<ModulationRoutingParameter *> RibbonParameter::getRoutingParameters() 
   return {};
 }
 
+#warning TODO: replace tmp symbol suffix with real '^r'
+
+Glib::ustring RibbonParameter::getLongName() const
+{
+  if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
+    return Parameter::getLongName() + "^r";
+  return Parameter::getLongName();
+}
+
+Glib::ustring RibbonParameter::getShortName() const
+{
+  if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
+    return Parameter::getShortName() + "^r";
+  return Parameter::getShortName();
+}
+
 tControlPositionValue RibbonParameter::getDefValueAccordingToMode() const
 {
   switch(getReturnMode())
@@ -326,24 +342,6 @@ void RibbonParameter::undoableStepBehavior(UNDO::Transaction *transaction, int d
     v -= numModes;
 
   undoableSetRibbonReturnMode(transaction, static_cast<RibbonReturnMode>(v), Initiator::EXPLICIT_USECASE);
-}
-
-Layout *RibbonParameter::createLayout(FocusAndMode focusAndMode) const
-{
-  switch(focusAndMode.mode)
-  {
-    case UIMode::Info:
-      return new ParameterInfoLayout();
-
-    case UIMode::Edit:
-      return new RibbonParameterEditLayout2();
-
-    case UIMode::Select:
-    default:
-      return new RibbonParameterSelectLayout2();
-  }
-
-  g_return_val_if_reached(nullptr);
 }
 
 void RibbonParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)

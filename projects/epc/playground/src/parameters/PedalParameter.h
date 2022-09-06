@@ -32,7 +32,6 @@ class PedalParameter : public PhysicalControlParameter
   Glib::ustring getCurrentBehavior() const override;
   void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
 
-  Layout *createLayout(FocusAndMode focusAndMode) const override;
   size_t getHash() const override;
   tControlPositionValue getDefValueAccordingToMode() const override;
 

@@ -72,9 +72,12 @@ class EditBufferUseCases
 
   void setModulationSourceOfAll(MacroControls controls);
 
+  void selectLastSelectedMacroControlParameter();
+
  private:
   VoiceGroup invert(VoiceGroup vg);
   [[nodiscard]] PresetManager* getPresetManager() const;
 
   EditBuffer& m_editBuffer;
+
 };

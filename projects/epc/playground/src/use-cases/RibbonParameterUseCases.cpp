@@ -30,6 +30,16 @@ void RibbonParameterUseCases::setTouchBehaviour(const Glib::ustring& mode)
 
 void RibbonParameterUseCases::incTouchBehaviour()
 {
-  auto trans = m_param->getUndoScope().startTransaction("Set ribbon mode");
+  auto trans = m_param->getUndoScope().startTransaction("Set ribbon touch behaviour");
   m_param->undoableIncRibbonTouchBehaviour(trans->getTransaction());
+}
+
+void RibbonParameterUseCases::stepTouchBehaviour(int i)
+{
+  i = std::abs(i);
+  auto scope = m_param->getUndoScope().startTransaction("Set ribbon touch behaviour");
+  for(int it = 0; it < i; it++)
+  {
+    m_param->undoableIncRibbonTouchBehaviour(scope->getTransaction());
+  }
 }

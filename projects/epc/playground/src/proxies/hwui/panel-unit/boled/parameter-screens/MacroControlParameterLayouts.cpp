@@ -45,6 +45,20 @@ MacroControlParameterLayout2::MacroControlParameterLayout2()
       sigc::hide(sigc::mem_fun(this, &MacroControlParameterLayout2::onSoundTypeChanged)));
 }
 
+MacroControlParameterLayout2::MacroControlParameterLayout2(Parameter *mc, Parameter *hwSrc)
+    : super()
+    , m_initialParameterSelection({ .m_src = hwSrc, .m_mc = mc })
+{
+  addControl(new SelectedParameterDotSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+  addControl(new ModulationSourceLabel(Rect(77, 33, 11, 12)));
+  m_modeOverlay = addControl(new Overlay(Rect(0, 0, 256, 64)));
+
+  setMode(Mode::MacroControlValue);
+
+  m_editBufferTypeConnection = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
+      sigc::hide(sigc::mem_fun(this, &MacroControlParameterLayout2::onSoundTypeChanged)));
+}
+
 MacroControlParameterLayout2::~MacroControlParameterLayout2()
 {
   m_editBufferTypeConnection.disconnect();
@@ -311,10 +325,33 @@ void MacroControlParameterLayout2::selectSmoothingParameterForMC()
     ebUseCases.selectParameter(mc->getSmoothingParameter(), true);
   }
 }
-
 Control *MacroControlParameterLayout2::createMCAssignmentIndicator()
 {
   return new MCAssignedIndicator(Rect(25, 15, 52, 24), getCurrentParameter());
+}
+
+MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2(MacroControlParameter *tgt,
+                                                                       PhysicalControlParameter *src)
+    : virtual_base()
+    , super1()
+    , super2(tgt, src)
+{
+  setButtonA(addControl(new Button("", Buttons::BUTTON_A)));
+
+  if(Application::get().getPresetManager()->getEditBuffer()->isDual())
+  {
+    if(getMode() == Mode::MacroControlValue)
+    {
+      setButtonAText("I / II");
+    }
+    else
+    {
+      setButtonAText("");
+    }
+  }
+
+  addControl(new Button("HW Sel", Buttons::BUTTON_B));
+  addControl(new Button("more..", Buttons::BUTTON_C));
 }
 
 MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
@@ -344,6 +381,16 @@ void MacroControlParameterSelectLayout2::init()
 {
   super1::init();
   super2::init();
+
+  if(m_initialParameterSelection.has_value())
+  {
+    auto v = m_initialParameterSelection.value();
+    if(auto mc = dynamic_cast<MacroControlParameter*>(v.m_mc))
+    {
+      mc->setUiSelectedHardwareSource(v.m_src->getID());
+    }
+    setMode(Mode::PlayControlAmount);
+  }
 }
 
 Carousel *MacroControlParameterSelectLayout2::createCarousel(const Rect &rect)
@@ -377,6 +424,11 @@ MacroControlParameterEditLayout2::MacroControlParameterEditLayout2()
 {
 }
 
+MacroControlParameterEditLayout2::MacroControlParameterEditLayout2(MacroControlParameter *tgt,
+                                                                   PhysicalControlParameter *src)
+{
+}
+
 ButtonMenu *MacroControlParameterEditLayout2::createMenu(const Rect &rect)
 {
   return new MacroControlEditButtonMenu(rect);
@@ -404,7 +456,6 @@ Control *MacroControlParameterEditLayout2::createMCAssignmentIndicator()
 {
   return nullptr;
 }
-
 bool MacroControlParameterEditLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   if(super1::onButton(i, down, modifiers))

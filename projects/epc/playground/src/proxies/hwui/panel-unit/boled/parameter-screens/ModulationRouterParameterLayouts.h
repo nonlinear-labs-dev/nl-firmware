@@ -11,6 +11,10 @@ class ModulationRouterParameterSelectLayout2 : public virtual ParameterSelectLay
 
  protected:
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
+  ModuleCaption *createModuleCaption() const override;
+  void init() override;
+  bool onRotary(int inc, ButtonModifiers modifiers) override;
+  Control *createParameterNameLabel() const override;
 };
 
 class ModulationRouterParameterEditLayout2 : public virtual ParameterEditLayout2

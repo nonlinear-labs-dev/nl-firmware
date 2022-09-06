@@ -12,26 +12,63 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulationRouterParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
 #include "use-cases/EditBufferUseCases.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MacroControlSliderForCurrentModulationRouter.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/FixedTextModuleCaption.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/HWSourceAmountCarousel.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedMacroControlsHWSourceAmount.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedMacroControlsHWSourceValue.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedMacroControlsHWSourceName.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedMacroControlsHWSourceSlider.h"
+#include "proxies/hwui/controls/DottedLine.h"
+#include "groups/MacroControlMappingGroup.h"
 
 ModulationRouterParameterSelectLayout2::ModulationRouterParameterSelectLayout2()
     : super()
 {
-  addControl(new Button("HW Source..", Buttons::BUTTON_A));
-  addControl(new Button("", Buttons::BUTTON_B));
-  addControl(new Button("", Buttons::BUTTON_C));
-  addControl(new Button("MC..", Buttons::BUTTON_D));
+  if(auto modRouter = dynamic_cast<ModulationRoutingParameter *>(getCurrentParameter()))
+  {
+    nltools::Log::error("selecting modRouter:", modRouter->getSourceParameter()->getLongName(), "to",
+                        modRouter->getTargetParameter()->getLongName());
+    modRouter->getTargetParameter()->setUiSelectedHardwareSource(modRouter->getSourceParameter()->getID());
+    nltools::Log::error("uiSelected:", modRouter->getTargetParameter()->getUiSelectedHardwareSource());
+  }
 
-  addControl(new SelectedParameterBarSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
-  addControl(createParameterValueControl());
+  addControl(new Button("HW Pos", Buttons::BUTTON_A));
+  addControl(new Button("HW Sel", Buttons::BUTTON_B));
+  addControl(new Button("HW Amt", Buttons::BUTTON_C));
+  highlightButtonWithCaption("HW Amt");
+
+  addControl(new MacroControlSliderForCurrentModulationRouter(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+  addControl(new SelectedMacroControlsHWSourceSlider(Rect(8, 25, 48, 4)));
+  addControl(new SelectedMacroControlsHWSourceValue(Rect(0, BUTTON_VALUE_Y_POSITION, 64, 12)));
+  addControl(new SelectedMacroControlsHWSourceName(Rect(64, BUTTON_VALUE_Y_POSITION, 64, 12)));
+  addControl(new SelectedMacroControlsHWSourceAmount(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)))->setHighlight(true);
+  //addControl(new DottedLine(Rect(60, 27, 13, 1)));
 
   highlight<ParameterNameLabel>();
   highlight<SelectedParameterBarSlider>();
   highlight<SelectedParameterValue>();
 }
 
+Control *ModulationRouterParameterSelectLayout2::createParameterNameLabel() const
+{
+  return new ParameterNameLabelForMCOfModulationRouter(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11));
+}
+
+void ModulationRouterParameterSelectLayout2::init()
+{
+  ParameterSelectLayout2::init();
+  getCarousel()->setHighlight(false);
+}
+
+ModuleCaption *ModulationRouterParameterSelectLayout2::createModuleCaption() const
+{
+  return new FixedTextModuleCaption(Rect(0, 0, 64, 13), "MC HW Amt");
+}
+
 Carousel *ModulationRouterParameterSelectLayout2::createCarousel(const Rect &rect)
 {
-  return nullptr;
+  return new HWSourceAmountCarousel(Rect(195, 0, 58, 64));
 }
 
 bool ModulationRouterParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
@@ -55,10 +92,16 @@ bool ModulationRouterParameterSelectLayout2::onButton(Buttons i, bool down, Butt
     {
       if(auto p = dynamic_cast<ModulationRoutingParameter *>(getCurrentParameter()))
       {
-        p->getSourceParameter()->setUiSelectedModulationRouter(p->getID());
-        ebUseCases.selectParameter(p->getTargetParameter());
+        p->getTargetParameter()->toggleUiSelectedHardwareSource(modifiers[ButtonModifier::SHIFT] ? -1 : 1);
+        auto currentMC = p->getTargetParameter();
+        auto newHWSrc = p->getTargetParameter()->getUiSelectedHardwareSource();
+        if(auto g = dynamic_cast<MacroControlMappingGroup*>(p->getParent()))
+        {
+          auto hwSrc = eb->findAndCastParameterByID<PhysicalControlParameter>(newHWSrc);
+          auto modP = g->getModulationRoutingParameterFor(hwSrc, currentMC);
+          ebUseCases.selectParameter(modP);
+        }
       }
-
       return true;
     }
   }
@@ -66,12 +109,17 @@ bool ModulationRouterParameterSelectLayout2::onButton(Buttons i, bool down, Butt
   return super::onButton(i, down, modifiers);
 }
 
+bool ModulationRouterParameterSelectLayout2::onRotary(int inc, ButtonModifiers modifiers)
+{
+  return ParameterLayout2::onRotary(inc, modifiers);
+}
+
 ModulationRouterParameterEditLayout2::ModulationRouterParameterEditLayout2()
     : super()
 {
-  addControl(new Button("", Buttons::BUTTON_A));
-  addControl(new Button("", Buttons::BUTTON_B));
-  addControl(new Button("", Buttons::BUTTON_C));
+  addControl(new Button("HW Pos", Buttons::BUTTON_A));
+  addControl(new Button("HW Sel", Buttons::BUTTON_B));
+  addControl(new Button("HW Amt", Buttons::BUTTON_C));
 
   addControl(new SelectedParameterBarSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
   addControl(createParameterValueControl());
