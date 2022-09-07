@@ -395,6 +395,7 @@ public class SetupModel {
 		public BooleanDataModelEntity bitmapCache = new BooleanDataModelEntity();
 		public BooleanDataModelEntity showDeveloperOptions = new BooleanDataModelEntity();
 		public BooleanDataModelEntity alertOnBufferUnderruns = new BooleanDataModelEntity();
+		public BooleanDataModelEntity localFineEnabled = new BooleanDataModelEntity();
 	}
 
 	public SystemSettings systemSettings = new SystemSettings();

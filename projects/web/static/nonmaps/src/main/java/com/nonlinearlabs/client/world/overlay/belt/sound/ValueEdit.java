@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
 import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
@@ -73,7 +74,7 @@ public class ValueEdit extends OverlayLayout {
 
 		@Override
 		public Control click(Position eventPoint) {
-			boolean fine = NonMaps.get().getNonLinearWorld().isShiftDown();
+			boolean fine = NonMaps.get().getNonLinearWorld().isFineActive();
 
 			if (isLeft) {
 				EditBufferUseCases.get().decParameter(parameter, fine);
@@ -86,7 +87,7 @@ public class ValueEdit extends OverlayLayout {
 		@Override
 		public Control longLeftPress(Position eventPoint) {
 			ButtonRepeat.get().start(() -> {
-				boolean fine = NonMaps.get().getNonLinearWorld().isShiftDown();
+				boolean fine = NonMaps.get().getNonLinearWorld().isFineActive();
 
 				if (isLeft) {
 					EditBufferUseCases.get().decParameter(parameter, fine);
@@ -155,6 +156,8 @@ public class ValueEdit extends OverlayLayout {
 
 	@Override
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
+		fine |= SetupModel.get().localSettings.localFineEnabled.getBool();
+		
 		double xPix = newPoint.getX() - oldPoint.getX();
 		double yPix = oldPoint.getY() - newPoint.getY();
 		double pix = xPix;
@@ -170,6 +173,8 @@ public class ValueEdit extends OverlayLayout {
 
 	@Override
 	public Control wheel(Position eventPoint, double amount, boolean fine) {
+		fine |= SetupModel.get().localSettings.localFineEnabled.getBool();
+
 		if (amount > 0)
 			EditBufferUseCases.get().incParameter(parameter, fine);
 		else if (amount < 0)
