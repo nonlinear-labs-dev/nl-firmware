@@ -75,7 +75,7 @@ build_c15() {
 
     cmake -DCMAKE_INSTALL_DIR=/usr/local/C15 -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off /srcdir
     make -j8
-    make install
+    make install -j8
     make install-nl-locale
 
     mkdir -p /usr/local/C15/web
