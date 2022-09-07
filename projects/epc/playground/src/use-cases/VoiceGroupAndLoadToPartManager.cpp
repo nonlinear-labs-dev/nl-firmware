@@ -32,12 +32,6 @@ void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(UNDO::Transaction *t, 
                                 });
 }
 
-void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(VoiceGroup v)
-{
-  auto scope = m_editBuffer.getParent()->getUndoScope().startTransaction("Select Part " + toString(v));
-  setCurrentVoiceGroup(scope->getTransaction(), v);
-}
-
 void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction,
                                                                                      VoiceGroup v)
 {
