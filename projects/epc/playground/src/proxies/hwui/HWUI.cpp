@@ -35,7 +35,7 @@
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
 #include "device-settings/ScreenSaverTimeoutSetting.h"
-#include "proxies/hwui/panel-unit/boled/recorder/DoYouWantToStopRecorderLayout.h"
+#include "proxies/hwui/panel-unit/boled/recorder/DoYouWantToStopRecorderPlaybackLayout.h"
 #include <Options.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 
@@ -60,7 +60,7 @@ HWUI::HWUI(Settings &settings, RecorderManager &recorderManager)
                                                             sigc::mem_fun(this, &HWUI::onButtonMessage));
 
   recorderManager.subscribeToNotifyNoRecorderUIsLeftAndStillPlaying(
-      [this] { getPanelUnit().getEditPanel().getBoled().setOverlay(new DoYouWantToStopRecorderLayout()); });
+      [this] { getPanelUnit().getEditPanel().getBoled().setOverlay(new DoYouWantToStopRecorderPlaybackLayout()); });
 }
 
 HWUI::~HWUI()

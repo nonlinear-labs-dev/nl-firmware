@@ -1,9 +1,9 @@
 #pragma once
 #include "proxies/hwui/Layout.h"
 
-class DoYouWantToStopRecorderLayout : public Layout
+class DoYouWantToStopRecorderPlaybackLayout : public Layout
 {
  public:
-  DoYouWantToStopRecorderLayout();
+  DoYouWantToStopRecorderPlaybackLayout();
   bool onButton(Buttons i, bool down, ::ButtonModifiers modifiers) override;
 };

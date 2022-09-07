@@ -204,7 +204,8 @@ void Recorder::checkAndSendNoClientsStatus()
 
   if(!hasClients and m_hadClientsAtLastCheck and m_out->isPlaying())
   {
-    m_out->pause();
+    nltools::msg::Setting::NotifyNoRecorderClients msg {};
+    nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
   }
 
   m_hadClientsAtLastCheck = hasClients;

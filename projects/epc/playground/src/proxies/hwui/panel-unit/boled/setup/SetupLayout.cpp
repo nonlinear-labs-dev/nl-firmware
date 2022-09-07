@@ -1049,7 +1049,7 @@ namespace NavTree
   struct RecorderStopButton : OneShotEntry
   {
     explicit RecorderStopButton(InnerNode* p)
-    : OneShotEntry(p, "Stop Playback", OneShotTypes::StartCB([]{ RecorderManager::stopRecorder(); }))
+    : OneShotEntry(p, "Stop Playback", OneShotTypes::StartCB([]{ RecorderManager::stopRecorderPlayback(); }))
     {
     }
   };

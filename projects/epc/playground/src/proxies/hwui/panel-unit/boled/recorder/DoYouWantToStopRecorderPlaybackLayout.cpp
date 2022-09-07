@@ -1,4 +1,4 @@
-#include "DoYouWantToStopRecorderLayout.h"
+#include "DoYouWantToStopRecorderPlaybackLayout.h"
 #include "proxies/hwui/controls/labels/LabelStyleable.h"
 #include "proxies/hwui/controls/Button.h"
 #include <Application.h>
@@ -8,7 +8,7 @@
 #include "use-cases/RecorderManager.h"
 #include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MultiLineLabel.h"
 
-DoYouWantToStopRecorderLayout::DoYouWantToStopRecorderLayout()
+DoYouWantToStopRecorderPlaybackLayout::DoYouWantToStopRecorderPlaybackLayout()
     : Layout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
 {
   LabelStyle headlineStyle{};
@@ -22,7 +22,7 @@ DoYouWantToStopRecorderLayout::DoYouWantToStopRecorderLayout()
   auto okay = addControl(new Button("Yes", Buttons::BUTTON_D));
 }
 
-bool DoYouWantToStopRecorderLayout::onButton(Buttons i, bool down, ::ButtonModifiers modifiers)
+bool DoYouWantToStopRecorderPlaybackLayout::onButton(Buttons i, bool down, ::ButtonModifiers modifiers)
 {
   if(down && i == Buttons::BUTTON_A)
   {
@@ -32,7 +32,7 @@ bool DoYouWantToStopRecorderLayout::onButton(Buttons i, bool down, ::ButtonModif
 
   if(down && i == Buttons::BUTTON_D)
   {
-    RecorderManager::stopRecorder();
+    RecorderManager::stopRecorderPlayback();
     Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().resetOverlay();
     return true;
   }

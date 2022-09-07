@@ -9,7 +9,7 @@ class RecorderManager : public sigc::trackable
  public:
   RecorderManager();
   sigc::connection subscribeToNotifyNoRecorderUIsLeftAndStillPlaying(sigc::slot<void(void)> s);
-  static void stopRecorder();
+  static void stopRecorderPlayback();
 
  private:
   Signal<void> m_signal;

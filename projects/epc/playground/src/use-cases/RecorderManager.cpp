@@ -18,7 +18,7 @@ sigc::connection RecorderManager::subscribeToNotifyNoRecorderUIsLeftAndStillPlay
   return m_signal.connect(s);
 }
 
-void RecorderManager::stopRecorder()
+void RecorderManager::stopRecorderPlayback()
 {
   nltools::msg::Setting::FlacRecorderStop msg {};
   nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
