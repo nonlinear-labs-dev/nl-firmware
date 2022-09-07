@@ -26,11 +26,6 @@
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
 
-PedalParameter::PedalParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling)
-    : PhysicalControlParameter(group, id, scaling)
-{
-}
-
 void PedalParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
   Parameter::writeDocProperties(writer, knownRevision);
@@ -307,14 +302,14 @@ void PedalParameter::onLocalEnableChanged(bool localEnableState)
 
 Glib::ustring PedalParameter::getLongName() const
 {
-  if(m_isHardwareDisabled)
+  if(isHardwareDisabled())
     return Parameter::getLongName() + " (Off)";
   return Parameter::getLongName();
 }
 
 Glib::ustring PedalParameter::getShortName() const
 {
-  if(m_isHardwareDisabled)
+  if(isHardwareDisabled())
     return Parameter::getShortName() + " (Off)";
   return Parameter::getShortName();
 }
@@ -323,7 +318,6 @@ void PedalParameter::onPedalTypeChanged(const Setting *s)
 {
   if(auto pedalType = dynamic_cast<const PedalType *>(s))
   {
-    m_isHardwareDisabled = pedalType->get() == PedalTypes::OFF;
     invalidate();
   }
 }
@@ -333,16 +327,27 @@ void PedalParameter::init(Settings &settings)
   switch(getID().getNumber())
   {
     case C15::PID::Pedal_1:
-      settings.getSetting("Pedal1Type")->onChange(sigc::mem_fun(this, &PedalParameter::onPedalTypeChanged));
+      m_setting = dynamic_cast<PedalType*>(settings.getSetting("Pedal1Type"));
       break;
     case C15::PID::Pedal_2:
-      settings.getSetting("Pedal2Type")->onChange(sigc::mem_fun(this, &PedalParameter::onPedalTypeChanged));
+      m_setting = dynamic_cast<PedalType*>(settings.getSetting("Pedal2Type"));
       break;
     case C15::PID::Pedal_3:
-      settings.getSetting("Pedal3Type")->onChange(sigc::mem_fun(this, &PedalParameter::onPedalTypeChanged));
+      m_setting = dynamic_cast<PedalType*>(settings.getSetting("Pedal3Type"));
       break;
     case C15::PID::Pedal_4:
-      settings.getSetting("Pedal4Type")->onChange(sigc::mem_fun(this, &PedalParameter::onPedalTypeChanged));
+      m_setting = dynamic_cast<PedalType*>(settings.getSetting("Pedal4Type"));
       break;
   }
+
+  m_setting->onChange(sigc::mem_fun(this, &PedalParameter::onPedalTypeChanged));
+}
+
+bool PedalParameter::isHardwareDisabled() const
+{
+  if(m_setting)
+  {
+    return m_setting->get() == PedalTypes::OFF;
+  }
+  return false;
 }

@@ -67,14 +67,13 @@ HardwareSourcesGroup::~HardwareSourcesGroup()
 
 void HardwareSourcesGroup::init()
 {
-  for(auto pedalID : { getPedal1ParameterID(), getPedal2ParameterID(), getPedal3ParameterID(), getPedal4ParameterID() })
-  {
-    if(auto pedal = findAndCastParameterByID<PedalParameter>(pedalID))
-    {
-      if(m_settings)
-        pedal->init(*m_settings);
-    }
-  }
+  if(m_settings == nullptr)
+    return;
+
+  findAndCastParameterByID<PedalParameter>(getPedal1ParameterID())->init(*m_settings);
+  findAndCastParameterByID<PedalParameter>(getPedal2ParameterID())->init(*m_settings);
+  findAndCastParameterByID<PedalParameter>(getPedal3ParameterID())->init(*m_settings);
+  findAndCastParameterByID<PedalParameter>(getPedal4ParameterID())->init(*m_settings);
 
   for(auto hwSend : getSendParameters())
   {

@@ -10,7 +10,7 @@ class PedalParameter : public PhysicalControlParameter
   typedef PhysicalControlParameter super;
 
  public:
-  PedalParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling);
+  using super::super;
   void onLocalEnableChanged(bool localEnableState) override;
   void init(Settings& s);
 
@@ -45,8 +45,9 @@ class PedalParameter : public PhysicalControlParameter
   void sendModeToPlaycontroller() const;
   void setRoutersModeAccordingToReturnMode();
   bool isLocalEnabled() const override;
+  bool isHardwareDisabled() const;
 
   PedalModes m_mode = PedalModes::STAY;
   tUpdateID m_updateIdWhenModeChanged = 0;
-  bool m_isHardwareDisabled = false;
+  PedalType* m_setting;
 };
