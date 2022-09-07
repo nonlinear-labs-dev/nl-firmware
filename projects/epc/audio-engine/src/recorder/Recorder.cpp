@@ -17,6 +17,8 @@ constexpr int operator""_MB(unsigned long long const x)
 
 constexpr static auto c_flacFrameBufferSize = 500_MB;
 
+using namespace std::chrono_literals;
+
 Recorder::Recorder(int sr)
     : m_storage(std::make_unique<FlacFrameStorage>(c_flacFrameBufferSize))
     , m_in(std::make_unique<RecorderInput>(m_storage.get(), sr))
@@ -25,7 +27,7 @@ Recorder::Recorder(int sr)
                                                              [this](auto, const auto &msg) { return api(msg); }))
     , m_http(std::make_unique<NetworkServer>(RECORDER_HTTPSERVER_PORT, m_storage.get()))
     , m_checkForActiveClients(Glib::MainContext::get_default(),
-                              sigc::mem_fun(this, &Recorder::checkAndSendNoClientsStatus), std::chrono::seconds(1))
+                              sigc::mem_fun(this, &Recorder::checkAndSendNoClientsStatus), 1s)
 {
   m_in->setPaused(true);
   m_settingConnection
@@ -209,5 +211,5 @@ void Recorder::checkAndSendNoClientsStatus()
   }
 
   m_hadClientsAtLastCheck = hasClients;
-  m_checkForActiveClients.refresh(Expiration::Duration(std::chrono::seconds(1)));
+  m_checkForActiveClients.refresh(1s);
 }

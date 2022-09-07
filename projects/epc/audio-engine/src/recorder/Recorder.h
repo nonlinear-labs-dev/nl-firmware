@@ -5,7 +5,6 @@
 #include <nltools/nlohmann/json.hpp>
 #include <memory>
 #include <sigc++/connection.h>
-#include <future>
 
 class FlacFrameStorage;
 class RecorderInput;
