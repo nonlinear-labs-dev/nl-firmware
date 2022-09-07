@@ -37,27 +37,24 @@ Layout* SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
 void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
                                      bool dosendToPlaycontroller)
 {
-  if(auto eb = getParentEditBuffer())
+  const auto syncActive = isSynced();
+
+  if(syncActive && isAtExtremes(value) && initiator != Initiator::INDIRECT_SPLIT_SYNC)
   {
-    const auto syncActive = isSynced();
+    clampToExtremes(transaction, dosendToPlaycontroller);
+    return;
+  }
 
-    if(syncActive && isAtExtremes(value) && initiator != Initiator::INDIRECT_SPLIT_SYNC)
+  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
+
+  if(syncActive)
+  {
+    if(initiator != Initiator::INDIRECT_SPLIT_SYNC)
     {
-      clampToExtremes(transaction, dosendToPlaycontroller);
-      return;
-    }
-
-    Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
-
-    if(syncActive)
-    {
-      if(initiator != Initiator::INDIRECT_SPLIT_SYNC)
-      {
-        auto other = getSibling();
-        auto siblingValue
-            = getValue().getNextStepValue(value, other->getVoiceGroup() == VoiceGroup::I ? -1 : 1, false, false);
-        other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
-      }
+      auto other = getSibling();
+      auto siblingValue
+          = getValue().getNextStepValue(value, other->getVoiceGroup() == VoiceGroup::I ? -1 : 1, false, false);
+      other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
     }
   }
 }
