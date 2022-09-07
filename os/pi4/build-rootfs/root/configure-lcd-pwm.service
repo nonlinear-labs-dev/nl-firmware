@@ -1,6 +1,5 @@
 [Unit]
 Description=Configure PWM and permissions for LCD backlight
-#After=systemd-modules-load.service
 After=multi-user.target
 
 [Service]
