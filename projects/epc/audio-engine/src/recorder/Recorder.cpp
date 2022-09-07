@@ -24,8 +24,8 @@ Recorder::Recorder(int sr)
     , m_api(std::make_unique<nltools::msg::WebSocketJsonAPI>(Glib::MainContext::get_default(), RECORDER_WEBSOCKET_PORT,
                                                              [this](auto, const auto &msg) { return api(msg); }))
     , m_http(std::make_unique<NetworkServer>(RECORDER_HTTPSERVER_PORT, m_storage.get()))
-    , m_checkClientThrottler(Glib::MainContext::get_default(), Expiration::Duration(std::chrono::milliseconds(1000)))
-    , m_checkForStop(std::async(std::launch::async, [=] { this->checkAndSendNoClientsStatus(); }))
+    , m_checkForActiveClients(Glib::MainContext::get_default(),
+                              sigc::mem_fun(this, &Recorder::checkAndSendNoClientsStatus), std::chrono::seconds(1))
 {
   m_in->setPaused(true);
   m_settingConnection
@@ -200,20 +200,13 @@ nlohmann::json Recorder::queryFrames(FrameId begin, FrameId end) const
 
 void Recorder::checkAndSendNoClientsStatus()
 {
-  while(true)
-  {
-    m_checkClientThrottler.doTask(
-        [this]
-        {
-          auto hasClients = m_api->hasClients();
-          if(!hasClients and m_hadClientsAtLastCheck and m_out->isPlaying())
-          {
-            nltools::msg::Setting::NotifyNoRecorderClients msg {};
-            nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
-          }
-          m_hadClientsAtLastCheck = hasClients;
-        });
+  auto hasClients = m_api->hasClients();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(990));
+  if(!hasClients and m_hadClientsAtLastCheck and m_out->isPlaying())
+  {
+    m_out->pause();
   }
+
+  m_hadClientsAtLastCheck = hasClients;
+  m_checkForActiveClients.refresh(Expiration::Duration(std::chrono::seconds(1)));
 }

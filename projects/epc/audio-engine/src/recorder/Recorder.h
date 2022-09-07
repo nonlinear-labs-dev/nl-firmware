@@ -51,7 +51,6 @@ private:
   sigc::connection m_settingConnection;
   sigc::connection m_stopConnection;
 
+  Expiration m_checkForActiveClients;
   bool m_hadClientsAtLastCheck = false;
-  Throttler m_checkClientThrottler;
-  std::future<void> m_checkForStop;
 };
