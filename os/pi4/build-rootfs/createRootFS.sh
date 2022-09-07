@@ -2,26 +2,6 @@
 
 set -e
 
-# wenn CM4, nach /boot/overlays
-# ../../raspi4/Klaus/config/touch.dts
-# ../../raspi4/Klaus/config/touch.dtbo
-
-# config.txt zu config.txt.in und modifikationsschritt je nach Target einfuegen
-
-# uebernehmen aber disablen:
-# ../../raspi4/Klaus/config/configure-lcd-pwm.service
-# ../../raspi4/Klaus/config/configure-lcd-pwm.sh
-
-# ../../raspi4/Klaus/config/max-cpu.service
-
-# ../../raspi4/Klaus/config/configure-neopixel-spi.service
-# ../../raspi4/Klaus/config/configure-neopixel-spi.sh
-
-# ../../raspi4/Klaus/config/backlight.sh
-
-# TODO: init_resize entfernen und wenn noetig waehrend des build prozess resizen
-
-
 unpack_image() {
   cp /current-binary-dir/raspios-original.img /raspios.img
 }
