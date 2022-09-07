@@ -197,14 +197,7 @@ tweak_root_partition() {
   disable_service cpufrequtils.service
   disable_service loadcpufreq.service
 
-  # add init foo here
   echo "cpufreq-set -g performance" >> /mnt/etc/rc.local
-
-  # why?
-  # chroot /mnt systemctl disable alsa-restore.service
-
-  #TODO
-  #/boot aus /etc/fstab rausnehmen
  
   rm -rf /mnt/packages
   
