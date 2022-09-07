@@ -8,7 +8,7 @@
 
 UsageMode::UsageMode()
 {
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::hide<0>(sigc::mem_fun(this, &UsageMode::bruteForceUpdateLeds)));
 }
 

@@ -4,7 +4,7 @@
 
 std::vector<ParameterId> UnisonParameterCarousel::getParameterIdsForMode(SoundType type)
 {
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
 
   switch(type)
   {

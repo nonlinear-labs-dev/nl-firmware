@@ -11,7 +11,8 @@
 Parameter *MonoModeParameterLayout::getCurrentParameter() const
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  return eb->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  return eb->getSelected(vg);
 }
 
 MonoModeParameterLayout::MonoModeParameterLayout()
@@ -52,7 +53,8 @@ bool MonoModeParameterLayout::onButton(Buttons i, bool down, ButtonModifiers mod
 Parameter *MonoModeModulateableParameterLayout::getCurrentParameter() const
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  return eb->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  return eb->getSelected(vg);
 }
 
 MonoModeModulateableParameterLayout::MonoModeModulateableParameterLayout()
@@ -67,10 +69,11 @@ Carousel *MonoModeModulateableParameterLayout::createCarousel(const Rect &rect)
 
 bool MonoModeModulateableParameterLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   if(down && i == Buttons::BUTTON_C)
   {
     auto current = dynamic_cast<const ModulateableMonoParameter *>(
-        Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup()));
+        Application::get().getPresetManager()->getEditBuffer()->getSelected(vg));
     if(current && current->getModulationSource() == MacroControls::NONE)
     {
       SettingsUseCases useCases(*Application::get().getSettings());

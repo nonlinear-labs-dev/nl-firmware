@@ -4,7 +4,7 @@
 #include "Toolbox.h"
 #include <synth/C15Synth.h>
 
-TEST_CASE("Notes Active")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Notes Active")
 {
   using namespace std::chrono_literals;
   auto options = Tests::createEmptyAudioEngineOptions();

@@ -12,7 +12,7 @@ namespace DescriptiveLayouts
     m_onParameterSelectionChangedConnection
         = Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
             sigc::mem_fun(this, &ParameterEvent::onParameterSelectionChanged),
-            Application::get().getHWUI()->getCurrentVoiceGroup());
+            Application::get().getVGManager()->getCurrentVoiceGroup());
   }
 
   template <typename T> ParameterEvent<T>::~ParameterEvent()

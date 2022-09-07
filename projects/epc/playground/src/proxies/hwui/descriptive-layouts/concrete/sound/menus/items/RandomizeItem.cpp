@@ -25,13 +25,16 @@ RandomizeItem::~RandomizeItem() = default;
 
 MenuOverlay* RandomizeItem::createOverlay()
 {
-  return new ChangeSettingWithCommitOverlay<RandomizeAmount>(getDefaultOverlayRect(), [] {
-    auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
-    auto pm = Application::get().getPresetManager();
-    auto eb = pm->getEditBuffer();
-    EditBufferUseCases useCases(*eb);
-    useCases.randomize(amount);
-  });
+  return new ChangeSettingWithCommitOverlay<RandomizeAmount>(
+      getDefaultOverlayRect(),
+      []
+      {
+        auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
+        auto pm = Application::get().getPresetManager();
+        auto eb = pm->getEditBuffer();
+        EditBufferUseCases useCases(*eb);
+        useCases.randomize(amount);
+      });
 }
 
 RandomizePart::RandomizePart(const Rect& r)
@@ -48,12 +51,15 @@ RandomizePart::~RandomizePart() = default;
 
 MenuOverlay* RandomizePart::createOverlay()
 {
-  return new ChangeSettingWithCommitOverlay<RandomizeAmount>(getDefaultOverlayRect(), [] {
-    auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
-    auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
-    auto pm = Application::get().getPresetManager();
-    auto eb = pm->getEditBuffer();
-    EditBufferUseCases useCases(*eb);
-    useCases.randomizePart(vg, amount);
-  });
+  return new ChangeSettingWithCommitOverlay<RandomizeAmount>(
+      getDefaultOverlayRect(),
+      []
+      {
+        auto amount = Application::get().getSettings()->getSetting<RandomizeAmount>()->get();
+        auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+        auto pm = Application::get().getPresetManager();
+        auto eb = pm->getEditBuffer();
+        EditBufferUseCases useCases(*eb);
+        useCases.randomizePart(vg, amount);
+      });
 }

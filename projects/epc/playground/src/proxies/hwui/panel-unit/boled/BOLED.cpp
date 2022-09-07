@@ -23,18 +23,18 @@
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 #include "BOLEDScreenSaver.h"
 
-BOLED::BOLED()
-    : OLEDProxy(Rect(0, 0, 256, 64))
+BOLED::BOLED(Oleds& oleds, LayoutFolderMonitor* mon)
+    : OLEDProxy(Rect(0, 0, 256, 64), oleds)
 {
+  mon->onChange(sigc::mem_fun(this, &BOLED::bruteForce));
 }
 
 BOLED::~BOLED() = default;
 
 void BOLED::init()
 {
-  reset(new SplashLayout());
+  reset(new SplashLayout(Application::get().getHWUI()));
 
-  LayoutFolderMonitor::get().onChange(sigc::mem_fun(this, &BOLED::bruteForce));
   Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
       sigc::mem_fun(this, &BOLED::toggleScreenSaver));
 }
@@ -45,7 +45,7 @@ void BOLED::toggleScreenSaver(bool enabled)
   {
     installScreenSaver(new BOLEDScreenSaver(*this));
   }
-  else if(dynamic_cast<BOLEDScreenSaver *>(getScreenSaver()) != nullptr)
+  else if(dynamic_cast<BOLEDScreenSaver*>(getScreenSaver()) != nullptr)
   {
     removeScreenSaver();
   }
@@ -109,14 +109,13 @@ void BOLED::setupSoundScreen(FocusAndMode focusAndMode)
 
 void BOLED::setupParameterScreen(FocusAndMode focusAndMode)
 {
-  if(auto selParam = Application::get().getPresetManager()->getEditBuffer()->getSelected(
-         Application::get().getHWUI()->getCurrentVoiceGroup()))
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  if(auto selParam = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg))
   {
-    auto layout = selParam->createLayout(focusAndMode);
-
     if(auto currentLayout = getLayout().get())
     {
-      auto descriptiveLayout = dynamic_cast<DescriptiveLayouts::GenericLayout *>(currentLayout) != nullptr;
+      auto layout = selParam->createLayout(focusAndMode);
+      auto descriptiveLayout = dynamic_cast<DescriptiveLayouts::GenericLayout*>(currentLayout) != nullptr;
 
       if(descriptiveLayout && currentLayout && typeid(*layout) == typeid(*currentLayout))
       {

@@ -32,7 +32,7 @@ InitPart::InitPart(const Rect& r)
                               {
                                 auto pm = Application::get().getPresetManager();
                                 EditBufferUseCases useCases { *pm->getEditBuffer() };
-                                auto currentPart = Application::get().getHWUI()->getCurrentVoiceGroup();
+                                auto currentPart = Application::get().getVGManager()->getCurrentVoiceGroup();
                                 useCases.initPart(currentPart, Defaults::UserDefault);
                               }),
                           OneShotTypes::FinishCB(

@@ -22,7 +22,7 @@ MCAssignedIndicator::MCAssignedIndicator(const Rect& r, const Parameter* p)
   m_middleRowLabel = addControl(new LabelRegular8(pos));
   m_middleRowLabel->setJustification(Font::Justification::Right);
 
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &MCAssignedIndicator::onVoiceGroupChanged));
 }
 
@@ -159,7 +159,7 @@ void MCAssignedIndicator::drawNonLEDTargets(FrameBuffer& fb)
 
   AffectedGroups mods {};
 
-  mods.currentHWUIVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  mods.currentHWUIVG = Application::get().getVGManager()->getCurrentVoiceGroup();
 
   auto color = isHighlight() ? FrameBufferColors::C128 : FrameBufferColors::C204;
 

@@ -11,8 +11,9 @@
 RecallMCAmountLabel::RecallMCAmountLabel(Rect pos)
     : Label(pos)
 {
-  if(auto modP = dynamic_cast<ModulateableParameter*>(
-         Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup())))
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  if(auto modP
+     = dynamic_cast<ModulateableParameter*>(Application::get().getPresetManager()->getEditBuffer()->getSelected(vg)))
   {
     if(auto originalParam = modP->getOriginalParameter())
     {

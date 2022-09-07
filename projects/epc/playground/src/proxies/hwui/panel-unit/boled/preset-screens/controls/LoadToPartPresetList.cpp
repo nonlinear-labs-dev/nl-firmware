@@ -19,7 +19,7 @@ LoadToPartPresetList::LoadToPartPresetList(const Rect& pos, bool showBankArrows,
     : PresetListBase(pos, showBankArrows)
     , m_selections { partSelectionI, partSelectionII }
 {
-  m_voiceGroupConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  m_voiceGroupConnection = Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::hide(sigc::mem_fun(this, &LoadToPartPresetList::onVoiceGroupChanged)));
 }
 
@@ -183,7 +183,7 @@ void LoadToPartPresetList::onSelectionChanged(const PresetPartSelection& selecti
 {
   if(Application::get().getSettings()->getSetting<DirectLoadSetting>()->get())
   {
-    auto currentVg = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto currentVg = Application::get().getVGManager()->getCurrentVoiceGroup();
     EditBufferUseCases useCase(*Application::get().getPresetManager()->getEditBuffer());
     useCase.loadToPart(selection.m_preset, selection.m_voiceGroup, currentVg);
   }
@@ -195,7 +195,7 @@ void LoadToPartPresetList::onEnterButtonPressed()
   {
     EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
     auto eb = Application::get().getPresetManager()->getEditBuffer();
-    const auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+    const auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
     auto oldPartInGroup = eb->getPartOrigin(currentVG);
     ebUseCases.loadToPart(selection->m_preset, selection->m_voiceGroup, currentVG);
 
@@ -212,13 +212,13 @@ void LoadToPartPresetList::onVoiceGroupChanged()
 
 PresetPartSelection* LoadToPartPresetList::getCurrentSelection()
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   return m_selections[static_cast<int>(vg)];
 }
 
 const PresetPartSelection* LoadToPartPresetList::getCurrentSelection() const
 {
-  auto vg = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   return m_selections[static_cast<int>(vg)];
 }
 

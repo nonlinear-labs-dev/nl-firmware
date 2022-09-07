@@ -364,11 +364,6 @@ tControlPositionValue Parameter::getFactoryDefaultValue() const
   return m_value.getFactoryDefaultValue();
 }
 
-tTcdValue Parameter::getTcdValue() const
-{
-  return m_value.getTcdValue();
-}
-
 tDisplayValue Parameter::getDisplayValue() const
 {
   return m_value.getDisplayValue();
@@ -502,19 +497,6 @@ bool Parameter::shouldWriteDocProperties(UpdateDocumentContributor::tUpdateID kn
   return knownRevision == 0;
 }
 
-void Parameter::writeToPlaycontroller(MessageComposer &cmp) const
-{
-  gint16 v = getTcdValue();
-  cmp << v;
-}
-
-void Parameter::undoableLoadValue(UNDO::Transaction *transaction, const Glib::ustring &value)
-{
-  auto tcdValue = std::stoi(value);
-  auto cpValue = m_value.getScaleConverter()->tcdToControlPosition(tcdValue);
-  loadFromPreset(transaction, cpValue);
-}
-
 void Parameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
   auto rnd = g_random_double_range(0.0, 1.0);
@@ -524,11 +506,6 @@ void Parameter::undoableRandomize(UNDO::Transaction *transaction, Initiator init
 
   auto quantized = getValue().getQuantizedValue(newPos, true);
   setCpValue(transaction, initiator, quantized, false);
-}
-
-void Parameter::exportReaktorParameter(std::stringstream &target) const
-{
-  target << getTcdValue() << std::endl;
 }
 
 Layout *Parameter::createLayout(FocusAndMode focusAndMode) const

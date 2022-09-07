@@ -3,12 +3,13 @@
 #include <functional>
 #include "glibmm/spawn.h"
 #include "glibmm/iochannel.h"
+#include "glibmm/main.h"
 
 class AsyncCommandLine
 {
  public:
-  AsyncCommandLine(const std::vector<std::string>& command, std::function<void(const std::string&)> onSuccess,
-                   std::function<void(const std::string&)> onError);
+  AsyncCommandLine(Glib::RefPtr<Glib::MainContext> ctx, const std::vector<std::string>& command,
+                   std::function<void(const std::string&)> onSuccess, std::function<void(const std::string&)> onError);
 
   ~AsyncCommandLine();
   bool isRunning() const;
@@ -29,4 +30,5 @@ class AsyncCommandLine
 
   bool m_isRunning;
   void closeWatch(Glib::Pid pid);
+  sigc::connection m_signalWatchHandler;
 };

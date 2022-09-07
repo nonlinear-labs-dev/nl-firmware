@@ -92,17 +92,6 @@ QuantizedValue::~QuantizedValue()
 {
 }
 
-tTcdValue QuantizedValue::getTcdValue() const
-{
-  return getScaleConverter()->controlPositionToTcd(getQuantizedClipped());
-}
-
-void QuantizedValue::setTcdValue(tTcdValue v)
-{
-  auto cp = getScaleConverter()->tcdToControlPosition(v);
-  setRawValue(Initiator::INDIRECT, cp);
-}
-
 tDisplayValue QuantizedValue::getDisplayValue() const
 {
   return getScaleConverter()->controlPositionToDisplay(getQuantizedClipped());

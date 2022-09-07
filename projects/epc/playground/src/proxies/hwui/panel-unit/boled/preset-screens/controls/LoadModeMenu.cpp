@@ -38,7 +38,7 @@ LoadModeMenu::LoadModeMenu(const Rect& rect)
   m_directLoadSettingConnection
       = getDirectLoadSetting()->onChange(sigc::hide(sigc::mem_fun(this, &LoadModeMenu::bruteForce)));
 
-  m_loadToPartConnection = Application::get().getHWUI()->onLoadToPartModeChanged(
+  m_loadToPartConnection = Application::get().getVGManager()->onLoadToPartModeChanged(
       sigc::hide(sigc::mem_fun(this, &LoadModeMenu::bruteForce)));
 }
 
@@ -67,12 +67,12 @@ void LoadModeMenu::bruteForce()
 
 void toggleLoadToPartDetail()
 {
-  auto hwui = Application::get().getHWUI();
+  auto vgManager = Application::get().getVGManager();
   auto pm = Application::get().getPresetManager();
 
   if(pm->getNumBanks() != 0)
   {
-    hwui->toggleLoadToPart();
+    vgManager->toggleLoadToPart();
   }
 }
 
@@ -112,7 +112,7 @@ bool LoadModeMenu::isDirectLoadEnabled()
 
 bool LoadModeMenu::isLoadToPartEnabled()
 {
-  return Application::get().getHWUI()->isInLoadToPart();
+  return Application::get().getVGManager()->isInLoadToPart();
 }
 
 bool LoadModeMenu::onButton(Buttons button, bool down, ButtonModifiers modifiers)

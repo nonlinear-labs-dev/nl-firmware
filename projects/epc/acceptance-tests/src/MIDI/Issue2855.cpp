@@ -3,7 +3,7 @@
 #include <mock/MockDSPHosts.h>
 #include <mock/TCDHelpers.h>
 
-TEST_CASE("Issue 2855")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 2855")
 {
   ConfigureableDSPHost host;
   MidiRuntimeOptions options;

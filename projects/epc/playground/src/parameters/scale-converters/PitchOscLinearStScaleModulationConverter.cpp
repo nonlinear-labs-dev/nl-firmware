@@ -2,7 +2,7 @@
 #include "dimension/PitchDimension.h"
 
 PitchOscLinearStScaleModulationConverter::PitchOscLinearStScaleModulationConverter()
-    : LinearScaleConverter(tTcdRange(0, 15000), tDisplayRange(-150, 150), PitchDimension::get())
+    : LinearScaleConverter(tDisplayRange(-150, 150), PitchDimension::get())
 {
 }
 

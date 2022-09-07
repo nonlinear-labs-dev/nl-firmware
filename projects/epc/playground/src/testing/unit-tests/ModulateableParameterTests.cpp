@@ -7,7 +7,7 @@
 #include <sync/SyncMasterMockRoot.h>
 #include "testing/unit-tests/mock/MockSettingsObject.h"
 
-TEST_CASE("Modulateable Parameter")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Modulateable Parameter")
 {
   MockSettingsObject settings("/tmp/dksakda.xml", &SyncMasterMockRoot::get());
   TestGroupSet groupSet(&SyncMasterMockRoot::get());

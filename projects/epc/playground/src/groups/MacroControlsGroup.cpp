@@ -18,7 +18,6 @@ MacroControlsGroup::~MacroControlsGroup() = default;
 
 void MacroControlsGroup::init()
 {
-
   appendParameter(new MacroControlParameter(this, { C15::PID::MC_A, VoiceGroup::Global }));
   appendParameter(new MacroControlParameter(this, { C15::PID::MC_B, VoiceGroup::Global }));
   appendParameter(new MacroControlParameter(this, { C15::PID::MC_C, VoiceGroup::Global }));

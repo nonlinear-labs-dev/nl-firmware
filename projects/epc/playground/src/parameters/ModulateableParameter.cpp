@@ -47,12 +47,6 @@ tDisplayValue ModulateableParameter::getModulationAmount() const
   return m_modulationAmount;
 }
 
-void ModulateableParameter::writeToPlaycontroller(MessageComposer &cmp) const
-{
-  Parameter::writeToPlaycontroller(cmp);
-  cmp << getModulationSourceAndAmountPacked();
-}
-
 uint16_t ModulateableParameter::getModulationSourceAndAmountPacked() const
 {
   if(getModulationSource() == MacroControls::NONE)
@@ -235,17 +229,6 @@ double ModulateableParameter::getModulationAmountFineDenominator() const
 double ModulateableParameter::getModulationAmountCoarseDenominator() const
 {
   return ParameterDB::getCourseModulationDenominator(getID());
-}
-
-void ModulateableParameter::exportReaktorParameter(std::stringstream &target) const
-{
-  super::exportReaktorParameter(target);
-  auto packedModulationInfo = getModulationSourceAndAmountPacked();
-
-  if(m_modSource == MacroControls::NONE)
-    packedModulationInfo = 0x2000;
-
-  target << packedModulationInfo << std::endl;
 }
 
 Glib::ustring ModulateableParameter::stringizeModulationAmount() const

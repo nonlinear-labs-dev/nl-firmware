@@ -15,8 +15,9 @@
 ParameterNameLabel::ParameterNameLabel(const Rect &pos)
     : Label(pos)
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &ParameterNameLabel::onParameterSelected)), getHWUI()->getCurrentVoiceGroup());
+      sigc::hide<0>(sigc::mem_fun(this, &ParameterNameLabel::onParameterSelected)), vg);
 
   Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
       sigc::mem_fun(this, &ParameterNameLabel::onPresetLoaded));
@@ -58,11 +59,11 @@ void ParameterNameLabel::handleMCParameterName(const Parameter *pParameter)
   setText({ name, changed ? 1u : 0u });
 }
 
-void ParameterNameLabel::handleSendParameterName(const Parameter* p)
+void ParameterNameLabel::handleSendParameterName(const Parameter *p)
 {
   const auto changed = p->isChangedFromLoaded();
   auto name = p->getShortName();
-  setText({name + (changed ? "*" : ""), changed ? 1u : 0u });
+  setText({ name + (changed ? "*" : ""), changed ? 1u : 0u });
 }
 
 Glib::ustring ParameterNameLabel::truncateMCName(const bool changed, const Glib::ustring &name) const
@@ -126,7 +127,7 @@ void ParameterNameLabel::setFontColor(FrameBuffer &fb) const
 
 std::shared_ptr<Font> ParameterNameLabel::getFont() const
 {
-  return Oleds::get().getFont("Emphase-9-Bold", getFontHeight());
+  return Fonts::get().getFont("Emphase-9-Bold", getFontHeight());
 }
 
 int ParameterNameLabel::getFontHeight() const
@@ -141,7 +142,7 @@ void ParameterNameLabel::setSuffixFontColor(FrameBuffer &fb) const
 
 void ParameterNameLabel::onPresetLoaded()
 {
-  const auto param
-      = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  const auto param = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
   onParameterChanged(param);
 }

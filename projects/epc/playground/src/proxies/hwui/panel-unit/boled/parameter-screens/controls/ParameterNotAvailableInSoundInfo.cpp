@@ -20,7 +20,7 @@ namespace detail
     using CenterAlignedLabel::CenterAlignedLabel;
     std::shared_ptr<Font> getFont() const override
     {
-      return Oleds::get().getFont("Emphase-8-Bold", getFontHeight());
+      return Fonts::get().getFont("Emphase-8-Bold", getFontHeight());
     }
   };
 }
@@ -31,8 +31,7 @@ ParameterNotAvailableInSoundInfo::ParameterNotAvailableInSoundInfo(const Rect &r
   auto hwui = Application::get().getHWUI();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
-  auto vg = getHWUI()->getCurrentVoiceGroup();
-
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   m_parameterSelectionConnection
       = eb->onSelectionChanged(sigc::mem_fun(this, &ParameterNotAvailableInSoundInfo::onSelectionChanged), vg);
 
@@ -45,7 +44,7 @@ ParameterNotAvailableInSoundInfo::ParameterNotAvailableInSoundInfo(const Rect &r
   addControl(new CenterAlignedLabel("Only available with", { 0, 20, 128, 10 }))->setHighlight(true);
   addControl(new CenterAlignedLabel("Layer Sounds", { 0, 32, 128, 10 }))->setHighlight(true);
 
-  auto selected = eb->getSelected(hwui->getCurrentVoiceGroup());
+  auto selected = eb->getSelected(vg);
   setVisible(selected->isDisabled());
 }
 
@@ -63,7 +62,8 @@ void ParameterNotAvailableInSoundInfo::onSelectionChanged(const Parameter *old, 
 void ParameterNotAvailableInSoundInfo::onSoundTypeChanged()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto current = eb->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto current = eb->getSelected(vg);
   const auto vis = current->isDisabled();
   m_parameterNameLabel->setText({ current->getLongName(), 0 });
   setVisible(vis);

@@ -11,9 +11,9 @@ SelectedMacroControlsHWSourceValue::SelectedMacroControlsHWSourceValue(const Rec
     : super(rect)
     , m_hwParamID { ParameterId::invalid() }
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &SelectedMacroControlsHWSourceValue::onParameterSelected)),
-      getHWUI()->getCurrentVoiceGroup());
+      sigc::hide<0>(sigc::mem_fun(this, &SelectedMacroControlsHWSourceValue::onParameterSelected)), vg);
 
   Application::get().getHWUI()->onModifiersChanged(
       sigc::hide(sigc::mem_fun(this, &SelectedMacroControlsHWSourceValue::onModifiersChanged)));

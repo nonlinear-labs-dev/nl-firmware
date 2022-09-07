@@ -3,8 +3,11 @@
 #include "TestLayout.h"
 #include <presets/PresetManager.h>
 #include <libundo/undo/Scope.h>
+#include <Application.h>
+#include <use-cases/VoiceGroupAndLoadToPartManager.h>
 
-HWUIActions::HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuffer& eb)
+HWUIActions::HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuffer& eb,
+                         VoiceGroupAndLoadToPartManager& vgManager)
     : SectionAndActionManager(parent, "/hwui/")
 {
   addAction("download-soled-as-png",
@@ -29,11 +32,11 @@ HWUIActions::HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuff
             [&](const std::shared_ptr<NetworkRequest>& request)
             {
               auto part = to<VoiceGroup>(request->get("part"));
-              if(hwui.getCurrentVoiceGroup() != part && eb.isDual())
+              if(vgManager.getCurrentVoiceGroup() != part && eb.isDual())
               {
                 auto str = toString(part);
                 auto scope = eb.getParent()->getUndoScope().startTransaction("Select Part " + str);
-                hwui.setCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction(), part);
+                vgManager.setCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction(), part);
               }
             });
 

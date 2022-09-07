@@ -366,7 +366,9 @@ void RibbonParameter::sendToAudioEngine() const
   PhysicalControlParameter::sendToAudioEngine();
   auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
                                                                          : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
-  Application::get().getPlaycontrollerProxy()->sendSetting(id, getValue().getTcdValue());
+  auto proxy = Application::get().getPlaycontrollerProxy();
+  auto newValue = proxy->ribbonCPValueToTCDValue(getValue().getQuantizedClipped(), isBiPolar());
+  proxy->sendSetting(id, newValue);
 }
 
 void RibbonParameter::onLocalEnableChanged(bool localEnableState)
@@ -406,5 +408,7 @@ void RibbonParameter::setCPFromSetting(UNDO::Transaction *transaction, const tCo
   Parameter::setCPFromSetting(transaction, cpValue);
   auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
                                                                          : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
-  Application::get().getPlaycontrollerProxy()->sendSetting(id, getValue().getTcdValue());
+  auto proxy = Application::get().getPlaycontrollerProxy();
+  auto v = proxy->ribbonCPValueToTCDValue(getValue().getQuantizedClipped(), isBiPolar());
+  proxy->sendSetting(id, v);
 }

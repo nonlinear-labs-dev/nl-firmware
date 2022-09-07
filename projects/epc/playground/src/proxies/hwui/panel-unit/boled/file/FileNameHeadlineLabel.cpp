@@ -13,7 +13,7 @@ FileNameHeadlineLabel::FileNameHeadlineLabel(const Glib::ustring &str, const Rec
 
 std::shared_ptr<Font> FileNameHeadlineLabel::getFont() const
 {
-  return Oleds::get().getFont("Emphase-9-Bold", getFontHeight());
+  return Fonts::get().getFont("Emphase-9-Bold", getFontHeight());
 }
 
 bool FileNameHeadlineLabel::redraw(FrameBuffer &fb)

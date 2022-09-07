@@ -7,6 +7,7 @@
 class Application;
 class Parameter;
 class TwoStateLED;
+class LayoutFolderMonitor;
 
 class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
 {
@@ -16,7 +17,7 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
  public:
   typedef std::shared_ptr<TwoStateLED> tLed;
 
-  PanelUnit(Settings& settings);
+  PanelUnit(Settings &settings, Oleds &oleds, LayoutFolderMonitor *mon);
   ~PanelUnit() override;
 
   bool onButtonPressed(Buttons buttonID, ButtonModifiers modifiers, bool state) override;
@@ -31,7 +32,7 @@ class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
   const EditPanel &getEditPanel() const;
   EditPanel &getEditPanel();
   MacroControlAssignmentStateMachine &getMacroControlAssignmentStateMachine();
-  
+
  protected:
   void setupFocusAndMode(FocusAndMode focusAndMode) override;
 
