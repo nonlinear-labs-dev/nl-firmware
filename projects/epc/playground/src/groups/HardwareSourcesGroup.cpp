@@ -12,6 +12,10 @@ HardwareSourcesGroup::HardwareSourcesGroup(ParameterGroupSet* parent, Settings* 
     : ParameterGroup(parent, { "CS", VoiceGroup::Global }, "HW Source", "Hardware Source", "Hardware Source")
     , m_settings(settings)
 {
+}
+
+void HardwareSourcesGroup::init()
+{
   auto pedal1 = appendParameter(
       new PedalParameter(this, getPedal1ParameterID(), ScaleConverter::get<Linear100PercentScaleConverter>()));
 
@@ -59,14 +63,7 @@ HardwareSourcesGroup::HardwareSourcesGroup(ParameterGroupSet* parent, Settings* 
 
   appendParameter(new HardwareSourceSendParameter(this, *ribbon2, getRibbon2SendID(),
                                                   ScaleConverter::get<Linear100PercentScaleConverter>()));
-}
 
-HardwareSourcesGroup::~HardwareSourcesGroup()
-{
-}
-
-void HardwareSourcesGroup::init()
-{
   if(m_settings == nullptr)
     return;
 
