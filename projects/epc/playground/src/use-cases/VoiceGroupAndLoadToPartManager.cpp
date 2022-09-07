@@ -34,14 +34,8 @@ void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(UNDO::Transaction *t, 
 
 void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(VoiceGroup v)
 {
-  auto oldGroup = m_currentVoiceGroup;
-  if(v == VoiceGroup::I || v == VoiceGroup::II)
-    if(std::exchange(m_currentVoiceGroup, v) != v)
-    {
-      m_voiceGoupSignal.send(m_currentVoiceGroup);
-      m_editBuffer.fakeParameterSelectionSignal(oldGroup, m_currentVoiceGroup);
-      m_editBuffer.onChange(UpdateDocumentContributor::ChangeFlags::Generic);
-    }
+  auto scope = m_editBuffer.getParent()->getUndoScope().startTransaction("Select Part " + toString(v));
+  setCurrentVoiceGroup(scope->getTransaction(), v);
 }
 
 void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction,
