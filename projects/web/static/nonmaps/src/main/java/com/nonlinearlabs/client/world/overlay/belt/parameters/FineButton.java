@@ -1,6 +1,5 @@
 package com.nonlinearlabs.client.world.overlay.belt.parameters;
 
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
@@ -35,7 +34,6 @@ public class FineButton extends SVGImage {
             BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
             if(bpm != null)
             {
-                GWT.log(bpm.longName.getValue() + " " + bpm.value.metaData.fineDenominator.getValue() + " " + bpm.value.metaData.coarseDenominator);
                 isEnabled = bpm.value.metaData.fineDenominator != bpm.value.metaData.coarseDenominator;
 
                 if(!isEnabled && SetupModel.get().localSettings.localFineEnabled.getBool())
