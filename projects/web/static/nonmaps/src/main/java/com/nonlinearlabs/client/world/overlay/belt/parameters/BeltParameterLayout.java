@@ -354,10 +354,10 @@ public class BeltParameterLayout extends OverlayLayout {
 				Mode.paramValue, Mode.modulateableParameter, Mode.unmodulateableParameter) && isEnabled;
 
 		boolean dualSplitPointDisplay = isSplitPoint && isSyncDisabled();
-
+		boolean isInModAspect = isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcUpper, Mode.mcLower);
 		syncSplitParameter.setVisible(isSplitPoint);
-		splitValueDisplay.setVisible(dualSplitPointDisplay && valueDisplayEnabled);
-		valueDisplay.setVisible(!dualSplitPointDisplay && valueDisplayEnabled);
+		splitValueDisplay.setVisible(dualSplitPointDisplay && valueDisplayEnabled && !isInModAspect);
+		valueDisplay.setVisible((!dualSplitPointDisplay && valueDisplayEnabled) || (dualSplitPointDisplay && isInModAspect));
 
 		dottedLine.setVisible(isOneOf(Mode.modulateableParameter) && isEnabled);
 		infoButton.setVisible(isOneOf(Mode.modulateableParameter, Mode.unmodulateableParameter));

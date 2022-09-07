@@ -37,32 +37,24 @@ Layout* SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
 void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
                                      bool dosendToPlaycontroller)
 {
-  if(auto eb = getParentEditBuffer())
+  const auto syncActive = isSynced();
+
+  if(syncActive && isAtExtremes(value) && initiator != Initiator::INDIRECT_SPLIT_SYNC)
   {
-    auto& settings = eb->getSettings();
-    const auto syncActive = settings.getSetting<SplitPointSyncParameters>()->get();
+    clampToExtremes(transaction, dosendToPlaycontroller);
+    return;
+  }
 
-    if(syncActive && isAtExtremes(value) && initiator != Initiator::INDIRECT_SPLIT_SYNC)
-    {
-      clampToExtremes(transaction, dosendToPlaycontroller);
-      return;
-    }
+  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
 
-    Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
-
-    if(syncActive)
+  if(syncActive)
+  {
+    if(initiator != Initiator::INDIRECT_SPLIT_SYNC)
     {
-      if(initiator != Initiator::INDIRECT_SPLIT_SYNC)
-      {
-        auto other = getSibling();
-        auto siblingValue
-            = getValue().getNextStepValue(value, other->getVoiceGroup() == VoiceGroup::I ? -1 : 1, false, false);
-        other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
-      }
-    }
-    else
-    {
-      preventNegativeOverlap(transaction, value, dosendToPlaycontroller);
+      auto other = getSibling();
+      auto siblingValue
+          = getValue().getNextStepValue(value, other->getVoiceGroup() == VoiceGroup::I ? -1 : 1, false, false);
+      other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
     }
   }
 }
@@ -86,42 +78,22 @@ void SplitPointParameter::clampToExtremes(UNDO::Transaction* transaction, bool d
   }
 }
 
-void SplitPointParameter::preventNegativeOverlap(UNDO::Transaction* transaction, tControlPositionValue value,
-                                                 bool dosendToPlaycontroller)
-{
-  auto sibling = getSibling();
-  auto siblingValue = sibling->getControlPositionValue();
-  auto inc = sibling->getVoiceGroup() == VoiceGroup::I ? 1 : -1;
-
-  auto siblingThreshold = getValue().getNextStepValue(siblingValue, inc, false, false);
-  siblingValue = getValue().getNextStepValue(value, -inc, false, false);
-
-  if(getVoiceGroup() == VoiceGroup::I)
-  {
-    if(value < siblingThreshold)
-    {
-      sibling->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
-    }
-  }
-  else
-  {
-    if(value > siblingThreshold)
-    {
-      sibling->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
-    }
-  }
-}
-
 void SplitPointParameter::setModulationAmount(UNDO::Transaction* transaction, const tDisplayValue& amount)
 {
   ModulateableParameter::setModulationAmount(transaction, amount);
-  getSibling()->setModulationAmountFromSibling(transaction, amount);
+  if(isSynced())
+  {
+    getSibling()->setModulationAmountFromSibling(transaction, amount);
+  }
 }
 
 void SplitPointParameter::setModulationSource(UNDO::Transaction* transaction, MacroControls src)
 {
   ModulateableParameter::setModulationSource(transaction, src);
-  getSibling()->setModulationSourceFromSibling(transaction, src);
+  if(isSynced())
+  {
+    getSibling()->setModulationSourceFromSibling(transaction, src);
+  }
 }
 
 Glib::ustring SplitPointParameter::stringizeModulationAmount(tControlPositionValue amount) const
@@ -204,4 +176,14 @@ void SplitPointParameter::loadDefault(UNDO::Transaction* transaction, Defaults m
     else
       loadFromPreset(transaction, getDefaultValue());
   }
+}
+
+bool SplitPointParameter::isSynced() const
+{
+  if(auto eb = getParentEditBuffer())
+  {
+    auto& settings = eb->getSettings();
+    return settings.getSetting<SplitPointSyncParameters>()->get();
+  }
+  return false;
 }
