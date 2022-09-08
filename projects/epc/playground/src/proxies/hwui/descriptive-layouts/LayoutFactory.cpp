@@ -68,8 +68,8 @@ namespace DescriptiveLayouts
     return *it;
   }
 
-  std::shared_ptr<Layout> BoledLayoutFactory::instantiate(FocusAndMode fam)
+  Layout* BoledLayoutFactory::instantiate(FocusAndMode fam)
   {
-    return std::shared_ptr<Layout>(find(fam).instantiate());
+    return find(fam).instantiate();
   }
 }

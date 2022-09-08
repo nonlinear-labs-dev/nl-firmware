@@ -9,6 +9,7 @@
 #include "parameters/ModulationRoutingParameter.h"
 #include "parameters/PhysicalControlParameter.h"
 #include "groups/HardwareSourcesGroup.h"
+#include "use-cases/EditBufferUseCases.h"
 #include <groups/MacroControlMappingGroup.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MiniParameterBarSlider.h>
 
@@ -21,20 +22,31 @@ HWSourceAmountCarousel::~HWSourceAmountCarousel()
 {
 }
 
-void HWSourceAmountCarousel::turn()
+void doTurn(int inc)
 {
   auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
+  EditBufferUseCases ebUseCases(*eb);
   if(auto p = dynamic_cast<MacroControlParameter *>(eb->getSelected(vg)))
-    p->toggleUiSelectedHardwareSource(1);
+  {
+    if(auto mcm = dynamic_cast<MacroControlMappingGroup*>(eb->getParameterGroupByID({"MCM", VoiceGroup::Global})))
+    {
+      p->toggleUiSelectedHardwareSource(inc);
+      auto hwSrc = eb->findAndCastParameterByID<PhysicalControlParameter>(p->getUiSelectedHardwareSource());
+      auto newSelection = mcm->getModulationRoutingParameterFor(hwSrc, p);
+      ebUseCases.selectParameter(newSelection, true);
+    }
+  }
+}
+
+void HWSourceAmountCarousel::turn()
+{
+  doTurn(1);
 }
 
 void HWSourceAmountCarousel::antiTurn()
 {
-  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  if(auto p = dynamic_cast<MacroControlParameter *>(eb->getSelected(vg)))
-    p->toggleUiSelectedHardwareSource(-1);
+  doTurn(-1);
 }
 
 void HWSourceAmountCarousel::setup(Parameter *newOne)

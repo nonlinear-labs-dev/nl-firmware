@@ -23,7 +23,7 @@ namespace DescriptiveLayouts
 
     void clear();
 
-    std::shared_ptr<Layout> instantiate(FocusAndMode fam);
+    Layout* instantiate(FocusAndMode fam);
 
     template <typename... Args>
 

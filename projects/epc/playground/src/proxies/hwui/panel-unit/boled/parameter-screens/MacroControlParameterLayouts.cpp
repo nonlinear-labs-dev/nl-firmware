@@ -199,7 +199,19 @@ bool MacroControlParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
   if(m_mode == Mode::PlayControlSelection)
   {
     if(auto p = dynamic_cast<MacroControlParameter *>(getCurrentParameter()))
+    {
+      auto eb = p->getParentEditBuffer();
+      EditBufferUseCases ebUseCases(*eb);
       p->toggleUiSelectedHardwareSource(inc);
+      auto currentMC = p;
+      auto newHWSrc = p->getUiSelectedHardwareSource();
+      if(auto g = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID({"MCM", VoiceGroup::Global})))
+      {
+        auto hwSrc = eb->findAndCastParameterByID<PhysicalControlParameter>(newHWSrc);
+        auto modP = g->getModulationRoutingParameterFor(hwSrc, currentMC);
+        ebUseCases.selectParameter(modP);
+      }
+    }
 
     return true;
   }

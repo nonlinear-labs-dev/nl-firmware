@@ -20,16 +20,19 @@ class OLEDProxy : public Uncopyable, public sigc::trackable
 
   FrameBuffer &getFrameBuffer();
 
-  typedef std::unique_ptr<Layout> tLayoutPtr;
+  typedef std::shared_ptr<Layout> tLayoutPtr;
 
-  Layout* getLayout() const;
-  Layout* getOverlay() const;
-  Layout* getBaseLayout() const;
+  tLayoutPtr getLayout() const;
+  tLayoutPtr getOverlay() const;
+  tLayoutPtr getBaseLayout() const;
 
+
+  virtual void reset(const tLayoutPtr& layout);
   virtual void reset(Layout *layout);
 
   sigc::connection onLayoutInstalled(const sigc::slot<void, Layout *> &slot);
 
+  void setOverlay(const tLayoutPtr& layout);
   void setOverlay(Layout *layout);
 
   void resetOverlay();

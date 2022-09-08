@@ -10,7 +10,16 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
   MacroControlParameterLayout2(Parameter* mc, Parameter* hwSrc);
   ~MacroControlParameterLayout2() override;
 
+  enum class Mode
+  {
+    MacroControlValue,
+    PlayControlPosition,
+    PlayControlSelection,
+    PlayControlAmount
+  };
+
   void copyFrom(Layout *other) override;
+  Mode getMode() const;
 
  protected:
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
@@ -22,17 +31,9 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
     Parameter* m_mc;
   };
 
-  enum class Mode
-  {
-    MacroControlValue,
-    PlayControlPosition,
-    PlayControlSelection,
-    PlayControlAmount
-  };
 
   void toggleMode(Mode desiredMode);
   virtual void setMode(Mode desiredMode);
-  Mode getMode() const;
 
  protected:
   void setButtonText(Buttons b, const std::string &s);
