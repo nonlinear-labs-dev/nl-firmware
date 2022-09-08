@@ -55,7 +55,7 @@ parameters:
     label_long: Cutoff
     label_short: Cutoff
     control_position: { coarse: 120, fine: 1200, scale: LINEAR_20_140_ST, initial: 0.5f }
-    modulation_aspects: { coarse: 120, fine: 1200, scale: LINEAR_BIPOLAR_100_ST }
+    modulation_aspects: { coarse: 120, fine: 1200, scale: LINEAR_BIPOLAR_120_ST }
     rendering_args: { scaling: Expon_Lin_Pitch, factor: 120.0f, offset: 20.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Static value of the filter cutoff frequency at C3 [in semitones], applies to both stages of the filter.
