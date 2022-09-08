@@ -47,6 +47,7 @@
 #include "groups/MasterGroup.h"
 #include "parameter_declarations.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/VoiceGroupUseCases.h"
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
 {
@@ -241,7 +242,8 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
           }
           else
           {
-            Application::get().getVGManager()->toggleCurrentVoiceGroup();
+            VoiceGroupUseCases vgUseCases(Application::get().getVGManager(), getCurrentEditParameter()->getParentEditBuffer());
+            vgUseCases.toggleVoiceGroupSelection();
           }
           return true;
         }

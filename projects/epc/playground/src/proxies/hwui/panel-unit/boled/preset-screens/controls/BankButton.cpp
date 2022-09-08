@@ -6,6 +6,7 @@
 #include <sigc++/adaptors/hide.h>
 #include "BankButton.h"
 #include "use-cases/SettingsUseCases.h"
+#include "use-cases/VoiceGroupUseCases.h"
 #include <device-settings/Settings.h>
 #include <device-settings/FocusAndModeSetting.h>
 
@@ -99,5 +100,11 @@ void BankButton::installDual()
   };
 
   m_buttonAHandler = std::make_unique<ShortVsLongPress>(
-      [this] { Application::get().getVGManager()->toggleCurrentVoiceGroup(); }, toggleBankFocus);
+      []
+      {
+        VoiceGroupUseCases vgUseCases(Application::get().getVGManager(),
+                                      Application::get().getPresetManager()->getEditBuffer());
+        vgUseCases.toggleVoiceGroupSelection();
+      },
+      toggleBankFocus);
 }

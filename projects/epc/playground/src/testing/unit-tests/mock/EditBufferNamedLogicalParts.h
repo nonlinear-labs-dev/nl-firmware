@@ -1,32 +1,6 @@
 #pragma once
 #include <testing/TestHelper.h>
 
-namespace detail
-{
-  constexpr static auto MONO_ENABLE = 364;
-
-  constexpr static auto MASTER_VOLUME = 247;
-  constexpr static auto MASTER_TUNE = 248;
-
-  constexpr static auto PART_VOLUME = 358;
-  constexpr static auto PART_TUNE = 360;
-
-  constexpr static auto FADE_FROM = 396;
-  constexpr static auto FADE_RANGE = 397;
-
-  constexpr static auto SPLIT_POINT = 356;
-
-  constexpr static auto UNISON_VOICES = 249;
-
-  constexpr static auto FB_OSC = 346;
-  constexpr static auto FB_OSC_SRC = 348;
-  constexpr static auto FB_COMB_FROM = 350;
-  constexpr static auto FB_SVF_FROM = 352;
-  constexpr static auto FB_FX_FROM = 354;
-
-  constexpr static auto OUT_TO_FX = 362;
-}
-
 class EditBufferLogicalParts
 {
  private:
@@ -36,10 +10,10 @@ class EditBufferLogicalParts
   }
 
  public:
-  static std::vector<Parameter*> removeElements(std::vector<Parameter*> p, std::vector<int> ids)
+  static std::vector<Parameter*> removeElements(const std::vector<Parameter*>& p, std::vector<int> ids)
   {
-    std::vector<Parameter*> ret{};
-    for(auto& param: p)
+    std::vector<Parameter*> ret {};
+    for(auto& param : p)
     {
       if(std::find(ids.begin(), ids.end(), param->getID().getNumber()) == ids.end())
       {
@@ -51,12 +25,12 @@ class EditBufferLogicalParts
 
   template <VoiceGroup vg> static std::vector<Parameter*> getLocalNormal()
   {
-    using namespace detail;
     auto eb = TestHelper::getEditBuffer();
     std::vector<Parameter*> ret {};
 
     auto ignore = std::vector { "Unison", "Mono", "Part", "Split" };
-    auto ignoreParams = std::vector { FB_OSC, FB_OSC_SRC, FB_COMB_FROM, FB_SVF_FROM, FB_FX_FROM, OUT_TO_FX };
+    auto ignoreParams = std::vector { C15::PID::FB_Mix_Osc,     C15::PID::FB_Mix_Osc_Src, C15::PID::FB_Mix_Comb_Src,
+                                      C15::PID::FB_Mix_SVF_Src, C15::PID::FB_Mix_FX_Src,  C15::PID::Out_Mix_To_FX };
 
     for(auto& g : eb->getParameterGroups(vg))
     {
@@ -78,16 +52,17 @@ class EditBufferLogicalParts
   std::vector<Parameter*> filter(const std::vector<Parameter*>& in, const std::vector<ParameterId>& exclude)
   {
     std::vector<Parameter*> ret;
-    std::copy_if(in.begin(), in.end(), std::back_inserter(ret), [&](Parameter* p) {
-      auto it = std::find(exclude.begin(), exclude.end(), p->getID());
-      return it == exclude.end();
-    });
+    std::copy_if(in.begin(), in.end(), std::back_inserter(ret),
+                 [&](Parameter* p)
+                 {
+                   auto it = std::find(exclude.begin(), exclude.end(), p->getID());
+                   return it == exclude.end();
+                 });
     return ret;
   }
 
   template <VoiceGroup vg> static std::vector<Parameter*> getAllNonGlobalParameters()
   {
-    using namespace detail;
     auto eb = TestHelper::getEditBuffer();
     std::vector<Parameter*> ret {};
     eb->forEachParameter<vg>([&](Parameter* p) { ret.emplace_back(p); });
@@ -96,34 +71,32 @@ class EditBufferLogicalParts
 
   template <VoiceGroup vg> static std::vector<Parameter*> getCrossFB()
   {
-    using namespace detail;
     auto eb = TestHelper::getEditBuffer();
     std::vector<Parameter*> ret;
-    ret.emplace_back(eb->findParameterByID({ FB_COMB_FROM, vg }));
-    ret.emplace_back(eb->findParameterByID({ FB_FX_FROM, vg }));
-    ret.emplace_back(eb->findParameterByID({ FB_OSC, vg }));
-    ret.emplace_back(eb->findParameterByID({ FB_OSC_SRC, vg }));
-    ret.emplace_back(eb->findParameterByID({ FB_SVF_FROM, vg }));
+    ret.emplace_back(eb->findParameterByID({ C15::PID::FB_Mix_Comb_Src, vg }));
+    ret.emplace_back(eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, vg }));
+    ret.emplace_back(eb->findParameterByID({ C15::PID::FB_Mix_Osc, vg }));
+    ret.emplace_back(eb->findParameterByID({ C15::PID::FB_Mix_Osc_Src, vg }));
+    ret.emplace_back(eb->findParameterByID({ C15::PID::FB_Mix_SVF_Src, vg }));
     return ret;
   }
 
   template <VoiceGroup vg> static std::vector<Parameter*> getToFX()
   {
-    using namespace detail;
     auto eb = TestHelper::getEditBuffer();
     std::vector<Parameter*> ret;
-    ret.emplace_back(eb->findParameterByID({ OUT_TO_FX, vg }));
+    ret.emplace_back(eb->findParameterByID({ C15::PID::Out_Mix_To_FX, vg }));
     return ret;
   }
 
   template <VoiceGroup vg> static Parameter* getUnisonVoice()
   {
-    return TestHelper::getEditBuffer()->findParameterByID({ detail::UNISON_VOICES, vg });
+    return TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Unison_Voices, vg });
   };
 
   template <VoiceGroup vg> static Parameter* getMonoEnable()
   {
-    return TestHelper::getEditBuffer()->findParameterByID({ detail::MONO_ENABLE, vg });
+    return TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Mono_Grp_Enable, vg });
   }
 
   static std::vector<Parameter*> getMaster()
@@ -164,13 +137,13 @@ class EditBufferLogicalParts
   template <VoiceGroup vg> static ModulateableParameter* getPartVolume()
   {
     return dynamic_cast<ModulateableParameter*>(
-        TestHelper::getEditBuffer()->findParameterByID({ detail::PART_VOLUME, vg }));
+        TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Voice_Grp_Volume, vg }));
   }
 
   template <VoiceGroup vg> static ModulateableParameter* getPartTune()
   {
     return dynamic_cast<ModulateableParameter*>(
-        TestHelper::getEditBuffer()->findParameterByID({ detail::PART_TUNE, vg }));
+        TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Voice_Grp_Tune, vg }));
   }
 
   template <VoiceGroup vg> static std::vector<Parameter*> getPartMaster()
@@ -188,29 +161,29 @@ class EditBufferLogicalParts
 
   template <VoiceGroup vg> static Parameter* getFadeFrom()
   {
-    return TestHelper::getEditBuffer()->findParameterByID({ detail::FADE_FROM, vg });
+    return TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Voice_Grp_Fade_From, vg });
   }
 
   template <VoiceGroup vg> static Parameter* getFadeRange()
   {
-    return TestHelper::getEditBuffer()->findParameterByID({ detail::FADE_RANGE, vg });
+    return TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Voice_Grp_Fade_Range, vg });
   }
 
   template <VoiceGroup vg> static Parameter* getSplitPoint()
   {
-    return TestHelper::getEditBuffer()->findParameterByID({ detail::SPLIT_POINT, vg });
+    return TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Split_Split_Point, vg });
   }
 
   static ModulateableParameter* getMasterVolume()
   {
     return dynamic_cast<ModulateableParameter*>(
-        TestHelper::getEditBuffer()->findParameterByID({ detail::MASTER_VOLUME, VoiceGroup::Global }));
+        TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global }));
   }
 
   static ModulateableParameter* getMasterTune()
   {
     return dynamic_cast<ModulateableParameter*>(
-        TestHelper::getEditBuffer()->findParameterByID({ detail::MASTER_TUNE, VoiceGroup::Global }));
+        TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Master_Tune, VoiceGroup::Global }));
   }
 
   static std::vector<Parameter*> getModMatrix()
