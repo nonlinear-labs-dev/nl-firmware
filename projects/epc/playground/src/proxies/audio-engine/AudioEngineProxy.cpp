@@ -47,53 +47,63 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
   onConnectionEstablished(EndPoint::AudioEngine,
                           sigc::mem_fun(this, &AudioEngineProxy::connectSettingsToAudioEngineMessage));
 
-  receive<HardwareSourcePollEnd>(EndPoint::Playground, [this](auto &msg) {
-    int index = 0;
-    bool didChange = false;
-    for(auto value : msg.m_data)
-    {
-      auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(index);
-      index++;
-      if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
+  receive<HardwareSourcePollEnd>(
+      EndPoint::Playground,
+      [this](auto &msg)
       {
-        PhysicalControlParameterUseCases useCases(p);
-        didChange |= useCases.applyPolledHWPosition(value);
-      }
-    }
+        int index = 0;
+        bool didChange = false;
+        for(auto value : msg.m_data)
+        {
+          auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(index);
+          index++;
+          if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
+          {
+            PhysicalControlParameterUseCases useCases(p);
+            didChange |= useCases.applyPolledHWPosition(value);
+          }
+        }
 
-    if(didChange)
-    {
-      nltools::Log::info("sending EditBuffer after PollEnd has been received!");
-      sendEditBuffer();
-    }
-  });
+        if(didChange)
+        {
+          nltools::Log::info("sending EditBuffer after PollEnd has been received!");
+          sendEditBuffer();
+        }
+      });
 
-  receive<HardwareSourceChangedNotification>(EndPoint::Playground, [this](auto &msg) {
-    if(auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(msg.hwSource))
-    {
-      if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
+  receive<HardwareSourceChangedNotification>(
+      EndPoint::Playground,
+      [this](auto &msg)
       {
-        PhysicalControlParameterUseCases useCase(p);
-        useCase.changeFromAudioEngine(msg.position, msg.source);
-        m_playcontrollerProxy.notifyRibbonTouch(p->getID().getNumber());
-      }
-    }
-  });
+        if(auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(msg.hwSource))
+        {
+          if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
+          {
+            PhysicalControlParameterUseCases useCase(p);
+            useCase.changeFromAudioEngine(msg.position, msg.source);
+            m_playcontrollerProxy.notifyRibbonTouch(p->getID().getNumber());
+          }
+        }
+      });
 
-  receive<Midi::ProgramChangeMessage>(EndPoint::Playground, [=](const auto &msg) {
-    if(auto lock = m_programChangeRecursion.lock())
-      if(auto bank = m_presetManager.findMidiSelectedBank())
-      {
-        setLastKnownMIDIProgramChangeNumber(static_cast<int>(msg.program));
-        BankUseCases useCase(bank, m_settings);
-        useCase.selectPreset(msg.program);
-      }
-  });
+  receive<Midi::ProgramChangeMessage>(EndPoint::Playground,
+                                      [=](const auto &msg)
+                                      {
+                                        if(auto lock = m_programChangeRecursion.lock())
+                                          if(auto bank = m_presetManager.findMidiSelectedBank())
+                                          {
+                                            setLastKnownMIDIProgramChangeNumber(static_cast<int>(msg.program));
+                                            BankUseCases useCase(bank, m_settings);
+                                            useCase.selectPreset(msg.program);
+                                          }
+                                      });
 
-  receive<nltools::msg::Setting::SetGlobalLocalSetting>(EndPoint::Playground, [=](const auto &msg) {
-    SettingsUseCases useCases(m_settings);
-    useCases.setGlobalLocal(msg.m_state);
-  });
+  receive<nltools::msg::Setting::SetGlobalLocalSetting>(EndPoint::Playground,
+                                                        [=](const auto &msg)
+                                                        {
+                                                          SettingsUseCases useCases(m_settings);
+                                                          useCases.setGlobalLocal(msg.m_state);
+                                                        });
 
   m_presetManager.onLoadHappened(sigc::mem_fun(this, &AudioEngineProxy::onPresetManagerLoaded));
 }
@@ -106,31 +116,37 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditB
   size_t mcT = 0;
   size_t modR = 0;
 
-  auto masterParameter = dynamic_cast<const ModulateableParameter *>(
-      editBuffer.findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global }));
+  auto masterParameter
+      = editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Master_Volume, VoiceGroup::Global });
+  nltools_assertOnDevPC(masterParameter != nullptr);
   auto &master = msg.master.volume;
   master.id = masterParameter->getID().getNumber();
   master.controlPosition = masterParameter->getControlPositionValue();
   master.modulationAmount = masterParameter->getModulationAmount();
   master.mc = masterParameter->getModulationSource();
 
-  auto tuneParameter = dynamic_cast<const ModulateableParameter *>(
-      editBuffer.findParameterByID({ C15::PID::Master_Tune, VoiceGroup::Global }));
+  auto tuneParameter
+      = editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Master_Tune, VoiceGroup::Global });
+  nltools_assertOnDevPC(tuneParameter != nullptr);
   auto &tune = msg.master.tune;
   tune.id = tuneParameter->getID().getNumber();
   tune.controlPosition = tuneParameter->getControlPositionValue();
   tune.modulationAmount = tuneParameter->getModulationAmount();
   tune.mc = tuneParameter->getModulationSource();
 
-  auto panParameter = editBuffer.findAndCastParameterByID<ModulateableParameter>({C15::PID::Master_Pan, VoiceGroup::Global});
-  auto& pan = msg.master.pan;
+  auto panParameter
+      = editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Master_Pan, VoiceGroup::Global });
+  nltools_assertOnDevPC(panParameter != nullptr);
+  auto &pan = msg.master.pan;
   pan.id = panParameter->getID().getNumber();
   pan.controlPosition = panParameter->getControlPositionValue();
   pan.modulationAmount = panParameter->getModulationAmount();
   pan.mc = panParameter->getModulationSource();
 
-  auto sepParam = editBuffer.template findAndCastParameterByID<ModulateableParameter>({C15::PID::Master_Serial_FX, VoiceGroup::Global});
-  auto& sep = msg.master.serialFX;
+  auto sepParam
+      = editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Master_Serial_FX, VoiceGroup::Global });
+  nltools_assertOnDevPC(sepParam != nullptr);
+  auto &sep = msg.master.serialFX;
   sep.id = sepParam->getID().getNumber();
   sep.controlPosition = sepParam->getControlPositionValue();
   sep.modulationAmount = sepParam->getModulationAmount();
@@ -153,11 +169,12 @@ template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditB
       {
         if(p->getID().getNumber() == C15::PID::Scale_Base_Key)
         {
-          auto& pItem = msg.scaleBaseKey;
+          nltools_assertOnDevPC(dynamic_cast<ModulateableParameter *>(p) == nullptr);
+          auto &pItem = msg.scaleBaseKey;
           pItem.id = p->getID().getNumber();
           pItem.controlPosition = p->getControlPositionValue();
         }
-        else if(auto modP = dynamic_cast<ModulateableParameter*>(p))
+        else if(auto modP = dynamic_cast<ModulateableParameter *>(p))
         {
           auto &pItem = msg.scaleOffsets[scaleOffsets++];
           pItem.id = p->getID().getNumber();
@@ -270,6 +287,7 @@ void AudioEngineProxy::fillMonoPart(nltools::msg::ParameterGroups::MonoGroup &mo
 
   if(auto enable = g->findParameterByID({ C15::PID::Mono_Grp_Enable, from }))
   {
+    nltools_assertOnDevPC(dynamic_cast<ModulateableParameter *>(enable) == nullptr);
     auto &monoEnable = monoGroup.monoEnable;
     monoEnable.id = C15::PID::Mono_Grp_Enable;
     monoEnable.controlPosition = enable->getControlPositionValue();
@@ -277,6 +295,7 @@ void AudioEngineProxy::fillMonoPart(nltools::msg::ParameterGroups::MonoGroup &mo
 
   if(auto prio = g->findParameterByID({ C15::PID::Mono_Grp_Prio, from }))
   {
+    nltools_assertOnDevPC(dynamic_cast<ModulateableParameter *>(prio) == nullptr);
     auto &item = monoGroup.priority;
     item.id = C15::PID::Mono_Grp_Prio;
     item.controlPosition = prio->getControlPositionValue();
@@ -284,6 +303,7 @@ void AudioEngineProxy::fillMonoPart(nltools::msg::ParameterGroups::MonoGroup &mo
 
   if(auto legato = g->findParameterByID({ C15::PID::Mono_Grp_Legato, from }))
   {
+    nltools_assertOnDevPC(dynamic_cast<ModulateableParameter *>(legato) == nullptr);
     auto &item = monoGroup.legato;
     item.id = C15::PID::Mono_Grp_Legato;
     item.controlPosition = legato->getControlPositionValue();
@@ -527,43 +547,47 @@ void AudioEngineProxy::connectSettingsToAudioEngineMessage()
                           EnableHighVelocityCC, Enable14BitSupport, RoutingSettings, GlobalLocalEnableSetting>(
       &m_settings);
 
-  m_settingConnections.push_back(m_settings.getSetting<AutoStartRecorderSetting>()->onChange([](const Setting *s) {
-    auto as = static_cast<const AutoStartRecorderSetting *>(s);
-    const auto shouldAutoStart = as->get();
-    auto msg = nltools::msg::Setting::FlacRecorderAutoStart {};
-    msg.enabled = shouldAutoStart;
-    nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
-  }));
+  m_settingConnections.push_back(m_settings.getSetting<AutoStartRecorderSetting>()->onChange(
+      [](const Setting *s)
+      {
+        auto as = static_cast<const AutoStartRecorderSetting *>(s);
+        const auto shouldAutoStart = as->get();
+        auto msg = nltools::msg::Setting::FlacRecorderAutoStart {};
+        msg.enabled = shouldAutoStart;
+        nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+      }));
 }
 
 void AudioEngineProxy::scheduleMidiSettingsMessage()
 {
-  m_sendMidiSettingThrottler.doTask([this]() {
-    nltools::msg::Setting::MidiSettingsMessage msg;
-    msg.sendChannel = m_settings.getSetting<MidiSendChannelSetting>()->get();
-    msg.sendSplitChannel = m_settings.getSetting<MidiSendChannelSplitSetting>()->get();
-    msg.receiveChannel = m_settings.getSetting<MidiReceiveChannelSetting>()->get();
-    msg.receiveSplitChannel = m_settings.getSetting<MidiReceiveChannelSplitSetting>()->get();
+  m_sendMidiSettingThrottler.doTask(
+      [this]()
+      {
+        nltools::msg::Setting::MidiSettingsMessage msg;
+        msg.sendChannel = m_settings.getSetting<MidiSendChannelSetting>()->get();
+        msg.sendSplitChannel = m_settings.getSetting<MidiSendChannelSplitSetting>()->get();
+        msg.receiveChannel = m_settings.getSetting<MidiReceiveChannelSetting>()->get();
+        msg.receiveSplitChannel = m_settings.getSetting<MidiReceiveChannelSplitSetting>()->get();
 
-    msg.pedal1cc = m_settings.getSetting<PedalCCMapping<1>>()->get();
-    msg.pedal2cc = m_settings.getSetting<PedalCCMapping<2>>()->get();
-    msg.pedal3cc = m_settings.getSetting<PedalCCMapping<3>>()->get();
-    msg.pedal4cc = m_settings.getSetting<PedalCCMapping<4>>()->get();
-    msg.ribbon1cc = m_settings.getSetting<RibbonCCMapping<1>>()->get();
-    msg.ribbon2cc = m_settings.getSetting<RibbonCCMapping<2>>()->get();
-    msg.aftertouchcc = m_settings.getSetting<AftertouchCCMapping>()->get();
-    msg.bendercc = m_settings.getSetting<BenderCCMapping>()->get();
+        msg.pedal1cc = m_settings.getSetting<PedalCCMapping<1>>()->get();
+        msg.pedal2cc = m_settings.getSetting<PedalCCMapping<2>>()->get();
+        msg.pedal3cc = m_settings.getSetting<PedalCCMapping<3>>()->get();
+        msg.pedal4cc = m_settings.getSetting<PedalCCMapping<4>>()->get();
+        msg.ribbon1cc = m_settings.getSetting<RibbonCCMapping<1>>()->get();
+        msg.ribbon2cc = m_settings.getSetting<RibbonCCMapping<2>>()->get();
+        msg.aftertouchcc = m_settings.getSetting<AftertouchCCMapping>()->get();
+        msg.bendercc = m_settings.getSetting<BenderCCMapping>()->get();
 
-    msg.highVeloCCEnabled = m_settings.getSetting<EnableHighVelocityCC>()->get();
-    msg.highResCCEnabled = m_settings.getSetting<Enable14BitSupport>()->get();
+        msg.highVeloCCEnabled = m_settings.getSetting<EnableHighVelocityCC>()->get();
+        msg.highResCCEnabled = m_settings.getSetting<Enable14BitSupport>()->get();
 
-    msg.routings = m_settings.getSetting<RoutingSettings>()->getRaw();
-    msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
+        msg.routings = m_settings.getSetting<RoutingSettings>()->getRaw();
+        msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
 
-    msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
+        msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
 
-    nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
-  });
+        nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+      });
 }
 
 void AudioEngineProxy::setLastKnownMIDIProgramChangeNumber(int pc)

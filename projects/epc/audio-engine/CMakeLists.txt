@@ -46,8 +46,10 @@ IF(DEV_PC)
     TARGET_COMPILE_DEFINITIONS(${AE_LIB_NAME} PRIVATE test_inputModeFlag=1)
 ENDIF(DEV_PC)
 
+add_dependencies(${AE_LIB_NAME} configuration)
+
 target_link_libraries(${AE_LIB_NAME} PUBLIC pthread)
-target_include_directories(${AE_LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared/parameter-db/generated)
+target_include_directories(${AE_LIB_NAME} PUBLIC ${CMAKE_BINARY_DIR}/projects/shared/configuration/generated/)
 target_include_directories(${AE_LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared)
 
 add_subdirectory(tests)

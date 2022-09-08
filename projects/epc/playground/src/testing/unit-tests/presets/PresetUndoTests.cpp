@@ -4,7 +4,7 @@
 #include <presets/PresetParameter.h>
 #include <groups/ParameterGroup.h>
 #include <libundo/undo/TrashTransaction.h>
-#include <parameter-db/generated/parameter_list.h>
+#include <parameter_list.h>
 #include <use-cases/PresetManagerUseCases.h>
 #include <use-cases/BankUseCases.h>
 #include <use-cases/PresetUseCases.h>
@@ -159,7 +159,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"PresetParameterGroup")
 
       void init()
       {
-        appendParameter(new Parameter(this, { 1, VoiceGroup::I }, ScaleConverter::get<Linear100PercentScaleConverter>()));
+        appendParameter(new Parameter(this, { 1, VoiceGroup::I }));
       }
     };
 

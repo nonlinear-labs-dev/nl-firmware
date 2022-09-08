@@ -1,0 +1,19 @@
+#pragma once
+
+/******************************************************************************/
+/** @file       parameter_group.h
+    @date       ${timestamp}
+    @version    ${config.milestone}-${config.version}
+    @author     M. Seeber
+    @brief      provide parameter groups
+    @todo       
+*******************************************************************************/
+
+#include "parameter_descriptor.h"
+
+namespace C15
+{
+    const ParameterGroupDescriptor ParameterGroups[] = {
+        ${parameter_groups}
+    };
+} // namespace C15

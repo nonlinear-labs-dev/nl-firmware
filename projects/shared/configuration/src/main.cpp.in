@@ -1,0 +1,56 @@
+/******************************************************************************/
+/** @file       main.cpp
+    @date       ${timestamp}
+    @version    ${config.milestone}-${config.version}
+    @author     M. Seeber
+    @brief      program to successfully compile as part of validation
+    @todo       
+*******************************************************************************/
+
+#include "parameter_list.h"
+#include "display_scaling_type.h"
+#include "parameter_group.h"
+// #include "placeholder.h" // placeholder requires nltools and therefore cmake(lists)
+#include <iostream>
+
+using namespace C15;
+
+bool ModMatrixSanityChecks()
+{
+    constexpr size_t hardware_sources = (size_t) Parameters::Hardware_Sources::_LENGTH_;
+    constexpr size_t hardware_sends = (size_t) Parameters::Display_Parameters::_LENGTH_;
+    constexpr size_t hardware_amounts = (size_t) Parameters::Hardware_Amounts::_LENGTH_;
+    constexpr size_t macro_controls = (size_t) Parameters::Macro_Controls::_LENGTH_;
+    constexpr size_t macro_times = (size_t) Parameters::Macro_Times::_LENGTH_;
+    constexpr size_t expected_amounts = hardware_sources * (macro_controls - 1); // Macros have "None" element
+    if(hardware_sources != hardware_sends)
+    {
+        std::cerr << "number of HardwareSources (" << hardware_sources;
+        std::cerr << ") and DisplayParameters (" << hardware_sends;
+        std::cerr << ") must match" << std::endl;
+        return false;
+    }
+    if(macro_controls != macro_times)
+    {
+        std::cerr << "number of MacroControls (" << macro_controls;
+        std::cerr << ") and MacroTimes (" << macro_times;
+        std::cerr << ") must match" << std::endl;
+        return false;
+    }
+    if(hardware_amounts != expected_amounts)
+    {
+        std::cerr << "number of HardwareAmounts (" << hardware_amounts;
+        std::cerr << ") and [HardwareSources = " << hardware_sources;
+        std::cerr << " * MacroControls = " << macro_controls;
+        std::cerr << "] (" << expected_amounts;
+        std::cerr << ") must match" << std::endl;
+        return false;
+    }
+    return true;
+}
+
+int main()
+{
+    if(!ModMatrixSanityChecks()) return 1;
+    return 0;
+}

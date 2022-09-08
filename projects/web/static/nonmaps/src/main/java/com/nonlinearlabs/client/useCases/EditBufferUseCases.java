@@ -96,23 +96,15 @@ public class EditBufferUseCases {
 		if (SetupModel.get().systemSettings.syncSplit.getBool()) {
 			handleSplitSync(p, newValue);
 		} else {
-			preventUnassignedKeyrange(p, newValue, oracle);
+			if (p.id.getVoiceGroup() == VoiceGroup.I) {
+				newValue = Math.min(59 / 60.0, newValue);
+				p.value.value.setValue(newValue);
+			} else {
+				newValue = Math.max(1 / 60.0, newValue);
+				p.value.value.setValue(newValue);
+			}
+			NonMaps.get().getServerProxy().setSplitPoints(p.id, newValue, 0.0, oracle);
 		}
-	}
-
-	private void preventUnassignedKeyrange(BasicParameterModel p, double newValue, boolean oracle) {
-		BasicParameterModel other = getSibling(p);
-		p.value.value.setValue(newValue);
-		double otherValue = other.value.getQuantizedAndClipped(true);
-
-		if (p.id.getVoiceGroup() == VoiceGroup.I) {
-			otherValue = Math.min(otherValue, p.value.getQuantizedAndClipped(true) + 1 / 60.0);
-		} else {
-			otherValue = Math.max(otherValue, p.value.getQuantizedAndClipped(true) - 1 / 60.0);
-		}
-
-		other.value.value.setValue(otherValue);
-		NonMaps.get().getServerProxy().setSplitPoints(p.id, newValue, other.value.value.getValue(), oracle);
 	}
 
 	private void startReturningAnimation(PhysicalControlParameterModel m) {

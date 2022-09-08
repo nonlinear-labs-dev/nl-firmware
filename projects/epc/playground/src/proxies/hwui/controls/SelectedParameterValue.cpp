@@ -108,7 +108,8 @@ PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
   LabelStyle style { .size = FontSize::Size9,
                      .decoration = FontDecoration::Regular,
                      .justification = Font::Justification::Center,
-                     .backgroundColor = FrameBufferColors::Transparent };
+                     .backgroundColor = FrameBufferColors::Transparent,
+                     .suffixTextColor = FrameBufferColors::C128 };
 
   m_localEnabledLabel = addControl(new LabelStyleable({ 0, 0, pos.getWidth(), pos.getHeight() }));
   m_localDisabledLabelSnd = addControl(new LabelStyleable(left));
@@ -122,6 +123,8 @@ PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   eb->onSelectionChanged(sigc::mem_fun(this, &PhysicalControlValueLabel::onParameterSelectionHappened),
                          VoiceGroup::Global);
+
+  Application::get().getHWUI()->onModifiersChanged(sigc::mem_fun(this, &PhysicalControlValueLabel::onModifiersChanged));
 }
 
 void PhysicalControlValueLabel::setHighlight(bool isHighlight)
@@ -176,7 +179,14 @@ void PhysicalControlValueLabel::onSendChanged(const Parameter *p)
     m_isLocalEnabled = send->isLocalEnabled();
     auto str = send->getDisplayString();
     auto shorter = nltools::string::removeCharacters(str, { '%', ' ' });
-    m_localDisabledLabelSnd->setText({ shorter });
+    if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
+    {
+       m_localDisabledLabelSnd->setText({ shorter, " F"});
+    }
+    else
+    {
+        m_localDisabledLabelSnd->setText({ shorter });
+    }
     ControlWithChildren::setDirty();
   }
 }
@@ -188,10 +198,29 @@ void PhysicalControlValueLabel::onHWChanged(const Parameter *p)
     m_isLocalEnabled = hw->isLocalEnabled();
     auto str = hw->getDisplayString();
     auto shorter = nltools::string::removeCharacters(str, { '%', ' ' });
-    m_localEnabledLabel->setText({ str });
-    m_localDisabledLabelRcv->setText({ shorter });
+    if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
+    {
+        StringAndSuffix temp{ str, " F"};
+        m_localEnabledLabel->setText(temp);
+        m_localDisabledLabelRcv->setText({ shorter, " F"});
+    }
+    else
+    {
+      m_localEnabledLabel->setText({ str });
+      m_localDisabledLabelRcv->setText({ shorter });
+    }
+
     ControlWithChildren::setDirty();
   }
+}
+
+void PhysicalControlValueLabel::onModifiersChanged(ButtonModifiers mods)
+{
+  if(m_hw)
+    onHWChanged(m_hw);
+
+  if(m_snd)
+    onSendChanged(m_snd);
 }
 
 HardwareSourceCCLabel::HardwareSourceCCLabel(const Rect &e)

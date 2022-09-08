@@ -8,8 +8,7 @@
 #include <algorithm>
 
 UnisonVoicesParameter::UnisonVoicesParameter(ParameterGroup *group, VoiceGroup vg)
-    : UnmodulateableUnisonParameter(group, ParameterId { C15::PID::Unison_Voices, vg },
-                                    ScaleConverter::get<LinearCountScaleConverter<24, VoicesDimension>>())
+    : UnmodulateableUnisonParameter(group, ParameterId { C15::PID::Unison_Voices, vg })
 {
 }
 

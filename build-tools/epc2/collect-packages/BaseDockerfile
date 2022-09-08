@@ -19,5 +19,12 @@ RUN pacman --noconfirm -Sy
 RUN pacman --noconfirm -S archlinux-keyring
 RUN pacman --noconfirm -S pacman-contrib
 
+RUN pacman-key --init
+RUN pacman --noconfirm -Sy
+RUN pacman --noconfirm -S archlinux-keyring
+RUN pacman-key --populate
+
+RUN pacman --noconfirm -S icu npm nodejs
+
 
  

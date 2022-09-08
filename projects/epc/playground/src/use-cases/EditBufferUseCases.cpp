@@ -181,7 +181,10 @@ void EditBufferUseCases::setSplits(const ParameterId& id, tControlPositionValue 
     auto name = s->getGroupAndParameterNameWithVoiceGroup();
     auto scope = s->getUndoScope().startContinuousTransaction(s, "Set '%0'", name);
     s->setCPFromWebUI(scope->getTransaction(), cp);
-    other->setCPFromWebUI(scope->getTransaction(), otherCp);
+    if(s->isSynced())
+    {
+      other->setCPFromWebUI(scope->getTransaction(), otherCp);
+    }
   }
 }
 

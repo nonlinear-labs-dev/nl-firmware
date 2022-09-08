@@ -17,8 +17,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Modulateable Parameter")
   SECTION("1.4pct to 112 playcontroller")
   {
     auto scope = TestHelper::createTestScope();
-    ModulateableParameter peter(&group, { C15::PID::FB_Mix_FX, VoiceGroup::Global },
-                                ScaleConverter::get<Linear100PercentScaleConverter>());
+    ModulateableParameter peter(&group, { C15::PID::FB_Mix_FX, VoiceGroup::Global });
     peter.setModulationAmount(scope->getTransaction(), 0.014);
     peter.setModulationSource(scope->getTransaction(), MacroControls::MC1);
     auto packed = peter.getModulationSourceAndAmountPacked();

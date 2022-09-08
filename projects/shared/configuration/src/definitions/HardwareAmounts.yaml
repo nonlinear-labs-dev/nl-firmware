@@ -1,0 +1,462 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Mod_HA
+
+static: [
+  &HARDWARE_AMOUNT {
+    type: Hardware_Amount,
+    availability: {
+      Single: &AVAILABILITY { hidden: false, disabled: false, count: 1 },
+      Split: *AVAILABILITY,
+      Layer: *AVAILABILITY
+    },
+    control_position: {
+      coarse: 100,
+      fine: 1000,
+      scale: LINEAR_BIPOLAR_100_PERCENT,
+      initial: 0.0f
+    }
+  }
+]
+
+parameters:
+  - <<: *HARDWARE_AMOUNT
+    id: 255
+    token: Pedal_1_to_MC_A
+    label_long: Pedal 1 to @MC:A
+    label_short: Ped 1 to @MC:A
+    info: >
+      Determines the influence of Pedal 1 on Macro Control A.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 256
+    token: Pedal_1_to_MC_B
+    label_long: Pedal 1 to @MC:B
+    label_short: Ped 1 to @MC:B
+    info: >
+      Determines the influence of Pedal 1 on Macro Control B.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 257
+    token: Pedal_1_to_MC_C
+    label_long: Pedal 1 to @MC:C
+    label_short: Ped 1 to @MC:C
+    info: >
+      Determines the influence of Pedal 1 on Macro Control C.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 258
+    token: Pedal_1_to_MC_D
+    label_long: Pedal 1 to @MC:D
+    label_short: Ped 1 to @MC:D
+    info: >
+      Determines the influence of Pedal 1 on Macro Control D.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 373
+    token: Pedal_1_to_MC_E
+    label_long: Pedal 1 to @MC:E
+    label_short: Ped 1 to @MC:E
+    info: >
+      Determines the influence of Pedal 1 on Macro Control E.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 374
+    token: Pedal_1_to_MC_F
+    label_long: Pedal 1 to @MC:F
+    label_short: Ped 1 to @MC:F
+    info: >
+      Determines the influence of Pedal 1 on Macro Control F.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 260
+    token: Pedal_2_to_MC_A
+    label_long: Pedal 2 to @MC:A
+    label_short: Ped 2 to @MC:A
+    info: >
+      Determines the influence of Pedal 2 on Macro Control A.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 261
+    token: Pedal_2_to_MC_B
+    label_long: Pedal 2 to @MC:B
+    label_short: Ped 2 to @MC:B
+    info: >
+      Determines the influence of Pedal 2 on Macro Control B.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 262
+    token: Pedal_2_to_MC_C
+    label_long: Pedal 2 to @MC:C
+    label_short: Ped 2 to @MC:C
+    info: >
+      Determines the influence of Pedal 2 on Macro Control C.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 263
+    token: Pedal_2_to_MC_D
+    label_long: Pedal 2 to @MC:D
+    label_short: Ped 2 to @MC:D
+    info: >
+      Determines the influence of Pedal 2 on Macro Control D.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 375
+    token: Pedal_2_to_MC_E
+    label_long: Pedal 2 to @MC:E
+    label_short: Ped 2 to @MC:E
+    info: >
+      Determines the influence of Pedal 2 on Macro Control E.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 376
+    token: Pedal_2_to_MC_F
+    label_long: Pedal 2 to @MC:F
+    label_short: Ped 2 to @MC:F
+    info: >
+      Determines the influence of Pedal 2 on Macro Control F.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 265
+    token: Pedal_3_to_MC_A
+    label_long: Pedal 3 to @MC:A
+    label_short: Ped 3 to @MC:A
+    info: >
+      Determines the influence of Pedal 3 on Macro Control A.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 266
+    token: Pedal_3_to_MC_B
+    label_long: Pedal 3 to @MC:B
+    label_short: Ped 3 to @MC:B
+    info: >
+      Determines the influence of Pedal 3 on Macro Control B.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 267
+    token: Pedal_3_to_MC_C
+    label_long: Pedal 3 to @MC:C
+    label_short: Ped 3 to @MC:C
+    info: >
+      Determines the influence of Pedal 3 on Macro Control C.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 268
+    token: Pedal_3_to_MC_D
+    label_long: Pedal 3 to @MC:D
+    label_short: Ped 3 to @MC:D
+    info: >
+      Determines the influence of Pedal 3 on Macro Control D.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 377
+    token: Pedal_3_to_MC_E
+    label_long: Pedal 3 to @MC:E
+    label_short: Ped 3 to @MC:E
+    info: >
+      Determines the influence of Pedal 3 on Macro Control E.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 378
+    token: Pedal_3_to_MC_F
+    label_long: Pedal 3 to @MC:F
+    label_short: Ped 3 to @MC:F
+    info: >
+      Determines the influence of Pedal 3 on Macro Control F.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 270
+    token: Pedal_4_to_MC_A
+    label_long: Pedal 4 to @MC:A
+    label_short: Ped 4 to @MC:A
+    info: >
+      Determines the influence of Pedal 4 on Macro Control A.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 271
+    token: Pedal_4_to_MC_B
+    label_long: Pedal 4 to @MC:B
+    label_short: Ped 4 to @MC:B
+    info: >
+      Determines the influence of Pedal 4 on Macro Control B.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 272
+    token: Pedal_4_to_MC_C
+    label_long: Pedal 4 to @MC:C
+    label_short: Ped 4 to @MC:C
+    info: >
+      Determines the influence of Pedal 4 on Macro Control C.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 273
+    token: Pedal_4_to_MC_D
+    label_long: Pedal 4 to @MC:D
+    label_short: Ped 4 to @MC:D
+    info: >
+      Determines the influence of Pedal 4 on Macro Control D.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 379
+    token: Pedal_4_to_MC_E
+    label_long: Pedal 4 to @MC:E
+    label_short: Ped 4 to @MC:E
+    info: >
+      Determines the influence of Pedal 4 on Macro Control E.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 380
+    token: Pedal_4_to_MC_F
+    label_long: Pedal 4 to @MC:F
+    label_short: Ped 4 to @MC:F
+    info: >
+      Determines the influence of Pedal 4 on Macro Control F.
+      If the pedal is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 275
+    token: Bender_to_MC_A
+    label_long: Bender to @MC:A
+    label_short: Bender to @MC:A
+    info: >
+      Determines the influence of the Bender on Macro Control A.
+      The amount can be adjusted continuously [in percent] and can cover the whole range of the
+      Macro Control in both directions (-100.0 ... 100.0 %). The bipolar range of the Bender is
+      mapped to the unipolar range of the Macro Control by an amount of 50 %.
+  - <<: *HARDWARE_AMOUNT
+    id: 276
+    token: Bender_to_MC_B
+    label_long: Bender to @MC:B
+    label_short: Bender to @MC:B
+    info: >
+      Determines the influence of the Bender on Macro Control B.
+      The amount can be adjusted continuously [in percent] and can cover the whole range of the
+      Macro Control in both directions (-100.0 ... 100.0 %). The bipolar range of the Bender is
+      mapped to the unipolar range of the Macro Control by an amount of 50 %.
+  - <<: *HARDWARE_AMOUNT
+    id: 277
+    token: Bender_to_MC_C
+    label_long: Bender to @MC:C
+    label_short: Bender to @MC:C
+    info: >
+      Determines the influence of the Bender on Macro Control C.
+      The amount can be adjusted continuously [in percent] and can cover the whole range of the
+      Macro Control in both directions (-100.0 ... 100.0 %). The bipolar range of the Bender is
+      mapped to the unipolar range of the Macro Control by an amount of 50 %.
+  - <<: *HARDWARE_AMOUNT
+    id: 278
+    token: Bender_to_MC_D
+    label_long: Bender to @MC:D
+    label_short: Bender to @MC:D
+    info: >
+      Determines the influence of the Bender on Macro Control D.
+      The amount can be adjusted continuously [in percent] and can cover the whole range of the
+      Macro Control in both directions (-100.0 ... 100.0 %). The bipolar range of the Bender is
+      mapped to the unipolar range of the Macro Control by an amount of 50 %.
+  - <<: *HARDWARE_AMOUNT
+    id: 381
+    token: Bender_to_MC_E
+    label_long: Bender to @MC:E
+    label_short: Bender to @MC:E
+    info: >
+      Determines the influence of the Bender on Macro Control E. 
+      The amount can be adjusted continuously [in percent] and can cover the whole range of the
+      Macro Control in both directions (-100.0 ... 100.0 %). The bipolar range of the Bender is
+      mapped to the unipolar range of the Macro Control by an amount of 50 %.
+  - <<: *HARDWARE_AMOUNT
+    id: 382
+    token: Bender_to_MC_F
+    label_long: Bender to @MC:F
+    label_short: Bender to @MC:F
+    info: >
+      Determines the influence of the Bender on Macro Control F.
+      The amount can be adjusted continuously [in percent] and can cover the whole range of the
+      Macro Control in both directions (-100.0 ... 100.0 %). The bipolar range of the Bender is
+      mapped to the unipolar range of the Macro Control by an amount of 50 %.
+  - <<: *HARDWARE_AMOUNT
+    id: 280
+    token: Aftertouch_to_MC_A
+    label_long: Aftertouch to @MC:A
+    label_short: AT to @MC:A
+    info: >
+      Determines the influence of the Aftertouch on Macro Control A.
+      The amount can be adjusted continuously [in percent] and can cover the whole range of the
+      Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 281
+    token: Aftertouch_to_MC_B
+    label_long: Aftertouch to @MC:B
+    label_short: AT to @MC:B
+    info: >
+      Determines the influence of the Aftertouch on Macro Control B.
+      The amount can be adjusted continuously [in percent] and can cover the whole range of the
+      Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 282
+    token: Aftertouch_to_MC_C
+    label_long: Aftertouch to @MC:C
+    label_short: AT to @MC:C
+    info: >
+      Determines the influence of the Aftertouch on Macro Control C.
+      The amount can be adjusted continuously [in percent] and can cover the whole range of the
+      Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 283
+    token: Aftertouch_to_MC_D
+    label_long: Aftertouch to @MC:D
+    label_short: AT to @MC:D
+    info: >
+      Determines the influence of the Aftertouch on Macro Control D.
+      The amount can be adjusted continuously [in percent] and can cover the whole range of the
+      Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 383
+    token: Aftertouch_to_MC_E
+    label_long: Aftertouch to @MC:E
+    label_short: AT to @MC:E
+    info: >
+      Determines the influence of the Aftertouch on Macro Control E.
+      The amount can be adjusted continuously [in percent] and can cover the whole range of the
+      Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 384
+    token: Aftertouch_to_MC_F
+    label_long: Aftertouch to @MC:F
+    label_short: AT to @MC:F
+    info: >
+      Determines the influence of the Aftertouch on Macro Control F.
+      The amount can be adjusted continuously [in percent] and can cover the whole range of the
+      Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 285
+    token: Ribbon_1_to_MC_A
+    label_long: Ribbon 1 to @MC:A
+    label_short: Rib 1 to @MC:A
+    info: >
+      Determines the influence of Ribbon 1 on Macro Control A.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 286
+    token: Ribbon_1_to_MC_B
+    label_long: Ribbon 1 to @MC:B
+    label_short: Rib 1 to @MC:B
+    info: >
+      Determines the influence of Ribbon 1 on Macro Control B.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 287
+    token: Ribbon_1_to_MC_C
+    label_long: Ribbon 1 to @MC:C
+    label_short: Rib 1 to @MC:C
+    info: >
+      Determines the influence of Ribbon 1 on Macro Control C.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 288
+    token: Ribbon_1_to_MC_D
+    label_long: Ribbon 1 to @MC:D
+    label_short: Rib 1 to @MC:D
+    info: >
+      Determines the influence of Ribbon 1 on Macro Control D.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 385
+    token: Ribbon_1_to_MC_E
+    label_long: Ribbon 1 to @MC:E
+    label_short: Rib 1 to @MC:E
+    info: >
+      Determines the influence of Ribbon 1 on Macro Control E.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 386
+    token: Ribbon_1_to_MC_F
+    label_long: Ribbon 1 to @MC:F
+    label_short: Rib 1 to @MC:F
+    info: >
+      Determines the influence of Ribbon 1 on Macro Control F.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 290
+    token: Ribbon_2_to_MC_A
+    label_long: Ribbon 2 to @MC:A
+    label_short: Rib 2 to @MC:A
+    info: >
+      Determines the influence of Ribbon 2 on Macro Control A.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 291
+    token: Ribbon_2_to_MC_B
+    label_long: Ribbon 2 to @MC:B
+    label_short: Rib 2 to @MC:B
+    info: >
+      Determines the influence of Ribbon 2 on Macro Control B.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 292
+    token: Ribbon_2_to_MC_C
+    label_long: Ribbon 2 to @MC:C
+    label_short: Rib 2 to @MC:C
+    info: >
+      Determines the influence of Ribbon 2 on Macro Control C.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 293
+    token: Ribbon_2_to_MC_D
+    label_long: Ribbon 2 to @MC:D
+    label_short: Rib 2 to @MC:D
+    info: >
+      Determines the influence of Ribbon 2 on Macro Control D.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 387
+    token: Ribbon_2_to_MC_E
+    label_long: Ribbon 2 to @MC:E
+    label_short: Rib 2 to @MC:E
+    info: >
+      Determines the influence of Ribbon 2 on Macro Control E.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 388
+    token: Ribbon_2_to_MC_F
+    label_long: Ribbon 2 to @MC:F
+    label_short: Rib 2 to @MC:F
+    info: >
+      Determines the influence of Ribbon 2 on Macro Control F.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).

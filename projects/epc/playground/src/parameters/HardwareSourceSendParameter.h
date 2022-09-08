@@ -9,7 +9,6 @@ class HardwareSourceSendParameter : public Parameter
 {
  public:
   HardwareSourceSendParameter(HardwareSourcesGroup* pGroup, PhysicalControlParameter& sibling, const ParameterId& id,
-                              const ScaleConverter* converter, double def, int coarseDenominator, int fineDenominator,
                               Settings* settings);
   Layout* createLayout(FocusAndMode focusAndMode) const override;
 

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "LinearScaleConverter.h"
 
 class LinearBipolar60DbScaleConverter : public LinearScaleConverter

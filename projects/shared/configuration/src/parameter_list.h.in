@@ -1,0 +1,20 @@
+#pragma once
+
+/******************************************************************************/
+/** @file       parameter_list.h
+    @date       ${timestamp}
+    @version    ${config.milestone}-${config.version}
+    @author     M. Seeber
+    @brief      complete list of groups/parameters (and their properties) in TCD order
+    @todo       
+*******************************************************************************/
+
+#include "c15_config.h"
+#include "parameter_descriptor.h"
+
+namespace C15
+{
+    const ParameterDescriptor ParameterList[Config::tcd_elements] = {
+        ${parameter_list}
+    };
+} // namespace C15

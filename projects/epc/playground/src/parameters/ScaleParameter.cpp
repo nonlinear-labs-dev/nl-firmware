@@ -11,14 +11,14 @@
 #include "parameters/scale-converters/FineBipolar1200CTScaleConverter.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 
-ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId& id, const ScaleConverter *scaling)
-    : super(group, id, scaling, ScaleConverter::get<FineBipolar1200CTScaleConverter>())
+ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId& id)
+    : super(group, id)
 {
 }
 
 void ScaleParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
 {
-  ModulateableParameterWithUnusualModUnit::writeDocProperties(writer, knownRevision);
+  ModulateableParameter::writeDocProperties(writer, knownRevision);
 
   if(!shouldWriteDocProperties(knownRevision))
   {
@@ -51,8 +51,8 @@ Glib::ustring ScaleParameter::getLongName() const
   return super::getLongName();
 }
 
-BaseScaleParameter::BaseScaleParameter(ParameterGroup *group, const ParameterId &id, const ScaleConverter *scaling)
-: super(group, id, scaling)
+BaseScaleParameter::BaseScaleParameter(ParameterGroup *group, const ParameterId &id)
+: super(group, id)
 {
 }
 

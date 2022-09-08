@@ -97,6 +97,7 @@ download_packages() {
 
 install_packages() {
   /workdir/overlay-fs/bin/arch-chroot /workdir/overlay-fs /bin/bash -c "\
+  set -x
   cd /update-packages
   rm /var/lib/pacman/db.lck
   for package in $PACKAGES_TO_INSTALL; do
@@ -104,9 +105,20 @@ install_packages() {
 	    exit 1
     fi
   done
+  
+  echo \"Server = https://archive.archlinux.org/repos/2020/09/08/\$repo/os/\$arch\" > /etc/pacman.d/mirrorlist
 
-  echo 'Server=https://archive.archlinux.org/repos/2017/04/16/\$repo/os/\$arch' > /etc/pacman.d/mirrorlist
-  pacman --noconfirm -S typescript
+  sed \"s/^\[core\]/[core]\nSigLevel = Optional TrustAll/g\" -i /etc/pacman.conf
+  sed \"s/^\[extra\]/[extra]\nSigLevel = Optional TrustAll/g\" -i /etc/pacman.conf
+  sed \"s/^\[community\]/[community]\nSigLevel = Optional TrustAll/g\" -i /etc/pacman.conf
+
+  rm -R /etc/pacman.d/gnupg/
+  rm -R /root/.gnupg/  # only if the directory exists
+  gpg --refresh-keys
+  pacman-key --init && pacman-key --populate
+  pacman-key --refresh-keys
+
+  pacman --noconfirm -S typescript npm nodejs
 "
   
     return $?
@@ -136,7 +148,7 @@ install_update() {
   echo "LANG=en_US@nonlinear.UTF-8" > /internal/epc-update-partition/etc/locale.conf
   touch /internal/epc-update-partition/usr/share/locale/locale.alias
 
-	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "cd /build && make install && make install-nl-locale"
+	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "cd /build && make install -j8 && make install-nl-locale"
     mkdir -p /internal/epc-update-partition/usr/local/C15/web
     tar -xzf /bindir/projects/web/web.tar.gz -C /internal/epc-update-partition/usr/local/C15/web
 	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\

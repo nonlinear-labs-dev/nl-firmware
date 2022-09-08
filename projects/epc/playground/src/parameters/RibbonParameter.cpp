@@ -261,7 +261,7 @@ void RibbonParameter::sendModeToPlaycontroller() const
   if(Application::exists())
   {
     Application::get().getPlaycontrollerProxy()->sendSetting(id, v);
-    sendToPlaycontroller();
+    sendToAudioEngine();
   }
 }
 
@@ -359,9 +359,9 @@ size_t RibbonParameter::getHash() const
   return hash;
 }
 
-void RibbonParameter::sendToPlaycontroller() const
+void RibbonParameter::sendToAudioEngine() const
 {
-  PhysicalControlParameter::sendToPlaycontroller();
+  PhysicalControlParameter::sendToAudioEngine();
   auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
                                                                          : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
   auto proxy = Application::get().getPlaycontrollerProxy();

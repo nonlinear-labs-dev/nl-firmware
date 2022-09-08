@@ -1,0 +1,80 @@
+#pragma once
+
+/******************************************************************************/
+/** @file       parameter_declarations.h
+    @date       ${timestamp}
+    @version    ${config.milestone}-${config.version}
+    @author     M. Seeber
+    @brief      descriptors for all parameter-related details
+    @todo       
+*******************************************************************************/
+
+namespace C15
+{
+    namespace Descriptors
+    {
+        enum class ParameterType
+        {
+            ${enums.parameter_type}
+        };
+        enum class ParameterGroup
+        {
+            ${enums.parameter_group}
+        };
+        enum class SmootherSection
+        {
+            ${enums.smoother_section}
+        };
+        enum class SmootherClock
+        {
+            ${enums.smoother_clock}
+        };
+        enum class ParameterSignal
+        {
+            ${enums.parameter_signal}
+        };
+    } // namespace C15::Descriptors
+    namespace Properties {
+        enum class LayerId
+        {
+            ${enums.layer_id}
+        };
+        enum class LayerMode
+        {
+            ${enums.sound_type}
+        };
+        enum class HW_Return_Behavior
+        {
+            ${enums.return_behavior}
+        };
+        enum class SmootherScale {
+            ${enums.smoother_scale}
+        };
+        enum class ParameterUnit {
+            ${enums.parameter_unit}
+        };
+        enum class ParameterRounding {
+            ${enums.parameter_rounding}
+        };
+        enum class ParameterInfinity {
+            ${enums.parameter_infinity}
+        };
+        enum class DisplayScalingType {
+            ${enums.display_scaling_type}
+        };
+    } // namespace C15::Properties
+    namespace Parameters {
+        ${parameters}
+    } // namespace C15::Parameters
+    namespace Smoothers {
+        ${smoothers}
+    } // namespace C15::Smoothers
+    namespace Signals {
+        ${signals}
+    } // namespace C15::Signals
+    namespace PID {
+        enum ParameterID {
+            ${enums.pid}
+        };
+    } // namespace C15::PID
+} // namespace C15
