@@ -644,7 +644,7 @@ namespace NavTree
     };
 
     explicit RamUsage(InnerNode *parent)
-        : Leaf(parent, "RAM usage:")
+        : Leaf(parent, "RAM Usage:")
     {
     }
 
@@ -1046,6 +1046,14 @@ namespace NavTree
     }
   };
 
+  struct RecorderStopButton : OneShotEntry
+  {
+    explicit RecorderStopButton(InnerNode* p)
+    : OneShotEntry(p, "Stop Playback", OneShotTypes::StartCB([]{ RecorderManager::stopRecorderPlayback(); }))
+    {
+    }
+  };
+
   struct RoutingsEntry : public EditableLeaf
   {
    public:
@@ -1175,7 +1183,8 @@ namespace NavTree
     explicit FlacSettings(InnerNode *parent)
         : InnerNode(parent, "Recorder Settings")
     {
-      children.emplace_back(new EnumSettingItem<AutoStartRecorderSetting>(this, "Auto-Start Recorder"));
+      children.emplace_back(new EnumSettingItem<AutoStartRecorderSetting>(this, "Auto-Start Recording"));
+      children.emplace_back(new RecorderStopButton(this));
     }
   };
 

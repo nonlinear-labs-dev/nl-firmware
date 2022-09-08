@@ -35,10 +35,11 @@
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
 #include "device-settings/ScreenSaverTimeoutSetting.h"
+#include "proxies/hwui/panel-unit/boled/recorder/DoYouWantToStopRecorderPlaybackLayout.h"
 #include <Options.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 
-HWUI::HWUI(Settings &settings)
+HWUI::HWUI(Settings &settings, RecorderManager &recorderManager)
     : m_layoutFolderMonitor(std::make_unique<LayoutFolderMonitor>())
     , m_panelUnit { settings, m_oleds, m_layoutFolderMonitor.get() }
     , m_baseUnit { settings, m_oleds }
@@ -57,6 +58,9 @@ HWUI::HWUI(Settings &settings)
 
   nltools::msg::receive<nltools::msg::ButtonChangedMessage>(nltools::msg::EndPoint::Playground,
                                                             sigc::mem_fun(this, &HWUI::onButtonMessage));
+
+  recorderManager.subscribeToNotifyNoRecorderUIsLeftAndStillPlaying(
+      [this] { getPanelUnit().getEditPanel().getBoled().setOverlay(new DoYouWantToStopRecorderPlaybackLayout()); });
 }
 
 HWUI::~HWUI()
