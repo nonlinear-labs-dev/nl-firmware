@@ -9,11 +9,12 @@
 #include "DateTimeInfo.h"
 #include "RTSoftwareVersion.h"
 #include "UniqueHardwareID.h"
+#include "AftertouchCalibratedStatus.h"
 #include <Application.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 #include <http/NetworkRequest.h>
 
-DeviceInformation::DeviceInformation(UpdateDocumentContributor *parent)
+DeviceInformation::DeviceInformation(UpdateDocumentContributor *parent, PlaycontrollerProxy &pcp)
     : ContentSection(parent)
     , m_actions("/device-info/")
 {
@@ -24,6 +25,7 @@ DeviceInformation::DeviceInformation(UpdateDocumentContributor *parent)
   m_items.emplace_back(new BuildVersion(this));
   m_items.emplace_back(new BufferUnderruns(this));
   m_items.emplace_back(new UniqueHardwareID(this));
+  m_items.emplace_back(new AftertouchCalibratedStatus(this, pcp));
 }
 
 DeviceInformation::~DeviceInformation() = default;

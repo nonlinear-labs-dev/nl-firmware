@@ -253,4 +253,9 @@ public class SystemSettings {
 		SetupModel.get().systemSettings.passPhrase.setValue(value);
 		NonMaps.theMaps.getServerProxy().setSetting("Passphrase", value);
     }
+
+    public void setLegacyAftertouch(BooleanValues on) {
+		SetupModel.get().systemSettings.legacyAftertouch.setValue(on);
+		NonMaps.theMaps.getServerProxy().setSetting("AftertouchLegacyMode", netify(on.name()));
+    }
 }

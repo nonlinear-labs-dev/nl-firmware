@@ -29,10 +29,11 @@
 
 // ==== V 209 ====
 // restructured to allow smaller chips than the LPC4337
-#define SW_VERSION 209
 
 // ==== V 210 ====
 // new Aftertouch processing, with calibration
+// new Bender processing
+#define SW_VERSION 210
 
 #define STR_IMPL_(x) #x            //stringify argument
 #define STR(x)       STR_IMPL_(x)  //indirection to expand argument macros

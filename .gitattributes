@@ -4,6 +4,8 @@
 *.h             text eol=lf
 *.sh            text eol=lf
 *.txt           text eol=lf
+*.cal           text eol=lf
+*.ini           text eol=lf
 *.service       text eol=lf
 *.in            text eol=lf
 *.mk            text eol=lf

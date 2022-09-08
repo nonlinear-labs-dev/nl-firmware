@@ -61,7 +61,7 @@ void RibbonRelativeFactor::syncExternals(SendReason reason) const
   {
     auto proxy = Application::get().getPlaycontrollerProxy();
     auto tcdValue = proxy->ribbonRelativeFactorToTCDValue(m_factor.getQuantizedClipped());
-    proxy->sendSetting(RIBBON_REL_FACTOR, tcdValue);
+    proxy->sendSetting(PLAYCONTROLLER_SETTING_ID_RIBBON_REL_FACTOR, tcdValue);
   }
 }
 

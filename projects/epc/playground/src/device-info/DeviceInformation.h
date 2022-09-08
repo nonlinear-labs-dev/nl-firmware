@@ -6,11 +6,12 @@
 #include <http/RPCActionManager.h>
 
 class DeviceInformationItem;
+class PlaycontrollerProxy;
 
 class DeviceInformation : public ContentSection
 {
  public:
-  explicit DeviceInformation(UpdateDocumentContributor *parent);
+  explicit DeviceInformation(UpdateDocumentContributor *parent, PlaycontrollerProxy &pcp);
   virtual ~DeviceInformation();
 
   virtual void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;

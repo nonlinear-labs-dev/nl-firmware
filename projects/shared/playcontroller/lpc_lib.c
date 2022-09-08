@@ -1,13 +1,13 @@
 /******************************************************************************/
-/** @file		nl_tcd_interpol.c
+/** @file		lpc_lib.c
     @date		2019-12-02
     @version	0
     @author		KSTR
-    @brief		lookup table with piece-wise linear interpolation
+    @brief		lookup table with piece-wise linear interpolation, lowpass filter
     @ingroup	nl_tcd_modules
 *******************************************************************************/
 
-#include "nl_tcd_interpol.h"
+#include "lpc_lib.h"
 
 // Returns the interpolated y-value. Saturates to y0 or y1 if x outside interval [x0, x1]
 static inline int16_t InterpolateSegment(int16_t const x0, int16_t const y0,
@@ -26,7 +26,7 @@ static inline int16_t InterpolateSegment(int16_t const x0, int16_t const y0,
 *   @param  x value for which to calculate
 *   @return interpolated y value
 ******************************************************************************/
-int16_t LIB_InterpolateValue(LIB_interpol_data_T *table, int16_t x)
+int16_t LIB_InterpolateValue(LIB_interpol_data_T* const table, int16_t const x)
 {
   // Sanity checks
   if (!table)  // no table supplied ?

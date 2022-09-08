@@ -2,16 +2,17 @@
  *  last mod: 2016-04-27 DTZ
  *  Created on: 21.01.2015
  *      Author: ssc
- *  changed 2020-03-31 KSTR
+ *  changed 2022-05-17 KSTR
  */
 
 //#define BB_MSG_DBG  // if defined, discards normal BB_MSG_WriteMessage*() messages and enables the *_DBG() variants instead
 
 #include "nl_bb_msg.h"
 #include "nl_spi_bb.h"
-
 #include "tcd/nl_tcd_adc_work.h"
 #include "tcd/nl_tcd_poly.h"
+#include "tcd/nl_tcd_aftertouch.h"
+#include "tcd/nl_tcd_bender.h"
 #include "tcd/nl_tcd_msg.h"
 #include "drv/nl_dbg.h"
 #include "sup/nl_sup.h"
@@ -298,6 +299,10 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
     POLY_ForceKey(data[0], data[1], data[2]);
   else if (type == PLAYCONTROLLER_BB_MSG_TYPE_KEYMAP_DATA)
     POLY_SetKeyRemapTable(length, data);
+  else if (type == PLAYCONTROLLER_BB_MSG_TYPE_AT_MASKING)
+    POLY_SetATMasking(length, data);
+  else if (type == PLAYCONTROLLER_BB_MSG_TYPE_AT_CAL)
+    AT_SetAftertouchCalibration(length, data);
   else if (type == PLAYCONTROLLER_BB_MSG_TYPE_SETTING)
   {
     switch (data[0])
@@ -327,10 +332,10 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         POLY_Select_VelTable(data[1]);                // Parameter: 0 = very soft ... 4 = very hard
         break;
       case PLAYCONTROLLER_SETTING_ID_AFTERTOUCH_CURVE:  // Aftertouch Curve
-        ADC_WORK_Select_AftertouchTable(data[1]);       // 0: soft, 1: normal, 2: hard
+        AT_Select_AftertouchTable(data[1]);             // 0: soft, 1: normal, 2: hard
         break;
       case PLAYCONTROLLER_SETTING_ID_BENDER_CURVE:  // Bender Curve
-        ADC_WORK_Select_BenderTable(data[1]);       // 0: soft, 1: normal, 2: hard
+        BNDR_Select_BenderTable(data[1]);           // 0: soft, 1: normal, 2: hard
         break;
       case PLAYCONTROLLER_SETTING_ID_SOFTWARE_MUTE_OVERRIDE:
         SUP_SetMuteOverride(data[1]);  // enable/disable Software Mute Override and value
@@ -373,6 +378,18 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
             break;
         }
         break;
+      case PLAYCONTROLLER_SETTING_ID_ENABLE_AT_DATA_COLLECT:
+        AT_SetCollectTestData(data[1]);
+        break;
+      case PLAYCONTROLLER_SETTING_ID_ENABLE_LEGACY_AT:
+        AT_SetLegacyMode(data[1]);
+        break;
+      case PLAYCONTROLLER_SETTING_ID_ENABLE_LEGACY_BNDR:
+        BNDR_SetLegacyMode(data[1]);
+        break;
+      case PLAYCONTROLLER_SETTING_ID_BNDR_SETTLING_SENSITIVITY:
+        BNDR_Select_BenderSensitivity(data[1]);
+        break;
       default:
         // do nothing
         type = 0;  // to set a breakpoint only
@@ -407,15 +424,29 @@ void BB_MSG_ReceiveCallback(uint16_t type, uint16_t length, uint16_t* data)
         BB_MSG_SendTheBuffer();
         break;
       }
-      case PLAYCONTROLLER_REQUEST_ID_AT_MAX_DATA:
+      case PLAYCONTROLLER_REQUEST_ID_AT_TEST_DATA:
       {
-        uint16_t  words  = ADC_WORK_GetATAdcDataSize();
-        uint16_t* buffer = ADC_WORK_GetATAdcData();
-        BB_MSG_WriteMessage(PLAYCONTROLLER_BB_MSG_TYPE_AT_MAX_DATA, words, buffer);
-        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_AT_MAX_DATA, 1);
+        uint16_t  words  = AT_GetATAdcDataSize();
+        uint16_t* buffer = AT_GetATAdcData();
+        BB_MSG_WriteMessage(PLAYCONTROLLER_BB_MSG_TYPE_AT_TEST_DATA, words, buffer);
+        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_AT_TEST_DATA, 1);
         BB_MSG_SendTheBuffer();
         break;
       }
+      case PLAYCONTROLLER_REQUEST_ID_AT_STATUS:  // sending aftertouch status to the BB
+        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_AT_STATUS, AT_GetStatus());
+        BB_MSG_SendTheBuffer();
+        break;
+      case PLAYCONTROLLER_REQUEST_ID_BNDR_STATUS:  // sending bender status to the BB
+        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_BNDR_STATUS, BNDR_GetStatus());
+        BB_MSG_SendTheBuffer();
+        break;
+      case PLAYCONTROLLER_REQUEST_ID_BNDR_RESET:  // reset bender
+        BNDR_Reset(0);
+        BNDR_Reset(1);
+        BB_MSG_WriteMessage2Arg(PLAYCONTROLLER_BB_MSG_TYPE_NOTIFICATION, PLAYCONTROLLER_NOTIFICATION_ID_BNDR_RESET, 1);
+        BB_MSG_SendTheBuffer();
+        break;
       case PLAYCONTROLLER_REQUEST_ID_UHID64:
       {
         BB_MSG_WriteMessage(PLAYCONTROLLER_BB_MSG_TYPE_UHID64, 4, (uint16_t*) &NL_uhid64);
