@@ -83,7 +83,7 @@ void ModulationRoutersCarousel::setHighlight(bool isHighlight)
 
 void ModulationRoutersCarousel::turnInDirection(int inc)
 {
-  auto vg = getHWUI()->getCurrentVoiceGroup();
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
   if(auto s = dynamic_cast<HardwareSourceSendParameter*>(selected))
   {

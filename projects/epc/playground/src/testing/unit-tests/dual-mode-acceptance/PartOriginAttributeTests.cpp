@@ -24,7 +24,7 @@ namespace detail
   }
 }
 
-TEST_CASE("Part Origin Attribute")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Part Origin Attribute")
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
@@ -117,7 +117,7 @@ auto getOrigins()
   return std::pair { eb->getPartOrigin(VoiceGroup::I), eb->getPartOrigin(VoiceGroup::II) };
 };
 
-TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
 {
   DualPresetBank presets;
   auto bank = presets.getBank();
@@ -128,9 +128,9 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
   auto eb = TestHelper::getEditBuffer();
   auto settings = TestHelper::getSettings();
   auto pm = Application::get().getPresetManager();
-
-  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto vgManager = Application::get().getVGManager();
+  vgManager->setCurrentVoiceGroup(VoiceGroup::I);
+  auto currentVG = vgManager->getCurrentVoiceGroup();
 
   CHECK(currentVG == VoiceGroup::I);
 
@@ -162,7 +162,7 @@ TEST_CASE("Step Direct Load and Load to Part Preset List", "[Preset][Loading]")
       return uuid == bank->getPresetAt(0)->getUuid();
     });
 
-    hwui->setLoadToPart(true);
+    vgManager->setLoadToPart(true);
 
     detail::pressButton(Buttons::BUTTON_INC);
 

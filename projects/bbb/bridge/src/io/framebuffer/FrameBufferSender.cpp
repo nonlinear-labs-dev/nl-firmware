@@ -10,7 +10,7 @@
 #include <giomm.h>
 
 FrameBufferSender::FrameBufferSender()
-    : m_throttler(std::chrono::milliseconds(10))
+    : m_throttler(Glib::MainContext::get_default(), std::chrono::milliseconds(10))
 {
 #ifndef _DEVELOPMENT_PC
   m_fd = open("/dev/fb0", O_RDWR);

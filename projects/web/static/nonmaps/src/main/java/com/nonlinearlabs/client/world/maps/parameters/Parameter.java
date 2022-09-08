@@ -196,6 +196,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	@Override
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
+		fine |= SetupModel.get().localSettings.localFineEnabled.getBool();
 		fine = forceFine(fine);
 
 		boolean noDrag = (SetupModel.get().localSettings.editParameter.getValue() == EditParameter.never)

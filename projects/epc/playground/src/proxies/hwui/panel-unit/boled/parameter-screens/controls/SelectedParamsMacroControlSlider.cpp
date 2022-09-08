@@ -11,9 +11,9 @@
 SelectedParamsMacroControlSlider::SelectedParamsMacroControlSlider(const Rect &rect)
     : super(rect)
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &SelectedParamsMacroControlSlider::setTargetParameter)),
-      getHWUI()->getCurrentVoiceGroup());
+      sigc::hide<0>(sigc::mem_fun(this, &SelectedParamsMacroControlSlider::setTargetParameter)), vg);
 }
 
 SelectedParamsMacroControlSlider::~SelectedParamsMacroControlSlider()

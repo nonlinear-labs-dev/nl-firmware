@@ -3,7 +3,7 @@
 #include <testing/unit-tests/mock/MockPresetStorage.h>
 #include <proxies/hwui/HWUI.h>
 
-TEST_CASE("FROM Layer")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"FROM Layer")
 {
   using namespace C15::PID;
   MockPresetStorage presets;
@@ -12,7 +12,7 @@ TEST_CASE("FROM Layer")
   EditBufferUseCases ebUseCases(*eb);
   ebUseCases.load(presets.getLayerPreset());
 
-  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+  Application::get().getVGManager()->setCurrentVoiceGroup(VoiceGroup::II);
 
   CHECK(eb->getType() == SoundType::Layer);
 
@@ -271,7 +271,7 @@ TEST_CASE("FROM Layer")
   }
 }
 
-TEST_CASE("Split Loaded")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Loaded")
 {
   using namespace C15::PID;
   MockPresetStorage presets;
@@ -281,7 +281,7 @@ TEST_CASE("Split Loaded")
 
   ebUseCases.load(presets.getSplitPreset());
 
-  Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+  Application::get().getVGManager()->setCurrentVoiceGroup(VoiceGroup::II);
   CHECK(eb->getType() == SoundType::Split);
 
   WHEN("OUT: To FX x selected")

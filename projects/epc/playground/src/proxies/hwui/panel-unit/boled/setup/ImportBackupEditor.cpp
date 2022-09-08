@@ -102,7 +102,8 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
 {
   using namespace std::chrono_literals;
   auto &app = Application::get();
-  auto &boled = app.getHWUI()->getPanelUnit().getEditPanel().getBoled();
+  auto hwui = app.getHWUI();
+  auto &boled = hwui->getPanelUnit().getEditPanel().getBoled();
   auto settings = app.getSettings();
 
   if(file != std::filesystem::directory_entry())
@@ -111,22 +112,35 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
 
     FileInStream in(path, true);
 
-    boled.setOverlay(new SplashLayout());
-    SplashLayout::addStatus("Restoring Backup from File!");
+    boled.setOverlay(new SplashLayout(hwui));
+    hwui->addSplashStatus("Restoring Backup from File!");
 
     PresetManagerUseCases useCase(*app.getPresetManager(), *settings);
     auto& ae = *app.getAudioEngineProxy();
-    auto ret = useCase.importBackupFile(in, { SplashLayout::start, SplashLayout::addStatus, SplashLayout::finish }, ae);
+
+    auto start = [hwui](){
+      hwui->startSplash();
+    };
+
+    auto addStatus = [hwui](auto str){
+      hwui->addSplashStatus(str);
+    };
+
+    auto finish = [hwui](){
+      hwui->finishSplash();
+    };
+
+    auto ret = useCase.importBackupFile(in, { start, addStatus, finish }, ae);
     switch(ret)
     {
       case PresetManagerUseCases::ImportExitCode::Unsupported:
-        SplashLayout::setStatus(
+        hwui->setSplashStatus(
             "Unsupported File Version. The backup was created with a newer firmware. Please update your C15.");
         std::this_thread::sleep_for(2s);
         break;
       default:
       case PresetManagerUseCases::ImportExitCode::OK:
-        SplashLayout::addStatus("Restore Complete!");
+        hwui->setSplashStatus("Restore Complete!");
         std::this_thread::sleep_for(0.7s);
         break;
     }

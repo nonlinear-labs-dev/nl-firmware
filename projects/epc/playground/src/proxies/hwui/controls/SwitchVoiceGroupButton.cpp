@@ -20,10 +20,11 @@
 SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
     : Button("", pos)
 {
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::mem_fun(this, &SwitchVoiceGroupButton::onParameterSelectionChanged), getHWUI()->getCurrentVoiceGroup());
+      sigc::mem_fun(this, &SwitchVoiceGroupButton::onParameterSelectionChanged), currentVG);
 
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &SwitchVoiceGroupButton::onVoiceGroupChanged));
 
   Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
@@ -33,7 +34,8 @@ SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
 void SwitchVoiceGroupButton::rebuild()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto selected = eb->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto selected = eb->getSelected(vg);
 
   if(allowToggling(selected, eb))
     setText(StringAndSuffix { "I / II", 0 });
@@ -82,4 +84,3 @@ bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const Edit
   else
     return false;
 }
-

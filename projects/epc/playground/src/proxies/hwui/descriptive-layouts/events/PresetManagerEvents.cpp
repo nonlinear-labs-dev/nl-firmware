@@ -18,7 +18,7 @@ namespace DescriptiveLayouts
 {
 
   PresetManagerEvents::PresetManagerEvents()
-      : m_throttler(std::chrono::milliseconds(10))
+      : m_throttler(Application::get().getMainContext(), std::chrono::milliseconds(10))
   {
     createEventSources<Text::DisplayString>(
         EventSources::PreviousNumber, EventSources::PreviousName, EventSources::CurrentNumber,

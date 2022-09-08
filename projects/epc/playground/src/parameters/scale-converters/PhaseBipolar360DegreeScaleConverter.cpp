@@ -2,7 +2,7 @@
 #include "dimension/DegreeDimensionCoarse.h"
 
 PhaseBipolar360DegreeScaleConverter::PhaseBipolar360DegreeScaleConverter()
-    : LinearScaleConverter(tTcdRange(-7200, 7200), tDisplayRange(-360, 360), DegreeDimensionCoarse::get())
+    : LinearScaleConverter(tDisplayRange(-360, 360), DegreeDimensionCoarse::get())
 {
 }
 

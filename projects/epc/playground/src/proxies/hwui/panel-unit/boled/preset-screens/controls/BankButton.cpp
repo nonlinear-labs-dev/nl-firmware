@@ -66,7 +66,8 @@ void BankButton::installSingle()
   auto bankbutton = addControl(new Button("Bank", { 0, 15, 58, 11 }));
   bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
 
-  auto toggleBankFocus = [this] {
+  auto toggleBankFocus = [this]
+  {
     SettingsUseCases useCases(*Application::get().getSettings());
 
     if(m_bankFocus)
@@ -87,7 +88,8 @@ void BankButton::installDual()
 
   addControl(new Button("I / II", { 0, 15, 58, 11 }));
 
-  auto toggleBankFocus = [this] {
+  auto toggleBankFocus = [this]
+  {
     SettingsUseCases useCases(*Application::get().getSettings());
 
     if(m_bankFocus)
@@ -97,5 +99,5 @@ void BankButton::installDual()
   };
 
   m_buttonAHandler = std::make_unique<ShortVsLongPress>(
-      [this] { Application::get().getHWUI()->toggleCurrentVoiceGroup(); }, toggleBankFocus);
+      [this] { Application::get().getVGManager()->toggleCurrentVoiceGroup(); }, toggleBankFocus);
 }

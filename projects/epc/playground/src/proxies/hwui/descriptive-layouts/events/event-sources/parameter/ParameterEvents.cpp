@@ -71,7 +71,7 @@ void DescriptiveLayouts::ParameterDisplayStringEventSource::onSelectedParameterC
 void DescriptiveLayouts::ParameterDisplayStringEventSource::onModifierChanged(ButtonModifiers mods)
 {
   onSelectedParameterChanged(Application::get().getPresetManager()->getEditBuffer()->getSelected(
-      Application::get().getHWUI()->getCurrentVoiceGroup()));
+      Application::get().getVGManager()->getCurrentVoiceGroup()));
 }
 
 void DescriptiveLayouts::ParameterValueChanged::onSelectedParameterChanged(const Parameter *p)

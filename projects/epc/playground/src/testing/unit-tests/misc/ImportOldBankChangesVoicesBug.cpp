@@ -14,7 +14,7 @@
 #include <sync/SyncMasterMockRoot.h>
 #include <testing/unit-tests/mock/MockSettingsObject.h>
 
-TEST_CASE("Import Bank Fresh Results in Correct Voices", "[Unison]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Import Bank Fresh Results in Correct Voices", "[Unison]")
 {
   FuxieSwarmsTestBank bank;
   auto preset = bank.getPreset(0);
@@ -44,7 +44,7 @@ TEST_CASE("Import Bank Fresh Results in Correct Voices", "[Unison]")
   }
 }
 
-TEST_CASE("MC Smoothing A-D set to 20ms")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MC Smoothing A-D set to 20ms")
 {
   FuxieSwarmsTestBank bank;
   auto preset = bank.getPreset(0);
@@ -60,7 +60,7 @@ TEST_CASE("MC Smoothing A-D set to 20ms")
   CHECK(display == "20.0 ms");
 }
 
-TEST_CASE("UnisonVoices Conversion rules")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"UnisonVoices Conversion rules")
 {
   MockSettingsObject mockSettings("", &SyncMasterMockRoot::get());
   std::unique_ptr<AudioEngineProxy> aeContainer;

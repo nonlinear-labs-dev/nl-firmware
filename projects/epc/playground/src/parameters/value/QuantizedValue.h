@@ -65,8 +65,6 @@ class QuantizedValue : public ClippedValue
   [[nodiscard]] tControlPositionValue getNextStepValue(tControlPositionValue value, int incs, bool fine,
                                                        bool shift) const;
 
-  [[nodiscard]] tTcdValue getTcdValue() const;
-  void setTcdValue(tTcdValue v);
   [[nodiscard]] tDisplayValue getDisplayValue() const;
   [[nodiscard]] Glib::ustring getDisplayString() const;
   [[nodiscard]] Glib::ustring getDisplayString(tControlPositionValue cp) const;

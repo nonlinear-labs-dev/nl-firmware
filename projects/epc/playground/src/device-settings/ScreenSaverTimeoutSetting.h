@@ -32,5 +32,5 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
   Signal<void, bool> m_screenSaverSignal;
 
   int m_selectedIndex = 2;
-  std::chrono::minutes m_timeout;
+  std::chrono::minutes m_timeout = std::chrono::minutes::zero();
 };

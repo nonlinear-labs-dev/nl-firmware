@@ -4,7 +4,7 @@
 #include <proxies/hwui/base-unit/UpperRibbon.h>
 #include <proxies/hwui/base-unit/soled/RibbonLabel.h>
 
-TEST_CASE("Upper Ribbon", "[HWUI][Ribbon]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Upper Ribbon", "[HWUI][Ribbon]")
 {
   class TestRibbon : public UpperRibbon
   {

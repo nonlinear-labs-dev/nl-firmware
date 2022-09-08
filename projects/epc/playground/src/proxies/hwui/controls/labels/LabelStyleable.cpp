@@ -44,6 +44,11 @@ void LabelStyleable::setBackgroundColor(FrameBuffer& fb) const
   fb.setColor(m_styleSheet.backgroundColor);
 }
 
+void LabelStyleable::setSuffixFontColor(FrameBuffer& fb) const
+{
+  fb.setColor(m_styleSheet.suffixTextColor);
+}
+
 std::shared_ptr<Font> LabelStyleable::getFont() const
 {
   try
@@ -68,16 +73,15 @@ std::shared_ptr<Font> LabelStyleable::getFont() const
         break;
     }
 
-    auto& oled = Oleds::get();
     auto rawStr = fontStream.str();
-    return oled.getFont(rawStr, fontHeight);
+    return Fonts::get().getFont(rawStr, fontHeight);
   }
   catch(...)
   {
     ExceptionTools::errorLogCurrentException();
   }
 
-  return Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
+  return Fonts::get().getFont("Emphase-8-Regular", getFontHeight());
 }
 
 LabelStyle LabelStyleable::getCurrentStyle() const

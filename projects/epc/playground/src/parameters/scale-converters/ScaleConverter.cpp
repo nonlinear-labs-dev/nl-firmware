@@ -102,12 +102,6 @@ const ScaleConverter::tControlPositionRange &ScaleConverter::getControlPositionR
   return s;
 }
 
-ScaleConverter::tTcdRange ScaleConverter::getTcdRange() const
-{
-  ScaleConverter::tControlPositionRange cpRange = getControlPositionRange();
-  return tTcdRange(controlPositionToTcd(cpRange.getMin()), controlPositionToTcd(cpRange.getMax()));
-}
-
 tControlPositionValue ScaleConverter::getCoarseDenominator(const QuantizedValue &v) const
 {
   return v.getCoarseDenominator();

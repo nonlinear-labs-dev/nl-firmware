@@ -14,6 +14,8 @@ import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.contextStates.ContextState;
 import com.nonlinearlabs.client.contextStates.StopWatchState;
+import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
+import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.integrationTests.IntegrationTests;
@@ -32,9 +34,9 @@ import com.nonlinearlabs.client.world.overlay.DragProxy;
 import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.belt.presets.PresetManagerContextMenu;
 import com.nonlinearlabs.client.world.pointer.TouchPinch;
+import java.util.function.Function;
 
 public class NonLinearWorld extends MapsLayout {
-
 	private Animator theAnimation = null;
 	private int invalidationMask = 0;
 	private NonMaps root = null;
@@ -52,6 +54,8 @@ public class NonLinearWorld extends MapsLayout {
 	private double maxLevelOfDetail = 0;
 	private String numBufferUnderruns = "0";
 
+	private BooleanDataModelEntity shiftSignal = new BooleanDataModelEntity();
+
 	private Throttler bufferUnderrunAlertThrottler = new Throttler(5000);
 
 	private TransitionDamper scrollAnimation = new TransitionDamper(0.9, new TransitionDamper.Client() {
@@ -65,7 +69,7 @@ public class NonLinearWorld extends MapsLayout {
 	public NonLinearWorld(NonMaps root) {
 		super(null);
 		this.root = root;
-
+		
 		settings = addChild(new DeveloperSettings(this));
 		parameterEditor = new ParameterEditor(this);
 		presetManager = new PresetManager(this);
@@ -492,7 +496,7 @@ public class NonLinearWorld extends MapsLayout {
 				IntegrationTests.doAllTests();
 
 		if (event.getNativeKeyCode() == KeyCodes.KEY_SHIFT)
-			isShiftDown = true;
+			setShiftDown(true);
 		if (event.getNativeKeyCode() == KeyCodes.KEY_SPACE)
 			isSpaceDown = true;
 		if (event.getNativeKeyCode() == KeyCodes.KEY_CTRL)
@@ -517,7 +521,7 @@ public class NonLinearWorld extends MapsLayout {
 
 	public boolean handleKeyUp(final KeyUpEvent event) {
 		if (event.getNativeKeyCode() == KeyCodes.KEY_SHIFT)
-			isShiftDown = false;
+			setShiftDown(false);
 
 		if (event.getNativeKeyCode() == KeyCodes.KEY_SPACE)
 			isSpaceDown = false;
@@ -645,6 +649,10 @@ public class NonLinearWorld extends MapsLayout {
 		return isShiftDown;
 	}
 
+	public boolean isFineActive() {
+		return isShiftDown || SetupModel.get().localSettings.localFineEnabled.getBool();
+	}
+
 	public boolean isSpaceDown() {
 		return isSpaceDown;
 	}
@@ -655,6 +663,7 @@ public class NonLinearWorld extends MapsLayout {
 
 	public void setShiftDown(boolean s) {
 		isShiftDown = s;
+		shiftSignal.setValue(s);
 	}
 
 	public void setCtrlDown(boolean s) {
@@ -664,5 +673,10 @@ public class NonLinearWorld extends MapsLayout {
 	@Override
 	public boolean isDraggingControl() {
 		return false;
+	}
+
+	public void onShiftStateChanged(Function<BooleanValues, Boolean> cb)
+	{
+		shiftSignal.onChange(cb);
 	}
 }

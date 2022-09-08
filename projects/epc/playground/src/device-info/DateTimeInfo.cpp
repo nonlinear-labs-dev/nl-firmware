@@ -14,8 +14,13 @@ DateTimeInfo::DateTimeInfo(DeviceInformation *parent)
     : DeviceInformationItem(parent)
 {
   onTimeChanged();
-  Application::get().getMainContext()->signal_timeout().connect_seconds(
+  m_signalMinutePassed = Application::get().getMainContext()->signal_timeout().connect_seconds(
       sigc::mem_fun(this, &DateTimeInfo::onTimeChanged), 60);
+}
+
+DateTimeInfo::~DateTimeInfo()
+{
+  m_signalMinutePassed.disconnect();
 }
 
 bool DateTimeInfo::onTimeChanged()
@@ -32,10 +37,12 @@ void DateTimeInfo::writeDocument(Writer &writer, UpdateDocumentContributor::tUpd
 
 Glib::ustring DateTimeInfo::get() const
 {
-  return TimeTools::getAdjustedIso();
+  auto adj = Application::get().getSettings()->getSetting<DateTimeAdjustment>();
+  return TimeTools::getAdjustedIso(adj);
 }
 
 Glib::ustring DateTimeInfo::getDisplayString() const
 {
-  return TimeTools::getDisplayStringFromIso(TimeTools::getAdjustedIso());
+  auto adj = Application::get().getSettings()->getSetting<DateTimeAdjustment>();
+  return TimeTools::getDisplayStringFromIso(TimeTools::getAdjustedIso(adj));
 }

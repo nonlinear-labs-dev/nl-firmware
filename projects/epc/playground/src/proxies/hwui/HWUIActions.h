@@ -6,8 +6,10 @@
 #include <http/SectionAndActionManager.h>
 #include "HWUI.h"
 
+class VoiceGroupAndLoadToPartManager;
+
 class HWUIActions : public SectionAndActionManager
 {
  public:
-  HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuffer& eb);
+  HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuffer& eb, VoiceGroupAndLoadToPartManager& vgManager);
 };

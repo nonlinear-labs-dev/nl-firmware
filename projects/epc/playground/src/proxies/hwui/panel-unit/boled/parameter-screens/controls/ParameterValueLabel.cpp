@@ -12,7 +12,7 @@ ParameterValueLabel::ParameterValueLabel(const Parameter *param, const Rect &pos
 
   updateParameter(param);
 
-  m_vgSelectionConnection = Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  m_vgSelectionConnection = Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &ParameterValueLabel::updateVoiceGroup));
 }
 

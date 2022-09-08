@@ -11,7 +11,10 @@ namespace FileTools
       , m_rootFolder(rootFolder)
       , m_monitors(0)
   {
-    rebuildDirectoryList();
+  }
+
+  RecursiveDirectoryMonitor::~RecursiveDirectoryMonitor()
+  {
   }
 
   void RecursiveDirectoryMonitor::rebuildDirectoryList()
@@ -29,7 +32,7 @@ namespace FileTools
   {
     auto monitor = file->monitor(Gio::FILE_MONITOR_WATCH_MOUNTS);
     monitor->signal_changed().connect(sigc::mem_fun(this, &RecursiveDirectoryMonitor::onFileChanged));
-    m_monitors.emplace_back(std::move(monitor));
+    m_monitors.push_back(std::move(monitor));
   }
 
   void RecursiveDirectoryMonitor::onFileChanged(const tFile& oldFile, const tFile& newFile, int monitorEvent)

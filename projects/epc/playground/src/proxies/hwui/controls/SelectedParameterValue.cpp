@@ -21,11 +21,11 @@ SelectedParameterValue::SelectedParameterValue(const Rect &rect)
 {
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &SelectedParameterValue::onParameterSelected)),
-      getHWUI()->getCurrentVoiceGroup());
+      Application::get().getVGManager()->getCurrentVoiceGroup());
 
   Application::get().getHWUI()->onModifiersChanged(sigc::mem_fun(this, &SelectedParameterValue::onModifiersChanged));
 
-  Application::get().getHWUI()->onCurrentVoiceGroupChanged(
+  Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::mem_fun(this, &SelectedParameterValue::onVoiceGroupSelectionChanged));
 
   Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
@@ -38,8 +38,8 @@ SelectedParameterValue::~SelectedParameterValue()
 
 void SelectedParameterValue::onModifiersChanged(ButtonModifiers mods)
 {
-  onParamValueChanged(
-      Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup()));
+  onParamValueChanged(Application::get().getPresetManager()->getEditBuffer()->getSelected(
+      Application::get().getVGManager()->getCurrentVoiceGroup()));
 }
 
 void SelectedParameterValue::onParameterSelected(Parameter *parameter)
@@ -65,7 +65,7 @@ bool SelectedParameterValue::redraw(FrameBuffer &fb)
   auto amount = Application::get()
                     .getPresetManager()
                     ->getEditBuffer()
-                    ->getSelected(getHWUI()->getCurrentVoiceGroup())
+                    ->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup())
                     ->getDisplayString();
 
   if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
@@ -92,8 +92,8 @@ void SelectedParameterValue::onVoiceGroupSelectionChanged(VoiceGroup v)
 
 void SelectedParameterValue::onSoundTypeChanged()
 {
-  auto selected
-      = Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup());
+  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(
+      Application::get().getVGManager()->getCurrentVoiceGroup());
   setVisible(!selected->isDisabled());
 }
 
@@ -108,7 +108,8 @@ PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
   LabelStyle style { .size = FontSize::Size9,
                      .decoration = FontDecoration::Regular,
                      .justification = Font::Justification::Center,
-                     .backgroundColor = FrameBufferColors::Transparent };
+                     .backgroundColor = FrameBufferColors::Transparent,
+                     .suffixTextColor = FrameBufferColors::C128 };
 
   m_localEnabledLabel = addControl(new LabelStyleable({ 0, 0, pos.getWidth(), pos.getHeight() }));
   m_localDisabledLabelSnd = addControl(new LabelStyleable(left));
@@ -122,6 +123,8 @@ PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   eb->onSelectionChanged(sigc::mem_fun(this, &PhysicalControlValueLabel::onParameterSelectionHappened),
                          VoiceGroup::Global);
+
+  Application::get().getHWUI()->onModifiersChanged(sigc::mem_fun(this, &PhysicalControlValueLabel::onModifiersChanged));
 }
 
 void PhysicalControlValueLabel::setHighlight(bool isHighlight)
@@ -170,7 +173,14 @@ void PhysicalControlValueLabel::onSendChanged(const Parameter *p)
     m_isLocalEnabled = send->isLocalEnabled();
     auto str = send->getDisplayString();
     auto shorter = nltools::string::removeCharacters(str, { '%', ' ' });
-    m_localDisabledLabelSnd->setText({ shorter });
+    if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
+    {
+       m_localDisabledLabelSnd->setText({ shorter, " F"});
+    }
+    else
+    {
+        m_localDisabledLabelSnd->setText({ shorter });
+    }
     ControlWithChildren::setDirty();
   }
 }
@@ -182,10 +192,29 @@ void PhysicalControlValueLabel::onHWChanged(const Parameter *p)
     m_isLocalEnabled = hw->isLocalEnabled();
     auto str = hw->getDisplayString();
     auto shorter = nltools::string::removeCharacters(str, { '%', ' ' });
-    m_localEnabledLabel->setText({ str });
-    m_localDisabledLabelRcv->setText({ shorter });
+    if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
+    {
+        StringAndSuffix temp{ str, " F"};
+        m_localEnabledLabel->setText(temp);
+        m_localDisabledLabelRcv->setText({ shorter, " F"});
+    }
+    else
+    {
+      m_localEnabledLabel->setText({ str });
+      m_localDisabledLabelRcv->setText({ shorter });
+    }
+
     ControlWithChildren::setDirty();
   }
+}
+
+void PhysicalControlValueLabel::onModifiersChanged(ButtonModifiers mods)
+{
+  if(m_hw)
+    onHWChanged(m_hw);
+
+  if(m_snd)
+    onSendChanged(m_snd);
 }
 
 HardwareSourceCCLabel::HardwareSourceCCLabel(const Rect &e)

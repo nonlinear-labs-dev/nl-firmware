@@ -72,8 +72,7 @@ class AudioEngineProxy : public sigc::trackable
   void connectSettingsToAudioEngineMessage();
   void scheduleMidiSettingsMessage();
 
-  Throttler m_sendMidiSettingThrottler { std::chrono::milliseconds { 250 } };
-
+  Throttler m_sendMidiSettingThrottler;
   std::vector<sigc::connection> m_settingConnections;
   PresetManager& m_presetManager;
   Settings& m_settings;

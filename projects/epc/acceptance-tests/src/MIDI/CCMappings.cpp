@@ -1,8 +1,9 @@
 #include <catch.hpp>
 #include <MidiRuntimeOptions.h>
 #include <mock/MidiRuntimeOptionsTester.h>
+#include <testing/TestHelper.h>
 
-TEST_CASE("PedalCC to int")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "PedalCC to int")
 {
   auto getMSB = [](PedalCC c) { return MidiRuntimeOptionsTester::decodeEnumMSB(c); };
 
@@ -25,7 +26,7 @@ TEST_CASE("PedalCC to int")
   CHECK(getLSB(PedalCC::CC64_Continuous) == std::nullopt);
 }
 
-TEST_CASE("RibbonCC to int")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "RibbonCC to int")
 {
   auto getMSB = [](RibbonCC c) { return MidiRuntimeOptionsTester::decodeEnumMSB(c); };
 
@@ -42,7 +43,7 @@ TEST_CASE("RibbonCC to int")
   CHECK(getLSB(RibbonCC::CC31).value() == 63);
 }
 
-TEST_CASE("AftertouchCC to int")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "AftertouchCC to int")
 {
   auto getMSB = [](AftertouchCC c) { return MidiRuntimeOptionsTester::decodeEnumMSB(c); };
 
@@ -65,7 +66,7 @@ TEST_CASE("AftertouchCC to int")
   CHECK(getLSB(AftertouchCC::CC20).value() == 52);
 }
 
-TEST_CASE("BenderCC to int")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "BenderCC to int")
 {
   auto getMSB = [](BenderCC c) { return MidiRuntimeOptionsTester::decodeEnumMSB(c); };
 

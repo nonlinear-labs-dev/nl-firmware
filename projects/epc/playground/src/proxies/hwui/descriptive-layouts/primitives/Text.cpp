@@ -125,11 +125,11 @@ namespace DescriptiveLayouts
       switch((StyleValues::Font) getStyleValue(StyleKey::FontDecoration))
       {
         case StyleValues::Font::Bold:
-          m_cachedFont = Oleds::get().getFont("Emphase-8-Bold", getFontHeight());
+          m_cachedFont = Fonts::get().getFont("Emphase-8-Bold", getFontHeight());
           break;
         case StyleValues::Font::Regular:
         default:
-          m_cachedFont = Oleds::get().getFont("Emphase-8-Regular", getFontHeight());
+          m_cachedFont = Fonts::get().getFont("Emphase-8-Regular", getFontHeight());
           break;
       }
     }

@@ -33,7 +33,9 @@ FileInStream::FileInStream(const Glib::ustring &fileName, bool tryZip)
     {
       auto decompressor = g_zlib_decompressor_new(GZlibCompressorFormat::G_ZLIB_COMPRESSOR_FORMAT_GZIP);
       auto converter = g_converter_input_stream_new(G_INPUT_STREAM(fileStream), G_CONVERTER(decompressor));
+      g_filter_input_stream_set_close_base_stream(G_FILTER_INPUT_STREAM(converter), true);
       m_stream = g_data_input_stream_new(G_INPUT_STREAM(converter));
+      g_filter_input_stream_set_close_base_stream(G_FILTER_INPUT_STREAM(m_stream), true);
       g_object_unref(converter);
       g_object_unref(decompressor);
     }
@@ -46,13 +48,13 @@ FileInStream::FileInStream(const Glib::ustring &fileName, bool tryZip)
   }
   else
   {
-    DebugLevel::error("Could not open file stream:", fileName);
+    DebugLevel::warning("Could not open file stream:", fileName);
   }
 
   if(!m_stream)
   {
     m_eof = true;
-    DebugLevel::error("FileInStream has no stream for file:", fileName);
+    DebugLevel::warning("FileInStream has no stream for file:", fileName);
   }
 }
 

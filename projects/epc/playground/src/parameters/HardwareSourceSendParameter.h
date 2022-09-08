@@ -42,7 +42,7 @@ class HardwareSourceSendParameter : public Parameter
   PhysicalControlParameter& m_sibling;
   Settings* m_settings = nullptr;
 
-  ReturnMode m_returnMode;
+  ReturnMode m_returnMode = ReturnMode::None;
   bool m_localIsEnabled;
   bool m_routingIsEnabled;
   bool m_lastChangedFromHWUI = false;

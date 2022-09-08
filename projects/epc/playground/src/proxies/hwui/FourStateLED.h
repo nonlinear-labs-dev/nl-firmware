@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LED.h"
+#include "nltools/threading/Throttler.h"
 
 class FourStateLED : public LED
 {
@@ -22,5 +23,6 @@ class FourStateLED : public LED
   void syncHWUI();
 
  private:
+  Throttler m_syncThrottler;
   State m_state = State::Invalid;
 };

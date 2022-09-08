@@ -34,9 +34,11 @@
 #include <use-cases/BankUseCases.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
 #include <device-settings/NoteShift.h>
+#include <Application.h>
 
 AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, PlaycontrollerProxy &playProxy)
-    : m_presetManager { pm }
+    : m_sendMidiSettingThrottler(Application::get().getMainContext(), std::chrono::milliseconds { 250 })
+    , m_presetManager { pm }
     , m_settings { settings }
     , m_playcontrollerProxy { playProxy }
 {

@@ -23,15 +23,17 @@ HWSourceAmountCarousel::~HWSourceAmountCarousel()
 
 void HWSourceAmountCarousel::turn()
 {
-  if(auto p = dynamic_cast<MacroControlParameter *>(
-         Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup())))
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  if(auto p = dynamic_cast<MacroControlParameter *>(eb->getSelected(vg)))
     p->toggleUiSelectedHardwareSource(1);
 }
 
 void HWSourceAmountCarousel::antiTurn()
 {
-  if(auto p = dynamic_cast<MacroControlParameter *>(
-         Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup())))
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  if(auto p = dynamic_cast<MacroControlParameter *>(eb->getSelected(vg)))
     p->toggleUiSelectedHardwareSource(-1);
 }
 
@@ -79,19 +81,22 @@ void HWSourceAmountCarousel::setup(Parameter *newOne)
 
 void HWSourceAmountCarousel::highlightSelected()
 {
-  setup(Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup()));
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  setup(Application::get().getPresetManager()->getEditBuffer()->getSelected(vg));
 }
 
 void HWSourceAmountCarousel::onMacroControlChanged(const Parameter *param)
 {
   if(auto mc = dynamic_cast<const MacroControlParameter *>(param))
   {
-    forEach([=](tControlPtr c) {
-      if(auto miniSlider = std::dynamic_pointer_cast<MiniParameterBarSlider>(c))
-        if(auto p = dynamic_cast<ModulationRoutingParameter *>(miniSlider->getParameter()))
-          miniSlider->setHighlight(isHighlight()
-                                   || (mc->getUiSelectedHardwareSource() == p->getSourceParameter()->getID()));
-    });
+    forEach(
+        [=](tControlPtr c)
+        {
+          if(auto miniSlider = std::dynamic_pointer_cast<MiniParameterBarSlider>(c))
+            if(auto p = dynamic_cast<ModulationRoutingParameter *>(miniSlider->getParameter()))
+              miniSlider->setHighlight(isHighlight()
+                                       || (mc->getUiSelectedHardwareSource() == p->getSourceParameter()->getID()));
+        });
   }
 }
 

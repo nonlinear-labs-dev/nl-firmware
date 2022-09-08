@@ -12,8 +12,9 @@
 MCAmountLabel::MCAmountLabel(const Rect &rect)
     : super(rect)
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &MCAmountLabel::onParameterSelected)), getHWUI()->getCurrentVoiceGroup());
+      sigc::hide<0>(sigc::mem_fun(this, &MCAmountLabel::onParameterSelected)), vg);
 
   Application::get().getHWUI()->onModifiersChanged(sigc::hide(sigc::mem_fun(this, &MCAmountLabel::onModifiersChanged)));
 }
@@ -61,5 +62,6 @@ void MCAmountLabel::setSuffixFontColor(FrameBuffer &fb) const
 
 void MCAmountLabel::onModifiersChanged()
 {
-  update(Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup()));
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  update(Application::get().getPresetManager()->getEditBuffer()->getSelected(vg));
 }

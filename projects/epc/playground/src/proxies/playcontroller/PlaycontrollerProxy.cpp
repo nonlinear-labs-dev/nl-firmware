@@ -18,6 +18,7 @@
 #include "device-settings/DebugLevel.h"
 #include "device-settings/VelocityCurve.h"
 #include "use-cases/ParameterUseCases.h"
+#include "parameters/ValueRange.h"
 #include <device-settings/ParameterEditModeRibbonBehaviour.h>
 #include <memory.h>
 #include <nltools/messaging/Message.h>
@@ -28,22 +29,22 @@
 
 PlaycontrollerProxy::PlaycontrollerProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
-    , m_throttledRelativeParameterChange(std::chrono::milliseconds(1))
-    , m_throttledAbsoluteParameterChange(std::chrono::milliseconds(1))
+    , m_throttledRelativeParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
+    , m_throttledAbsoluteParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
 {
   m_msgParser.reset(new MessageParser());
 
   if(Application::exists())
   {
-      nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playcontroller,
-                                            sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerConnected));
+    nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playcontroller,
+                                          sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerConnected));
 
-      nltools::msg::receive<nltools::msg::PlaycontrollerMessage>(
-              nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerMessage));
+    nltools::msg::receive<nltools::msg::PlaycontrollerMessage>(
+        nltools::msg::EndPoint::Playground, sigc::mem_fun(this, &PlaycontrollerProxy::onPlaycontrollerMessage));
 
-      nltools::msg::receive<nltools::msg::Keyboard::NoteEventHappened>(
-              nltools::msg::EndPoint::Playground,
-              sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
+    nltools::msg::receive<nltools::msg::Keyboard::NoteEventHappened>(
+        nltools::msg::EndPoint::Playground,
+        sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
   }
 }
 
@@ -191,8 +192,7 @@ void PlaycontrollerProxy::sendCalibrationData()
 
 Parameter *PlaycontrollerProxy::findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const
 {
-  auto paramId = [](uint16_t id)
-  {
+  auto paramId = [](uint16_t id) {
     switch(id)
     {
       case HW_SOURCE_ID_PEDAL_1:
@@ -236,8 +236,8 @@ void PlaycontrollerProxy::onEditControlMessageReceived(const MessageParser::NLMe
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
 
-  if(auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected(
-         Application::get().getHWUI()->getCurrentVoiceGroup()))
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  if(auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg))
   {
     auto ribbonModeBehaviour = Application::get().getSettings()->getSetting<ParameterEditModeRibbonBehaviour>()->get();
 
@@ -258,37 +258,33 @@ void PlaycontrollerProxy::onRelativeEditControlMessageReceived(Parameter *p, gin
 {
   m_throttledRelativeParameterAccumulator += value;
 
-  m_throttledRelativeParameterChange.doTask(
-      [this, p]()
-      {
-        if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
-          m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
+  m_throttledRelativeParameterChange.doTask([this, p]() {
+    if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
+      m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
 
-        auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
-        IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
-        useCase.changeBy(amount, false);
-        m_throttledRelativeParameterAccumulator = 0;
-      });
+    auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
+    IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
+    useCase.changeBy(amount, false);
+    m_throttledRelativeParameterAccumulator = 0;
+  });
 }
 
 void PlaycontrollerProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gint16 value)
 {
   m_throttledAbsoluteParameterValue = value;
 
-  m_throttledAbsoluteParameterChange.doTask(
-      [this, p]()
-      {
-        ParameterUseCases useCase(p);
+  m_throttledAbsoluteParameterChange.doTask([this, p]() {
+    ParameterUseCases useCase(p);
 
-        if(p->isBiPolar())
-        {
-          useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
-        }
-        else
-        {
-          useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
-        }
-      });
+    if(p->isBiPolar())
+    {
+      useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
+    }
+    else
+    {
+      useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
+    }
+  });
 }
 
 void PlaycontrollerProxy::notifyRibbonTouch(int ribbonsParameterID)
@@ -428,7 +424,7 @@ void PlaycontrollerProxy::sendRequestToPlaycontroller(MessageParser::Playcontrol
   queueToPlaycontroller(cmp);
 }
 
-sigc::connection PlaycontrollerProxy::onUHIDChanged(const sigc::slot<void, uint64_t>& s)
+sigc::connection PlaycontrollerProxy::onUHIDChanged(const sigc::slot<void, uint64_t> &s)
 {
   return m_signalUHIDChanged.connectAndInit(s, m_uhid);
 }
@@ -445,4 +441,36 @@ void PlaycontrollerProxy::setUHID(uint64_t uhid)
     m_uhid = uhid;
     m_signalUHIDChanged.send(m_uhid);
   }
+}
+
+template <typename tRet, typename tInValue>
+tRet scaleValueToRange(const ValueRange<tTcdValue> &tcdRange, const tInValue &in, const ValueRange<tInValue> &inRange,
+                       bool clip)
+{
+  tInValue inRangeWidth = inRange.getRangeWidth();
+  tRet outRangeWidth = tcdRange.getRangeWidth();
+  tInValue clippedIn = clip ? inRange.clip(in) : in;
+  auto res = (clippedIn - inRange.getMin()) * outRangeWidth / inRangeWidth + tcdRange.getMin();
+
+  if(std::numeric_limits<tRet>::is_integer)
+    return lround(res);
+
+  return res;
+}
+
+int16_t PlaycontrollerProxy::ribbonRelativeFactorToTCDValue(tControlPositionValue d)
+{
+  static ValueRange<tTcdValue> m_ribbonRelativeFactorTcdRange { 256, 2560 };
+  return scaleValueToRange<int16_t>(m_ribbonRelativeFactorTcdRange, d, ValueRange<tControlPositionValue>(0, 1), false);
+}
+
+int16_t PlaycontrollerProxy::ribbonCPValueToTCDValue(tControlPositionValue d, bool bipolar)
+{
+  static ValueRange<tTcdValue> m_ribbonValueTcdRangeBipolar { -8000, 8000 };
+  static ValueRange<tTcdValue> m_ribbonValueTcdRangeUnipolar { 0, 16000 };
+
+  if(bipolar)
+    return scaleValueToRange<int16_t>(m_ribbonValueTcdRangeBipolar, d, ValueRange<tControlPositionValue>(-1, 1), false);
+  else
+    return scaleValueToRange<int16_t>(m_ribbonValueTcdRangeUnipolar, d, ValueRange<tControlPositionValue>(0, 1), false);
 }

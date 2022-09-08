@@ -10,9 +10,9 @@ ModulationSourceEnabledDottedLine::ModulationSourceEnabledDottedLine(const Rect 
     : super(rect)
     , m_enabled(false)
 {
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &ModulationSourceEnabledDottedLine::onParameterSelected)),
-      getHWUI()->getCurrentVoiceGroup());
+      sigc::hide<0>(sigc::mem_fun(this, &ModulationSourceEnabledDottedLine::onParameterSelected)), currentVG);
 }
 
 ModulationSourceEnabledDottedLine::~ModulationSourceEnabledDottedLine()

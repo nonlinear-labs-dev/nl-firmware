@@ -3,7 +3,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetManager.h>
 
-TEST_CASE("Store Presets With Part Names", "[Preset][Store]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Presets With Part Names", "[Preset][Store]")
 {
   auto eb = TestHelper::getEditBuffer();
   auto pm = TestHelper::getPresetManager();
