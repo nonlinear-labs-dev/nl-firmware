@@ -20,61 +20,22 @@ HardwareSourcesGroup::~HardwareSourcesGroup()
 
 void HardwareSourcesGroup::init()
 {
-  auto pedal1 = appendParameter(new PedalParameter(this, getPedal1ParameterID(),
-                                     ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
-
-  appendParameter(new HardwareSourceSendParameter(this, *pedal1, getPedal1SendID(),
-                                                  ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000,
-                                                  m_settings));
-
-  auto pedal2 = appendParameter(new PedalParameter(this, getPedal2ParameterID(),
-                                     ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
-
-  appendParameter(new HardwareSourceSendParameter(this, *pedal2, getPedal2SendID(),
-                                                  ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000,
-                                                  m_settings));
-
-  auto pedal3 = appendParameter(new PedalParameter(this, getPedal3ParameterID(),
-                                     ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
-
-  appendParameter(new HardwareSourceSendParameter(this, *pedal3, getPedal3SendID(),
-                                                  ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000,
-                                                  m_settings));
-
-  auto pedal4 = appendParameter(new PedalParameter(this, getPedal4ParameterID(),
-                                     ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
-
-  appendParameter(new HardwareSourceSendParameter(this, *pedal4, getPedal4SendID(),
-                                                  ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000,
-                                                  m_settings));
-
-  auto bender = appendParameter(new PitchbendParameter(this, getPitchbendParameterID(),
-                                         ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 100, 1000));
-
-  appendParameter(new HardwareSourceSendParameter(this, *bender, getBenderSendID(),
-                                                  ScaleConverter::get<LinearBipolar100PercentScaleConverter>(), 0, 100,
-                                                  1000, m_settings));
-
-  auto at = appendParameter(new AftertouchParameter(this, getAftertouchParameterID(),
-                                          ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000));
-
-  appendParameter(new HardwareSourceSendParameter(this, *at, getAftertouchSendID(),
-                                                  ScaleConverter::get<Linear100PercentScaleConverter>(), 0, 100, 1000,
-                                                  m_settings));
-
-  auto ribbon1 = appendParameter(new RibbonParameter(this, getUpperRibbonParameterID(),
-                                      ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
-
-  appendParameter(new HardwareSourceSendParameter(this, *ribbon1, getRibbon1SendID(),
-                                                  ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000,
-                                                  m_settings));
-
-  auto ribbon2 = appendParameter(new RibbonParameter(this, getLowerRibbonParameterID(),
-                                      ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000));
-
-  appendParameter(new HardwareSourceSendParameter(this, *ribbon2, getRibbon2SendID(),
-                                                  ScaleConverter::get<Linear100PercentScaleConverter>(), 0.5, 100, 1000,
-                                                  m_settings));
+  auto pedal1 = appendParameter(new PedalParameter(this, getPedal1ParameterID()));
+  appendParameter(new HardwareSourceSendParameter(this, *pedal1, getPedal1SendID(), m_settings));
+  auto pedal2 = appendParameter(new PedalParameter(this, getPedal2ParameterID()));
+  appendParameter(new HardwareSourceSendParameter(this, *pedal2, getPedal2SendID(), m_settings));
+  auto pedal3 = appendParameter(new PedalParameter(this, getPedal3ParameterID()));
+  appendParameter(new HardwareSourceSendParameter(this, *pedal3, getPedal3SendID(), m_settings));
+  auto pedal4 = appendParameter(new PedalParameter(this, getPedal4ParameterID()));
+  appendParameter(new HardwareSourceSendParameter(this, *pedal4, getPedal4SendID(), m_settings));
+  auto bender = appendParameter(new PitchbendParameter(this, getPitchbendParameterID()));
+  appendParameter(new HardwareSourceSendParameter(this, *bender, getBenderSendID(), m_settings));
+  auto at = appendParameter(new AftertouchParameter(this, getAftertouchParameterID()));
+  appendParameter(new HardwareSourceSendParameter(this, *at, getAftertouchSendID(), m_settings));
+  auto ribbon1 = appendParameter(new RibbonParameter(this, getUpperRibbonParameterID()));
+  appendParameter(new HardwareSourceSendParameter(this, *ribbon1, getRibbon1SendID(), m_settings));
+  auto ribbon2 = appendParameter(new RibbonParameter(this, getLowerRibbonParameterID()));
+  appendParameter(new HardwareSourceSendParameter(this, *ribbon2, getRibbon2SendID(), m_settings));
 }
 
 HardwareSourcesGroup::tPhysicalControlParameters HardwareSourcesGroup::getPhysicalControlParameters()
@@ -83,7 +44,7 @@ HardwareSourcesGroup::tPhysicalControlParameters HardwareSourcesGroup::getPhysic
 
   for(auto param : getParameters())
     if(auto physicalParam = dynamic_cast<PhysicalControlParameter*>(param))
-      if(dynamic_cast<HardwareSourceSendParameter*>(physicalParam) == nullptr) //to keep outside unchanged for now
+      if(dynamic_cast<HardwareSourceSendParameter*>(physicalParam) == nullptr)  //to keep outside unchanged for now
         ret.push_back(physicalParam);
 
   return ret;

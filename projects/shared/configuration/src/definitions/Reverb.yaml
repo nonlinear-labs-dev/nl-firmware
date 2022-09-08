@@ -1,0 +1,93 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Reverb
+
+signals:
+  Mono_Signal: [ Size, Feedback, Bal, Pre, HPF, LPF, Dry, Wet ]
+
+static: [
+  &ALL_EXPOSED {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 1 },
+      Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &VALUE_PERCENT { coarse: 100, fine: 1000 },
+  &MODULATEABLE {
+    type: Local_Modulateable
+  }
+]
+
+parameters:
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 235
+    token: Size
+    label_long: Size
+    label_short: Size
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.33f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      The room size and reverb time are set here.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 237
+    token: Pre_Dly
+    label_long: Pre Delay
+    label_short: Pre Delay
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.33f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Cubic, factor: 1.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Pre delay time, shifting the late reflections. This has a profound effect on the perceived room size.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 238
+    token: Color
+    label_long: Color
+    label_short: Color
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.5f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Pre delay time, shifting the late reflections. This has a profound effect on the perceived room size.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 240
+    token: Chorus
+    label_long: Chorus
+    label_short: Chorus
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.25f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 1.0f, offset: 0.0f, section: Mono, clock: Slow, signal: Mono_Signal }
+    info: >
+      This controls the internal modulation of the reverberation delays.
+      At higher amounts, there is more movement and the diffusion is smoother.
+      At lower amounts, the reverb becomes more static and metallic.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 241
+    token: Mix
+    label_long: Mix
+    label_short: Mix
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: None }
+    info: >
+      Crossfades between the dry signal and the reverberation signal.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 344
+    token: Send
+    label_long: Send
+    label_short: Send
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 1.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: Mono_Signal }
+    info: >
+      Level control at the input of the effect signal path.
+      In contrast to the Reverb Mix parameter, the Reverb feedback will still be audible when setting the Send parameter to zero.

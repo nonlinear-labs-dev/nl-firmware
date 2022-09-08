@@ -9,7 +9,7 @@ class ModulateableParameter : public Parameter
   typedef Parameter super;
 
  public:
-  ModulateableParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling);
+  ModulateableParameter(ParameterGroup *group, const ParameterId& id);
   ~ModulateableParameter() override;
 
   size_t getHash() const override;
@@ -68,4 +68,5 @@ class ModulateableParameter : public Parameter
 
   tDisplayValue m_modulationAmount;
   MacroControls m_modSource;
+  const ScaleConverter* m_modulationAmountScaleConverter = nullptr;
 };

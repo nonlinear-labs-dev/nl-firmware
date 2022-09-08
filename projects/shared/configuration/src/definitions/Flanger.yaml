@@ -1,0 +1,182 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Flanger
+
+signals:
+  Mono_Signal: [ LFO_L, LFO_R, Time_L, Time_R, FB_Local, FB_Cross, LPF, DRY, WET, APF_L, APF_R, Tremolo_L, Tremolo_R ]
+
+static: [
+  &ALL_EXPOSED {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 1 },
+      Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &VALUE_PERCENT { coarse: 100, fine: 1000 },
+  &MODULATEABLE {
+    type: Local_Modulateable
+  }
+]
+
+parameters:
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 211
+    token: Time_Mod
+    label_long: Time Mod
+    label_short: Time Mod
+    control_position: { <<: *VALUE_PERCENT, scale: PARABOLIC_BIP_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: Mono_Signal }
+    info: >
+      Relative amount of the modulation of the delay times by the LFO and/or the envelope.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 213
+    token: Phase
+    label_long: Phase
+    label_short: Phase
+    control_position: { coarse: 180, fine: 1800, scale: LINEAR_180_DEG, initial: 0.5f }
+    modulation_aspects: { coarse: 180, fine: 1800, scale: LINEAR_BIPOLAR_180_DEG }
+    rendering_args: { scaling: Linear, factor: 180.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Phase offset between the LFO signals modulating the delay times in the left and the right channel.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 214
+    token: Rate
+    label_long: Rate
+    label_short: Rate
+    control_position: { <<: *VALUE_PERCENT, scale: PARABOLIC_10_HZ, initial: 0.317f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 10.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Frequency of the LFO and rate of the envelope.
+      Both can be modulation sources for the delay times and the allpass center frequencies.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 216
+    token: Time
+    label_long: Time
+    label_short: Time
+    control_position: { coarse: 125, fine: 1250, scale: PARABOLIC_50_MS, initial: 0.317f }
+    modulation_aspects: { coarse: 125, fine: 1250, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 50.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Mean value of the delay times in the left and right channel.\n
+      The \"Stereo\" parameter allows to create a time offset between the channels.\n
+      When the time of the Flanger is set to zero, the overall effect is determined by the phase shifting of the allpass.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 218
+    token: Stereo
+    label_long: Stereo
+    label_short: Stereo
+    control_position: { coarse: 50, fine: 500, scale: LINEAR_BIPOLAR_50_PERCENT, initial: 0.0f }
+    modulation_aspects: { coarse: 50, fine: 500, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 50.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Sets the ratio between the delay times of the left and of the right channel [the value shows the offset to 100.0 %].
+      In the center position, the offset is zero and both delay times are equal.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 219
+    token: Feedback
+    label_long: Feedback
+    label_short: Feedback
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Mono, clock: Fast, signal: None }
+    info: >
+      Amount of the internal feedback.
+      At negative values, the feedback is inverted and will emphasize other frequencies than in the non-inverted mode.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 221
+    token: Cross_FB
+    label_long: Cross FB
+    label_short: Cross FB
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.5f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: None }
+    info: >
+      Amount of the cross feedback between the left and the right channel, increasing the complexity of the resulting signal.
+      At negative values, the cross feedback is inverted and will emphasize other frequencies than in the non-inverted mode.\n
+      0.0 %: no cross feedback\n
+      +/- 100.0 %: all feedback is cross feedback
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 222
+    token: Hi_Cut
+    label_long: Hi Cut
+    label_short: Hi Cut
+    control_position: { coarse: 80, fine: 800, scale: LINEAR_60_140_ST, initial: 0.75f }
+    modulation_aspects: { coarse: 80, fine: 800, scale: LINEAR_BIPOLAR_160_ST }
+    rendering_args: { scaling: Expon_Lin_Pitch, factor: 80.0f, offset: 60.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Cutoff frequency [in semitones] of the filter that damps the higher frequencies of the delayed signal.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 223
+    token: Mix
+    label_long: Mix
+    label_short: Mix
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: None }
+    info: >
+      Crossfades between the dry signal and the delayed signal. At negative values, the delayed signal is inverted.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 307
+    token: Envelope
+    label_long: Envelope
+    label_short: Envelope
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Crossfades between the signals of the LFO and the envelope as modulation sources
+      for the delay times and the allpass center frequencies.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 308
+    token: AP_Mod
+    label_long: Allpass Mod
+    label_short: AP Mod
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 70.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Relative amount of the modulation of the allpass center frequencies by the LFO and/or the envelope.
+      The allpass creates the effect of a phaser.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 310
+    token: AP_Tune
+    label_long: Allpass Tune
+    label_short: AP Tune
+    control_position: { coarse: 140, fine: 1400, scale: LINEAR_0_140_ST, initial: 1.0f }
+    modulation_aspects: { coarse: 140, fine: 1400, scale: LINEAR_BIPOLAR_140_ST }
+    rendering_args: { scaling: Linear, factor: 140.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Mean center frequency of the 4-pole allpass filters which are in series with the delays.
+      Their frequency-dependant phase shifts can create a \"Phaser\" effect.
+      The phase shift is minimized by setting this control to its maximum.\n
+      When the time of the flanger is set to zero, the allpass becomes the dominant part.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 389
+    token: Tremolo
+    label_long: Tremolo
+    label_short: Tremolo
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: Mono_Signal }
+    info: >
+      Determines the amount of amplitude modulation by the Flanger's stereo LFO.
+      It is applied after the Mix stage of the Flanger.
+      The Rate and Phase parameters control the frequency and stereo spreading of this effect.
