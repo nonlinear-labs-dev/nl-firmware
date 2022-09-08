@@ -88,8 +88,28 @@ bool ModulationRouterParameterSelectLayout2::onButton(Buttons i, bool down, Butt
       return true;
     }
 
+    if(i == Buttons::BUTTON_B)
+    {
+      return true;
+    }
+
+    if(i == Buttons::BUTTON_C)
+    {
+      if(auto hwAmtButton = findButtonWithText("HW Amt"))
+      {
+        m_mode = hwAmtButton->isHighlight() ? ModRouterLayoutMode::MC : ModRouterLayoutMode::HWAmt;
+        if(auto p = dynamic_cast<ModulationRoutingParameter *>(getCurrentParameter()))
+        {
+          auto mc = p->getTargetParameter();
+          ebUseCases.selectParameter(mc);
+        }
+      }
+      return true;
+    }
+
     if(i == Buttons::BUTTON_D)
     {
+      m_mode = ModRouterLayoutMode::HWAmt;
       if(auto p = dynamic_cast<ModulationRoutingParameter *>(getCurrentParameter()))
       {
         p->getTargetParameter()->toggleUiSelectedHardwareSource(modifiers[ButtonModifier::SHIFT] ? -1 : 1);
@@ -112,6 +132,21 @@ bool ModulationRouterParameterSelectLayout2::onButton(Buttons i, bool down, Butt
 bool ModulationRouterParameterSelectLayout2::onRotary(int inc, ButtonModifiers modifiers)
 {
   return ParameterLayout2::onRotary(inc, modifiers);
+}
+
+ModRouterLayoutMode ModulationRouterParameterSelectLayout2::getMode() const
+{
+  return m_mode;
+}
+
+Button* ModulationRouterParameterSelectLayout2::findButtonWithText(const Glib::ustring &name)
+{
+  for(auto b : getControls<Button>())
+  {
+    if(b->getText().text == name)
+      return b.get();
+  }
+  return nullptr;
 }
 
 ModulationRouterParameterEditLayout2::ModulationRouterParameterEditLayout2()

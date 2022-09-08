@@ -124,6 +124,7 @@ void BOLED::setupParameterScreen(FocusAndMode focusAndMode)
       }
       else
       {
+        layout->copyFrom(currentLayout);
         reset(layout);
       }
     }

@@ -31,6 +31,7 @@
 #include <sigc++/adaptors/hide.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAssignedIndicator.h>
 #include "use-cases/EditBufferUseCases.h"
+#include "ModulationRouterParameterLayouts.h"
 
 MacroControlParameterLayout2::MacroControlParameterLayout2()
     : super()
@@ -73,6 +74,27 @@ void MacroControlParameterLayout2::copyFrom(Layout *other)
 {
   if(auto p = dynamic_cast<MacroControlParameterLayout2 *>(other))
     setMode(p->m_mode);
+
+  if(auto p = dynamic_cast<ModulationRouterParameterSelectLayout2*>(other))
+  {
+    nltools::Log::error(toString(p->getMode()));
+
+    switch(p->getMode())
+    {
+      case ModRouterLayoutMode::HWAmt:
+        setMode(Mode::PlayControlAmount);
+        break;
+      case ModRouterLayoutMode::HWSel:
+        setMode(Mode::PlayControlSelection);
+        break;
+      case ModRouterLayoutMode::HWPos:
+        setMode(Mode::PlayControlPosition);
+        break;
+      case ModRouterLayoutMode::MC:
+        setMode(Mode::MacroControlValue);
+        break;
+    }
+  }
 
   super::copyFrom(other);
 }
@@ -298,6 +320,7 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
       break;
 
     case Mode::PlayControlAmount:
+    {
       setButtonText(Buttons::BUTTON_A, "HW Pos");
       setButtonText(Buttons::BUTTON_B, "HW Sel");
       setButtonText(Buttons::BUTTON_C, "HW Amt");
@@ -310,8 +333,10 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
           ->setHighlight(true);
       m_modeOverlay->addControl(new DottedLine(Rect(60, 27, 13, 1)));
       highlightButtonWithCaption("HW Amt");
-      findControlOfType<HWSourceAmountCarousel>()->highlightSelected();
+      if(auto car = findControlOfType<HWSourceAmountCarousel>())
+        car->highlightSelected();
       break;
+    }
   }
 }
 

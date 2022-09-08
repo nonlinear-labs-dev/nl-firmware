@@ -30,74 +30,68 @@ const Rect &OLEDProxy::getPosInFrameBuffer() const
 
 void OLEDProxy::invalidate()
 {
-  if(auto l = std::dynamic_pointer_cast<Layout>(getLayout()))
+  if(auto l = dynamic_cast<Layout*>(getLayout()))
     l->setDirty();
   else
     DebugLevel::warning("Oled proxy has NO screen set !??");
 }
 
-OLEDProxy::tLayoutPtr OLEDProxy::getLayout() const
+Layout* OLEDProxy::getLayout() const
 {
   if(m_screenSaver)
-    return m_screenSaver;
+    return m_screenSaver.get();
 
   if(m_overlay)
-    return m_overlay;
+    return m_overlay.get();
 
-  return m_layout;
+  return m_layout.get();
 }
 
-OLEDProxy::tLayoutPtr OLEDProxy::getBaseLayout() const
+Layout* OLEDProxy::getBaseLayout() const
 {
-  return m_layout;
+  return m_layout.get();
 }
 
-OLEDProxy::tLayoutPtr OLEDProxy::getOverlay() const
+Layout* OLEDProxy::getOverlay() const
 {
-  return m_overlay;
+  return m_overlay.get();
 }
 
 void OLEDProxy::reset(Layout *layout)
-{
-  tLayoutPtr s(layout);
-  reset(s);
-}
-
-void OLEDProxy::reset(tLayoutPtr layout)
 {
   resetOverlay();
 
   if(m_layout)
     m_layout->removeButtonRepeat();
 
-  m_layout = layout;
+  tLayoutPtr oldLayout(m_layout.release());
+  m_layout.reset(layout);
 
   if(!layout->isInitialized())
     layout->init();
 
-  m_sigLayoutInstalled.emit(layout.get());
+  if(oldLayout)
+  {
+    layout->copyFrom(oldLayout.get());
+  }
 
-  DebugLevel::info(G_STRLOC, typeid(layout.get()).name());
+  m_sigLayoutInstalled.emit(m_layout.get());
+
+  DebugLevel::info(G_STRLOC, typeid(m_layout.get()).name());
   invalidate();
 }
 
 void OLEDProxy::setOverlay(Layout *layout)
 {
-  tLayoutPtr s(layout);
-  setOverlay(s);
-}
-
-void OLEDProxy::setOverlay(tLayoutPtr layout)
-{
   if(m_layout)
     m_layout->removeButtonRepeat();
 
-  m_overlay = layout;
+  m_overlay.reset(layout);
 
   if(!layout->isInitialized())
     layout->init();
 
-  DebugLevel::info(G_STRLOC, typeid(layout.get()).name());
+  DebugLevel::info(G_STRLOC, typeid(layout).name());
   invalidate();
 }
 
