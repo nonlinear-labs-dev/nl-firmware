@@ -38,7 +38,7 @@ Recorder::Recorder(int sr)
                                                                                 m_in->setPaused(false);
                                                                             });
 
-  m_stopConnection = nltools::msg::receive<nltools::msg::Setting::FlacRecorderStop>(
+  m_stopConnection = nltools::msg::receive<nltools::msg::Setting::FlacRecorderStopPlayback>(
       nltools::msg::EndPoint::AudioEngine, [this](const auto &msg) { m_out->pause(); });
 }
 

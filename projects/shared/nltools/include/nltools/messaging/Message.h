@@ -273,11 +273,11 @@ namespace nltools
         bool enabled;
       };
 
-      struct FlacRecorderStop
+      struct FlacRecorderStopPlayback
       {
         constexpr static MessageType getType()
         {
-          return MessageType::StopRecorderMessage;
+          return MessageType::StopRecorderPlaybackMessage;
         }
       };
 

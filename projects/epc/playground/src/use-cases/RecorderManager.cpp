@@ -8,7 +8,6 @@ RecorderManager::RecorderManager()
   nltools::msg::receive<tMsg>(nltools::msg::EndPoint::Playground,
                               [this](tMsg msg)
                               {
-                                nltools::Log::error("received stop playback message!");
                                 m_signal.deferedSend();
                               });
 }
@@ -20,6 +19,6 @@ sigc::connection RecorderManager::subscribeToNotifyNoRecorderUIsLeftAndStillPlay
 
 void RecorderManager::stopRecorderPlayback()
 {
-  nltools::msg::Setting::FlacRecorderStop msg {};
+  nltools::msg::Setting::FlacRecorderStopPlayback msg {};
   nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
 }
