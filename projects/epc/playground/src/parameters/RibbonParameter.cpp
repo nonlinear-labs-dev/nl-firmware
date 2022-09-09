@@ -232,8 +232,8 @@ const ScaleConverter *RibbonParameter::createScaleConverter() const
 
 void RibbonParameter::sendModeToPlaycontroller() const
 {
-  uint16_t id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAY_MODE_UPPER_RIBBON_BEHAVIOUR
-                                                                             : PLAY_MODE_LOWER_RIBBON_BEHAVIOUR;
+  uint16_t id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR
+                                                                             : PLAYCONTROLLER_SETTING_ID_PLAY_MODE_LOWER_RIBBON_BEHAVIOUR;
   uint16_t v = 0;
 
   if(getRibbonReturnMode() == RibbonReturnMode::RETURN)
@@ -245,7 +245,7 @@ void RibbonParameter::sendModeToPlaycontroller() const
   if(Application::exists())
   {
     Application::get().getPlaycontrollerProxy()->sendSetting(id, v);
-    sendToPlaycontroller();
+    sendToAudioEngine();
   }
 }
 
@@ -361,9 +361,9 @@ size_t RibbonParameter::getHash() const
   return hash;
 }
 
-void RibbonParameter::sendToPlaycontroller() const
+void RibbonParameter::sendToAudioEngine() const
 {
-  PhysicalControlParameter::sendToPlaycontroller();
+  PhysicalControlParameter::sendToAudioEngine();
   auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
                                                                          : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
   auto proxy = Application::get().getPlaycontrollerProxy();

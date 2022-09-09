@@ -9,3 +9,8 @@ LinearBipolar36StScaleConverter::LinearBipolar36StScaleConverter()
 LinearBipolar36StScaleConverter::~LinearBipolar36StScaleConverter()
 {
 }
+
+LinearBipolar72StScaleConverter::LinearBipolar72StScaleConverter()
+    : LinearScaleConverter(tDisplayRange(-72, 72), PitchDimensionCoarse::get())
+{
+}

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -83,7 +84,10 @@ Retry:
 #define EHC_SAVE_EEPROM "save-ehc"
 #define UHID64          "uhid64"
 #define POLLHWS         "pollhws"
-#define AT_MAX_DATA     "at-max-data"
+#define AT_TEST_DATA    "at-test-data"
+#define AT_STATUS       "at-status"
+#define BNDR_STATUS     "bndr-status"
+#define BNDR_RESET      "bndr-reset"
 #if LPC_KEYBED_DIAG
 #define KEY_CNTRS "key-counters"
 #endif
@@ -106,6 +110,12 @@ Retry:
 #define SSPECIAL_RESET      "reboot"
 #define SSPECIAL_RESETHB    "hb-reset"
 #define SSPECIAL_ENABLEMIDI "enable-midi"
+#define AT_TEST_DATA        "at-test-data"
+#define AT_LEGACY           "legacy-at"
+#define BNDR_LEGACY         "legacy-bndr"
+#define BNDR_SETTL          "bndr-settling"
+#define BNDR_SETTL_INSENS   "insensitive"
+#define BNDR_SETTL_SENS     "sensitive"
 
 #define KEY_EMUL "key"
 
@@ -113,9 +123,12 @@ Retry:
 
 #define RESET "reset"
 
+#define AT_MASK "at-mask"
+
 uint16_t REQ_DATA[] = { PLAYCONTROLLER_BB_MSG_TYPE_REQUEST, 0x0001, 0x0000 };
 uint16_t SET_DATA[] = { PLAYCONTROLLER_BB_MSG_TYPE_SETTING, 0x0002, 0x0000, 0x0000 };
 uint16_t KEY_DATA[] = { PLAYCONTROLLER_BB_MSG_TYPE_KEY_EMUL, 0x0003, 0x0000, 0x0000, 0x0000 };
+uint16_t ATM_DATA[] = { PLAYCONTROLLER_BB_MSG_TYPE_AT_MASKING, 0x0004, 0x0000, 0x0000, 0x0000, 0x0000 };
 
 // ===================
 void Usage(void)
@@ -129,7 +142,7 @@ void Usage(void)
 #if LPC_KEYBED_DIAG
   puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|key-counters");
 #else
-  puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|pollhws|at-max-data");
+  puts("  req[uest] : sw-version|muting|clear-eeprom|status|clear-status|save-ehc|pollhws|at-test-data|at-status|bndr-status|bndr-reset");
 #endif
   puts("     sw-version   : get LPC firware version");
   puts("     muting       : get software&hardware muting status");
@@ -139,21 +152,33 @@ void Usage(void)
   puts("     save-ehc     : save current EHC config data to EEPROM");
   puts("     uhid64       : get unique hardware ID (64bit)");
   puts("     pollhws      : poll hardware sources");
-  puts("     at-max-data  : get AT raw ADC max values for all keys");
+  puts("     at-test-data : get aftertouch raw ADC (or Ohms) values for all keys");
+  puts("     at-status    : get aftertouch status");
+  puts("     bndr-status  : get pitchbender status");
+  puts("     bndr-reset   : reset pitchbender");
 #if LPC_KEYBED_DIAG
   puts("     key-counters : get diagnostic key error counters");
 #endif
-  puts("  set[ting] : mute-ctrl|sensors|key-logging|hws-to-ui|ae-cmd|system");
-  puts("     mute-ctrl: disable|mute|unmute : disable mute override or set/clear muting");
-  puts("     sensors: on|off                : turn raw sensor messages on/off");
-  puts("     key-logging: on|off            : turn key-logging messages on/off");
-  puts("     hws-to-ui: on|off              : turn hardware-source to UI messages on/off");
-  puts("     ae-cmd: tton|ttoff|def-snd     : Audio Engine Special, test-tone on/off, load default sound");
-  puts("     system: reboot|hb-reset|enable-midi");
-  puts("                  : System Special; reboot system, reset heartbeat counter, enable midi");
+  puts("  set[ting] : mute-ctrl|sensors|key-logging|hws-to-ui|at-test-data");
+  puts("              |legacy-at|legacy-bndr|bndr-settling|ae-cmd|system");
+  puts("     mute-ctrl disable|mute|unmute : disable mute override or set/clear muting");
+  puts("     sensors on|off                : turn raw sensor messages on/off");
+  puts("     key-logging on|off            : turn key-logging messages on/off");
+  puts("     hws-to-ui on|off              : turn hardware-source to UI messages on/off");
+  puts("     at-test-data on|off           : turn collecting aftertouch test data on/off");
+  puts("     legacy-at on|off              : turn legacy aftertouch mode on/off");
+  puts("     legacy-bndr on|off            : turn legacy pitchbender mode on/off");
+  puts("     bndr-settling insensitive|sensitive");
+  puts("                                   : pitchbender auto-zero settling sensitivity");
+  puts("     ae-cmd tton|ttoff|def-snd     : Audio Engine Special, test-tone on/off, load default sound");
+  puts("     system reboot|hb-reset|enable-midi");
+  puts("                                   : System Specials: reboot system, reset heartbeat counter, enable midi");
   puts("  key <note-nr> <time>      : send emulated key");
   puts("     <note-nr>              : MIDI key number, 60=\"C3\"");
   puts("     <time>                 : key time (~1/velocity) in us (1000...525000), negative means key release");
+  puts("  at-mask <bitmask64> : mask keys for aftertouch focus tracking");
+  puts("      <bitmask64>           : 16-digit hex value representing a 64bit bit mask, bit 0 is leftmost key");
+  puts("                              Bit 63 causes AT also to be silent when only masked keys are pressed");
   puts("  test <size> <count> <delay>   : send test message");
   puts("     <size>                     : payload size in words (1..1000)");
   puts("     <count>                    : # of times the message is send (1..65535)");
@@ -213,7 +238,6 @@ int lpcReset(int driver)
   usleep(POLL_DELAY_US);
   if (purgeBuffer(driver))
     return 1;
-  puts("LPC is down");
   return 0;
 }
 
@@ -300,9 +324,27 @@ int main(int argc, char const *argv[])
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
-    if (strncmp(argv[2], AT_MAX_DATA, sizeof AT_MAX_DATA) == 0)
+    if (strncmp(argv[2], AT_TEST_DATA, sizeof AT_TEST_DATA) == 0)
     {
-      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_AT_MAX_DATA;
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_AT_TEST_DATA;
+      writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
+      return 0;
+    }
+    if (strncmp(argv[2], AT_STATUS, sizeof AT_STATUS) == 0)
+    {
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_AT_STATUS;
+      writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
+      return 0;
+    }
+    if (strncmp(argv[2], BNDR_STATUS, sizeof BNDR_STATUS) == 0)
+    {
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_BNDR_STATUS;
+      writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
+      return 0;
+    }
+    if (strncmp(argv[2], BNDR_RESET, sizeof BNDR_RESET) == 0)
+    {
+      REQ_DATA[2] = PLAYCONTROLLER_REQUEST_ID_BNDR_RESET;
       writeData(driver, sizeof REQ_DATA, &REQ_DATA[0]);
       return 0;
     }
@@ -409,6 +451,86 @@ int main(int argc, char const *argv[])
         return 0;
       }
       puts("set hws-to-ui : illegal parameter");
+      Usage();
+    }
+
+    // AT test data
+    if (strncmp(argv[2], AT_TEST_DATA, sizeof AT_TEST_DATA) == 0)
+    {
+      SET_DATA[2] = PLAYCONTROLLER_SETTING_ID_ENABLE_AT_DATA_COLLECT;
+      if (strncmp(argv[3], OFF, sizeof OFF) == 0)
+      {
+        SET_DATA[3] = 0;
+        writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
+        return 0;
+      }
+      if (strncmp(argv[3], ON, sizeof ON) == 0)
+      {
+        SET_DATA[3] = 1;
+        writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
+        return 0;
+      }
+      puts("set at-test-data : illegal parameter");
+      Usage();
+    }
+
+    // legacy AT
+    if (strncmp(argv[2], AT_LEGACY, sizeof AT_LEGACY) == 0)
+    {
+      SET_DATA[2] = PLAYCONTROLLER_SETTING_ID_ENABLE_LEGACY_AT;
+      if (strncmp(argv[3], OFF, sizeof OFF) == 0)
+      {
+        SET_DATA[3] = 0;
+        writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
+        return 0;
+      }
+      if (strncmp(argv[3], ON, sizeof ON) == 0)
+      {
+        SET_DATA[3] = 1;
+        writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
+        return 0;
+      }
+      puts("set legacy-at : illegal parameter");
+      Usage();
+    }
+
+    // legacy Bender
+    if (strncmp(argv[2], BNDR_LEGACY, sizeof BNDR_LEGACY) == 0)
+    {
+      SET_DATA[2] = PLAYCONTROLLER_SETTING_ID_ENABLE_LEGACY_BNDR;
+      if (strncmp(argv[3], OFF, sizeof OFF) == 0)
+      {
+        SET_DATA[3] = 0;
+        writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
+        return 0;
+      }
+      if (strncmp(argv[3], ON, sizeof ON) == 0)
+      {
+        SET_DATA[3] = 1;
+        writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
+        return 0;
+      }
+      puts("set legacy-bndr : illegal parameter");
+      Usage();
+    }
+
+    // Bender sensitivity
+    if (strncmp(argv[2], BNDR_SETTL, sizeof BNDR_SETTL) == 0)
+    {
+      SET_DATA[2] = PLAYCONTROLLER_SETTING_ID_BNDR_SETTLING_SENSITIVITY;
+      if (strncmp(argv[3], BNDR_SETTL_INSENS, sizeof BNDR_SETTL_INSENS) == 0)
+      {
+        SET_DATA[3] = 0;
+        writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
+        return 0;
+      }
+      if (strncmp(argv[3], BNDR_SETTL_SENS, sizeof BNDR_SETTL_SENS) == 0)
+      {
+        SET_DATA[3] = 1;
+        writeData(driver, sizeof SET_DATA, &SET_DATA[0]);
+        return 0;
+      }
+      puts("set bndr-settling : illegal parameter");
       Usage();
     }
 
@@ -580,9 +702,29 @@ int main(int argc, char const *argv[])
         return 0;
       }
     }
+    puts("LPC appears to be down (Note: bbbb.service must be stopped for proper response)");
+    return 1;
+  }
 
-    printf(">>> LPC reset failed after %u retries\n", savedRetries);
-    return 1;  // reset failed
+  // at-mask
+  if (strncmp(argv[1], AT_MASK, sizeof AT_MASK) == 0)
+  {
+    if (argc != 3)
+    {
+      puts("at-mask: wrong number of arguments");
+      Usage();
+    }
+
+    uint64_t mask = 0;
+    if (sscanf(argv[2], "%" SCNx64, &mask) != 1)
+    {
+      puts("at-mask: mask argument error (hex uint64 expected)");
+      Usage();
+    }
+    uint64_t *p = (uint64_t *) (&ATM_DATA[2]);
+    *p          = mask;
+    writeData(driver, sizeof ATM_DATA, &ATM_DATA[0]);
+    return 0;
   }
 
   // unknown

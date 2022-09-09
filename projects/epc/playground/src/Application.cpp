@@ -91,22 +91,24 @@ Application::Application(int numArgs, char **argv)
     : m_theMainContext(createMainContext())
     , m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
     , m_theMainLoop(Glib::MainLoop::create(m_theMainContext))
+    , m_recorderManager(std::make_unique<RecorderManager>())
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_options->getSettingsFile(), m_http->getUpdateDocumentMaster()))
     , m_presetManager(
           new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
-    , m_hwui(new HWUI(*m_settings))
+    , m_hwui(new HWUI(*m_settings, *m_recorderManager.get()))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
     , m_audioEngineProxy(new AudioEngineProxy(*m_presetManager, *m_settings, *m_playcontrollerProxy))
     , m_voiceGroupManager(std::make_unique<VoiceGroupAndLoadToPartManager>(*m_presetManager->getEditBuffer()))
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
-    , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster()))
+    , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster(), *m_playcontrollerProxy))
     , m_clipboard(new Clipboard(m_http->getUpdateDocumentMaster()))
     , m_usbChangeListener(std::make_unique<USBChangeListener>())
     , m_webUISupport(std::make_unique<WebUISupport>(m_http->getUpdateDocumentMaster()))
-    , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui, *m_settings, *m_voiceGroupManager)
+    , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui, *m_settings,
+                       *m_voiceGroupManager)
     , m_heartbeatState(false)
     , m_isQuit(false)
 {
@@ -347,4 +349,9 @@ ActionManagers *Application::getActionManagers()
 VoiceGroupAndLoadToPartManager *Application::getVGManager()
 {
   return m_voiceGroupManager.get();
+}
+
+RecorderManager *Application::getRecorderManager()
+{
+  return m_recorderManager.get();
 }

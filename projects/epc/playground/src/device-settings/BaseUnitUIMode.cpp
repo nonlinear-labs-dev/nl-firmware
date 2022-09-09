@@ -31,5 +31,5 @@ void BaseUnitUIMode::syncExternals(SendReason reason) const
   if(m != BaseUnitUIModes::ParameterEdit)
     m = BaseUnitUIModes::Play;
   auto v = static_cast<uint16_t>(m);
-  Application::get().getPlaycontrollerProxy()->sendSetting(BASE_UNIT_UI_MODE, v);
+  Application::get().getPlaycontrollerProxy()->sendSetting(PLAYCONTROLLER_SETTING_ID_BASE_UNIT_UI_MODE, v);
 }

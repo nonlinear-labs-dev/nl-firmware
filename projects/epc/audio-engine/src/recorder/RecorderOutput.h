@@ -18,6 +18,7 @@ class RecorderOutput
   ~RecorderOutput();
 
   void process(SampleFrame *frames, size_t numFrames);
+  bool isPlaying() const;
   void pause();
   void start();
   void setPlayPos(FrameId id);

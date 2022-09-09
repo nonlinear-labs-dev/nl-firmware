@@ -2,6 +2,7 @@
 
 #include "playground.h"
 #include "parameters/ValueRange.h"
+#include "parameter_declarations.h"
 #include <map>
 #include <memory>
 
@@ -40,6 +41,8 @@ class ScaleConverter
     }
     return it->second.get();
   }
+
+  static const ScaleConverter* getByEnum(C15::Properties::DisplayScalingType e);
 
   [[nodiscard]] virtual size_t hash() const;
 

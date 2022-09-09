@@ -33,12 +33,15 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include "UsageMode.h"
 #include "use-cases/SettingsUseCases.h"
+#include <device-info/AftertouchCalibratedStatus.h>
+#include <device-info/DeviceInformation.h>
 #include "use-cases/EditBufferUseCases.h"
 #include "device-settings/ScreenSaverTimeoutSetting.h"
+#include "proxies/hwui/panel-unit/boled/recorder/DoYouWantToStopRecorderPlaybackLayout.h"
 #include <Options.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 
-HWUI::HWUI(Settings &settings)
+HWUI::HWUI(Settings &settings, RecorderManager &recorderManager)
     : m_layoutFolderMonitor(std::make_unique<LayoutFolderMonitor>())
     , m_panelUnit { settings, m_oleds, m_layoutFolderMonitor.get() }
     , m_baseUnit { settings, m_oleds }
@@ -57,6 +60,9 @@ HWUI::HWUI(Settings &settings)
 
   nltools::msg::receive<nltools::msg::ButtonChangedMessage>(nltools::msg::EndPoint::Playground,
                                                             sigc::mem_fun(this, &HWUI::onButtonMessage));
+
+  recorderManager.subscribeToNotifyNoRecorderUIsLeftAndStillPlaying(
+      [this] { getPanelUnit().getEditPanel().getBoled().setOverlay(new DoYouWantToStopRecorderPlaybackLayout()); });
 }
 
 HWUI::~HWUI()
@@ -276,6 +282,12 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
         f = powf(fabsf(f), 1.5f) * sign;
         auto c = static_cast<signed char>(roundf(f));
         m_panelUnit.getEditPanel().getKnob().fake(c);
+      }
+      else if(line == "atc")
+      {
+        auto dev = Application::get().getDeviceInformation();
+        dev->getItem<AftertouchCalibratedStatus>()->toggle();
+        nltools::Log::error("ATC ist nun:", dev->getItem<AftertouchCalibratedStatus>()->get());
       }
       else
       {

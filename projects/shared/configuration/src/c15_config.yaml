@@ -1,0 +1,27 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !config
+
+milestone: 1.7B
+version: 9
+
+max_voices: 24
+
+clock_rates:
+  sd: [ 48000, 9600, 400 ]
+  hd: [ 96000, 9600, 400 ]
+
+fade_time_in_ms: 3.0f
+
+physical_key_range:
+  from: 36
+  to: 96
+
+virtual_key_range:
+  from: 0
+  to: 127
+
+generic_keys:
+  pivot: 60
+  center: 66
+  reference: 69

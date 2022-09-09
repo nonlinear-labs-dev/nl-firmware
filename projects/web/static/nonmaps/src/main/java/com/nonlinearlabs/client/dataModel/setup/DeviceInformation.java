@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.dataModel.setup;
 
+import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.client.dataModel.StringDataModelEntity;
 
 public class DeviceInformation {
@@ -22,4 +23,5 @@ public class DeviceInformation {
 	public StringDataModelEntity bufferUnderruns = new StringDataModelEntity("0");
 	public StringDataModelEntity uniqueHardwareID = new StringDataModelEntity("0");
 	public StringDataModelEntity uiRTVersion = new StringDataModelEntity();
+	public BooleanDataModelEntity aftertouchCalibrated = new BooleanDataModelEntity();
 }

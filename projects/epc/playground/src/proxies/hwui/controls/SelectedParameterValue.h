@@ -45,6 +45,7 @@ class PhysicalControlValueLabel : public ControlWithChildren
   void setHighlight(bool isHighlight) override;
 
  private:
+  void onModifiersChanged(ButtonModifiers mods);
   void onParameterSelectionHappened(const Parameter* old, Parameter* newP);
   void onSendChanged(const Parameter* p);
   void onHWChanged(const Parameter* p);

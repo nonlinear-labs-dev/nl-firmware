@@ -7,6 +7,7 @@ class VoiceGroupIndicator : public Control
   explicit VoiceGroupIndicator(const Rect& r, bool allowLoadToPart);
   ~VoiceGroupIndicator() override;
   bool redraw(FrameBuffer& fb) override;
+  VoiceGroup getCurrentDisplayedVoiceGroup() const;
 
  private:
   void onSoundTypeChanged(SoundType type);

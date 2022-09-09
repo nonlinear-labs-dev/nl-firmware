@@ -18,8 +18,8 @@
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <libundo/undo/Scope.h>
 
-PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling)
-    : super(group, id, scaling)
+PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, ParameterId id)
+    : super(group, id)
 {
 }
 
@@ -174,7 +174,7 @@ void PhysicalControlParameter::onUnselected()
   {
     m_lastChangedFromHWUI = false;
     getValue().setRawValue(Initiator::EXPLICIT_OTHER, 0);
-    sendToPlaycontroller();
+    sendToAudioEngine();
     onChange(Generic | DontTrustOracle);
     invalidate();
   }

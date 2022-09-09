@@ -10,7 +10,7 @@ class PhysicalControlParameter : public Parameter
   typedef Parameter super;
 
  public:
-  PhysicalControlParameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling);
+  PhysicalControlParameter(ParameterGroup *group, ParameterId id);
 
   bool isChangedFromLoaded() const override;
   virtual void onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source);

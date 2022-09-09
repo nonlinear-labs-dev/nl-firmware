@@ -1,0 +1,195 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Out_Mix
+
+signals:
+  Truepoly_Signal: [ A_Left, A_Right, B_Left, B_Right, Comb_Left, Comb_Right, SVF_Left, SVF_Right ]
+
+static: [
+  &SINGLE_HIDDEN {
+    availability: {
+      Single: { hidden: true, disabled: false, count: 0 },
+      Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &ALL_EXPOSED {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 1 },
+      Split: *AVAILABILITY_DUAL,
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &VALUE_PERCENT { coarse: 100, fine: 1000 },
+  &MODULATEABLE {
+    type: Local_Modulateable
+  },
+  &UNMODULATEABLE {
+    type: Local_Unmodulateable
+  }
+]
+
+parameters:
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 169
+    token: A_Lvl
+    label_long: A - Level
+    label_short: A
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Output mix factor for the signal from Oscillator & Shaper A.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 171
+    token: A_Pan
+    label_long: A - Pan
+    label_short: Pan
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Pan position of the signal from Oscillator & Shaper A in the output mix.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 172
+    token: B_Lvl
+    label_long: B - Level
+    label_short: B
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Output mix factor for the signal from Oscillator & Shaper B.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 174
+    token: B_Pan
+    label_long: B - Pan
+    label_short: Pan
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Pan position of the signal from Oscillator & Shaper B in the output mix.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 175
+    token: Comb_Lvl
+    label_long: Comb - Level
+    label_short: Comb
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Output mix factor for the signal from the Comb Filter.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 177
+    token: Comb_Pan
+    label_long: Comb - Pan
+    label_short: Pan
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Pan position of the signal from the Comb Filter in the output mix.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 178
+    token: SVF_Lvl
+    label_long: SV Filter - Level
+    label_short: SV Filter
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Output mix factor for the signal from the State Variable Filter.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 180
+    token: SVF_Pan
+    label_long: SV Filter - Pan
+    label_short: Pan
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Pan position of the signal from the State Variable Filter in the output mix.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 181
+    token: Drive
+    label_long: Drive
+    label_short: Drive
+    control_position: {coarse: 100, fine: 500, scale: LINEAR_50_DB, initial: 0.0f }
+    modulation_aspects: { coarse: 50, fine: 500, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Expon_Mix_Drive, factor: 50.0f, offset: 0.25f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      Input gain [in dB] of the sine shaper stage. Higher gains will create more distortion and harmonics.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 183
+    token: Fold
+    label_long: Fold
+    label_short: Fold
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.5f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      Amount of folding back of the shaper curve for high input amplitudes.\n
+      0.0 %: flat saturation, no folding\n
+      100.0 %: fully folded back (periodic sine curve)\n
+      A higher amount of folding leads to a softer but more nasal sound.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 184
+    token: Asym
+    label_long: Asymmetry
+    label_short: Asym
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics.
+      At higher values, it becomes a parabolic curve that shifts the frequency of the fundamental to its double.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 185
+    token: Lvl
+    label_long: Level
+    label_short: Level
+    control_position: { <<: *VALUE_PERCENT, scale: PARABOLIC_GAIN_DB, initial: 0.38f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 2.56f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      Master output level [in dB] of the synth. The output signal will be processed by the (monophonic) chain of effects.
+  - <<: *UNMODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 187
+    token: Key_Pan
+    label_long: Key Pan
+    label_short: Key Pan
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    rendering_args: { scaling: Linear, factor: 1.0f / 60.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Amount of key panning for each note (referring to the key position relative to the center at F#3 = 66 semitones).
+      At zero, each note is centered before being passed to the panning section in the mix.
+      At maximum, low notes will be panned to the left, high notes to the right.
+      At minimum, the opposite  effect applies.
+  - <<: *MODULATEABLE
+    <<: *SINGLE_HIDDEN
+    id: 362
+    token: To_FX
+    label_long: To FX @VG:Other
+    label_short: To FX @VG:Other
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Determines how much of the Output Mixer signal is sent to the Effects section of the other Part.
+      At 100.0 % the signal will be sent to the other Part exclusively. (Only available when using a Dual mode.)

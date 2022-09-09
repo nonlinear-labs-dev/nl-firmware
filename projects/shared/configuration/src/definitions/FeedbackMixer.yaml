@@ -1,0 +1,216 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: FB_Mix
+
+signals:
+  Truepoly_Signal: [ Lvl, HPF ]
+
+static: [
+  &LAYER_ENABLED {
+    availability: {
+      Single: &AVAILABILITY_DISABLED { hidden: false, disabled: true, count: 0 },
+      Split: *AVAILABILITY_DISABLED,
+      Layer: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 }
+    }
+  },
+  &LAYER_EXPOSED {
+    availability: {
+      Single: &AVAILABLILITY_HIDDEN { hidden: true, disabled: false, count: 0 },
+      Split: *AVAILABLILITY_HIDDEN,
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &LAYER_AVAILABLE {
+    availability: {
+      Single: *AVAILABLILITY_HIDDEN,
+      Split: { hidden: false, disabled: false, count: 0 },
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &ALL_EXPOSED {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 1 },
+      Split: *AVAILABILITY_DUAL,
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &RENDER_TYPICAL {
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+  },
+  &VALUE_PERCENT { coarse: 100, fine: 1000 },
+  &MODULATEABLE {
+    type: Local_Modulateable
+  },
+  &UNMODULATEABLE {
+    type: Local_Unmodulateable
+  }
+]
+
+parameters:
+  - <<: *MODULATEABLE
+    <<: *LAYER_ENABLED
+    <<: *RENDER_TYPICAL
+    id: 346
+    token: Osc
+    label_long: A/B @ST:Between
+    label_short: A/B @ST:Between
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    info: >
+      Level of the signal from branch A or B of the other Part. (Only available when using Layer mode.)
+  - <<: *MODULATEABLE
+    <<: *LAYER_EXPOSED
+    <<: *RENDER_TYPICAL
+    id: 348
+    token: Osc_Src
+    label_long: A - B
+    label_short: A - B
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    info: >
+      Crossfades between branch A and B of the other Part. (Only available when using Layer mode.)
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    <<: *RENDER_TYPICAL
+    id: 156
+    token: Comb
+    label_long: Comb Filter
+    label_short: Comb
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    info: >
+      Feedback mix factor for the output of the Comb Filter.
+  - <<: *MODULATEABLE
+    <<: *LAYER_EXPOSED
+    <<: *RENDER_TYPICAL
+    id: 350
+    token: Comb_Src
+    label_long: Comb - From @VG:Other
+    label_short: From @VG:Other
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    info: >
+      Crossfades to the Comb Filter signal of the other Part. (Only available when using Layer mode.)
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    <<: *RENDER_TYPICAL
+    id: 158
+    token: SVF
+    label_long: SV Filter
+    label_short: SV Filter
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    info: >
+      Feedback mix factor for the output of the State Variable Filter.
+  - <<: *MODULATEABLE
+    <<: *LAYER_EXPOSED
+    <<: *RENDER_TYPICAL
+    id: 352
+    token: SVF_Src
+    label_long: SV Filter - From @VG:Other
+    label_short: From @VG:Other
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    info: >
+      Crossfades to the State Variable Filter signal of the other Part. (Only available when using Layer mode.)
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 160
+    token: FX
+    label_long: Effects
+    label_short: Effects
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      Feedback mix factor for the output of the Effects chain.
+      The reverb amount in the feedback can be set by the \"Reverb Amount\" fader independantly.
+      Since the signal is monophonic, such feedback will cause intermodulation between the voices.
+  - <<: *MODULATEABLE
+    <<: *LAYER_EXPOSED
+    <<: *RENDER_TYPICAL
+    id: 354
+    token: FX_Src
+    label_long: Effects - From @VG:Other
+    label_short: From @VG:Other
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    info: >
+      Crossfades to the Effects signal of the other Part. (Only available when using Split or Layer mode.)
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    <<: *RENDER_TYPICAL
+    id: 162
+    token: Rvb
+    label_long: Reverb Mix
+    label_short: Rev Mix
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.5f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    info: >
+      Controls the amount of reverb in the feedback independantly from the Mix in the Reverb section.\n
+      0.0 %: dry, no reverb signal\n
+      50.0 %: mix of 50 % dry and 50 % wet signal\n
+      100.0 %: wet, 100.0 % reverb signal
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 164
+    token: Drive
+    label_long: Drive
+    label_short: Drive
+    control_position: { coarse: 140, fine: 700, scale: LINEAR_70_DB, initial: 2.0f / 7.0f }
+    modulation_aspects: { coarse: 70, fine: 700, scale: LINEAR_BIPOLAR_70_DB }
+    rendering_args: { scaling: Expon_Mix_Drive, factor: 70.0f, offset: 0.25f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
+    info: >
+      Input gain [in dB] of the sine shaper stage. Higher gains will create more distortion and harmonics.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    <<: *RENDER_TYPICAL
+    id: 166
+    token: Fold
+    label_long: Fold
+    label_short: Fold
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.5f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    info: >
+      Amount of folding back of the shaper curve for high input amplitudes.\n
+      0.0 %: flat saturation, no folding\n
+      100.0 %: fully folded back (periodic sine curve)\n
+      A higher amount of folding leads to a softer but more nasal sound.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    <<: *RENDER_TYPICAL
+    id: 167
+    token: Asym
+    label_long: Asymmetry
+    label_short: Asym
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    info: >
+      Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics.
+      At higher values, it becomes a parabolic curve that shifts the frequency of the fundamental to its double.
+  - <<: *UNMODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 168
+    token: Lvl_KT
+    label_long: Level - Key Trk
+    label_short: Key Trk
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_1_DBST, initial: 0.0f }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Key scaling of the feedback level [in dB per semitone].\n
+      positive values: higher level for higher notes (+ 1.0 = + 12 dB per octave)\n
+      negative values: lower level for higher notes (- 1.0 = - 12 dB per octave)\n
+      origin at C3 = 60 semitones
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 299
+    token: Lvl
+    label_long: Level
+    label_short: Level
+    control_position: { <<: *VALUE_PERCENT, scale: PARABOLIC_GAIN_DB, initial: 0.38f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 4.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Level of the (global) Feedback mix [in dB].

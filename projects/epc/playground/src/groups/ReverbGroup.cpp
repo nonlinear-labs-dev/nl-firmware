@@ -16,21 +16,10 @@ ReverbGroup::~ReverbGroup()
 
 void ReverbGroup::init()
 {
-  appendParameter(new ModulateableParameter(this, { C15::PID::Reverb_Size, getVoiceGroup() },
-                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
-
-  appendParameter(new ModulateableParameter(this, { C15::PID::Reverb_Pre_Dly, getVoiceGroup() },
-                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
-
-  appendParameter(new ModulateableParameter(this, { C15::PID::Reverb_Color, getVoiceGroup() },
-                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
-
-  appendParameter(new ModulateableParameter(this, { C15::PID::Reverb_Chorus, getVoiceGroup() },
-                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
-
-  appendParameter(new ModulateableParameter(this, { C15::PID::Reverb_Mix, getVoiceGroup() },
-                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
-
-  appendParameter(new ModulateableParameter(this, { C15::PID::Reverb_Send, getVoiceGroup() },
-                                            ScaleConverter::get<Linear100PercentScaleConverter>()));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Reverb_Size, getVoiceGroup() }));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Reverb_Pre_Dly, getVoiceGroup() }));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Reverb_Color, getVoiceGroup() }));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Reverb_Chorus, getVoiceGroup() }));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Reverb_Mix, getVoiceGroup() }));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Reverb_Send, getVoiceGroup() }));
 }

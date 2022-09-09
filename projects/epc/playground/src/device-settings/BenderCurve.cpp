@@ -15,7 +15,7 @@ BenderCurve::~BenderCurve()
 
 void BenderCurve::syncExternals(SendReason reason) const
 {
-  Application::get().getPlaycontrollerProxy()->sendSetting(BENDER_CURVE, (uint16_t)(get()));
+  Application::get().getPlaycontrollerProxy()->sendSetting(PLAYCONTROLLER_SETTING_ID_BENDER_CURVE, (uint16_t)(get()));
 }
 
 const std::vector<Glib::ustring> &BenderCurve::enumToString() const

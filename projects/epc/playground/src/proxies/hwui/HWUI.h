@@ -20,6 +20,7 @@ class Application;
 class UsageMode;
 class Settings;
 class LayoutFolderMonitor;
+class RecorderManager;
 
 namespace UNDO
 {
@@ -34,10 +35,10 @@ namespace nltools::msg
 class PresetPartSelection;
 class SplashLayout;
 
-class HWUI
+class HWUI : public sigc::trackable
 {
  public:
-  HWUI(Settings &settings);
+  HWUI(Settings &settings, RecorderManager &recorderManager);
   virtual ~HWUI();
   void init();
   void indicateBlockingMainThread();

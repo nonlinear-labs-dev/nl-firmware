@@ -14,10 +14,11 @@
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
 
 HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* pGroup,
-                                                         PhysicalControlParameter& sibling, const ParameterId& id,
-                                                         const ScaleConverter* converter)
-    : Parameter(pGroup, id, converter)
-    , m_sibling { sibling }
+                                                         PhysicalControlParameter& sibling,
+                                                         const ParameterId& id, Settings* settings)
+    : Parameter(pGroup, id)
+    , m_sibling{sibling}
+    , m_settings(settings)
 {
   m_sibling.onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);
 }
@@ -64,7 +65,7 @@ void HardwareSourceSendParameter::onUnselected()
   {
     m_lastChangedFromHWUI = false;
     getValue().setRawValue(Initiator::EXPLICIT_OTHER, getSiblingParameter()->getDefValueAccordingToMode());
-    sendToPlaycontroller();
+    sendToAudioEngine();
     invalidate();
   }
 }

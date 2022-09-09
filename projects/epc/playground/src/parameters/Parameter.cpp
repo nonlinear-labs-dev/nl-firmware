@@ -33,11 +33,11 @@ static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionV
 bool wasDefaultedAndNotUnselected();
 const tControlPositionValue &getPriorDefaultValue();
 
-Parameter::Parameter(ParameterGroup *group, ParameterId id, const ScaleConverter *scaling)
+Parameter::Parameter(ParameterGroup *group, const ParameterId& id)
     : UpdateDocumentContributor(group)
     , SyncedItem(group->getRoot()->getSyncMaster(), "/parameter/" + id.toString())
     , m_id(id)
-    , m_value(this, scaling)
+    , m_value(this, ScaleConverter::getByEnum(ParameterDB::getValueDisplayScalingType(id)))
     , m_voiceGroup { group->getVoiceGroup() }
     , m_lastSnapshotedValue(c_invalidSnapshotValue)
 {
@@ -244,7 +244,7 @@ void Parameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, 
             m_value.setRawValue(initiator, newVal);
 
             if(dosendToPlaycontroller)
-              sendToPlaycontroller();
+              sendToAudioEngine();
           });
     }
   }
@@ -289,7 +289,7 @@ void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, tControl
   }
 }
 
-void Parameter::sendToPlaycontroller() const
+void Parameter::sendToAudioEngine() const
 {
   sendParameterMessage();
 }
@@ -433,6 +433,8 @@ Glib::ustring Parameter::getMiniParameterEditorName() const
 
 Glib::ustring Parameter::getGroupAndParameterName() const
 {
+  if(getParentEditBuffer()->isDual() && getVoiceGroup() != VoiceGroup::Global)
+    return UNDO::StringTools::buildString(getParentGroup()->getShortName(), " - ", getLongName(), " - ", toString(getVoiceGroup()));
   return UNDO::StringTools::buildString(getParentGroup()->getShortName(), " - ", getLongName());
 }
 

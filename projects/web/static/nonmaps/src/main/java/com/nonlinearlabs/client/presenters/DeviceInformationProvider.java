@@ -2,6 +2,7 @@ package com.nonlinearlabs.client.presenters;
 
 import java.util.LinkedList;
 import java.util.function.Function;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 
 public class DeviceInformationProvider {
 	public static DeviceInformationProvider theInstance = new DeviceInformationProvider();
@@ -82,6 +83,12 @@ public class DeviceInformationProvider {
 
 		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().uiRTVersion.onChange(v -> {
 			info.rtVersion = v;
+			notifyClients();
+			return true;
+		});
+
+		com.nonlinearlabs.client.dataModel.setup.DeviceInformation.get().aftertouchCalibrated.onChange(v -> {
+			info.isAftertouchCalibrated = v.equals(BooleanValues.on);
 			notifyClients();
 			return true;
 		});

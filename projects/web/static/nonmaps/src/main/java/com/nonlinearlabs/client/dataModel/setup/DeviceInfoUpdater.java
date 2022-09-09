@@ -23,7 +23,7 @@ public class DeviceInfoUpdater extends Updater {
 		m.put("buffer-underruns", DeviceInformation.get().bufferUnderruns);
 		m.put("unique-hardware-id", DeviceInformation.get().uniqueHardwareID);
 		m.put("rt-software-version", DeviceInformation.get().uiRTVersion);
-
+		m.put("at-calibrated", DeviceInformation.get().aftertouchCalibrated);
 		return m;
 	}
 
@@ -37,7 +37,6 @@ public class DeviceInfoUpdater extends Updater {
 					DataModelEntityBase s = findDeviceInfoFromTagName(info.getNodeName());
 					if (s != null)
 						s.fromString(value);
-
 				}
 				info = info.getNextSibling();
 			}
