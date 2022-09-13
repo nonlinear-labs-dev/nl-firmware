@@ -22,6 +22,7 @@ class HWSourceAmountCarousel : public Carousel
   void antiTurn() override;
   void setHighlight(bool isHighlight) override;
   void highlightSelected();
+  bool isSelectedHighlighted() const;
 
  protected:
   void setup(Parameter* selectedParameter) override;

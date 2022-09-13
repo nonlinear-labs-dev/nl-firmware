@@ -2,7 +2,7 @@
 
 #include "ParameterLayout.h"
 
-ENUM(ModRouterLayoutMode, uint8_t, HWAmt, HWSel, HWPos, MC);
+ENUM(ModRouterLayoutMode, uint8_t, HWAmt, HWSel, HWPos, MC, None);
 
 class ModulationRouterParameterSelectLayout2 : public virtual ParameterSelectLayout2
 {
@@ -24,7 +24,7 @@ class ModulationRouterParameterSelectLayout2 : public virtual ParameterSelectLay
   void copyFrom(Layout *src) override;
 
  private:
-  ModRouterLayoutMode m_mode = ModRouterLayoutMode::HWAmt;
+  ModRouterLayoutMode m_mode = ModRouterLayoutMode::None;
 };
 
 class ModulationRouterParameterEditLayout2 : public virtual ParameterEditLayout2

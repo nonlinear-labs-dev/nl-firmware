@@ -29,7 +29,7 @@ void doTurn(int inc)
   EditBufferUseCases ebUseCases(*eb);
   if(auto p = dynamic_cast<MacroControlParameter *>(eb->getSelected(vg)))
   {
-    if(auto mcm = dynamic_cast<MacroControlMappingGroup*>(eb->getParameterGroupByID({"MCM", VoiceGroup::Global})))
+    if(auto mcm = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID({ "MCM", VoiceGroup::Global })))
     {
       p->toggleUiSelectedHardwareSource(inc);
       auto hwSrc = eb->findAndCastParameterByID<PhysicalControlParameter>(p->getUiSelectedHardwareSource());
@@ -41,12 +41,18 @@ void doTurn(int inc)
 
 void HWSourceAmountCarousel::turn()
 {
-  doTurn(1);
+  if(isSelectedHighlighted())
+    doTurn(1);
+  else
+    doTurn(0);
 }
 
 void HWSourceAmountCarousel::antiTurn()
 {
-  doTurn(-1);
+  if(isSelectedHighlighted())
+    doTurn(-1);
+  else
+    doTurn(0);
 }
 
 void HWSourceAmountCarousel::setup(Parameter *newOne)
@@ -128,7 +134,7 @@ void HWSourceAmountCarousel::onMacroControlChanged(const Parameter *param)
   if(auto mc = dynamic_cast<const MacroControlParameter *>(param))
   {
     forEach(
-        [=](tControlPtr c)
+        [=](const tControlPtr &c)
         {
           if(auto miniSlider = std::dynamic_pointer_cast<MiniParameterBarSlider>(c))
             if(auto p = dynamic_cast<ModulationRoutingParameter *>(miniSlider->getParameter()))
@@ -141,4 +147,18 @@ void HWSourceAmountCarousel::onMacroControlChanged(const Parameter *param)
 void HWSourceAmountCarousel::setHighlight(bool isHighlight)
 {
   super::setHighlight(isHighlight);
+}
+
+bool HWSourceAmountCarousel::isSelectedHighlighted() const
+{
+  auto ret = false;
+  forEach(
+      [&](const tControlPtr &c)
+      {
+        if(auto miniSlider = std::dynamic_pointer_cast<MiniParameterBarSlider>(c))
+        {
+          ret |= miniSlider->isHighlight();
+        }
+      });
+  return ret;
 }

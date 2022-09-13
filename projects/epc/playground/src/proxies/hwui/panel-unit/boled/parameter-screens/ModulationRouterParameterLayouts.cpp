@@ -96,32 +96,32 @@ void ModulationRouterParameterSelectLayout2::copyFrom(Layout *src)
 
 void ModulationRouterParameterSelectLayout2::setMode(ModRouterLayoutMode mode)
 {
-  if(m_mode != mode)
+  nltools::Log::error("installing mode in Mod-Router Layout:", toString(mode));
+  m_mode = mode;
+  noHighlight();
+
+  highlight<ParameterNameLabel>();
+  highlight<SelectedParameterBarSlider>();
+  highlight<SelectedParameterValue>();
+
+  switch(m_mode)
   {
-    m_mode = mode;
-    noHighlight();
-
-    highlight<ParameterNameLabel>();
-    highlight<SelectedParameterBarSlider>();
-    highlight<SelectedParameterValue>();
-
-    switch(m_mode)
-    {
-      case ModRouterLayoutMode::HWAmt:
-        highlightButtonWithCaption("HW Amt");
-        break;
-      case ModRouterLayoutMode::HWSel:
-        highlightButtonWithCaption("HW Sel");
-        break;
-      case ModRouterLayoutMode::HWPos:
-        highlightButtonWithCaption("HW Pos");
-        break;
-      case ModRouterLayoutMode::MC:
-        break;
-    }
-    if(auto c = findControlOfType<HWSourceAmountCarousel>())
-      c->highlightSelected();
+    case ModRouterLayoutMode::None:
+    case ModRouterLayoutMode::HWAmt:
+      highlightButtonWithCaption("HW Amt");
+      break;
+    case ModRouterLayoutMode::HWSel:
+      highlightButtonWithCaption("HW Sel");
+      break;
+    case ModRouterLayoutMode::HWPos:
+      highlightButtonWithCaption("HW Pos");
+      break;
+    case ModRouterLayoutMode::MC:
+      break;
   }
+
+  if(auto c = findControlOfType<HWSourceAmountCarousel>())
+    c->highlightSelected();
 }
 
 bool ModulationRouterParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
