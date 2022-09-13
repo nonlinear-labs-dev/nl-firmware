@@ -290,6 +290,10 @@ HardwareSourceSendParameter *PhysicalControlParameter::getSendParameter() const
         return HardwareSourcesGroup::getRibbon1SendID();
       case C15::PID::Ribbon_2:
         return HardwareSourcesGroup::getRibbon2SendID();
+      case C15::PID::Ribbon_3:
+        return HardwareSourcesGroup::getRibbon3SendID();
+      case C15::PID::Ribbon_4:
+        return HardwareSourcesGroup::getRibbon4SendID();
       case C15::PID::Aftertouch:
         return HardwareSourcesGroup::getAftertouchSendID();
       case C15::PID::Bender:

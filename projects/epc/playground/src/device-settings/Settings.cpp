@@ -135,6 +135,8 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master)
   addSetting("Pedal4Mapping", new PedalCCMapping<4>(*this, *enable14Bit));
   addSetting("Ribbon1Mapping", new RibbonCCMapping<1>(*this, *enable14Bit));
   addSetting("Ribbon2Mapping", new RibbonCCMapping<2>(*this, *enable14Bit));
+  addSetting("Ribbon3Mapping", new RibbonCCMapping<3>(*this, *enable14Bit));
+  addSetting("Ribbon4Mapping", new RibbonCCMapping<4>(*this, *enable14Bit));
   addSetting("BenderMapping", new BenderCCMapping(*this, *enable14Bit));
   addSetting("AftertouchMapping", new AftertouchCCMapping(*this, *enable14Bit));
 

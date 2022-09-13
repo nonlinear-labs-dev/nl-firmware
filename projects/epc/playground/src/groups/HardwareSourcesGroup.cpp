@@ -36,6 +36,10 @@ void HardwareSourcesGroup::init()
   appendParameter(new HardwareSourceSendParameter(this, *ribbon1, getRibbon1SendID(), m_settings));
   auto ribbon2 = appendParameter(new RibbonParameter(this, getLowerRibbonParameterID()));
   appendParameter(new HardwareSourceSendParameter(this, *ribbon2, getRibbon2SendID(), m_settings));
+  auto ribbon3 = appendParameter(new RibbonParameter(this, getUpperRibbon3ParameterID()));
+  appendParameter(new HardwareSourceSendParameter(this, *ribbon3, getRibbon3SendID(), m_settings));
+  auto ribbon4 = appendParameter(new RibbonParameter(this, getLowerRibbon4ParameterID()));
+  appendParameter(new HardwareSourceSendParameter(this, *ribbon4, getRibbon4SendID(), m_settings));
 }
 
 HardwareSourcesGroup::tPhysicalControlParameters HardwareSourcesGroup::getPhysicalControlParameters()

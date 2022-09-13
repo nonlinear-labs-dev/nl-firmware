@@ -312,7 +312,9 @@ namespace nltools
           Ribbon2 = 7,
           ProgramChange = 8,
           Notes = 9,
-          LENGTH = 10
+          Ribbon3 = 10,
+          Ribbon4 = 11,
+          LENGTH = 12
         };
 
         enum class RoutingAspect : std::size_t
@@ -618,6 +620,10 @@ namespace nltools
 
     namespace ParameterGroups
     {
+      constexpr auto numMacros = 6;
+      constexpr auto numHWSources = 10;
+      constexpr auto numRouters = numMacros * numHWSources;
+
       struct Parameter
       {
         uint16_t id {};
@@ -742,14 +748,14 @@ namespace nltools
         return MessageType::SinglePreset;
       }
 
-      std::array<ParameterGroups::MacroParameter, 6> macros;
-      std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
+      std::array<ParameterGroups::MacroParameter, ParameterGroups::numMacros> macros;
+      std::array<ParameterGroups::UnmodulateableParameter, ParameterGroups::numMacros> macrotimes;
 
       std::array<ParameterGroups::ModulateableParameter, 160> modulateables;
       std::array<ParameterGroups::UnmodulateableParameter, 35> unmodulateables;
 
-      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
-      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+      std::array<ParameterGroups::HardwareSourceParameter, ParameterGroups::numHWSources> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, ParameterGroups::numRouters> hwamounts;
 
       ParameterGroups::UnisonGroup unison;
       ParameterGroups::MonoGroup mono;
@@ -796,11 +802,11 @@ namespace nltools
 
       ParameterGroups::MasterGroup master;
 
-      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
-      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+      std::array<ParameterGroups::HardwareSourceParameter, ParameterGroups::numHWSources> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, ParameterGroups::numRouters> hwamounts;
 
-      std::array<ParameterGroups::MacroParameter, 6> macros;
-      std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
+      std::array<ParameterGroups::MacroParameter, ParameterGroups::numMacros> macros;
+      std::array<ParameterGroups::UnmodulateableParameter, ParameterGroups::numMacros> macrotimes;
 
       ParameterGroups::GlobalParameter scaleBaseKey;
       std::array<ParameterGroups::ModulateableParameter, 12> scaleOffsets;
@@ -836,11 +842,11 @@ namespace nltools
         return MessageType::LayerPreset;
       }
 
-      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
-      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+      std::array<ParameterGroups::HardwareSourceParameter, ParameterGroups::numHWSources> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, ParameterGroups::numRouters> hwamounts;
 
-      std::array<ParameterGroups::MacroParameter, 6> macros;
-      std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
+      std::array<ParameterGroups::MacroParameter, ParameterGroups::numMacros> macros;
+      std::array<ParameterGroups::UnmodulateableParameter, ParameterGroups::numMacros> macrotimes;
 
       std::array<std::array<ParameterGroups::ModulateableParameter, 160>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulateableParameter, 35>, 2> unmodulateables;

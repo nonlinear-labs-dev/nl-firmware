@@ -147,6 +147,10 @@ RoutingSettings::tRoutingIndex HardwareSourceSendParameter::getIndex(const Param
       return tIdx::Ribbon1;
     case C15::PID::Ribbon_2_Send:
       return tIdx::Ribbon2;
+    case C15::PID::Ribbon_3_Send:
+      return tIdx::Ribbon3;
+    case C15::PID::Ribbon_4_Send:
+      return tIdx::Ribbon4;
   }
   nltools_assertNotReached();
 }
@@ -241,6 +245,10 @@ bool HardwareSourceSendParameter::isAssigned() const
       return m_settings->getSetting<RibbonCCMapping<1>>()->get() != RibbonCC::None;
     case C15::PID::Ribbon_2_Send:
       return m_settings->getSetting<RibbonCCMapping<2>>()->get() != RibbonCC::None;
+    case C15::PID::Ribbon_3_Send:
+      return m_settings->getSetting<RibbonCCMapping<3>>()->get() != RibbonCC::None;
+    case C15::PID::Ribbon_4_Send:
+      return m_settings->getSetting<RibbonCCMapping<4>>()->get() != RibbonCC::None;
     case C15::PID::Pedal_1_Send:
       return m_settings->getSetting<PedalCCMapping<1>>()->get() != PedalCC::None;
     case C15::PID::Pedal_2_Send:

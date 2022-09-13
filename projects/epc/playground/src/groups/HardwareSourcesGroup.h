@@ -33,6 +33,16 @@ class HardwareSourcesGroup : public ParameterGroup
     return { C15::PID::Ribbon_2, VoiceGroup::Global };
   }
 
+  static ParameterId getUpperRibbon3ParameterID()
+  {
+    return { C15::PID::Ribbon_3, VoiceGroup::Global };
+  }
+
+  static ParameterId getLowerRibbon4ParameterID()
+  {
+    return { C15::PID::Ribbon_4, VoiceGroup::Global };
+  }
+
   static ParameterId getPedal1ParameterID()
   {
     return { C15::PID::Pedal_1, VoiceGroup::Global };
@@ -91,6 +101,16 @@ class HardwareSourcesGroup : public ParameterGroup
   static ParameterId getRibbon2SendID()
   {
     return { static_cast<int>(C15::PID::Ribbon_2_Send), VoiceGroup::Global };
+  }
+
+  static ParameterId getRibbon3SendID()
+  {
+    return { static_cast<int>(C15::PID::Ribbon_3_Send), VoiceGroup::Global };
+  }
+
+  static ParameterId getRibbon4SendID()
+  {
+    return { static_cast<int>(C15::PID::Ribbon_4_Send), VoiceGroup::Global };
   }
 
   static ParameterId getAftertouchSendID()
