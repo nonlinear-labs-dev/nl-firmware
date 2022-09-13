@@ -11,3 +11,6 @@ RUN mkdir -p /packages
 RUN mkdir -p /tmp/blankdb
 WORKDIR /packages
 RUN pacman --noconfirm -Syw --cachedir . --dbpath /tmp/blankdb @C15_REQUIREMENTS@
+
+RUN pacman --noconfirm -S npm nodejs rsync
+RUN npm install typescript js-yaml @types/node @types/js-yaml
