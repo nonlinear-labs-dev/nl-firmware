@@ -4,7 +4,6 @@
 #include <proxies/hwui/OLEDProxy.h>
 #include <glib.h>
 #include <proxies/hwui/Oleds.h>
-
 #include <utility>
 #include <Application.h>
 #include <proxies/hwui/HWUI.h>
@@ -33,7 +32,7 @@ void OLEDProxy::invalidate()
   if(auto l = std::dynamic_pointer_cast<Layout>(getLayout()))
     l->setDirty();
   else
-    DebugLevel::warning("Oled proxy has NO screen set !??");
+    nltools::Log::info("Oled proxy has NO screen set !??");
 }
 
 OLEDProxy::tLayoutPtr OLEDProxy::getLayout() const
@@ -77,7 +76,7 @@ void OLEDProxy::reset(const OLEDProxy::tLayoutPtr &layout)
 
   m_sigLayoutInstalled.emit(m_layout.get());
 
-  DebugLevel::info(G_STRLOC, typeid(m_layout.get()).name());
+  nltools::Log::info(G_STRLOC, typeid(layout.get()).name());
   invalidate();
 }
 
@@ -97,7 +96,7 @@ void OLEDProxy::setOverlay(const OLEDProxy::tLayoutPtr &layout)
   if(!layout->isInitialized())
     layout->init();
 
-  DebugLevel::info(G_STRLOC, typeid(layout).name());
+  nltools::Log::info(G_STRLOC, typeid(layout.get()).name());
   invalidate();
 }
 

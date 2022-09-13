@@ -48,10 +48,7 @@ PlaycontrollerProxy::PlaycontrollerProxy()
   }
 }
 
-PlaycontrollerProxy::~PlaycontrollerProxy()
-{
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
-}
+PlaycontrollerProxy::~PlaycontrollerProxy() = default;
 
 void PlaycontrollerProxy::onPlaycontrollerMessage(const nltools::msg::PlaycontrollerMessage &msg)
 {
@@ -132,7 +129,7 @@ void PlaycontrollerProxy::onAssertionMessageReceived(const MessageParser::NLMess
   char txt[numBytes + 2];
   strncpy(txt, bytes, numBytes);
   txt[numBytes] = '\0';
-  DebugLevel::error("!!! Assertion from playcontroller in", (const char *) txt);
+  nltools::Log::error("!!! Assertion from playcontroller in", (const char *) txt);
 }
 
 void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLMessage &msg)
@@ -228,8 +225,6 @@ Parameter *PlaycontrollerProxy::findPhysicalControlParameterFromPlaycontrollerHW
 
 void PlaycontrollerProxy::onEditControlMessageReceived(const MessageParser::NLMessage &msg)
 {
-  DebugLevel::info("it is an edit control message");
-
   uint16_t id = msg.params[0];
   auto ribbonParam = findPhysicalControlParameterFromPlaycontrollerHWSourceID(id);
   notifyRibbonTouch(ribbonParam->getID().getNumber());
@@ -243,12 +238,10 @@ void PlaycontrollerProxy::onEditControlMessageReceived(const MessageParser::NLMe
 
     if(ribbonModeBehaviour == ParameterEditModeRibbonBehaviours::PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR_RELATIVE)
     {
-      DebugLevel::info(G_STRLOC, value);
       onRelativeEditControlMessageReceived(p, value);
     }
     else
     {
-      DebugLevel::info(G_STRLOC, value);
       onAbsoluteEditControlMessageReceived(p, value);
     }
   }
@@ -332,8 +325,6 @@ void PlaycontrollerProxy::sendSetting(uint16_t key, uint16_t value)
   *cmp << key;
   *cmp << value;
   queueToPlaycontroller(cmp);
-
-  DebugLevel::info("sending setting", key, "=", value);
 }
 
 void PlaycontrollerProxy::sendPedalSetting(uint16_t pedal, PedalTypes pedalType, bool reset)
@@ -345,14 +336,13 @@ void PlaycontrollerProxy::sendPedalSetting(uint16_t pedal, PedalTypes pedalType,
                                                               reset ? EHC_RESET : EHC_NORESET, buffer))
 
   {
-    DebugLevel::info("EHC: send pedal setting", pedal, "=", pedalType);
     nltools::msg::PlaycontrollerMessage msg;
     msg.message = Glib::Bytes::create(buffer, written);
     nltools::msg::send(nltools::msg::EndPoint::Playcontroller, msg);
   }
   else
   {
-    DebugLevel::warning("Could not compose pedal preset", pedal, "=", pedalType);
+    DebugLevel::error("Could not compose pedal preset", pedal, "=", pedalType);
   }
 }
 
@@ -362,8 +352,6 @@ void PlaycontrollerProxy::sendSetting(uint16_t key, gint16 value)
   *cmp << key;
   *cmp << value;
   queueToPlaycontroller(cmp);
-
-  DebugLevel::info("sending setting", key, "=", value);
 }
 
 void PlaycontrollerProxy::onHeartbeatStumbled()
@@ -391,18 +379,15 @@ sigc::connection PlaycontrollerProxy::onLastKeyChanged(sigc::slot<void> s)
 void PlaycontrollerProxy::requestPlaycontrollerSoftwareVersion()
 {
   sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_SW_VERSION);
-  nltools::Log::info("sending request SOFTWARE_VERSION to LPC");
 }
 
 void PlaycontrollerProxy::requestPlaycontrollerUHID()
 {
   sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_UHID64);
-  nltools::Log::info("sending request UHID64 to LPC");
 }
 
 void PlaycontrollerProxy::requestHWPositions()
 {
-  nltools::Log::info("sending request POLLHWS to LPC");
   sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_POLLHWS);
 }
 
