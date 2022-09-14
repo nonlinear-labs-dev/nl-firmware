@@ -124,6 +124,26 @@ parameters:
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Attack time by high Note-On velocities.
   - <<: *ENV_VELOCITY
+    id: 425
+    token: Dec_1_Vel
+    label_long: Decay 1 Velocity
+    label_short: Velocity
+    control_position: { <<: *ENV_CP_VELOCITY, scale: LINEAR_BIPOLAR_INVERTED_60_DBT, initial: 0.0f }
+    info: >
+      Velocity influence on the Decay 1 time.
+      The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
+      of the Decay 1 time by high Note-On velocities.
+  - <<: *ENV_VELOCITY
+    id: 426
+    token: Dec_2_Vel
+    label_long: Decay 2 Velocity
+    label_short: Velocity
+    control_position: { <<: *ENV_CP_VELOCITY, scale: LINEAR_BIPOLAR_INVERTED_60_DBT, initial: 0.0f }
+    info: >
+      Velocity influence on the Decay 2 time.
+      The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
+      of the Decay 2 time by high Note-On velocities.
+  - <<: *ENV_VELOCITY
     id: 50
     token: Rel_Vel
     label_long: Release Velocity
@@ -175,3 +195,19 @@ parameters:
       Determines how much the Envelope signal is forced to start at zero instead of the current level
       (usually from the Release phase).
       At 100.0 % the Envelope always starts at zero, independant from the previous signal level.
+  - <<: *MODULATEABLE
+    id: 427
+    token: Loop
+    label_long: Loop
+    label_short: Loop
+    control_position: { coarse: 200, fine: 2000, scale: LINEAR_200_PERCENT, initial: 0.0f }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 200.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
+    info: >
+      Determines the presence and decay speed of looped envelope segments (Decay 1 and 2).\n
+      0%: no looped segments, normal envelope behavior with an exponential Decay 1 segment.\n
+      <= 100%: the loop will repeat and approach zero until a pressed key is released. Smaller Loop values produce a faster loop decay.
+      At 100%, the loop will repeat indefinetely. After releasing a pressed key, the normal Release segment will start.
+      The Decay 2 segment is linear during loops.\n
+      > 100%: the loop will repeat at full presence until a pressed key is released. Then, the loop will still repeat and approach zero.
+      Smaller Loop values produce produce a faster loop decay. At 200%, the loop will repeat indefinetely.
