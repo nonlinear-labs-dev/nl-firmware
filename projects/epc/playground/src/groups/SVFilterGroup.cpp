@@ -17,10 +17,10 @@ void SVFilterGroup::init()
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_In_A_B, getVoiceGroup() }));
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_Comb_Mix, getVoiceGroup() }));
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_Cut, getVoiceGroup() }));
-  appendParameter(new Parameter(this, { C15::PID::SV_Flt_Cut_KT, getVoiceGroup() }));
+  appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_Cut_KT, getVoiceGroup() }));
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_Cut_Env_C, getVoiceGroup() }));
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_Res, getVoiceGroup() }));
-  appendParameter(new Parameter(this, { C15::PID::SV_Flt_Res_KT, getVoiceGroup() }));
+  appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_Res_KT, getVoiceGroup() }));
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_Res_Env_C, getVoiceGroup() }));
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_Spread, getVoiceGroup() }));
   appendParameter(new ModulateableParameter(this, { C15::PID::SV_Flt_LBH, getVoiceGroup() }));

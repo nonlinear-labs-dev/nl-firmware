@@ -50,6 +50,6 @@ class CombFilterCol2 extends ParameterColumn {
 		super(parent);
 		addChild(new Pitch(this));
 		addChild(new ModulatableHorizontalSlider(this, 118));
-		addChild(new UnmodulateableNumericDisplay(this, 117));
+		addChild(new ModulateableNumericalControl(this, 117));
 	}
 }

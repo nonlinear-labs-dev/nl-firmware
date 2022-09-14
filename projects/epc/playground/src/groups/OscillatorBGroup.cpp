@@ -15,7 +15,7 @@ OscillatorBGroup::~OscillatorBGroup()
 void OscillatorBGroup::init()
 {
   appendParameter(new ModulateableParameter(this, { C15::PID::Osc_B_Pitch, getVoiceGroup() }));
-  appendParameter(new Parameter(this, { C15::PID::Osc_B_Pitch_KT, getVoiceGroup() }));
+  appendParameter(new ModulateableParameter(this, { C15::PID::Osc_B_Pitch_KT, getVoiceGroup() }));
   appendParameter(new ModulateableParameter(this, { C15::PID::Osc_B_Pitch_Env_C, getVoiceGroup() }));
   appendParameter(new ModulateableParameter(this, { C15::PID::Osc_B_Fluct, getVoiceGroup() }));
   appendParameter(new ModulateableParameter(this, { C15::PID::Osc_B_Fluct_Env_C, getVoiceGroup() }));
