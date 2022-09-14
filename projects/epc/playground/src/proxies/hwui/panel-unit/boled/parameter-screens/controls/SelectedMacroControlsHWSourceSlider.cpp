@@ -12,9 +12,9 @@ SelectedMacroControlsHWSourceSlider::SelectedMacroControlsHWSourceSlider(const R
     : super(rect)
     , m_hwParamID(ParameterId::invalid())
 {
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &SelectedMacroControlsHWSourceSlider::onParameterSelected)),
-      getHWUI()->getCurrentVoiceGroup());
+      sigc::hide<0>(sigc::mem_fun(this, &SelectedMacroControlsHWSourceSlider::onParameterSelected)), vg);
 }
 
 void SelectedMacroControlsHWSourceSlider::onParameterSelected(Parameter *newOne)

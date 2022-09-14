@@ -4,7 +4,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-TEST_CASE("Load to Part should lead to changed star and recall buffer unchanged")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load to Part should lead to changed star and recall buffer unchanged")
 {
 
   MockPresetStorage presets;

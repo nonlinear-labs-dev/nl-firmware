@@ -36,10 +36,19 @@ und zum Update via "mxli" auf dem BBB:
 ~\projects\playcontroller\firmware\src\main\Release\main.bin
 Das sagt er auch zum Schluss im Consolenfenster wenn man main compliert.
 
-Nicht wundern wenn man immer zwei Durchläufe bis zum korrekten Brennen mit LPCxpresso braucht,
-immer jeder zweite geht schief, ("Terminate Timeout"), Ursache bisher unbekannt.
 
-Der Progger sucht sich offenbar anhand des in-situ gescannten LPC-typs den richtigen Flash-Driver selber aus,
-dieser kann aber dennoch manuell geändert werden wenn es nötig ist für experimentelle Zwecke.
-... und zwar *jedesmal* vor dem Brennen weil die Einstellung im Brenner-Dialog ist nicht persistent. Immerhin bleibt er
-im DropDown-Menu (was im .cproject ebenso gespeichert ist).
+Nicht wundern wenn Brennen nur jedes zweite mal klappt -- Ursache für diese Problem ist unbekannt.
+Für das Debuggen bedeutet das, dass man vorher brennen muss und erst nach dem abrechenden Durchgang den Debugger startet,
+sonst klappt es nicht.
+Auch kommt es gelegentlich zu einem "Target not Found" beim Brennen, da hilft nur LPCxpresso verlassen, Prommer einmal
+kurz von USB abklemmen, dann LPCxpresso neu starten.
+
+Support für LPC4322 und LPC3423 (statt dem originalen LPC4337):
+Geht natürlich erst mit den dafür aktualiserten Linker-Scripts, also die "Minimalversion" C15_LPC4322_main.ld usw
+Beim Brennen oder Debuggen muss der entsprechende FLASH-Driver benutzt werden.
+
+Beim Brennen kann man den Treiber temporär ändern in Brenner-Dialog (vergisst er aber sofort wieder).
+Für's Debuggen muss man jedoch  Properties-->MCU Settings-->Edit-->Default Flash Driver  einstellen auf:
+  LPC18x2_43x2_512.cfx          für LPC4322
+  LPC18x3_43x3_2x256_BootA.cfx  für LPC4323
+Muss nur für M4 gemacht werden.

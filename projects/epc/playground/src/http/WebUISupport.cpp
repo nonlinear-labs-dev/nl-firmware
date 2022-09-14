@@ -55,7 +55,7 @@ WebUISupport::WebUISupport(UpdateDocumentContributor* master)
 void WebUISupport::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID) const
 {
   writer.writeTag("webui-helper", [&]() {
-    auto selectedVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+    auto selectedVG = Application::get().getVGManager()->getCurrentVoiceGroup();
     writer.writeTextElement("selected-part", toString(selectedVG));
   });
 }

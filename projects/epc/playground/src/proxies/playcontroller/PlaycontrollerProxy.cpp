@@ -29,8 +29,8 @@
 
 PlaycontrollerProxy::PlaycontrollerProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
-    , m_throttledRelativeParameterChange(std::chrono::milliseconds(1))
-    , m_throttledAbsoluteParameterChange(std::chrono::milliseconds(1))
+    , m_throttledRelativeParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
+    , m_throttledAbsoluteParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
 {
   m_msgParser.reset(new MessageParser());
 
@@ -148,6 +148,17 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
       m_signalPlaycontrollerSoftwareVersionChanged.send(m_playcontrollerSoftwareVersion);
     }
   }
+
+  else if(id == MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_AT_STATUS)
+  {
+    AT_status_T atStatus = AT_uint16ToStatus(value);
+
+    if(m_hasAftertouchCalibrationData != (atStatus.calibrated != 0))
+    {
+      m_hasAftertouchCalibrationData = (atStatus.calibrated != 0);
+      m_signalCalibrationStatus.send(m_hasAftertouchCalibrationData);
+    }
+  }
 }
 
 void PlaycontrollerProxy::onUHIDReceived(const MessageParser::NLMessage &msg)
@@ -172,6 +183,7 @@ void PlaycontrollerProxy::onPlaycontrollerConnected()
   requestPlaycontrollerSoftwareVersion();
   requestPlaycontrollerUHID();
   requestHWPositions();
+  requestCalibrationStatus();
 }
 
 void PlaycontrollerProxy::sendCalibrationData()
@@ -237,8 +249,8 @@ void PlaycontrollerProxy::onEditControlMessageReceived(const MessageParser::NLMe
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
 
-  if(auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected(
-         Application::get().getHWUI()->getCurrentVoiceGroup()))
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  if(auto p = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg))
   {
     auto ribbonModeBehaviour = Application::get().getSettings()->getSetting<ParameterEditModeRibbonBehaviour>()->get();
 
@@ -381,6 +393,7 @@ void PlaycontrollerProxy::onHeartbeatStumbled()
   requestPlaycontrollerSoftwareVersion();
   requestPlaycontrollerUHID();
   requestHWPositions();
+  requestCalibrationStatus();
 }
 
 sigc::connection PlaycontrollerProxy::onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s)
@@ -446,6 +459,16 @@ void PlaycontrollerProxy::setUHID(uint64_t uhid)
     m_uhid = uhid;
     m_signalUHIDChanged.send(m_uhid);
   }
+}
+
+sigc::connection PlaycontrollerProxy::onCalibrationStatusChanged(const sigc::slot<void, bool> &slot)
+{
+  return m_signalCalibrationStatus.connect(slot);
+}
+
+void PlaycontrollerProxy::requestCalibrationStatus()
+{
+  sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_AT_STATUS);
 }
 
 template <typename tRet, typename tInValue>

@@ -10,7 +10,7 @@
 #include <device-settings/SyncSplitSettingUseCases.h>
 #include <sync/SyncMasterMockRoot.h>
 
-TEST_CASE("Split Point Display Value")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Point Display Value")
 {
   auto eb = TestHelper::getEditBuffer();
 
@@ -46,7 +46,7 @@ TEST_CASE("Split Point Display Value")
   CHECK(splitII->getDisplayString() == "C6");
 }
 
-TEST_CASE("Split Point Helper Functions")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Point Helper Functions")
 {
   auto eb = TestHelper::getEditBuffer();
   auto settings = TestHelper::getSettings();
@@ -82,7 +82,7 @@ TEST_CASE("Split Point Helper Functions")
   }
 }
 
-TEST_CASE("Sync Setting gets updated on store and load")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Sync Setting gets updated on store and load")
 {
   auto pm = TestHelper::getPresetManager();
   auto eb = TestHelper::getEditBuffer();
@@ -190,7 +190,7 @@ TEST_CASE("Sync Setting gets updated on store and load")
   }
 }
 
-TEST_CASE("Note to Display")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Note to Display")
 {
   SplitPointDimension dim;
   CHECK(dim.stringizeNote(0) == "C1");
@@ -199,4 +199,71 @@ TEST_CASE("Note to Display")
   CHECK(dim.stringizeNote(60) == "C6");
   CHECK(dim.stringizeNote(30) == "F#3");
   CHECK(dim.stringizeNote(29) == "F3");
+}
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "modulate split")
+{
+  auto eb = TestHelper::getEditBuffer();
+
+  auto sI = eb->findAndCastParameterByID<SplitPointParameter>({C15::PID::Split_Split_Point, VoiceGroup::I});
+  auto sII = eb->findAndCastParameterByID<SplitPointParameter>({C15::PID::Split_Split_Point, VoiceGroup::II});
+
+  auto mcA = eb->findAndCastParameterByID<MacroControlParameter>({C15::PID::MC_A, VoiceGroup::Global});
+
+  ModParameterUseCases sIUseCases(sI);
+
+  TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
+
+  sIUseCases.selectModSource(MacroControls::MC1);
+
+  auto modAmount = GENERATE(15.0 / 60.0, 1.0 / 60.0, 59.0 / 60.0);
+  sIUseCases.setModulationAmount(modAmount);
+
+  CHECK(sI->getDisplayString() == "F#3");
+  CHECK(sII->getDisplayString() == "G3");
+  CHECK(sI->getDisplayValue() + 1 == Approx(sII->getDisplayValue()));
+
+  MacroControlParameterUseCases mcUseCases(mcA);
+  auto oldRange = sI->getModulationRange(false);
+
+  WHEN("Modulated direct")
+  {
+    auto mcPos = GENERATE(1.0 / 159.0, 4.0 / 160.0);
+    mcUseCases.setControlPosition(mcPos);
+
+    INFO("mcPos: " << mcPos << " modAmount: " << modAmount);
+
+    auto e = std::numeric_limits<float>::epsilon();
+    CHECK(sI->getDisplayValue() + 1 == Approx(sII->getDisplayValue()));
+    CHECK(oldRange.first == Approx(sI->getModulationRange(false).first).epsilon(e));
+    CHECK(oldRange.second == Approx(sI->getModulationRange(false).second).epsilon(e));
+  }
+
+  WHEN("Modulated steps fine")
+  {
+    mcUseCases.setControlPosition(0);
+
+    for(int i = 0; i < 90; i++)
+    {
+      mcUseCases.incDecPosition(1, true, false);
+    }
+
+    CHECK(sI->getDisplayValue() + 1 == Approx(sII->getDisplayValue()));
+    CHECK(oldRange.first == Approx(sI->getModulationRange(false).first));
+    CHECK(oldRange.second == Approx(sI->getModulationRange(false).second));
+  }
+
+  WHEN("Modulated steps coarse")
+  {
+    mcUseCases.setControlPosition(0);
+
+    for(int i = 0; i < 90; i++)
+    {
+      mcUseCases.incDecPosition(1, false, false);
+    }
+
+    CHECK(sI->getDisplayValue() + 1 == Approx(sII->getDisplayValue()));
+    CHECK(oldRange.first == Approx(sI->getModulationRange(false).first));
+    CHECK(oldRange.second == Approx(sI->getModulationRange(false).second));
+  }
 }

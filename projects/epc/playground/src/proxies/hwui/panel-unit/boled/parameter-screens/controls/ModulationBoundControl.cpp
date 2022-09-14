@@ -16,8 +16,8 @@ bool ModulationBoundControl::onButton(Buttons i, bool down, ButtonModifiers)
       if(down)
       {
         auto eb = Application::get().getPresetManager()->getEditBuffer();
-        if(auto modulatedParam
-           = dynamic_cast<ModulateableParameter *>(eb->getSelected(getHWUI()->getCurrentVoiceGroup())))
+        auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+        if(auto modulatedParam = dynamic_cast<ModulateableParameter *>(eb->getSelected(vg)))
         {
           ModParameterUseCases useCase(modulatedParam);
           useCase.setModulationAmount(0);

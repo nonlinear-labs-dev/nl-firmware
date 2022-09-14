@@ -14,10 +14,13 @@
 #include <glibmm/refptr.h>
 #include <png++/image.hpp>
 #include <tools/ScopedGuard.h>
+#include "Oleds.h"
 
 class Application;
 class UsageMode;
 class Settings;
+class LayoutFolderMonitor;
+class RecorderManager;
 
 namespace UNDO
 {
@@ -30,30 +33,15 @@ namespace nltools::msg
 }
 
 class PresetPartSelection;
+class SplashLayout;
 
-class HWUI
+class HWUI : public sigc::trackable
 {
  public:
-  HWUI(Settings &settings);
+  HWUI(Settings &settings, RecorderManager &recorderManager);
   virtual ~HWUI();
   void init();
   void indicateBlockingMainThread();
-
-  VoiceGroup getCurrentVoiceGroup() const;
-
-  bool isInLoadToPart() const;
-
-  //TODO Remove all non HWUI Related things! -> VoiceGroup, LoadToPart etc
-  void setLoadToPart(bool state);
-  void setCurrentVoiceGroup(VoiceGroup v);
-  void setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v);
-
-  void toggleCurrentVoiceGroupAndUpdateParameterSelection();
-  void toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction);
-  void toggleCurrentVoiceGroup();
-
-  sigc::connection onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb);
-  sigc::connection onLoadToPartModeChanged(const sigc::slot<void, bool> &cb);
 
   PanelUnit &getPanelUnit();
   const PanelUnit &getPanelUnit() const;
@@ -69,17 +57,23 @@ class HWUI
   sigc::connection connectToBlinkTimer(const sigc::slot<void, int> &cb);
   void deInit();
 
-  void toggleLoadToPart();
-
-  PresetPartSelection *getPresetPartSelection(VoiceGroup vg);
-
   std::string exportSoled();
   std::string exportBoled();
+
+  Oleds &getOleds();
+
+  //SplashScreen
+  void startSplash();
+  void finishSplash();
+  void setSplashStatus(const std::string &msg);
+  void addSplashStatus(const std::string &msg);
+  void registerSplash(SplashLayout *l);
+  void unregisterSplash(SplashLayout *l);
 
  private:
   void exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std::string &fileName) const;
 
-  void onFocusAndModeChanged(const Setting* s);
+  void onFocusAndModeChanged(const Setting *s);
   void onPresetLoaded();
   void onEditBufferSoundTypeChanged(SoundType type);
   void undoableUpdateParameterSelection(UNDO::Transaction *transaction);
@@ -93,7 +87,6 @@ class HWUI
   void setModifiers(ButtonModifiers m);
 
   bool onBlinkTimeout();
-  void setupFocusAndMode();
 
   void setModifiers(Buttons buttonID, bool state);
   bool detectAffengriff(Buttons buttonID, bool state);
@@ -101,6 +94,9 @@ class HWUI
 
   void onParameterReselection(Parameter *parameter);
   void onParameterSelection(Parameter *oldParameter, Parameter *newParameter);
+
+
+  Oleds m_oleds;
 
   sigc::connection m_editBufferSoundTypeConnection;
   sigc::connection m_editBufferPresetLoadedConnection;
@@ -111,13 +107,9 @@ class HWUI
   sigc::connection m_editBufferParameterSelectionConnection;
 
   void onRotaryChanged();
-  Signal<void, VoiceGroup> m_voiceGoupSignal;
-  Signal<void, bool> m_loadToPartSignal;
   Signal<void> m_inputSignal;
 
-  bool m_loadToPartActive = false;
-
-  VoiceGroup m_currentVoiceGroup = VoiceGroup::I;
+  std::unique_ptr<LayoutFolderMonitor> m_layoutFolderMonitor;
   PanelUnit m_panelUnit;
   BaseUnit m_baseUnit;
 
@@ -136,8 +128,9 @@ class HWUI
   int m_blinkCount;
   Expiration m_switchOffBlockingMainThreadIndicator;
   ScopedGuard m_parameterFocusLock;
-  Settings& m_settings;
-  FocusAndModeSetting & m_famSetting;
+  Settings &m_settings;
+  FocusAndModeSetting &m_famSetting;
+  SplashLayout *m_splashLayout = nullptr;
 
   bool m_currentParameterIsFineAllowed = false;
 };

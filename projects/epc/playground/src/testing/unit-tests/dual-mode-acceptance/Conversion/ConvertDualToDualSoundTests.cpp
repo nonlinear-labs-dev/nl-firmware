@@ -11,7 +11,7 @@
 
 using EBL = EditBufferLogicalParts;
 
-TEST_CASE("Convert Split (II) to Layer")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Split (II) to Layer")
 {
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();
@@ -31,7 +31,7 @@ TEST_CASE("Convert Split (II) to Layer")
     monoII->setCPFromHwui(scope->getTransaction(), 1);
     CHECK(monoII->getDisplayString() == "On");
 
-    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+    Application::get().getVGManager()->setCurrentVoiceGroup(scope->getTransaction(), VoiceGroup::II);
 
     for(auto p : EBL::getLocalNormal<VoiceGroup::I>())
       TestHelper::forceParameterChange(scope->getTransaction(), p);
@@ -158,7 +158,7 @@ TEST_CASE("Convert Split (II) to Layer")
   }
 }
 
-TEST_CASE("Convert Layer I to Split")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Layer I to Split")
 {
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto monoI = EBL::getMonoEnable<VoiceGroup::I>();

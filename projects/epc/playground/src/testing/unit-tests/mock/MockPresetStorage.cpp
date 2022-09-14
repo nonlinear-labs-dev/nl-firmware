@@ -24,6 +24,7 @@ MockPresetStorage::~MockPresetStorage()
   auto transaction = scope->getTransaction();
   auto editBuffer = getEditBuffer();
   auto pm = editBuffer->getParent();
+  editBuffer->resetOriginIf(editBuffer->getOrigin());
   pm->deleteBank(transaction, m_bank->getUuid());
 }
 

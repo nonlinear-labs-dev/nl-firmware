@@ -18,7 +18,7 @@ auto getPresetParameter = [](auto preset, auto parameter) {
   return preset->findParameterByID(id, false);
 };
 
-TEST_CASE("Load Pre 1.7 Preset into Mono Enabled part resets Mono Enable")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Pre 1.7 Preset into Mono Enabled part resets Mono Enable")
 {
   auto eb = TestHelper::getEditBuffer();
   PreDualModePresetBank bank;
@@ -39,7 +39,7 @@ TEST_CASE("Load Pre 1.7 Preset into Mono Enabled part resets Mono Enable")
   CHECK(monoEnable->getDisplayString() == "Off");
 }
 
-TEST_CASE("Load Single into Split Part I")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Split Part I")
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
@@ -52,7 +52,7 @@ TEST_CASE("Load Single into Split Part I")
     TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
+    Application::get().getVGManager()->setCurrentVoiceGroup(transaction, VoiceGroup::I);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
     envAAttack->setValue(transaction, 0.666);
@@ -163,7 +163,7 @@ TEST_CASE("Load Single into Split Part I")
   }
 }
 
-TEST_CASE("Load Single into Split Part II")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Split Part II")
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
@@ -176,7 +176,7 @@ TEST_CASE("Load Single into Split Part II")
     TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+    Application::get().getVGManager()->setCurrentVoiceGroup(transaction, VoiceGroup::II);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
     envAAttack->setValue(transaction, 0.666);

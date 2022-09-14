@@ -20,6 +20,9 @@
 
 #include <tools/TimeTools.h>
 
+#include <device-settings/Settings.h>
+#include <device-settings/DateTimeAdjustment.h>
+
 BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& presetManager, Settings& settings)
     : SectionAndActionManager(parent, "/banks/")
     , m_presetManager(presetManager)
@@ -485,7 +488,8 @@ bool BankActions::handleRequest(const Glib::ustring& path, std::shared_ptr<Netwo
         auto scope = UNDO::Scope::startTrashTransaction();
         auto transaction = scope->getTransaction();
         bank->setAttribute(transaction, "Name of Export File", "(via Browser)");
-        bank->setAttribute(transaction, "Date of Export File", TimeTools::getAdjustedIso());
+        auto adj = m_settings.getSetting<DateTimeAdjustment>();
+        bank->setAttribute(transaction, "Date of Export File", TimeTools::getAdjustedIso(adj));
       }
 
       return true;

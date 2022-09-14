@@ -20,8 +20,9 @@
 #include <nltools/messaging/Message.h>
 #include "use-cases/EditBufferUseCases.h"
 
-PanelUnit::PanelUnit(Settings &settings)
+PanelUnit::PanelUnit(Settings &settings, Oleds &oleds, LayoutFolderMonitor *mon)
     : super(settings)
+    , m_editPanel(oleds, mon)
 {
   const int numLEDs = 96;
 
@@ -37,7 +38,7 @@ PanelUnit::PanelUnit(Settings &settings)
         auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
         EditBufferUseCases ebUseCases { *editBuffer };
 
-        auto p = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
+        auto p = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
 
         if(auto mrp = dynamic_cast<ModulationRoutingParameter *>(p))
         {
@@ -54,7 +55,7 @@ PanelUnit::PanelUnit(Settings &settings)
       [=]()
       {
         auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-        auto selParam = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
+        auto selParam = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
         auto mc = MacroControlsGroup::paramIDToModSrc(selParam->getID());
 
         auto targetId = m_macroControlAssignmentStateMachine.getCurrentModulateableParameter();
@@ -86,7 +87,7 @@ PanelUnit::PanelUnit(Settings &settings)
       {
         auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
         EditBufferUseCases ebUseCases { *editBuffer };
-        auto p = editBuffer->getSelected(Application::get().getHWUI()->getCurrentVoiceGroup());
+        auto p = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
         auto currentSource = choseHWBestSourceForMC(p->getID());
         ebUseCases.selectParameter(currentSource, true);
         m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);

@@ -9,8 +9,8 @@ class HardwareSourceSendParameter : public Parameter
 {
  public:
   HardwareSourceSendParameter(HardwareSourcesGroup* pGroup, PhysicalControlParameter& sibling, const ParameterId& id,
-                              const ScaleConverter* converter, double def, int coarseDenominator, int fineDenominator,
                               Settings* settings);
+  void init(Settings* settings);
   Layout* createLayout(FocusAndMode focusAndMode) const override;
 
   [[nodiscard]] bool isLocalEnabled() const;
@@ -43,7 +43,7 @@ class HardwareSourceSendParameter : public Parameter
   PhysicalControlParameter& m_sibling;
   Settings* m_settings = nullptr;
 
-  ReturnMode m_returnMode;
+  ReturnMode m_returnMode = ReturnMode::None;
   bool m_localIsEnabled;
   bool m_routingIsEnabled;
   bool m_lastChangedFromHWUI = false;

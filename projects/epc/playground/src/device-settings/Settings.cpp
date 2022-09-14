@@ -49,6 +49,7 @@
 #include "SplitPointSyncParameters.h"
 #include "GlobalLocalEnableSetting.h"
 #include "FocusAndModeSetting.h"
+#include "AftertouchLegacyMode.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -146,6 +147,7 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master)
   addSetting("AlsaFramesPerPeriod", new AlsaFramesPerPeriod(*this));
 
   addSetting("FlacRecorderVirgin", new FlacRecorderVirgin(*this));
+  addSetting("AftertouchLegacyMode", new AftertouchLegacyMode(*this));
 }
 
 Settings::~Settings()
@@ -225,7 +227,7 @@ void Settings::save()
 
 void Settings::sanitize()
 {
-  getSetting<DeviceName>()->sanitize();
+  getSetting<DeviceName>()->sanitize(getSetting<DateTimeAdjustment>());
 }
 
 void Settings::addSetting(const Glib::ustring &key, Setting *s)
@@ -289,6 +291,7 @@ void Settings::sendGlobalPlaycontrollerInitSettings()
   getSetting("Pedal2Type")->syncExternals(SendReason::HeartBeatDropped);
   getSetting("Pedal3Type")->syncExternals(SendReason::HeartBeatDropped);
   getSetting("Pedal4Type")->syncExternals(SendReason::HeartBeatDropped);
+  getSetting<AftertouchLegacyMode>()->syncExternals(SendReason::HeartBeatDropped);
 }
 
 void Settings::sendGlobalAESettings()

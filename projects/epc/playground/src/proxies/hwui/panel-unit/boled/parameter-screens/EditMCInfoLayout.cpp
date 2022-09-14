@@ -32,6 +32,7 @@ Glib::ustring EditMCInfoLayout::getInitialText() const
 
 MacroControlParameter *EditMCInfoLayout::getMacroControl() const
 {
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
   return dynamic_cast<MacroControlParameter *>(
-      Application::get().getPresetManager()->getEditBuffer()->getSelected(getHWUI()->getCurrentVoiceGroup()));
+      Application::get().getPresetManager()->getEditBuffer()->getSelected(currentVG));
 }

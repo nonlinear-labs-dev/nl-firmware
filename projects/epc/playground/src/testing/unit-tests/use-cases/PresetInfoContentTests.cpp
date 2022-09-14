@@ -9,22 +9,40 @@ namespace detail
   template <VoiceGroup vg> void enableMono(Preset* preset)
   {
     auto scope = TestHelper::createTestScope();
-    auto mono = preset->findParameterByID({ 364, vg }, true);
+    auto mono = preset->findParameterByID({ C15::PID::Mono_Grp_Enable, vg }, true);
     mono->setValue(scope->getTransaction(), 1);
+  }
+
+  template <VoiceGroup vg> void disableMono(Preset* preset)
+  {
+    auto scope = TestHelper::createTestScope();
+    auto mono = preset->findParameterByID({ C15::PID::Mono_Grp_Enable, vg }, true);
+    mono->setValue(scope->getTransaction(), 0);
   }
 
   template <VoiceGroup vg> void enableUnison(Preset* preset)
   {
     auto scope = TestHelper::createTestScope();
-    auto unison = preset->findParameterByID({ 249, vg }, true);
+    auto unison = preset->findParameterByID({ C15::PID::Unison_Voices, vg }, true);
     unison->setValue(scope->getTransaction(), 1);
+  }
+
+  template <VoiceGroup vg> void disableUnison(Preset* preset)
+  {
+    auto scope = TestHelper::createTestScope();
+    auto unison = preset->findParameterByID({ C15::PID::Unison_Voices, vg }, true);
+    unison->setValue(scope->getTransaction(), 0);
   }
 };
 
-TEST_CASE("Single Preset Type String", "[Preset]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Single Preset Type String", "[Preset]")
 {
   MockPresetStorage presets;
   auto preset = presets.getSinglePreset();
+  detail::disableMono<VoiceGroup::I>(preset);
+  detail::disableMono<VoiceGroup::II>(preset);
+  detail::disableUnison<VoiceGroup::I>(preset);
+  detail::disableUnison<VoiceGroup::II>(preset);
 
   SECTION("Mono Enabled")
   {
@@ -46,10 +64,15 @@ TEST_CASE("Single Preset Type String", "[Preset]")
   }
 }
 
-TEST_CASE("Layer Preset Type String", "[Preset]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Layer Preset Type String", "[Preset]")
 {
   MockPresetStorage presets;
   auto preset = presets.getLayerPreset();
+
+  detail::disableMono<VoiceGroup::I>(preset);
+  detail::disableMono<VoiceGroup::II>(preset);
+  detail::disableUnison<VoiceGroup::I>(preset);
+  detail::disableUnison<VoiceGroup::II>(preset);
 
   SECTION("Mono Enabled")
   {
@@ -71,10 +94,15 @@ TEST_CASE("Layer Preset Type String", "[Preset]")
   }
 }
 
-TEST_CASE("Split Preset Type String", "[Preset]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Preset Type String", "[Preset]")
 {
   MockPresetStorage presets;
   auto preset = presets.getSplitPreset();
+
+  detail::disableMono<VoiceGroup::I>(preset);
+  detail::disableMono<VoiceGroup::II>(preset);
+  detail::disableUnison<VoiceGroup::I>(preset);
+  detail::disableUnison<VoiceGroup::II>(preset);
 
   SECTION("None")
   {

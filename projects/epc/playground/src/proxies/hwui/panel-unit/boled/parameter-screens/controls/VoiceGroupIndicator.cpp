@@ -15,17 +15,14 @@ VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r, bool allowLoadToPart)
     , m_allowLoadToPart(allowLoadToPart)
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto vgManager = Application::get().getVGManager();
+  auto vg = vgManager->getCurrentVoiceGroup();
 
   eb->onSoundTypeChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onSoundTypeChanged));
+  eb->onSelectionChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterSelectionChanged), vg);
 
-  eb->onSelectionChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onParameterSelectionChanged),
-                         getHWUI()->getCurrentVoiceGroup());
-
-  auto hwui = Application::get().getHWUI();
-
-  hwui->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onVoiceGroupSelectionChanged));
-
-  hwui->onLoadToPartModeChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onLoadModeChanged));
+  vgManager->onCurrentVoiceGroupChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onVoiceGroupSelectionChanged));
+  vgManager->onLoadToPartModeChanged(sigc::mem_fun(this, &VoiceGroupIndicator::onLoadModeChanged));
 }
 
 VoiceGroupIndicator::~VoiceGroupIndicator()
@@ -149,7 +146,7 @@ void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
   const auto paramNum = parameter->getID().getNumber();
 
   if(paramNum == C15::PID::Split_Split_Point || MacroControlsGroup::isMacroControl(paramNum))
-    m_selectedVoiceGroup = Application::get().getHWUI()->getCurrentVoiceGroup();
+    m_selectedVoiceGroup = Application::get().getVGManager()->getCurrentVoiceGroup();
 
   setDirty();
 }
@@ -223,4 +220,9 @@ void VoiceGroupIndicator::onLoadModeChanged(bool loadModeActive)
 {
   m_inLoadToPart = m_allowLoadToPart && loadModeActive;
   setDirty();
+}
+
+VoiceGroup VoiceGroupIndicator::getCurrentDisplayedVoiceGroup() const
+{
+  return m_selectedVoiceGroup;
 }

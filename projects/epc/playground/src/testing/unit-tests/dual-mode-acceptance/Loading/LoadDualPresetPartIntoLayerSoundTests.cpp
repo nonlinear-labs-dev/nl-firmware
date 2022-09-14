@@ -13,7 +13,7 @@
 
 using EBL = EditBufferLogicalParts;
 
-TEST_CASE("Load Part I of Split into Layer Part I")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Layer Part I")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;
@@ -27,7 +27,7 @@ TEST_CASE("Load Part I of Split into Layer Part I")
     TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
+    Application::get().getVGManager()->setCurrentVoiceGroup(transaction, VoiceGroup::I);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
     envAAttack->setValue(transaction, 0.666);
@@ -162,7 +162,7 @@ TEST_CASE("Load Part I of Split into Layer Part I")
   }
 }
 
-TEST_CASE("Load Part I of Split into Layer Part II")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Layer Part II")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;
@@ -174,7 +174,7 @@ TEST_CASE("Load Part I of Split into Layer Part II")
     TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+    Application::get().getVGManager()->setCurrentVoiceGroup(transaction, VoiceGroup::II);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
     envAAttack->setValue(transaction, 0.666);
@@ -309,7 +309,7 @@ TEST_CASE("Load Part I of Split into Layer Part II")
   }
 }
 
-TEST_CASE("Load Part I of Layer into Layer Part I")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Layer into Layer Part I")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;
@@ -321,7 +321,7 @@ TEST_CASE("Load Part I of Layer into Layer Part I")
     TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::I);
+    Application::get().getVGManager()->setCurrentVoiceGroup(transaction, VoiceGroup::I);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
     envAAttack->setValue(transaction, 0.666);
@@ -465,7 +465,7 @@ TEST_CASE("Load Part I of Layer into Layer Part I")
   }
 }
 
-TEST_CASE("Load Part I of Layer into Layer Part II")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Layer into Layer Part II")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;
@@ -477,7 +477,7 @@ TEST_CASE("Load Part I of Layer into Layer Part II")
     TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    Application::get().getHWUI()->setCurrentVoiceGroup(VoiceGroup::II);
+    Application::get().getVGManager()->setCurrentVoiceGroup(transaction, VoiceGroup::II);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
     envAAttack->setValue(transaction, 0.666);

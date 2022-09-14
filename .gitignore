@@ -1,5 +1,6 @@
 CMakeLists.txt.user
 *.class
+
 # Package Files #
 *.jar
 *.war
@@ -64,3 +65,9 @@ projects/epc/web-ui/.classpath
 projects/epc/web-ui/.settings/
 projects/epc/web-ui/.vscode/settings.json
 projects/shared/parameter-db/src/.~lock.ParameterList_1.7B.ods#
+# yaml experiments #
+projects/shared/configuration/node_modules
+projects/shared/configuration/generated
+projects/shared/configuration/lib/*.js
+projects/shared/configuration/lib/tasks/*.js
+projects/shared/configuration/.vscode

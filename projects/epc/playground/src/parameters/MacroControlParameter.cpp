@@ -30,11 +30,11 @@
 static ParameterId lastSelectedMacroControl = MacroControlsGroup::modSrcToParamId(MacroControls::MC1);
 
 MacroControlParameter::MacroControlParameter(ParameterGroup *group, const ParameterId &id)
-    : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>())
+    : Parameter(group, id)
     , m_UiSelectedHardwareSourceParameterID(HardwareSourcesGroup::getPedal1ParameterID().getNumber(),
                                             id.getVoiceGroup())
     , m_lastMCViewUuid { "NONE" }
-    , mcviewThrottler { Expiration::Duration(5) }
+    , mcviewThrottler { Application::get().getMainContext(), Expiration::Duration(5) }
 {
 }
 
@@ -201,12 +201,10 @@ void MacroControlParameter::undoableSetGivenName(UNDO::Transaction *transaction,
   if(m_givenName != newName)
   {
     auto swapData = UNDO::createSwapData(newName);
-    transaction->addSimpleCommand(
-        [=](UNDO::Command::State) mutable
-        {
-          swapData->swapWith(m_givenName);
-          invalidate();
-        });
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      swapData->swapWith(m_givenName);
+      invalidate();
+    });
   }
 }
 
@@ -216,12 +214,10 @@ void MacroControlParameter::undoableSetInfo(UNDO::Transaction *transaction, cons
   {
     auto swapData = UNDO::createSwapData(info);
 
-    transaction->addSimpleCommand(
-        [=](UNDO::Command::State) mutable
-        {
-          swapData->swapWith(m_info);
-          invalidate();
-        });
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      swapData->swapWith(m_info);
+      invalidate();
+    });
   }
 }
 

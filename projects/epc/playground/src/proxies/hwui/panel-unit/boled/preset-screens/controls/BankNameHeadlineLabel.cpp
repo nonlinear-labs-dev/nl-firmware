@@ -14,7 +14,7 @@ BankNameHeadlineLabel::BankNameHeadlineLabel(const Rect &pos)
 
 std::shared_ptr<Font> BankNameHeadlineLabel::getFont() const
 {
-  return Oleds::get().getFont("Emphase-9-Bold", getFontHeight());
+  return Fonts::get().getFont("Emphase-9-Bold", getFontHeight());
 }
 
 int BankNameHeadlineLabel::getFontHeight() const

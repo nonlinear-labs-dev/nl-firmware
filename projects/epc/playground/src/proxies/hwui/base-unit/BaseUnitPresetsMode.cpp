@@ -15,37 +15,45 @@ void BaseUnitPresetsMode::setup()
 {
   super::setup();
 
-  setupButtonConnection(Buttons::BUTTON_MINUS, [=](auto, auto, auto state) {
-    if(BaseUnitPresetsAndBanksMode::checkPanicAffenGriff(Buttons::BUTTON_MINUS, state))
-      return true;
+  setupButtonConnection(Buttons::BUTTON_MINUS,
+                        [=](auto, auto, auto state)
+                        {
+                          if(BaseUnitPresetsAndBanksMode::checkPanicAffenGriff(Buttons::BUTTON_MINUS, state))
+                            return true;
 
-    if(state)
-      installButtonRepeat([]() {
-        auto pm = Application::get().getPresetManager();
-        PresetManagerUseCases useCase(*pm, *Application::get().getSettings());
-        useCase.selectPreviousPreset();
-      });
-    else
-      removeButtonRepeat();
+                          if(state)
+                            installButtonRepeat(
+                                []()
+                                {
+                                  auto pm = Application::get().getPresetManager();
+                                  PresetManagerUseCases useCase(*pm, *Application::get().getSettings());
+                                  useCase.selectPreviousPreset();
+                                });
+                          else
+                            removeButtonRepeat();
 
-    return true;
-  });
+                          return true;
+                        });
 
-  setupButtonConnection(Buttons::BUTTON_PLUS, [=](auto, auto, auto state) {
-    if(BaseUnitPresetsAndBanksMode::checkPanicAffenGriff(Buttons::BUTTON_MINUS, state))
-      return true;
+  setupButtonConnection(Buttons::BUTTON_PLUS,
+                        [=](auto, auto, auto state)
+                        {
+                          if(BaseUnitPresetsAndBanksMode::checkPanicAffenGriff(Buttons::BUTTON_MINUS, state))
+                            return true;
 
-    if(state)
-      installButtonRepeat([]() {
-        auto pm = Application::get().getPresetManager();
-        PresetManagerUseCases useCase(*pm, *Application::get().getSettings());
-        useCase.selectNextPreset();
-      });
-    else
-      removeButtonRepeat();
+                          if(state)
+                            installButtonRepeat(
+                                []()
+                                {
+                                  auto pm = Application::get().getPresetManager();
+                                  PresetManagerUseCases useCase(*pm, *Application::get().getSettings());
+                                  useCase.selectNextPreset();
+                                });
+                          else
+                            removeButtonRepeat();
 
-    return true;
-  });
+                          return true;
+                        });
 }
 
 void BaseUnitPresetsMode::onFuncButtonDown()
@@ -53,10 +61,10 @@ void BaseUnitPresetsMode::onFuncButtonDown()
   auto &app = Application::get();
   auto hwui = Application::get().getHWUI();
   auto eb = app.getPresetManager()->getEditBuffer();
-  auto currentVoiceGroup = hwui->getCurrentVoiceGroup();
+  auto currentVoiceGroup = app.getVGManager()->getCurrentVoiceGroup();
 
   EditBufferUseCases useCase(*eb);
-  if(hwui->isInLoadToPart() && eb->isDual())
+  if(app.getVGManager()->isInLoadToPart() && eb->isDual())
   {
     if(auto preset = eb->getParent()->getSelectedPreset())
       useCase.loadToPart(preset, VoiceGroup::I, currentVoiceGroup);

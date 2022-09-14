@@ -28,16 +28,14 @@
 #include <presets/EditBufferActions.h>
 #include <use-cases/SettingsUseCases.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
+#include <nltools/system/SpawnAsyncCommandLine.h>
 
 using namespace std::chrono_literals;
 
 Application *Application::theApp = nullptr;
 
-void setupMessaging(const Options *options)
+void setupMessaging(const Options *options, Glib::RefPtr<Glib::MainContext> pContext)
 {
-  if(Options::s_acceptanceTests)
-    return;
-
   using namespace nltools::msg;
 
   const auto &bbbb = options->getBBBB();
@@ -45,6 +43,8 @@ void setupMessaging(const Options *options)
   const auto &midi = options->getMidiBridge();
 
   Configuration conf;
+  conf.mainContext = pContext;
+
 #ifdef _DEVELOPMENT_PC
   conf.offerEndpoints = { { EndPoint::Playground }, { EndPoint::TestEndPoint } };
 #else
@@ -63,8 +63,9 @@ void setupMessaging(const Options *options)
 
 std::unique_ptr<Options> Application::initStatic(Application *app, std::unique_ptr<Options> options)
 {
+  g_main_context_push_thread_default(app->m_theMainContext->gobj());
   theApp = app;
-  setupMessaging(options.get());
+  setupMessaging(options.get(), app->m_theMainContext);
   return options;
 }
 
@@ -74,30 +75,43 @@ void quitApp(int sig)
   Application::get().quit();
 }
 
+Glib::RefPtr<Glib::MainContext> createMainContext()
+{
+  if(Options::s_acceptanceTests)
+  {
+    return Glib::MainContext::create();
+  }
+  else
+  {
+    return Glib::MainContext::get_default();
+  }
+}
+
 Application::Application(int numArgs, char **argv)
-    : m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
-    , m_theMainLoop(Glib::MainLoop::create(Glib::MainContext::get_default()))
+    : m_theMainContext(createMainContext())
+    , m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
+    , m_theMainLoop(Glib::MainLoop::create(m_theMainContext))
+    , m_recorderManager(std::make_unique<RecorderManager>())
     , m_http(new HTTPServer())
     , m_settings(new Settings(m_options->getSettingsFile(), m_http->getUpdateDocumentMaster()))
-    , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_presetManager(
           new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
+    , m_hwui(new HWUI(*m_settings, *m_recorderManager.get()))
+    , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
     , m_audioEngineProxy(new AudioEngineProxy(*m_presetManager, *m_settings, *m_playcontrollerProxy))
-    , m_hwui(new HWUI(*m_settings.get()))
+    , m_voiceGroupManager(std::make_unique<VoiceGroupAndLoadToPartManager>(*m_presetManager->getEditBuffer()))
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
-    , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster()))
+    , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster(), *m_playcontrollerProxy))
     , m_clipboard(new Clipboard(m_http->getUpdateDocumentMaster()))
     , m_usbChangeListener(std::make_unique<USBChangeListener>())
     , m_webUISupport(std::make_unique<WebUISupport>(m_http->getUpdateDocumentMaster()))
-    , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui, *m_settings)
+    , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui, *m_settings,
+                       *m_voiceGroupManager)
     , m_heartbeatState(false)
     , m_isQuit(false)
 {
-  if(Options::s_acceptanceTests)
-    m_options->setPresetManagerPath("/tmp/pg-test-pm/");
-
 #ifdef _PROFILING
   Profiler::get().enable(true);
 #endif
@@ -105,8 +119,9 @@ Application::Application(int numArgs, char **argv)
   m_settings->init();
   m_hwui->init();
   m_http->init();
-  m_presetManager->init(m_audioEngineProxy.get(), *m_settings, SplashLayout::addStatus);
+  m_presetManager->init(m_audioEngineProxy.get(), *m_settings, [this](auto str) { m_hwui->addSplashStatus(str); });
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
+  m_voiceGroupManager->init();
 
   auto focusAndMode = m_settings->getSetting<FocusAndModeSetting>();
   SettingsUseCases useCases(*m_settings);
@@ -122,11 +137,16 @@ Application::Application(int numArgs, char **argv)
   ::signal(SIGQUIT, quitApp);
   ::signal(SIGTERM, quitApp);
   ::signal(SIGINT, quitApp);
+
+  g_main_context_pop_thread_default(m_theMainContext->gobj());
 }
 
 Application::~Application()
 {
+  stopWatchDog();
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+
+  SpawnAsyncCommandLine::clear();
 
   m_watchDog.reset();
   m_aggroWatchDog.reset();
@@ -146,6 +166,8 @@ Application::~Application()
   Profiler::get().print();
 #endif
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
+
+  nltools::msg::deInit();
 
   theApp = nullptr;
 }
@@ -205,21 +227,24 @@ void Application::runWatchDog()
 
   if(m_aggroWatchDog)
   {
-    m_aggroWatchDog->run(std::chrono::milliseconds(250), [=](int numWarning, int inactiveFoMS) {
-      DebugLevel::warning("Aggro WatchDog was inactive for ", inactiveFoMS, "ms. Warning #", numWarning);
+    m_aggroWatchDog->run(std::chrono::milliseconds(250),
+                         [=](int numWarning, int inactiveFoMS)
+                         {
+                           DebugLevel::warning("Aggro WatchDog was inactive for ", inactiveFoMS, "ms. Warning #",
+                                               numWarning);
 
 #ifdef _PROFILING
-      Profiler::get().printAllCallstacks();
+                           Profiler::get().printAllCallstacks();
 #endif
 
-      if(auto h = getHWUI())
-      {
-        if(getSettings()->getSetting<BlockingMainThreadIndication>()->get())
-        {
-          h->indicateBlockingMainThread();
-        }
-      }
-    });
+                           if(auto h = getHWUI())
+                           {
+                             if(getSettings()->getSetting<BlockingMainThreadIndication>()->get())
+                             {
+                               h->indicateBlockingMainThread();
+                             }
+                           }
+                         });
   }
 }
 
@@ -319,4 +344,14 @@ bool Application::heartbeat()
 ActionManagers *Application::getActionManagers()
 {
   return &m_actionManagers;
+}
+
+VoiceGroupAndLoadToPartManager *Application::getVGManager()
+{
+  return m_voiceGroupManager.get();
+}
+
+RecorderManager *Application::getRecorderManager()
+{
+  return m_recorderManager.get();
 }

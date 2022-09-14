@@ -10,7 +10,7 @@
 *******************************************************************************/
 
 #include "signal_storage_dual.h"
-#include <parameter_info.h>
+#include <parameter_declarations.h>
 #include "ae_potential_improvements.h"
 
 namespace Engine {

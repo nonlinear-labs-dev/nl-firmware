@@ -1,0 +1,10 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Env_G
+
+signals:
+  Truepoly_Signal: [ Sig ]
+
+parameters: []

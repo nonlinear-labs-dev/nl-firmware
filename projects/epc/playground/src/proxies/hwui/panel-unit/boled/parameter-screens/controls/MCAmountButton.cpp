@@ -2,11 +2,10 @@
 #include "parameters/ModulateableParameter.h"
 #include "groups/MasterGroup.h"
 #include "groups/VoiceGroupMasterGroup.h"
-#include "groups/ScaleGroup.h"
 #include "groups/UnisonGroup.h"
 #include "groups/SplitParameterGroups.h"
+#include "parameters/unison-parameters/UnmodulateableUnisonParameter.h"
 #include <proxies/hwui/buttons.h>
-#include <parameters/unison-parameters/ModulateableUnisonParameterWithUnusualModUnit.h>
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
 
 MCAmountButton::MCAmountButton(Buttons id)
@@ -18,9 +17,8 @@ MCAmountButton::~MCAmountButton() = default;
 
 void MCAmountButton::update(const Parameter* parameter)
 {
-  auto getSpecialParameter = [](const Parameter* param) -> const ModulateableParameter*
-  {
-    if(const auto* u = dynamic_cast<const ModulateableUnisonParameterWithUnusualModUnit*>(param))
+  auto getSpecialParameter = [](const Parameter* param) -> const ModulateableParameter* {
+    if(const auto* u = dynamic_cast<const ModulateableUnisonParameter*>(param))
       return u;
     else if(const auto* a = dynamic_cast<const ModulateableMonoParameter*>(param))
       return a;

@@ -85,7 +85,7 @@ void EditBufferSnapshotMaker::addSnapshot(UNDO::Transaction *transaction, tParam
         auto currentValue = record.parameter->getControlPositionValue();
         std::swap(currentValue, record.snapshotValue);
         record.parameter->getValue().setRawValue(Initiator::EXPLICIT_OTHER, currentValue);
-        record.parameter->sendToPlaycontroller();
+        record.parameter->sendToAudioEngine();
       }
     }
   });

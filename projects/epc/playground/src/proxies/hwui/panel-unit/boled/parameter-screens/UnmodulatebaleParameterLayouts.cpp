@@ -38,7 +38,7 @@ UnmodulateableParameterSelectLayout2::UnmodulateableParameterSelectLayout2()
     , super1()
     , super2()
 {
-  auto currentVG = Application::get().getHWUI()->getCurrentVoiceGroup();
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
   m_signalParameterSelectionChanged = Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::mem_fun(this, &UnmodulateableParameterSelectLayout2::onParameterSelectionChanged), currentVG);
 }

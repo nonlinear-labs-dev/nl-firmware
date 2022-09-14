@@ -156,6 +156,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/shared/sys/delays.h</locationURI>
 		</link>
 		<link>
+			<name>src/shared/sys/lpc_lib.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/shared/playcontroller/lpc_lib.c</locationURI>
+		</link>
+		<link>
 			<name>src/shared/sys/nl_stdlib.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/shared/sys/nl_stdlib.h</locationURI>

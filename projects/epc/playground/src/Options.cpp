@@ -5,17 +5,24 @@
 #include "Application.h"
 #include <giomm.h>
 #include <nltools/ErrorCodes.h>
+#include <filesystem>
 
 bool Options::s_acceptanceTests = false;
 
 Options::Options()
 {
-  setDefaults();
+  if(s_acceptanceTests)
+    setDefaultsForTests();
+  else
+    setDefaults();
 }
 
 Options::Options(int &argc, char **&argv)
 {
-  setDefaults();
+  if(s_acceptanceTests)
+    setDefaultsForTests();
+  else
+    setDefaults();
 
   Glib::OptionGroup mainGroup("common", "common options");
   Glib::OptionContext ctx;
@@ -83,6 +90,29 @@ Options::Options(int &argc, char **&argv)
     nltools::Log::error(__FILE__, __FUNCTION__, __LINE__, "Could not parse args:", ss.str());
     std::exit(static_cast<int>(nltools::ErrorCode::UnknownOptionKeyError));
   }
+}
+
+void Options::setDefaultsForTests()
+{
+  auto persistencePath = std::filesystem::path("/tmp");
+
+  auto timestamp = std::chrono::steady_clock::now().time_since_epoch().count();
+  auto fine = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+
+  auto settingsName = std::string("/tmp/settings") + std::to_string(fine) + std::string(".xml");
+  auto settingsFile = std::filesystem::path(settingsName);
+  auto pmName = std::string("/tmp/preset-manager-") + std::to_string(timestamp) + "-" + std::to_string(fine) + std::string("/");
+  auto pmDirectory = std::filesystem::path(pmName);
+
+  if(is_directory(persistencePath))
+  {
+    if(not is_directory(pmDirectory))
+      std::filesystem::create_directories(pmDirectory);
+    m_pmPath = pmDirectory.string();
+    m_settingsFile = settingsFile.string();
+  }
+
+  m_layoutFolder = getResourcesDir() + std::string("/templates/");
 }
 
 void Options::setDefaults()

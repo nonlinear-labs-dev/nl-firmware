@@ -12,7 +12,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-TEST_CASE("Issue 3035, Loading Preset with held bender leads to wrong values", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Loading Preset with held bender leads to wrong values", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
 
@@ -128,7 +128,7 @@ TEST_CASE("Issue 3035, Loading Preset with held bender leads to wrong values", "
   }
 }
 
-TEST_CASE("Load Preset with differing Return Types", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Preset with differing Return Types", "[3035]")
 {
   auto pm = TestHelper::getPresetManager();
   {
@@ -192,7 +192,7 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
     CHECK(pedal1->getDisplayString() == "25.0 %");
     ebUseCases.load(ped1_retzero);
     TestHelper::doMainLoopIteration();
-    CHECK(pedal1->getDisplayString() == "! 25.0 %");
+    CHECK(pedal1->getDisplayString() == "25.0 %");
   }
 
   WHEN("Non Ret Pedal Load should not set MC Pos")
@@ -217,7 +217,7 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
     ribbonUseCase.changeFromAudioEngine(1, HWChangeSource::TCD);
     TestHelper::doMainLoopIteration();
 
-    CHECK(ribbon1->getDisplayString() == "! 100.0 %");
+    CHECK(ribbon1->getDisplayString() == "100.0 %");
     CHECK(mc1->getDisplayString() == "100.0 %");
 
     ebUseCases.load(rib1_stay);
@@ -237,13 +237,13 @@ TEST_CASE("Load Preset with differing Return Types", "[3035]")
     ribbonUseCase.changeFromAudioEngine(1, HWChangeSource::TCD);
     TestHelper::doMainLoopIteration();
 
-    CHECK(ribbon1->getDisplayString() == "! 100.0 %");
+    CHECK(ribbon1->getDisplayString() == "100.0 %");
     CHECK(mc1->getDisplayString() == "100.0 %");
 
     ebUseCases.load(rib1_retcenter_2);
     TestHelper::doMainLoopIteration();
 
-    CHECK(ribbon1->getDisplayString() == "! 100.0 %");
+    CHECK(ribbon1->getDisplayString() == "100.0 %");
     CHECK(mc1->getDisplayString() == "100.0 %");
   }
 

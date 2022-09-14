@@ -7,8 +7,6 @@
 #include <nltools/messaging/Message.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 
-static const uint16_t c_NoteShiftSettingKey = NOTE_SHIFT;
-
 NoteShift::NoteShift(Settings &parent)
     : super(parent)
     , m_shift(0)
@@ -48,8 +46,11 @@ void NoteShift::set(int shift)
 
 void NoteShift::syncExternals(SendReason reason) const
 {
-  nltools::msg::Setting::NoteShiftMessage msg { m_shift };
-  Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::NoteShiftMessage>(msg);
+  if(Application::exists())
+  {
+    nltools::msg::Setting::NoteShiftMessage msg { m_shift };
+    Application::get().getAudioEngineProxy()->sendSettingMessage<nltools::msg::Setting::NoteShiftMessage>(msg);
+  }
 }
 
 int NoteShift::get() const
