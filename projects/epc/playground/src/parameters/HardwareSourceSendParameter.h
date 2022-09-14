@@ -10,6 +10,7 @@ class HardwareSourceSendParameter : public Parameter
  public:
   HardwareSourceSendParameter(HardwareSourcesGroup* pGroup, PhysicalControlParameter& sibling, const ParameterId& id,
                               Settings* settings);
+  void init(Settings* settings);
   Layout* createLayout(FocusAndMode focusAndMode) const override;
 
   [[nodiscard]] bool isLocalEnabled() const;

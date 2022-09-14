@@ -14,10 +14,6 @@ HardwareSourcesGroup::HardwareSourcesGroup(ParameterGroupSet* parent, Settings* 
 {
 }
 
-HardwareSourcesGroup::~HardwareSourcesGroup()
-{
-}
-
 void HardwareSourcesGroup::init()
 {
   auto pedal1 = appendParameter(new PedalParameter(this, getPedal1ParameterID()));
@@ -36,6 +32,19 @@ void HardwareSourcesGroup::init()
   appendParameter(new HardwareSourceSendParameter(this, *ribbon1, getRibbon1SendID(), m_settings));
   auto ribbon2 = appendParameter(new RibbonParameter(this, getLowerRibbonParameterID()));
   appendParameter(new HardwareSourceSendParameter(this, *ribbon2, getRibbon2SendID(), m_settings));
+
+  if(m_settings == nullptr)
+    return;
+
+  findAndCastParameterByID<PedalParameter>(getPedal1ParameterID())->init(*m_settings);
+  findAndCastParameterByID<PedalParameter>(getPedal2ParameterID())->init(*m_settings);
+  findAndCastParameterByID<PedalParameter>(getPedal3ParameterID())->init(*m_settings);
+  findAndCastParameterByID<PedalParameter>(getPedal4ParameterID())->init(*m_settings);
+
+  for(auto hwSend : getSendParameters())
+  {
+    hwSend->init(m_settings);
+  }
 }
 
 HardwareSourcesGroup::tPhysicalControlParameters HardwareSourcesGroup::getPhysicalControlParameters()
