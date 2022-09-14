@@ -954,9 +954,8 @@ namespace Engine
     timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Time_KT) * _pitch;
     levelVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_Vel);
     attackVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Att_Vel) * _vel;
-    // solves decay 1/2 velocity (primary) bug of #3251
-    decay1Vel = 0.0f;  // TODO: implement new Parameter EnvC::Decay1Vel
-    decay2Vel = 0.0f;  // TODO: implement new Parameter EnvC::Decay2Vel
+    decay1Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Dec_1_Vel);
+    decay2Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Dec_2_Vel);
     levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_KT) * _pitch;
     if(levelVel < 0.0f)
     {
@@ -967,7 +966,7 @@ namespace Engine
       unclipped = m_convert->eval_level(((1.0f - _vel) * -levelVel) + levelKT);
     }
     peak = std::min(unclipped, env_clip_peak);
-    m_env_c.setLoopFactor(0.0f);  // TODO: implement new Parameter EnvC::LoopFactor
+    m_env_c.setLoopFactor(m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Loop));
     m_env_c.mClipFactor[_voiceId] = unclipped / peak;
     m_env_c.setPeakLevel(_voiceId, peak);
     m_env_c.setCurvature(_voiceId, m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Att_Curve));
@@ -1037,7 +1036,7 @@ namespace Engine
     // env c
     timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Time_KT) * _pitch;
     releaseVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Rel_Vel) * _vel;
-    m_env_c.setLoopFactor(0.0f);  // TODO: implement new Parameter EnvC::LoopFactor
+    m_env_c.setLoopFactor(m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Loop));
     m_env_c.mTimeFactor[LoopableEnv::SegmentId::Release][_voiceId]
         = m_convert->eval_level(timeKT + releaseVel) * m_millisecond;
     time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Rel);
