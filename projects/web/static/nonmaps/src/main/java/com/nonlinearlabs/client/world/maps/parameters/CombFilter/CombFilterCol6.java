@@ -6,6 +6,7 @@ import com.nonlinearlabs.client.world.maps.parameters.ModulateableKnob;
 import com.nonlinearlabs.client.world.maps.parameters.ModulateableSliderHorizontal;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSlider;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
+import com.nonlinearlabs.client.world.maps.parameters.UnmodulateableNumericDisplay;
 
 class CombFilterCol6 extends ParameterColumn {
 
@@ -13,6 +14,6 @@ class CombFilterCol6 extends ParameterColumn {
 		super(parent);
 		addChild(new ModulateableKnob(this, 129));
 		addChild(new ModulatableHorizontalSlider(this, 132));
-		addChild(new ModulateableSliderHorizontal(this, 131));
+		addChild(new ModulatableHorizontalSlider(this, 131));
 	}
 }

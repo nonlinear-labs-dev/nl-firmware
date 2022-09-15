@@ -13,6 +13,6 @@ class CombFilterCol4 extends ParameterColumn {
 		super(parent);
 		addChild(new ModulateableKnob(this, 123));
 		addChild(new ModulatableHorizontalSlider(this, 126));
-		addChild(new ModulateableSmallKnobParameter(this, 125));
+		addChild(new ModulatableHorizontalSlider(this, 125));
 	}
 }
