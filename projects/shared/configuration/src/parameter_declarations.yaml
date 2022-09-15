@@ -726,6 +726,14 @@ display_scaling_type: {
     values: [ "0.00", "50.00", "100.00", "150.00", "200.00" ],
     bipolar: false
   },
+  FINE_BIPOLAR_200_PERCENT: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-200.00", "-100.00", "0.00", "100.00", "200.00" ],
+    bipolar: true
+  },
   LINEAR_100_PERCENT: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_PERCENT,

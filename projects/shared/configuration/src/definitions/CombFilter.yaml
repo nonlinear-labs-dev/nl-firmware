@@ -47,12 +47,13 @@ parameters:
     rendering_args: { scaling: Expon_Lin_Pitch, factor: 120.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Coarse pitch of the Comb Filter (delay) at C3 (MIDI note 60) [in semitones, based on MIDI note numbers].
-  - <<: *UNMODULATEABLE
+  - <<: *MODULATEABLE
     id: 117
     token: Pitch_KT
     label_long: Pitch - Key Trk
     label_short: Key Trk
     control_position: { coarse: 200, fine: 20000, scale: FINE_200_PERCENT, initial: 0.5f }
+    modulation_aspects: { coarse: 200, fine: 20000, scale: FINE_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Key scaling of the tuning of the Comb Filter (delay).\n
@@ -79,12 +80,13 @@ parameters:
     info: >
       Amount of the internal feedback noticeable as the decay time of the impules response [logarithmic scaling].
       At negative values, the feedback signal is inverted, which shifts the fundamental resonance down by one octave.
-  - <<: *UNMODULATEABLE
+  - <<: *MODULATEABLE
     id: 121
     token: Decay_KT
     label_long: Decay - Key Trk
     label_short: Key Trk
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.33f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Key scaling of the decay time.\n
@@ -115,12 +117,13 @@ parameters:
       Center frequency of the 2-pole allpass filter [in semitones].
       It is the frequency where the phase is shifted by 180 degrees.
       The allpass is in series with the delay. At the maximum position (140 semitones), the allpass has no effect.
-  - <<: *UNMODULATEABLE
+  - <<: *MODULATEABLE
     id: 125
     token: AP_KT
     label_long: Allpass - Key Trk
     label_short: Key Trk
     control_position: { coarse: 200, fine: 2000, scale: LINEAR_200_PERCENT, initial: 0.5f }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Key scaling of the allpass filter frequency.\n
@@ -156,12 +159,13 @@ parameters:
     rendering_args: { scaling: Expon_Lin_Pitch, factor: 100.0f, offset: 40.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Cutoff frequency [in semitones] of the lowpass filter that damps the higher frequencies in the comb filter's signal path.
-  - <<: *UNMODULATEABLE
+  - <<: *MODULATEABLE
     id: 131
     token: LP_KT
     label_long: Hi Cut - Key Trk
     label_short: Key Trk
     control_position: { coarse: 200, fine: 2000, scale: LINEAR_200_PERCENT, initial: 0.5f }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Key scaling of the lowpass cutoff frequency.\n
