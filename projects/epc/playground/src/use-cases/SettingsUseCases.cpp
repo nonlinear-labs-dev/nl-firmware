@@ -30,6 +30,8 @@ void SettingsUseCases::setMappingsToHighRes()
   static auto p4 = m_settings.getSetting<PedalCCMapping<4>>();
   static auto r1 = m_settings.getSetting<RibbonCCMapping<1>>();
   static auto r2 = m_settings.getSetting<RibbonCCMapping<2>>();
+  static auto r3 = m_settings.getSetting<RibbonCCMapping<3>>();
+  static auto r4 = m_settings.getSetting<RibbonCCMapping<4>>();
   static auto at = m_settings.getSetting<AftertouchCCMapping>();
   static auto be = m_settings.getSetting<BenderCCMapping>();
 
@@ -41,7 +43,9 @@ void SettingsUseCases::setMappingsToHighRes()
   p4->set(PedalCC::CC23);
   r1->set(RibbonCC::CC24);
   r2->set(RibbonCC::CC25);
-  at->set(AftertouchCC::CC26);
+  r3->set(RibbonCC::CC26);
+  r4->set(RibbonCC::CC27);
+  at->set(AftertouchCC::CC28);
   be->set(BenderCC::Pitchbend);
 }
 
@@ -55,6 +59,8 @@ void SettingsUseCases::setMappingsToClassicMidi()
   static auto p4 = m_settings.getSetting<PedalCCMapping<4>>();
   static auto r1 = m_settings.getSetting<RibbonCCMapping<1>>();
   static auto r2 = m_settings.getSetting<RibbonCCMapping<2>>();
+  static auto r3 = m_settings.getSetting<RibbonCCMapping<3>>();
+  static auto r4 = m_settings.getSetting<RibbonCCMapping<4>>();
   static auto at = m_settings.getSetting<AftertouchCCMapping>();
   static auto be = m_settings.getSetting<BenderCCMapping>();
 
@@ -66,6 +72,8 @@ void SettingsUseCases::setMappingsToClassicMidi()
   p4->set(PedalCC::CC23);
   r1->set(RibbonCC::CC24);
   r2->set(RibbonCC::CC25);
+  r3->set(RibbonCC::CC26);
+  r4->set(RibbonCC::CC27);
   at->set(AftertouchCC::ChannelPressure);
   be->set(BenderCC::Pitchbend);
 }

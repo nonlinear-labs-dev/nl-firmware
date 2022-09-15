@@ -64,6 +64,8 @@ public class SetupUpdater extends Updater {
 		m.put("Pedal4Mapping", SetupModel.get().systemSettings.pedal4Mapping);
 		m.put("Ribbon1Mapping", SetupModel.get().systemSettings.ribbon1Mapping);
 		m.put("Ribbon2Mapping", SetupModel.get().systemSettings.ribbon2Mapping);
+		m.put("Ribbon3Mapping", SetupModel.get().systemSettings.ribbon3Mapping);
+		m.put("Ribbon4Mapping", SetupModel.get().systemSettings.ribbon4Mapping);
 		m.put("BenderMapping", SetupModel.get().systemSettings.benderMapping);
 		m.put("HighVeloCC", SetupModel.get().systemSettings.highVelocityCC);
 		m.put("HighResCC", SetupModel.get().systemSettings.enable14BitSupport);

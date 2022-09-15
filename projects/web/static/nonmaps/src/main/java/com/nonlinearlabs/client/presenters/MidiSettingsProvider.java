@@ -140,6 +140,24 @@ public class MidiSettingsProvider extends Notifier<MidiSettingsPresenter> {
             return true;
         });
 
+        s.ribbon3Mapping.onChange(t -> {
+            int newValue = t.ordinal();
+            if(settings.ribbonMapping3.selected != newValue) {
+                settings.ribbonMapping3.selected = newValue;
+                notifyClients();
+            }
+            return true;
+        });
+
+        s.ribbon4Mapping.onChange(t -> {
+            int newValue = t.ordinal();
+            if(settings.ribbonMapping4.selected != newValue) {
+                settings.ribbonMapping4.selected = newValue;
+                notifyClients();
+            }
+            return true;
+        });
+
         s.benderMapping.onChange(t -> {
             int newValue = t.ordinal();
             if(settings.benderMapping.selected != newValue) {

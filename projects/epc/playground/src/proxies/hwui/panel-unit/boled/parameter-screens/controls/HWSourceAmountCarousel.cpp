@@ -57,68 +57,50 @@ void HWSourceAmountCarousel::antiTurn()
 
 void HWSourceAmountCarousel::setup(Parameter *newOne)
 {
-  clear();
-
-  const int ySpaceing = 5;
-  const int sliderHeight = 2;
-  const int yGroupSpacing = 8;
-  const int paramWidth = 56;
-
-  int yPos = ySpaceing;
-
   if(auto p = dynamic_cast<MacroControlParameter *>(newOne))
   {
-    if(p->getUiSelectedHardwareSource().getNumber() == 0)
-      p->toggleUiSelectedHardwareSource(1);
-
-    auto group = p->getParentEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global });
-    auto csGroup = dynamic_cast<MacroControlMappingGroup *>(group);
-    auto routingParams = csGroup->getModulationRoutingParametersFor(p);
-
-    for(auto routingParam : routingParams)
-    {
-      auto miniParam
-          = new MiniParameterBarSlider(static_cast<Parameter *>(routingParam), Rect(0, yPos, paramWidth, sliderHeight));
-      addControl(miniParam);
-
-      yPos += sliderHeight;
-
-      if(getNumChildren() == 4)
-        yPos += yGroupSpacing;
-      else
-        yPos += ySpaceing;
-    }
-
-    m_mcConnection.disconnect();
-    m_mcConnection = p->onParameterChanged(sigc::mem_fun(this, &HWSourceAmountCarousel::onMacroControlChanged));
+    setupMacrocontrol(p);
   }
   else if(auto modRouter = dynamic_cast<ModulationRoutingParameter *>(newOne))
   {
-    auto mc = modRouter->getTargetParameter();
-    if(mc->getUiSelectedHardwareSource().getNumber() == 0)
-      mc->toggleUiSelectedHardwareSource(1);
-
-    auto group = mc->getParentEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global });
-    auto csGroup = dynamic_cast<MacroControlMappingGroup *>(group);
-    auto routingParams = csGroup->getModulationRoutingParametersFor(mc);
-
-    for(auto routingParam : routingParams)
-    {
-      auto miniParam
-          = new MiniParameterBarSlider(static_cast<Parameter *>(routingParam), Rect(0, yPos, paramWidth, sliderHeight));
-      addControl(miniParam);
-
-      yPos += sliderHeight;
-
-      if(getNumChildren() == 4)
-        yPos += yGroupSpacing;
-      else
-        yPos += ySpaceing;
-    }
-
-    m_mcConnection.disconnect();
-    m_mcConnection = mc->onParameterChanged(sigc::mem_fun(this, &HWSourceAmountCarousel::onMacroControlChanged));
+    setupMacrocontrol(modRouter->getTargetParameter());
   }
+}
+
+void HWSourceAmountCarousel::setupMacrocontrol(MacroControlParameter *mc)
+{
+  clear();
+
+  const int ySpaceing = 4;
+  const int sliderHeight = 2;
+  const int yGroupSpacing = 6;
+  const int paramWidth = 56;
+
+  int yPos = 2;
+
+  if(mc->getUiSelectedHardwareSource().getNumber() == 0)
+    mc->toggleUiSelectedHardwareSource(1);
+
+  auto group = mc->getParentEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global });
+  auto csGroup = dynamic_cast<MacroControlMappingGroup *>(group);
+  auto routingParams = csGroup->getModulationRoutingParametersFor(mc);
+
+  for(auto routingParam : routingParams)
+  {
+    auto miniParam
+        = new MiniParameterBarSlider(static_cast<Parameter *>(routingParam), Rect(0, yPos, paramWidth, sliderHeight));
+    addControl(miniParam);
+
+    yPos += sliderHeight;
+
+    if(getNumChildren() == 4 || getNumChildren() == 6)
+      yPos += yGroupSpacing;
+    else
+      yPos += ySpaceing;
+  }
+
+  m_mcConnection.disconnect();
+  m_mcConnection = mc->onParameterChanged(sigc::mem_fun(this, &HWSourceAmountCarousel::onMacroControlChanged));
 
   setDirty();
 }

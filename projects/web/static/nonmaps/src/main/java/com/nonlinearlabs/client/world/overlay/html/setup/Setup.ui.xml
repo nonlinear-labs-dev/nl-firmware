@@ -459,6 +459,24 @@
 					</div>
 					<div class="eins-he">
 						<div class="w60p">
+							<p>Ribbon 3</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="ribbon3Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Ribbon 4</p>
+						</div>
+						<div class="w40p">
+							<g:ListBox ui:field="ribbon4Mapping">
+							</g:ListBox>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
 							<p>Bender</p>
 						</div>
 						<div class="w40p">
@@ -784,6 +802,62 @@
 								<td>
 									<div>
 										<g:CheckBox ui:field="lon7" name="l7" value="true"></g:CheckBox>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>Ribbon 3</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pson8" name="ps8" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pron8" name="pr8" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sson8" name="ss8" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sron8" name="sr8" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="lon8" name="l8" value="true"></g:CheckBox>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>Ribbon 4</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pson9" name="ps9" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="pron9" name="pr9" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sson9" name="ss9" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="sron9" name="sr9" value="true"></g:CheckBox>
+									</div>
+								</td>
+								<td>
+									<div>
+										<g:CheckBox ui:field="lon9" name="l9" value="true"></g:CheckBox>
 									</div>
 								</td>
 							</tr>

@@ -82,7 +82,7 @@ public class Setup extends Composite {
 	ListBox velocityCurve, aftertouchCurve, benderCurve, pedal1Type, pedal2Type, pedal3Type, pedal4Type,
 			selectionAutoScroll, editParameter, scalingFactor, stripeBrightness, midiReceiveChannel, midiReceiveChannelSplit,
 			midiSendChannel, midiSendChannelSplit, pedal1Mapping, 
-			pedal2Mapping, pedal3Mapping, pedal4Mapping, ribbon1Mapping, ribbon2Mapping, benderMapping, aftertouchMapping, pcBanks;
+			pedal2Mapping, pedal3Mapping, pedal4Mapping, ribbon1Mapping, ribbon2Mapping, ribbon3Mapping, ribbon4Mapping, benderMapping, aftertouchMapping, pcBanks;
 
 	@UiField
 	Label pedal1DisplayString, pedal2DisplayString, pedal3DisplayString, pedal4DisplayString,
@@ -118,9 +118,9 @@ public class Setup extends Composite {
 	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
 
 	@UiField
-	CheckBox psonNotes, psonPC, pson0, pson1, pson2, pson3, pson4, pson5, pson6, pson7, pronNotes, pronPC, pron0, pron1, pron2, pron3, pron4, pron5, pron6, pron7, 
-				ssonNotes, ssonPC, sson0, sson1, sson2, sson3, sson4, sson5, sson6, sson7, sronNotes, sronPC, sron0, sron1, sron2, sron3, sron4, sron5, sron6, sron7, 
-				lonNotes, lon0, lon1, lon2, lon3, lon4, lon5, lon6, lon7;
+	CheckBox psonNotes, psonPC, pson0, pson1, pson2, pson3, pson4, pson5, pson6, pson7, pson8, pson9, pronNotes, pronPC, pron0, pron1, pron2, pron3, pron4, pron5, pron6, pron7, pron8, pron9, 
+				ssonNotes, ssonPC, sson0, sson1, sson2, sson3, sson4, sson5, sson6, sson7, sson8, sson9, sronNotes, sronPC, sron0, sron1, sron2, sron3, sron4, sron5, sron6, sron7, sron8, sron9, 
+				lonNotes, lon0, lon1, lon2, lon3, lon4, lon5, lon6, lon7, lon8, lon9;
 
 
 	private class RoutingsMap {
@@ -156,7 +156,7 @@ public class Setup extends Composite {
 	private RoutingsMap[] m_routingMap;
 
 	private void createUIData() {
-		m_routingMap = new RoutingsMap[10];
+		m_routingMap = new RoutingsMap[12];
 		m_routingMap[0] = new RoutingsMap(pson0, pron0, sson0, sron0, lon0);
 		m_routingMap[1] = new RoutingsMap(pson1, pron1, sson1, sron1, lon1);
 		m_routingMap[2] = new RoutingsMap(pson2, pron2, sson2, sron2, lon2);
@@ -167,6 +167,8 @@ public class Setup extends Composite {
 		m_routingMap[7] = new RoutingsMap(pson7, pron7, sson7, sron7, lon7);
 		m_routingMap[8] = new RoutingsMap(psonPC, pronPC, ssonPC, sronPC, null);
 		m_routingMap[9] = new RoutingsMap(psonNotes, pronNotes, ssonNotes, sronNotes, lonNotes);
+		m_routingMap[10] = new RoutingsMap(pson8, pron8, sson8, sron8, lon8);
+		m_routingMap[11] = new RoutingsMap(pson9, pron9, sson9, sron9, lon9);
 	}
 
 	public Setup() {
@@ -246,6 +248,8 @@ public class Setup extends Composite {
 		int p4 = pedal4Mapping.getSelectedIndex();
 		int r1 = ribbon1Mapping.getSelectedIndex();
 		int r2 = ribbon2Mapping.getSelectedIndex();
+		int r3 = ribbon3Mapping.getSelectedIndex();
+		int r4 = ribbon4Mapping.getSelectedIndex();
 		int b = benderMapping.getSelectedIndex();
 		int a = aftertouchMapping.getSelectedIndex();
 		
@@ -256,6 +260,8 @@ public class Setup extends Composite {
 			fillListboxWithOptions(pedal4Mapping, MidiSettings.PedalMapping.options);	
 			fillListboxWithOptions(ribbon1Mapping, MidiSettings.RibbonMapping.options);
 			fillListboxWithOptions(ribbon2Mapping, MidiSettings.RibbonMapping.options);
+			fillListboxWithOptions(ribbon3Mapping, MidiSettings.RibbonMapping.options);
+			fillListboxWithOptions(ribbon4Mapping, MidiSettings.RibbonMapping.options);
 			fillListboxWithOptions(benderMapping, MidiSettings.BenderMapping.options);
 			fillListboxWithOptions(aftertouchMapping, MidiSettings.AftertouchMapping.options);
 		} else {
@@ -265,6 +271,8 @@ public class Setup extends Composite {
 			fillListboxWithOptions(pedal4Mapping, MidiSettings.PedalMapping.optionsWithoutLSB);	
 			fillListboxWithOptions(ribbon1Mapping, MidiSettings.RibbonMapping.optionsWithoutLSB);
 			fillListboxWithOptions(ribbon2Mapping, MidiSettings.RibbonMapping.optionsWithoutLSB);
+			fillListboxWithOptions(ribbon3Mapping, MidiSettings.RibbonMapping.optionsWithoutLSB);
+			fillListboxWithOptions(ribbon4Mapping, MidiSettings.RibbonMapping.optionsWithoutLSB);
 			fillListboxWithOptions(benderMapping, MidiSettings.BenderMapping.optionsWithoutLSB);
 			fillListboxWithOptions(aftertouchMapping, MidiSettings.AftertouchMapping.optionsWithoutLSB);
 		}
@@ -275,6 +283,8 @@ public class Setup extends Composite {
 		pedal4Mapping.setSelectedIndex(p4);
 		ribbon1Mapping.setSelectedIndex(r1);
 		ribbon2Mapping.setSelectedIndex(r2);
+		ribbon3Mapping.setSelectedIndex(r3);
+		ribbon4Mapping.setSelectedIndex(r4);
 		benderMapping.setSelectedIndex(b);
 		aftertouchMapping.setSelectedIndex(a);
 	}
@@ -398,6 +408,8 @@ public class Setup extends Composite {
 		pedal4Mapping.addChangeHandler(e -> settings.setPedal4Mapping(PedalCCMapping.values()[pedal4Mapping.getSelectedIndex()]));
 		ribbon1Mapping.addChangeHandler(e -> settings.setRibbon1Mapping(RibbonCCMapping.values()[ribbon1Mapping.getSelectedIndex()]));
 		ribbon2Mapping.addChangeHandler(e -> settings.setRibbon2Mapping(RibbonCCMapping.values()[ribbon2Mapping.getSelectedIndex()]));
+		ribbon3Mapping.addChangeHandler(e -> settings.setRibbon3Mapping(RibbonCCMapping.values()[ribbon3Mapping.getSelectedIndex()]));
+		ribbon4Mapping.addChangeHandler(e -> settings.setRibbon4Mapping(RibbonCCMapping.values()[ribbon4Mapping.getSelectedIndex()]));
 		aftertouchMapping.addChangeHandler(e -> settings.setAftertouchMapping(AftertouchCCMapping.values()[aftertouchMapping.getSelectedIndex()]));
 		benderMapping.addChangeHandler(e -> settings.setPitchbendMapping(BenderCCMapping.values()[benderMapping.getSelectedIndex()]));
 		highVeloCCOn.addValueChangeHandler(e -> settings.setHighVelocityCC(BooleanValues.on));
@@ -648,6 +660,8 @@ public class Setup extends Composite {
 		pedal4Mapping.setSelectedIndex(t.pedalMapping4.selected);		
 		ribbon1Mapping.setSelectedIndex(t.ribbonMapping1.selected);	
 		ribbon2Mapping.setSelectedIndex(t.ribbonMapping2.selected);
+		ribbon3Mapping.setSelectedIndex(t.ribbonMapping3.selected);
+		ribbon4Mapping.setSelectedIndex(t.ribbonMapping4.selected);
 		aftertouchMapping.setSelectedIndex(t.aftertouchMapping.selected);
 		benderMapping.setSelectedIndex(t.benderMapping.selected);
 		highVeloCCOn.setValue(t.highVelocityCC.value);

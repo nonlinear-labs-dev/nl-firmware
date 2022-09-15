@@ -5,6 +5,7 @@
 
 class Application;
 class Parameter;
+class MacroControlParameter;
 
 class HWSourceAmountCarousel : public Carousel
 {
@@ -28,6 +29,7 @@ class HWSourceAmountCarousel : public Carousel
   void setup(Parameter* selectedParameter) override;
 
  private:
+  void setupMacrocontrol(MacroControlParameter* mc);
   void onMacroControlChanged(const Parameter* param);
 
   sigc::connection m_mcConnection;

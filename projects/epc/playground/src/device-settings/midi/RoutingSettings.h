@@ -2,6 +2,7 @@
 #include <device-settings/Setting.h>
 #include <device-settings/Settings.h>
 #include <nltools/messaging/Message.h>
+#include <ParameterId.h>
 
 class RoutingSettings : public Setting
 {
@@ -16,7 +17,7 @@ class RoutingSettings : public Setting
   Glib::ustring getDisplayString() const override;
   Glib::ustring save() const override;
 
-  bool getState(int hwId, tAspectIndex aspect) const;
+  bool getState(const ParameterId& id, tAspectIndex aspect) const;
   bool getState(tRoutingIndex hwIdx, tAspectIndex settingIdx) const;
   void setState(tRoutingIndex hwIdx, tAspectIndex settingIdx, bool state);
   void setAllAspectsForIndex(tRoutingIndex hwIdx, bool state);
