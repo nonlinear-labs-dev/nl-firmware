@@ -12,6 +12,6 @@ class ResoColumn extends ParameterColumn {
 		super(parent);
 		addChild(new ModulateableKnob(this, 144));
 		addChild(new ModulatableHorizontalSlider(this, 147));
-		addChild(new ModulationSourceSlider(this, 146));
+		addChild(new ModulatableHorizontalSlider(this, 146));
 	}
 }

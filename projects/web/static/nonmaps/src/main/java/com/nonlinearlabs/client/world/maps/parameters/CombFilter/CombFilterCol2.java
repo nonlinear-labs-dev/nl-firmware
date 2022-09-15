@@ -8,6 +8,7 @@ import com.nonlinearlabs.client.world.maps.parameters.ModulatableHorizontalSlide
 import com.nonlinearlabs.client.world.maps.parameters.ModulatableParameter;
 import com.nonlinearlabs.client.world.maps.parameters.ModulateableNumericalControl;
 import com.nonlinearlabs.client.world.maps.parameters.ModulationSourceSlider;
+import com.nonlinearlabs.client.world.maps.parameters.NumericalControlSmall;
 import com.nonlinearlabs.client.world.maps.parameters.UnmodulateableNumericDisplay;
 import com.nonlinearlabs.client.world.maps.parameters.ParameterColumn;
 import com.nonlinearlabs.client.world.maps.parameters.Spacer;

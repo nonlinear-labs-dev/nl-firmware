@@ -327,7 +327,7 @@ function processDefinitions(result: Result) {
     });
     // provide string replacements
     result.parameter_list = parameterList.join(",\n");
-    result.parameter_units = Object.values(result.declarations.parameter_unit).map((entry => `"${entry}"`)).join("\n");
+    result.parameter_units = Object.values(result.declarations.parameter_unit).map((entry => `"${entry}"`)).join(",\n");
     result.display_scaling_types = Object.entries(result.declarations.display_scaling_type).reduce((out, [key, props]) => {
         out.push(`{\n${indent}${[
             `Properties::DisplayScalingType::${key}`,
