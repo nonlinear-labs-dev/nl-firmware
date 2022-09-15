@@ -41,20 +41,24 @@ public class ParameterFactory {
 			391, 406, 408 };
 
 	static private int[] pedals = { 254, 259, 264, 269 };
-	static private int[] ribbons = { 284, 289 };
-	static private int[] physicalControls = { 254, 259, 264, 269, 274, 279, 284, 289 };
+	static private int[] ribbons = { 284, 289, 409, 411 };
 
-	static private int[] sendParams = { 398, 399, 400, 401, 402, 403, 404, 405 };
+	static private int[] physicalControls = { 254, 259, 264, 269, 274, 279, 284, 289, 409, 411 };
+
+	static private int[] sendParams = { 398, 399, 400, 401, 402, 403, 404, 405, 410, 412 };
 
 	static private int[] macroControls = { 243, 244, 245, 246, 369, 371 };
 	static private int[] modulationRouters = { 255, 256, 257, 258, 260, 261, 262, 263, 265, 266, 267, 268, 270, 271,
 			272, 273, 275, 276, 277, 278, 280, 281, 282, 283, 285, 286, 287, 288, 290, 291, 292, 293, 373, 374, 375,
-			376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388 };
+			376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 413, 414, 415, 416, 417, 418, 419, 420,
+			421, 422, 423, 424 };
+
 	static private int[] scaleOffsetParameters = { 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 391 };
 
 	static private int[][] modRouters = { { 255, 256, 257, 258, 373, 374 }, { 260, 261, 262, 263, 375, 376 },
 			{ 265, 266, 267, 268, 377, 378 }, { 270, 271, 272, 273, 379, 380 }, { 275, 276, 277, 278, 381, 382 },
-			{ 280, 281, 282, 283, 383, 384 }, { 285, 286, 287, 288, 385, 386 }, { 290, 291, 292, 293, 387, 388 } };
+			{ 280, 281, 282, 283, 383, 384 }, { 285, 286, 287, 288, 385, 386 }, { 290, 291, 292, 293, 387, 388 }, 
+			{ 413, 414, 415, 416, 417, 418 }, { 419, 420, 421, 422, 423, 424 } };
 
 	static private String[] parameterGroups = { "CS", "Cab", "Comb", "Echo", "Env A", "Env B", "Env C", "FB", "Flang",
 			"Gap Filt", "MCM", "MCs", "Master", "Mixer", "Mono", "Osc A", "Osc B", "Part", "Reverb", "SVF", "Scale",
@@ -117,6 +121,10 @@ public class ParameterFactory {
 		return new BasicParameterModel(id);
 	}
 
+	static public int getNumberOfHW() {
+		return physicalControls.length;
+	}
+
 	static public int[] getScaleOffsetParameters() {
 		return scaleOffsetParameters;
 	}
@@ -146,7 +154,8 @@ public class ParameterFactory {
 	}
 
 	public static ParameterId[] getModulationRouters(ParameterId hw) {
-		int physCtrlNum = (hw.getNumber() - 254) / 5;
+		int physCtrlNum = ParameterFactory.hwToIdx(hw.getNumber());
+
 		ParameterId result[] = new ParameterId[6];
 		for (int i = 0; i < 6; i++)
 			result[i] = new ParameterId(modRouters[physCtrlNum][i], VoiceGroup.Global);
@@ -154,8 +163,35 @@ public class ParameterFactory {
 		return result;
 	}
 
+	private static int hwToIdx(int number) {
+		switch(number)
+		{
+			case 254:
+				return 0;
+			case 259:
+				return 1;
+			case 264:
+				return 2;
+			case 269:
+				return 3;
+			case 274:
+				return 4;
+			case 279:
+				return 5; 
+			case 284:
+				return 6;
+			case 289:
+				return 7;
+			case 409:
+				return 8;
+			case 411:
+				return 9;
+		}
+		return 0;
+	}
+
 	public static ParameterId[] getModulationRoutersForMC(ParameterId id) {
-		ParameterId result[] = new ParameterId[8];
+		ParameterId result[] = new ParameterId[getNumberOfHW()];
 
 		int mcPos = 0;
 
@@ -166,7 +202,7 @@ public class ParameterFactory {
 			mcPos++;
 		}
 
-		for (int i = 0; i < 8; i++)
+		for (int i = 0; i < getNumberOfHW(); i++)
 			result[i] = new ParameterId(modRouters[i][mcPos], VoiceGroup.Global);
 
 		return result;
