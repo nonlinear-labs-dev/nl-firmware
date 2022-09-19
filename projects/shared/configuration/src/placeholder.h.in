@@ -9,7 +9,8 @@
     @todo       
 *******************************************************************************/
 
-#include <nltools/Types.h>
+//#include <nltools/Types.h>
+#include <stddef.h>
 
 namespace C15
 {
@@ -40,6 +41,7 @@ namespace C15
             : m_replacement{ _I, _II }
         {
         }
+        template<typename VoiceGroup>
         inline const Text &getReplacement(const VoiceGroup &_vg) const
         {
           if((size_t) _vg < s_size)
@@ -58,6 +60,7 @@ namespace C15
             : m_replacement{ _single, _split, _layer }
         {
         }
+        template<typename SoundType>
         inline const Text &getReplacement(const SoundType &_st) const
         {
           if((size_t) _st < s_size)
@@ -77,6 +80,7 @@ namespace C15
             : m_replacement{ _single, _split, _layer }
         {
         }
+        template<typename SoundType, typename VoiceGroup>
         inline const Text &getReplacement(const SoundType &_st, const VoiceGroup &_vg) const
         {
           if((size_t) _st < s_size)
@@ -97,6 +101,7 @@ namespace C15
     {
      public:
       static constexpr bool s_isGlobal = true;
+      template<typename SoundType>
       inline const Text &getReplacement(const SoundType &_st) const
       {
         return m_replacement.getReplacement(_st);
@@ -126,6 +131,7 @@ namespace C15
     {
      public:
       static constexpr bool s_isGlobal = false;
+      template<typename SoundType, typename VoiceGroup>
       inline const Text &getReplacement(const SoundType &_st, const VoiceGroup &_vg) const
       {
         return m_replacement.getReplacement(_st, _vg);
