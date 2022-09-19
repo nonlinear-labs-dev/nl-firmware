@@ -9,7 +9,6 @@
     @todo       
 *******************************************************************************/
 
-//#include <nltools/Types.h>
 #include <stddef.h>
 
 namespace C15
