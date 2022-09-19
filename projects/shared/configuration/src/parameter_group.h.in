@@ -13,7 +13,7 @@
 
 namespace C15
 {
-    const ParameterGroupDescriptor ParameterGroups[] = {
+    constexpr ParameterGroupDescriptor ParameterGroups[] = {
         ${parameter_groups}
     };
 } // namespace C15

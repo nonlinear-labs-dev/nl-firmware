@@ -14,7 +14,7 @@
 
 namespace C15
 {
-    const ParameterDescriptor ParameterList[Config::tcd_elements] = {
+    constexpr ParameterDescriptor ParameterList[Config::tcd_elements] = {
         ${parameter_list}
     };
 } // namespace C15
