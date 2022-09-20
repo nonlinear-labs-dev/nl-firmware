@@ -290,6 +290,7 @@ function processDefinitions(result: Result) {
             const descriptor: Array<string> = [
                 `Parameters::${typeStr}::${tokenStr}`,
                 `PID::${tokenStr}`,
+                `Descriptors::ParameterGroup::${group.name}`,
                 initial,
                 (
                     rendering_args === undefined ? "{}" :

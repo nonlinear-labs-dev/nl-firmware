@@ -221,6 +221,7 @@ namespace C15
     {
         const Descriptors::TypeDescriptor m_param;
         const PID::ParameterID m_param_id = PID::None;
+        const Descriptors::ParameterGroup m_group = Descriptors::ParameterGroup::None;
         const float m_initial = 0.0f;
         const Descriptors::AudioEngineParamDescriptor m_ae;
         const Descriptors::PlaygroundParamDescriptor m_pg;
