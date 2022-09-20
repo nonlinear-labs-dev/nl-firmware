@@ -62,6 +62,22 @@ namespace C15
                 : m_type(ParameterType::Local_Unmodulateable)
                 , m_index(static_cast<uint32_t>(_param))
             {}
+            inline constexpr TypeDescriptor(const Parameters::Polyphonic_Modulateables _param)
+                : m_type(ParameterType::Polyphonic_Modulateable)
+                , m_index(static_cast<uint32_t>(_param))
+            {}
+            inline constexpr TypeDescriptor(const Parameters::Polyphonic_Unmodulateables _param)
+                : m_type(ParameterType::Polyphonic_Unmodulateable)
+                , m_index(static_cast<uint32_t>(_param))
+            {}
+            inline constexpr TypeDescriptor(const Parameters::Monophonic_Modulateables _param)
+                : m_type(ParameterType::Monophonic_Modulateable)
+                , m_index(static_cast<uint32_t>(_param))
+            {}
+            inline constexpr TypeDescriptor(const Parameters::Monophonic_Unmodulateables _param)
+                : m_type(ParameterType::Monophonic_Unmodulateable)
+                , m_index(static_cast<uint32_t>(_param))
+            {}
             inline constexpr TypeDescriptor(const Parameters::Display_Parameters _param)
                 : m_type(ParameterType::Display_Parameter)
                 , m_index(static_cast<uint32_t>(_param))
