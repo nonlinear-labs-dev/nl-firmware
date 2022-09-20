@@ -231,7 +231,7 @@ function processDefinitions(result: Result) {
             }
             // feed playgroundDescriptor with parameter labels and info strings
             playgroundDescriptor.push(...[
-                inactive || "", group.data.label_long, group.data.label_short, label_long, label_short,
+                inactive || "", label_long, label_short,
                 info.trim().replace(/\n/g, "\\n")
             ].map((entry) => `"${entry}"`), displayScaling.cp, displayScaling.ma);
             // optional renderingArgs (relevant for C15Synth only)

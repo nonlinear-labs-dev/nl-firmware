@@ -191,8 +191,6 @@ namespace C15
             const uint32_t m_coarse_amt = 0;
             const uint32_t m_fine_amt = 0;
             const char * const m_inactive_cp = nullptr;
-            const char * const m_group_label_long = nullptr;
-            const char * const m_group_label_short = nullptr;
             const char * const m_param_label_long = nullptr;
             const char * const m_param_label_short = nullptr;
             const char * const m_param_info = nullptr;
