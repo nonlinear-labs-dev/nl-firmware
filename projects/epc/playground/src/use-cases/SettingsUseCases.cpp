@@ -14,9 +14,9 @@
 #include <device-settings/SplitPointSyncParameters.h>
 #include <presets/PresetManager.h>
 
-SettingsUseCases::SettingsUseCases(Settings &s)
+SettingsUseCases::SettingsUseCases(Settings& s)
     : m_settings { s }
-    , m_focusAndModeSetting{ *s.getSetting<FocusAndModeSetting>() }
+    , m_focusAndModeSetting { *s.getSetting<FocusAndModeSetting>() }
 {
 }
 
@@ -90,6 +90,19 @@ void SettingsUseCases::updateRoutingAspect(int entry, int aspect, bool value)
   }
 }
 
+void SettingsUseCases::toggleRibbonSelection()
+{
+  if(m_settings.getSetting<SelectedRibbonsSetting>()->get() == SelectedRibbons::Ribbon1_2)
+    setRibbonSelection(SelectedRibbons::Ribbon3_4);
+  else
+    setRibbonSelection(SelectedRibbons::Ribbon1_2);
+}
+
+void SettingsUseCases::setRibbonSelection(SelectedRibbons ribbonsToSelect)
+{
+  m_settings.getSetting<SelectedRibbonsSetting>()->set(ribbonsToSelect);
+}
+
 void SettingsUseCases::panicAudioEngine()
 {
   using namespace nltools::msg;
@@ -104,7 +117,6 @@ void SettingsUseCases::setRoutingAspectsForEntry(nltools::msg::Setting::MidiSett
     s->setAllAspectsForIndex(index, b);
   }
 }
-
 
 void SettingsUseCases::setAllRoutingEntries(bool state)
 {
@@ -158,17 +170,17 @@ void SettingsUseCases::setFocusAndMode(const FocusAndMode& focusAndMode)
   m_focusAndModeSetting.set(focusAndMode);
 }
 
-void SettingsUseCases::setUIFocus(const UIFocus &focus)
+void SettingsUseCases::setUIFocus(const UIFocus& focus)
 {
   m_focusAndModeSetting.set(focus);
 }
 
-void SettingsUseCases::setUIMode(const UIMode &mode)
+void SettingsUseCases::setUIMode(const UIMode& mode)
 {
   m_focusAndModeSetting.set(mode);
 }
 
-void SettingsUseCases::setUIDetail(const UIDetail &detail)
+void SettingsUseCases::setUIDetail(const UIDetail& detail)
 {
   auto focusAndMode = m_focusAndModeSetting.getState();
   focusAndMode.detail = detail;

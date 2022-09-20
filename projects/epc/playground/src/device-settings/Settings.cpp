@@ -49,6 +49,7 @@
 #include "SplitPointSyncParameters.h"
 #include "GlobalLocalEnableSetting.h"
 #include "FocusAndModeSetting.h"
+#include "SelectedRibbonsSetting.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -148,6 +149,7 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master)
   addSetting("AlsaFramesPerPeriod", new AlsaFramesPerPeriod(*this));
 
   addSetting("FlacRecorderVirgin", new FlacRecorderVirgin(*this));
+  addSetting("SelectedRibbons", new SelectedRibbonsSetting(*this));
 }
 
 Settings::~Settings()
