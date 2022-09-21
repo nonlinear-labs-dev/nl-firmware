@@ -69,6 +69,7 @@ depends=(
 )
 
 build() {
+  export NODE_PATH="/usr/lib/node_modules"
   DESTDIR="\$pkgdir" cmake -B /out/build -S /src -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off
   DESTDIR="\$pkgdir" cmake --build /out/build --parallel $NUM_CORES
 }
