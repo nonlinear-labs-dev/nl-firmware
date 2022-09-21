@@ -19,9 +19,14 @@ type Result = ConfigType & DeclarationsType & {
     parameter_units: string;
     display_scaling_types: string;
     parameter_groups: string;
+    group_map: string;
 };
 
 type ParamType = {
+    [key: string]: Array<string>;
+};
+
+type GroupElementMap = {
     [key: string]: Array<string>;
 };
 
@@ -91,7 +96,8 @@ function processDefinitions(result: Result) {
     // parameterList collection
     const
         processedGroups: Array<string> = [],
-        parameterList: Array<string> = new Array<string>(result.config.params).fill("{None}");
+        parameterList: Array<string> = new Array<string>(result.config.params).fill("{None}"),
+        groupMap: GroupElementMap = {};
     // for every yaml resource of ./src/definitions, providing a parameter group
     result.definitions.sort((...defs) => {
         return defs.reduce((out, {filename, group}, index) => {
@@ -114,10 +120,13 @@ function processDefinitions(result: Result) {
                 data: result.declarations.parameter_group[definition.group]
             };
         // group sanity checks
+        if(!validateToken(group.name))
+            throw new Error(`${err}: invalid group token "${group.name}"`);
         if(processedGroups.includes(group.name)) {
             throw new Error(`${err}: group "${group.name}" is already defined`);
         }
         processedGroups.push(group.name);
+        groupMap[group.name] = new Array<string>();
         // for every parameter of the group
         definition.parameters.forEach((parameter, index) => {
             const
@@ -174,6 +183,8 @@ function processDefinitions(result: Result) {
             params.push(id, tokenStr);
             pid[id] = `${tokenStr} = ${id}`;
             parameterType[typeStr].push(tokenStr);
+            // feed group map
+            groupMap[group.name].push(tokenStr);
             // controlPosition properties
             const
                 { coarse, fine, scale, initial, inactive } = control_position,
@@ -367,6 +378,20 @@ function processDefinitions(result: Result) {
         return out;
     }, []).join("\n");
     result.enums.pid = ["None = -1", ...pid.filter((id) => id !== undefined)].join(",\n");
+    result.group_map = Object.entries(groupMap).reduce((out: Array<string>, [key, entries]) => {
+        if(entries.length > 0)
+            out.push([
+                "template<>",
+                `struct ParameterGroupElementList<Descriptors::ParameterGroup::${key}>`,
+                "{",
+                `${indent}static constexpr uint32_t sSize = ${entries.length};`,
+                `${indent}static constexpr PID::ParameterID sElements[sSize] = {`,
+                `${indent.repeat(2)}${entries.map((entry) => `PID::${entry}`).join(`,\n${indent.repeat(2)}`)}`,
+                `${indent}};`,
+                "};"
+            ].join("\n"));
+        return out;
+    }, []).join("\n");
 }
 
 function generateOverview(result: Result, sourceDir: string, outDir: string) {
@@ -448,6 +473,7 @@ function main(outDir: string, sourceDir: string) {
         result: Result = {
             timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "",
             parameter_list: "", parameter_units: "", display_scaling_types: "", parameter_groups: "",
+            group_map: "",
             ...ConfigParser.parse(sourceDir + "/src/c15_config.yaml"),
             ...DeclarationsParser.parse(sourceDir + "/src/parameter_declarations.yaml"),
             definitions: DefinitionsParser.parseAll(...definitions).map((definition, index) => {

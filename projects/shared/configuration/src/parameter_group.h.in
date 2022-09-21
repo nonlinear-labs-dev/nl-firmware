@@ -13,7 +13,13 @@
 
 namespace C15
 {
+    // descriptors of individual parameter groups
     constexpr ParameterGroupDescriptor ParameterGroups[] = {
         ${parameter_groups}
     };
+    // elements of individual parameter groups
+    template<Descriptors::ParameterGroup G>
+    struct ParameterGroupElementList;
+    // template specializations
+    ${group_map}
 } // namespace C15
