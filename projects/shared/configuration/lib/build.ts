@@ -346,6 +346,8 @@ function processDefinitions(result: Result) {
             `Properties::ParameterRounding::${props.round}`,
             `Properties::ParameterUnit::${props.unit}`,
             `Properties::ParameterInfinity::${props.inf}`,
+            props.min,
+            props.max,
             props.bipolar.toString()
         ].join(`,\n${indent}`)}\n}`);
         return out;

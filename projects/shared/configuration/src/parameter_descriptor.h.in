@@ -229,6 +229,8 @@ namespace C15
         const Properties::ParameterRounding m_round = Properties::ParameterRounding::None;
         const Properties::ParameterUnit m_unit = Properties::ParameterUnit::None;
         const Properties::ParameterInfinity m_infinity = Properties::ParameterInfinity::None;
+        const float m_min = {};
+        const float m_max = {};
         const bool m_bipolar = false;
     };
     struct ParameterDescriptor
