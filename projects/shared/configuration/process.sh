@@ -6,14 +6,9 @@ isDevPC=$3
 
 cd "$sourceDir" || exit 6
 
-if [ "$isDevPC" == "OFF" ]; then
-  sudo npm install -g typescript
-  sudo npm install
-fi
-
 # 1/5 - compile typescript via tsc
 echo "1/5 - starting typescript compilation";
-if ! sudo tsc "$sourceDir"/lib/build.ts; then
+if ! tsc "$sourceDir"/lib/build.ts; then
     echo "1/5 - typescript compilation failed";
     exit 1
 fi
