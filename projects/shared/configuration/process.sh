@@ -6,11 +6,6 @@ isDevPC=$3
 
 cd "$sourceDir" || exit 6
 
-if [ "$isDevPC" == "OFF" ]; then
-  npm install -g typescript
-  npm install
-fi
-
 # 1/5 - compile typescript via tsc
 echo "1/5 - starting typescript compilation";
 if ! tsc "$sourceDir"/lib/build.ts; then
