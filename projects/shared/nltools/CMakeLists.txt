@@ -12,17 +12,18 @@ file(GLOB_RECURSE TEST_FILES ./tests/*)
 
 list(REMOVE_ITEM SOURCE_FILES EXCLUDE REGEX ${TEST_FILES})
 
-set(LIBS glibmm-2.4 giomm-2.4 libsoup-2.4)
-
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 find_package(PkgConfig REQUIRED)
 
-foreach(lib ${LIBS})
-  pkg_check_modules(MOD REQUIRED ${lib})
-  target_include_directories(${PROJECT_NAME} PUBLIC ${MOD_INCLUDE_DIRS})
-  target_link_libraries(${PROJECT_NAME} PUBLIC ${MOD_LIBRARIES})
-  target_link_directories(${PROJECT_NAME} PUBLIC ${MOD_LIBRARY_DIRS})
-endforeach(lib)
+pkg_check_modules(MOD REQUIRED glibmm-2.4 giomm-2.4 libsoup-2.4)
+target_include_directories(${PROJECT_NAME} PUBLIC ${MOD_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${MOD_LIBRARIES})
+
+if(${CMAKE_VERSION} VERSION_LESS "3.13.0")
+    link_directories(${PROJECT_NAME} PUBLIC ${MOD_LIBRARY_DIRS})
+else()
+    target_link_directories(${PROJECT_NAME} PUBLIC ${MOD_LIBRARY_DIRS})
+endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/)
