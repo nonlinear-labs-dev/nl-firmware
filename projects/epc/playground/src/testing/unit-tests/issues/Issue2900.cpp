@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <thread>
 #include <nltools/GenericScopeGuard.h>
+#include <proxies/hwui/HardwareFeatures.h>
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 2900")
 {
@@ -22,7 +23,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 2900")
 
   auto file = "/tmp/playground-issue2900-settings.xml";
   std::filesystem::remove(file);
-  auto settings = std::make_unique<MockSettingsObject>(file, &SyncMasterMockRoot::get());
+  HardwareFeatures hw;
+  auto settings = std::make_unique<MockSettingsObject>(file, &SyncMasterMockRoot::get(), hw);
   settings->init();
 
   WHEN("settings are created initial state is 'virgin'")
@@ -49,7 +51,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 2900")
       THEN("state is restored on next startup")
       {
         settings.reset();
-        settings = std::make_unique<MockSettingsObject>(file, &SyncMasterMockRoot::get());
+        settings = std::make_unique<MockSettingsObject>(file, &SyncMasterMockRoot::get(), hw);
         settings->init();
         CHECK_FALSE(settings->getSetting<FlacRecorderVirgin>()->get());
       }

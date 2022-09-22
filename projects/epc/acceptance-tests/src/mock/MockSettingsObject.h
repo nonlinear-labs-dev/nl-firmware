@@ -1,6 +1,7 @@
 #pragma once
 #include <device-settings/Settings.h>
 #include <functional>
+#include <proxies/hwui/HardwareFeatures.h>
 
 class MockSettingsObject : public Settings
 {
@@ -12,5 +13,6 @@ class MockSettingsObject : public Settings
   tUpdateID onChange(uint64_t flags) override;
 
  private:
+  std::unique_ptr<HardwareFeatures> m_hwFeatures;
   tOnChangeCB m_onChangeCB;
 };

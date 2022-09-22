@@ -3,8 +3,9 @@
 # Date:         12.02.2020
 # vom Cmake übergebene Pfade zu den .tarS
 
+set -x
+
 EPC_UPDATE=$1 && shift
-EPC_2_UPDATE=$1 && shift
 BBB_UPDATE=$1 && shift
 BBB_MLO=$1 && shift
 BBB_UBOOT_IMG=$1 && shift
@@ -20,17 +21,17 @@ UPDATE_BBB=0
 UPDATE_PLAYCONTROLLER=0
 UPDATE_EPC=0
 
-if [[ $ASPECTS = *epc* ]]
+if [[ "$ASPECTS" = *epc* ]]
 then
     UPDATE_EPC=1
 fi
 
-if [[ $ASPECTS = *playcontroller* ]]
+if [[ "$ASPECTS" = *playcontroller* ]]
 then
     UPDATE_PLAYCONTROLLER=1
 fi
 
-if [[ $ASPECTS = *bbb* ]]
+if [[ "$ASPECTS" = *bbb* ]]
 then
     UPDATE_BBB=1
 fi
@@ -41,9 +42,9 @@ fail_and_exit() {
 }
 
 check_preconditions () {
-    if [ -z "$EPC_UPDATE" -a $UPDATE_EPC == 1 ]; then echo "ePC update missing..." && return 1; fi
-    if [ -z "$BBB_UPDATE" -a $UPDATE_BBB == 1 ]; then echo "BBB update missing..." && return 1; fi
-    if [ -z "$PLAYCONTROLLER_UPDATE" -a $UPDATE_PLAYCONTROLLER == 1 ]; then echo "playcontroller update missing..." && return 1; fi
+    if [ -z "$EPC_UPDATE" -a "$UPDATE_EPC" = "1" ]; then echo "ePC update missing..." && return 1; fi
+    if [ -z "$BBB_UPDATE" -a "$UPDATE_BBB" = "1" ]; then echo "BBB update missing..." && return 1; fi
+    if [ -z "$PLAYCONTROLLER_UPDATE" -a "$UPDATE_PLAYCONTROLLER" = "1" ]; then echo "playcontroller update missing..." && return 1; fi
     return 0
 }
 
@@ -51,9 +52,9 @@ create_update_file_structure() {
     echo "Creating Update Structure..."
     rm -rf $OUT_DIRECTORY
     mkdir $OUT_DIRECTORY || fail_and_exit
-    if [ $UPDATE_BBB == 1 ]; then mkdir $OUT_DIRECTORY/BBB || fail_and_exit; fi
-    if [ $UPDATE_EPC == 1 ]; then mkdir $OUT_DIRECTORY/EPC || fail_and_exit; fi
-    if [ $UPDATE_PLAYCONTROLLER == 1 ]; then mkdir $OUT_DIRECTORY/playcontroller || fail_and_exit; fi
+    if [ "$UPDATE_BBB" = "1" ]; then mkdir $OUT_DIRECTORY/BBB || fail_and_exit; fi
+    if [ "$UPDATE_EPC" = "1" ]; then mkdir $OUT_DIRECTORY/EPC || fail_and_exit; fi
+    if [ "$UPDATE_PLAYCONTROLLER" = "1" ]; then mkdir $OUT_DIRECTORY/playcontroller || fail_and_exit; fi
     mkdir $OUT_DIRECTORY/utilities || fail_and_exit
     echo "Creating Update Structure done."
     return 0
@@ -62,7 +63,7 @@ create_update_file_structure() {
 deploy_updates() {
     echo "Deploying updates..."
 
-    if [ $UPDATE_BBB == 1 ]; then
+    if [ "$UPDATE_BBB" = "1" ]; then
         echo "Will deploy BBB updates."
         cp $BBB_UPDATE $OUT_DIRECTORY/BBB/ && chmod 666 $OUT_DIRECTORY/BBB/rootfs.tar.gz || fail_and_exit;
         cp $BBB_MLO $OUT_DIRECTORY/BBB/ && chmod 666 $OUT_DIRECTORY/BBB/MLO || fail_and_exit;
@@ -75,13 +76,12 @@ deploy_updates() {
         echo $SUM | cut -d' ' -f1 >> $OUT_DIRECTORY/BBB/UBOOT_sum
     fi
 
-    if [ $UPDATE_EPC == 1 ]; then
+    if [ "$UPDATE_EPC" = "1" ]; then
         echo "Will deploy ePC updates."
-        cp $EPC_UPDATE $OUT_DIRECTORY/EPC/update_5-7i3.tar && chmod 666 $OUT_DIRECTORY/EPC/update_5-7i3.tar || fail_and_exit;
-        cp $EPC_2_UPDATE $OUT_DIRECTORY/EPC/update_10-11i3.tar && chmod 666 $OUT_DIRECTORY/EPC/update_10-11i3.tar || fail_and_exit;
+        cp $EPC_UPDATE $OUT_DIRECTORY/EPC/update.tar && chmod 666 $OUT_DIRECTORY/EPC/update.tar || fail_and_exit;
     fi
 
-    if [ $UPDATE_PLAYCONTROLLER == 1 ]; then
+    if [ "$UPDATE_PLAYCONTROLLER" = "1" ]; then
         echo "Will deploy playcontroller update."
         cp $PLAYCONTROLLER_UPDATE $OUT_DIRECTORY/playcontroller/main.bin && chmod 666 $OUT_DIRECTORY/playcontroller/main.bin || fail_and_exit;
     fi
@@ -96,17 +96,15 @@ deploy_scripts() {
     cp $SOURCE_DIR/update_scripts/run.sh $OUT_DIRECTORY/ && chmod 777 $OUT_DIRECTORY/run.sh || fail_and_exit;
     sed -i "s/ASPECTS=\"TO_BE_REPLACED_BY_CREATE_C15_UPDATE\"/ASPECTS=\"$ASPECTS\"/g" $OUT_DIRECTORY/run.sh
 
-    if [ $UPDATE_BBB == 1 ]; then
+    if [ "$UPDATE_BBB" = "1" ]; then
         cp $SOURCE_DIR/update_scripts/bbb_update.sh $OUT_DIRECTORY/BBB/ && \
             chmod 777 $OUT_DIRECTORY/BBB/bbb_update.sh || \
             fail_and_exit;
     fi
 
-    if [ $UPDATE_EPC == 1 ]; then
+    if [ "$UPDATE_EPC" = "1" ]; then
         cp $SOURCE_DIR/update_scripts/epc_pull_update.sh $OUT_DIRECTORY/EPC/ && \
             chmod 777 $OUT_DIRECTORY/EPC/epc_pull_update.sh && \
-            cp $SOURCE_DIR/update_scripts/epc_push_update.sh $OUT_DIRECTORY/EPC/ && \
-            chmod 777 $OUT_DIRECTORY/EPC/epc_push_update.sh && \
             cp $SOURCE_DIR/update_scripts/epc_1_fix.sh $OUT_DIRECTORY/EPC/ && \
             chmod 777 $OUT_DIRECTORY/EPC/epc_1_fix.sh && \
             cp $SOURCE_DIR/update_scripts/epc_2_fix.sh $OUT_DIRECTORY/EPC/ && \
@@ -114,7 +112,7 @@ deploy_scripts() {
             fail_and_exit;
     fi
 
-    if [ $UPDATE_PLAYCONTROLLER == 1 ]; then
+    if [ "$UPDATE_PLAYCONTROLLER" = "1" ]; then
         cp $SOURCE_DIR/update_scripts/playcontroller_update.sh $OUT_DIRECTORY/playcontroller/ && \
             chmod 777 $OUT_DIRECTORY/playcontroller/playcontroller_update.sh && \
             cp $SOURCE_DIR/update_scripts/playcontroller_check.sh $OUT_DIRECTORY/playcontroller/ && \
@@ -182,26 +180,24 @@ create_update_tar () {
     return 1
 }
 
-print_version_string()
-{
+print_version_string() {
     [ ! -z "$1" ] && echo " " $(grep -m 1 --binary-files=text "C15 Version" $1 | sed '$ s/\x00*$//') " (" $1 ")"
 }
 
 print_C15_version_strings() {
     echo "Getting version strings..."
-    if [ $UPDATE_EPC == 1 ]; then
-        FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground
-        rm -f $FILE
-	mkdir -p $BINARY_DIR/build-tools/epc/tmp 
-        tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/update.tar ./update/NonLinuxOverlay.tar.gz
-        tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/tmp/update/NonLinuxOverlay.tar.gz ./usr/local/C15/playground/playground
-        FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground
-        print_version_string $FILE
+    if [ "$UPDATE_EPC" = "1" ]; then
+      FILE=$BINARY_DIR/build-tools/epc/tmp/usr/local/C15/playground/playground
+      rm -f $FILE
+      mkdir -p $BINARY_DIR/build-tools/epc/tmp
+      tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/update.tar update/c15-rootfs.tar.xz
+      tar -C $BINARY_DIR/build-tools/epc/tmp --extract --file=$BINARY_DIR/build-tools/epc/tmp/update/c15-rootfs.tar.xz ./usr/local/C15/playground/playground
+      print_version_string $FILE
     fi
-    if [ $UPDATE_PLAYCONTROLLER == 1 ]; then
+    if [ "$UPDATE_PLAYCONTROLLER" = "1" ]; then
         print_version_string $(find $BINARY_DIR/build-tools/playcontroller/ -type f -name "main.bin")
     fi
-    if [ $UPDATE_BBB == 1 ]; then
+    if [ "$UPDATE_BBB" = "1" ]; then
         print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "playcontroller")
         print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "playcontroller-read")
         print_version_string $(find $BINARY_DIR/build-tools/bbb/rootfs/usr -type f -name "ehc")

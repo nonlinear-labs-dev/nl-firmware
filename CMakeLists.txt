@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.2)
 
 project(C15)
 
+SET(DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/../nonlinear-labs-downloads" CACHE STRING "Where to store downloads needed for NonlinearLabs-Builds")
+SET(NL_SERVER h2949050.stratoserver.net)
+
 include(CTest)
 include(cmake/NL.cmake)
 
@@ -20,6 +23,7 @@ SET(NPM_PACKAGES jquery @types/meteor meteor-build-client@0.4.1)
 string(REPLACE ";" " " METEOR_PACKAGES "${METEOR_PACKAGES}")
 string(REPLACE ";" " " NPM_PACKAGES "${NPM_PACKAGES}")
 
+add_subdirectory(os)
 add_subdirectory(projects)
 add_subdirectory(build-tools)
 

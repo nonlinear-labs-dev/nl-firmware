@@ -3,11 +3,12 @@
 #include <sigc++/sigc++.h>
 #include <glibmm/ustring.h>
 #include <optional>
+#include "proxies/hwui/HardwareFeatures.h"
 
 class EpcWifi : public sigc::trackable
 {
  public:
-  EpcWifi();
+  EpcWifi(HardwareFeatures& hw);
   ~EpcWifi();
 
   void setNewPassphrase(const Glib::ustring& _newPassphrase);

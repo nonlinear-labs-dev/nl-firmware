@@ -1,189 +1,55 @@
 #!/bin/sh
 
-UPDATE_PACKAGE_SERVERS="http://h2949050.stratoserver.net/epc/"
-PACKAGES_TO_INSTALL="fuse-common-3.9.0-1-x86_64.pkg.tar.xz fuse3-3.9.0-1-x86_64.pkg.tar.xz sshfs-3.7.0-1-x86_64.pkg.tar.zst mc-4.8.24-2-x86_64.pkg.tar.zst flac-1.3.3-1-x86_64.pkg.tar.xz"
+set -x
+set -e
 
-error() {
-    echo "Create ePC update failed: $1"
-    exit 1
-}
+OUTDIR="$1"
+shift
+DIR="$OUTDIR/update"
 
-copy_running_os() {
-    echo "Copying running os..."
-    if tar -C /internal/os --exclude=.wh..wh..opq --exclude=./build/CMakeFiles -czf /update-scratch/update/NonLinuxOverlay.tar.gz .; then
-        echo "Copying running os done."
-        return 0
-    fi
-    echo "Copying running os failed."
-    return 1
-}
+rm -rf $DIR
+mkdir -p $DIR
 
-calc_checksum() {
-    echo "Calc checksum..."
-    if (cd /update-scratch/update/ && touch $(sha256sum ./NonLinuxOverlay.tar.gz | grep -o "^[^ ]*").sign); then
-        echo "Calc checksum done."
-        return 0
-    fi
-    echo "Calc checksum failed."
-    return 1
-}
+for var in $@; do
+  cp $var $DIR/
+done
 
-create_update_tar() {
-    echo "Create update.tar..."
-    if (cd /update-scratch/ && tar -cf /update.tar ./update); then
-        echo "Create update.tar done."
-        return 0
-    fi
-    echo "Create update.tar failed."
-    return 1
-}
+tar --extract --file=$DIR/xz-5.2.5-linux-x86_64.tar.gz ./xz-5.2.5-linux-x86_64/xz
+rm $DIR/xz-5.2.5-linux-x86_64.tar.gz
+mv ./xz-5.2.5-linux-x86_64/xz $DIR/
+rm -rf ./xz-5.2.5-linux-x86_64
 
-create_update() {
-    echo "Creating update..."
-    
-    mkdir -p /update-scratch/update
+cat << EOF > $DIR/backdoor.sh
+#!/bin/sh
+set -e
+set -x
 
-    if copy_running_os && calc_checksum && create_update_tar; then
-        echo "Created update done."
-        return 0
-    fi
+mkdir -p /nloverlay
 
-    echo "Creating update failed."
-    return 1
-}
+for dir in "os-overlay" "runtime-overlay" "work"; do
+  rm -rf /nloverlay/\$dir
+  mkdir -p /nloverlay/\$dir
+done
 
-deploy_update() {
-    mv /update.tar /bindir/build-tools/epc/update.tar
-    return $?
-}
+mount -t overlay -o lowerdir=/lroot,upperdir=/nloverlay/os-overlay,workdir=/nloverlay/work overlay /mnt
 
-setup_build_overlay() {
-    fuse-overlayfs -o lowerdir=/workdir/squashfs-root -o upperdir=/workdir/overlay-scratch -o workdir=/workdir/overlay-workdir /workdir/overlay-fs || error "fuse-overlay failed."
-    mkdir -p /workdir/overlay-fs/sources
-    mkdir -p /workdir/overlay-fs/build
-    mkdir -p /workdir/epc-nl-build
-    mount --bind /sources /workdir/overlay-fs/sources || error "Mounting the sources failed."
-    mount --bind /workdir/epc-nl-build /workdir/overlay-fs/build || error "Mounting the build folder failed."
-}
+mv /mnt/usr/lib/modules /tmp/
+mv /mnt/usr/lib/firmware /tmp/
+rm -rf /mnt/*
+./xz -c -k -d /nloverlay/update-scratch/update/c15-rootfs.tar.xz | tar -C /mnt -x
+mv /tmp/modules /mnt/usr/lib/
+mv /tmp/firmware /mnt/usr/lib/
 
-download_package() {
-    if find ./$1 > /dev/null; then
-        return 0
-    fi
+umount /mnt
 
-    for server in $UPDATE_PACKAGE_SERVERS; do
-        URL="${server}$1"
-        if wget $URL; then
-            return 0
-        fi
-    done
+for dir in "runtime-overlay" "work"; do
+  rm -rf /nloverlay/\$dir
+  mkdir -p /nloverlay/\$dir
+done
 
-    return 1
-}
+/bin/sh /nloverlay/update-scratch/update/post-install.sh /nloverlay/os-overlay
+EOF
 
-download_packages() {
-    mkdir -p /workdir/update-packages
-    cd /workdir/update-packages
-    for package in $PACKAGES_TO_INSTALL; do
-        if ! download_package ${package}; then
-    		return 1
-        fi
-    done
-
-    mkdir -p /workdir/overlay-fs/update-packages
-    cp /workdir/update-packages/* /workdir/overlay-fs/update-packages
-    return 0
-}
-
-install_packages() {
-  /workdir/overlay-fs/bin/arch-chroot /workdir/overlay-fs /bin/bash -c "\
-  set -x
-  cd /update-packages
-  rm /var/lib/pacman/db.lck
-  for package in $PACKAGES_TO_INSTALL; do
-    if ! pacman --noconfirm -U ./\$package; then
-	    exit 1
-    fi
-  done
-  
-  echo \"Server = https://archive.archlinux.org/repos/2020/09/08/\$repo/os/\$arch\" > /etc/pacman.d/mirrorlist
-
-  sed \"s/^\[core\]/[core]\nSigLevel = Optional TrustAll/g\" -i /etc/pacman.conf
-  sed \"s/^\[extra\]/[extra]\nSigLevel = Optional TrustAll/g\" -i /etc/pacman.conf
-  sed \"s/^\[community\]/[community]\nSigLevel = Optional TrustAll/g\" -i /etc/pacman.conf
-
-  rm -R /etc/pacman.d/gnupg/
-  rm -R /root/.gnupg/  # only if the directory exists
-  gpg --refresh-keys
-  pacman-key --init && pacman-key --populate
-  pacman-key --refresh-keys
-
-  pacman --noconfirm -S typescript npm nodejs
-"
-  
-    return $?
-}
-
-build_update() {
-    download_packages || error "Downloading packages failed."
-    install_packages || error "Installing the packages failed."
-
-    /workdir/overlay-fs/bin/arch-chroot /workdir/overlay-fs /bin/bash -c "\
-        cd /build && cmake -DTARGET_PLATFORM=epc -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off /sources && make -j8"
-    return $?
-}
-
-setup_install_overlay() {
-    mkdir -p /internal
-    cp -ra /workdir/overlay-fs /internal/built || error "Copying the build failed."
-    mkdir -p /internal/os /internal/ow /internal/epc-update-partition
-    fuse-overlayfs -o lowerdir=/internal/built -o upperdir=/internal/os -o workdir=/internal/ow /internal/epc-update-partition
-    return $?
-}
-
-install_update() {
-	cp /workdir/update-packages/* /internal/epc-update-partition/update-packages
-
-  echo "en_US@nonlinear.UTF-8 UTF-8" >> /internal/epc-update-partition/etc/locale.gen
-  echo "LANG=en_US@nonlinear.UTF-8" > /internal/epc-update-partition/etc/locale.conf
-  touch /internal/epc-update-partition/usr/share/locale/locale.alias
-
-	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "cd /build && make install -j8 && make install-nl-locale"
-    mkdir -p /internal/epc-update-partition/usr/local/C15/web
-    tar -xzf /bindir/projects/web/web.tar.gz -C /internal/epc-update-partition/usr/local/C15/web
-	/internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\
-		cd /update-packages
-		rm /var/lib/pacman/db.lck
-		for package in $PACKAGES_TO_INSTALL; do
-		  if ! pacman --noconfirm -U ./\$package; then
-		    exit 1
-		  fi
-		done
-	"
-
-	return $?
-}
-
-update_fstab() {
-    /internal/epc-update-partition/bin/arch-chroot /internal/epc-update-partition /bin/bash -c "\
-        echo 'root@192.168.10.11:/mnt/usb-stick  /mnt/usb-stick  fuse.sshfs  sshfs_sync,direct_io,cache=no,reconnect,defaults,_netdev,ServerAliveInterval=2,ServerAliveCountMax=3,StrictHostKeyChecking=off  0  0' >> /etc/fstab"
-    return $?
-}
-
-main() {
-    mkdir -p /workdir || error "Creation of workdir failed"
-    mkdir -p /bindir/build-tools/epc
-    mount -o loop /bindir/build-tools/epc/fs.ext4 /workdir || error "Mouning filesystem failed."
-
-    setup_build_overlay || error "Setting up build overlay failed."
-    build_update || error "Building the update failed"
-    setup_install_overlay || error "Setting up the install overlay failed."
-    install_update || error "Installing gthe update failed."
-    update_fstab || error "Updateing /etc/fstab failed."
-    create_update || error "Creating the update.tar failed."
-    deploy_update || error "Deploying the update failed."
-
-    return 0
-}
-
-main
+BACKDOOR_CHECKSUM=$(sha256sum $DIR/backdoor.sh | cut -d " " -f 1)
+touch $DIR/$BACKDOOR_CHECKSUM.sign
+tar -C $OUTDIR -cf $OUTDIR/update.tar update

@@ -1,7 +1,12 @@
 #include "MockSettingsObject.h"
 
 MockSettingsObject::MockSettingsObject(const Glib::ustring& file, UpdateDocumentMaster* m)
-    : Settings(file, m)
+    : Settings(file, m,
+               [this]() -> HardwareFeatures&
+               {
+                 m_hwFeatures = std::make_unique<HardwareFeatures>();
+                 return *m_hwFeatures;
+               }())
 {
 }
 
