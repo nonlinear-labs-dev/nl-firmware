@@ -22,7 +22,7 @@ for project in nonmaps recorder online-help mc-view; do
   tar -xf /builddir/static/$project/bundle.tar.gz -C /tmp/static/$project
 done
 
-ln -s /builddir/build-time-info.js /tmp/client/build-time-info.js
+ln -sf /builddir/build-time-info.js /tmp/client/build-time-info.js
 ln -s /tmp/client ~/meteor-build/client 
 ln -s /tmp/static ~/meteor-build/public
 
