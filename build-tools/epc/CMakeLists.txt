@@ -23,4 +23,6 @@ ADD_CUSTOM_TARGET(epc-create-update
   DEPENDS c15-rootfs
   DEPENDS update.tar)
 
-add_dependencies(epc-create-update web)
+IF(BUILD_WEB)
+    add_dependencies(epc-create-update web)
+ENDIF()
