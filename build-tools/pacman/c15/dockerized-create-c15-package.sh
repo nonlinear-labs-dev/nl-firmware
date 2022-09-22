@@ -11,6 +11,7 @@ for dir in /c15 /out/build /home/bob /out/ccache; do
 done
 
 ln -s /out/ccache /home/bob/.ccache
+ln -sf /usr/lib/node_modules /node_modules
 
 NUM_CORES=$(nproc --all)
 
@@ -69,7 +70,6 @@ depends=(
 )
 
 build() {
-  export NODE_PATH="/usr/lib/node_modules"
   DESTDIR="\$pkgdir" cmake -B /out/build -S /src -DTARGET_PLATFORM=epc2 -DCMAKE_BUILD_TYPE=Release -DBUILD_EPC_SCRIPTS=On -DBUILD_AUDIOENGINE=On -DBUILD_PLAYGROUND=On -DBUILD_WEB=Off
   DESTDIR="\$pkgdir" cmake --build /out/build --parallel $NUM_CORES
 }
