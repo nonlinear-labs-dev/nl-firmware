@@ -82,19 +82,17 @@ std::list<ModulationRoutingParameter *> RibbonParameter::getRoutingParameters() 
   return {};
 }
 
-#warning TODO: replace tmp symbol suffix with real '^r'
-
 Glib::ustring RibbonParameter::getLongName() const
 {
   if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
-    return Parameter::getLongName() + "^r";
+    return Parameter::getLongName() + "\uE282";
   return Parameter::getLongName();
 }
 
 Glib::ustring RibbonParameter::getShortName() const
 {
   if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
-    return Parameter::getShortName() + "^r";
+    return Parameter::getShortName() + "\uE282";
   return Parameter::getShortName();
 }
 

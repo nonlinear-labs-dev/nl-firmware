@@ -1,5 +1,4 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
-
 import com.google.gwt.xml.client.Node;
 
 public class RibbonParameterModelUpdater extends BasicParameterModelUpdater {
@@ -13,5 +12,6 @@ public class RibbonParameterModelUpdater extends BasicParameterModelUpdater {
         super.doUpdate();
         RibbonParameterModel p = (RibbonParameterModel) target;
         p.mode.fromInt(Integer.parseInt(getChildText(root, "ribbon-return-mode")));
+        p.behaviour.fromInt(Integer.parseInt(getChildText(root, "ribbon-touch-behaviour")));
     }
 }
