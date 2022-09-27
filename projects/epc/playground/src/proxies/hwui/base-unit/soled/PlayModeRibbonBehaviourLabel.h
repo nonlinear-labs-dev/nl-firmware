@@ -1,11 +1,13 @@
 #pragma once
 
 #include "proxies/hwui/controls/Label.h"
+#include "ParameterId.h"
 
 class Application;
 class EditBuffer;
 class Parameter;
 class ParameterId;
+class Setting;
 
 class PlayModeRibbonBehaviourLabel : public Label
 {
@@ -20,6 +22,10 @@ class PlayModeRibbonBehaviourLabel : public Label
   PlayModeRibbonBehaviourLabel& operator=(const PlayModeRibbonBehaviourLabel&) = delete;
 
  private:
+  void onRibbonSelectionChanged(const Setting* s);
   void updateText(const Parameter* s);
   EditBuffer* getEditBuffer() const;
+
+  sigc::connection m_connection;
+  ParameterId m_ribbonParamID;
 };

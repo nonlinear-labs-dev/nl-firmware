@@ -5,6 +5,7 @@
 
 #include "parameters/ModulationRoutingParameter.h"
 #include "parameters/PhysicalControlParameter.h"
+#include "device-settings/SelectedRibbonsSetting.h"
 #include <groups/HardwareSourcesGroup.h>
 #include <proxies/hwui/HWUI.h>
 #include <math.h>
@@ -15,6 +16,8 @@ MCRoutings::MCRoutings(const ParameterId &ribbonParamID, const Rect &pos)
     , m_ribbonParamID(ribbonParamID)
 {
   connectToRoutingParameters();
+
+  Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->onChange(sigc::mem_fun(this, &MCRoutings::onRibbonSelectionChanged));
 }
 
 MCRoutings::~MCRoutings()
@@ -47,6 +50,30 @@ bool MCRoutings::redraw(FrameBuffer &fb)
   }
 
   return true;
+}
+
+void MCRoutings::onRibbonSelectionChanged(const Setting* s)
+{
+  if(auto selected = dynamic_cast<const SelectedRibbonsSetting*>(s))
+  {
+    auto isOneAndTwo = selected->get() == SelectedRibbons::Ribbon1_2;
+
+    if(isOneAndTwo)
+    {
+      if(m_ribbonParamID.getNumber() == C15::PID::Ribbon_3)
+        m_ribbonParamID = { C15::PID::Ribbon_1, VoiceGroup::Global };
+      else if(m_ribbonParamID.getNumber() == C15::PID::Ribbon_4)
+        m_ribbonParamID = { C15::PID::Ribbon_2, VoiceGroup::Global };
+    }
+    else
+    {
+      if(m_ribbonParamID.getNumber() == C15::PID::Ribbon_1)
+        m_ribbonParamID = { C15::PID::Ribbon_3, VoiceGroup::Global };
+      else
+        m_ribbonParamID = { C15::PID::Ribbon_4, VoiceGroup::Global };
+    }
+  }
+  setDirty();
 }
 
 EditBuffer *MCRoutings::getEditBuffer() const

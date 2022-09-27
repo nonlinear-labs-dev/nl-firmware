@@ -23,6 +23,8 @@ class PhysicalControlParameter : public Parameter
   void setCPFromWebUI(UNDO::Transaction *transaction, const tControlPositionValue &cpValue) override;
 
   Glib::ustring getDisplayString() const override;
+  Glib::ustring getCurrentModulatingMacroControlString() const;
+  bool isMCAssignedToThisAlsoAssignedToAnyPedal() const;
 
   virtual ReturnMode getReturnMode() const = 0;
 
@@ -56,6 +58,7 @@ class PhysicalControlParameter : public Parameter
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
+  MacroControlParameter* getMCAssignedToThisHW() const;
  private:
   void sendParameterMessage() const override;
 

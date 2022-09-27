@@ -11,6 +11,7 @@
 #include <presets/ParameterGroupSet.h>
 #include <cmath>
 #include "ParameterAlgorithm.h"
+#include "PedalParameter.h"
 #include <http/UpdateDocumentMaster.h>
 #include <Application.h>
 #include <proxies/hwui/panel-unit/PanelUnitParameterEditMode.h>
@@ -94,6 +95,16 @@ Glib::ustring PhysicalControlParameter::getDisplayString() const
     return Glib::ustring("! ") + Parameter::getDisplayString();
 
   return Parameter::getDisplayString();
+}
+
+Glib::ustring PhysicalControlParameter::getCurrentModulatingMacroControlString() const
+{
+  if(auto currentMC = getMCAssignedToThisHW())
+  {
+    return currentMC->getLongName();
+  }
+
+  return "not assigned";
 }
 
 void PhysicalControlParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
@@ -303,4 +314,42 @@ HardwareSourceSendParameter *PhysicalControlParameter::getSendParameter() const
   };
 
   return getParentEditBuffer()->findAndCastParameterByID<HardwareSourceSendParameter>({ idToSendID(getID()) });
+}
+
+MacroControlParameter *PhysicalControlParameter::getMCAssignedToThisHW() const
+{
+  MacroControlParameter *currentMC = nullptr;
+  double currentMax = 0;
+  auto mappings = dynamic_cast<MacroControlMappingGroup *>(
+      getParentEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
+  for(auto p : mappings->getModulationRoutingParametersFor(this))
+  {
+    if(std::abs(p->getControlPositionValue()) > currentMax)
+    {
+      currentMC = p->getTargetParameter();
+      currentMax = p->getControlPositionValue();
+    }
+  }
+  return currentMC;
+}
+
+bool PhysicalControlParameter::isMCAssignedToThisAlsoAssignedToAnyPedal() const
+{
+  if(auto currentMC = getMCAssignedToThisHW())
+  {
+    auto mappings = dynamic_cast<MacroControlMappingGroup *>(
+        getParentEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
+    for(auto mapping : mappings->getModulationRoutingParametersFor(currentMC))
+    {
+      if(dynamic_cast<PedalParameter *>(mapping->getSourceParameter()))
+      {
+        if(mapping->getControlPositionValue() != 0)
+        {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
 }

@@ -185,21 +185,21 @@ void Settings::load()
 {
   auto lock = m_isLoading.lock();
 
-  DebugLevel::gassy(__PRETTY_FUNCTION__, G_STRLOC);
+  nltools::Log::info(__PRETTY_FUNCTION__, G_STRLOC);
 
   try
   {
-    DebugLevel::gassy(__PRETTY_FUNCTION__, G_STRLOC);
+    nltools::Log::info(__PRETTY_FUNCTION__, G_STRLOC);
     FileInStream in(m_file, false);
     XmlReader reader(in, nullptr);
     reader.read<SettingsSerializer>(std::ref(*this));
   }
   catch(...)
   {
-    DebugLevel::error("Exception loading the settings!");
+    nltools::Log::error("Exception loading the settings!");
   }
 
-  DebugLevel::gassy(__PRETTY_FUNCTION__, G_STRLOC);
+  nltools::Log::info(__PRETTY_FUNCTION__, G_STRLOC);
 
   sanitize();
 

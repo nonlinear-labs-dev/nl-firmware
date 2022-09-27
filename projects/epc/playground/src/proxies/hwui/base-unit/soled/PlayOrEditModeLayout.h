@@ -22,9 +22,4 @@ class PlayOrEditModeLayout : public Layout
  private:
   PlayOrEditModeLayout(const PlayOrEditModeLayout& other);
   PlayOrEditModeLayout& operator=(const PlayOrEditModeLayout&);
-
-  void onLastTouchedRibbonChanged(int lastTouchedRibbonParameterID);
-
-  Label* m_upperArrow = nullptr;
-  Label* m_lowerArrow = nullptr;
 };
