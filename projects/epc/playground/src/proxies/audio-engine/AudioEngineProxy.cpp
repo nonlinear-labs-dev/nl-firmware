@@ -619,6 +619,8 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
 
         msg.localEnable = m_settings.getSetting<GlobalLocalEnableSetting>()->get();
 
+        msg.isSecondSetOfRibbonsEnabled = m_settings.getSetting<SelectedRibbonsSetting>()->get() == SelectedRibbons::Ribbon3_4;
+
         nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
       });
 }

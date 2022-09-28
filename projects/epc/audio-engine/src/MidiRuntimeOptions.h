@@ -43,6 +43,8 @@ class MidiRuntimeOptions
 
   [[nodiscard]] bool shouldReceiveLocalNotes() const;
 
+  [[nodiscard]] bool isSecondSetOfRibbonsIsSelected() const;
+
   [[nodiscard]] bool shouldReceiveMidiOnPrimary(tMidiSettingMessage::RoutingIndex routingIndex) const;
   [[nodiscard]] bool shouldReceiveMidiOnSplit(tMidiSettingMessage::RoutingIndex routingIndex) const;
   [[nodiscard]] bool shouldSendMidiOnPrimary(tMidiSettingMessage::RoutingIndex routingIndex) const;
@@ -175,6 +177,8 @@ class MidiRuntimeOptions
   nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings m_routingMappings;
 
   nltools::msg::Setting::MidiSettingsMessage m_lastMessage;
+
+  bool m_isSecondSetOfRibbonsEnabled = false;
 
   friend class MidiRuntimeOptionsTester;
 };

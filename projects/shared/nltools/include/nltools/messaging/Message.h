@@ -351,6 +351,7 @@ namespace nltools
         BenderCC bendercc;
 
         bool localEnable = true;
+        bool isSecondSetOfRibbonsEnabled = false;
         tRoutingMappings routings {};
       };
 

@@ -27,6 +27,7 @@ void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
 
   m_routingMappings = msg.routings;
   m_localEnable = msg.localEnable;
+  m_isSecondSetOfRibbonsEnabled = msg.isSecondSetOfRibbonsEnabled;
 }
 
 MidiReceiveChannel MidiRuntimeOptions::getMIDIPrimaryReceiveChannel() const
@@ -111,6 +112,12 @@ bool MidiRuntimeOptions::shouldReceiveLocalNotes() const
   constexpr auto aspect = static_cast<size_t>(MidiRuntimeOptions::tMidiSettingMessage::RoutingAspect::LOCAL);
   return m_routingMappings[idx][aspect] && m_localEnable;
 }
+
+[[nodiscard]] bool MidiRuntimeOptions::isSecondSetOfRibbonsIsSelected() const
+{
+  return m_isSecondSetOfRibbonsEnabled;
+}
+
 
 std::optional<int> MidiRuntimeOptions::decodeEnumMSB(PedalCC cc)
 {
