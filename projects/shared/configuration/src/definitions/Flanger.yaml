@@ -76,7 +76,7 @@ parameters:
     label_long: Stereo
     label_short: Stereo
     control_position: { coarse: 50, fine: 500, scale: LINEAR_BIPOLAR_50_PERCENT, initial: 0.0f }
-    modulation_aspects: { coarse: 50, fine: 500, scale: LINEAR_BIPOLAR_100_PERCENT }
+    modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT }
     rendering_args: { scaling: Linear, factor: 50.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
     info: >
       Sets the ratio between the delay times of the left and of the right channel [the value shows the offset to 100.0 %].
@@ -88,7 +88,7 @@ parameters:
     label_long: Feedback
     label_short: Feedback
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Mono, clock: Fast, signal: None }
     info: >
       Amount of the internal feedback.
@@ -100,7 +100,7 @@ parameters:
     label_long: Cross FB
     label_short: Cross FB
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.5f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: None }
     info: >
       Amount of the cross feedback between the left and the right channel, increasing the complexity of the resulting signal.
@@ -114,7 +114,7 @@ parameters:
     label_long: Hi Cut
     label_short: Hi Cut
     control_position: { coarse: 80, fine: 800, scale: LINEAR_60_140_ST, initial: 0.75f }
-    modulation_aspects: { coarse: 80, fine: 800, scale: LINEAR_BIPOLAR_160_ST }
+    modulation_aspects: { coarse: 80, fine: 800, scale: LINEAR_BIPOLAR_80_ST }
     rendering_args: { scaling: Expon_Lin_Pitch, factor: 80.0f, offset: 60.0f, section: Mono, clock: Slow, signal: None }
     info: >
       Cutoff frequency [in semitones] of the filter that damps the higher frequencies of the delayed signal.
@@ -125,7 +125,7 @@ parameters:
     label_long: Mix
     label_short: Mix
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: None }
     info: >
       Crossfades between the dry signal and the delayed signal. At negative values, the delayed signal is inverted.
@@ -148,7 +148,7 @@ parameters:
     label_long: Allpass Mod
     label_short: AP Mod
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 70.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
     info: >
       Relative amount of the modulation of the allpass center frequencies by the LFO and/or the envelope.

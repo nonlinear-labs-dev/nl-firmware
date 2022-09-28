@@ -39,7 +39,7 @@ parameters:
     label_long: A - Level
     label_short: A
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       Output mix factor for the signal from Oscillator & Shaper A.
@@ -50,7 +50,7 @@ parameters:
     label_long: A - Pan
     label_short: Pan
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Poly, clock: Fast, signal: None }
     info: >
       Pan position of the signal from Oscillator & Shaper A in the output mix.
@@ -61,7 +61,7 @@ parameters:
     label_long: B - Level
     label_short: B
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       Output mix factor for the signal from Oscillator & Shaper B.
@@ -72,7 +72,7 @@ parameters:
     label_long: B - Pan
     label_short: Pan
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Poly, clock: Fast, signal: None }
     info: >
       Pan position of the signal from Oscillator & Shaper B in the output mix.
@@ -83,7 +83,7 @@ parameters:
     label_long: Comb - Level
     label_short: Comb
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       Output mix factor for the signal from the Comb Filter.
@@ -94,7 +94,7 @@ parameters:
     label_long: Comb - Pan
     label_short: Pan
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Poly, clock: Fast, signal: None }
     info: >
       Pan position of the signal from the Comb Filter in the output mix.
@@ -105,7 +105,7 @@ parameters:
     label_long: SV Filter - Level
     label_short: SV Filter
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       Output mix factor for the signal from the State Variable Filter.
@@ -116,7 +116,7 @@ parameters:
     label_long: SV Filter - Pan
     label_short: Pan
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.5f, section: Poly, clock: Fast, signal: None }
     info: >
       Pan position of the signal from the State Variable Filter in the output mix.
@@ -127,7 +127,7 @@ parameters:
     label_long: Drive
     label_short: Drive
     control_position: {coarse: 100, fine: 500, scale: LINEAR_50_DB, initial: 0.0f }
-    modulation_aspects: { coarse: 50, fine: 500, scale: LINEAR_BIPOLAR_50_DB }
+    modulation_aspects: { coarse: 100, fine: 500, scale: LINEAR_BIPOLAR_50_DB }
     rendering_args: { scaling: Expon_Mix_Drive, factor: 50.0f, offset: 0.25f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
     info: >
       Input gain [in dB] of the sine shaper stage. Higher gains will create more distortion and harmonics.

@@ -40,7 +40,7 @@ parameters:
     label_long: Stereo
     label_short: Stereo
     control_position: { coarse: 72, fine: 720, scale: LINEAR_BIPOLAR_36_ST, initial: 0.0f }
-    modulation_aspects: { coarse: 72, fine: 720, scale: LINEAR_BIPOLAR_72_ST }
+    modulation_aspects: { coarse: 144, fine: 1440, scale: LINEAR_BIPOLAR_72_ST }
     rendering_args: { scaling: Linear, factor: 36.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
     info: >
       Sets the difference between the center frequencies of the left and of the right channel [in semitones].
@@ -75,7 +75,7 @@ parameters:
     label_long: Balanace
     label_short: Balance
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: None }
     info: >
       Balance between the levels of the ranges above and below the gap.\n
@@ -88,7 +88,7 @@ parameters:
     label_long: Mix
     label_short: Mix
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: None }
     info: >
       Crossfades between the dry signal and the filtered signal.

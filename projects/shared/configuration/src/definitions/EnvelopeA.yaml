@@ -112,7 +112,7 @@ parameters:
     label_long: Gain
     label_short: Gain
     control_position: { <<: *ENV_CP_GAIN, scale: LINEAR_BIPOLAR_24_DB, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *ENV_CP_GAIN, scale: LINEAR_BIPOLAR_48_DB }
+    modulation_aspects: { coarse: 96, fine: 960, scale: LINEAR_BIPOLAR_48_DB }
     rendering_args: { scaling: Expon_Gain, factor: 24.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       Gain [in dB] of the envelope signal.
@@ -192,7 +192,7 @@ parameters:
     label_long: Attack Curve
     label_short: Curve
     control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
     info: >
       Curvature of the (polynomial) Attack segment.
@@ -203,7 +203,7 @@ parameters:
     label_long: Elevate T - A
     label_short: Elevate
     control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       Transforms the breakpoints of the Envelope signal, becoming more and more a flat organ-like curve towards the control's edges.
