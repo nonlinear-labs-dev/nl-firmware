@@ -574,8 +574,9 @@ void AudioEngineProxy::connectSettingsToAudioEngineMessage()
   subscribeToMidiSettings<MidiReceiveChannelSetting, MidiReceiveChannelSplitSetting, MidiReceiveAftertouchCurveSetting,
                           MidiReceiveVelocityCurveSetting, MidiSendChannelSetting, MidiSendChannelSplitSetting,
                           PedalCCMapping<1>, PedalCCMapping<2>, PedalCCMapping<3>, PedalCCMapping<4>,
-                          RibbonCCMapping<1>, RibbonCCMapping<2>, AftertouchCCMapping, BenderCCMapping,
-                          EnableHighVelocityCC, Enable14BitSupport, RoutingSettings, GlobalLocalEnableSetting>(
+                          RibbonCCMapping<1>, RibbonCCMapping<2>, RibbonCCMapping<1>, RibbonCCMapping<2>,
+                          AftertouchCCMapping, BenderCCMapping, EnableHighVelocityCC, Enable14BitSupport,
+                          RoutingSettings, GlobalLocalEnableSetting, SelectedRibbonsSetting>(
       &m_settings);
 
   m_settingConnections.push_back(m_settings.getSetting<AutoStartRecorderSetting>()->onChange(
