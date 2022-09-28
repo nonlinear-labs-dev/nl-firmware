@@ -594,7 +594,7 @@ namespace nltools
         return MessageType::HardwarePollEnded;
       }
 
-      std::array<float, 8> m_data;
+      std::array<float, 10> m_data;
     };
 
     namespace detail

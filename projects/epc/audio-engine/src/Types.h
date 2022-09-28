@@ -68,7 +68,8 @@ inline std::string toString(HardwareSource s)
 
 static auto sHardwareSources
     = { HardwareSource::PEDAL1, HardwareSource::PEDAL2,     HardwareSource::PEDAL3,  HardwareSource::PEDAL4,
-        HardwareSource::BENDER, HardwareSource::AFTERTOUCH, HardwareSource::RIBBON1, HardwareSource::RIBBON2 };
+        HardwareSource::BENDER, HardwareSource::AFTERTOUCH, HardwareSource::RIBBON1, HardwareSource::RIBBON2,
+        HardwareSource::RIBBON3, HardwareSource::RIBBON4 };
 
 struct SampleFrame
 {

@@ -14,12 +14,15 @@ class TCDDecoder
 
   [[nodiscard]] DecoderEventType getEventType() const;
   [[nodiscard]] int getKeyOrController() const;
+  [[nodiscard]] HardwareSource getHardwareSource() const;
   [[nodiscard]] float getValue() const;
 
   void reset();
 
  protected:
+
   int keyOrController = -1;
+  HardwareSource hwSource = HardwareSource::NONE;
   float value = 0;
   DecoderEventType m_type = DecoderEventType::UNKNOWN;
 

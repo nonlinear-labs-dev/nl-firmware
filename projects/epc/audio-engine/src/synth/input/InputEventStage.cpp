@@ -7,19 +7,19 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
                                  InputEventStage::MIDIOut outCB, InputEventStage::ChannelModeMessageCB specialCB)
     : m_tcdDecoder(dspHost, options, &m_shifteable_keys)
     , m_midiDecoder(dspHost, options)
-    , m_dspHost{ dspHost }
-    , m_options{ options }
+    , m_dspHost { dspHost }
+    , m_options { options }
     , m_hwChangedCB(std::move(hwChangedCB))
     , m_channelModeMessageCB(std::move(specialCB))
-    , m_midiOut{ std::move(outCB) }
+    , m_midiOut { std::move(outCB) }
 {
   std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
-            std::array<uint16_t, 2>{ std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
+            std::array<uint16_t, 2> { std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
 
   for(auto &hw : m_localDisabledPositions)
     std::get<0>(hw) = std::numeric_limits<float>::max();
 
-  for(auto& p: m_polledHWPositions)
+  for(auto &p : m_polledHWPositions)
     p = std::numeric_limits<float>::max();
 }
 
@@ -178,8 +178,7 @@ void InputEventStage::onTCDEvent()
     {
       if(!m_isPolling)
       {
-        onHWChanged(static_cast<HardwareSource>(decoder->getKeyOrController()), decoder->getValue(), HWChangeSource::TCD,
-                    false, false, false);
+        onHWChanged(decoder->getHardwareSource(), decoder->getValue(), HWChangeSource::TCD, false, false, false);
       }
       else
       {
@@ -791,7 +790,8 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
 {
   const auto routingIndex = static_cast<RoutingIndex>(hwID);
 
-  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit) {
+  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)
+  {
     switch(source)
     {
       case HWChangeSource::MIDI:
@@ -1193,7 +1193,7 @@ void InputEventStage::requestExternalReset(DSPInterface::OutputResetEventSource 
   }
 }
 
-std::array<float, 8> InputEventStage::getPolledHWSourcePositions() const
+std::array<float, InputEventStage::NUM_HW> InputEventStage::getPolledHWSourcePositions() const
 {
   return m_polledHWPositions;
 }

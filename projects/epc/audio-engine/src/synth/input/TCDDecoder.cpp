@@ -25,7 +25,7 @@ bool TCDDecoder::decode(const MidiEvent &event)
       value = static_cast<float>(arg) * c_norm_hw;  // HW src normalization by 1 / 16000
 
       auto hwid = static_cast<HardwareSource>(channel);
-      
+
       //ugly code ugh !!!!
       if(hwid == HardwareSource::RIBBON1 && m_options->isSecondSetOfRibbonsIsSelected())
       {
@@ -52,6 +52,7 @@ bool TCDDecoder::decode(const MidiEvent &event)
       }
 
       keyOrController = channel;
+      hwSource = hwid;
       m_type = DecoderEventType::HardwareChange;
     }
     else if(_status == AE_PROTOCOL_CMD)  // PlayController Command
@@ -118,6 +119,11 @@ int TCDDecoder::getKeyOrController() const
   return keyOrController;
 }
 
+[[nodiscard]] HardwareSource TCDDecoder::getHardwareSource() const
+{
+  return hwSource;
+}
+
 float TCDDecoder::getValue() const
 {
   return value;
@@ -128,4 +134,5 @@ void TCDDecoder::reset()
   value = 0;
   m_type = DecoderEventType::UNKNOWN;
   keyOrController = -1;
+  hwSource = HardwareSource::NONE;
 }

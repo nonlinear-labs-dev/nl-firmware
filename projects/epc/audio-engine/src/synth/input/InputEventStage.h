@@ -14,6 +14,8 @@ class MidiRuntimeOptions;
 
 class InputEventStage
 {
+ private:
+  constexpr static auto NUM_HW = 10;
  public:
   using RoutingIndex = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
   using RoutingAspect = nltools::msg::Setting::MidiSettingsMessage::RoutingAspect;
@@ -36,7 +38,7 @@ class InputEventStage
 
   [[nodiscard]] float getHWSourcePositionIfLocalDisabled(HardwareSource hwid) const;
   [[nodiscard]] HWChangeSource getHWSourcePositionSource(HardwareSource hwid) const;
-  [[nodiscard]] std::array<float, 8> getPolledHWSourcePositions() const;
+  [[nodiscard]] std::array<float, NUM_HW> getPolledHWSourcePositions() const;
 
   void onMidiSettingsMessageWasReceived(const tMSG& msg, const tMSG& oldmsg);
   void requestExternalReset(DSPInterface::OutputResetEventSource resetTarget);
@@ -112,7 +114,6 @@ class InputEventStage
 
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
-  constexpr static auto NUM_HW = 10;
   std::array<std::array<uint16_t, 2>, NUM_HW> m_latchedHWPositions{};
 
   using tHWPosEntry = std::tuple<float, HWChangeSource>;
@@ -142,5 +143,5 @@ class InputEventStage
   template <typename tChannelEnum> void doSendAllNotesOff(tChannelEnum tEnum);
 
   bool m_isPolling = false;
-  std::array<float, 8> m_polledHWPositions;
+  std::array<float, NUM_HW> m_polledHWPositions;
 };
