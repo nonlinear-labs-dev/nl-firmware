@@ -30,3 +30,7 @@
   10  // release time of gate envelopes (in milliseconds) -- 1ms problematic (key up noise), 10ms okay (like prototype) \
       // (due to current comb decay gate implementation)
 #define env_highest_finite_time 16000.f  // highest allowed finite time
+
+// loop factor
+#define env_loop_factor_from 0 // from
+#define env_loop_factor_range 100 // range

@@ -797,5 +797,5 @@ display_scaling_type: {
     inf: *INF_FINITE,
     values: [ "-200.0", "-100.0", "0.0", "100.0", "200.0" ],
     bipolar: true
-  },
+  }
 }
