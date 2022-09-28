@@ -21,6 +21,7 @@ class LowerRibbon : public Ribbon, public sigc::trackable
   void onParamSelectionChanged(const Parameter* old, const Parameter* newP);
   void onParamValueChanged(const Parameter* param);
   void onSendValueChanged(const Parameter *param);
+  void onRibbonSelectionChanged(const Setting* setting);
   void reconnect();
 
   int posToLedID(int pos) const override;
@@ -31,5 +32,6 @@ class LowerRibbon : public Ribbon, public sigc::trackable
   sigc::connection m_sendConnection;
 
   sigc::connection m_parameterSelectionChangedSignal;
+  sigc::connection m_ribbonSelectionSignal;
   sigc::connection m_settingChangedSignal;
 };

@@ -46,6 +46,15 @@ LowerRibbon::LowerRibbon()
 
   m_parameterSelectionChangedSignal = Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::mem_fun(this, &LowerRibbon::onParamSelectionChanged), {});
+
+
+  m_ribbonSelectionSignal = Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->onChange(
+      sigc::mem_fun(this, &LowerRibbon::onRibbonSelectionChanged));
+}
+
+void LowerRibbon::onRibbonSelectionChanged(const Setting *setting)
+{
+  reconnect();
 }
 
 void LowerRibbon::reconnect()
@@ -110,7 +119,6 @@ void LowerRibbon::onSendValueChanged(const Parameter *param)
     }
   }
 }
-
 void LowerRibbon::indicateBlockingMainThread(bool onOff)
 {
   m_indicateBlockingMainThread = onOff;

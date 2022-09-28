@@ -20,6 +20,9 @@ UpperRibbon::UpperRibbon()
       sigc::mem_fun(this, &UpperRibbon::onParamSelectionChanged), {});
   m_settingChangedSignal = Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(
       sigc::mem_fun(this, &UpperRibbon::onSettingChanged));
+  m_ribbonSelectionSignal = Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->onChange(
+      sigc::mem_fun(this, &UpperRibbon::onRibbonSelectionChanged));
+
 }
 
 UpperRibbon::~UpperRibbon()
@@ -29,6 +32,11 @@ UpperRibbon::~UpperRibbon()
 }
 
 void UpperRibbon::onParamSelectionChanged(Parameter* oldOne, Parameter* newOne)
+{
+  reconnect();
+}
+
+void UpperRibbon::onRibbonSelectionChanged(const Setting* setting)
 {
   reconnect();
 }
