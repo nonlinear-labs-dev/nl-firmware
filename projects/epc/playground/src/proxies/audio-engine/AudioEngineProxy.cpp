@@ -606,6 +606,8 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
         msg.pedal4cc = m_settings.getSetting<PedalCCMapping<4>>()->get();
         msg.ribbon1cc = m_settings.getSetting<RibbonCCMapping<1>>()->get();
         msg.ribbon2cc = m_settings.getSetting<RibbonCCMapping<2>>()->get();
+        msg.ribbon3cc = m_settings.getSetting<RibbonCCMapping<3>>()->get();
+        msg.ribbon4cc = m_settings.getSetting<RibbonCCMapping<4>>()->get();
         msg.aftertouchcc = m_settings.getSetting<AftertouchCCMapping>()->get();
         msg.bendercc = m_settings.getSetting<BenderCCMapping>()->get();
 

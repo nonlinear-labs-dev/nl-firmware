@@ -777,6 +777,10 @@ HardwareSource InputEventStage::parameterIDToHWID(int id)
       return HardwareSource::RIBBON1;
     case C15::PID::Ribbon_2:
       return HardwareSource::RIBBON2;
+    case C15::PID::Ribbon_3:
+      return HardwareSource::RIBBON3;
+    case C15::PID::Ribbon_4:
+      return HardwareSource::RIBBON4;
     default:
       return HardwareSource::NONE;
   }
@@ -863,6 +867,8 @@ HardwareSource ccToHWID(int cc, MidiRuntimeOptions *options)
     const auto bender = options->getCCFor<Midi::MSB::Bender>();
     const auto ribbon1 = options->getCCFor<Midi::MSB::Rib1>();
     const auto ribbon2 = options->getCCFor<Midi::MSB::Rib2>();
+    const auto ribbon3 = options->getCCFor<Midi::MSB::Rib3>();
+    const auto ribbon4 = options->getCCFor<Midi::MSB::Rib4>();
 
     if(p1 == cc)
     {
@@ -895,6 +901,14 @@ HardwareSource ccToHWID(int cc, MidiRuntimeOptions *options)
     else if(ribbon2 == cc)
     {
       return HardwareSource::RIBBON2;
+    }
+    else if(ribbon3 == cc)
+    {
+      return HardwareSource::RIBBON3;
+    }
+    else if(ribbon3 == cc)
+    {
+      return HardwareSource::RIBBON4;
     }
   }
   return HardwareSource::NONE;

@@ -112,7 +112,7 @@ class InputEventStage
 
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
-  constexpr static auto NUM_HW = 8;
+  constexpr static auto NUM_HW = 10;
   std::array<std::array<uint16_t, 2>, NUM_HW> m_latchedHWPositions{};
 
   using tHWPosEntry = std::tuple<float, HWChangeSource>;

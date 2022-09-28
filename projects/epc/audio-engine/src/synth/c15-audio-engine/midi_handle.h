@@ -27,7 +27,9 @@ namespace Midi
       Bender = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Bender) << 8 | 0,
       Aftertouch = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Aftertouch) << 8 | 0,
       Rib1 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_1) << 8 | 24,
-      Rib2 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_2) << 8 | 25
+      Rib2 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_2) << 8 | 25,
+      Rib3 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_3) << 8 | 26,
+      Rib4 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_4) << 8 | 27,
     };
   }  // namespace Midi::MSB
 
@@ -42,6 +44,8 @@ namespace Midi
       Ped4 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Pedal_4) << 8 | 55,
       Rib1 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_1) << 8 | 56,
       Rib2 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_2) << 8 | 57,
+      Rib3 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_4) << 8 | 58,
+      Rib4 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_4) << 8 | 59,
       Vel = 0xFF << 8 | 88
     };
   }  // namespace Midi::LSB

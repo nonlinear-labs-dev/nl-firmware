@@ -17,6 +17,8 @@ void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
   pedal4CC = msg.pedal4cc;
   ribbon1CC = msg.ribbon1cc;
   ribbon2CC = msg.ribbon2cc;
+  ribbon3CC = msg.ribbon3cc;
+  ribbon4CC = msg.ribbon4cc;
   aftertouchCC = msg.aftertouchcc;
   benderCC = msg.bendercc;
 
@@ -469,6 +471,16 @@ void MidiRuntimeOptions::setRibbon1(RibbonCC cc)
 void MidiRuntimeOptions::setRibbon2(RibbonCC cc)
 {
   ribbon2CC = cc;
+}
+
+void MidiRuntimeOptions::setRibbon3(RibbonCC cc)
+{
+  ribbon3CC = cc;
+}
+
+void MidiRuntimeOptions::setRibbon4(RibbonCC cc)
+{
+  ribbon4CC = cc;
 }
 
 bool MidiRuntimeOptions::is14BitSupportEnabled() const

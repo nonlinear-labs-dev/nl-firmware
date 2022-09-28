@@ -34,6 +34,8 @@ enum class HardwareSource : int8_t
   AFTERTOUCH = 5,
   RIBBON1 = 6,
   RIBBON2 = 7,
+  RIBBON3 = 8,
+  RIBBON4 = 9,
   NONE = -1
 };
 

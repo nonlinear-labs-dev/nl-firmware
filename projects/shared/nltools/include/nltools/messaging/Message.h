@@ -345,6 +345,8 @@ namespace nltools
         PedalCC pedal4cc;
         RibbonCC ribbon1cc;
         RibbonCC ribbon2cc;
+        RibbonCC ribbon3cc;
+        RibbonCC ribbon4cc;
         AftertouchCC aftertouchcc;
         BenderCC bendercc;
 
