@@ -15,7 +15,7 @@ bool TCDDecoder::decode(const MidiEvent &event)
   const auto _status = event.raw[0];
   const auto _data0 = event.raw[1];
   const auto _data1 = event.raw[2];
-  const uint32_t channel = _status & 0b00001111;
+  uint32_t channel = _status & 0b00001111;
   const uint32_t st = (_status & 0b01111111) >> 4;
   if(st == 6)
   {
@@ -25,10 +25,18 @@ bool TCDDecoder::decode(const MidiEvent &event)
       value = static_cast<float>(arg) * c_norm_hw;  // HW src normalization by 1 / 16000
 
       auto hwid = static_cast<HardwareSource>(channel);
+      
+      //ugly code ugh !!!!
       if(hwid == HardwareSource::RIBBON1 && m_options->isSecondSetOfRibbonsIsSelected())
+      {
+        channel += 2;
         hwid = HardwareSource::RIBBON3;
+      }
       else if(hwid == HardwareSource::RIBBON2 && m_options->isSecondSetOfRibbonsIsSelected())
+      {
+        channel += 2;
         hwid = HardwareSource::RIBBON4;
+      }
 
       const auto behaviour = m_dsp->getBehaviour(hwid);
 
