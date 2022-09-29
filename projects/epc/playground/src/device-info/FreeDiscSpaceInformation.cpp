@@ -17,7 +17,7 @@ FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation* parent)
   refresh();
 
   using namespace std::chrono;
-  constexpr minutes timeout(5);
+  constexpr seconds timeout(5); //todo change back!
   m_signalRefresh = Application::get().getMainContext()->signal_timeout().connect(
       sigc::mem_fun(this, &FreeDiscSpaceInformation::refresh), duration_cast<milliseconds>(timeout).count());
 }
@@ -25,9 +25,10 @@ FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation* parent)
 bool FreeDiscSpaceInformation::refresh()
 {
   SpawnAsyncCommandLine::spawn(
-      Application::get().getMainContext(),
-      { "df", "-h", "|", "grep", "'persistent'", "|", "awk", "'{print $4}'" },
-      [&](const std::string& success) {
+      Application::get().getMainContext(), { "df", "-h", "|", "grep", "'persistent'", "|", "awk", "'{print $4}'" },
+      [&](const std::string& success)
+      {
+        nltools::Log::error(__PRETTY_FUNCTION__, success);
         if(success.empty())
           m_value = "N/A";
         else
@@ -42,7 +43,7 @@ bool FreeDiscSpaceInformation::refresh()
           }
         }
       },
-      [](auto err) {});
+      [](auto err) { nltools::Log::error(__PRETTY_FUNCTION__, err); });
   return true;
 }
 
