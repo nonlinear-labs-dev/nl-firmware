@@ -1274,6 +1274,12 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
+	public void stopRecorderPlayback() {
+		StaticURI.Path path = new StaticURI.Path("settings", "stop-recorder-playback");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+
     public void resetRoutings(boolean b) {
 		StaticURI.Path path = new StaticURI.Path("settings", "set-all-routings-to-value");
 		StaticURI.KeyValue state = new StaticURI.KeyValue("state", b ? "1" : "0");

@@ -4,6 +4,7 @@
 #include <cstring>
 #include <nltools/Testing.h>
 #include <nltools/Types.h>
+#include <array>
 
 namespace nltools
 {
@@ -271,6 +272,22 @@ namespace nltools
         }
 
         bool enabled;
+      };
+
+      struct FlacRecorderStopPlayback
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::StopRecorderPlaybackMessage;
+        }
+      };
+
+      struct NotifyNoRecorderClients
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::NotifyNoRecorderClients;
+        }
       };
 
       struct PresetGlitchMessage
@@ -754,8 +771,8 @@ namespace nltools
       std::array<ParameterGroups::MacroParameter, ParameterGroups::numMacros> macros;
       std::array<ParameterGroups::UnmodulateableParameter, ParameterGroups::numMacros> macrotimes;
 
-      std::array<ParameterGroups::ModulateableParameter, 160> modulateables;
-      std::array<ParameterGroups::UnmodulateableParameter, 35> unmodulateables;
+      std::array<ParameterGroups::ModulateableParameter, 169> modulateables;
+      std::array<ParameterGroups::UnmodulateableParameter, 29> unmodulateables;
 
       std::array<ParameterGroups::HardwareSourceParameter, ParameterGroups::numHWSources> hwsources;
       std::array<ParameterGroups::HardwareAmountParameter, ParameterGroups::numRouters> hwamounts;
@@ -797,8 +814,8 @@ namespace nltools
         return MessageType::SplitPreset;
       }
 
-      std::array<std::array<ParameterGroups::ModulateableParameter, 160>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulateableParameter, 35>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 169>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulateableParameter, 29>, 2> unmodulateables;
 
       std::array<ParameterGroups::UnisonGroup, 2> unison;
       std::array<ParameterGroups::MonoGroup, 2> mono;
@@ -851,8 +868,8 @@ namespace nltools
       std::array<ParameterGroups::MacroParameter, ParameterGroups::numMacros> macros;
       std::array<ParameterGroups::UnmodulateableParameter, ParameterGroups::numMacros> macrotimes;
 
-      std::array<std::array<ParameterGroups::ModulateableParameter, 160>, 2> modulateables;
-      std::array<std::array<ParameterGroups::UnmodulateableParameter, 35>, 2> unmodulateables;
+      std::array<std::array<ParameterGroups::ModulateableParameter, 169>, 2> modulateables;
+      std::array<std::array<ParameterGroups::UnmodulateableParameter, 29>, 2> unmodulateables;
 
       ParameterGroups::UnisonGroup unison;
       ParameterGroups::MonoGroup mono;

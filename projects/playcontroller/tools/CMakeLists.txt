@@ -13,7 +13,7 @@ add_executable(playcontroller       src/playcontroller.c        src/linuxgpio.c)
 add_executable(playcontroller-read  src/playcontroller-read.c   src/process-read-msgs.c)
 add_executable(ehc                  src/ehc.c)
 add_executable(ehc-preset           src/ehc-preset.c  ${CMAKE_SOURCE_DIR}/projects/shared/playcontroller/EHC-pedal-presets.c)
-add_executable(make-cal-bin         src/make-cal-bin.c)
+add_executable(make-cal-bin         src/make-cal-bin.c ${CMAKE_SOURCE_DIR}/projects/shared/playcontroller/lpc_lib.c)
 
 include_directories(src)
 include_directories(../)

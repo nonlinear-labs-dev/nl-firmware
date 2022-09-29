@@ -22,6 +22,8 @@
 #include "ae_poly_out_mix.h"
 #include "nltoolbox.h"
 
+namespace Engine {
+
 class PolySection
 {
  public:
@@ -31,7 +33,7 @@ class PolySection
   uint32_t m_uVoice = 0, m_key_active = 0;
   int32_t m_fadeStart = 0, m_fadeEnd = 0, m_fadeIncrement = 0;
   PolySection();
-  void init(GlobalSignals *_globalsignals, exponentiator *_convert, Engine::Handle::Time_Handle *_time,
+  void init(GlobalSignals *_globalsignals, exponentiator *_convert, Handle::Time_Handle *_time,
             LayerSignalCollection *_z_self, float *_reference, const float _ms, const float _gateRelease,
             const float _samplerate, const uint32_t _upsampleFactor);
   void add_copy_sync_id(const uint32_t _smootherId, const uint32_t _signalId);
@@ -46,6 +48,7 @@ class PolySection
   void render_feedback(const LayerSignalCollection &_z_other);
   void render_fast();
   void render_slow();
+  void onBeforeKeyDown();
   bool keyDown(PolyKeyEvent *_event);
   void keyUp(PolyKeyEvent *_event);
   void resetEnvelopes();
@@ -63,17 +66,22 @@ class PolySection
       m_smoothers;
   GlobalSignals *m_globalsignals;
   exponentiator *m_convert;
-  Engine::Handle::Time_Handle *m_time;
+  Handle::Time_Handle *m_time;
   LayerSignalCollection *m_z_self;
   UnisonSpreadTable<C15::Config::total_polyphony> m_spread;
-  Engine::Envelopes::SplitEnvelope<C15::Config::local_polyphony> m_env_a, m_env_b;
-  Engine::Envelopes::RetriggerEnvelope<C15::Config::local_polyphony> m_env_c;
-  Engine::Envelopes::GateEnvelope<C15::Config::local_polyphony> m_env_g;
-  Engine::PolySoundGenerator m_soundgenerator;
-  Engine::PolyCombFilter m_combfilter;
-  Engine::PolyStateVariableFilter m_svfilter;
-  Engine::PolyFeedbackMixer m_feedbackmixer;
-  Engine::PolyOutputMixer m_outputmixer;
+//  LegacyEnvelopes::SplitEnvelope<C15::Config::local_polyphony> m_env_a, m_env_b;
+//  LegacyEnvelopes::RetriggerEnvelope<C15::Config::local_polyphony> m_env_c;
+//  LegacyEnvelopes::GateEnvelope<C15::Config::local_polyphony> m_env_g;
+  using ElevatingEnv = Envelopes::ElevatingADBDSR<PolyValue, Envelopes::RetriggerType::Soft>::Impl;
+  ElevatingEnv m_env_a, m_env_b;
+  using LoopableEnv = Envelopes::LoopableADBDSR<PolyValue, Envelopes::RetriggerType::Variable>::Impl;
+  LoopableEnv m_env_c;
+  Envelopes::PolyGate m_env_g;
+  PolySoundGenerator m_soundgenerator;
+  PolyCombFilter m_combfilter;
+  PolyStateVariableFilter m_svfilter;
+  PolyFeedbackMixer m_feedbackmixer;
+  PolyOutputMixer m_outputmixer;
   NlToolbox::Curves::Shaper_1_BP m_comb_decayCurve, m_svf_LBH1Curve, m_svf_LBH2Curve;
   NlToolbox::Curves::Shaper_2_BP m_svf_resCurve;
   ProtoSmoother<1> m_mono_glide;
@@ -93,6 +101,7 @@ class PolySection
   float evalNyquist(const float _value);
   float evalScale(const uint32_t _voiceId);
   void postProcess_poly_audio(const uint32_t _voiceId, const float _mute);
+  void postProcess_mono_audio();
   void postProcess_poly_fast(const uint32_t _voiceId);
   void postProcess_mono_fast();
   void postProcess_poly_slow(const uint32_t _voiceId);
@@ -101,9 +110,11 @@ class PolySection
   void postProcess_poly_key(const uint32_t _voiceId);
   void startEnvelopes(const uint32_t _voiceId, const float _pitch, const float _vel);
   void stopEnvelopes(const uint32_t _voiceId, const float _pitch, const float _vel);
-  void updateEnvLevels(const uint32_t _voiceId);
-  void updateEnvTimes(const uint32_t _voiceId);
+  void updateEnvLevels();
+  void updateEnvTimes();
   void updateNotePitch(const uint32_t _voiceId);
   void setSlowFilterCoefs(const uint32_t _voiceId);
   void testVoiceFadeTable();
 };
+
+} // namespace Engine

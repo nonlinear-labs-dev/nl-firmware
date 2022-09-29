@@ -3,6 +3,7 @@
 #include "playground.h"
 #include <vector>
 #include <playcontroller/playcontroller-defs.h>
+#include <playcontroller/playcontroller-converters.h>
 
 class MessageParser
 {

@@ -42,6 +42,19 @@
 						</div>
 					</div>
 
+					<div class="eins-he" ui:field="aftertouchLegacyDiv">
+						<div class="w70p">
+							<p>Legacy Aftertouch</p>
+						</div>
+
+						<div class="w30p mw-fit-content">
+							<g:RadioButton ui:field="legacyAftertouchOn"
+								name="rad_lat" value="true"></g:RadioButton>
+							<g:RadioButton ui:field="legacyAftertouchOff"
+								name="rad_lat" value="false"></g:RadioButton>
+						</div>
+					</div>
+
 					<div class="linie"></div>
 
 					<div class="eins-he">
@@ -883,11 +896,21 @@
 					</div>
 					<div class="eins-he">
 						<div class="w60p">
-							<p>Auto-Start Recorder</p>
+							<p>Auto-Start Recording</p>
 						</div>
 						<div class="w40p mw-fit-content">
 							<g:RadioButton ui:field="autoStartRecordOn" name="rad_autoStartRecord" value="true"></g:RadioButton>
 							<g:RadioButton ui:field="autoStartRecordOff" name="rad_autoStartRecord" value="false"></g:RadioButton>
+						</div>
+					</div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Stop Playback</p>
+						</div>
+						<div class="w20p">
+							<g:Button ui:field="stopRecorderPlayback">Stop</g:Button>
+						</div>
+						<div class="w20p">
 						</div>
 					</div>
 				</div>

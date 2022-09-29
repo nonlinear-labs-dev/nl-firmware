@@ -69,6 +69,7 @@
 #include "RoutingsView.h"
 #include "RoutingsEditor.h"
 #include "OneShotEntryTypes.h"
+#include "device-info/AftertouchCalibratedStatus.h"
 #include "use-cases/SoundUseCases.h"
 #include "use-cases/PresetManagerUseCases.h"
 
@@ -92,6 +93,8 @@
 #include <device-settings/SignalFlowIndicationSetting.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
 #include <device-info/UniqueHardwareID.h>
+
+#include <device-settings/AftertouchLegacyMode.h>
 
 namespace NavTree
 {
@@ -357,10 +360,10 @@ namespace NavTree
   {
     explicit StoreInitSound(InnerNode *p)
         : OneShotEntry(p, "Store Init Sound", OneShotTypes::StartCB([] {
-          auto pm = Application::get().getPresetManager();
-          SoundUseCases useCases(pm->getEditBuffer(), pm);
-          useCases.storeInitSound();
-        }))
+                         auto pm = Application::get().getPresetManager();
+                         SoundUseCases useCases(pm->getEditBuffer(), pm);
+                         useCases.storeInitSound();
+                       }))
     {
     }
   };
@@ -369,10 +372,10 @@ namespace NavTree
   {
     explicit ResetInitSound(InnerNode *p)
         : OneShotEntry(p, "Reset Init Sound", OneShotTypes::StartCB([] {
-          auto pm = Application::get().getPresetManager();
-          SoundUseCases useCases(pm->getEditBuffer(), pm);
-          useCases.resetInitSound();
-        }))
+                         auto pm = Application::get().getPresetManager();
+                         SoundUseCases useCases(pm->getEditBuffer(), pm);
+                         useCases.resetInitSound();
+                       }))
     {
     }
   };
@@ -449,6 +452,10 @@ namespace NavTree
       children.emplace_back(new SettingItem<TransitionTime>(this, "Transition Time"));
       children.emplace_back(new Velocity(this));
       children.emplace_back(new Aftertouch(this));
+      if(Application::get().getDeviceInformation()->getItem<AftertouchCalibratedStatus>()->isCalibrated())
+      {
+        children.emplace_back(new EnumSettingItem<AftertouchLegacyMode>(this, "Legacy Aftertouch mode"));
+      }
       children.emplace_back(new BenderCurveSetting(this));
       children.emplace_back(new PedalSettings(this));
       children.emplace_back(new EnumSettingItem<PresetGlitchSuppression>(this, "Preset Glitch Suppression"));
@@ -644,7 +651,7 @@ namespace NavTree
     };
 
     explicit RamUsage(InnerNode *parent)
-        : Leaf(parent, "RAM usage:")
+        : Leaf(parent, "RAM Usage:")
     {
     }
 
@@ -879,9 +886,9 @@ namespace NavTree
 
     explicit ResetMidiSettingsToHighRes(InnerNode *parent)
         : OneShotEntry(parent, "Set to High-Res. Defaults", OneShotTypes::StartCB([]() {
-          SettingsUseCases useCases(*Application::get().getSettings());
-          useCases.setMappingsToHighRes();
-        }))
+                         SettingsUseCases useCases(*Application::get().getSettings());
+                         useCases.setMappingsToHighRes();
+                       }))
     {
     }
   };
@@ -891,9 +898,9 @@ namespace NavTree
 
     explicit ResetMidiSettingsToClassic(InnerNode *parent)
         : OneShotEntry(parent, "Set to Classic MIDI Defaults", OneShotTypes::StartCB([]() {
-          SettingsUseCases useCases(*Application::get().getSettings());
-          useCases.setMappingsToClassicMidi();
-        }))
+                         SettingsUseCases useCases(*Application::get().getSettings());
+                         useCases.setMappingsToClassicMidi();
+                       }))
     {
     }
   };
@@ -1048,10 +1055,19 @@ namespace NavTree
     }
   };
 
+  struct RecorderStopButton : OneShotEntry
+  {
+    explicit RecorderStopButton(InnerNode* p)
+    : OneShotEntry(p, "Stop Playback", OneShotTypes::StartCB([]{ RecorderManager::stopRecorderPlayback(); }))
+    {
+    }
+  };
+
   struct RoutingsEntry : public EditableLeaf
   {
    public:
-    RoutingsEntry(RoutingSettings::tRoutingIndex id, InnerNode *p, const Glib::ustring &text, RoutingSettings::tRoutingIndex& parentSelection)
+    RoutingsEntry(RoutingSettings::tRoutingIndex id, InnerNode *p, const Glib::ustring &text,
+                  RoutingSettings::tRoutingIndex &parentSelection)
         : EditableLeaf(p, text)
         , m_id { id }
         , m_parentSelection { parentSelection }
@@ -1078,9 +1094,9 @@ namespace NavTree
 
     explicit SetRoutingsTo(InnerNode *parent)
         : OneShotEntry(parent, getName(), OneShotTypes::StartCB([]() {
-          SettingsUseCases useCases(*Application::get().getSettings());
-          useCases.setAllRoutingEntries(value);
-        }))
+                         SettingsUseCases useCases(*Application::get().getSettings());
+                         useCases.setAllRoutingEntries(value);
+                       }))
     {
     }
 
@@ -1179,7 +1195,8 @@ namespace NavTree
     explicit FlacSettings(InnerNode *parent)
         : InnerNode(parent, "Recorder Settings")
     {
-      children.emplace_back(new EnumSettingItem<AutoStartRecorderSetting>(this, "Auto-Start Recorder"));
+      children.emplace_back(new EnumSettingItem<AutoStartRecorderSetting>(this, "Auto-Start Recording"));
+      children.emplace_back(new RecorderStopButton(this));
     }
   };
 

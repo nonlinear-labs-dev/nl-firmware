@@ -73,6 +73,7 @@ public class SetupUpdater extends Updater {
 		m.put("AutoStartRecorder", SetupModel.get().systemSettings.autoStartRecorder);
 		m.put("RoutingSettings", SetupModel.get().systemSettings.routingAspects);
 		m.put("GlobalLocalEnable", SetupModel.get().systemSettings.localEnabled);
+		m.put("AftertouchLegacyMode", SetupModel.get().systemSettings.legacyAftertouch);
 		return m;
 	}
 

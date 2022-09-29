@@ -14,8 +14,8 @@ ADD_CUSTOM_COMMAND(
     DEPENDS download-meteor-resources
     COMMAND rm -rf ./meteor-build
     COMMAND mkdir -p ./meteor-build
-    COMMAND tar -xzf ${CMAKE_BINARY_DIR}/build-tools/web/meteor-resources-${METEOR_RESOURCES_REVISION}.tar.gz 
-            -C ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND tar -xzf ${CMAKE_BINARY_DIR}/build-tools/web/meteor-resources-${METEOR_RESOURCES_REVISION}.tar.gz
+    -C ${CMAKE_CURRENT_BINARY_DIR}
     COMMAND touch .prepare-web-build
 )
 
@@ -28,11 +28,11 @@ ADD_CUSTOM_COMMAND(
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/nonmaps/bundle.tar.gz
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/online-help/bundle.tar.gz
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/static/recorder/bundle.tar.gz
-    COMMAND ${CMAKE_BINARY_DIR}/build-tools/web/runInWebDocker.sh 
-              ${CMAKE_CURRENT_BINARY_DIR}/build.sh 
-              ${CMAKE_CURRENT_SOURCE_DIR}
-              ${CMAKE_CURRENT_BINARY_DIR}
-              "--network none" 
+    COMMAND ${CMAKE_BINARY_DIR}/build-tools/web/runInWebDocker.sh
+    ${CMAKE_CURRENT_BINARY_DIR}/build.sh
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    "--network none"
     COMMAND touch .do-web-build
 )
 
@@ -57,9 +57,9 @@ ADD_CUSTOM_COMMAND(
     OUTPUT .debug-web
     DEPENDS ${ALL_FILES}
     DEPENDS .prepare-web-build
-    COMMAND ${CMAKE_BINARY_DIR}/build-tools/web/runInWebDocker.sh 
-              ${CMAKE_CURRENT_BINARY_DIR}/debug.sh
-              ${CMAKE_CURRENT_SOURCE_DIR}
-              ${CMAKE_CURRENT_BINARY_DIR}
-              "-p 3000:3000" 
+    COMMAND ${CMAKE_BINARY_DIR}/build-tools/web/runInWebDocker.sh
+    ${CMAKE_CURRENT_BINARY_DIR}/debug.sh
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    "-p 3000:3000"
 )

@@ -29,14 +29,6 @@ class ParameterInfoLayout;
 
 class ParameterLayout2;
 
-const constexpr auto CombFilterAB = 113;
-const constexpr auto CombFilterPM = 133;
-const constexpr auto CombFilterPMAB = 135;
-const constexpr auto effectsID = 160;
-const constexpr auto SVFilterAB = 136;
-const constexpr auto SVFilterFM = 153;
-const constexpr auto SVFilterFMAB = 155;
-
 PanelUnitParameterEditMode::PanelUnitParameterEditMode()
 {
   Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->onChange(
@@ -630,8 +622,8 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
-  const auto stateVariableFilterFMAB = editBuffer->findParameterByID({ SVFilterFMAB, vg });
-  const auto combFilterPMAB = editBuffer->findParameterByID({ CombFilterPMAB, vg });
+  const auto stateVariableFilterFMAB = editBuffer->findParameterByID({ C15::PID::SV_Flt_FM_A_B, vg });
+  const auto combFilterPMAB = editBuffer->findParameterByID({ C15::PID::Comb_Flt_PM_A_B, vg });
   const auto SVCombMix = editBuffer->findParameterByID({ C15::PID::SV_Flt_Comb_Mix, vg });
   const auto combMax = SVCombMix->getValue().getUpperBorder();
   const auto combMin = SVCombMix->getValue().getLowerBorder();
@@ -641,20 +633,20 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
     const auto currentParam = editBuffer->findParameterByID({ targetID, vg });
     switch(targetID)
     {
-      case SVFilterAB:
+      case C15::PID::SV_Flt_In_A_B:
         if(SVCombMix->getControlPositionValue() != combMin && SVCombMix->getControlPositionValue() != combMax)
           if(currentParam->getControlPositionValue() < 1)
             panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
-      case CombFilterAB:
+      case C15::PID::Comb_Flt_In_A_B:
         if(currentParam->getControlPositionValue() < 1)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
-      case CombFilterPM:
+      case C15::PID::Comb_Flt_PM:
         if(isSignalFlowingThrough(currentParam) && combFilterPMAB->getControlPositionValue() < 1)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
-      case SVFilterFM:
+      case C15::PID::SV_Flt_FM:
         if(isSignalFlowingThrough(currentParam) && stateVariableFilterFMAB->getControlPositionValue() < 1)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
@@ -672,8 +664,8 @@ void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &tar
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
-  const auto combFilterPMAB = editBuffer->findParameterByID({ CombFilterPMAB, vg });
-  const auto stateVariableFilterFMAB = editBuffer->findParameterByID({ SVFilterFMAB, vg });
+  const auto combFilterPMAB = editBuffer->findParameterByID({ C15::PID::Comb_Flt_PM_A_B, vg });
+  const auto stateVariableFilterFMAB = editBuffer->findParameterByID({ C15::PID::SV_Flt_FM_A_B, vg });
   const auto SVCombMix = editBuffer->findParameterByID({ C15::PID::SV_Flt_Comb_Mix, vg });
   const auto combMax = SVCombMix->getValue().getUpperBorder();
   const auto combMin = SVCombMix->getValue().getLowerBorder();
@@ -683,20 +675,20 @@ void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &tar
     auto currentParam = editBuffer->findParameterByID({ targetID, vg });
     switch(targetID)
     {
-      case SVFilterAB:
+      case C15::PID::SV_Flt_In_A_B:
         if(SVCombMix->getControlPositionValue() != combMin && SVCombMix->getControlPositionValue() != combMax)
           if(currentParam->getControlPositionValue() > 0)
             panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
-      case CombFilterAB:
+      case C15::PID::Comb_Flt_In_A_B:
         if(currentParam->getControlPositionValue() > 0)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
-      case CombFilterPM:
+      case C15::PID::Comb_Flt_PM:
         if(isSignalFlowingThrough(currentParam) && combFilterPMAB->getControlPositionValue() > 0)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
-      case SVFilterFM:
+      case C15::PID::SV_Flt_FM:
         if(isSignalFlowingThrough(currentParam) && stateVariableFilterFMAB->getControlPositionValue() > 0)
           panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
         break;
@@ -717,7 +709,7 @@ void PanelUnitParameterEditMode::letReverbBlink(const std::vector<int> &targets)
   for(auto targetID : targets)
   {
     const auto currentParam = editBuffer->findParameterByID({ targetID, vg });
-    const auto effectParam = editBuffer->findParameterByID({ effectsID, vg });
+    const auto effectParam = editBuffer->findParameterByID({ C15::PID::FB_Mix_FX, vg });
 
     if(isSignalFlowingThrough(currentParam) && isSignalFlowingThrough(effectParam))
       panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);

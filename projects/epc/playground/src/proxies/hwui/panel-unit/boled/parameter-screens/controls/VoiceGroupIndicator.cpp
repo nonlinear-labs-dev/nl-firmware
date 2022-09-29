@@ -221,3 +221,8 @@ void VoiceGroupIndicator::onLoadModeChanged(bool loadModeActive)
   m_inLoadToPart = m_allowLoadToPart && loadModeActive;
   setDirty();
 }
+
+VoiceGroup VoiceGroupIndicator::getCurrentDisplayedVoiceGroup() const
+{
+  return m_selectedVoiceGroup;
+}

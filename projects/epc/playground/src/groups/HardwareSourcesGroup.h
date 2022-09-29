@@ -13,7 +13,6 @@ class HardwareSourcesGroup : public ParameterGroup
 {
  public:
   explicit HardwareSourcesGroup(ParameterGroupSet* parent, Settings* settings);
-  ~HardwareSourcesGroup() override;
 
   typedef PhysicalControlParameter* tPhysicalControlParameter;
   typedef std::list<tPhysicalControlParameter> tPhysicalControlParameters;

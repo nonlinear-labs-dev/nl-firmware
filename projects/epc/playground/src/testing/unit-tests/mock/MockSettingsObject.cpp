@@ -1,7 +1,7 @@
 #include "MockSettingsObject.h"
 
-MockSettingsObject::MockSettingsObject(const Glib::ustring& file, UpdateDocumentMaster* m)
-    : Settings(file, m)
+MockSettingsObject::MockSettingsObject(const Glib::ustring& file, UpdateDocumentMaster* m, HardwareFeatures& hw)
+    : Settings(file, m, hw)
 {
 }
 

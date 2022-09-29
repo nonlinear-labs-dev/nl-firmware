@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.0)
 
 project(web-client)
 
+add_subdirectory(c16-hwui)
+
 file(GLOB_RECURSE ALL_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
 add_custom_command(

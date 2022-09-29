@@ -46,7 +46,8 @@ namespace nltools
          MidiSimpleMessage, MidiAck, MidiProgramChange, MidiBridgeSettings, MidiSettings, MidiHardwareChange,
 
          SyncFS, UpdateUploaded, AutoStartRecorderMessage, AEPanic, GlobalLocalSetting, WifiDevBBBEnable,
-         BufferUnderrunsChanged, SetFramesPerPeriod, FlacRecorderStateChanged, HardwarePollEnded);
+         BufferUnderrunsChanged, SetFramesPerPeriod, FlacRecorderStateChanged, HardwarePollEnded,
+         StopRecorderPlaybackMessage, NotifyNoRecorderClients);
 
     namespace detail
     {
@@ -76,10 +77,12 @@ namespace nltools
       template <typename Msg>
       sigc::connection receive(MessageType type, EndPoint receivingEndPoint, std::function<void(const Msg &)> cb)
       {
-        return receiveSerialized(type, receivingEndPoint, [=](const SerializedMessage &s) {
-          auto msg = detail::deserialize<Msg>(s);
-          cb(msg);
-        });
+        return receiveSerialized(type, receivingEndPoint,
+                                 [=](const SerializedMessage &s)
+                                 {
+                                   auto msg = detail::deserialize<Msg>(s);
+                                   cb(msg);
+                                 });
       }
 
       sigc::connection receiveSerialized(MessageType type, EndPoint receivingEndPoint,

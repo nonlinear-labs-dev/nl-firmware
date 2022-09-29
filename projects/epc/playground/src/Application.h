@@ -2,6 +2,7 @@
 
 #include "playground.h"
 #include "use-cases/VoiceGroupAndLoadToPartManager.h"
+#include "use-cases/RecorderManager.h"
 #include <memory>
 #include <glibmm/refptr.h>
 #include <proxies/usb/USBChangeListener.h>
@@ -21,6 +22,7 @@ class Settings;
 class EmbeddedPC;
 class Clipboard;
 class WebUISupport;
+class HardwareFeatures;
 
 namespace Glib
 {
@@ -53,10 +55,10 @@ class Application
   Clipboard *getClipboard();
   WebUISupport *getWebUISupport();
   VoiceGroupAndLoadToPartManager* getVGManager();
+  RecorderManager* getRecorderManager();
+  HardwareFeatures* getHardwareFeatures();
 
   void quit();
-  [[nodiscard]] bool isQuit() const;
-
   void runWatchDog();
   void stopWatchDog();
 
@@ -68,9 +70,12 @@ class Application
 
   static Application *theApp;
   Glib::RefPtr<Glib::MainContext> m_theMainContext;
+
   std::unique_ptr<Options> m_options;
   Glib::RefPtr<Glib::MainLoop> m_theMainLoop;
 
+  std::unique_ptr<RecorderManager> m_recorderManager;
+  std::unique_ptr<HardwareFeatures> m_hwFeatures;
   std::unique_ptr<HTTPServer> m_http;
   std::unique_ptr<Settings> m_settings;
   std::unique_ptr<PresetManager> m_presetManager;

@@ -3,10 +3,12 @@
 #include <device-settings/midi/RoutingSettings.h>
 #include <testing/unit-tests/mock/MockSettingsObject.h>
 #include <sync/SyncMasterMockRoot.h>
+#include <proxies/hwui/HardwareFeatures.h>
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MockSettingsObject onChange is called when Setting calls notify")
 {
-  MockSettingsObject settings("", &SyncMasterMockRoot::get());
+  HardwareFeatures hw;
+  MockSettingsObject settings("", &SyncMasterMockRoot::get(), hw);
   auto setting = settings.getSetting<RoutingSettings>();
 
   bool parentSubRecChanges = false;

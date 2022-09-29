@@ -9,11 +9,11 @@ ButtonParameterMapping::ButtonParameterMapping()
   addMapping(Buttons::BUTTON_2, { Env_C_Rel, Env_C_Rel_Vel });
   addMapping(Buttons::BUTTON_3, { Env_B_Att, Env_B_Att_Vel, Env_B_Att_Curve });
   addMapping(Buttons::BUTTON_4, { Env_A_Dec_1, Env_A_Dec_1_Vel });
-  addMapping(Buttons::BUTTON_5, { Env_C_Dec_1, Env_C_BP });
+  addMapping(Buttons::BUTTON_5, { Env_C_Dec_1, Env_C_Dec_1_Vel, Env_C_BP });
   addMapping(Buttons::BUTTON_6, { Env_C_Lvl_Vel });
   addMapping(Buttons::BUTTON_7, { Env_B_Dec_1, Env_B_Dec_1_Vel });
   addMapping(Buttons::BUTTON_8, { Env_A_BP });
-  addMapping(Buttons::BUTTON_9, { Env_C_Dec_2, Env_C_Sus });
+  addMapping(Buttons::BUTTON_9, { Env_C_Dec_2, Env_C_Dec_2_Vel, Env_C_Sus, Env_C_Loop });
   addMapping(Buttons::BUTTON_10, { Env_C_Lvl_KT, Env_C_Time_KT });
   addMapping(Buttons::BUTTON_11, { Env_B_BP });
   addMapping(Buttons::BUTTON_12, { Env_A_Dec_2, Env_A_Dec_2_Vel });

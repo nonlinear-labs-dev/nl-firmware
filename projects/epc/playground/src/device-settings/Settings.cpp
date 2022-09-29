@@ -50,6 +50,7 @@
 #include "GlobalLocalEnableSetting.h"
 #include "FocusAndModeSetting.h"
 #include "SelectedRibbonsSetting.h"
+#include "AftertouchLegacyMode.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -69,8 +70,9 @@
 #include <device-settings/flac/FlacRecorderVirgin.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/AlsaFramesPerPeriod.h>
+#include <proxies/hwui/HardwareFeatures.h>
 
-Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master)
+Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, HardwareFeatures& hwFeatures)
     : UpdateDocumentContributor(master)
     , m_file(file)
     , m_saveJob(5000, [this] { save(); })
@@ -99,8 +101,8 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master)
   addSetting("BenderCurve", new BenderCurve(*this));
   addSetting("EditSmoothingTime", new EditSmoothingTime(*this));
 
-  auto localWifi = std::make_shared<EpcWifi>();
-  addSetting("SSID", new SSID(*this, localWifi));
+  auto localWifi = std::make_shared<EpcWifi>(hwFeatures);
+  addSetting("SSID", new SSID(*this, localWifi, hwFeatures));
   addSetting("Passphrase", new Passphrase(*this, localWifi));
   addSetting("WifiSetting", new WifiSetting(*this, localWifi));
 
@@ -150,6 +152,7 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master)
 
   addSetting("FlacRecorderVirgin", new FlacRecorderVirgin(*this));
   addSetting("SelectedRibbons", new SelectedRibbonsSetting(*this));
+  addSetting("AftertouchLegacyMode", new AftertouchLegacyMode(*this));
 }
 
 Settings::~Settings()
@@ -293,6 +296,7 @@ void Settings::sendGlobalPlaycontrollerInitSettings()
   getSetting("Pedal2Type")->syncExternals(SendReason::HeartBeatDropped);
   getSetting("Pedal3Type")->syncExternals(SendReason::HeartBeatDropped);
   getSetting("Pedal4Type")->syncExternals(SendReason::HeartBeatDropped);
+  getSetting<AftertouchLegacyMode>()->syncExternals(SendReason::HeartBeatDropped);
 }
 
 void Settings::sendGlobalAESettings()
@@ -308,8 +312,12 @@ void Settings::sendPresetSettingsToPlaycontroller()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto r1 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_1, VoiceGroup::Global }));
   auto r2 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_2, VoiceGroup::Global }));
+  auto r3 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_3, VoiceGroup::Global }));
+  auto r4 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_4, VoiceGroup::Global }));
   r1->sendModeToPlaycontroller();
   r2->sendModeToPlaycontroller();
+  r3->sendModeToPlaycontroller();
+  r4->sendModeToPlaycontroller();
 }
 
 sigc::connection Settings::onSettingsChanged(sigc::slot<void(void)> s)

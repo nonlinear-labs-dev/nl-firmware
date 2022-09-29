@@ -323,7 +323,7 @@ TEST_CASE("Recorder CRC16")
 
     Bitstream s(frame->buffer);
     auto footerBytePos = frame->buffer.size() - 2;
-    auto footerBitPos = footerBytePos * 8;
+    uint64_t footerBitPos = footerBytePos * 8;
     auto crc16 = s.read(footerBitPos, 16);
     REQUIRE(crc16 == s.crc16(0, footerBytePos));
   });

@@ -145,6 +145,17 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
       m_signalPlaycontrollerSoftwareVersionChanged.send(m_playcontrollerSoftwareVersion);
     }
   }
+
+  else if(id == MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_AT_STATUS)
+  {
+    AT_status_T atStatus = AT_uint16ToStatus(value);
+
+    if(m_hasAftertouchCalibrationData != (atStatus.calibrated != 0))
+    {
+      m_hasAftertouchCalibrationData = (atStatus.calibrated != 0);
+      m_signalCalibrationStatus.send(m_hasAftertouchCalibrationData);
+    }
+  }
 }
 
 void PlaycontrollerProxy::onUHIDReceived(const MessageParser::NLMessage &msg)
@@ -169,6 +180,7 @@ void PlaycontrollerProxy::onPlaycontrollerConnected()
   requestPlaycontrollerSoftwareVersion();
   requestPlaycontrollerUHID();
   requestHWPositions();
+  requestCalibrationStatus();
 }
 
 void PlaycontrollerProxy::sendCalibrationData()
@@ -189,7 +201,8 @@ void PlaycontrollerProxy::sendCalibrationData()
 
 Parameter *PlaycontrollerProxy::findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const
 {
-  auto paramId = [](uint16_t id) {
+  auto paramId = [](uint16_t id)
+  {
     switch(id)
     {
       case HW_SOURCE_ID_PEDAL_1:
@@ -253,33 +266,37 @@ void PlaycontrollerProxy::onRelativeEditControlMessageReceived(Parameter *p, gin
 {
   m_throttledRelativeParameterAccumulator += value;
 
-  m_throttledRelativeParameterChange.doTask([this, p]() {
-    if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
-      m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
+  m_throttledRelativeParameterChange.doTask(
+      [this, p]()
+      {
+        if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
+          m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
 
-    auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
-    IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
-    useCase.changeBy(amount, false);
-    m_throttledRelativeParameterAccumulator = 0;
-  });
+        auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
+        IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
+        useCase.changeBy(amount, false);
+        m_throttledRelativeParameterAccumulator = 0;
+      });
 }
 
 void PlaycontrollerProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gint16 value)
 {
   m_throttledAbsoluteParameterValue = value;
 
-  m_throttledAbsoluteParameterChange.doTask([this, p]() {
-    ParameterUseCases useCase(p);
+  m_throttledAbsoluteParameterChange.doTask(
+      [this, p]()
+      {
+        ParameterUseCases useCase(p);
 
-    if(p->isBiPolar())
-    {
-      useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
-    }
-    else
-    {
-      useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
-    }
-  });
+        if(p->isBiPolar())
+        {
+          useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
+        }
+        else
+        {
+          useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
+        }
+      });
 }
 
 void PlaycontrollerProxy::notifyRibbonTouch(int ribbonsParameterID)
@@ -366,6 +383,7 @@ void PlaycontrollerProxy::onHeartbeatStumbled()
   requestPlaycontrollerSoftwareVersion();
   requestPlaycontrollerUHID();
   requestHWPositions();
+  requestCalibrationStatus();
 }
 
 sigc::connection PlaycontrollerProxy::onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s)
@@ -428,6 +446,16 @@ void PlaycontrollerProxy::setUHID(uint64_t uhid)
     m_uhid = uhid;
     m_signalUHIDChanged.send(m_uhid);
   }
+}
+
+sigc::connection PlaycontrollerProxy::onCalibrationStatusChanged(const sigc::slot<void, bool> &slot)
+{
+  return m_signalCalibrationStatus.connect(slot);
+}
+
+void PlaycontrollerProxy::requestCalibrationStatus()
+{
+  sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_AT_STATUS);
 }
 
 template <typename tRet, typename tInValue>

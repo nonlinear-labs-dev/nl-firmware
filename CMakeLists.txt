@@ -1,14 +1,22 @@
-cmake_minimum_required(VERSION 3.2)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.2)
 
-project(C15)
+PROJECT(C15 VERSION 2.0.1)
 
-include(CTest)
-include(cmake/NL.cmake)
+SET(DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/../nonlinear-labs-downloads" CACHE STRING "Where to store downloads needed for NonlinearLabs-Builds")
+SET(NL_SERVER h2949050.stratoserver.net)
 
-set(TARGET_PLATFORM "devpc" CACHE STRING "Which target to build for: devpc | epc | epc2 | bbb | playcontroller")
+INCLUDE(cmake/NL.cmake)
+INCLUDE(CTest)
 
-message("Target platform is: ${TARGET_PLATFORM}")
-add_definitions(-DTARGET_PLATFORM="${TARGET_PLATFORM}")
+
+if(NOT TARGET_PLATFORM)
+  set(TARGET_PLATFORM "devpc" CACHE STRING "Which target to build for: devpc | epc | epc2 | bbb | playcontroller | pi4")
+endif()
+
+SET(NL_SERVER h2949050.stratoserver.net)
+
+MESSAGE("Target platform is: ${TARGET_PLATFORM}")
+ADD_DEFINITIONS(-DTARGET_PLATFORM="${TARGET_PLATFORM}")
 
 SET(DOWNLOAD_LOCATION "http://h2949050.stratoserver.net/")
 
@@ -17,9 +25,34 @@ SET(DOCKERNAME nl-build-container-${BUILD_CONTAINER_VERSION})
 SET(METEOR_RESOURCES_REVISION 2021-08-12)
 SET(METEOR_PACKAGES kadira:flow-router blaze-html-templates jquery kadira:blaze-layout autoupdate typescript reactive-var)
 SET(NPM_PACKAGES jquery @types/meteor meteor-build-client@0.4.1)
-string(REPLACE ";" " " METEOR_PACKAGES "${METEOR_PACKAGES}")
-string(REPLACE ";" " " NPM_PACKAGES "${NPM_PACKAGES}")
+STRING(REPLACE ";" " " METEOR_PACKAGES "${METEOR_PACKAGES}")
+STRING(REPLACE ";" " " NPM_PACKAGES "${NPM_PACKAGES}")
 
-add_subdirectory(projects)
-add_subdirectory(build-tools)
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsoup2.4-1, libflac8, libglibmm-2.4-1v5, libasound2, libfreetype6")
 
+IF (${TARGET_PLATFORM} STREQUAL "pi4")
+  set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "armhf")
+ENDIF ()
+
+ADD_SUBDIRECTORY(projects)
+ADD_SUBDIRECTORY(build-tools)
+ADD_SUBDIRECTORY(os)
+
+
+SET(CPACK_GENERATOR "DEB")
+SET(CPACK_BINARY_DEB On)
+SET(CPACK_PACKAGE_CONTACT "info@nonlinear-labs.de")
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Nonlinear Labs GmbH")
+SET(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+SET(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+SET(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libsoup2.4-1, libflac8, libglibmm-2.4-1v5, libasound2, libfreetype6")
+SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Userland binaries for Nonlinear Labs synthesizers")
+
+message("CPACK: ${CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA}")
+
+INCLUDE(CPack)
+INCLUDE(CTest)

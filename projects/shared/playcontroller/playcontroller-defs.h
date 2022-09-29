@@ -1,5 +1,11 @@
 #pragma once
 
+#include <stdint.h>
+
+//
+// ---------- ENUMS ----------------
+//
+
 enum PLAYCONTROLLER_BB_MESSAGE_TYPES
 {
   PLAYCONTROLLER_BB_MSG_TYPE_PRESET_DIRECT = 0x0100,  // not used, direction: input; arguments(uint16): N, Nx data
@@ -23,7 +29,9 @@ enum PLAYCONTROLLER_BB_MESSAGE_TYPES
   PLAYCONTROLLER_BB_MSG_TYPE_KEYMAP_DATA   = 0x1300,  // direction: input; arguments  (uint16): 32 (for 61 keys)
   PLAYCONTROLLER_BB_MSG_TYPE_KEYCNTR_DATA  = 0x1400,  // direction: output; arguments  (uint16): 64+128 key counters (64 low-level, 128 midi-level)
   PLAYCONTROLLER_BB_MSG_TYPE_UHID64        = 0x1500,  // direction: output; arguments  (uint16): 4 words, comprising an uint64_t;
-  PLAYCONTROLLER_BB_MSG_TYPE_AT_MAX_DATA   = 0x1600,  // direction: output; arguments  (uint16): 61 uint16, max aftertouch values for all 61 keys
+  PLAYCONTROLLER_BB_MSG_TYPE_AT_TEST_DATA  = 0x1600,  // direction: output; arguments  (uint16): 61 uint16, aftertouch test values (raw ADC) for all 61 keys
+  PLAYCONTROLLER_BB_MSG_TYPE_AT_MASKING    = 0x1700,  // direction: input;  arguments  (uint16): 1 uint64 (bit 0..60 = key left to right, bit 64 = enable "silent" mode)
+  PLAYCONTROLLER_BB_MSG_TYPE_AT_CAL        = 0x1800,  // direction: input;  arguments  (uint16): 64 (see typedef AT_calibration_T)
   PLAYCONTROLLER_BB_MSG_TYPE_TEST_MSG      = 0xFFFF,  // direction in/out
 };
 
@@ -62,6 +70,10 @@ enum PLAYCONTROLLER_SETTING_IDS
   PLAYCONTROLLER_SETTING_ID_SYSTEM_SPECIAL                   = 0xFF06,  // direction: input; arguments(uint16): 1, command (1:reset heartbeat: 2: system reset: 3:Enable MIDI)
   PLAYCONTROLLER_SETTING_ID_ENABLE_KEY_MAPPING               = 0xFF07,  // direction: input; arguments(uint16): 1, flag (!= 0)
   PLAYCONTROLLER_SETTING_ID_ENABLE_UI_PARAMETER_MSGS         = 0xFF08,  // direction: input; arguments(uint16): 1, flag (!= 0)
+  PLAYCONTROLLER_SETTING_ID_ENABLE_AT_DATA_COLLECT           = 0xFF09,  // direction: input; arguments(uint16): 1, flag (!= 0)
+  PLAYCONTROLLER_SETTING_ID_ENABLE_LEGACY_AT                 = 0xFF0A,  // direction: input; arguments(uint16): 1, flag (!= 0) (boot default is "disabled")
+  PLAYCONTROLLER_SETTING_ID_ENABLE_LEGACY_BNDR               = 0xFF0B,  // direction: input; arguments(uint16): 1, flag (!= 0) (boot default is "enabled")
+  PLAYCONTROLLER_SETTING_ID_BNDR_SETTLING_SENSITIVITY        = 0xFF0C,  // direction: input; arguments(uint16): 1, 0= INSENSITIVE(default), >=1 = SENSITIVE
 };
 
 enum PLAYCONTROLLER_REQUEST_IDS
@@ -76,7 +88,10 @@ enum PLAYCONTROLLER_REQUEST_IDS
   PLAYCONTROLLER_REQUEST_ID_CLEAR_STAT     = 0x0007,
   PLAYCONTROLLER_REQUEST_ID_UHID64         = 0x0008,
   PLAYCONTROLLER_REQUEST_ID_POLLHWS        = 0x0009,
-  PLAYCONTROLLER_REQUEST_ID_AT_MAX_DATA    = 0x000A,
+  PLAYCONTROLLER_REQUEST_ID_AT_TEST_DATA   = 0x000A,
+  PLAYCONTROLLER_REQUEST_ID_AT_STATUS      = 0x000B,
+  PLAYCONTROLLER_REQUEST_ID_BNDR_STATUS    = 0x000C,
+  PLAYCONTROLLER_REQUEST_ID_BNDR_RESET     = 0x000D,
 };
 
 enum PLAYCONTROLLER_NOTIFICATION_IDS
@@ -91,7 +106,10 @@ enum PLAYCONTROLLER_NOTIFICATION_IDS
   PLAYCONTROLLER_NOTIFICATION_ID_CLEAR_STAT     = 0x0007,
   PLAYCONTROLLER_NOTIFICATION_ID_UHID64         = 0x0008,
   PLAYCONTROLLER_NOTIFICATION_ID_POLLHWS        = 0x0009,
-  PLAYCONTROLLER_NOTIFICATION_ID_AT_MAX_DATA    = 0x000A,
+  PLAYCONTROLLER_NOTIFICATION_ID_AT_TEST_DATA   = 0x000A,
+  PLAYCONTROLLER_NOTIFICATION_ID_AT_STATUS      = 0x000B,
+  PLAYCONTROLLER_NOTIFICATION_ID_BNDR_STATUS    = 0x000C,
+  PLAYCONTROLLER_NOTIFICATION_ID_BNDR_RESET     = 0x000D,
   PLAYCONTROLLER_NOTIFICATION_ID_TEST_MSG       = 0xFFFF,
 };
 
@@ -170,6 +188,10 @@ enum SUP_MUTING_BITS
   SUP_UNMUTE_STATUS_HARDWARE_VALUE     = 0b0000000000000001,  // ... with this value (1:unmuted)
 };
 
+//
+// ---------- TYPEDEFS ----------------
+//
+
 typedef struct
 {
   unsigned ctrlId : 3;            // controller number 0...7, aka input (main) ADC channel 0...7, 0/1=J1T/R, 2/3=J2T/R, etc,
@@ -196,3 +218,36 @@ typedef struct
   unsigned isRestored : 1;     // controller state has been restored from EEPROM
 
 } EHC_ControllerStatus_T;
+
+// --- Aftertouch per Key Calibration data structure ---
+typedef struct
+{
+  uint16_t keybedId;       // keybed serial # (id = 0 forces legacy AT mode)
+  uint16_t adcTarget;      // adc target value for the test force (typically for 10N)
+  uint16_t adcDefault;     // default when AT is active without any key pressed (typically the average of all the following values)
+  uint16_t adcValues[61];  // adc values obtained for test force for all 61 keys
+} AT_calibration_T;
+
+typedef struct
+{
+  unsigned legacyMode : 1;   // lecacy AT mode currently in use (Note: non-legacy mode only is active with a valid calibration)
+  unsigned calibrated : 1;   // calibration in use (ignore in legacy mode)
+  unsigned maskedKeys : 1;   // some key are masked (ignore in legacy mode)
+  unsigned silentKeys : 1;   // masked key only will silence the AT output (ignore in legacy mode)
+  unsigned eepromValid : 1;  // valid calibration data found at boot time
+} AT_status_T;
+
+// ---- Bender status
+typedef struct
+{
+  unsigned legacyMode : 1;       // lecacy Bender mode currently in use
+  unsigned zeroed : 1;           // current value is zero position  (ignore in legacy mode)
+  unsigned everZeroed : 1;       // a zero position has ever been reached (ignore in legacy mode)
+  unsigned leftEndStop : 1;      // left end stop has been adjusted (ignore in legacy mode)
+  unsigned rightEndStop : 1;     // right end stop has been adjusted (ignore in legacy mode)
+  unsigned offZero : 1;          // a settled value has occured outside the auto-zero range (and not being an end stop)
+  unsigned useFineSettling : 1;  // using fine settling at the moment
+  unsigned settledFine : 1;      // current movement as settled wrt "fine" settling criteria
+  unsigned settledCoarse : 1;    // current movement as settled wrt "coarse" settling criteria
+  unsigned reasonableZero : 1;   // current zero is with the usually expected range
+} BNDR_status_T;

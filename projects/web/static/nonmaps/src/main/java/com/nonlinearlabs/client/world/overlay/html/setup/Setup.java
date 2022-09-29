@@ -76,7 +76,7 @@ public class Setup extends Composite {
 	FileUpload upload;
 
 	@UiField
-	DivElement deviceSettings, uiSettings, midiSettings, flacSettings, systemInfo, about, updateSpinner;
+	DivElement deviceSettings, uiSettings, midiSettings, flacSettings, systemInfo, about, updateSpinner, aftertouchLegacyDiv;
 
 	@UiField
 	ListBox velocityCurve, aftertouchCurve, benderCurve, pedal1Type, pedal2Type, pedal3Type, pedal4Type,
@@ -95,7 +95,7 @@ public class Setup extends Composite {
 	RadioButton presetGlitchSuppressionOn, presetGlitchSuppressionOff, showContextMenusOn, showContextMenusOff,
 			presetDragDropOn, presetDragDropOff, bitmapCacheOn, bitmapCacheOff, developerOptionsOn, developerOptionsOff,
 			highlightChangedOn, highlightChangedOff, syncPartsOn, syncPartsOff, globalLocalOn, globalLocalOff, 
-			highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff;
+                        highVeloCCOn, highVeloCCOff, enable14Bit, disable14Bit, autoStartRecordOn, autoStartRecordOff, legacyAftertouchOn, legacyAftertouchOff;
 
 	@UiField
 	Label transitionTimeDisplayString, tuneReferenceDisplayString;
@@ -112,7 +112,7 @@ public class Setup extends Composite {
 	TextArea deviceName, passphrase;
 
 	@UiField
-	Button saveDeviceName, storeInitSound, resetInitSound, classicMidi, highResMidi, panicAE, routingsOn, routingsOff, savePassphrase, dicePassphrase, defaultPassphrase;
+	Button saveDeviceName, storeInitSound, resetInitSound, classicMidi, highResMidi, panicAE, stopRecorderPlayback, routingsOn, routingsOff, savePassphrase, dicePassphrase, defaultPassphrase;
 
 	Range editSmoothingTimeRange;
 	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
@@ -238,6 +238,8 @@ public class Setup extends Composite {
 		fillRadioButtons(enable14Bit, disable14Bit, MidiSettings.OnOffOption.options);
 		fillRadioButtons(autoStartRecordOn, autoStartRecordOff, MidiSettings.OnOffOption.options);
 		fillRadioButtons(globalLocalOn, globalLocalOff, MidiSettings.OnOffOption.options);
+
+		fillRadioButtons(legacyAftertouchOn, legacyAftertouchOff, MidiSettings.OnOffOption.options);
 	}
 
 	private void setupMappings(boolean showLSB)
@@ -335,6 +337,9 @@ public class Setup extends Composite {
 		presetGlitchSuppressionOn.addClickHandler(e -> settings.setPresetGlitchSuppression(BooleanValues.on));
 		presetGlitchSuppressionOff.addClickHandler(e -> settings.setPresetGlitchSuppression(BooleanValues.off));
 
+		legacyAftertouchOn.addClickHandler(e -> settings.setLegacyAftertouch(BooleanValues.on));
+		legacyAftertouchOff.addClickHandler(e -> settings.setLegacyAftertouch(BooleanValues.off));
+
 		showContextMenusOn.addClickHandler(e -> locals.setContextMenus(BooleanValues.on));
 		showContextMenusOff.addClickHandler(e -> locals.setContextMenus(BooleanValues.off));
 
@@ -426,6 +431,7 @@ public class Setup extends Composite {
 		disable14Bit.addValueChangeHandler(e -> settings.set14BitSupport(BooleanValues.off));	
 		
 		panicAE.addClickHandler(e -> settings.panic());
+		stopRecorderPlayback.addClickHandler(e -> settings.stopRecorderPlayback());
 
 		classicMidi.addClickHandler(e -> settings.resetToClassicMidi());
 		highResMidi.addClickHandler(e -> settings.resetToHighResMidi());
@@ -611,6 +617,9 @@ public class Setup extends Composite {
 
 		transitionTimeDisplayString.setText(t.transitionTimeDisplayString);
 		transitionTimeSliderRange.setValue(t.transitionTimeValue);
+
+		legacyAftertouchOn.setValue(t.legacyAftertouch);
+		legacyAftertouchOff.setValue(!t.legacyAftertouch);
 	}
 
 	public void applyPedalValues(DeviceSettings.Pedal src, ListBox type, Range slider, Label text) {
@@ -646,6 +655,12 @@ public class Setup extends Composite {
 		uiTotalRam.setText(t.totalRam);
 		uniqueHardwareID.setText(t.uniqueHardwareID);
 		uiRTVersion.setText(t.rtVersion);
+
+		if(t.isAftertouchCalibrated) {
+			aftertouchLegacyDiv.removeClassName("hidden");
+		} else {
+			aftertouchLegacyDiv.addClassName("hidden");
+		}
 	}
 
 	private void applyPresenter(MidiSettings t) {

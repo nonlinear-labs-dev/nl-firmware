@@ -433,6 +433,8 @@ Glib::ustring Parameter::getMiniParameterEditorName() const
 
 Glib::ustring Parameter::getGroupAndParameterName() const
 {
+  if(getParentEditBuffer()->isDual() && getVoiceGroup() != VoiceGroup::Global)
+    return UNDO::StringTools::buildString(getParentGroup()->getShortName(), " - ", getLongName(), " - ", toString(getVoiceGroup()));
   return UNDO::StringTools::buildString(getParentGroup()->getShortName(), " - ", getLongName());
 }
 

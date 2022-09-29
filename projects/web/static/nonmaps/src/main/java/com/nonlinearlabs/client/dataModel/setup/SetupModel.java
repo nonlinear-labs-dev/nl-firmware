@@ -382,6 +382,8 @@ public class SetupModel {
 
 		public RoutingAspectsDataModelEntity routingAspects = new RoutingAspectsDataModelEntity();
 		public BooleanDataModelEntity localEnabled = new BooleanDataModelEntity();
+
+		public BooleanDataModelEntity legacyAftertouch = new BooleanDataModelEntity();
 	};
 
 	public class LocalSettings {

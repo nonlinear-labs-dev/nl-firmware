@@ -20,7 +20,14 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
     , m_sibling{sibling}
     , m_settings(settings)
 {
-  if(m_settings)
+  m_sibling.onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);
+}
+
+void HardwareSourceSendParameter::init(Settings* settings)
+{
+  m_settings = settings;
+
+  if(settings)
   {
     auto local = settings->getSetting<GlobalLocalEnableSetting>();
     auto routings = settings->getSetting<RoutingSettings>();
@@ -32,8 +39,6 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
     local->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onLocalChanged));
     routings->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onRoutingsChanged));
   }
-
-  m_sibling.onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);
 }
 
 void HardwareSourceSendParameter::loadFromPreset(UNDO::Transaction* transaction, const tControlPositionValue& value)
@@ -158,8 +163,8 @@ RoutingSettings::tRoutingIndex HardwareSourceSendParameter::getIndex(const Param
 nlohmann::json HardwareSourceSendParameter::serialize() const
 {
   auto param = Parameter::serialize();
-  param.push_back({"is-enabled", isLocalEnabled() });
-  param.push_back({"return-mode", static_cast<int>(m_returnMode) });
+  param.push_back({ "is-enabled", isLocalEnabled() });
+  param.push_back({ "return-mode", static_cast<int>(m_returnMode) });
   return param;
 }
 

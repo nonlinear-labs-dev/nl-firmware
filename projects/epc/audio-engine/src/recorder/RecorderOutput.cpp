@@ -123,3 +123,8 @@ void RecorderOutput::background()
     }
   }
 }
+
+bool RecorderOutput::isPlaying() const
+{
+  return !m_paused;
+}

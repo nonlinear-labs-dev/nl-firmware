@@ -15,7 +15,7 @@ VelocityCurve::~VelocityCurve()
 
 void VelocityCurve::syncExternals(SendReason reason) const
 {
-  Application::get().getPlaycontrollerProxy()->sendSetting(VELOCITY_CURVE, static_cast<uint16_t>(get()));
+  Application::get().getPlaycontrollerProxy()->sendSetting(PLAYCONTROLLER_SETTING_ID_VELOCITY_CURVE, static_cast<uint16_t>(get()));
 }
 
 const std::vector<Glib::ustring> &VelocityCurve::enumToString() const

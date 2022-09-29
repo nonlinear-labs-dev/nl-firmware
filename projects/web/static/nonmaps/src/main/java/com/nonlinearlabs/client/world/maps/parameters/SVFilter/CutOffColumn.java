@@ -12,6 +12,6 @@ class CutOffColumn extends ParameterColumn {
 		super(parent);
 		addChild(new ModulateableKnob(this, 140));
 		addChild(new ModulatableHorizontalSlider(this, 143));
-		addChild(new ModulationSourceSlider(this, 142));
+		addChild(new ModulatableHorizontalSlider(this, 142));
 	}
 }

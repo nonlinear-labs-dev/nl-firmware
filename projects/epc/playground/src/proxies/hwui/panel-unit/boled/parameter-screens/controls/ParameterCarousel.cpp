@@ -136,23 +136,23 @@ void ParameterCarousel::antiTurn()
   EditBufferUseCases ebUseCases { *eb };
 
   tIfCallback cb = ([&](const tControlPtr& ctrl) -> bool {
-                      if(auto p = std::dynamic_pointer_cast<MiniParameter>(ctrl))
-                      {
-                        if(found)
-                        {
-                          ebUseCases.selectParameter(p->getParameter()->getID(), true);
-                          handled = true;
-                          return false;
-                        }
+    if(auto p = std::dynamic_pointer_cast<MiniParameter>(ctrl))
+    {
+      if(found)
+      {
+        ebUseCases.selectParameter(p->getParameter()->getID(), true);
+        handled = true;
+        return false;
+      }
 
-                        if(p->isSelected())
-                        {
-                          found = true;
-                        }
-                      }
+      if(p->isSelected())
+      {
+        found = true;
+      }
+    }
 
-                      return true;
-                    });
+    return true;
+  });
 
   forEachReversed(cb);
 
@@ -255,9 +255,9 @@ void ParameterCarousel::setupChildControlsThatDontFit(Parameter* selectedParamet
   auto itOfLastShownElement = itOfSelectedParameter;
 
   if(itOfSelectedParameter != buttonAssignments.begin())
-    std::advance(itOfLastShownElement, std::min(3l, distanceToEnd));
+    std::advance(itOfLastShownElement, std::min<long>(3l, distanceToEnd));
   else
-    std::advance(itOfLastShownElement, std::min(4l, distanceToEnd));
+    std::advance(itOfLastShownElement, std::min<long>(4l, distanceToEnd));
 
   for(auto it = itOfElementBefore; it != itOfLastShownElement; it++)
   {
@@ -333,8 +333,7 @@ void ScaleParameterCarousel::setup(Parameter* selectedParameter)
     if(idx == 6)
       yPos = offsetYOffset;
 
-    auto isLowerGroup = [](auto idx)
-    {
+    auto isLowerGroup = [](auto idx) {
       auto lowerGroupIDs = { 3, 4, 5, 9, 10, 11 };
       auto it = std::find(lowerGroupIDs.begin(), lowerGroupIDs.end(), idx);
       return it != lowerGroupIDs.end();
@@ -374,12 +373,12 @@ void ScaleParameterCarousel::turn()
     else
       selectedIt = std::next(selectedIt);
 
-    auto id = ParameterId({*selectedIt, VoiceGroup::Global});
+    auto id = ParameterId({ *selectedIt, VoiceGroup::Global });
     ebUseCases.selectParameter(id, true);
   }
   else
   {
-    ebUseCases.selectParameter({order.front(), VoiceGroup::Global}, true);
+    ebUseCases.selectParameter({ order.front(), VoiceGroup::Global }, true);
   }
 }
 
@@ -401,11 +400,11 @@ void ScaleParameterCarousel::antiTurn()
     else
       selectedIt = std::prev(selectedIt);
 
-    auto id = ParameterId{*selectedIt, VoiceGroup::Global};
+    auto id = ParameterId { *selectedIt, VoiceGroup::Global };
     ebUseCases.selectParameter(id, true);
   }
   else
   {
-    ebUseCases.selectParameter({order.back(), VoiceGroup::Global}, true);
+    ebUseCases.selectParameter({ order.back(), VoiceGroup::Global }, true);
   }
 }

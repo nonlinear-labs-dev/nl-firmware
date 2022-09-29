@@ -12,6 +12,7 @@
 class Application;
 class Setting;
 class SettingsActions;
+class HardwareFeatures;
 
 class Settings : public UpdateDocumentContributor
 {
@@ -19,7 +20,7 @@ class Settings : public UpdateDocumentContributor
   typedef std::unique_ptr<Setting> tSettingPtr;
   typedef std::map<Glib::ustring, tSettingPtr> tMap;
 
-  explicit Settings(const Glib::ustring &file, UpdateDocumentMaster *master);
+  explicit Settings(const Glib::ustring &file, UpdateDocumentMaster *master, HardwareFeatures& hwFeatures);
   ~Settings() override;
 
   void init();
