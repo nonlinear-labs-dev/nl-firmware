@@ -789,7 +789,14 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
                                   bool wasMIDISplit, bool didBehaviourChange)
 {
   nltools::Log::error(__PRETTY_FUNCTION__, "hwid:", toString(hwID), "pos:", pos, "source:", toString(source), "hwid idx:", static_cast<unsigned int>(hwID));
-  const auto routingIndex = static_cast<RoutingIndex>(hwID);
+  RoutingIndex routingIndex = RoutingIndex::LENGTH;
+
+  if(hwID == HardwareSource::RIBBON3)
+    routingIndex = RoutingIndex::Ribbon3;
+  else if(hwID == HardwareSource::RIBBON4)
+    routingIndex = RoutingIndex::Ribbon4;
+  else
+    routingIndex = static_cast<RoutingIndex>(hwID);
 
   auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)
   {

@@ -59,6 +59,10 @@ inline std::string toString(HardwareSource s)
       return "RIBBON1";
     case HardwareSource::RIBBON2:
       return "RIBBON2";
+    case HardwareSource::RIBBON3:
+      return "RIBBON3";
+    case HardwareSource::RIBBON4:
+      return "RIBBON4";
     case HardwareSource::NONE:
       return "NONE";
     default:
