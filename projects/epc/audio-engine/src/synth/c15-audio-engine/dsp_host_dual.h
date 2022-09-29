@@ -37,7 +37,7 @@ inline constexpr bool VOICE_FADE_INTERPOLATION = true;
 inline constexpr bool LOG_MISSING = false;
 inline constexpr bool LOG_FAIL = false;
 inline constexpr bool LOG_INIT = false;
-inline constexpr bool LOG_MIDI_TCD = false;
+inline constexpr bool LOG_MIDI_TCD = true;
 inline constexpr bool LOG_MIDI_RAW = false;
 inline constexpr bool LOG_MIDI_DETAIL = true;
 inline constexpr bool LOG_MIDI_OUT = false;
@@ -154,7 +154,7 @@ class DSPInterface
   }
 
  private:
-  std::array<HWChangeSource, 8> m_hwSourceLastChangeSources;
+  std::array<HWChangeSource, 10> m_hwSourceLastChangeSources;
 };
 
 class dsp_host_dual : public DSPInterface

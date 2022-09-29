@@ -788,6 +788,7 @@ HardwareSource InputEventStage::parameterIDToHWID(int id)
 void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource source, bool wasMIDIPrimary,
                                   bool wasMIDISplit, bool didBehaviourChange)
 {
+  nltools::Log::error(__PRETTY_FUNCTION__, "hwid:", toString(hwID), "pos:", pos, "source:", toString(source), "hwid idx:", static_cast<unsigned int>(hwID));
   const auto routingIndex = static_cast<RoutingIndex>(hwID);
 
   auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)

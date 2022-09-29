@@ -47,7 +47,7 @@ bool TCDDecoder::decode(const MidiEvent &event)
 
       if constexpr(LOG_MIDI_TCD)
       {
-        nltools::Log::warning("Got HW-Src:", channel, "value:", value, "behaviour", static_cast<int>(behaviour),
+        nltools::Log::warning("Got HW-Src:", toString(hwSource), "value:", value, "behaviour", static_cast<int>(behaviour),
                               "raw data0", (short) _data0, "raw data1", (short) _data1);
       }
 

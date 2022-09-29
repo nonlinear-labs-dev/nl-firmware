@@ -444,6 +444,10 @@ int MidiRuntimeOptions::getMSBCCForHWID(HardwareSource hwID) const
       return getCCFor<Midi::MSB::Rib1>();
     case HardwareSource::RIBBON2:
       return getCCFor<Midi::MSB::Rib2>();
+    case HardwareSource::RIBBON3:
+      return getCCFor<Midi::MSB::Rib3>();
+    case HardwareSource::RIBBON4:
+      return getCCFor<Midi::MSB::Rib4>();
     case HardwareSource::NONE:
     default:
       return -1;
@@ -597,6 +601,10 @@ bool MidiRuntimeOptions::isLocalEnabled(HardwareSource source)
       return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon1);
     case HardwareSource::RIBBON2:
       return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon2);
+    case HardwareSource::RIBBON3:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon3);
+    case HardwareSource::RIBBON4:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon4);
     default:
     case HardwareSource::NONE:
       return false;
