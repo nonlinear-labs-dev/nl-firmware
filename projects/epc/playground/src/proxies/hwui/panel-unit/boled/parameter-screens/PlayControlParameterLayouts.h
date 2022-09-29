@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ParameterLayout.h"
+#include "UnmodulatebaleParameterLayouts.h"
 
 class PhysicalControlSlider;
 
@@ -44,4 +45,17 @@ class PlayControlParameterLayout2 : public virtual ParameterLayout2
 
   PhysicalControlSlider* m_hwSourceSlider = nullptr;
   Control* m_currentValueDisplay = nullptr;
+};
+
+class PlayControlParameterEditLayout2 : public ParameterEditLayout2, public UnmodulateableParameterLayout2
+{
+ public:
+  typedef ParameterEditLayout2 super1;
+  typedef UnmodulateableParameterLayout2 super2;
+  PlayControlParameterEditLayout2();
+  void init() override;
+
+ protected:
+  ButtonMenu *createMenu(const Rect &rect) override;
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
 };

@@ -164,7 +164,7 @@ Layout *PhysicalControlParameter::createLayout(FocusAndMode focusAndMode) const
       return new PlayControlParameterLayout2();
 
     case UIMode::Edit:
-      return new PlayControlParameterLayout2();
+      return new PlayControlParameterEditLayout2();
   }
 
   g_return_val_if_reached(nullptr);

@@ -3,6 +3,9 @@
 #include "use-cases/EditBufferUseCases.h"
 #include "use-cases/PhysicalControlParameterUseCases.h"
 #include "use-cases/RibbonParameterUseCases.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterKnubbelSlider.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/SelectedParameterBarSlider.h"
+#include "proxies/hwui/controls/SwitchVoiceGroupButton.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/PhysicalControlSlider.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationRoutersCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/PhysicalControlBehaviorLabel.h>
@@ -264,7 +267,7 @@ bool PlayControlParameterLayout2::isSendParameter() const
 
 bool PlayControlParameterLayout2::supportsBehaviour() const
 {
-  auto ribbonParams = { C15::PID::Ribbon_1, C15::PID::Ribbon_2 };
+  auto ribbonParams = { C15::PID::Ribbon_1, C15::PID::Ribbon_2, C15::PID::Ribbon_3, C15::PID::Ribbon_4 };
   auto pedalParams = { C15::PID::Pedal_1, C15::PID::Pedal_2, C15::PID::Pedal_3, C15::PID::Pedal_4 };
   auto currentParamId = getCurrentParameter()->getID().getNumber();
   auto isRibbonParam = std::find(ribbonParams.begin(), ribbonParams.end(), currentParamId) != ribbonParams.end();
@@ -274,8 +277,59 @@ bool PlayControlParameterLayout2::supportsBehaviour() const
 
 bool PlayControlParameterLayout2::supportsMode() const
 {
-  auto ribbonParams = { C15::PID::Ribbon_1, C15::PID::Ribbon_2 };
+  auto ribbonParams = { C15::PID::Ribbon_1, C15::PID::Ribbon_2, C15::PID::Ribbon_3, C15::PID::Ribbon_4 };
   auto currentParamId = getCurrentParameter()->getID().getNumber();
   auto isRibbonParam = std::find(ribbonParams.begin(), ribbonParams.end(), currentParamId) != ribbonParams.end();
   return isRibbonParam;
+}
+
+//edit mode!
+
+PlayControlParameterEditLayout2::PlayControlParameterEditLayout2()
+{
+}
+
+void PlayControlParameterEditLayout2::init()
+{
+  super1::init();
+  super2::init();
+
+  if(auto p = getCurrentParameter())
+  {
+    switch(p->getVisualizationStyle())
+    {
+      case Parameter::VisualizationStyle::Dot:
+        addControl(new SelectedParameterKnubbelSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+        break;
+      case Parameter::VisualizationStyle::Bar:
+      case Parameter::VisualizationStyle::BarFromRight:
+        addControl(new SelectedParameterBarSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+        break;
+    }
+  }
+
+  addControl(createParameterValueControl());
+
+  highlight<SelectedParameterBarSlider>();
+  highlight<SelectedParameterValue>();
+  highlight<ParameterNameLabel>();
+
+  if(auto vgButton = findControlOfType<SwitchVoiceGroupButton>())
+  {
+    remove(vgButton.get());
+    addControl(new Button("", Buttons::BUTTON_A));
+  }
+}
+
+ButtonMenu *PlayControlParameterEditLayout2::createMenu(const Rect &rect)
+{
+  return new ParameterEditButtonMenu(rect);
+}
+
+bool PlayControlParameterEditLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
+{
+  if(super1::onButton(i, down, modifiers))
+    return true;
+
+  return super2::onButton(i, down, modifiers);
 }
