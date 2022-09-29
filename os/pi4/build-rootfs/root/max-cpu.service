@@ -1,0 +1,10 @@
+[Unit]
+Description=Run CPU at full speed
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/cpufreq-set -g performance
+
+[Install]
+WantedBy=multi-user.target

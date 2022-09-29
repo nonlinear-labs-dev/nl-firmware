@@ -38,5 +38,7 @@ ADD_CUSTOM_TARGET(fetch-meteor-resources
 
 ADD_CUSTOM_TARGET(download-meteor-resources
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/meteor-resources-${METEOR_RESOURCES_REVISION}.tar.gz)
+  
+ADD_CUSTOM_TARGET(web-package DEPENDS web.deb)
 
 add_dependencies(download-meteor-resources nl-build-container-setup)

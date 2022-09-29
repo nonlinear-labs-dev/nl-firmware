@@ -24,6 +24,7 @@ add_custom_command(
 
 add_custom_command(
     COMMENT "Clone nonlinux from github"
+    DEPENDS .docker-container-created
     OUTPUT .nonlinux-cloned 
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/runInDocker.sh
         ${CMAKE_CURRENT_BINARY_DIR}

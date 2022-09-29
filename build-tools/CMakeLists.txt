@@ -17,6 +17,7 @@ add_subdirectory(bbb)
 add_subdirectory(build-container)
 add_subdirectory(epc)
 add_subdirectory(pacman)
+add_subdirectory(pi4)
 add_subdirectory(playcontroller)
 add_subdirectory(web)
 

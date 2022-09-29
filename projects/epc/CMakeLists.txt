@@ -7,7 +7,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wdouble-promotion")
 
 IF(${TARGET_PLATFORM} STREQUAL "epc" OR ${TARGET_PLATFORM} STREQUAL "epc2")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=broadwell")
-ELSE()
+ELSEIF (${TARGET_PLATFORM} STREQUAL "pi4" )
+    MESSAGE("building for Pi4")
+ELSE ()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 ENDIF()
 
