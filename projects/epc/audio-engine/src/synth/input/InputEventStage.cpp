@@ -477,6 +477,16 @@ void InputEventStage::sendHardwareChangeAsMidi(HardwareSource hwID, float value)
                 m_options->getCCFor<Midi::LSB::Rib2>());
       break;
 
+    case HardwareSource::RIBBON3:
+      sendCCOut(HardwareSource::RIBBON3, value, m_options->getCCFor<Midi::MSB::Rib3>(),
+          m_options->getCCFor<Midi::LSB::Rib3>());
+      break;
+
+    case HardwareSource::RIBBON4:
+      sendCCOut(HardwareSource::RIBBON4, value, m_options->getCCFor<Midi::MSB::Rib4>(),
+          m_options->getCCFor<Midi::LSB::Rib4>());
+      break;
+
     default:
       break;
   }
@@ -1116,6 +1126,10 @@ InputEventStage::RoutingIndex InputEventStage::toRoutingIndex(HardwareSource sou
       return RoutingIndex::Ribbon1;
     case HardwareSource::RIBBON2:
       return RoutingIndex::Ribbon2;
+    case HardwareSource::RIBBON3:
+      return RoutingIndex::Ribbon3;
+    case HardwareSource::RIBBON4:
+      return RoutingIndex::Ribbon4;
     default:
     case HardwareSource::NONE:
       return InputEventStage::RoutingIndex::LENGTH;
