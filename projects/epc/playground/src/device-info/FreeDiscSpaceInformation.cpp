@@ -9,6 +9,8 @@
 #include "nltools/system/AsyncCommandLine.h"
 #include "nltools/system/SpawnAsyncCommandLine.h"
 #include "Application.h"
+#include "CompileTimeOptions.h"
+#include <filesystem>
 
 FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation* parent)
     : DeviceInformationItem(parent)
@@ -17,18 +19,19 @@ FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation* parent)
   refresh();
 
   using namespace std::chrono;
-  constexpr seconds timeout(5); //todo change back!
+  constexpr minutes timeout(5);
   m_signalRefresh = Application::get().getMainContext()->signal_timeout().connect(
       sigc::mem_fun(this, &FreeDiscSpaceInformation::refresh), duration_cast<milliseconds>(timeout).count());
 }
 
 bool FreeDiscSpaceInformation::refresh()
 {
+  using std::filesystem::path;
+  auto scriptPath = path(getResourcesDir()).concat("/free-diskspace-information.sh");
   SpawnAsyncCommandLine::spawn(
-      Application::get().getMainContext(), { "sh", "-c", "\"df", "-h", "|", "grep", "'persistent'", "|", "awk", "'{print $4}'\"" },
+      Application::get().getMainContext(), { "sh", scriptPath.string() },
       [&](const std::string& success)
       {
-        nltools::Log::error(__PRETTY_FUNCTION__, success);
         if(success.empty())
           m_value = "N/A";
         else
@@ -43,7 +46,7 @@ bool FreeDiscSpaceInformation::refresh()
           }
         }
       },
-      [](auto err) { nltools::Log::error(__PRETTY_FUNCTION__, err); });
+      [](auto err) { nltools::Log::error(__PRETTY_FUNCTION__, "error trying to get free disk space", err); });
   return true;
 }
 
