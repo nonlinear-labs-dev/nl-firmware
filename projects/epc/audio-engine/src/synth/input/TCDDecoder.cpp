@@ -3,9 +3,9 @@
 #include <playcontroller/playcontroller-defs.h>
 
 TCDDecoder::TCDDecoder(DSPInterface *dsp, MidiRuntimeOptions *options, KeyShift *keyShift)
-    : m_dsp{ dsp }
-    , m_keyShift{ keyShift }
-    , m_options{ options }
+    : m_dsp { dsp }
+    , m_keyShift { keyShift }
+    , m_options { options }
 {
   reset();
 }
@@ -45,15 +45,15 @@ bool TCDDecoder::decode(const MidiEvent &event)
         value = (2.0f * value) - 1.0f;
       }
 
-      if constexpr(LOG_MIDI_TCD)
-      {
-        nltools::Log::warning("Got HW-Src:", toString(hwSource), "value:", value, "behaviour", static_cast<int>(behaviour),
-                              "raw data0", (short) _data0, "raw data1", (short) _data1);
-      }
-
       keyOrController = channel;
       hwSource = hwid;
       m_type = DecoderEventType::HardwareChange;
+
+      if constexpr(LOG_MIDI_TCD)
+      {
+        nltools::Log::warning("Got HW-Src:", toString(hwSource), "value:", value, "behaviour",
+                              static_cast<int>(behaviour), "raw data0", (short) _data0, "raw data1", (short) _data1);
+      }
     }
     else if(_status == AE_PROTOCOL_CMD)  // PlayController Command
     {
