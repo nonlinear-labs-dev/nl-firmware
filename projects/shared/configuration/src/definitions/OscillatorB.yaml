@@ -178,7 +178,7 @@ parameters:
     label_long: Phase
     label_short: Phase
     control_position: { coarse: 36, fine: 1800, scale: LINEAR_BIPOLAR_180_DEG, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { coarse: 72, fine: 36800, scale: LINEAR_BIPOLAR_360_DEG }
+    modulation_aspects: { coarse: 72, fine: 3600, scale: LINEAR_BIPOLAR_360_DEG }
     rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.0f, section: Poly, clock: Audio, signal: Quasipoly_Signal }
     info: >
       Start phase [in degrees]. The Oscillator will be set to this phase position with each Note-On.
