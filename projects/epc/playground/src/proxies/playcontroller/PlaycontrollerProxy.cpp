@@ -208,8 +208,10 @@ Parameter *PlaycontrollerProxy::findPhysicalControlParameterFromPlaycontrollerHW
         return HardwareSourcesGroup::getUpperRibbonParameterID();
       case HW_SOURCE_ID_RIBBON_2:
         return HardwareSourcesGroup::getLowerRibbonParameterID();
-      case HW_SOURCE_ID_PEDAL_5:
-      case HW_SOURCE_ID_PEDAL_6:
+      case 8: //meh
+        return HardwareSourcesGroup::getUpperRibbon3ParameterID();
+      case 9: //uhg
+        return HardwareSourcesGroup::getLowerRibbon4ParameterID();
       case HW_SOURCE_ID_PEDAL_7:
       case HW_SOURCE_ID_PEDAL_8:
         //todo new pedals
