@@ -9,6 +9,7 @@
 #include "FineBipolar1200CTScaleConverter.h"
 #include "FineBipolar12STScaleConverter.h"
 #include "FineBipolar80StScaleConverter.h"
+#include "FineBipolar200PercentScaleConverter.h"
 #include "KeyScaleConverter.h"
 #include "LegatoScaleConverter.h"
 #include "Linear0To140StScaleConverter.h"
@@ -262,7 +263,7 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_200_PERCENT:
       return get<LinearBipolar200PercentScaleConverter>();
     case C15::Properties::DisplayScalingType::FINE_BIPOLAR_200_PERCENT:
-      return get<LinearBipolar200PercentFineScaleConverter>();
+      return get<FineBipolar200PercentScaleConverter>();
   }
   return nullptr;
 }

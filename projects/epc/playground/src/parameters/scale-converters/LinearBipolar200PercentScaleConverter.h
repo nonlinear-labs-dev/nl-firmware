@@ -9,10 +9,3 @@ class LinearBipolar200PercentScaleConverter : public LinearScaleConverter
   ~LinearBipolar200PercentScaleConverter() override;
 
 };
-
-class LinearBipolar200PercentFineScaleConverter : public LinearScaleConverter
-{
- public:
-  LinearBipolar200PercentFineScaleConverter();
-  ~LinearBipolar200PercentFineScaleConverter() override;
-};
