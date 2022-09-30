@@ -864,6 +864,16 @@ display_scaling_type: {
     max: 200.0f,
     bipolar: false
   },
+  FINE_BIPOLAR_100_PERCENT: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-100.00", "-50.00", "0.00", "50.00", "200.00" ],
+    min: -100.0f,
+    max: 100.0f,
+    bipolar: true
+  },
   FINE_BIPOLAR_200_PERCENT: {
     round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_PERCENT,

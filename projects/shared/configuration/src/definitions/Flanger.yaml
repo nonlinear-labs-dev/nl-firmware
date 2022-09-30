@@ -63,7 +63,7 @@ parameters:
     label_long: Time
     label_short: Time
     control_position: { coarse: 125, fine: 1250, scale: PARABOLIC_50_MS, initial: 0.317f }
-    modulation_aspects: { coarse: 125, fine: 1250, scale: LINEAR_BIPOLAR_100_PERCENT }
+    modulation_aspects: { coarse: 125, fine: 1250, scale: FINE_BIPOLAR_100_PERCENT }
     rendering_args: { scaling: Parabolic, factor: 50.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
     info: >
       Mean value of the delay times in the left and right channel.\n
