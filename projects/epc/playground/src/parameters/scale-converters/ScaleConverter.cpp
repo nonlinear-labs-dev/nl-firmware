@@ -6,12 +6,12 @@
 #include "EnvelopeReleaseTimeMSScaleConverter.h"
 #include "Fine105PercentScaleConverter.h"
 #include "Fine12STScaleConverter.h"
-#include "FineBipolar1200CTScaleConverter.h"
+#include "LinearBipolar2400CtScaleConverter.h"
 #include "FineBipolar12STScaleConverter.h"
 #include "FineBipolar80StScaleConverter.h"
 #include "FineBipolar100PercentScaleConverter.h"
 #include "FineBipolar200PercentScaleConverter.h"
-#include "KeyScaleConverter.h"
+#include "LinearBipolar1200CtScaleConverter.h"
 #include "LegatoScaleConverter.h"
 #include "Linear0To140StScaleConverter.h"
 #include "Linear100PercentScaleConverter.h"
@@ -140,9 +140,9 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
     case C15::Properties::DisplayScalingType::MODES_LEGATO:
       return get<LegatoScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_1200_CENT:
-      return get<KeyScaleConverter>();
+      return get<LinearBipolar1200CtScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_2400_CENT:
-      return get<FineBipolar1200CTScaleConverter>();
+      return get<LinearBipolar2400CtScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_50_DB:
       return get<Linear50DbScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_50_DB:
