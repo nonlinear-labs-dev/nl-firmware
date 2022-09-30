@@ -40,8 +40,8 @@ parameters:
     token: Stereo
     label_long: Stereo
     label_short: Stereo
-    control_position: { coarse: 66, fine: 660, scale: LINEAR_BIPOLAR_33_PERCENT, initial: 0.0f }
-    modulation_aspects: { coarse: 132, fine: 1320, scale: LINEAR_BIPOLAR_66_PERCENT }
+    control_position: { coarse: 66, fine: 660, scale: FINE_BIPOLAR_33_PERCENT, initial: 0.0f }
+    modulation_aspects: { coarse: 132, fine: 1320, scale: FINE_BIPOLAR_66_PERCENT }
     rendering_args: { scaling: Linear, factor: 33.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
     info: >
       Sets the ratio between the delay times of the left and of the right channel [the value shows the offset to 100.0 %].

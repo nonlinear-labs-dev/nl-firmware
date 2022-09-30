@@ -39,8 +39,8 @@ parameters:
     token: Stereo
     label_long: Stereo
     label_short: Stereo
-    control_position: { coarse: 72, fine: 720, scale: LINEAR_BIPOLAR_36_ST, initial: 0.0f }
-    modulation_aspects: { coarse: 144, fine: 1440, scale: LINEAR_BIPOLAR_72_ST }
+    control_position: { coarse: 72, fine: 720, scale: FINE_BIPOLAR_36_ST, initial: 0.0f }
+    modulation_aspects: { coarse: 144, fine: 1440, scale: FINE_BIPOLAR_72_ST }
     rendering_args: { scaling: Linear, factor: 36.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
     info: >
       Sets the difference between the center frequencies of the left and of the right channel [in semitones].

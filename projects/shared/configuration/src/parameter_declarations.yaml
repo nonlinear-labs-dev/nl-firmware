@@ -588,12 +588,12 @@ display_scaling_type: {
     max: 60.0f,
     bipolar: true
   },
-  LINEAR_BIPOLAR_36_ST: {
-    round: *ROUNDING_ONE_DECIMAL,
+  FINE_BIPOLAR_36_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
-    values: [ "-36.0", "-18.0", "0.0", "18.0", "36.0" ],
+    values: [ "-36.00", "-18.00", "0.00", "18.00", "36.00" ],
     min: -36.0f,
     max: 36.0f,
     bipolar: true
@@ -708,12 +708,12 @@ display_scaling_type: {
     max: 140.0f,
     bipolar: false
   },
-  LINEAR_BIPOLAR_72_ST: {
-    round: *ROUNDING_ONE_DECIMAL,
+  FINE_BIPOLAR_72_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
-    values: [ "-72.0", "-36.0", "0.0", "36.0", "72.0" ],
+    values: [ "-72.00", "-36.00", "0.00", "36.00", "72.00" ],
     min: -72.0f,
     max: 72.0f,
     bipolar: true
@@ -894,12 +894,12 @@ display_scaling_type: {
     max: 100.0f,
     bipolar: false
   },
-  LINEAR_BIPOLAR_33_PERCENT: {
-    round: *ROUNDING_ONE_DECIMAL,
+  FINE_BIPOLAR_33_PERCENT: {
+    round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_PERCENT,
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
-    values: [ "-33.0", "-16.5", "0.0", "16.5", "33.0" ],
+    values: [ "-33.00", "-16.50", "0.00", "16.50", "33.00" ],
     min: -33.0f,
     max: 33.0f,
     bipolar: true
@@ -914,12 +914,12 @@ display_scaling_type: {
     max: 50.0f,
     bipolar: true
   },
-  LINEAR_BIPOLAR_66_PERCENT: {
-    round: *ROUNDING_ONE_DECIMAL,
+  FINE_BIPOLAR_66_PERCENT: {
+    round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_PERCENT,
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
-    values: [ "-66.0", "-33.0", "0.0", "33.0", "66.0" ],
+    values: [ "-66.00", "-33.00", "0.00", "33.00", "66.00" ],
     min: -66.0f,
     max: 66.0f,
     bipolar: true

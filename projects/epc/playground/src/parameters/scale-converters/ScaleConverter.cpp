@@ -41,15 +41,16 @@
 #include "LinearBipolar1DbstScaleConverter.h"
 #include "LinearBipolar200PercentScaleConverter.h"
 #include "LinearBipolar24DbScaleConverter.h"
-#include "LinearBipolar33PercentScaleConverter.h"
-#include "LinearBipolar36StScaleConverter.h"
+#include "FineBipolar33PercentScaleConverter.h"
+#include "FineBipolar36StScaleConverter.h"
+#include "FineBipolar72StScaleConverter.h"
 #include "LinearBipolar48DbScaleConverter.h"
 #include "LinearBipolar48StScaleConverter.h"
 #include "LinearBipolar50DbScaleConverter.h"
 #include "LinearBipolar50PercentScaleConverter.h"
 #include "LinearBipolar60DbScaleConverter.h"
 #include "LinearBipolar60StScaleConverter.h"
-#include "LinearBipolar66PercentScaleConverter.h"
+#include "FineBipolar66PercentScaleConverter.h"
 #include "LinearBipolar70DbScaleConverter.h"
 #include "LinearBipolar80StScaleConverter.h"
 #include "LinearBipolar96StScaleConverterCoarse.h"
@@ -194,8 +195,8 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
       return get<FineBipolar160StScaleConverter>();
     case C15::Properties::DisplayScalingType::INTEGRAL_BIPOLAR_60_ST:
       return get<LinearBipolar60StScaleConverter>();
-    case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_36_ST:
-      return get<LinearBipolar36StScaleConverter>();
+    case C15::Properties::DisplayScalingType::FINE_BIPOLAR_36_ST:
+      return get<FineBipolar36StScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_60_ST:
       return get<LinearBipolar60StScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_96_ST:
@@ -218,8 +219,8 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
       return get<Linear60To140StScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_80_140_ST:
       return get<Linear80To140StScaleConverter>();
-    case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_72_ST:
-      return get<LinearBipolar72StScaleConverter>();
+    case C15::Properties::DisplayScalingType::FINE_BIPOLAR_72_ST:
+      return get<FineBipolar72StScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_80_ST:
       return get<LinearBipolar80StScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_100_ST:
@@ -250,12 +251,12 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
       return get<Fine200PercentScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_100_PERCENT:
       return get<Linear100PercentScaleConverter>();
-    case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_33_PERCENT:
-      return get<LinearBipolar33PercentScaleConverter>();
+    case C15::Properties::DisplayScalingType::FINE_BIPOLAR_33_PERCENT:
+      return get<FineBipolar33PercentScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_50_PERCENT:
       return get<LinearBipolar50PercentScaleConverter>();
-    case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_66_PERCENT:
-      return get<LinearBipolar66PercentScaleConverter>();
+    case C15::Properties::DisplayScalingType::FINE_BIPOLAR_66_PERCENT:
+      return get<FineBipolar66PercentScaleConverter>();
     case C15::Properties::DisplayScalingType::PARABOLIC_BIP_100_PERCENT:
       return get<BipolarParabolic100PercentScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_200_PERCENT:
