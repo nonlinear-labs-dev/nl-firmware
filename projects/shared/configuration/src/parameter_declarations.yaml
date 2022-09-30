@@ -75,7 +75,6 @@ parameter_rounding: {
   [&ROUNDING_ONE_DECIMAL One_Decimal],
   [&ROUNDING_TWO_DECIMALS Two_Decimals],
   [&ROUNDING_THREE_DECIMALS Three_Decimals],
-  [&ROUNDING_FOUR_DECIMALS Four_Decimals],
   [&ROUNDING_THREE_SIGNIFICANT_DIGITS Three_Significant_Digits]
 }
 
