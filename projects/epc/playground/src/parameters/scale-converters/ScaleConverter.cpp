@@ -33,6 +33,7 @@
 #include "Linear96StScaleConverter.h"
 #include "LinearBipolar100PercentScaleConverter.h"
 #include "LinearBipolar100StScaleConverter.h"
+#include "LinearBipolar200StScaleConverter.h"
 #include "LinearBipolar120StScaleConverter.h"
 #include "LinearBipolar140StScaleConverter.h"
 #include "LinearBipolar160StScaleConverter.h"
@@ -227,7 +228,7 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_160_ST:
       return get<LinearBipolar160StScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_200_ST:
-      return get<LinearBipolar100StScaleConverter>();
+      return get<LinearBipolar200StScaleConverter>();
     case C15::Properties::DisplayScalingType::NUMERIC_120_ST:
       return get<PitchCombLinearStScaleConverter>();
     case C15::Properties::DisplayScalingType::NUMERIC_BIPOLAR_120_ST:
