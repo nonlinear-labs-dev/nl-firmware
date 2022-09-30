@@ -29,7 +29,7 @@ parameters:
     label_long: Time
     label_short: Time
     control_position: { coarse: 200, fine: 2000, scale: PARABOLIC_2000_MS, initial: 0.433f }
-    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_100_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: FINE_BIPOLAR_100_PERCENT }
     rendering_args: { scaling: Parabolic, factor: 2.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
     info: >
       Mean delay time [in milliseconds].
