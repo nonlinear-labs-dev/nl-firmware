@@ -218,7 +218,7 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_72_ST:
       return get<LinearBipolar72StScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_80_ST:
-      return get<FineBipolar80StScaleConverter>();
+      return get<LinearBipolar80StScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_100_ST:
       return get<LinearBipolar100StScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_120_ST:
