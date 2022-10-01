@@ -48,7 +48,7 @@ parameters:
     label_long: Part Tune
     label_short: Tune
     control_position: { coarse: 48, fine: 4800, scale: FINE_BIPOLAR_48_ST, initial: 0.0f }
-    modulation_aspects: { coarse: 48, fine: 4800, scale: FINE_BIPOLAR_96_ST }
+    modulation_aspects: { coarse: 96, fine: 9600, scale: FINE_BIPOLAR_96_ST }
     rendering_args: { scaling: Linear, factor: 48.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Part pitch transposition [in semitones], available when using Split or Layer mode.

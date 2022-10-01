@@ -40,7 +40,11 @@ parameter_type: {
   Global_Modulateable: [*GLOBAL_PARAMETER, *ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *MODULATION_ASPECTS, *RENDERING_ARGS],
   Global_Unmodulateable: [*GLOBAL_PARAMETER, *ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS],
   Local_Modulateable: [*ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *MODULATION_ASPECTS, *RENDERING_ARGS],
-  Local_Unmodulateable: [*ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS]
+  Local_Unmodulateable: [*ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS],
+  Polyphonic_Modulateable: [*ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *MODULATION_ASPECTS, *RENDERING_ARGS],
+  Polyphonic_Unmodulateable: [*ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS],
+  Monophonic_Modulateable: [*ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *MODULATION_ASPECTS, *RENDERING_ARGS],
+  Monophonic_Unmodulateable: [*ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS]
 }
 
 parameter_signal: {
@@ -167,6 +171,8 @@ display_scaling_type: {
     reference: *REFERENCE_NONE,
     inf: *INF_FINITE,
     values: [],
+    min: 0.0f,
+    max: 0.0f,
     bipolar: false
   },
 
@@ -178,6 +184,8 @@ display_scaling_type: {
     reference: *REFERENCE_INTEGRAL,
     inf: *INF_FINITE,
     values: [ C, D#, F#, G#, B ],
+    min: 0.0f,
+    max: 11.0f,
     bipolar: false
   },
   LINEAR_61_KEYS: {
@@ -186,14 +194,19 @@ display_scaling_type: {
     reference: *REFERENCE_INTEGRAL,
     inf: *INF_FINITE,
     values: [ C1, D#2, F#3, A4, C6 ],
+    min: 0.0f,
+    max: 60.0f,
     bipolar: false
   },
+  # effectively the same scaling as above
   LINEAR_0_60_KEY: {
     round: *ROUNDING_NO_DECIMALS,
     unit: *UNIT_NONE,
     reference: *REFERENCE_INTEGRAL,
     inf: *INF_FINITE,
     values: [ C1, D#2, F#3, A4, C6 ],
+    min: 0.0f,
+    max: 60.0f,
     bipolar: false
   },
   SWITCH_ON_OFF: {
@@ -202,6 +215,8 @@ display_scaling_type: {
     reference: *REFERENCE_INTEGRAL,
     inf: *INF_FINITE,
     values: [ "Off", "On" ],
+    min: 0.0f,
+    max: 1.0f,
     bipolar: false
   },
   SWITCH_PRIO: {
@@ -210,6 +225,8 @@ display_scaling_type: {
     reference: *REFERENCE_INTEGRAL,
     inf: *INF_FINITE,
     values: [ Latest, Highest, Lowest ],
+    min: 0.0f,
+    max: 2.0f,
     bipolar: false
   },
   MODES_LEGATO: {
@@ -218,6 +235,8 @@ display_scaling_type: {
     reference: *REFERENCE_INTEGRAL,
     inf: *INF_FINITE,
     values: [ None, Env, Glide, Env&Gld ],
+    min: 0.0f,
+    max: 3.0f,
     bipolar: false
   },
 
@@ -229,6 +248,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-1200.0", "-600.0", "0.0", "600.0", "1200.0" ],
+    min: -1200.0f,
+    max: 1200.0f,
     bipolar: true
   },
   LINEAR_BIPOLAR_2400_CENT: {
@@ -237,6 +258,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-2400.0", "-1200.0", "0.0", "1200.0", "2400.0" ],
+    min: -2400.0f,
+    max: 2400.0f,
     bipolar: true
   },
 
@@ -248,6 +271,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "0.0", "12.5", "25.0", "37.5", "50.0" ],
+    min: 0.0f,
+    max: 50.0f,
     bipolar: false
   },
   LINEAR_BIPOLAR_50_DB: {
@@ -256,6 +281,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-50.0", "-25.0", "0.0", "25.0", "50.0" ],
+    min: -50.0f,
+    max: 50.0f,
     bipolar: true
   },
   # LINEAR_60_DB: {
@@ -265,6 +292,8 @@ display_scaling_type: {
   #   reference: *REFERENCE_LINEAR,
   #   inf: *INF_FINITE,
   #   values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ],
+  #   min: 0.0f,
+  #   max: 60.0f,
   #   bipolar: false
   # },
   LINEAR_MINUS_50_0_DB: {
@@ -273,6 +302,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-50.0", "-37.5", "-25.0", "-12.5", "0.0" ],
+    min: -50.0f,
+    max: 0.0f,
     bipolar: false
   },
   LINEAR_BIPOLAR_24_DB: {
@@ -281,6 +312,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-24.0", "-12.0", "0.0", "12.0", "24.0" ],
+    min: -24.0f,
+    max: 24.0f,
     bipolar: true
   },
   LINEAR_BIPOLAR_48_DB: {
@@ -289,6 +322,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-48.0", "-24.0", "0.0", "24.0", "48.0" ],
+    min: -48.0f,
+    max: 48.0f,
     bipolar: true
   },
   PARABOLIC_GAIN_DB: {
@@ -297,6 +332,8 @@ display_scaling_type: {
     reference: *REFERENCE_GAIN,
     inf: *INF_MIN,
     values: [ "-108", "-12.0", "0.000", "7.04", "12.0" ],
+    min: -108.0f, # unclear if this is useful
+    max: 12.0f,   # unclear if this is useful
     bipolar: false
   },
   LINEAR_70_DB: {
@@ -305,6 +342,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "0.0", "17.5", "35.0", "52.5", "70.0" ],
+    min: 0.0f,
+    max: 70.0f,
     bipolar: false
   },
   LINEAR_BIPOLAR_70_DB: {
@@ -313,6 +352,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-70.0", "-35.0", "0.0", "35.0", "70.0" ],
+    min: -70.0f,
+    max: 70.0f,
     bipolar: true
   },
   LINEAR_BIPOLAR_60_DB: {
@@ -321,6 +362,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
+    min: -60.0f,
+    max: 60.0f,
     bipolar: true
   },
 
@@ -333,6 +376,8 @@ display_scaling_type: {
   #   reference: *REFERENCE_LINEAR,
   #   inf: *INF_FINITE,
   #   values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ],
+  #   min: 0.0f,
+  #   max: 60.0f,
   #   bipolar: false
   # },
   # LINEAR_BIPOLAR_60_DBT: {
@@ -342,6 +387,8 @@ display_scaling_type: {
   #   reference: *REFERENCE_LINEAR,
   #   inf: *INF_FINITE,
   #   values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
+  #   min: -60.0f,
+  #   max: 60.0f,
   #   bipolar: true
   # },
   # LINEAR_INVERTED_60_DBT: {
@@ -351,6 +398,8 @@ display_scaling_type: {
   #   reference: *REFERENCE_LINEAR,
   #   inf: *INF_FINITE,
   #   values: [ "-60.0", "-45.0", "-30.0", "-15.0", "0.0" ],
+  #   min: -60.0f,
+  #   max: 0.0f,
   #   bipolar: false
   # },
   LINEAR_BIPOLAR_INVERTED_60_DBT: {
@@ -359,6 +408,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
+    min: -60.0f,
+    max: 60.0f,
     bipolar: true
   },
 
@@ -370,6 +421,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-1.000", "-0.500", "0.000", "0.500", "1.000" ],
+    min: -1.0f,
+    max: 1.0f,
     bipolar: true
   },
 
@@ -381,6 +434,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "0.0", "45.0", "90.0", "135.0", "180.0" ],
+    min: 0.0f,
+    max: 180.0f,
     bipolar: false
   },
   LINEAR_360_DEG: {
@@ -389,6 +444,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "0.0", "90.0", "180.0", "270.0", "360.0" ],
+    min: 0.0f,
+    max: 360.0f,
     bipolar: false
   },
   LINEAR_BIPOLAR_360_DEG: {
@@ -397,6 +454,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-360.0", "-180.0", "0.0", "180.0", "360.0" ],
+    min: -360.0f,
+    max: 360.0f,
     bipolar: true
   },
   LINEAR_BIPOLAR_180_DEG: {
@@ -405,6 +464,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-180.0", "-90.0", "0", "90.0", "180.0" ],
+    min: -180.0f,
+    max: 180.0f,
     bipolar: true
   },
 
@@ -416,6 +477,8 @@ display_scaling_type: {
     reference: *REFERENCE_PARABOLIC,
     inf: *INF_FINITE,
     values: [ "0.000", "0.625", "2.50", "5.63", "10.0" ],
+    min: 0.0f,
+    max: 10.0f,
     bipolar: false
   },
 
@@ -427,6 +490,8 @@ display_scaling_type: {
     reference: *REFERENCE_EXPONENTIAL,
     inf: *INF_FINITE,
     values: [ "-100000", "-316", "0.000", "316", "100000" ],
+    min: -100000.0f,
+    max: 100000.0f,
     bipolar: true
   },
   ENVELOPE_TIME_MS: {
@@ -435,6 +500,8 @@ display_scaling_type: {
     reference: *REFERENCE_EXPONENTIAL,
     inf: *INF_FINITE,
     values: [ "0.000", "2.00", "40.0", "800", "16000" ],
+    min: 0.0f,
+    max: 16000.0f,
     bipolar: false
   },
   ENVELOPE_TIME_MS_INF: {
@@ -443,6 +510,8 @@ display_scaling_type: {
     reference: *REFERENCE_EXPONENTIAL,
     inf: *INF_MAX,
     values: [ "0.000", "2.00", "40.0", "800", "16000" ],
+    min: 0.0f,
+    max: 16000.0f, # unclear if this is useful
     bipolar: false
   },
   PARABOLIC_50_MS: {
@@ -451,6 +520,8 @@ display_scaling_type: {
     reference: *REFERENCE_PARABOLIC,
     inf: *INF_FINITE,
     values: [ "0.000", "3.14", "12.5", "28.2", "50.0" ],
+    min: 0.0f,
+    max: 50.0f,
     bipolar: false
   },
   PARABOLIC_2000_MS: {
@@ -459,6 +530,8 @@ display_scaling_type: {
     reference: *REFERENCE_PARABOLIC,
     inf: *INF_FINITE,
     values: [ "0.000", "125", "500", "1130", "2000" ],
+    min: 0.0f,
+    max: 2000.0f,
     bipolar: false
   },
 
@@ -470,6 +543,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-48.00", "-24.00", "0.00", "24.00", "48.00" ],
+    min: -48.0f,
+    max: 48.0f,
     bipolar: true
   },
   FINE_BIPOLAR_96_ST: {
@@ -478,6 +553,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-96.00", "-48.00", "0.00", "48.00", "96.00" ],
+    min: -96.0f,
+    max: 96.0f,
     bipolar: true
   },
   FINE_BIPOLAR_80_ST: {
@@ -486,6 +563,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-80.00", "-40.00", "0.00", "40.00", "80.00" ],
+    min: -80.0f,
+    max: 80.0f,
     bipolar: true
   },
   FINE_BIPOLAR_160_ST: {
@@ -494,6 +573,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-160.00", "-80.00", "0.00", "80.00", "160.00" ],
+    min: -160.0f,
+    max: 160.0f,
     bipolar: true
   },
   INTEGRAL_BIPOLAR_60_ST: {
@@ -502,14 +583,18 @@ display_scaling_type: {
     reference: *REFERENCE_INTEGRAL,
     inf: *INF_FINITE,
     values: [ "-60", "-30", "0", "30", "60" ],
+    min: -60.0f,
+    max: 60.0f,
     bipolar: true
   },
-  LINEAR_BIPOLAR_36_ST: {
-    round: *ROUNDING_ONE_DECIMAL,
+  FINE_BIPOLAR_36_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
-    values: [ "-36.0", "-18.0", "0.0", "18.0", "36.0" ],
+    values: [ "-36.00", "-18.00", "0.00", "18.00", "36.00" ],
+    min: -36.0f,
+    max: 36.0f,
     bipolar: true
   },
   LINEAR_BIPOLAR_60_ST: {
@@ -518,6 +603,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
+    min: -60.0f,
+    max: 60.0f,
     bipolar: true
   },
   LINEAR_96_ST: {
@@ -526,6 +613,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "0.0", "24.0", "48.0", "72.0", "96.0" ],
+    min: 0.0f,
+    max: 96.0f,
     bipolar: false
   },
   LINEAR_BIPOLAR_96_ST: {
@@ -534,6 +623,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-96.0", "-48.0", "0.0", "48.0", "96.0" ],
+    min: -96.0f,
+    max: 96.0f,
     bipolar: true
   },
   LINEAR_0_140_ST: {
@@ -542,6 +633,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "0.0", "35.0", "70.0", "105.0", "140.0" ],
+    min: 0.0f,
+    max: 140.0f,
     bipolar: false
   },
   LINEAR_BIPOLAR_140_ST: {
@@ -550,6 +643,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-140.0", "-70.0", "0.0", "70.0", "140.0" ],
+    min: -140.0f,
+    max: 140.0f,
     bipolar: true
   },
   LINEAR_20_100_ST: {
@@ -558,6 +653,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "20.0", "40.0", "60.0", "80.0", "100.0" ],
+    min: 20.0f,
+    max: 100.0f,
     bipolar: false
   },
   LINEAR_20_140_ST: {
@@ -566,6 +663,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "20.0", "50.0", "80.0", "110.0", "140.0" ],
+    min: 20.0f,
+    max: 140.0f,
     bipolar: false
   },
   LINEAR_24_120_ST: {
@@ -574,6 +673,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "24.0", "48.0", "72.0", "96.0", "120.0" ],
+    min: 24.0f,
+    max: 120.0f,
     bipolar: false
   },
   LINEAR_40_140_ST: {
@@ -582,6 +683,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "40.0", "65.0", "90.0", "115.0", "140.0" ],
+    min: 40.0f,
+    max: 140.0f,
     bipolar: false
   },
   LINEAR_60_140_ST: {
@@ -590,6 +693,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "60.0", "80.0", "100.0", "120.0", "140.0" ],
+    min: 60.0f,
+    max: 140.0f,
     bipolar: false
   },
   LINEAR_80_140_ST: {
@@ -598,14 +703,18 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "80.0", "95.0", "110.0", "125.0", "140.0" ],
+    min: 80.0f,
+    max: 140.0f,
     bipolar: false
   },
-  LINEAR_BIPOLAR_72_ST: {
-    round: *ROUNDING_ONE_DECIMAL,
+  FINE_BIPOLAR_72_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_ST,
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
-    values: [ "-72.0", "-36.0", "0.0", "36.0", "72.0" ],
+    values: [ "-72.00", "-36.00", "0.00", "36.00", "72.00" ],
+    min: -72.0f,
+    max: 72.0f,
     bipolar: true
   },
   LINEAR_BIPOLAR_80_ST: {
@@ -614,6 +723,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-80.0", "-40.0", "0.0", "40.0", "80.0" ],
+    min: -80.0f,
+    max: 80.0f,
     bipolar: true
   },
   LINEAR_BIPOLAR_100_ST: {
@@ -622,6 +733,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-100.0", "-50.0", "0.0", "50.0", "100.0" ],
+    min: -100.0f,
+    max: 100.0f,
     bipolar: true
   },
   LINEAR_BIPOLAR_120_ST: {
@@ -630,6 +743,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-120.0", "-60.0", "0.0", "60.0", "120.0" ],
+    min: -120.0f,
+    max: 120.0f,
     bipolar: true
   },
   LINEAR_BIPOLAR_160_ST: {
@@ -638,6 +753,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-160.0", "-80.0", "0.0", "80.0", "160.0" ],
+    min: -160.0f,
+    max: 160.0f,
     bipolar: true
   },
   LINEAR_BIPOLAR_200_ST: {
@@ -646,6 +763,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-200.0", "-100.0", "0.0", "100.0", "200.0" ],
+    min: -200.0f,
+    max: 200.0f,
     bipolar: true
   },
   NUMERIC_120_ST: {
@@ -654,6 +773,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "0.00", "30.00", "60.00", "90.00", "120.00" ],
+    min: 0.0f,
+    max: 120.0f,
     bipolar: false
   },
   NUMERIC_BIPOLAR_120_ST: {
@@ -662,6 +783,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-120.00", "-60.00", "0.00", "60.00", "120.00" ],
+    min: -120.0f,
+    max: 120.0f,
     bipolar: true
   },
   NUMERIC_150_ST: {
@@ -670,6 +793,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-20.00", "17.50", "55.00", "92.50", "130.00" ],
+    min: -20.0f,
+    max: 130.0f,
     bipolar: false
   },
   NUMERIC_BIPOLAR_150_ST: {
@@ -678,6 +803,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-150.00", "-75.00", "0.00", "75.00", "150.00" ],
+    min: -150.0f,
+    max: 150.0f,
     bipolar: true
   },
   VERY_FINE_24_ST: {
@@ -686,6 +813,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "0.000", "6.000", "12.000", "18.000", "24.000" ],
+    min: 0.0f,
+    max: 24.0f,
     bipolar: false
   },
   VERY_FINE_BIPOLAR_24_ST: {
@@ -694,6 +823,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-24.000", "-12.000", "0.000", "12.000", "24.000" ],
+    min: -24.0f,
+    max: 24.0f,
     bipolar: true
   },
   LINEAR_0_60_ST: {
@@ -702,6 +833,8 @@ display_scaling_type: {
     reference: *REFERENCE_INTEGRAL,
     inf: *INF_FINITE,
     values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ],
+    min: 0.0f,
+    max: 60.0f,
     bipolar: false
   },
 
@@ -713,6 +846,8 @@ display_scaling_type: {
     reference: *REFERENCE_INTEGRAL,
     inf: *INF_FINITE,
     values: [ "1", "7", "13", "18", "24" ],
+    min: 1.0f,  # unclear if this is useful
+    max: 24.0f, # unclear if this is useful
     bipolar: false
   },
 
@@ -724,7 +859,19 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "0.00", "50.00", "100.00", "150.00", "200.00" ],
+    min: 0.0f,
+    max: 200.0f,
     bipolar: false
+  },
+  FINE_BIPOLAR_100_PERCENT: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-100.00", "-50.00", "0.00", "50.00", "200.00" ],
+    min: -100.0f,
+    max: 100.0f,
+    bipolar: true
   },
   FINE_BIPOLAR_200_PERCENT: {
     round: *ROUNDING_TWO_DECIMALS,
@@ -732,6 +879,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-200.00", "-100.00", "0.00", "100.00", "200.00" ],
+    min: -200.0f,
+    max: 200.0f,
     bipolar: true
   },
   LINEAR_100_PERCENT: {
@@ -740,14 +889,18 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "0.0", "25.0", "50.0", "75.0", "100.0" ],
+    min: 0.0f,
+    max: 100.0f,
     bipolar: false
   },
-  LINEAR_BIPOLAR_33_PERCENT: {
-    round: *ROUNDING_ONE_DECIMAL,
+  FINE_BIPOLAR_33_PERCENT: {
+    round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_PERCENT,
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
-    values: [ "-33.0", "-16.5", "0.0", "16.5", "33.0" ],
+    values: [ "-33.00", "-16.50", "0.00", "16.50", "33.00" ],
+    min: -33.0f,
+    max: 33.0f,
     bipolar: true
   },
   LINEAR_BIPOLAR_50_PERCENT: {
@@ -756,14 +909,18 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-50.0", "-25.0", "0.0", "25.0", "50.0" ],
+    min: -50.0f,
+    max: 50.0f,
     bipolar: true
   },
-  LINEAR_BIPOLAR_66_PERCENT: {
-    round: *ROUNDING_ONE_DECIMAL,
+  FINE_BIPOLAR_66_PERCENT: {
+    round: *ROUNDING_TWO_DECIMALS,
     unit: *UNIT_PERCENT,
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
-    values: [ "-66.0", "-33.0", "0.0", "33.0", "66.0" ],
+    values: [ "-66.00", "-33.00", "0.00", "33.00", "66.00" ],
+    min: -66.0f,
+    max: 66.0f,
     bipolar: true
   },
   PARABOLIC_BIP_100_PERCENT: {
@@ -772,6 +929,8 @@ display_scaling_type: {
     reference: *REFERENCE_PARABOLIC,
     inf: *INF_FINITE,
     values: [ "-100.0", "-25.0", "0.0", "25.0", "100.0" ],
+    min: -100.0f,
+    max: 100.0f,
     bipolar: true
   },
   LINEAR_200_PERCENT: {
@@ -780,6 +939,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "0.0", "50.0", "100.0" , "150.0", "200.0"],
+    min: 0.0f,
+    max: 200.0f,
     bipolar: false
   },  
   LINEAR_BIPOLAR_100_PERCENT: {
@@ -788,6 +949,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-100.0", "-50.0", "0.0", "50.0", "100.0" ],
+    min: -100.0f,
+    max: 100.0f,
     bipolar: true
   },
   LINEAR_BIPOLAR_200_PERCENT: {
@@ -796,6 +959,8 @@ display_scaling_type: {
     reference: *REFERENCE_LINEAR,
     inf: *INF_FINITE,
     values: [ "-200.0", "-100.0", "0.0", "100.0", "200.0" ],
+    min: -200.0f,
+    max: 200.0f,
     bipolar: true
   }
 }

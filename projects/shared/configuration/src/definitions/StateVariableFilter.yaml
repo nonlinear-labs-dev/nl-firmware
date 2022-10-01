@@ -44,7 +44,7 @@ parameters:
     label_long: Comb Mix
     label_short: Comb Mix
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
     info: >
       The input signal for the State Variable Filter as mix of the signals from the A-B mixer and from the Comb Filter.
@@ -78,7 +78,7 @@ parameters:
     label_long: Cutoff - Env C
     label_short: Env C
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_ST, initial: 0.0f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_ST }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_ST }
     rendering_args: { scaling: Linear, factor: 100.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Amount of cutoff modulation by Envelope C [in semitones].
@@ -98,7 +98,7 @@ parameters:
     label_long: Reson - Key Trk
     label_short: Key Trk
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Key scaling of the filter resonance.\n
@@ -111,7 +111,7 @@ parameters:
     label_long: Reson - Env C
     label_short: Env C
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Amount of resonance modulation by Envelope C.
@@ -121,7 +121,7 @@ parameters:
     label_long: Spread
     label_short: Spread
     control_position: { coarse: 60, fine: 600, scale: LINEAR_BIPOLAR_60_ST, initial: 0.2f }
-    modulation_aspects: { coarse: 60, fine: 600, scale: LINEAR_BIPOLAR_120_ST }
+    modulation_aspects: { coarse: 120, fine: 1200, scale: LINEAR_BIPOLAR_120_ST }
     rendering_args: { scaling: Linear, factor: 30.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Amount of splitting of the cutoffs of the two 2-pole filters.
@@ -146,7 +146,7 @@ parameters:
     label_long: Parallel
     label_short: Parallel
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       At zero, the two 2-pole filter stages are in series forming a 4-pole filter.
@@ -160,7 +160,7 @@ parameters:
     label_long: FM
     label_short: FM
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 5.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Amount of (phase) modulation of the comb filter pitch (delay time) by the output signals of

@@ -179,7 +179,7 @@ parameters:
     label_long: Attack Curve
     label_short: Curve
     control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
     info: >
       Curvature of the (polynomial) Attack segment.

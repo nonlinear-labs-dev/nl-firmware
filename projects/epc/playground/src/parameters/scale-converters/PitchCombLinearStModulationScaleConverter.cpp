@@ -9,13 +9,3 @@ PitchCombLinearStModulationScaleConverter::PitchCombLinearStModulationScaleConve
 PitchCombLinearStModulationScaleConverter::~PitchCombLinearStModulationScaleConverter()
 {
 }
-
-tControlPositionValue PitchCombLinearStModulationScaleConverter::getCoarseDenominator(const QuantizedValue &v) const
-{
-  return 120;
-}
-
-tControlPositionValue PitchCombLinearStModulationScaleConverter::getFineDenominator(const QuantizedValue &v) const
-{
-  return 6000;
-}

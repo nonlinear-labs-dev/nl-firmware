@@ -51,8 +51,8 @@ parameters:
     token: Phase
     label_long: Phase
     label_short: Phase
-    control_position: { coarse: 180, fine: 3600, scale: LINEAR_360_DEG, initial: 0.0f }
-    modulation_aspects: { coarse: 180, fine: 3600, scale: LINEAR_BIPOLAR_360_DEG }
+    control_position: { coarse: 72, fine: 3600, scale: LINEAR_360_DEG, initial: 0.0f }
+    modulation_aspects: { coarse: 72, fine: 3600, scale: LINEAR_BIPOLAR_360_DEG }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Audio, signal: None }
     info: >
       Spreading the (Oscillators') start phases of the unison voices to get different

@@ -9,13 +9,3 @@ PitchOscLinearStScaleModulationConverter::PitchOscLinearStScaleModulationConvert
 PitchOscLinearStScaleModulationConverter::~PitchOscLinearStScaleModulationConverter()
 {
 }
-
-tControlPositionValue PitchOscLinearStScaleModulationConverter::getCoarseDenominator(const QuantizedValue &v) const
-{
-  return 150;
-}
-
-tControlPositionValue PitchOscLinearStScaleModulationConverter::getFineDenominator(const QuantizedValue &v) const
-{
-  return 7500;
-}

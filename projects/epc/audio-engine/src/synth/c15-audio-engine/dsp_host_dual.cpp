@@ -2,6 +2,7 @@
 #include <MidiRuntimeOptions.h>
 #include <cassert>
 #include <nltools/messaging/Messaging.h>
+#include <parameter_group.h>
 
 using namespace std::chrono_literals;
 
@@ -278,27 +279,30 @@ void dsp_host_dual::init(const uint32_t _samplerate,
     }
   }
   // temporary: load initials in order to have valid osc reset params
-  // onSettingInitialSinglePreset();
+  //onSettingInitialSinglePreset();
 
-  if (LOG_INIT) {
-    // nltools::Log::info("dsp_host_dual::init - engine dsp status: global");
-    // nltools::Log::info("missing: nltools::msg - reference, initial:",
-    // m_reference.m_scaled);
+  if(LOG_INIT)
+  {
+    //nltools::Log::info("dsp_host_dual::init - engine dsp status: global");
+    //nltools::Log::info("missing: nltools::msg - reference, initial:", m_reference.m_scaled);
   }
 }
 
-C15::ParameterDescriptor dsp_host_dual::getParameter(const int _id) {
-  if ((_id > -1) && (_id < C15::Config::tcd_elements)) {
-    if (LOG_DISPATCH) {
-      if (C15::ParameterList[_id].m_param.m_type !=
-          C15::Descriptors::ParameterType::None) {
-        nltools::Log::info(
-            "dispatch(", _id,
-            "):", C15::ParameterList[_id].m_pg.m_group_label_short, "-",
-            C15::ParameterList[_id].m_pg.m_param_label_short);
-      } else {
-        nltools::Log::warning(__PRETTY_FUNCTION__, "dispatch(", _id,
-                              "): None!");
+C15::ParameterDescriptor dsp_host_dual::getParameter(const int _id)
+{
+  if((_id > -1) && (_id < C15::Config::tcd_elements))
+  {
+    if(LOG_DISPATCH)
+    {
+      if(C15::ParameterList[_id].m_param.m_type != C15::Descriptors::ParameterType::None)
+      {
+        nltools::Log::info("dispatch(", _id,
+                           "):", C15::ParameterGroups[(unsigned) C15::ParameterList[_id].m_group].m_label_short, "-",
+                           C15::ParameterList[_id].m_pg.m_param_label_short);
+      }
+      else
+      {
+        nltools::Log::warning(__PRETTY_FUNCTION__, "dispatch(", _id, "): None!");
       }
     }
     return C15::ParameterList[_id];
@@ -325,119 +329,80 @@ void dsp_host_dual::logStatus() {
         "Engine Param Status - - - - - - - - - - - - - - - \n\n");
     for (unsigned int i : LOG_PARAMS) {
       auto element = C15::ParameterList[i];
-      switch (element.m_param.m_type) {
-      case C15::Descriptors::ParameterType::None:
-        break;
-      case C15::Descriptors::ParameterType::Hardware_Source:
-        nltools::Log::info(
-            "HW[", i, "]", element.m_pg.m_group_label_short, ">",
-            element.m_pg.m_param_label_short,
-            ":(pos:", m_params.get_hw_src(element.m_param.m_index)->m_position,
-            ", beh:",
-            static_cast<int>(
-                m_params.get_hw_src(element.m_param.m_index)->m_behavior),
-            ")");
-        break;
-      case C15::Descriptors::ParameterType::Hardware_Amount:
-        nltools::Log::info(
-            "HA[", i, "]", element.m_pg.m_group_label_short, ">",
-            element.m_pg.m_param_label_short,
-            ":(pos:", m_params.get_hw_amt(element.m_param.m_index)->m_position,
-            ")");
-        break;
-      case C15::Descriptors::ParameterType::Macro_Control:
-        nltools::Log::info(
-            "MC[", i, "]", element.m_pg.m_group_label_short, ">",
-            element.m_pg.m_param_label_short,
-            ":(pos:", m_params.get_macro(element.m_param.m_index)->m_position,
-            ")");
-        break;
-      case C15::Descriptors::ParameterType::Macro_Time:
-        nltools::Log::info(
-            "MT[", i, "]", element.m_pg.m_group_label_short, ">",
-            element.m_pg.m_param_label_short, ":(pos:",
-            m_params.get_macro_time(element.m_param.m_index)->m_position,
-            ", scl:",
-            m_params.get_macro_time(element.m_param.m_index)->m_scaled, ")");
-        break;
-      case C15::Descriptors::ParameterType::Global_Modulateable:
-        nltools::Log::info(
-            "GT[", i, "]", element.m_pg.m_group_label_short, ">",
-            element.m_pg.m_param_label_short, ":(pos:",
-            m_params.get_global_target(element.m_param.m_index)
-                ->polarize(m_params.get_global_target(element.m_param.m_index)
-                               ->m_position),
-            ", scl:",
-            m_params.get_global_target(element.m_param.m_index)->m_scaled,
-            ", amt:",
-            m_params.get_global_target(element.m_param.m_index)->m_amount,
-            ", src:",
-            static_cast<int>(
-                m_params.get_global_target(element.m_param.m_index)->m_source),
-            ")");
-        break;
-      case C15::Descriptors::ParameterType::Global_Unmodulateable:
-        nltools::Log::info(
-            "GD[", i, "]", element.m_pg.m_group_label_short, ">",
-            element.m_pg.m_param_label_short, ":(pos:",
-            m_params.get_global_direct(element.m_param.m_index)->m_position,
-            ", scl:",
-            m_params.get_global_direct(element.m_param.m_index)->m_scaled, ")");
-        break;
-      case C15::Descriptors::ParameterType::Local_Modulateable:
-        nltools::Log::info(
-            "LT[I, ", i, "]", element.m_pg.m_group_label_short, ">",
-            element.m_pg.m_param_label_short, ":(pos:",
-            m_params.get_local_target(0, element.m_param.m_index)
-                ->polarize(
-                    m_params.get_local_target(0, element.m_param.m_index)
-                        ->m_position),
-            ", scl:",
-            m_params.get_local_target(0, element.m_param.m_index)->m_scaled,
-            ", amt:",
-            m_params.get_local_target(0, element.m_param.m_index)->m_amount,
-            ", src:",
-            static_cast<int>(
-                m_params.get_local_target(0, element.m_param.m_index)
-                    ->m_source),
-            ")");
-        if (m_layer_mode != C15::Properties::LayerMode::Single) {
-          nltools::Log::info(
-              "LT[II, ", i, "]", element.m_pg.m_group_label_short, ">",
-              element.m_pg.m_param_label_short, ":(pos:",
-              m_params.get_local_target(1, element.m_param.m_index)
-                  ->polarize(
-                      m_params.get_local_target(1, element.m_param.m_index)
-                          ->m_position),
-              ", scl:",
-              m_params.get_local_target(1, element.m_param.m_index)->m_scaled,
-              ", amt:",
-              m_params.get_local_target(1, element.m_param.m_index)->m_amount,
-              ", src:",
-              static_cast<int>(
-                  m_params.get_local_target(1, element.m_param.m_index)
-                      ->m_source),
-              ")");
-        }
-        break;
-      case C15::Descriptors::ParameterType::Local_Unmodulateable:
-        nltools::Log::info(
-            "LD[I, ", i, "]", element.m_pg.m_group_label_short, ">",
-            element.m_pg.m_param_label_short, ":(pos:",
-            m_params.get_local_direct(0, element.m_param.m_index)->m_position,
-            ", scl:",
-            m_params.get_local_direct(0, element.m_param.m_index)->m_scaled,
-            ")");
-        if (m_layer_mode != C15::Properties::LayerMode::Single) {
-          nltools::Log::info(
-              "LD[II, ", i, "]", element.m_pg.m_group_label_short, ">",
-              element.m_pg.m_param_label_short, ":(pos:",
-              m_params.get_local_direct(1, element.m_param.m_index)->m_position,
-              ", scl:",
-              m_params.get_local_direct(1, element.m_param.m_index)->m_scaled,
-              ")");
-        }
-        break;
+      switch(element.m_param.m_type)
+      {
+        case C15::Descriptors::ParameterType::None:
+          break;
+        case C15::Descriptors::ParameterType::Hardware_Source:
+          nltools::Log::info("HW[", i, "]", C15::ParameterGroups[(unsigned) element.m_group].m_label_short, ">",
+                             element.m_pg.m_param_label_short,
+                             ":(pos:", m_params.get_hw_src(element.m_param.m_index)->m_position,
+                             ", beh:", static_cast<int>(m_params.get_hw_src(element.m_param.m_index)->m_behavior), ")");
+          break;
+        case C15::Descriptors::ParameterType::Hardware_Amount:
+          nltools::Log::info("HA[", i, "]", C15::ParameterGroups[(unsigned) element.m_group].m_label_short, ">",
+                             element.m_pg.m_param_label_short,
+                             ":(pos:", m_params.get_hw_amt(element.m_param.m_index)->m_position, ")");
+          break;
+        case C15::Descriptors::ParameterType::Macro_Control:
+          nltools::Log::info("MC[", i, "]", C15::ParameterGroups[(unsigned) element.m_group].m_label_short, ">",
+                             element.m_pg.m_param_label_short,
+                             ":(pos:", m_params.get_macro(element.m_param.m_index)->m_position, ")");
+          break;
+        case C15::Descriptors::ParameterType::Macro_Time:
+          nltools::Log::info("MT[", i, "]", C15::ParameterGroups[(unsigned) element.m_group].m_label_short, ">",
+                             element.m_pg.m_param_label_short,
+                             ":(pos:", m_params.get_macro_time(element.m_param.m_index)->m_position,
+                             ", scl:", m_params.get_macro_time(element.m_param.m_index)->m_scaled, ")");
+          break;
+        case C15::Descriptors::ParameterType::Global_Modulateable:
+          nltools::Log::info("GT[", i, "]", C15::ParameterGroups[(unsigned) element.m_group].m_label_short, ">",
+                             element.m_pg.m_param_label_short, ":(pos:",
+                             m_params.get_global_target(element.m_param.m_index)
+                                 ->polarize(m_params.get_global_target(element.m_param.m_index)->m_position),
+                             ", scl:", m_params.get_global_target(element.m_param.m_index)->m_scaled,
+                             ", amt:", m_params.get_global_target(element.m_param.m_index)->m_amount,
+                             ", src:", static_cast<int>(m_params.get_global_target(element.m_param.m_index)->m_source),
+                             ")");
+          break;
+        case C15::Descriptors::ParameterType::Global_Unmodulateable:
+          nltools::Log::info("GD[", i, "]", C15::ParameterGroups[(unsigned) element.m_group].m_label_short, ">",
+                             element.m_pg.m_param_label_short,
+                             ":(pos:", m_params.get_global_direct(element.m_param.m_index)->m_position,
+                             ", scl:", m_params.get_global_direct(element.m_param.m_index)->m_scaled, ")");
+          break;
+        case C15::Descriptors::ParameterType::Local_Modulateable:
+          nltools::Log::info("LT[I, ", i, "]", C15::ParameterGroups[(unsigned) element.m_group].m_label_short, ">",
+                             element.m_pg.m_param_label_short, ":(pos:",
+                             m_params.get_local_target(0, element.m_param.m_index)
+                                 ->polarize(m_params.get_local_target(0, element.m_param.m_index)->m_position),
+                             ", scl:", m_params.get_local_target(0, element.m_param.m_index)->m_scaled,
+                             ", amt:", m_params.get_local_target(0, element.m_param.m_index)->m_amount, ", src:",
+                             static_cast<int>(m_params.get_local_target(0, element.m_param.m_index)->m_source), ")");
+          if(m_layer_mode != C15::Properties::LayerMode::Single)
+          {
+            nltools::Log::info("LT[II, ", i, "]", C15::ParameterGroups[(unsigned) element.m_group].m_label_short, ">",
+                               element.m_pg.m_param_label_short, ":(pos:",
+                               m_params.get_local_target(1, element.m_param.m_index)
+                                   ->polarize(m_params.get_local_target(1, element.m_param.m_index)->m_position),
+                               ", scl:", m_params.get_local_target(1, element.m_param.m_index)->m_scaled,
+                               ", amt:", m_params.get_local_target(1, element.m_param.m_index)->m_amount, ", src:",
+                               static_cast<int>(m_params.get_local_target(1, element.m_param.m_index)->m_source), ")");
+          }
+          break;
+        case C15::Descriptors::ParameterType::Local_Unmodulateable:
+          nltools::Log::info("LD[I, ", i, "]", C15::ParameterGroups[(unsigned) element.m_group].m_label_short, ">",
+                             element.m_pg.m_param_label_short,
+                             ":(pos:", m_params.get_local_direct(0, element.m_param.m_index)->m_position,
+                             ", scl:", m_params.get_local_direct(0, element.m_param.m_index)->m_scaled, ")");
+          if(m_layer_mode != C15::Properties::LayerMode::Single)
+          {
+            nltools::Log::info("LD[II, ", i, "]", C15::ParameterGroups[(unsigned) element.m_group].m_label_short, ">",
+                               element.m_pg.m_param_label_short,
+                               ":(pos:", m_params.get_local_direct(1, element.m_param.m_index)->m_position,
+                               ", scl:", m_params.get_local_direct(1, element.m_param.m_index)->m_scaled, ")");
+          }
+          break;
       }
     }
     nltools::Log::info(
@@ -456,14 +421,16 @@ dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage &_msg) {
   if (m_glitch_suppression) {
     OutputResetEventSource result;
     // glitch suppression: start outputMute fade
-    m_fade.muteAndDo([&] {
-      // global flush
-      m_poly[0].flushDSP();
-      m_poly[1].flushDSP();
-      m_mono[0].flushDSP();
-      m_mono[1].flushDSP();
-      result = recallSingle(_msg);
-    });
+    m_fade.muteAndDo(
+        [&]
+        {
+          // global flush
+          m_poly[0].flushDSP();
+          m_poly[1].flushDSP();
+          m_mono[0].flushDSP();
+          m_mono[1].flushDSP();
+          result = recallSingle(_msg);
+        });
 
     if (LOG_RECALL) {
       nltools::Log::info(__PRETTY_FUNCTION__,
@@ -486,14 +453,16 @@ dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage &_msg) {
   if (m_glitch_suppression) {
     OutputResetEventSource result;
     // glitch suppression: start outputMute fade
-    m_fade.muteAndDo([&] {
-      // global flush
-      m_poly[0].flushDSP();
-      m_poly[1].flushDSP();
-      m_mono[0].flushDSP();
-      m_mono[1].flushDSP();
-      result = recallSplit(_msg);
-    });
+    m_fade.muteAndDo(
+        [&]
+        {
+          // global flush
+          m_poly[0].flushDSP();
+          m_poly[1].flushDSP();
+          m_mono[0].flushDSP();
+          m_mono[1].flushDSP();
+          result = recallSplit(_msg);
+        });
 
     if (LOG_RECALL) {
       nltools::Log::info(__PRETTY_FUNCTION__,
@@ -515,14 +484,16 @@ dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage &_msg) {
   if (m_glitch_suppression) {
     OutputResetEventSource result;
     // glitch suppression: start outputMute fade
-    m_fade.muteAndDo([&] {
-      // global flush
-      m_poly[0].flushDSP();
-      m_poly[1].flushDSP();
-      m_mono[0].flushDSP();
-      m_mono[1].flushDSP();
-      result = recallLayer(_msg);
-    });
+    m_fade.muteAndDo(
+        [&]
+        {
+          // global flush
+          m_poly[0].flushDSP();
+          m_poly[1].flushDSP();
+          m_mono[0].flushDSP();
+          m_mono[1].flushDSP();
+          result = recallLayer(_msg);
+        });
 
     if (LOG_RECALL) {
       nltools::Log::info(__PRETTY_FUNCTION__,
@@ -740,24 +711,29 @@ DSPInterface::OutputResetEventSource dsp_host_dual::localUnisonVoicesChg(
     const OutputResetEventSource outputEvent = determineOutputEventSource(
         areKeysPressed(fromType(m_layer_mode)), m_layer_mode);
     // application now via fade point
-    m_fade.muteAndDo([&] {
-      // apply (preloaded) unison change
-      m_alloc.setUnison(layerId, param->m_position, m_layer_mode, m_layer_mode);
-      // apply reset to affected poly compoments
-      m_poly[layerId].resetEnvelopes();
-      m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
-      m_poly[layerId].m_key_active = 0;
-      if (m_layer_mode != LayerMode::Split) {
-        m_alloc.m_internal_keys.m_global = 0;
-        // apply reset to other poly components (when not in split mode)
-        const uint32_t lId = 1 - layerId;
-        m_poly[lId].resetEnvelopes();
-        m_poly[lId].m_uVoice = m_alloc.m_unison - 1;
-        m_poly[lId].m_key_active = 0;
-      } else {
-        m_alloc.m_internal_keys.m_local[layerId] = 0;
-      }
-    });
+    m_fade.muteAndDo(
+        [&]
+        {
+          // apply (preloaded) unison change
+          m_alloc.setUnison(layerId, param->m_position, m_layer_mode, m_layer_mode);
+          // apply reset to affected poly compoments
+          m_poly[layerId].resetEnvelopes();
+          m_poly[layerId].m_uVoice = m_alloc.m_unison - 1;
+          m_poly[layerId].m_key_active = 0;
+          if(m_layer_mode != LayerMode::Split)
+          {
+            m_alloc.m_internal_keys.m_global = 0;
+            // apply reset to other poly components (when not in split mode)
+            const uint32_t lId = 1 - layerId;
+            m_poly[lId].resetEnvelopes();
+            m_poly[lId].m_uVoice = m_alloc.m_unison - 1;
+            m_poly[lId].m_key_active = 0;
+          }
+          else
+          {
+            m_alloc.m_internal_keys.m_local[layerId] = 0;
+          }
+        });
     // return detected reset event
     if (m_layer_mode != LayerMode::Split) {
       return outputEvent;
@@ -790,22 +766,27 @@ DSPInterface::OutputResetEventSource dsp_host_dual::localMonoEnableChg(
         areKeysPressed(fromType(m_layer_mode)), m_layer_mode);
     param->m_scaled = scale(param->m_scaling, param->m_position);
     // application now via fade point
-    m_fade.muteAndDo([&] {
-      // apply (preloaded) mono change
-      m_alloc.setMonoEnable(layerId, param->m_scaled, m_layer_mode);
-      // apply reset to affected poly compoments
-      m_poly[layerId].resetEnvelopes();
-      m_poly[layerId].m_key_active = 0;
-      if (m_layer_mode != LayerMode::Split) {
-        m_alloc.m_internal_keys.m_global = 0;
-        // apply reset to other poly components (when not in split mode)
-        const uint32_t lId = 1 - layerId;
-        m_poly[lId].resetEnvelopes();
-        m_poly[lId].m_key_active = 0;
-      } else {
-        m_alloc.m_internal_keys.m_local[layerId] = 0;
-      }
-    });
+    m_fade.muteAndDo(
+        [&]
+        {
+          // apply (preloaded) mono change
+          m_alloc.setMonoEnable(layerId, param->m_scaled, m_layer_mode);
+          // apply reset to affected poly compoments
+          m_poly[layerId].resetEnvelopes();
+          m_poly[layerId].m_key_active = 0;
+          if(m_layer_mode != LayerMode::Split)
+          {
+            m_alloc.m_internal_keys.m_global = 0;
+            // apply reset to other poly components (when not in split mode)
+            const uint32_t lId = 1 - layerId;
+            m_poly[lId].resetEnvelopes();
+            m_poly[lId].m_key_active = 0;
+          }
+          else
+          {
+            m_alloc.m_internal_keys.m_local[layerId] = 0;
+          }
+        });
     // return detected reset event
     if (m_layer_mode != LayerMode::Split) {
       return outputEvent;
@@ -1074,20 +1055,25 @@ void dsp_host_dual::render() {
   m_mainOut_R = m_global.m_out_r * mute;
 }
 
-void dsp_host_dual::reset() {
-  m_fade.muteAndDo([&] {
-    for (uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++) {
-      m_z_layers[layerId].reset();
-      m_poly[layerId].resetDSP();
-      m_mono[layerId].resetDSP();
-    }
-    m_alloc.reset();
-    m_global.resetDSP();
-    m_mainOut_L = m_mainOut_R = 0.0f;
-    if (LOG_RESET) {
-      nltools::Log::info("DSP has been reset.");
-    }
-  });
+void dsp_host_dual::reset()
+{
+  m_fade.muteAndDo(
+      [&]
+      {
+        for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+        {
+          m_z_layers[layerId].reset();
+          m_poly[layerId].resetDSP();
+          m_mono[layerId].resetDSP();
+        }
+        m_alloc.reset();
+        m_global.resetDSP();
+        m_mainOut_L = m_mainOut_R = 0.0f;
+        if(LOG_RESET)
+        {
+          nltools::Log::info("DSP has been reset.");
+        }
+      });
 }
 
 dsp_host_dual::HWSourceValues dsp_host_dual::getHWSourceValues() const {
@@ -2230,13 +2216,13 @@ void dsp_host_dual::globalParRcl(
 void dsp_host_dual::globalParRcl(
     const nltools::msg::ParameterGroups::ModulateableParameter &_param) {
   auto element = getParameter(_param.id);
-  if (element.m_param.m_type ==
-      C15::Descriptors::ParameterType::Global_Modulateable) {
-    if (LOG_RECALL_DETAILS) {
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Modulateable)
+  {
+    if(LOG_RECALL_DETAILS)
+    {
       nltools::Log::info(
-          "recall(id:", _param.id, ", label:", element.m_pg.m_group_label_short,
-          element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
-          ", initial:", element.m_initial, ")");
+          "recall(id:", _param.id, ", label:", C15::ParameterGroups[(unsigned) element.m_group].m_label_short,
+          element.m_pg.m_param_label_short, ", value:", _param.controlPosition, ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_global_target(element.m_param.m_index);
     param->update_source(getMacro(_param.mc));
@@ -2258,13 +2244,13 @@ void dsp_host_dual::globalParRcl(
 void dsp_host_dual::globalParRcl(
     const nltools::msg::ParameterGroups::UnmodulateableParameter &_param) {
   auto element = getParameter(_param.id);
-  if (element.m_param.m_type ==
-      C15::Descriptors::ParameterType::Global_Unmodulateable) {
-    if (LOG_RECALL_DETAILS) {
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Unmodulateable)
+  {
+    if(LOG_RECALL_DETAILS)
+    {
       nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.id,
-                         ", label:", element.m_pg.m_group_label_short,
-                         element.m_pg.m_param_label_short,
-                         ", value:", _param.controlPosition,
+                         ", label:", C15::ParameterGroups[(unsigned) element.m_group].m_label_short,
+                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
                          ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_global_direct(element.m_param.m_index);
@@ -2280,13 +2266,13 @@ void dsp_host_dual::globalParRcl(
 void dsp_host_dual::globalParRcl(
     const nltools::msg::ParameterGroups::GlobalParameter &_param) {
   auto element = getParameter(_param.id);
-  if (element.m_param.m_type ==
-      C15::Descriptors::ParameterType::Global_Unmodulateable) {
-    if (LOG_RECALL_DETAILS) {
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Unmodulateable)
+  {
+    if(LOG_RECALL_DETAILS)
+    {
       nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.id,
-                         ", label:", element.m_pg.m_group_label_short,
-                         element.m_pg.m_param_label_short,
-                         ", value:", _param.controlPosition,
+                         ", label:", C15::ParameterGroups[(unsigned) element.m_group].m_label_short,
+                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
                          ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_global_direct(element.m_param.m_index);
@@ -2315,14 +2301,14 @@ void dsp_host_dual::localParRcl(
     const uint32_t _layerId,
     const nltools::msg::ParameterGroups::ModulateableParameter &_param) {
   auto element = getParameter(_param.id);
-  if (element.m_param.m_type ==
-      C15::Descriptors::ParameterType::Local_Modulateable) {
-    if (LOG_RECALL_DETAILS) {
-      nltools::Log::info(
-          __PRETTY_FUNCTION__, "recall(layer:", _layerId, ", id:", _param.id,
-          ", label:", element.m_pg.m_group_label_short,
-          element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
-          ", initial:", element.m_initial, ")");
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Modulateable)
+  {
+    if(LOG_RECALL_DETAILS)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__, "recall(layer:", _layerId, ", id:", _param.id,
+                         ", label:", C15::ParameterGroups[(unsigned) element.m_group].m_label_short,
+                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                         ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_local_target(_layerId, element.m_param.m_index);
     param->update_source(getMacro(_param.mc));
@@ -2345,14 +2331,13 @@ void dsp_host_dual::localParRcl(
     const uint32_t _layerId,
     const nltools::msg::ParameterGroups::SplitPoint &_param) {
   auto element = getParameter(_param.id);
-  if (element.m_param.m_index ==
-      static_cast<uint32_t>(
-          C15::Parameters::Local_Modulateables::Split_Split_Point)) {
-    if (LOG_RECALL_DETAILS) {
+  if(element.m_param.m_index == static_cast<uint32_t>(C15::Parameters::Local_Modulateables::Split_Split_Point))
+  {
+    if(LOG_RECALL_DETAILS)
+    {
       nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.id,
-                         ", label:", element.m_pg.m_group_label_short,
-                         element.m_pg.m_param_label_short,
-                         ", value:", _param.controlPosition,
+                         ", label:", C15::ParameterGroups[(unsigned) element.m_group].m_label_short,
+                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
                          ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_local_target(_layerId, element.m_param.m_index);
@@ -2380,14 +2365,14 @@ void dsp_host_dual::localParRcl(
     const uint32_t _layerId,
     const nltools::msg::ParameterGroups::UnmodulateableParameter &_param) {
   auto element = getParameter(_param.id);
-  if (element.m_param.m_type ==
-      C15::Descriptors::ParameterType::Local_Unmodulateable) {
-    if (LOG_RECALL_DETAILS) {
-      nltools::Log::info(
-          __PRETTY_FUNCTION__, "recall(layer:", _layerId, ", id:", _param.id,
-          ", label:", element.m_pg.m_group_label_short,
-          element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
-          ", initial:", element.m_initial, ")");
+  if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Unmodulateable)
+  {
+    if(LOG_RECALL_DETAILS)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__, "recall(layer:", _layerId, ", id:", _param.id,
+                         ", label:", C15::ParameterGroups[(unsigned) element.m_group].m_label_short,
+                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                         ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_local_direct(_layerId, element.m_param.m_index);
     param->update_position(static_cast<float>(_param.controlPosition));
@@ -2643,14 +2628,18 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity,
   }
 }
 
-void dsp_host_dual::fadeOutResetVoiceAllocAndEnvelopes() {
-  m_fade.muteAndDo([&] {
-    m_alloc.reset();
-    for (auto &layerId : m_poly) {
-      layerId.resetEnvelopes();
-      layerId.m_key_active = 0;
-    }
-  });
+void dsp_host_dual::fadeOutResetVoiceAllocAndEnvelopes()
+{
+  m_fade.muteAndDo(
+      [&]
+      {
+        m_alloc.reset();
+        for(auto& layerId : m_poly)
+        {
+          layerId.resetEnvelopes();
+          layerId.m_key_active = 0;
+        }
+      });
 }
 
 bool dsp_host_dual::updateBehaviour(C15::ParameterDescriptor &element,
