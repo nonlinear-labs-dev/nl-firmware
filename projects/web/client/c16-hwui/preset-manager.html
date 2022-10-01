@@ -1,27 +1,34 @@
 <template name="C16EditBuffer">
+  <div class="edit-buffer">
     <div>C16 Parameter Editor</div>
     {{#each getParameterGroups}}
     {{ > C16ParameterGroup }}
     {{/each}}
+  </div>
 </template>
 
 <template name="C16ParameterGroup">
+  <div class="parameter-group" id="group-{{id}}">
     <h1>Group: {{ name }}</h1>
     {{ #each getParameters }}
     {{ > C16Parameter }}
     {{/each}}
+  </div>
 </template>
 
 <template name="C16Parameter">
+  <div class="parameter" id="parameter-{{id}}">
     <h2>Name: {{ name }}</h2>
     <div>Value: {{ value }}</div>
+  </div>
 </template>
 
 <template name="C16PresetManager">
     <div class="preset-manager">
-        {{#each getBanks}}
+      Selected Bank:
+        {{#with selectedBank}}
         {{ > C16Bank }}
-        {{/each}}
+        {{/with}}
     </div>
 </template>
 

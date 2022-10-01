@@ -1,22 +1,27 @@
 #include <device-settings/DeviceName.h>
 #include <device-settings/Settings.h>
 #include <device-settings/SSID.h>
+#include <proxies/hwui/HardwareFeatures.h>
+#include <utility>
 
-SSID::SSID(Settings &parent, const std::shared_ptr<EpcWifi> &localWifi)
+SSID::SSID(Settings &parent, std::shared_ptr<EpcWifi> localWifi, HardwareFeatures &hwFeatures)
     : Setting(parent)
-    , m_localWifi(localWifi)
+    , m_hasEPCWifi(hwFeatures.hasEPCWiFi())
+    , m_localWifi(std::move(localWifi))
 {
-  parent.getSetting<DeviceName>()->onChange([=](const Setting *s) {
-    static const std::string dict = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-_";
+  parent.getSetting<DeviceName>()->onChange(
+      [=](const Setting *s)
+      {
+        static const std::string dict = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-_";
 
-    std::string ssid = "NL-C15-" + s->save();
+        std::string ssid = "NL-C15-" + s->save();
 
-    for(char &it : ssid)
-      if(dict.find(it) == std::string::npos)
-        it = '_';
+        for(char &it : ssid)
+          if(dict.find(it) == std::string::npos)
+            it = '_';
 
-    updateSSID(ssid);
-  });
+        updateSSID(ssid);
+      });
 }
 
 SSID::~SSID() = default;
@@ -44,14 +49,9 @@ Glib::ustring SSID::getDisplayString() const
 void SSID::updateSSID(const Glib::ustring &str)
 {
   m_ssid = str;
-
-  static auto isEpc2 = !strcmp(TARGET_PLATFORM, "epc2");
-  static auto suffix = (isEpc2 ? "_BBB" : "");
-
+  auto suffix = (m_hasEPCWifi ? "_BBB" : "");
   auto ssidMsg = nltools::msg::WiFi::SetWiFiSSIDMessage(m_ssid + suffix);
   nltools::msg::send(nltools::msg::EndPoint::BeagleBone, ssidMsg);
-
   m_localWifi->setNewSSID(m_ssid);
-
   notify();
 }

@@ -64,7 +64,12 @@ ENDIF(DSL_LAYOUTS)
 # CONFIGURED FILES
 configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
-configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
+
+IF (${TARGET_PLATFORM} STREQUAL "pi4")
+  configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.pi4.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
+ELSE()
+  configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.epc.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
+ENDIF()
 
 add_custom_command(
   COMMENT "Generate BuildVersion.cpp"

@@ -1,0 +1,23 @@
+/dts-v1/;
+/plugin/;
+/ {
+        compatible = "brcm,bcm2835", "brcm,bcm2708", "brcm,bcm2709";
+        fragment@0 {
+                target = <&i2c1>;
+                __overlay__ {
+			#address-cells = <1>;
+                        #size-cells = <0>;
+						
+                         ft6236@38 {
+                                compatible = "focaltech,ft6236";
+                                reg = <0x38>;
+                                pinctrl-names = "default";
+                                interrupt-parent = <&gpio>;
+                                interrupts = <5 2>; /* rising edge */
+                                touchscreen-size-y = <600>;
+                                touchscreen-size-x = <1024>;
+                                reset-gpios = <&gpio 6 1>; /* active low */
+                        };
+                };
+        };
+};

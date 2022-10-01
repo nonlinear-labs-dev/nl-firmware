@@ -1,5 +1,6 @@
 #include "AudioOutput.h"
 #include <math.h>
+#include <algorithm>
 
 AudioOutput::AudioOutput()
 {

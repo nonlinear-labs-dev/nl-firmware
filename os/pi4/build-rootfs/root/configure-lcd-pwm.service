@@ -1,0 +1,11 @@
+[Unit]
+Description=Configure PWM and permissions for LCD backlight
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/configure-lcd-pwm.sh
+
+[Install]
+#WantedBy=multi-user.target
+WantedBy=graphical.target

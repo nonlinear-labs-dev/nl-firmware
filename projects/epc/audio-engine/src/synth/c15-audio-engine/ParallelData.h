@@ -6,6 +6,7 @@
 #include <omp.h>
 #include <vector>
 #include <cstdint>
+#include <cmath>
 
 #ifdef __arm__
 
@@ -30,8 +31,7 @@ void testParallelData();
 
 namespace parallel_data_detail
 {
-  template <typename T, size_t simdSize, size_t parallelism> union v128
-  {
+  template <typename T, size_t simdSize, size_t parallelism> union v128 {
     int32x4_t mmi[simdSize];
     uint32x4_t mmu[simdSize];
     float32x4_t mmf[simdSize];
@@ -198,6 +198,18 @@ template <typename T, size_t size> class ParallelData
     return ret;                                                                                                        \
   }
 
+#define VECTOR_P_P_CMP_OPERATOR(operation, imm)                                                                        \
+  template <typename T, size_t size>                                                                                   \
+  inline ParallelData<uint32_t, size> operator operation(                                                              \
+      const ParallelData<T, size> &l, const ParallelData<T, size> &r) {                                                \
+    ParallelData<uint32_t, size> ret;                                                                                  \
+                                                                                                                       \
+    for (size_t i = 0; i < ParallelData<T, size>::simdSize; i++)                                                       \
+      ret.m_data.mmu[i] = imm(l.m_data.mmf[i], r.m_data.mmf[i]);                                                       \
+                                                                                                                       \
+    return ret;                                                                                                        \
+  }
+
 #else
 
 #define VECTOR_P_S_CMP_OPERATOR(operation, imm)                                                                        \
@@ -209,6 +221,18 @@ template <typename T, size_t size> class ParallelData
                                                                                                                        \
     for(size_t i = 0; i < ParallelData<T, size>::simdSize; i++)                                                        \
       ret.m_data.mmf[i] = _mm_cmp_ps(l.m_data.mmf[i], b, imm);                                                         \
+                                                                                                                       \
+    return ret;                                                                                                        \
+  }
+
+#define VECTOR_P_P_CMP_OPERATOR(operation, imm)                                                                        \
+  template <typename T, size_t size>                                                                                   \
+  inline ParallelData<uint32_t, size> operator operation(                                                              \
+      const ParallelData<T, size> &l, const ParallelData<T, size> &r) {                                                \
+    ParallelData<uint32_t, size> ret;                                                                                  \
+                                                                                                                       \
+    for (size_t i = 0; i < ParallelData<T, size>::simdSize; i++)                                                       \
+      ret.m_data.mmf[i] = _mm_cmp_ps(l.m_data.mmf[i], r.m_data.mmf[i], imm);                                           \
                                                                                                                        \
     return ret;                                                                                                        \
   }
@@ -236,6 +260,11 @@ VECTOR_P_S_CMP_OPERATOR(<, _CMP_LT_OS)
 VECTOR_P_S_CMP_OPERATOR(>, _CMP_GT_OS)
 VECTOR_P_S_CMP_OPERATOR(<=, _CMP_LE_OS)
 VECTOR_P_S_CMP_OPERATOR(>=, _CMP_GE_OS)
+
+VECTOR_P_P_CMP_OPERATOR(<, _CMP_LT_OS)
+VECTOR_P_P_CMP_OPERATOR(>, _CMP_GT_OS)
+VECTOR_P_P_CMP_OPERATOR(<=, _CMP_LE_OS)
+VECTOR_P_P_CMP_OPERATOR(>=, _CMP_GE_OS)
 
 template <typename T1, typename T2, size_t size>
 inline ParallelData<T1, size> operator&(const ParallelData<T1, size> &l, const ParallelData<T2, size> &r)

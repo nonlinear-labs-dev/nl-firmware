@@ -40,6 +40,7 @@
 #include "proxies/hwui/panel-unit/boled/recorder/DoYouWantToStopRecorderPlaybackLayout.h"
 #include <Options.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
+#include <proxies/hwui/HardwareFeatures.h>
 
 HWUI::HWUI(Settings &settings, RecorderManager &recorderManager)
     : m_layoutFolderMonitor(std::make_unique<LayoutFolderMonitor>())
@@ -253,6 +254,12 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       else if(line == "inc-all-fine")
       {
         Application::get().getPresetManager()->incAllParamsFine();
+      }
+      else if(line == "epc-info")
+      {
+        auto hwInfo = Application::get().getHardwareFeatures();
+        nltools::Log::error("epc model:", toString(hwInfo->getModel()));
+        nltools::Log::error("has epc wifi:", hwInfo->hasEPCWiFi());
       }
       else if(line.at(0) == '!')
       {

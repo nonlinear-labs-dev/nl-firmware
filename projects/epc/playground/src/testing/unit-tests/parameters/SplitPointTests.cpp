@@ -14,8 +14,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Point Display Value")
 {
   auto eb = TestHelper::getEditBuffer();
 
-  auto splitI = dynamic_cast<SplitPointParameter*>(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }));
-  auto splitII = dynamic_cast<SplitPointParameter*>(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II }));
+  auto splitI
+      = dynamic_cast<SplitPointParameter*>(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }));
+  auto splitII
+      = dynamic_cast<SplitPointParameter*>(eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II }));
   g_assert(splitI != nullptr);
   g_assert(splitII != nullptr);
 

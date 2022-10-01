@@ -4,7 +4,7 @@ import './c16-hwui/parameter-editor.ts';
 import './c16-hwui/preset-manager.ts';
 
 FlowRouter.route('/index.html', {
-    action(params, query) {
-        BlazeLayout.render(query.page, {});
-    }  
+  action(params, query) {
+    BlazeLayout.render(query.page, {});
+  }
 });

@@ -962,5 +962,5 @@ display_scaling_type: {
     min: -200.0f,
     max: 200.0f,
     bipolar: true
-  },
+  }
 }

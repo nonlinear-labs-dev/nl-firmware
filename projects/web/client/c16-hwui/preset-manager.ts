@@ -20,6 +20,10 @@ Template.C16PresetManager.helpers({
     getBanks() {
         return Template.instance().presenter.get().banks.map(bank => BankPresenter.create(bank))
     }
+
+    selectedBank() {
+        return BankPresenter.create(Template.instance().presenter.selectBank);
+    }
 });
 
 Template.C16Bank.helpers({

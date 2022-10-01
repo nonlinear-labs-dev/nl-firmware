@@ -58,6 +58,11 @@ namespace StringTools
     return ret;
   }
 
+  bool contains(const Glib::ustring& in, const Glib::ustring& pattern)
+  {
+    return in.find(pattern) != Glib::ustring::npos;
+  }
+
   std::vector<std::string> splitStringAtSpacesAndTrimSpaces(const Glib::ustring &in)
   {
     std::vector<std::string> ret;

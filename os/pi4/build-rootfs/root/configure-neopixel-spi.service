@@ -1,0 +1,11 @@
+[Unit]
+Description=Configure Neopixel SPI Driver
+After=systemd-modules-load.service
+
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/configure-neopixel-spi.sh
+
+[Install]
+WantedBy=multi-user.target
