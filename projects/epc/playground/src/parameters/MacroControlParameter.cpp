@@ -203,10 +203,12 @@ void MacroControlParameter::undoableSetGivenName(UNDO::Transaction *transaction,
   if(m_givenName != newName)
   {
     auto swapData = UNDO::createSwapData(newName);
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      swapData->swapWith(m_givenName);
-      invalidate();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          swapData->swapWith(m_givenName);
+          invalidate();
+        });
   }
 }
 
@@ -216,10 +218,12 @@ void MacroControlParameter::undoableSetInfo(UNDO::Transaction *transaction, cons
   {
     auto swapData = UNDO::createSwapData(info);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      swapData->swapWith(m_info);
-      invalidate();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          swapData->swapWith(m_info);
+          invalidate();
+        });
   }
 }
 
@@ -274,9 +278,7 @@ Glib::ustring MacroControlParameter::getLongName() const
 {
   Glib::ustring b = super::getLongName();
 
-  auto replace = [](auto s, auto p, auto r) {
-    return StringTools::replaceAll(s, p, r);
-  };
+  auto replace = [](auto s, auto p, auto r) { return StringTools::replaceAll(s, p, r); };
 
   auto invertLabel = [replace](auto str)
   {
@@ -413,4 +415,26 @@ void MacroControlParameter::setCPFromMCView(UNDO::Transaction *transaction, cons
 void MacroControlParameter::sendParameterMessage() const
 {
   Application::get().getAudioEngineProxy()->createAndSendParameterMessage<MacroControlParameter>(this);
+}
+
+bool MacroControlParameter::hasRelativeRibbonAsSource() const
+{
+  auto group = getParentEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global });
+  if(auto mcm = dynamic_cast<MacroControlMappingGroup *>(group))
+  {
+    for(auto router : mcm->getModulationRoutingParametersFor(this))
+    {
+      if(auto ribbon = dynamic_cast<RibbonParameter*>(router->getSourceParameter()))
+      {
+        if(std::abs(router->getControlPositionValue()) > 0)
+        {
+          if(ribbon->getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
+          {
+            return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
 }

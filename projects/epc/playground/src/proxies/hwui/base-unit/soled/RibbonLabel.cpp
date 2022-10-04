@@ -121,6 +121,11 @@ StringAndSuffix RibbonLabel::getText() const
   return "not assigned";
 }
 
+std::shared_ptr<Font> RibbonLabel::getFont() const
+{
+  return Fonts::get().getFont("Emphase-9-Regular", getFontHeight());
+}
+
 Glib::ustring RibbonLabel::crop(const Glib::ustring &text) const
 {
   auto min = 0ul;

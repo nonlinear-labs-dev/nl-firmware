@@ -21,9 +21,11 @@ class RibbonLabel : public Label
   RibbonLabel(const RibbonLabel &other) = delete;
   RibbonLabel &operator=(const RibbonLabel &) = delete;
 
+  std::shared_ptr<Font> getFont() const override;
+
  protected:
   int getXOffset() const override;
-  void onRibbonSelectionChanged(const Setting* s);
+  void onRibbonSelectionChanged(const Setting *s);
 
  private:
   Glib::ustring crop(const Glib::ustring &text) const;

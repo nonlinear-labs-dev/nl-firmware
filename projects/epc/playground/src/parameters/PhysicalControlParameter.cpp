@@ -101,7 +101,13 @@ Glib::ustring PhysicalControlParameter::getCurrentModulatingMacroControlString()
 {
   if(auto currentMC = getMCAssignedToThisHW())
   {
-    return currentMC->getLongName();
+    Glib::ustring suffix = "";
+    if(currentMC->hasRelativeRibbonAsSource())
+    {
+      suffix = "\uE282";
+    }
+
+    return currentMC->getLongName() + suffix;
   }
 
   return "not assigned";
