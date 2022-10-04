@@ -15,7 +15,8 @@ class MidiRuntimeOptions;
 class InputEventStage
 {
  private:
-  constexpr static auto NUM_HW = 10;
+  constexpr static auto NUM_HW = static_cast<int>(C15::Parameters::Hardware_Sources::_LENGTH_);
+
  public:
   using RoutingIndex = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
   using RoutingAspect = nltools::msg::Setting::MidiSettingsMessage::RoutingAspect;
@@ -114,7 +115,7 @@ class InputEventStage
 
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
-  std::array<std::array<uint16_t, 2>, NUM_HW> m_latchedHWPositions{};
+  std::array<std::array<uint16_t, 2>, NUM_HW> m_latchedHWPositions {};
 
   using tHWPosEntry = std::tuple<float, HWChangeSource>;
   std::array<tHWPosEntry, NUM_HW> m_localDisabledPositions;

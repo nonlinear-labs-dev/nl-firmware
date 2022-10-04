@@ -798,7 +798,11 @@ HardwareSource InputEventStage::parameterIDToHWID(int id)
 void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource source, bool wasMIDIPrimary,
                                   bool wasMIDISplit, bool didBehaviourChange)
 {
-  nltools::Log::error(__PRETTY_FUNCTION__, "hwid:", toString(hwID), "pos:", pos, "source:", toString(source), "hwid idx:", static_cast<unsigned int>(hwID));
+  if constexpr (LOG_INPUT_EVENT_STAGE)
+  {
+    nltools::Log::error(__PRETTY_FUNCTION__, "hwid:", toString(hwID), "pos:", pos, "source:", toString(source), "hwid idx:", static_cast<unsigned int>(hwID));
+  }
+
   RoutingIndex routingIndex = RoutingIndex::LENGTH;
 
   if(hwID == HardwareSource::RIBBON3)
@@ -924,7 +928,7 @@ HardwareSource ccToHWID(int cc, MidiRuntimeOptions *options)
     {
       return HardwareSource::RIBBON3;
     }
-    else if(ribbon3 == cc)
+    else if(ribbon4 == cc)
     {
       return HardwareSource::RIBBON4;
     }

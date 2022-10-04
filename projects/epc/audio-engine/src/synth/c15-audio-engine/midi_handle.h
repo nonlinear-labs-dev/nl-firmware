@@ -44,7 +44,7 @@ namespace Midi
       Ped4 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Pedal_4) << 8 | 55,
       Rib1 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_1) << 8 | 56,
       Rib2 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_2) << 8 | 57,
-      Rib3 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_4) << 8 | 58,
+      Rib3 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_3) << 8 | 58,
       Rib4 = static_cast<uint16_t>(C15::Parameters::Hardware_Sources::Ribbon_4) << 8 | 59,
       Vel = 0xFF << 8 | 88
     };

@@ -39,7 +39,7 @@ inline constexpr bool LOG_FAIL = false;
 inline constexpr bool LOG_INIT = false;
 inline constexpr bool LOG_MIDI_TCD = true;
 inline constexpr bool LOG_MIDI_RAW = false;
-inline constexpr bool LOG_MIDI_DETAIL = true;
+inline constexpr bool LOG_MIDI_DETAIL = false;
 inline constexpr bool LOG_MIDI_OUT = false;
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = false;
@@ -56,6 +56,7 @@ inline constexpr bool LOG_HW = false;
 // more detailed logging of specific parameters
 inline constexpr bool LOG_ENGINE_STATUS = false;
 inline constexpr bool LOG_ENGINE_EDITS = false;
+inline constexpr bool LOG_INPUT_EVENT_STAGE = false;
 inline constexpr uint32_t LOG_PARAMS_LENGTH = 3;
 // use tcd ids here (currently: Split Point, Unison Detune)
 static const uint32_t LOG_PARAMS[LOG_PARAMS_LENGTH] = { 356, 250, 367 };
@@ -63,6 +64,8 @@ static const uint32_t LOG_PARAMS[LOG_PARAMS_LENGTH] = { 356, 250, 367 };
 class MidiRuntimeOptions;
 
 using KeyShift = ShifteableKeys<C15::Config::physical_key_from, C15::Config::physical_key_to>;
+
+constexpr static auto tNUM_HW = static_cast<int>(C15::Parameters::Hardware_Sources::_LENGTH_);
 
 class DSPInterface
 {
@@ -154,7 +157,7 @@ class DSPInterface
   }
 
  private:
-  std::array<HWChangeSource, 10> m_hwSourceLastChangeSources;
+  std::array<HWChangeSource, tNUM_HW> m_hwSourceLastChangeSources;
 };
 
 class dsp_host_dual : public DSPInterface
