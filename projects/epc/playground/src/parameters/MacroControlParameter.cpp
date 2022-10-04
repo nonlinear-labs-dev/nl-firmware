@@ -74,12 +74,14 @@ void MacroControlParameter::registerTarget(ModulateableParameter *target)
 {
   m_targets.insert(target);
   m_targetListChanged();
+  onChange(UpdateDocumentContributor::ChangeFlags::DontTrustOracle);
 }
 
 void MacroControlParameter::unregisterTarget(ModulateableParameter *target)
 {
   m_targets.erase(target);
   m_targetListChanged();
+  onChange(UpdateDocumentContributor::ChangeFlags::DontTrustOracle);
 }
 
 void MacroControlParameter::setLastMCViewUUID(const Glib::ustring &uuid)
@@ -272,6 +274,26 @@ Glib::ustring MacroControlParameter::getLongName() const
 {
   Glib::ustring b = super::getLongName();
 
+  auto replace = [](auto s, auto p, auto r) {
+    return StringTools::replaceAll(s, p, r);
+  };
+
+  auto invertLabel = [replace](auto str)
+  {
+    auto mcA = replace(str, "\uE000", "\uE400");
+    auto mcB = replace(mcA, "\uE001", "\uE401");
+    auto mcC = replace(mcB, "\uE002", "\uE402");
+    auto mcD = replace(mcC, "\uE003", "\uE403");
+    auto mcE = replace(mcD, "\uE200", "\uE404");
+    auto mcF = replace(mcE, "\uE201", "\uE405");
+    return mcF;
+  };
+
+  if(getTargets().empty())
+  {
+    b = invertLabel(b);
+  }
+
   if(!m_givenName.empty())
     return b + " " + m_givenName;
 
@@ -283,6 +305,7 @@ size_t MacroControlParameter::getHash() const
   size_t hash = super::getHash();
   hash_combine(hash, getLongName());
   hash_combine(hash, getInfo());
+  hash_combine(hash, getTargets().size());
   return hash;
 }
 

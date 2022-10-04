@@ -195,6 +195,8 @@ void ModulateableParameterSelectLayout2::init()
 {
   super1::init();
   super2::init();
+
+  highlight<ParameterNameLabel>();
 }
 
 bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
