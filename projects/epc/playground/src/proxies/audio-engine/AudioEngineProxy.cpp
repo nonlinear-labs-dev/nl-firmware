@@ -56,22 +56,6 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
         for(auto value : msg.m_data)
         {
           auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(index);
-
-          auto settings = m_settings.getSetting<SelectedRibbonsSetting>();
-          auto isRibbon1_2 = settings->get() == SelectedRibbons::Ribbon1_2;
-
-          if(!isRibbon1_2)
-          {
-            if(param->getID().getNumber() == C15::PID::Ribbon_1)
-            {
-              param = m_presetManager.getEditBuffer()->findParameterByID({C15::PID::Ribbon_3, VoiceGroup::Global});
-            }
-            else if(param->getID().getNumber() == C15::PID::Ribbon_2)
-            {
-              param = m_presetManager.getEditBuffer()->findParameterByID({C15::PID::Ribbon_4, VoiceGroup::Global});
-            }
-          }
-
           index++;
           if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
           {
@@ -93,21 +77,6 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
       {
         if(auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(msg.hwSource))
         {
-          auto settings = m_settings.getSetting<SelectedRibbonsSetting>();
-          auto isRibbon1_2 = settings->get() == SelectedRibbons::Ribbon1_2;
-
-          if(!isRibbon1_2)
-          {
-            if(param->getID().getNumber() == C15::PID::Ribbon_1)
-            {
-              param = m_presetManager.getEditBuffer()->findParameterByID({C15::PID::Ribbon_3, VoiceGroup::Global});
-            }
-            else if(param->getID().getNumber() == C15::PID::Ribbon_2)
-            {
-              param = m_presetManager.getEditBuffer()->findParameterByID({C15::PID::Ribbon_4, VoiceGroup::Global});
-            }
-          }
-
           if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
           {
             PhysicalControlParameterUseCases useCase(p);
