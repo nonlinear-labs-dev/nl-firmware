@@ -1,7 +1,9 @@
 #pragma once
 #include <proxies/hwui/controls/Control.h>
+#include <sigc++/connection.h>
 
 class Setting;
+class Parameter;
 
 class SelectedRibbonsIndication : public Control
 {
