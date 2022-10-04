@@ -250,6 +250,10 @@ Setting *getMappingSetting(int id, Settings *settings)
       return settings->getSetting<RibbonCCMapping<1>>();
     case C15::PID::Ribbon_2:
       return settings->getSetting<RibbonCCMapping<2>>();
+    case C15::PID::Ribbon_3:
+      return settings->getSetting<RibbonCCMapping<3>>();
+    case C15::PID::Ribbon_4:
+      return settings->getSetting<RibbonCCMapping<4>>();
     case C15::PID::Bender:
       return settings->getSetting<BenderCCMapping>();
     case C15::PID::Aftertouch:

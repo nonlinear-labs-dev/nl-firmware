@@ -7,6 +7,8 @@ public class MidiSettingsPresenter {
     public String pedal4CCString = "";
     public String ribbon1CCString = "";
     public String ribbon2CCString = "";
+    public String ribbon3CCString = "";
+    public String ribbon4CCString = "";
     public String benderCCString = "";
     public String aftertouchCCString = "";
     public String selectedParameterCCString = "";
@@ -38,6 +40,12 @@ public class MidiSettingsPresenter {
             case 405:
             case 289:
                 return ribbon2CCString;
+            case 409:
+            case 410:
+                return ribbon3CCString;
+            case 411:
+            case 412:
+                return ribbon4CCString;
             default:
                 return "";
         }
