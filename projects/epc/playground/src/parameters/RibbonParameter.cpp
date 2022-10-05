@@ -2,6 +2,7 @@
 #include "scale-converters/LinearBipolar100PercentScaleConverter.h"
 #include "scale-converters/Linear100PercentScaleConverter.h"
 #include "ModulationRoutingParameter.h"
+#include "device-settings/SelectedRibbonsSetting.h"
 #include <http/UpdateDocumentMaster.h>
 #include <Application.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
@@ -246,22 +247,29 @@ const ScaleConverter *RibbonParameter::createScaleConverter() const
 
 void RibbonParameter::sendModeToPlaycontroller() const
 {
-  auto r1 = getID() == HardwareSourcesGroup::getUpperRibbonParameterID();
-  auto r3 = getID() == HardwareSourcesGroup::getUpperRibbon3ParameterID();
-  uint16_t id = (r1 || r3) ? PLAYCONTROLLER_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR
-                                                                             : PLAYCONTROLLER_SETTING_ID_PLAY_MODE_LOWER_RIBBON_BEHAVIOUR;
-  uint16_t v = 0;
-
-  if(getRibbonReturnMode() == RibbonReturnMode::RETURN)
-    v += 1;
-
-  if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
-    v += 2;
-
-  if(Application::exists())
+  auto selRibbons = getParentEditBuffer()->getSettings().getSetting<SelectedRibbonsSetting>()->get();
+  if((selRibbons == SelectedRibbons::Ribbon1_2
+      && (getID().getNumber() == C15::PID::Ribbon_1 || getID().getNumber() == C15::PID::Ribbon_2))
+     || (selRibbons == SelectedRibbons::Ribbon3_4
+         && (getID().getNumber() == C15::PID::Ribbon_3 || getID().getNumber() == C15::PID::Ribbon_4)))
   {
-    Application::get().getPlaycontrollerProxy()->sendSetting(id, v);
-    sendToAudioEngine();
+    auto r1 = getID() == HardwareSourcesGroup::getUpperRibbonParameterID();
+    auto r3 = getID() == HardwareSourcesGroup::getUpperRibbon3ParameterID();
+    uint16_t id = (r1 || r3) ? PLAYCONTROLLER_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR
+                             : PLAYCONTROLLER_SETTING_ID_PLAY_MODE_LOWER_RIBBON_BEHAVIOUR;
+    uint16_t v = 0;
+
+    if(getRibbonReturnMode() == RibbonReturnMode::RETURN)
+      v = 1;
+
+    if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
+      v = 2;
+
+    if(Application::exists())
+    {
+      Application::get().getPlaycontrollerProxy()->sendSetting(id, v);
+      sendToAudioEngine();
+    }
   }
 }
 

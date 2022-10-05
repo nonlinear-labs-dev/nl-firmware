@@ -102,4 +102,5 @@ class PlaycontrollerProxy
   void onUHIDReceived(const MessageParser::NLMessage &message);
   void requestHWPositions();
   void requestCalibrationStatus();
+  void onSelectedRibbonsChanged(const Setting *s);
 };

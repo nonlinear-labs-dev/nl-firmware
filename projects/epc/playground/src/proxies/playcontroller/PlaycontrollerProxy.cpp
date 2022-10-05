@@ -19,6 +19,7 @@
 #include "device-settings/VelocityCurve.h"
 #include "use-cases/ParameterUseCases.h"
 #include "parameters/ValueRange.h"
+#include "device-settings/SelectedRibbonsSetting.h"
 #include <device-settings/ParameterEditModeRibbonBehaviour.h>
 #include <memory.h>
 #include <nltools/messaging/Message.h>
@@ -45,6 +46,8 @@ PlaycontrollerProxy::PlaycontrollerProxy()
     nltools::msg::receive<nltools::msg::Keyboard::NoteEventHappened>(
         nltools::msg::EndPoint::Playground,
         sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
+
+    Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->onChange(sigc::mem_fun(this, &PlaycontrollerProxy::onSelectedRibbonsChanged));
   }
 }
 
@@ -488,4 +491,17 @@ int16_t PlaycontrollerProxy::ribbonCPValueToTCDValue(tControlPositionValue d, bo
     return scaleValueToRange<int16_t>(m_ribbonValueTcdRangeBipolar, d, ValueRange<tControlPositionValue>(-1, 1), false);
   else
     return scaleValueToRange<int16_t>(m_ribbonValueTcdRangeUnipolar, d, ValueRange<tControlPositionValue>(0, 1), false);
+}
+
+void PlaycontrollerProxy::onSelectedRibbonsChanged(const Setting *s)
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto r1 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_1, VoiceGroup::Global }));
+  auto r2 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_2, VoiceGroup::Global }));
+  auto r3 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_3, VoiceGroup::Global }));
+  auto r4 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_4, VoiceGroup::Global }));
+  r1->sendModeToPlaycontroller();
+  r2->sendModeToPlaycontroller();
+  r3->sendModeToPlaycontroller();
+  r4->sendModeToPlaycontroller();
 }
