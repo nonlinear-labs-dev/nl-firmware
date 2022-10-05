@@ -1739,7 +1739,8 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
   {
     if(auto hw = dynamic_cast<PhysicalControlParameter *>(p))
     {
-      if(hw->getID().getNumber() == C15::PID::Ribbon_1 || hw->getID().getNumber() == C15::PID::Ribbon_2)
+      if(hw->getID().getNumber() == C15::PID::Ribbon_1 || hw->getID().getNumber() == C15::PID::Ribbon_2 ||
+         hw->getID().getNumber() == C15::PID::Ribbon_3 || hw->getID().getNumber() == C15::PID::Ribbon_4)
       {
         auto oldMode = hw->getLastReturnModeBeforePresetLoad();
         auto newMode = hw->getReturnMode();

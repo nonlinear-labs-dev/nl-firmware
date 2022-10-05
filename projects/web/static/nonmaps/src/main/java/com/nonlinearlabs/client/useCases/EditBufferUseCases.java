@@ -1,5 +1,7 @@
 package com.nonlinearlabs.client.useCases;
 
+import java.util.Arrays;
+
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.LoadToPartMode.LoadToPartModeData;
@@ -121,11 +123,7 @@ public class EditBufferUseCases {
 
 			if (r.value.getQuantized(true) > 0.0) {
 				ParameterId physicalControlID = r.getAssociatedPhysicalControlID();
-
-				int ribbon1 = 284;
-				int ribbon2 = 289;
-
-				if (physicalControlID.getNumber() == ribbon1 || physicalControlID.getNumber() == ribbon2) {
+				if(Arrays.binarySearch(ParameterFactory.ribbons, physicalControlID.getNumber()) >= 0) {
 					RibbonParameterModel ribbon = this.<RibbonParameterModel>findParameter(physicalControlID);
 					if (!ribbon.isReturning()) {
 							ribbon.value.value.setValue(m.value.getQuantizedAndClipped(true));

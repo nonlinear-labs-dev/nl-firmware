@@ -43,7 +43,7 @@ public class ParameterFactory {
 			391, 394, 406, 408, 427 };
 
 	static private int[] pedals = { 254, 259, 264, 269 };
-	static private int[] ribbons = { 284, 289, 409, 411 };
+	public static int[] ribbons = { 284, 289, 409, 411 };
 
 	static public int[] physicalControls = { 254, 259, 264, 269, 274, 279, 284, 289, 409, 411 };
 
