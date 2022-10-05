@@ -57,7 +57,7 @@ void ModulationRouterParameterSelectLayout2::init()
 
 ModuleCaption *ModulationRouterParameterSelectLayout2::createModuleCaption() const
 {
-  return new FixedTextModuleCaption(Rect(0, 0, 64, 13), "!Macro Control");
+  return new FixedTextModuleCaption(Rect(0, 0, 64, 13), "Macro Control");
 }
 
 Carousel *ModulationRouterParameterSelectLayout2::createCarousel(const Rect &rect)
