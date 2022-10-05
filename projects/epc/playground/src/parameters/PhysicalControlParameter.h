@@ -56,15 +56,14 @@ class PhysicalControlParameter : public Parameter
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
+  ReturnMode m_returnModeBeforeLastLoad = ReturnMode::None;
+  bool m_changingFromHWUI = false;
+  bool m_lastChangedFromHWUI = false;
+  tControlPositionValue m_valueBeforeLastLoad = 0;
+
  private:
   void sendParameterMessage() const override;
 
   IntrusiveList<ModulationRoutingParameter *> m_targets;
-
-  tControlPositionValue m_valueBeforeLastLoad = 0;
-  ReturnMode m_returnModeBeforeLastLoad = ReturnMode::None;
-
-  bool m_changingFromHWUI = false;
-  bool m_lastChangedFromHWUI = false;
   ReturnMode m_oldReturnMode;
 };
