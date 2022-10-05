@@ -954,8 +954,8 @@ namespace Engine
     timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Time_KT) * _pitch;
     levelVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_Vel);
     attackVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Att_Vel) * _vel;
-    decay1Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Dec_1_Vel);
-    decay2Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Dec_2_Vel);
+    decay1Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Dec_1_Vel) * _vel;
+    decay2Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Dec_2_Vel) * _vel;
     levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_KT) * _pitch;
     if(levelVel < 0.0f)
     {
