@@ -117,6 +117,25 @@ StringAndSuffix RibbonLabel::getText() const
     auto shouldPrefix = m_parameter->isMCAssignedToThisAlsoAssignedToAnyPedal();
     return (shouldPrefix ? "\uE280" : "") + m_parameter->getCurrentModulatingMacroControlString();
   }
+  else if(!isRibbonEnabled && m_parameter)
+  {
+    if(isRibbon1)
+    {
+      return settings->getSetting<RibbonCCMapping<1>>()->getDisplayString();
+    }
+    else if(isRibbon2)
+    {
+      return settings->getSetting<RibbonCCMapping<2>>()->getDisplayString();
+    }
+    else if(isRibbon3)
+    {
+      return settings->getSetting<RibbonCCMapping<3>>()->getDisplayString();
+    }
+    else if(isRibbon4)
+    {
+      return settings->getSetting<RibbonCCMapping<4>>()->getDisplayString();
+    }
+  }
 
   return "not assigned";
 }
