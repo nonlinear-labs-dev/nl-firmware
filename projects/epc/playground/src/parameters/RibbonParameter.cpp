@@ -258,10 +258,10 @@ void RibbonParameter::sendModeToPlaycontroller() const
     uint16_t v = 0;
 
     if(getRibbonReturnMode() == RibbonReturnMode::RETURN)
-      v = 1;
+      v += 1;
 
     if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
-      v = 2;
+      v += 2;
 
     if(Application::exists())
     {
