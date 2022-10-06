@@ -204,3 +204,4 @@ parameters:
     info: >
       If enabled, the Oscillator will reset its phase everytime the envelopes start (in the corresponding voice).
       If disabled, the Oscillator is in free-running mode.
+      Changing this parameter is only effective when a key is pressed.

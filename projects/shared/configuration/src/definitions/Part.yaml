@@ -79,7 +79,8 @@ parameters:
       For Part II the full level range spans from the highest key (C6) to the key set here.
       For the keys below this breakpoint the level is faded out.\n
       By default this parameter is set to the highest key (C6) for Part I and to the lowest key (C1) for Part II,
-      so that both Parts cover the whole key range without fading.
+      so that both Parts cover the whole key range without fading.\n
+      Changing this parameter is only effective when a key is pressed.
   - <<: *ONLY_LAYER_HIDDEN
     type: Local_Unmodulateable
     id: 397
@@ -94,4 +95,5 @@ parameters:
       For Part I the fade-out applies to keys above the breakpoint set by \"Fade From\".
       For Part II the fade-out applies to keys below the breakpoint set by \"Fade From\".\n
       With a Fade Range of zero the Part is muted for all keys beyond the breakpoint, which is the default behavior.
-      You can set this parameter in fractions of semitones to make subtle changes to the curve of the fade-out.
+      You can set this parameter in fractions of semitones to make subtle changes to the curve of the fade-out.\n
+      Changing this parameter is only effective when a key is pressed.
