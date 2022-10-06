@@ -37,6 +37,7 @@ class RibbonParameter : public PhysicalControlParameter
   Glib::ustring getShortName() const override;
 
  protected:
+  bool isRibbonCurrentlySelectedInBaseUnit() const;
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
 
   bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
