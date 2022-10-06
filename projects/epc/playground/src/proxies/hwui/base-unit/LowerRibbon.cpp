@@ -47,7 +47,6 @@ LowerRibbon::LowerRibbon()
   m_parameterSelectionChangedSignal = Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::mem_fun(this, &LowerRibbon::onParamSelectionChanged), {});
 
-
   m_ribbonSelectionSignal = Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->onChange(
       sigc::mem_fun(this, &LowerRibbon::onRibbonSelectionChanged));
 }
@@ -59,6 +58,8 @@ void LowerRibbon::onRibbonSelectionChanged(const Setting *setting)
 
 void LowerRibbon::reconnect()
 {
+  m_paramConnection.disconnect();
+
   if(auto p = getParameter())
     m_paramConnection = p->onParameterChanged(sigc::mem_fun(this, &LowerRibbon::onParamValueChanged));
   if(auto p = getSendParameter())
