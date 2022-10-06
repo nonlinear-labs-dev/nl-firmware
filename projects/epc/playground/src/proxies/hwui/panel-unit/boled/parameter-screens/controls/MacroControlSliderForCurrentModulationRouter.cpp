@@ -19,6 +19,10 @@ void MacroControlSliderForCurrentModulationRouter::subscribeToMacroFromSelected(
   {
     setParameter(modRouter->getTargetParameter());
   }
+  else if(auto mc = dynamic_cast<MacroControlParameter*>(p))
+  {
+    setParameter(mc);
+  }
   else
   {
     nltools::Log::error("could not cast current parameter to router");

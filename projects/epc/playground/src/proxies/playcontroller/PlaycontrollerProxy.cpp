@@ -47,7 +47,8 @@ PlaycontrollerProxy::PlaycontrollerProxy()
         nltools::msg::EndPoint::Playground,
         sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
 
-    Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->onChange(sigc::mem_fun(this, &PlaycontrollerProxy::onSelectedRibbonsChanged));
+    Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->onChange(
+        sigc::mem_fun(this, &PlaycontrollerProxy::onSelectedRibbonsChanged));
   }
 }
 
@@ -224,9 +225,9 @@ Parameter *PlaycontrollerProxy::findPhysicalControlParameterFromPlaycontrollerHW
         return HardwareSourcesGroup::getUpperRibbonParameterID();
       case HW_SOURCE_ID_RIBBON_2:
         return HardwareSourcesGroup::getLowerRibbonParameterID();
-      case 8: //meh
+      case 8:  //meh
         return HardwareSourcesGroup::getUpperRibbon3ParameterID();
-      case 9: //uhg
+      case 9:  //uhg
         return HardwareSourcesGroup::getLowerRibbon4ParameterID();
       case HW_SOURCE_ID_PEDAL_7:
       case HW_SOURCE_ID_PEDAL_8:
