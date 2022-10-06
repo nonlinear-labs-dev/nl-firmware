@@ -75,11 +75,25 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
       EndPoint::Playground,
       [this](auto &msg)
       {
+        auto to_string = [](int hw){
+          switch(hw){
+            case HW_SOURCE_ID_RIBBON_1:
+              return "RIBBON_1";
+            case HW_SOURCE_ID_RIBBON_2:
+              return "RIBBON_2";
+            case 8:  //meh
+              return "RIBBON_3";
+            case 9:  //uhg
+              return "RIBBON_4";
+          }
+        };
+
         if(auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(msg.hwSource))
         {
           if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
           {
             PhysicalControlParameterUseCases useCase(p);
+            nltools::Log::error("got hw-source:", to_string(static_cast<int>(msg.source)), "with position:", msg.position);
             useCase.changeFromAudioEngine(msg.position, msg.source);
             m_playcontrollerProxy.notifyRibbonTouch(p->getID().getNumber());
           }
