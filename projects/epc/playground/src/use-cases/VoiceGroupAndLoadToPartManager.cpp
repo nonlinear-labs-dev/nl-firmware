@@ -20,6 +20,12 @@ void VoiceGroupAndLoadToPartManager::setLoadToPart(bool state)
     m_loadToPartSignal.send(m_loadToPartActive);
 }
 
+void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroupSilent(VoiceGroup vg)
+{
+  m_currentVoiceGroup = vg;
+  m_voiceGoupSignal.send(m_currentVoiceGroup);
+}
+
 void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(UNDO::Transaction *t, VoiceGroup v)
 {
   auto swap = UNDO::createSwapData(v);
