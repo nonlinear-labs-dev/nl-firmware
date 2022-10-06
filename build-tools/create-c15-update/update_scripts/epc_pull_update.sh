@@ -11,7 +11,10 @@
 
 set -x
 
-EPC_IP=$1
+
+EPC_IP="$1"
+FIX_EPC_1="$2"
+FIX_EPC_2="$3"
 TIMEOUT=300
 
 report_and_quit(){
@@ -56,6 +59,17 @@ add_ping_test_to_nlhook() {
   executeAsRoot "umount /mnt"
 }
 
+epc_fix() {
+    if [[ "$FIX_EPC_1" = "true" ]]; then
+        /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_1_fix.sh sscl@192.168.10.10:/tmp/epc_fix.sh
+    elif [[ "$FIX_EPC_2" = "true" ]]; then
+        /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_2_fix.sh sscl@192.168.10.10:/tmp/epc_fix.sh
+    fi
+
+    executeAsRoot "cd /tmp && chmod +x epc_fix.sh && ./epc_fix.sh" || return $?
+    return 0
+}
+
 update(){
     killall thttpd
 
@@ -64,6 +78,7 @@ update(){
     fi
     
     add_ping_test_to_nlhook
+    epc_fix
 
     for RETRYCOUNTER in {1..5}; do
         echo "restarting epc (try $RETRYCOUNTER)"

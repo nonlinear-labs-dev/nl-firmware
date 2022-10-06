@@ -142,19 +142,8 @@ check_preconditions() {
 
 epc_pull_update() {
     chmod +x /update/EPC/epc_pull_update.sh
-    /bin/sh /update/EPC/epc_pull_update.sh $EPC_IP
+    /bin/sh /update/EPC/epc_pull_update.sh $EPC_IP $FIX_EPC_1 $FIX_EPC_2
     return $?
-}
-
-epc_fix() {
-    if [[ "$FIX_EPC_1" = "true" ]]; then
-        /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_1_fix.sh sscl@192.168.10.10:/tmp/epc_fix.sh
-    elif [[ "$FIX_EPC_2" = "true" ]]; then
-        /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_2_fix.sh sscl@192.168.10.10:/tmp/epc_fix.sh
-    fi
-
-    executeAsRoot "cd /tmp && chmod +x epc_fix.sh && ./epc_fix.sh" || return $?
-    return 0
 }
 
 epc_update() {
@@ -169,7 +158,6 @@ epc_update() {
       return 1
     fi
 
-    epc_fix
     return_code=$?
     if [ $return_code -ne 0 ]; then
         /update/utilities/sshpass -p "sscl" scp -r sscl@$EPC_IP:/tmp/fix_error.log /dev/stdout | cat - >> /update/errors.log
