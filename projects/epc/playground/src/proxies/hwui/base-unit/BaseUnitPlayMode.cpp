@@ -32,7 +32,17 @@ void BaseUnitPlayMode::setup()
                             return true;
 
                           if(state)
-                            toggleRibbonSelection();
+                          {
+                            if(Application::get().getSettings()->getSetting<BaseUnitUIMode>()->get()
+                               == BaseUnitUIModes::ParameterEdit)
+                            {
+                              toggleTouchBehaviour();
+                            }
+                            else
+                            {
+                              toggleRibbonSelection();
+                            }
+                          }
 
                           return true;
                         });
