@@ -306,7 +306,9 @@ void PlaycontrollerProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gin
 void PlaycontrollerProxy::notifyRibbonTouch(int ribbonsParameterID)
 {
   if(ribbonsParameterID == HardwareSourcesGroup::getLowerRibbonParameterID().getNumber()
-     || ribbonsParameterID == HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
+     || ribbonsParameterID == HardwareSourcesGroup::getUpperRibbonParameterID().getNumber()
+     || ribbonsParameterID == HardwareSourcesGroup::getLowerRibbon4ParameterID().getNumber()
+     || ribbonsParameterID == HardwareSourcesGroup::getUpperRibbon3ParameterID().getNumber())
   {
     m_lastTouchedRibbon = ribbonsParameterID;
     m_signalRibbonTouched.send(ribbonsParameterID);
