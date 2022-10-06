@@ -27,8 +27,8 @@ PlayOrEditModeLayout::PlayOrEditModeLayout()
   addControl(new VerticalLine(Rect(24, 0, 1, 32)));
   addControl(new DottedLine(Rect(25, 16, 86, 1)));
 
-  addControl(new RibbonLabel(HardwareSourcesGroup::getLowerRibbonParameterID(), Rect(25, 17, 74, 14)));
-  addControl(new MCRoutings(HardwareSourcesGroup::getLowerRibbonParameterID(), Rect(99, 20, 8, 8)));
+  addControl(new RibbonLabel(HardwareSourcesGroup::getLowerRibbonParameterID(), Rect(25, 17, 78, 14)));
+  addControl(new MCRoutings(HardwareSourcesGroup::getLowerRibbonParameterID(), Rect(104, 17, 8, 12)));
 
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       mem_fun(this, &PlayOrEditModeLayout::onParameterSelectionChanged), {});

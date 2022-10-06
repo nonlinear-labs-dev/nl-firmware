@@ -26,10 +26,10 @@ class RibbonLabel : public Label
  protected:
   int getXOffset() const override;
   void onRibbonSelectionChanged(const Setting *s);
+  int getFontHeight() const override;
 
  private:
   Glib::ustring crop(const Glib::ustring &text) const;
-  Glib::ustring binarySearchLength(const Glib::ustring &text, unsigned long min, unsigned long max) const;
 
   using tRibbonEnables = std::tuple<bool, bool, bool, bool>;
   tRibbonEnables getRibbonEnabledStates() const;

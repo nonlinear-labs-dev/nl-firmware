@@ -98,7 +98,7 @@ void MCRoutings::onRoutingParameterChanged(const Parameter *p)
 
 void MCRoutings::drawRoutingParameters(FrameBuffer &fb, MacroControlMappingGroup::tModRoutingParams &params)
 {
-  int inc = getPosition().getHeight() / 4;
+  int inc = getPosition().getHeight() / 6;
   int pos = getPosition().getTop();
 
   for(auto param : params)

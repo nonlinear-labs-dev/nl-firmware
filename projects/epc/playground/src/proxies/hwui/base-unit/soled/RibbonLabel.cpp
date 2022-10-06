@@ -115,7 +115,7 @@ StringAndSuffix RibbonLabel::getText() const
   if(isRibbonEnabled && m_parameter)
   {
     auto shouldPrefix = m_parameter->isMCAssignedToThisAlsoAssignedToAnyPedal();
-    return (shouldPrefix ? "\uE280" : "") + m_parameter->getCurrentModulatingMacroControlString();
+    return crop((shouldPrefix ? "\uE280" : "") + m_parameter->getCurrentModulatingMacroControlString());
   }
   else if(!isRibbonEnabled && m_parameter)
   {
@@ -140,6 +140,11 @@ StringAndSuffix RibbonLabel::getText() const
   return "not assigned";
 }
 
+int RibbonLabel::getFontHeight() const
+{
+  return Label::getFontHeight();
+}
+
 std::shared_ptr<Font> RibbonLabel::getFont() const
 {
   return Fonts::get().getFont("Emphase-9-Regular", getFontHeight());
@@ -147,35 +152,26 @@ std::shared_ptr<Font> RibbonLabel::getFont() const
 
 Glib::ustring RibbonLabel::crop(const Glib::ustring &text) const
 {
-  auto min = 0ul;
-  auto max = text.length();
+  auto removeLastChar = [](const auto& s)
+  {
+    if(!s.empty())
+      return s.substr(0, s.size() - 1);
+    return s;
+  };
 
-  auto w = getFont()->getStringWidth(text);
+  Glib::ustring ret = text;
 
-  if(w <= getPosition().getWidth())
-    return text;
+  if(getFont()->getStringWidth(ret) > getWidth())
+  {
+    while(getFont()->getStringWidth(Glib::ustring(ret + "..")) > getWidth())
+    {
+      ret = removeLastChar(ret);
+      if(ret.empty())
+        break;
+    }
 
-  return binarySearchLength(text, min, max);
-}
+    ret += "..";
+  }
 
-Glib::ustring RibbonLabel::binarySearchLength(const Glib::ustring &text, unsigned long min, unsigned long max) const
-{
-  if(max == 0)
-    return "";
-
-  if((min + 1) == max)
-    return text.substr(0, min) + "..";
-
-  auto halfIdx = min + (max - min) / 2;
-  auto half = text.substr(0, halfIdx);
-  auto toMeasure = half + "..";
-
-  auto w = getFont()->getStringWidth(toMeasure);
-
-  if(w <= getPosition().getWidth())
-    min = halfIdx;
-  else
-    max = halfIdx;
-
-  return binarySearchLength(text, min, max);
+  return ret;
 }
