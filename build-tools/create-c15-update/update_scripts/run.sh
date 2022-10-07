@@ -5,7 +5,6 @@ set -x
 EPC_IP=192.168.10.10
 BBB_IP=192.168.10.11
 
-# general Messages
 MSG_DO_NOT_SWITCH_OFF="DO NOT SWITCH OFF!"
 MSG_STARTING_UPDATE="Starting the C15 update..."
 MSG_UPDATING_C15="Updating the C15"
@@ -106,27 +105,30 @@ wait4epc() {
 }
 
 check_preconditions() {
-    [ "$UPDATE_EPC" = "0" ] && return 0
-    if ! wait4epc 10; then
-        if [ -z "$EPC_IP" ]; then report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!" && return 1; fi
-        if ! ping -c1 $EPC_IP 1>&2 > /dev/null; then  report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!" && return 1; fi
-        if executeOnWin "mountvol p: /s & p: & DIR P:\nonlinear"; then
-            report "" "E84: Upgrade OS first!" "Please contact NLL!" && return 1
-        else
-            if mount.cifs //192.168.10.10/update /mnt/windows -o user=TEST,password=TEST \
-                && ls -l /mnt/windows/ | grep Phase22Renderer.ens; then
-                    report "" "E85: OS too old for update!" "Please contact NLL!" && return 1
+    if [ "$UPDATE_EPC" = "1" ]; then
+        if ! wait4epc 10; then
+            if [ -z "$EPC_IP" ]; then report "" "E81: Usage: $EPC_IP <IP-of-ePC> wrong ..." "Please retry update!" && return 1; fi
+            if ! ping -c1 $EPC_IP 1>&2 > /dev/null; then  report "" "E82: Cannot ping ePC on $EPC_IP ..." "Please retry update!" && return 1; fi
+            if executeOnWin "mountvol p: /s & p: & DIR P:\nonlinear"; then
+                report "" "E84: Upgrade OS first!" "Please contact NLL!" && return 1
+            else
+                if mount.cifs //192.168.10.10/update /mnt/windows -o user=TEST,password=TEST \
+                    && ls -l /mnt/windows/ | grep Phase22Renderer.ens; then
+                        report "" "E85: OS too old for update!" "Please contact NLL!" && return 1
+                fi
             fi
+            report "" "Something went wrong!" "Please retry update!" && return 1
         fi
-        report "" "Something went wrong!" "Please retry update!" && return 1
-    fi
-    
-    if [[ "$(executeAsRoot "uname -r")" == "4.9.9-rt6-1-rt" ]]; then
-        [ -f /update/EPC/update.tar ] && { ln -s /update/EPC/update.tar /update/EPC/update.tar; FIX_EPC_1=true; FIX_EPC_2=false; } ||
-            { report "" "E86: ePC update missing" "Please retry download!"; return 1; }
-    else
-        [ -f /update/EPC/update.tar ] && { ln -s /update/EPC/update.tar /update/EPC/update.tar; FIX_EPC_1=false; FIX_EPC_2=true; } ||
-            { report "" "E86: ePC update missing" "Please retry download!"; return 1; }
+
+      [ -f "/update/EPC/update.tar" ] || { report "" "E86: ePC update missing" "Please retry download!"; return 1; }
+
+      if [[ "$(executeAsRoot "uname -r")" == "4.9.9-rt6-1-rt" ]]; then
+          [ -f /update/EPC/epc_1_fix.sh ] && { FIX_EPC_1=true; FIX_EPC_2=false; } ||
+              { report "" "E86: ePC fix missing" "Please retry download!"; return 1; }
+      elif [[ "$(executeAsRoot "uname -r")" == "5.9.1-rt20-1-rt" ]]; then
+          [ -f /update/EPC/epc_2_fix.sh ] && { FIX_EPC_1=false; FIX_EPC_2=true; } ||
+              { report "" "E86: ePC fix missing" "Please retry download!"; return 1; }
+      fi
     fi
 
     if [ "$UPDATE_BBB" = "1" ]; then
@@ -150,7 +152,6 @@ epc_update() {
     pretty "" "$MSG_UPDATING_EPC" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_EPC" "$MSG_DO_NOT_SWITCH_OFF"
 
     epc_pull_update
-    
     return_code=$?
     if [ $return_code -ne 0 ]; then
       pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
@@ -158,17 +159,7 @@ epc_update() {
       return 1
     fi
 
-    return_code=$?
-    if [ $return_code -ne 0 ]; then
-        /update/utilities/sshpass -p "sscl" scp -r sscl@$EPC_IP:/tmp/fix_error.log /dev/stdout | cat - >> /update/errors.log
-        pretty "" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code" "$MSG_UPDATING_EPC" "$MSG_FAILED_WITH_ERROR_CODE $return_code"
-        sleep 2
-        return 1
-    fi
-    executeAsRoot "reboot"
-    wait4epc 60
-
-    pretty "" "$MSG_UPDATING_EPC" "$MSG_DONE" "$MSG_UPDATING_EPC" "$MSG_DONE"
+    pretty "" "$MSG_UPDATING_EPC" "$MSG_OK" "$MSG_UPDATING_EPC" "$MSG_OK"
     sleep 2
     return 0
 }
