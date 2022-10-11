@@ -52,7 +52,7 @@ add_ping_test_to_nlhook() {
     && executeAsRoot "sed -i \"${NEXT_LINE}i       ping_bbb\" /mnt/usr/lib/initcpio/hooks/nlhook" \
     && executeAsRoot "sed -i \"${LINE_NUMBER}i ping_bbb() { for R in \$\(seq 20\)\; do ping -c1 -W1 192.168.10.11 \&\& break\; done \; }\" /mnt/usr/lib/initcpio/hooks/nlhook" \
     && executeAsRoot "mount /dev/sda1 /mnt/boot/" \
-    && executeAsRoot "systemd-nspawn -D /mnt mkinitcpio -p linux-rt"
+    && executeAsRoot "systemd-nspawn -D /mnt mkinitcpio -p linux-rt" \
     || printf "E48 ePC fix: adding ping test to nlhook" >> /update/errors.log
   fi
 
