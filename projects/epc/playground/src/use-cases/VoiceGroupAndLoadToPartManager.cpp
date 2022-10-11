@@ -23,7 +23,11 @@ void VoiceGroupAndLoadToPartManager::setLoadToPart(bool state)
 void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(UNDO::Transaction *t, VoiceGroup v)
 {
   if(v == VoiceGroup::Global)
+  {
+    nltools::Log::error("setCurrentVoiceGroup called with VoiceGroup::Global");
+    Environment::printbacktrace(nltools::Log::Level::Error);
     return;
+  }
 
   auto swap = UNDO::createSwapData(v);
   t->addSimpleCommand([this, swap](auto) {
