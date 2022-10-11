@@ -14,7 +14,7 @@ fix_overlay_order() {
   if mount | grep "/lroot:/nloverlay/os-overlay"; then
     sed -i 's@/lroot:/nloverlay/os-overlay@/nloverlay/os-overlay:/lroot@' /tmp/sda2/lib/initcpio/hooks/oroot \
       && arch-chroot /tmp/sda2 mkinitcpio -p linux-rt \
-      || printf "E48 ePC1 update: fixing Overlay order failed" >> /tmp/fix_error.log && ((fix_errors++))
+      || printf "E48 ePC1 fix: fixing Overlay order failed" >> /tmp/fix_error.log && ((fix_errors++))
   fi
 }
 
@@ -25,7 +25,7 @@ fix_kernel_cmdline() {
       && arch-chroot /tmp/sda2 /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg" \
       && arch-chroot /tmp/sda2 /bin/bash -c "mkdir -p /boot/EFI/BOOT" \
       && arch-chroot /tmp/sda2 /bin/bash -c "cp /boot/EFI/arch_grub/grubx64.efi /boot/EFI/BOOT/BOOTX64.EFI" \
-      || printf "E48 ePC1 update: setting Kernel Params failed" >> /tmp/fix_error.log && ((fix_errors++))
+      || printf "E48 ePC1 fix: setting Kernel Params failed" >> /tmp/fix_error.log && ((fix_errors++))
   fi
 }
 

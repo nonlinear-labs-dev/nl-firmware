@@ -33,13 +33,11 @@ done
 
 mount -t overlay -o lowerdir=/lroot,upperdir=/nloverlay/os-overlay,workdir=/nloverlay/work overlay /mnt
 
-mv /mnt/usr/lib/modules /tmp/
-mv /mnt/usr/lib/firmware /tmp/
 rm -rf /mnt/*
+sync
 ./xz -c -k -d /nloverlay/update-scratch/update/c15-rootfs.tar.xz | tar -C /mnt -x
-mv /tmp/modules /mnt/usr/lib/
-mv /tmp/firmware /mnt/usr/lib/
-
+cp -r /lroot/usr/lib/modules /mnt/usr/lib/
+cp -r /lroot/usr/lib/firmware /mnt/usr/lib/
 umount /mnt
 
 for dir in "runtime-overlay" "work"; do

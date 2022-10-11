@@ -891,7 +891,6 @@ namespace Engine
         = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
     m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Decay2][_voiceId]
         = m_convert->eval_level(timeKT + decay2Vel) * m_millisecond;
-    m_env_a.setPeakLevel(_voiceId, peak);
     time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_A_Att)
         * m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Attack][_voiceId];
     m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Attack, _voiceId, 1.0f / (time + 1.0f));
@@ -932,7 +931,6 @@ namespace Engine
         = m_convert->eval_level(timeKT + decay1Vel) * m_millisecond;
     m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Decay2][_voiceId]
         = m_convert->eval_level(timeKT + decay2Vel) * m_millisecond;
-    m_env_b.setPeakLevel(_voiceId, peak);
     time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_B_Att)
         * m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Attack][_voiceId];
     m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Attack, _voiceId, 1.0f / (time + 1.0f));
@@ -954,8 +952,8 @@ namespace Engine
     timeKT = -0.5f * m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Time_KT) * _pitch;
     levelVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_Vel);
     attackVel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Att_Vel) * _vel;
-    decay1Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Dec_1_Vel);
-    decay2Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Dec_2_Vel);
+    decay1Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Dec_1_Vel) * _vel;
+    decay2Vel = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Dec_2_Vel) * _vel;
     levelKT = m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Lvl_KT) * _pitch;
     if(levelVel < 0.0f)
     {
