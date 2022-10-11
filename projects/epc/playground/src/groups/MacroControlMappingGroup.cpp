@@ -31,8 +31,8 @@ void MacroControlMappingGroup::init()
   auto pedal4 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getPedal4ParameterID());
   auto pitchbend = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getPitchbendParameterID());
   auto aftertouch = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getAftertouchParameterID());
-  auto ribbon1 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getUpperRibbonParameterID());
-  auto ribbon2 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getLowerRibbonParameterID());
+  auto ribbon1 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getUpperRibbon1ParameterID());
+  auto ribbon2 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getLowerRibbon2ParameterID());
   auto ribbon3 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getUpperRibbon3ParameterID());
   auto ribbon4 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getLowerRibbon4ParameterID());
 

@@ -22,12 +22,12 @@ class HardwareSourcesGroup : public ParameterGroup
   typedef std::list<tSendParameter> tSendParameters;
   tSendParameters getSendParameters();
 
-  static ParameterId getUpperRibbonParameterID()
+  static ParameterId getUpperRibbon1ParameterID()
   {
     return { C15::PID::Ribbon_1, VoiceGroup::Global };
   }
 
-  static ParameterId getLowerRibbonParameterID()
+  static ParameterId getLowerRibbon2ParameterID()
   {
     return { C15::PID::Ribbon_2, VoiceGroup::Global };
   }

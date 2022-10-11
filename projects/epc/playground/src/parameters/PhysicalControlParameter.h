@@ -55,10 +55,11 @@ class PhysicalControlParameter : public Parameter
 
   virtual void onLocalEnableChanged(bool b) = 0;
 
+  MacroControlParameter* getMCAssignedToThisHW() const;
+
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
-  MacroControlParameter* getMCAssignedToThisHW() const;
  private:
   void sendParameterMessage() const override;
 

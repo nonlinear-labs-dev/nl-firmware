@@ -17,7 +17,7 @@ static Parameter *getParameter()
   if(Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->get() == SelectedRibbons::Ribbon1_2)
   {
     return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-        HardwareSourcesGroup::getLowerRibbonParameterID());
+        HardwareSourcesGroup::getLowerRibbon2ParameterID());
   }
   else
   {

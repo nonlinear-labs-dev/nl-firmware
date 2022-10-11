@@ -28,9 +28,9 @@ void HardwareSourcesGroup::init()
   appendParameter(new HardwareSourceSendParameter(this, *bender, getBenderSendID(), m_settings));
   auto at = appendParameter(new AftertouchParameter(this, getAftertouchParameterID()));
   appendParameter(new HardwareSourceSendParameter(this, *at, getAftertouchSendID(), m_settings));
-  auto ribbon1 = appendParameter(new RibbonParameter(this, getUpperRibbonParameterID()));
+  auto ribbon1 = appendParameter(new RibbonParameter(this, getUpperRibbon1ParameterID()));
   appendParameter(new HardwareSourceSendParameter(this, *ribbon1, getRibbon1SendID(), m_settings));
-  auto ribbon2 = appendParameter(new RibbonParameter(this, getLowerRibbonParameterID()));
+  auto ribbon2 = appendParameter(new RibbonParameter(this, getLowerRibbon2ParameterID()));
   appendParameter(new HardwareSourceSendParameter(this, *ribbon2, getRibbon2SendID(), m_settings));
   auto ribbon3 = appendParameter(new RibbonParameter(this, getUpperRibbon3ParameterID()));
   appendParameter(new HardwareSourceSendParameter(this, *ribbon3, getRibbon3SendID(), m_settings));

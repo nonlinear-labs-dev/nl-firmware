@@ -106,7 +106,7 @@ void InputEventStage::onTCDEvent()
     {
       const bool isSplitSound = (soundType == SoundType::Split);
       const auto determinedPart
-          = isSplitSound ? calculateSplitPartForKeyDown(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
+          = isSplitSound ? calculateSplitPartForKeyDown(interface, decoder->getKey()) : VoiceGroup::Global;
 
       if(determinedPart == VoiceGroup::Invalid)
         break;
@@ -115,18 +115,18 @@ void InputEventStage::onTCDEvent()
       {
         if(isSplitSound)
         {
-          m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
+          m_dspHost->onKeyDownSplit(decoder->getKey(), decoder->getValue(), determinedPart, interface);
         }
         else if(soundValid)
         {
-          m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), interface);
+          m_dspHost->onKeyDown(decoder->getKey(), decoder->getValue(), interface);
         }
 
         setAndScheduleKeybedNotify();
       }
       else
       {
-        m_dspHost->registerNonLocalKeyAssignment(decoder->getKeyOrController(), determinedPart);
+        m_dspHost->registerNonLocalKeyAssignment(decoder->getKey(), determinedPart);
       }
 
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
@@ -138,7 +138,7 @@ void InputEventStage::onTCDEvent()
     }
     case DecoderEventType::KeyUp:
     {
-      const auto key = decoder->getKeyOrController();
+      const auto key = decoder->getKey();
       const auto isSplitSound = (soundType == SoundType::Split);
       const auto shouldReceiveLocalNotes = m_options->shouldReceiveLocalNotes();
       const auto determinedSplitPart = shouldReceiveLocalNotes ? calculateSplitPartForKeyUp(interface, key)
@@ -182,7 +182,8 @@ void InputEventStage::onTCDEvent()
       }
       else
       {
-        m_polledHWPositions[decoder->getKeyOrController()] = decoder->getValue();
+        auto hwId = static_cast<int>(decoder->getHardwareSource());
+        m_polledHWPositions[hwId] = decoder->getValue();
       }
       break;
     }
@@ -268,7 +269,7 @@ void InputEventStage::convertToAndSendMIDI(TCDDecoder *pDecoder, const VoiceGrou
       sendKeyUpAsMidi(pDecoder, determinedPart);
       break;
     case DecoderEventType::HardwareChange:
-      sendHardwareChangeAsMidi(static_cast<HardwareSource>(pDecoder->getKeyOrController()), pDecoder->getValue());
+      sendHardwareChangeAsMidi(pDecoder->getHardwareSource(), pDecoder->getValue());
       break;
     case DecoderEventType::UNKNOWN:
       nltools_assertNotReached();
@@ -313,7 +314,7 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &
 {
   const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDIPrimarySendChannel());
   const auto secondaryChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDISplitSendChannel());
-  const auto key = pDecoder->getKeyOrController();
+  const auto key = pDecoder->getKey();
   constexpr const uint8_t keyType = 0x90;
   constexpr const uint8_t ccType = 0xB0;
   const uint8_t keyByte = static_cast<uint8_t>(key) & 0x7F;
@@ -376,7 +377,7 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
 {
   const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDIPrimarySendChannel());
   const auto secondaryChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDISplitSendChannel());
-  const auto key = pDecoder->getKeyOrController();
+  const auto key = pDecoder->getKey();
 
   const auto mainC = static_cast<uint8_t>(mainChannel);
   const auto secC = static_cast<uint8_t>(secondaryChannel);
@@ -479,12 +480,12 @@ void InputEventStage::sendHardwareChangeAsMidi(HardwareSource hwID, float value)
 
     case HardwareSource::RIBBON3:
       sendCCOut(HardwareSource::RIBBON3, value, m_options->getCCFor<Midi::MSB::Rib3>(),
-          m_options->getCCFor<Midi::LSB::Rib3>());
+                m_options->getCCFor<Midi::LSB::Rib3>());
       break;
 
     case HardwareSource::RIBBON4:
       sendCCOut(HardwareSource::RIBBON4, value, m_options->getCCFor<Midi::MSB::Rib4>(),
-          m_options->getCCFor<Midi::LSB::Rib4>());
+                m_options->getCCFor<Midi::LSB::Rib4>());
       break;
 
     default:
@@ -795,14 +796,9 @@ HardwareSource InputEventStage::parameterIDToHWID(int id)
   }
 }
 
-void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource source, bool wasMIDIPrimary,
-                                  bool wasMIDISplit, bool didBehaviourChange)
+nltools::msg::Setting::MidiSettingsMessage::RoutingIndex hwidToRoutingIndex(HardwareSource hwID)
 {
-  if constexpr (LOG_INPUT_EVENT_STAGE)
-  {
-    nltools::Log::error(__PRETTY_FUNCTION__, "hwid:", toString(hwID), "pos:", pos, "source:", toString(source), "hwid idx:", static_cast<unsigned int>(hwID));
-  }
-
+  using RoutingIndex = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
   RoutingIndex routingIndex = RoutingIndex::LENGTH;
 
   if(hwID == HardwareSource::RIBBON3)
@@ -811,6 +807,19 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
     routingIndex = RoutingIndex::Ribbon4;
   else
     routingIndex = static_cast<RoutingIndex>(hwID);
+  return routingIndex;
+}
+
+void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource source, bool wasMIDIPrimary,
+                                  bool wasMIDISplit, bool didBehaviourChange)
+{
+  if constexpr(LOG_INPUT_EVENT_STAGE)
+  {
+    nltools::Log::error(__PRETTY_FUNCTION__, "hwid:", toString(hwID), "pos:", pos, "source:", toString(source),
+                        "hwid idx:", static_cast<unsigned int>(hwID));
+  }
+
+  auto routingIndex = hwidToRoutingIndex(hwID);
 
   auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)
   {

@@ -8,8 +8,8 @@
 PlayModeLayout::PlayModeLayout()
     : super()
 {
-  addControl(new RibbonLabel(HardwareSourcesGroup::getUpperRibbonParameterID(), Rect(25, 1, 78, 14)));
-  addControl(new MCRoutings(HardwareSourcesGroup::getUpperRibbonParameterID(), Rect(104, 1, 8, 12)));
+  addControl(new RibbonLabel(HardwareSourcesGroup::getUpperRibbon1ParameterID(), Rect(25, 1, 78, 14)));
+  addControl(new MCRoutings(HardwareSourcesGroup::getUpperRibbon1ParameterID(), Rect(104, 1, 8, 12)));
 }
 
 PlayModeLayout::~PlayModeLayout()

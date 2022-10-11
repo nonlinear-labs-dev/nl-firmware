@@ -36,14 +36,12 @@ class PlaycontrollerProxy
 
   void sendPedalSetting(uint16_t pedal, PedalTypes pedalType, bool reset);
 
-  sigc::connection onRibbonTouched(const sigc::slot<void, int> &s);
   sigc::connection onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s);
   sigc::connection onLastKeyChanged(sigc::slot<void> s);
   sigc::connection onUHIDChanged(const sigc::slot<void, uint64_t> &s);
   int getLastTouchedRibbonParameterID() const;
   std::string getPlaycontrollerSoftwareVersion() const;
   uint64_t getUHID() const;
-  Parameter *findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const;
   void notifyRibbonTouch(int ribbonsParameterID);
   void setUHID(uint64_t uhid);
   int16_t ribbonRelativeFactorToTCDValue(tControlPositionValue d);

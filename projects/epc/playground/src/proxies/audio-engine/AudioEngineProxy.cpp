@@ -47,35 +47,34 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
   onConnectionEstablished(EndPoint::AudioEngine,
                           sigc::mem_fun(this, &AudioEngineProxy::connectSettingsToAudioEngineMessage));
 
-  receive<HardwareSourcePollEnd>(
-      EndPoint::Playground,
-      [this](auto &msg)
-      {
-        int index = 0;
-        bool didChange = false;
-        for(auto value : msg.m_data)
-        {
-          auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(index);
-          index++;
-          if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
-          {
-            PhysicalControlParameterUseCases useCases(p);
-            didChange |= useCases.applyPolledHWPosition(value);
-          }
-        }
+  receive<HardwareSourcePollEnd>(EndPoint::Playground,
+                                 [this](auto &msg)
+                                 {
+                                   int index = 0;
+                                   bool didChange = false;
+                                   for(auto value : msg.m_data)
+                                   {
+                                     auto param = findPhysicalControlParameterFromAudioEngineHWSourceID(index);
+                                     index++;
+                                     if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
+                                     {
+                                       PhysicalControlParameterUseCases useCases(p);
+                                       didChange |= useCases.applyPolledHWPosition(value);
+                                     }
+                                   }
 
-        if(didChange)
-        {
-          nltools::Log::info("sending EditBuffer after PollEnd has been received!");
-          sendEditBuffer();
-        }
-      });
+                                   if(didChange)
+                                   {
+                                     nltools::Log::info("sending EditBuffer after PollEnd has been received!");
+                                     sendEditBuffer();
+                                   }
+                                 });
 
   receive<HardwareSourceChangedNotification>(
       EndPoint::Playground,
       [this](auto &msg)
       {
-        if(auto param = m_playcontrollerProxy.findPhysicalControlParameterFromPlaycontrollerHWSourceID(msg.hwSource))
+        if(auto param = findPhysicalControlParameterFromAudioEngineHWSourceID(msg.hwSource))
         {
           if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
           {
@@ -598,4 +597,36 @@ void AudioEngineProxy::scheduleMidiSettingsMessage()
 void AudioEngineProxy::setLastKnownMIDIProgramChangeNumber(int pc)
 {
   m_lastMIDIKnownProgramNumber = pc;
+}
+
+Parameter *AudioEngineProxy::findPhysicalControlParameterFromAudioEngineHWSourceID(int index)
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto i = [](auto s) { return static_cast<int>(s); };
+
+  switch(index)
+  {
+    case i(HardwareSource_AE::PEDAL1):
+      return eb->findParameterByID({ C15::PID::Pedal_1, VoiceGroup::Global });
+    case i(HardwareSource_AE::PEDAL2):
+      return eb->findParameterByID({ C15::PID::Pedal_2, VoiceGroup::Global });
+    case i(HardwareSource_AE::PEDAL3):
+      return eb->findParameterByID({ C15::PID::Pedal_3, VoiceGroup::Global });
+    case i(HardwareSource_AE::PEDAL4):
+      return eb->findParameterByID({ C15::PID::Pedal_4, VoiceGroup::Global });
+    case i(HardwareSource_AE::RIBBON1):
+      return eb->findParameterByID({ C15::PID::Ribbon_1, VoiceGroup::Global });
+    case i(HardwareSource_AE::RIBBON2):
+      return eb->findParameterByID({ C15::PID::Ribbon_2, VoiceGroup::Global });
+    case i(HardwareSource_AE::RIBBON3):
+      return eb->findParameterByID({ C15::PID::Ribbon_3, VoiceGroup::Global });
+    case i(HardwareSource_AE::RIBBON4):
+      return eb->findParameterByID({ C15::PID::Ribbon_4, VoiceGroup::Global });
+    case i(HardwareSource_AE::BENDER):
+      return eb->findParameterByID({ C15::PID::Bender, VoiceGroup::Global });
+    case i(HardwareSource_AE::AFTERTOUCH):
+      return eb->findParameterByID({ C15::PID::Aftertouch, VoiceGroup::Global });
+    default:
+      return nullptr;
+  }
 }

@@ -7,14 +7,11 @@
 #include <presets/EditBuffer.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/buttons.h>
-#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/Button.h>
-#include <proxies/hwui/controls/ControlOwner.h>
 #include <proxies/hwui/controls/DottedLine.h>
 #include <proxies/hwui/controls/Overlay.h>
 #include <proxies/hwui/controls/Rect.h>
 #include <proxies/hwui/controls/SelectedParameterValue.h>
-#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/HWSourceAmountCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MacroControlEditButtonMenu.h>
@@ -47,20 +44,6 @@ MacroControlParameterLayout2::MacroControlParameterLayout2()
       sigc::hide(sigc::mem_fun(this, &MacroControlParameterLayout2::onSoundTypeChanged)));
 }
 
-MacroControlParameterLayout2::MacroControlParameterLayout2(Parameter *mc, Parameter *hwSrc)
-    : super()
-    , m_initialParameterSelection({ .m_src = hwSrc, .m_mc = mc })
-{
-  addControl(new SelectedParameterDotSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
-  addControl(new ModulationSourceLabel(Rect(77, 33, 11, 12)));
-  m_modeOverlay = addControl(new Overlay(Rect(0, 0, 256, 64)));
-
-  setMode(Mode::MacroControlValue);
-
-  m_editBufferTypeConnection = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
-      sigc::hide(sigc::mem_fun(this, &MacroControlParameterLayout2::onSoundTypeChanged)));
-}
-
 MacroControlParameterLayout2::~MacroControlParameterLayout2()
 {
   m_editBufferTypeConnection.disconnect();
@@ -76,10 +59,8 @@ void MacroControlParameterLayout2::copyFrom(Layout *other)
   if(auto p = dynamic_cast<MacroControlParameterLayout2 *>(other))
     setMode(p->m_mode);
 
-  if(auto p = dynamic_cast<ModulationRouterParameterSelectLayout2*>(other))
+  if(auto p = dynamic_cast<ModulationRouterParameterSelectLayout2 *>(other))
   {
-    nltools::Log::error(toString(p->getMode()));
-
     switch(p->getMode())
     {
       case ModRouterLayoutMode::HWAmt:
@@ -173,7 +154,8 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
         }
         else if(buttonText == "I / II")
         {
-          VoiceGroupUseCases vgUseCases(Application::get().getVGManager(), getCurrentEditParameter()->getParentEditBuffer());
+          VoiceGroupUseCases vgUseCases(Application::get().getVGManager(),
+                                        getCurrentEditParameter()->getParentEditBuffer());
           vgUseCases.toggleVoiceGroupSelection();
         }
       }
@@ -207,7 +189,7 @@ bool MacroControlParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
       p->toggleUiSelectedHardwareSource(inc);
       auto currentMC = p;
       auto newHWSrc = p->getUiSelectedHardwareSource();
-      if(auto g = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID({"MCM", VoiceGroup::Global})))
+      if(auto g = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID({ "MCM", VoiceGroup::Global })))
       {
         auto hwSrc = eb->findAndCastParameterByID<PhysicalControlParameter>(newHWSrc);
         auto modP = g->getModulationRoutingParameterFor(hwSrc, currentMC);
@@ -369,30 +351,6 @@ Control *MacroControlParameterLayout2::createMCAssignmentIndicator()
   return new MCAssignedIndicator(Rect(25, 15, 52, 24), getCurrentParameter());
 }
 
-MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2(MacroControlParameter *tgt,
-                                                                       PhysicalControlParameter *src)
-    : virtual_base()
-    , super1()
-    , super2(tgt, src)
-{
-  setButtonA(addControl(new Button("", Buttons::BUTTON_A)));
-
-  if(Application::get().getPresetManager()->getEditBuffer()->isDual())
-  {
-    if(getMode() == Mode::MacroControlValue)
-    {
-      setButtonAText("I / II");
-    }
-    else
-    {
-      setButtonAText("");
-    }
-  }
-
-  addControl(new Button("HW Sel", Buttons::BUTTON_B));
-  addControl(new Button("more..", Buttons::BUTTON_C));
-}
-
 MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
     : virtual_base()
     , super1()
@@ -420,16 +378,6 @@ void MacroControlParameterSelectLayout2::init()
 {
   super1::init();
   super2::init();
-
-  if(m_initialParameterSelection.has_value())
-  {
-    auto v = m_initialParameterSelection.value();
-    if(auto mc = dynamic_cast<MacroControlParameter*>(v.m_mc))
-    {
-      mc->setUiSelectedHardwareSource(v.m_src->getID());
-    }
-    setMode(Mode::PlayControlAmount);
-  }
 }
 
 Carousel *MacroControlParameterSelectLayout2::createCarousel(const Rect &rect)
@@ -460,11 +408,6 @@ MacroControlParameterEditLayout2::MacroControlParameterEditLayout2()
     : virtual_base()
     , super1()
     , super2()
-{
-}
-
-MacroControlParameterEditLayout2::MacroControlParameterEditLayout2(MacroControlParameter *tgt,
-                                                                   PhysicalControlParameter *src)
 {
 }
 

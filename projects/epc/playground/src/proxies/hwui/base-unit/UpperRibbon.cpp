@@ -83,7 +83,7 @@ Parameter* UpperRibbon::getResponsibleParameter()
   if(selected->get() == SelectedRibbons::Ribbon1_2)
   {
     return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-        HardwareSourcesGroup::getUpperRibbonParameterID());
+        HardwareSourcesGroup::getUpperRibbon1ParameterID());
   }
   else
   {

@@ -34,7 +34,7 @@ class VoiceGroupAndLoadToPartManager : public sigc::trackable
 
   EditBuffer& m_editBuffer;
 
-  Signal<void, VoiceGroup> m_voiceGoupSignal;
+  Signal<void, VoiceGroup> m_voiceGroupSignal;
   Signal<void, bool> m_loadToPartSignal;
 
   sigc::connection m_editBufferSoundTypeConnection;

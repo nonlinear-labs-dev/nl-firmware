@@ -10,48 +10,46 @@ TCDDecoder::TCDDecoder(DSPInterface *dsp, MidiRuntimeOptions *options, KeyShift 
   reset();
 }
 
+HardwareSource toHWIDFromChannelAndSetting(const uint32_t channel, MidiRuntimeOptions *m_options)
+{
+  auto hwid = static_cast<HardwareSource>(channel);
+
+  if(hwid == HardwareSource::RIBBON1 && m_options->isSecondSetOfRibbonsIsSelected())
+    hwid = HardwareSource::RIBBON3;
+  else if(hwid == HardwareSource::RIBBON2 && m_options->isSecondSetOfRibbonsIsSelected())
+    hwid = HardwareSource::RIBBON4;
+
+  return hwid;
+}
+
 bool TCDDecoder::decode(const MidiEvent &event)
 {
   const auto _status = event.raw[0];
   const auto _data0 = event.raw[1];
   const auto _data1 = event.raw[2];
-  uint32_t channel = _status & 0b00001111;
+  const uint32_t channel = _status & 0b00001111;
   const uint32_t st = (_status & 0b01111111) >> 4;
   if(st == 6)
   {
     if(channel >= HW_SOURCE_ID_PEDAL_1 && channel <= HW_SOURCE_ID_RIBBON_2)
     {
       uint32_t arg = _data1 + (_data0 << 7);
-      value = static_cast<float>(arg) * c_norm_hw;  // HW src normalization by 1 / 16000
+      m_value = static_cast<float>(arg) * c_norm_hw;  // HW src normalization by 1 / 16000
 
-      auto hwid = static_cast<HardwareSource>(channel);
-
-      //ugly code ugh !!!!
-      if(hwid == HardwareSource::RIBBON1 && m_options->isSecondSetOfRibbonsIsSelected())
-      {
-        channel += 2;
-        hwid = HardwareSource::RIBBON3;
-      }
-      else if(hwid == HardwareSource::RIBBON2 && m_options->isSecondSetOfRibbonsIsSelected())
-      {
-        channel += 2;
-        hwid = HardwareSource::RIBBON4;
-      }
-
+      const auto hwid = toHWIDFromChannelAndSetting(channel, m_options);
       const auto behaviour = m_dsp->getBehaviour(hwid);
 
       if(behaviour == C15::Properties::HW_Return_Behavior::Center)
       {
-        value = (2.0f * value) - 1.0f;
+        m_value = (2.0f * m_value) - 1.0f;
       }
 
-      keyOrController = channel;
-      hwSource = hwid;
+      m_hwSource = hwid;
       m_type = DecoderEventType::HardwareChange;
 
       if constexpr(LOG_MIDI_TCD)
       {
-        nltools::Log::warning("Got HW-Src:", toString(hwSource), "value:", value, "behaviour",
+        nltools::Log::warning("Got HW-Src:", toString(m_hwSource), "m_value:", m_value, "behaviour",
                               static_cast<int>(behaviour), "raw data0", (short) _data0, "raw data1", (short) _data1);
       }
     }
@@ -81,27 +79,27 @@ bool TCDDecoder::decode(const MidiEvent &event)
     }
     else if(_status == AE_PROTOCOL_KEY_POS)  //Key Pos
     {
-      keyOrController = _data1;
+      m_key = _data1;
     }
     else if(_status == AE_PROTOCOL_KEY_DOWN)  //Key Down
     {
       uint32_t arg = _data1 + (_data0 << 7);
-      keyOrController = m_keyShift->keyDown(keyOrController);
+      m_key = m_keyShift->keyDown(m_key);
 
-      if((keyOrController >= C15::Config::virtual_key_from) && (keyOrController <= C15::Config::virtual_key_to))
+      if((m_key >= C15::Config::virtual_key_from) && (m_key <= C15::Config::virtual_key_to))
       {
-        value = static_cast<float>(arg) * c_norm_vel;  // VEL normalization by 1 / 16383
+        m_value = static_cast<float>(arg) * c_norm_vel;  // VEL normalization by 1 / 16383
         m_type = DecoderEventType::KeyDown;
       }
     }
     else if(_status == AE_PROTOCOL_KEY_UP)  //Key Up
     {
       uint32_t arg = _data1 + (_data0 << 7);
-      keyOrController = m_keyShift->keyUp(keyOrController);
+      m_key = m_keyShift->keyUp(m_key);
 
-      if((keyOrController >= C15::Config::virtual_key_from) && (keyOrController <= C15::Config::virtual_key_to))
+      if((m_key >= C15::Config::virtual_key_from) && (m_key <= C15::Config::virtual_key_to))
       {
-        value = static_cast<float>(arg) * c_norm_vel;  // VEL normalization by 1 / 16383
+        m_value = static_cast<float>(arg) * c_norm_vel;  // VEL normalization by 1 / 16383
         m_type = DecoderEventType::KeyUp;
       }
     }
@@ -114,25 +112,25 @@ DecoderEventType TCDDecoder::getEventType() const
   return m_type;
 }
 
-int TCDDecoder::getKeyOrController() const
+int TCDDecoder::getKey() const
 {
-  return keyOrController;
+  return m_key;
 }
 
 [[nodiscard]] HardwareSource TCDDecoder::getHardwareSource() const
 {
-  return hwSource;
+  return m_hwSource;
 }
 
 float TCDDecoder::getValue() const
 {
-  return value;
+  return m_value;
 }
 
 void TCDDecoder::reset()
 {
-  value = 0;
+  m_value = 0;
   m_type = DecoderEventType::UNKNOWN;
-  keyOrController = -1;
-  hwSource = HardwareSource::NONE;
+  m_key = INVALID_KEY;
+  m_hwSource = HardwareSource::NONE;
 }

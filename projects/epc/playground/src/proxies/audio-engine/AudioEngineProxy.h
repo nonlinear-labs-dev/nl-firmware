@@ -19,6 +19,21 @@ class PlaycontrollerProxy;
 class AudioEngineProxy : public sigc::trackable
 {
  public:
+  enum class HardwareSource_AE : int8_t
+  {
+    PEDAL1 = 0,
+    PEDAL2 = 1,
+    PEDAL3 = 2,
+    PEDAL4 = 3,
+    BENDER = 4,
+    AFTERTOUCH = 5,
+    RIBBON1 = 6,
+    RIBBON2 = 7,
+    RIBBON3 = 8,
+    RIBBON4 = 9,
+    NONE = -1
+  };
+
   AudioEngineProxy(PresetManager& pm, Settings& settings, PlaycontrollerProxy& playProxy);
 
   template <typename tParameter> auto createAndSendParameterMessage(const tParameter* parameter)
@@ -47,6 +62,8 @@ class AudioEngineProxy : public sigc::trackable
 
   void freezeParameterMessages();
   void thawParameterMessages(bool send);
+
+  Parameter* findPhysicalControlParameterFromAudioEngineHWSourceID(int index);
 
   static nltools::msg::LayerPresetMessage createLayerEditBufferMessage(const EditBuffer& eb);
   static nltools::msg::SplitPresetMessage createSplitEditBufferMessage(const EditBuffer& eb);

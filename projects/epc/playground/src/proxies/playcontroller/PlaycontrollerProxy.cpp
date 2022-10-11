@@ -29,7 +29,7 @@
 #include <use-cases/IncrementalChangerUseCases.h>
 
 PlaycontrollerProxy::PlaycontrollerProxy()
-    : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
+    : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbon1ParameterID().getNumber())
     , m_throttledRelativeParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
     , m_throttledAbsoluteParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
 {
@@ -67,11 +67,6 @@ void PlaycontrollerProxy::onPlaycontrollerMessage(const nltools::msg::Playcontro
       m_msgParser.reset(new MessageParser());
     }
   }
-}
-
-sigc::connection PlaycontrollerProxy::onRibbonTouched(const sigc::slot<void, int> &s)
-{
-  return m_signalRibbonTouched.connectAndInit(s, m_lastTouchedRibbon);
 }
 
 int PlaycontrollerProxy::getLastTouchedRibbonParameterID() const
@@ -203,50 +198,14 @@ void PlaycontrollerProxy::sendCalibrationData()
   }
 }
 
-Parameter *PlaycontrollerProxy::findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const
-{
-  auto paramId = [](uint16_t id)
-  {
-    switch(id)
-    {
-      case HW_SOURCE_ID_PEDAL_1:
-        return HardwareSourcesGroup::getPedal1ParameterID();
-      case HW_SOURCE_ID_PEDAL_2:
-        return HardwareSourcesGroup::getPedal2ParameterID();
-      case HW_SOURCE_ID_PEDAL_3:
-        return HardwareSourcesGroup::getPedal3ParameterID();
-      case HW_SOURCE_ID_PEDAL_4:
-        return HardwareSourcesGroup::getPedal4ParameterID();
-      case HW_SOURCE_ID_PITCHBEND:
-        return HardwareSourcesGroup::getPitchbendParameterID();
-      case HW_SOURCE_ID_AFTERTOUCH:
-        return HardwareSourcesGroup::getAftertouchParameterID();
-      case HW_SOURCE_ID_RIBBON_1:
-        return HardwareSourcesGroup::getUpperRibbonParameterID();
-      case HW_SOURCE_ID_RIBBON_2:
-        return HardwareSourcesGroup::getLowerRibbonParameterID();
-      case 8:  //meh
-        return HardwareSourcesGroup::getUpperRibbon3ParameterID();
-      case 9:  //uhg
-        return HardwareSourcesGroup::getLowerRibbon4ParameterID();
-      case HW_SOURCE_ID_PEDAL_7:
-      case HW_SOURCE_ID_PEDAL_8:
-        //todo new pedals
-      case HW_SOURCE_ID_LAST_KEY:
-      //todo last key
-      default:
-        return ParameterId::invalid();
-    }
-  }(id);
-
-  return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramId);
-}
-
 void PlaycontrollerProxy::onEditControlMessageReceived(const MessageParser::NLMessage &msg)
 {
   uint16_t id = msg.params[0];
-  auto ribbonParam = findPhysicalControlParameterFromPlaycontrollerHWSourceID(id);
-  notifyRibbonTouch(ribbonParam->getID().getNumber());
+  if(auto ribbonParam
+     = Application::get().getAudioEngineProxy()->findPhysicalControlParameterFromAudioEngineHWSourceID(id))
+  {
+    notifyRibbonTouch(ribbonParam->getID().getNumber());
+  }
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
 
@@ -305,8 +264,8 @@ void PlaycontrollerProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gin
 
 void PlaycontrollerProxy::notifyRibbonTouch(int ribbonsParameterID)
 {
-  if(ribbonsParameterID == HardwareSourcesGroup::getLowerRibbonParameterID().getNumber()
-     || ribbonsParameterID == HardwareSourcesGroup::getUpperRibbonParameterID().getNumber()
+  if(ribbonsParameterID == HardwareSourcesGroup::getLowerRibbon2ParameterID().getNumber()
+     || ribbonsParameterID == HardwareSourcesGroup::getUpperRibbon1ParameterID().getNumber()
      || ribbonsParameterID == HardwareSourcesGroup::getLowerRibbon4ParameterID().getNumber()
      || ribbonsParameterID == HardwareSourcesGroup::getUpperRibbon3ParameterID().getNumber())
   {

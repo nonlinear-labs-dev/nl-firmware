@@ -7,7 +7,6 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
  public:
   typedef ParameterLayout2 super;
   MacroControlParameterLayout2();
-  MacroControlParameterLayout2(Parameter* mc, Parameter* hwSrc);
   ~MacroControlParameterLayout2() override;
 
   enum class Mode
@@ -26,12 +25,6 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
   bool onRotary(int inc, ButtonModifiers modifiers) override;
   Parameter *getCurrentEditParameter() const override;
 
-  struct InitialParameterSelection {
-    Parameter* m_src;
-    Parameter* m_mc;
-  };
-
-
   void toggleMode(Mode desiredMode);
   virtual void setMode(Mode desiredMode);
 
@@ -41,8 +34,6 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
   void setButtonAText(const std::string &s);
   void setButtonA(Button *button);
   virtual Control *createMCAssignmentIndicator();
-
-  std::optional<InitialParameterSelection> m_initialParameterSelection = std::nullopt;
 
  private:
   void onSoundTypeChanged();
@@ -82,8 +73,6 @@ class MacroControlParameterEditLayout2 : public ParameterEditLayout2, public Mac
   typedef MacroControlParameterLayout2 super2;
 
   MacroControlParameterEditLayout2();
-  MacroControlParameterEditLayout2(MacroControlParameter* tgt, PhysicalControlParameter* src);
-
  protected:
   void setMode(Mode desiredMode) override;
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;

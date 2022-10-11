@@ -43,16 +43,12 @@ void HWSourceAmountCarousel::turn()
 {
   if(isSelectedHighlighted())
     doTurn(1);
-  else
-    doTurn(0);
 }
 
 void HWSourceAmountCarousel::antiTurn()
 {
   if(isSelectedHighlighted())
     doTurn(-1);
-  else
-    doTurn(0);
 }
 
 void HWSourceAmountCarousel::setup(Parameter *newOne)
