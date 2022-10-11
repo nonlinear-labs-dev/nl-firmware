@@ -31,6 +31,7 @@ void DescriptiveLayouts::EditBufferNameWithSuffix::onChange(const EditBuffer *eb
 void DescriptiveLayouts::CurrentVoiceGroupLabel::onChange(const EditBuffer *eb)
 {
   auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
+  nltools::Log::error(__PRETTY_FUNCTION__, "currentVG:", currentVG);
   setValue({ eb->getVoiceGroupNameWithSuffix(currentVG, false), 0 });
 }
 
