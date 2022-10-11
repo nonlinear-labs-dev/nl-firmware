@@ -5,11 +5,24 @@
 #include <nltools/Testing.h>
 #include <nltools/Types.h>
 #include <array>
+#include <parameter_list.h>
+#include <parameter_declarations.h>
+#include <parameter_descriptor.h>
+#include <parameter_group.h>
 
 namespace nltools
 {
   namespace msg
   {
+    constexpr auto NUM_HW = static_cast<int>(C15::Parameters::Hardware_Sources::_LENGTH_);
+    constexpr auto NUM_LOCAL_UNMOD = static_cast<int>(C15::Parameters::Local_Unmodulateables::_LENGTH_);
+    constexpr auto NUM_LOCAL_MOD = static_cast<int>(C15::Parameters::Local_Modulateables::_LENGTH_);
+    constexpr auto NUM_GLOBAL_UNMOD = static_cast<int>(C15::Parameters::Global_Unmodulateables::_LENGTH_);
+    constexpr auto NUM_GLOBAL_MOD = static_cast<int>(C15::Parameters::Global_Modulateables::_LENGTH_);
+    constexpr auto NUM_HWAMT = static_cast<int>(C15::Parameters::Hardware_Amounts::_LENGTH_);
+    constexpr auto NUM_MC = static_cast<int>(C15::Parameters::Macro_Controls::_LENGTH_);
+    constexpr auto NUM_MC_Times = static_cast<int>(C15::Parameters::Macro_Times::_LENGTH_);
+
     namespace Midi
     {
       struct SimpleMessage
@@ -853,12 +866,13 @@ namespace nltools
         return MessageType::LayerPreset;
       }
 
-      std::array<ParameterGroups::HardwareSourceParameter, 8> hwsources;
-      std::array<ParameterGroups::HardwareAmountParameter, 48> hwamounts;
+      std::array<ParameterGroups::HardwareSourceParameter, NUM_HW> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, NUM_HWAMT> hwamounts;
 
-      std::array<ParameterGroups::MacroParameter, 6> macros;
-      std::array<ParameterGroups::UnmodulateableParameter, 6> macrotimes;
+      std::array<ParameterGroups::MacroParameter, NUM_MC> macros;
+      std::array<ParameterGroups::UnmodulateableParameter, NUM_MC> macrotimes;
 
+      static_assert(NUM_LOCAL_MOD == 169);
       std::array<std::array<ParameterGroups::ModulateableParameter, 169>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulateableParameter, 29>, 2> unmodulateables;
 
