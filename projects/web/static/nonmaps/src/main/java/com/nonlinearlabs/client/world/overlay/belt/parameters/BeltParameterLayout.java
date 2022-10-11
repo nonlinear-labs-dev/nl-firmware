@@ -318,7 +318,9 @@ public class BeltParameterLayout extends OverlayLayout {
 
 		dottedLine.doLayout(mcSourceDisplay.getRelativePosition().getRight() - dottedLineInset, 0, lineWidth, h);
 		infoButton.doLayout(undoRedoMargin + undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
-		fineButton.doLayout(sliderLeft, h - modSrcDim * 1.4, modSrcDim, modSrcDim);
+		double sliderFourth = sliderWidth / 4;
+		double sliderThreeFourth = sliderFourth * 3;
+		fineButton.doLayout(sliderLeft + sliderThreeFourth, h - modSrcDim * 1.4, modSrcDim, modSrcDim);
 		
 		contextMenu.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
 				modSrcDim);
