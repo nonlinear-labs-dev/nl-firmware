@@ -31,7 +31,7 @@ parameters:
     token: Voices
     label_long: Voices
     label_short: Voices
-    control_position: { coarse: 23, fine: 23, scale: LINEAR_24_COUNT, initial: 0.0f, incative: 0 }
+    control_position: { coarse: 23, fine: 23, scale: LINEAR_24_COUNT, initial: 0.0f, inactive: 0 }
     rendering_args: { scaling: Linear, factor: 23.0f, offset: 1.0f, section: None, clock: None, signal: None }
     info: >
       Number of unison voices that will be assigned to a key. At 1, the unison effect is disabled.

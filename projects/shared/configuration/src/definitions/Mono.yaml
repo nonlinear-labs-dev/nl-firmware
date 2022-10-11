@@ -28,7 +28,7 @@ parameters:
     token: Enable
     label_long: Enable
     label_short: Enable
-    control_position: { coarse: 1, fine: 1, scale: SWITCH_ON_OFF, initial: 0.0f, incative: 0 }
+    control_position: { coarse: 1, fine: 1, scale: SWITCH_ON_OFF, initial: 0.0f, inactive: 0 }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: None, clock: None, signal: None }
     info: >
       When enabled, only one voice will be assigned, even when multiple keys are pressed.
