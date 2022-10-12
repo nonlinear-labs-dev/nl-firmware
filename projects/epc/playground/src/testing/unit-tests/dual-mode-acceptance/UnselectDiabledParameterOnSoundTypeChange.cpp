@@ -14,7 +14,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"FROM Layer")
 
   {
     auto scope = TestHelper::createTestScope();
-    Application::get().getVGManager()->setCurrentVoiceGroup(scope->getTransaction(), VoiceGroup::II);
+    Application::get().getVGManager()->setCurrentVoiceGroup(scope->getTransaction(), VoiceGroup::II, true);
   }
 
   CHECK(eb->getType() == SoundType::Layer);
@@ -286,7 +286,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Loaded")
 
   {
     auto scope = TestHelper::createTestScope();
-    Application::get().getVGManager()->setCurrentVoiceGroup(scope->getTransaction(), VoiceGroup::II);
+    Application::get().getVGManager()->setCurrentVoiceGroup(scope->getTransaction(), VoiceGroup::II, true);
   }
 
   CHECK(eb->getType() == SoundType::Split);
