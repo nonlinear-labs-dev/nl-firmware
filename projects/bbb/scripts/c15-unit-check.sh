@@ -77,7 +77,7 @@ function check_usb_stick() {
         echo "Could access file on usb stick that has been written by epc via sshfs? No!"
     fi
 
-   echo '1' > /mnt/usb-stick/test-file
+   echo '2' > /mnt/usb-stick/test-file
 
    sleep 5
 
@@ -183,10 +183,10 @@ function check_persistent_files() {
         "ls /persistent/calibration/*.cal"
     executeAsRoot \
         "Calibration .bin file?" \
-        "ls /persistent/calibration.bin"
+        "ls /persistent/calibration/calibration.bin"
     executeAsRoot \
         "Calibration .ini file?" \
-        "ls /persistent/calibration.ini"
+        "ls /persistent/calibration/calibration.ini"
     executeAsRoot \
         "Settings.xml file?" \
         "ls /persistent/settings.xml"
