@@ -1,3 +1,4 @@
+
 #include "LinearBipolar100PercentScaleConverter.h"
 #include "dimension/PercentageDimension.h"
 
