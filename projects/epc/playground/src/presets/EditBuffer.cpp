@@ -1583,7 +1583,7 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
           vg = VoiceGroup::I;
 
         undoableSelectParameter(transaction, { itConv->second, vg }, false);
-        vgManager->setCurrentVoiceGroup(transaction, vg);
+        vgManager->setCurrentVoiceGroup(transaction, vg, true);
       }
     }
 
@@ -1593,7 +1593,7 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
       if(!ParameterId::isGlobal(selNum))
         undoableSelectParameter(transaction, { selNum, VoiceGroup::I }, false);
 
-      vgManager->setCurrentVoiceGroup(transaction, VoiceGroup::I);
+      vgManager->setCurrentVoiceGroup(transaction, VoiceGroup::I, true);
     }
   }
 }
