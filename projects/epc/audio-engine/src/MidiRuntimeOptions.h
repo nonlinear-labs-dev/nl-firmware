@@ -43,6 +43,8 @@ class MidiRuntimeOptions
 
   [[nodiscard]] bool shouldReceiveLocalNotes() const;
 
+  [[nodiscard]] bool isSecondSetOfRibbonsIsSelected() const;
+
   [[nodiscard]] bool shouldReceiveMidiOnPrimary(tMidiSettingMessage::RoutingIndex routingIndex) const;
   [[nodiscard]] bool shouldReceiveMidiOnSplit(tMidiSettingMessage::RoutingIndex routingIndex) const;
   [[nodiscard]] bool shouldSendMidiOnPrimary(tMidiSettingMessage::RoutingIndex routingIndex) const;
@@ -72,6 +74,10 @@ class MidiRuntimeOptions
       return MidiRuntimeOptions::decodeEnumLSB(ribbon1CC).value_or(-1);
     else if constexpr(tLSB == Midi::LSB::Rib2)
       return MidiRuntimeOptions::decodeEnumLSB(ribbon2CC).value_or(-1);
+    else if constexpr(tLSB == Midi::LSB::Rib3)
+      return MidiRuntimeOptions::decodeEnumLSB(ribbon3CC).value_or(-1);
+    else if constexpr(tLSB == Midi::LSB::Rib4)
+      return MidiRuntimeOptions::decodeEnumLSB(ribbon4CC).value_or(-1);
     else
       nltools_assertNotReached();
   }
@@ -90,6 +96,10 @@ class MidiRuntimeOptions
       return MidiRuntimeOptions::decodeEnumMSB(ribbon1CC).value_or(-1);
     else if constexpr(tMSB == Midi::MSB::Rib2)
       return MidiRuntimeOptions::decodeEnumMSB(ribbon2CC).value_or(-1);
+    else if constexpr(tMSB == Midi::MSB::Rib3)
+      return MidiRuntimeOptions::decodeEnumMSB(ribbon3CC).value_or(-1);
+    else if constexpr(tMSB == Midi::MSB::Rib4)
+      return MidiRuntimeOptions::decodeEnumMSB(ribbon4CC).value_or(-1);
     else if constexpr(tMSB == Midi::MSB::Aftertouch)
       return MidiRuntimeOptions::decodeEnumMSB(aftertouchCC).value_or(-1);
     else if constexpr(tMSB == Midi::MSB::Bender)
@@ -117,6 +127,8 @@ class MidiRuntimeOptions
   void setPedal4(PedalCC cc);
   void setRibbon1(RibbonCC cc);
   void setRibbon2(RibbonCC cc);
+  void setRibbon3(RibbonCC cc);
+  void setRibbon4(RibbonCC cc);
   void setBenderCC(BenderCC cc);
   void setAftertouchCC(AftertouchCC cc);
   void setSendSplitChannel(MidiSendChannelSplit c);
@@ -157,12 +169,16 @@ class MidiRuntimeOptions
   PedalCC pedal4CC;
   RibbonCC ribbon1CC;
   RibbonCC ribbon2CC;
+  RibbonCC ribbon3CC;
+  RibbonCC ribbon4CC;
   AftertouchCC aftertouchCC;
   BenderCC benderCC;
 
   nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings m_routingMappings;
 
   nltools::msg::Setting::MidiSettingsMessage m_lastMessage;
+
+  bool m_isSecondSetOfRibbonsEnabled = false;
 
   friend class MidiRuntimeOptionsTester;
 };

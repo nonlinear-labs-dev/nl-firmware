@@ -7,19 +7,19 @@ InputEventStage::InputEventStage(DSPInterface *dspHost, MidiRuntimeOptions *opti
                                  InputEventStage::MIDIOut outCB, InputEventStage::ChannelModeMessageCB specialCB)
     : m_tcdDecoder(dspHost, options, &m_shifteable_keys)
     , m_midiDecoder(dspHost, options)
-    , m_dspHost{ dspHost }
-    , m_options{ options }
+    , m_dspHost { dspHost }
+    , m_options { options }
     , m_hwChangedCB(std::move(hwChangedCB))
     , m_channelModeMessageCB(std::move(specialCB))
-    , m_midiOut{ std::move(outCB) }
+    , m_midiOut { std::move(outCB) }
 {
   std::fill(m_latchedHWPositions.begin(), m_latchedHWPositions.end(),
-            std::array<uint16_t, 2>{ std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
+            std::array<uint16_t, 2> { std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max() });
 
   for(auto &hw : m_localDisabledPositions)
     std::get<0>(hw) = std::numeric_limits<float>::max();
 
-  for(auto& p: m_polledHWPositions)
+  for(auto &p : m_polledHWPositions)
     p = std::numeric_limits<float>::max();
 }
 
@@ -106,7 +106,7 @@ void InputEventStage::onTCDEvent()
     {
       const bool isSplitSound = (soundType == SoundType::Split);
       const auto determinedPart
-          = isSplitSound ? calculateSplitPartForKeyDown(interface, decoder->getKeyOrController()) : VoiceGroup::Global;
+          = isSplitSound ? calculateSplitPartForKeyDown(interface, decoder->getKey()) : VoiceGroup::Global;
 
       if(determinedPart == VoiceGroup::Invalid)
         break;
@@ -115,18 +115,18 @@ void InputEventStage::onTCDEvent()
       {
         if(isSplitSound)
         {
-          m_dspHost->onKeyDownSplit(decoder->getKeyOrController(), decoder->getValue(), determinedPart, interface);
+          m_dspHost->onKeyDownSplit(decoder->getKey(), decoder->getValue(), determinedPart, interface);
         }
         else if(soundValid)
         {
-          m_dspHost->onKeyDown(decoder->getKeyOrController(), decoder->getValue(), interface);
+          m_dspHost->onKeyDown(decoder->getKey(), decoder->getValue(), interface);
         }
 
         setAndScheduleKeybedNotify();
       }
       else
       {
-        m_dspHost->registerNonLocalKeyAssignment(decoder->getKeyOrController(), determinedPart);
+        m_dspHost->registerNonLocalKeyAssignment(decoder->getKey(), determinedPart);
       }
 
       if((m_options->shouldSendMIDINotesOnSplit() || m_options->shouldSendMIDINotesOnPrimary()) && soundValid)
@@ -138,7 +138,7 @@ void InputEventStage::onTCDEvent()
     }
     case DecoderEventType::KeyUp:
     {
-      const auto key = decoder->getKeyOrController();
+      const auto key = decoder->getKey();
       const auto isSplitSound = (soundType == SoundType::Split);
       const auto shouldReceiveLocalNotes = m_options->shouldReceiveLocalNotes();
       const auto determinedSplitPart = shouldReceiveLocalNotes ? calculateSplitPartForKeyUp(interface, key)
@@ -178,12 +178,12 @@ void InputEventStage::onTCDEvent()
     {
       if(!m_isPolling)
       {
-        onHWChanged(static_cast<HardwareSource>(decoder->getKeyOrController()), decoder->getValue(), HWChangeSource::TCD,
-                    false, false, false);
+        onHWChanged(decoder->getHardwareSource(), decoder->getValue(), HWChangeSource::TCD, false, false, false);
       }
       else
       {
-        m_polledHWPositions[decoder->getKeyOrController()] = decoder->getValue();
+        auto hwId = static_cast<int>(decoder->getHardwareSource());
+        m_polledHWPositions[hwId] = decoder->getValue();
       }
       break;
     }
@@ -269,7 +269,7 @@ void InputEventStage::convertToAndSendMIDI(TCDDecoder *pDecoder, const VoiceGrou
       sendKeyUpAsMidi(pDecoder, determinedPart);
       break;
     case DecoderEventType::HardwareChange:
-      sendHardwareChangeAsMidi(static_cast<HardwareSource>(pDecoder->getKeyOrController()), pDecoder->getValue());
+      sendHardwareChangeAsMidi(pDecoder->getHardwareSource(), pDecoder->getValue());
       break;
     case DecoderEventType::UNKNOWN:
       nltools_assertNotReached();
@@ -314,7 +314,7 @@ void InputEventStage::sendKeyDownAsMidi(TCDDecoder *pDecoder, const VoiceGroup &
 {
   const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDIPrimarySendChannel());
   const auto secondaryChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDISplitSendChannel());
-  const auto key = pDecoder->getKeyOrController();
+  const auto key = pDecoder->getKey();
   constexpr const uint8_t keyType = 0x90;
   constexpr const uint8_t ccType = 0xB0;
   const uint8_t keyByte = static_cast<uint8_t>(key) & 0x7F;
@@ -377,7 +377,7 @@ void InputEventStage::sendKeyUpAsMidi(TCDDecoder *pDecoder, const VoiceGroup &de
 {
   const auto mainChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDIPrimarySendChannel());
   const auto secondaryChannel = MidiRuntimeOptions::channelEnumToInt(m_options->getMIDISplitSendChannel());
-  const auto key = pDecoder->getKeyOrController();
+  const auto key = pDecoder->getKey();
 
   const auto mainC = static_cast<uint8_t>(mainChannel);
   const auto secC = static_cast<uint8_t>(secondaryChannel);
@@ -476,6 +476,16 @@ void InputEventStage::sendHardwareChangeAsMidi(HardwareSource hwID, float value)
     case HardwareSource::RIBBON2:
       sendCCOut(HardwareSource::RIBBON2, value, m_options->getCCFor<Midi::MSB::Rib2>(),
                 m_options->getCCFor<Midi::LSB::Rib2>());
+      break;
+
+    case HardwareSource::RIBBON3:
+      sendCCOut(HardwareSource::RIBBON3, value, m_options->getCCFor<Midi::MSB::Rib3>(),
+                m_options->getCCFor<Midi::LSB::Rib3>());
+      break;
+
+    case HardwareSource::RIBBON4:
+      sendCCOut(HardwareSource::RIBBON4, value, m_options->getCCFor<Midi::MSB::Rib4>(),
+                m_options->getCCFor<Midi::LSB::Rib4>());
       break;
 
     default:
@@ -777,17 +787,42 @@ HardwareSource InputEventStage::parameterIDToHWID(int id)
       return HardwareSource::RIBBON1;
     case C15::PID::Ribbon_2:
       return HardwareSource::RIBBON2;
+    case C15::PID::Ribbon_3:
+      return HardwareSource::RIBBON3;
+    case C15::PID::Ribbon_4:
+      return HardwareSource::RIBBON4;
     default:
       return HardwareSource::NONE;
   }
 }
 
+nltools::msg::Setting::MidiSettingsMessage::RoutingIndex hwidToRoutingIndex(HardwareSource hwID)
+{
+  using RoutingIndex = nltools::msg::Setting::MidiSettingsMessage::RoutingIndex;
+  RoutingIndex routingIndex = RoutingIndex::LENGTH;
+
+  if(hwID == HardwareSource::RIBBON3)
+    routingIndex = RoutingIndex::Ribbon3;
+  else if(hwID == HardwareSource::RIBBON4)
+    routingIndex = RoutingIndex::Ribbon4;
+  else
+    routingIndex = static_cast<RoutingIndex>(hwID);
+  return routingIndex;
+}
+
 void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource source, bool wasMIDIPrimary,
                                   bool wasMIDISplit, bool didBehaviourChange)
 {
-  const auto routingIndex = static_cast<RoutingIndex>(hwID);
+  if constexpr(LOG_INPUT_EVENT_STAGE)
+  {
+    nltools::Log::error(__PRETTY_FUNCTION__, "hwid:", toString(hwID), "pos:", pos, "source:", toString(source),
+                        "hwid idx:", static_cast<unsigned int>(hwID));
+  }
 
-  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit) {
+  auto routingIndex = hwidToRoutingIndex(hwID);
+
+  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)
+  {
     switch(source)
     {
       case HWChangeSource::MIDI:
@@ -863,6 +898,8 @@ HardwareSource ccToHWID(int cc, MidiRuntimeOptions *options)
     const auto bender = options->getCCFor<Midi::MSB::Bender>();
     const auto ribbon1 = options->getCCFor<Midi::MSB::Rib1>();
     const auto ribbon2 = options->getCCFor<Midi::MSB::Rib2>();
+    const auto ribbon3 = options->getCCFor<Midi::MSB::Rib3>();
+    const auto ribbon4 = options->getCCFor<Midi::MSB::Rib4>();
 
     if(p1 == cc)
     {
@@ -895,6 +932,14 @@ HardwareSource ccToHWID(int cc, MidiRuntimeOptions *options)
     else if(ribbon2 == cc)
     {
       return HardwareSource::RIBBON2;
+    }
+    else if(ribbon3 == cc)
+    {
+      return HardwareSource::RIBBON3;
+    }
+    else if(ribbon4 == cc)
+    {
+      return HardwareSource::RIBBON4;
     }
   }
   return HardwareSource::NONE;
@@ -1094,6 +1139,10 @@ InputEventStage::RoutingIndex InputEventStage::toRoutingIndex(HardwareSource sou
       return RoutingIndex::Ribbon1;
     case HardwareSource::RIBBON2:
       return RoutingIndex::Ribbon2;
+    case HardwareSource::RIBBON3:
+      return RoutingIndex::Ribbon3;
+    case HardwareSource::RIBBON4:
+      return RoutingIndex::Ribbon4;
     default:
     case HardwareSource::NONE:
       return InputEventStage::RoutingIndex::LENGTH;
@@ -1179,7 +1228,7 @@ void InputEventStage::requestExternalReset(DSPInterface::OutputResetEventSource 
   }
 }
 
-std::array<float, 8> InputEventStage::getPolledHWSourcePositions() const
+std::array<float, InputEventStage::NUM_HW> InputEventStage::getPolledHWSourcePositions() const
 {
   return m_polledHWPositions;
 }

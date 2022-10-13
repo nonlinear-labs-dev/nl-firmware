@@ -17,6 +17,8 @@ void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
   pedal4CC = msg.pedal4cc;
   ribbon1CC = msg.ribbon1cc;
   ribbon2CC = msg.ribbon2cc;
+  ribbon3CC = msg.ribbon3cc;
+  ribbon4CC = msg.ribbon4cc;
   aftertouchCC = msg.aftertouchcc;
   benderCC = msg.bendercc;
 
@@ -25,6 +27,7 @@ void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
 
   m_routingMappings = msg.routings;
   m_localEnable = msg.localEnable;
+  m_isSecondSetOfRibbonsEnabled = msg.isSecondSetOfRibbonsEnabled;
 }
 
 MidiReceiveChannel MidiRuntimeOptions::getMIDIPrimaryReceiveChannel() const
@@ -109,6 +112,12 @@ bool MidiRuntimeOptions::shouldReceiveLocalNotes() const
   constexpr auto aspect = static_cast<size_t>(MidiRuntimeOptions::tMidiSettingMessage::RoutingAspect::LOCAL);
   return m_routingMappings[idx][aspect] && m_localEnable;
 }
+
+[[nodiscard]] bool MidiRuntimeOptions::isSecondSetOfRibbonsIsSelected() const
+{
+  return m_isSecondSetOfRibbonsEnabled;
+}
+
 
 std::optional<int> MidiRuntimeOptions::decodeEnumMSB(PedalCC cc)
 {
@@ -435,6 +444,10 @@ int MidiRuntimeOptions::getMSBCCForHWID(HardwareSource hwID) const
       return getCCFor<Midi::MSB::Rib1>();
     case HardwareSource::RIBBON2:
       return getCCFor<Midi::MSB::Rib2>();
+    case HardwareSource::RIBBON3:
+      return getCCFor<Midi::MSB::Rib3>();
+    case HardwareSource::RIBBON4:
+      return getCCFor<Midi::MSB::Rib4>();
     case HardwareSource::NONE:
     default:
       return -1;
@@ -469,6 +482,16 @@ void MidiRuntimeOptions::setRibbon1(RibbonCC cc)
 void MidiRuntimeOptions::setRibbon2(RibbonCC cc)
 {
   ribbon2CC = cc;
+}
+
+void MidiRuntimeOptions::setRibbon3(RibbonCC cc)
+{
+  ribbon3CC = cc;
+}
+
+void MidiRuntimeOptions::setRibbon4(RibbonCC cc)
+{
+  ribbon4CC = cc;
 }
 
 bool MidiRuntimeOptions::is14BitSupportEnabled() const
@@ -578,6 +601,10 @@ bool MidiRuntimeOptions::isLocalEnabled(HardwareSource source)
       return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon1);
     case HardwareSource::RIBBON2:
       return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon2);
+    case HardwareSource::RIBBON3:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon3);
+    case HardwareSource::RIBBON4:
+      return shouldAllowLocal(nltools::msg::Setting::MidiSettingsMessage::RoutingIndex::Ribbon4);
     default:
     case HardwareSource::NONE:
       return false;

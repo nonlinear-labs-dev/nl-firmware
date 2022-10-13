@@ -4,6 +4,8 @@
 #include <parameters/RibbonParameter.h>
 #include "presets/EditBuffer.h"
 #include "presets/PresetManager.h"
+#include "device-settings/BaseUnitUIMode.h"
+#include "device-settings/SelectedRibbonsSetting.h"
 #include <groups/HardwareSourcesGroup.h>
 #include <glib.h>
 #include <cmath>
@@ -12,26 +14,66 @@
 
 static Parameter *getParameter()
 {
-  return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-      HardwareSourcesGroup::getLowerRibbonParameterID());
+  if(Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->get() == SelectedRibbons::Ribbon1_2)
+  {
+    return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+        HardwareSourcesGroup::getLowerRibbon2ParameterID());
+  }
+  else
+  {
+    return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+        HardwareSourcesGroup::getLowerRibbon4ParameterID());
+  }
 }
 
-static Parameter* getSendParameter()
+static Parameter *getSendParameter()
 {
-  return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-          HardwareSourcesGroup::getRibbon2SendID());
+  if(Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->get() == SelectedRibbons::Ribbon1_2)
+  {
+    return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+        HardwareSourcesGroup::getRibbon2SendID());
+  }
+  else
+  {
+    return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+        HardwareSourcesGroup::getRibbon4SendID());
+  }
 }
 
 LowerRibbon::LowerRibbon()
 {
   initLEDs();
-  getParameter()->onParameterChanged(sigc::mem_fun(this, &LowerRibbon::onParamValueChanged));
-  getSendParameter()->onParameterChanged(sigc::mem_fun(this, &LowerRibbon::onSendValueChanged));
+
+  m_parameterSelectionChangedSignal = Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+      sigc::mem_fun(this, &LowerRibbon::onParamSelectionChanged), {});
+
+  m_ribbonSelectionSignal = Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->onChange(
+      sigc::mem_fun(this, &LowerRibbon::onRibbonSelectionChanged));
+}
+
+void LowerRibbon::onRibbonSelectionChanged(const Setting *setting)
+{
+  reconnect();
+}
+
+void LowerRibbon::reconnect()
+{
+  m_paramConnection.disconnect();
+
+  if(auto p = getParameter())
+    m_paramConnection = p->onParameterChanged(sigc::mem_fun(this, &LowerRibbon::onParamValueChanged));
+  if(auto p = getSendParameter())
+    m_sendConnection = p->onParameterChanged(sigc::mem_fun(this, &LowerRibbon::onSendValueChanged));
 }
 
 int LowerRibbon::posToLedID(int pos) const
 {
   return pos * 2;
+}
+
+void LowerRibbon::onParamSelectionChanged(const Parameter *old, const Parameter *newP)
+{
+  reconnect();
 }
 
 void LowerRibbon::onParamValueChanged(const Parameter *param)
@@ -59,7 +101,7 @@ void LowerRibbon::onParamValueChanged(const Parameter *param)
 
 void LowerRibbon::onSendValueChanged(const Parameter *param)
 {
-  auto sendParameter = dynamic_cast<const HardwareSourceSendParameter*>(param);
+  auto sendParameter = dynamic_cast<const HardwareSourceSendParameter *>(param);
   auto mode = sendParameter->getReturnMode();
 
   bool bipol = mode == ReturnMode::Center;
@@ -78,7 +120,6 @@ void LowerRibbon::onSendValueChanged(const Parameter *param)
     }
   }
 }
-
 void LowerRibbon::indicateBlockingMainThread(bool onOff)
 {
   m_indicateBlockingMainThread = onOff;

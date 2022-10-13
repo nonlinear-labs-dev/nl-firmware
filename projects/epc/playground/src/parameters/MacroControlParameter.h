@@ -66,6 +66,7 @@ class MacroControlParameter : public Parameter
 
   void updateMCViewsFromMCChange(const Initiator &initiator);
   bool isChangedFromLoaded() const override;
+  bool hasRelativeRibbonAsSource() const;
 
  private:
   friend class MacroControlParameterUseCases;

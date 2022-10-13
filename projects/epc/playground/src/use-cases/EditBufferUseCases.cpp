@@ -166,7 +166,7 @@ void EditBufferUseCases::setModAmountAndValue(const ParameterId& id, tControlPos
     auto withSuffix = isDual && id.isDual();
     auto name = withSuffix ? param->getGroupAndParameterNameWithVoiceGroup() : param->getGroupAndParameterName();
     auto scope = m_editBuffer.getUndoScope().startContinuousTransaction(param->getAmountCookie(),
-                                                                         "Set Modulation Amount for '%0'", name);
+                                                                        "Set Modulation Amount for '%0'", name);
     auto transaction = scope->getTransaction();
     param->undoableSetModAmount(transaction, modAmt);
     param->setCPFromHwui(transaction, val);
@@ -394,11 +394,11 @@ void EditBufferUseCases::setModulationSourceOfAll(MacroControls controls)
   auto scope = m_editBuffer.getUndoScope().startTransaction("Set all Modulation Sources to %s", toString(controls));
   auto trans = scope->getTransaction();
 
-  for(auto& groups: m_editBuffer.getParameters())
+  for(auto& groups : m_editBuffer.getParameters())
   {
-    for(auto& g: groups)
+    for(auto& g : groups)
     {
-      for(auto& p: g->getParameters())
+      for(auto& p : g->getParameters())
       {
         if(auto mod = dynamic_cast<ModulateableParameter*>(p))
         {
@@ -408,4 +408,10 @@ void EditBufferUseCases::setModulationSourceOfAll(MacroControls controls)
       }
     }
   }
+}
+
+void EditBufferUseCases::selectLastSelectedMacroControlParameter()
+{
+  auto id = m_editBuffer.getLastSelectedMacroId();
+  selectParameter(id, true);
 }

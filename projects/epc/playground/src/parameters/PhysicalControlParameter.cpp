@@ -11,12 +11,14 @@
 #include <presets/ParameterGroupSet.h>
 #include <cmath>
 #include "ParameterAlgorithm.h"
+#include "PedalParameter.h"
 #include <http/UpdateDocumentMaster.h>
 #include <Application.h>
 #include <proxies/hwui/panel-unit/PanelUnitParameterEditMode.h>
 #include <presets/EditBuffer.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 #include <libundo/undo/Scope.h>
+#include <proxies/hwui/panel-unit/boled/parameter-screens/PlayControlParameterLayouts.h>
 
 PhysicalControlParameter::PhysicalControlParameter(ParameterGroup *group, ParameterId id)
     : super(group, id)
@@ -95,6 +97,22 @@ Glib::ustring PhysicalControlParameter::getDisplayString() const
   return Parameter::getDisplayString();
 }
 
+Glib::ustring PhysicalControlParameter::getCurrentModulatingMacroControlString() const
+{
+  if(auto currentMC = getMCAssignedToThisHW())
+  {
+    Glib::ustring suffix = "";
+    if(currentMC->hasRelativeRibbonAsSource())
+    {
+      suffix = "\uE282";
+    }
+
+    return currentMC->getLongName() + suffix;
+  }
+
+  return "not assigned";
+}
+
 void PhysicalControlParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
   m_changingFromHWUI = m_lastChangedFromHWUI;
@@ -147,8 +165,12 @@ Layout *PhysicalControlParameter::createLayout(FocusAndMode focusAndMode) const
     case UIMode::Info:
       return new ParameterInfoLayout();
 
+    case UIMode::Select:
     default:
-      return super::createLayout(focusAndMode);
+      return new PlayControlParameterLayout2();
+
+    case UIMode::Edit:
+      return new PlayControlParameterEditLayout2();
   }
 
   g_return_val_if_reached(nullptr);
@@ -285,6 +307,10 @@ HardwareSourceSendParameter *PhysicalControlParameter::getSendParameter() const
         return HardwareSourcesGroup::getRibbon1SendID();
       case C15::PID::Ribbon_2:
         return HardwareSourcesGroup::getRibbon2SendID();
+      case C15::PID::Ribbon_3:
+        return HardwareSourcesGroup::getRibbon3SendID();
+      case C15::PID::Ribbon_4:
+        return HardwareSourcesGroup::getRibbon4SendID();
       case C15::PID::Aftertouch:
         return HardwareSourcesGroup::getAftertouchSendID();
       case C15::PID::Bender:
@@ -294,4 +320,42 @@ HardwareSourceSendParameter *PhysicalControlParameter::getSendParameter() const
   };
 
   return getParentEditBuffer()->findAndCastParameterByID<HardwareSourceSendParameter>({ idToSendID(getID()) });
+}
+
+MacroControlParameter *PhysicalControlParameter::getMCAssignedToThisHW() const
+{
+  MacroControlParameter *currentMC = nullptr;
+  double currentMax = 0;
+  auto mappings = dynamic_cast<MacroControlMappingGroup *>(
+      getParentEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
+  for(auto p : mappings->getModulationRoutingParametersFor(this))
+  {
+    if(std::abs(p->getControlPositionValue()) > currentMax)
+    {
+      currentMC = p->getTargetParameter();
+      currentMax = p->getControlPositionValue();
+    }
+  }
+  return currentMC;
+}
+
+bool PhysicalControlParameter::isMCAssignedToThisAlsoAssignedToAnyPedal() const
+{
+  if(auto currentMC = getMCAssignedToThisHW())
+  {
+    auto mappings = dynamic_cast<MacroControlMappingGroup *>(
+        getParentEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global }));
+    for(auto mapping : mappings->getModulationRoutingParametersFor(currentMC))
+    {
+      if(dynamic_cast<PedalParameter *>(mapping->getSourceParameter()))
+      {
+        if(mapping->getControlPositionValue() != 0)
+        {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
 }

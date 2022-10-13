@@ -7,6 +7,7 @@
 #include <sigc++/sigc++.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/HWUI.h>
+#include <parameters/ModulationRoutingParameter.h>
 
 SelectedMacroControlsHWSourceSlider::SelectedMacroControlsHWSourceSlider(const Rect &rect)
     : super(rect)
@@ -20,7 +21,16 @@ SelectedMacroControlsHWSourceSlider::SelectedMacroControlsHWSourceSlider(const R
 void SelectedMacroControlsHWSourceSlider::onParameterSelected(Parameter *newOne)
 {
   m_mcChanged.disconnect();
-  m_mcChanged = newOne->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceSlider::onMCChanged));
+
+  if(auto mc = dynamic_cast<MacroControlParameter*>(newOne))
+  {
+    m_mcChanged = mc->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceSlider::onMCChanged));
+  }
+  else if(auto modulationRouter = dynamic_cast<ModulationRoutingParameter*>(newOne))
+  {
+    auto tgt = modulationRouter->getTargetParameter();
+    m_mcChanged = tgt->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceSlider::onMCChanged));
+  }
 }
 
 void SelectedMacroControlsHWSourceSlider::onMCChanged(const Parameter *param)

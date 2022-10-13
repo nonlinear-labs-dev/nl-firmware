@@ -1,0 +1,13 @@
+****************************************
+*********** NEU 2022-09-13 *************
+****************************************
+
+
+Neue Symbole (vorläufige Version):
+
+A.circled.inv	E400
+B.circled.inv	E401
+C.circled.inv	E402
+D.circled.inv	E403
+E.circled.inv	E404
+F.circled.inv	E405

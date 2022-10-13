@@ -140,6 +140,24 @@ public class MidiSettingsProvider extends Notifier<MidiSettingsPresenter> {
             return true;
         });
 
+        s.ribbon3Mapping.onChange(t -> {
+            int newValue = t.ordinal();
+            if(settings.ribbonMapping3.selected != newValue) {
+                settings.ribbonMapping3.selected = newValue;
+                notifyClients();
+            }
+            return true;
+        });
+
+        s.ribbon4Mapping.onChange(t -> {
+            int newValue = t.ordinal();
+            if(settings.ribbonMapping4.selected != newValue) {
+                settings.ribbonMapping4.selected = newValue;
+                notifyClients();
+            }
+            return true;
+        });
+
         s.benderMapping.onChange(t -> {
             int newValue = t.ordinal();
             if(settings.benderMapping.selected != newValue) {
@@ -232,6 +250,8 @@ public class MidiSettingsProvider extends Notifier<MidiSettingsPresenter> {
             presenter.pedal4CCString = cleanUpNoneStrings(PedalMapping.options[settings.pedalMapping4.selected]);
             presenter.ribbon1CCString = cleanUpNoneStrings(RibbonMapping.options[settings.ribbonMapping1.selected]);
             presenter.ribbon2CCString = cleanUpNoneStrings(RibbonMapping.options[settings.ribbonMapping2.selected]);
+            presenter.ribbon3CCString = cleanUpNoneStrings(RibbonMapping.options[settings.ribbonMapping3.selected]);
+            presenter.ribbon4CCString = cleanUpNoneStrings(RibbonMapping.options[settings.ribbonMapping4.selected]);
             presenter.benderCCString = cleanUpNoneStrings(BenderMapping.options[settings.benderMapping.selected]);
             presenter.aftertouchCCString = cleanUpNoneStrings(AftertouchMapping.options[settings.aftertouchMapping.selected]);
         }
@@ -242,6 +262,8 @@ public class MidiSettingsProvider extends Notifier<MidiSettingsPresenter> {
             presenter.pedal4CCString = cleanUpNoneStrings(PedalMapping.optionsWithoutLSB[settings.pedalMapping4.selected]);
             presenter.ribbon1CCString = cleanUpNoneStrings(RibbonMapping.optionsWithoutLSB[settings.ribbonMapping1.selected]);
             presenter.ribbon2CCString = cleanUpNoneStrings(RibbonMapping.optionsWithoutLSB[settings.ribbonMapping2.selected]);
+            presenter.ribbon3CCString = cleanUpNoneStrings(RibbonMapping.optionsWithoutLSB[settings.ribbonMapping3.selected]);
+            presenter.ribbon4CCString = cleanUpNoneStrings(RibbonMapping.optionsWithoutLSB[settings.ribbonMapping4.selected]);
             presenter.benderCCString = cleanUpNoneStrings(BenderMapping.optionsWithoutLSB[settings.benderMapping.selected]);
             presenter.aftertouchCCString = cleanUpNoneStrings(AftertouchMapping.optionsWithoutLSB[settings.aftertouchMapping.selected]);
         }

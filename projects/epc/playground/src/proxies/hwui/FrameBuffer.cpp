@@ -342,3 +342,9 @@ const std::vector<FrameBuffer::tPixel> &FrameBuffer::getBackBuffer() const
 {
   return m_backBuffer;
 }
+
+void FrameBuffer::drawDottedLine(int left, int top, int length)
+{
+  for(int i = left; i <= left + length; i += 2)
+    setPixel(i, top);
+}

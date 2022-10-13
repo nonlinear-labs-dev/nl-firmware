@@ -201,22 +201,6 @@ void PedalParameter::undoableStepBehavior(UNDO::Transaction *transaction, int di
   undoableSetPedalMode(transaction, static_cast<PedalModes>(e), Initiator::EXPLICIT_USECASE);
 }
 
-Layout *PedalParameter::createLayout(FocusAndMode focusAndMode) const
-{
-  switch(focusAndMode.mode)
-  {
-    case UIMode::Info:
-      return new ParameterInfoLayout();
-    case UIMode::Edit:
-      return new PedalParameterEditLayout2();
-    case UIMode::Select:
-    default:
-      return new PedalParameterSelectLayout2();
-  }
-
-  return super::createLayout(focusAndMode);
-}
-
 PedalType *PedalParameter::getAssociatedPedalTypeSetting() const
 {
   int key = 1;

@@ -14,9 +14,6 @@ class AftertouchParameter : public PhysicalControlParameter
   tControlPositionValue getDefValueAccordingToMode() const override;
   void onLocalEnableChanged(bool localEnableState) override;
 
- protected:
-  Layout *createLayout(FocusAndMode focusAndMode) const override;
-
  private:
   bool isLocalEnabled() const override;
 };

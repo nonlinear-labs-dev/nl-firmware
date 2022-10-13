@@ -49,6 +49,7 @@
 #include "SplitPointSyncParameters.h"
 #include "GlobalLocalEnableSetting.h"
 #include "FocusAndModeSetting.h"
+#include "SelectedRibbonsSetting.h"
 #include "AftertouchLegacyMode.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
@@ -137,6 +138,8 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, Hard
   addSetting("Pedal4Mapping", new PedalCCMapping<4>(*this, *enable14Bit));
   addSetting("Ribbon1Mapping", new RibbonCCMapping<1>(*this, *enable14Bit));
   addSetting("Ribbon2Mapping", new RibbonCCMapping<2>(*this, *enable14Bit));
+  addSetting("Ribbon3Mapping", new RibbonCCMapping<3>(*this, *enable14Bit));
+  addSetting("Ribbon4Mapping", new RibbonCCMapping<4>(*this, *enable14Bit));
   addSetting("BenderMapping", new BenderCCMapping(*this, *enable14Bit));
   addSetting("AftertouchMapping", new AftertouchCCMapping(*this, *enable14Bit));
 
@@ -148,6 +151,7 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, Hard
   addSetting("AlsaFramesPerPeriod", new AlsaFramesPerPeriod(*this));
 
   addSetting("FlacRecorderVirgin", new FlacRecorderVirgin(*this));
+  addSetting("SelectedRibbons", new SelectedRibbonsSetting(*this));
   addSetting("AftertouchLegacyMode", new AftertouchLegacyMode(*this));
 }
 
@@ -184,21 +188,21 @@ void Settings::load()
 {
   auto lock = m_isLoading.lock();
 
-  DebugLevel::gassy(__PRETTY_FUNCTION__, G_STRLOC);
+  nltools::Log::info(__PRETTY_FUNCTION__, G_STRLOC);
 
   try
   {
-    DebugLevel::gassy(__PRETTY_FUNCTION__, G_STRLOC);
+    nltools::Log::info(__PRETTY_FUNCTION__, G_STRLOC);
     FileInStream in(m_file, false);
     XmlReader reader(in, nullptr);
     reader.read<SettingsSerializer>(std::ref(*this));
   }
   catch(...)
   {
-    DebugLevel::error("Exception loading the settings!");
+    nltools::Log::error("Exception loading the settings!");
   }
 
-  DebugLevel::gassy(__PRETTY_FUNCTION__, G_STRLOC);
+  nltools::Log::info(__PRETTY_FUNCTION__, G_STRLOC);
 
   sanitize();
 
@@ -308,8 +312,12 @@ void Settings::sendPresetSettingsToPlaycontroller()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto r1 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_1, VoiceGroup::Global }));
   auto r2 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_2, VoiceGroup::Global }));
+  auto r3 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_3, VoiceGroup::Global }));
+  auto r4 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_4, VoiceGroup::Global }));
   r1->sendModeToPlaycontroller();
   r2->sendModeToPlaycontroller();
+  r3->sendModeToPlaycontroller();
+  r4->sendModeToPlaycontroller();
 }
 
 sigc::connection Settings::onSettingsChanged(sigc::slot<void(void)> s)

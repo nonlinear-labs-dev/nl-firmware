@@ -7,6 +7,7 @@
 #include "device-settings/BaseUnitUIMode.h"
 #include "device-settings/Settings.h"
 #include "groups/HardwareSourcesGroup.h"
+#include "device-settings/SelectedRibbonsSetting.h"
 #include <proxies/hwui/HWUI.h>
 #include <nltools/messaging/Message.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
@@ -19,6 +20,9 @@ UpperRibbon::UpperRibbon()
       sigc::mem_fun(this, &UpperRibbon::onParamSelectionChanged), {});
   m_settingChangedSignal = Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(
       sigc::mem_fun(this, &UpperRibbon::onSettingChanged));
+  m_ribbonSelectionSignal = Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->onChange(
+      sigc::mem_fun(this, &UpperRibbon::onRibbonSelectionChanged));
+
 }
 
 UpperRibbon::~UpperRibbon()
@@ -32,6 +36,11 @@ void UpperRibbon::onParamSelectionChanged(Parameter* oldOne, Parameter* newOne)
   reconnect();
 }
 
+void UpperRibbon::onRibbonSelectionChanged(const Setting* setting)
+{
+  reconnect();
+}
+
 void UpperRibbon::onSettingChanged(const Setting* setting)
 {
   reconnect();
@@ -39,7 +48,16 @@ void UpperRibbon::onSettingChanged(const Setting* setting)
 
 Parameter* getSendParameter()
 {
-  return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(HardwareSourcesGroup::getRibbon1SendID());
+  if(Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->get() == SelectedRibbons::Ribbon1_2)
+  {
+    return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+        HardwareSourcesGroup::getRibbon1SendID());
+  }
+  else
+  {
+    return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+        HardwareSourcesGroup::getRibbon3SendID());
+  }
 }
 
 void UpperRibbon::reconnect()
@@ -61,8 +79,17 @@ Parameter* UpperRibbon::getResponsibleParameter()
     return Application::get().getPresetManager()->getEditBuffer()->getSelected(
         Application::get().getVGManager()->getCurrentVoiceGroup());
 
-  return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-      HardwareSourcesGroup::getUpperRibbonParameterID());
+  auto selected = Application::get().getSettings()->getSetting<SelectedRibbonsSetting>();
+  if(selected->get() == SelectedRibbons::Ribbon1_2)
+  {
+    return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+        HardwareSourcesGroup::getUpperRibbon1ParameterID());
+  }
+  else
+  {
+    return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
+        HardwareSourcesGroup::getUpperRibbon3ParameterID());
+  }
 }
 
 void UpperRibbon::onParamValueChanged(const Parameter* param)

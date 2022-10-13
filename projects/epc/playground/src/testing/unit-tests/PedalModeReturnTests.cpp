@@ -16,7 +16,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Ribbon Return Mode")
 {
   auto eb = TestHelper::getEditBuffer();
   auto ribbon
-      = dynamic_cast<RibbonParameter*>(eb->findParameterByID(HardwareSourcesGroup::getUpperRibbonParameterID()));
+      = dynamic_cast<RibbonParameter*>(eb->findParameterByID(HardwareSourcesGroup::getUpperRibbon1ParameterID()));
 
   RibbonParameterUseCases useCase(ribbon);
 
@@ -60,7 +60,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Local Enable - Disable BiDi Mod
 {
   auto eb = TestHelper::getEditBuffer();
 
-  auto ribbon = dynamic_cast<RibbonParameter*>(eb->findParameterByID(HardwareSourcesGroup::getUpperRibbonParameterID()));
+  auto ribbon = dynamic_cast<RibbonParameter*>(eb->findParameterByID(HardwareSourcesGroup::getUpperRibbon1ParameterID()));
   auto pedal1 = dynamic_cast<PedalParameter*>(eb->findParameterByID(HardwareSourcesGroup::getPedal1ParameterID()));
   auto ribbonA = eb->findParameterByID({C15::PID::Ribbon_1_to_MC_A, VoiceGroup::Global});
   auto pedalA = eb->findParameterByID({C15::PID::Pedal_1_to_MC_A, VoiceGroup::Global});

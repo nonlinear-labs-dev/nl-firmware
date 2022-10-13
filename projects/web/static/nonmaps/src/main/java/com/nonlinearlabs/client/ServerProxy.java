@@ -22,6 +22,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModelUpdater;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
+import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel.TouchBehaviour;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerUpdater;
@@ -708,6 +709,12 @@ public class ServerProxy {
 		StaticURI.Path path = new StaticURI.Path("param-editor", "set-ribbon-return-mode");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", ribbonsParameterId),
 				new StaticURI.KeyValue("mode", mode));
+		queueJob(uri, false);
+	}
+
+	public void setRibbonBehaviour(int ribbonsParameterId, String behaviour) {
+		StaticURI.Path path = new StaticURI.Path("param-editor", "set-ribbon-behaviour");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", ribbonsParameterId), new StaticURI.KeyValue("mode", behaviour));
 		queueJob(uri, false);
 	}
 

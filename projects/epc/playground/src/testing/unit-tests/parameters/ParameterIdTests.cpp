@@ -23,6 +23,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"ParameterId hashes")
         }
         hashes.insert(std::make_pair(h, std::move(a)));
       }
+      CHECK(true);
     }
   }
 }

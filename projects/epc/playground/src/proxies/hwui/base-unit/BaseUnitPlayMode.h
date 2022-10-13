@@ -26,5 +26,7 @@ class BaseUnitPlayMode : public UsageMode
   std::unordered_map<Buttons, bool> m_buttonStates;
   NoteShiftStateMachine m_noteShiftState;
   ShortVsLongPress m_modeButtonHandler;
+
   bool checkPanicAffenGriff(Buttons b, bool state);
+  void toggleRibbonSelection();
 };
