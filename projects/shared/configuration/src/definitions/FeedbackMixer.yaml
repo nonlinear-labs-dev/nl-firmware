@@ -57,7 +57,7 @@ parameters:
     label_long: A/B @ST:Between
     label_short: A/B @ST:Between
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     info: >
       Level of the signal from branch A or B of the other Part. (Only available when using Layer mode.)
   - <<: *MODULATEABLE
@@ -79,7 +79,7 @@ parameters:
     label_long: Comb Filter
     label_short: Comb
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     info: >
       Feedback mix factor for the output of the Comb Filter.
   - <<: *MODULATEABLE
@@ -101,7 +101,7 @@ parameters:
     label_long: SV Filter
     label_short: SV Filter
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     info: >
       Feedback mix factor for the output of the State Variable Filter.
   - <<: *MODULATEABLE
@@ -122,7 +122,7 @@ parameters:
     label_long: Effects
     label_short: Effects
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Parabolic, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
     info: >
       Feedback mix factor for the output of the Effects chain.
@@ -160,7 +160,7 @@ parameters:
     label_long: Drive
     label_short: Drive
     control_position: { coarse: 140, fine: 700, scale: LINEAR_70_DB, initial: 2.0f / 7.0f }
-    modulation_aspects: { coarse: 70, fine: 700, scale: LINEAR_BIPOLAR_70_DB }
+    modulation_aspects: { coarse: 140, fine: 700, scale: LINEAR_BIPOLAR_70_DB }
     rendering_args: { scaling: Expon_Mix_Drive, factor: 70.0f, offset: 0.25f, section: Poly, clock: Fast, signal: Quasipoly_Signal }
     info: >
       Input gain [in dB] of the sine shaper stage. Higher gains will create more distortion and harmonics.

@@ -56,6 +56,8 @@ export type DeclarationsType = {
                 reference: string;
                 values: Array<string>;
                 inf: boolean | string;
+                min: string;
+                max: string;
                 bipolar: boolean;
             };
         };

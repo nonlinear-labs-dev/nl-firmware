@@ -46,7 +46,7 @@ parameters:
     label_long: Master Tune
     label_short: Tune
     control_position: { coarse: 48, fine: 4800, scale: FINE_BIPOLAR_48_ST, initial: 0.0f }
-    modulation_aspects: { coarse: 48, fine: 4800, scale: FINE_BIPOLAR_96_ST }
+    modulation_aspects: { coarse: 96, fine: 9600, scale: FINE_BIPOLAR_96_ST }
     rendering_args: { scaling: Linear, factor: 48.0f, offset: 0.0f, section: Global, clock: Slow, signal: Global_Signal }
     info: >
       Global pitch transposition [in semitones].
@@ -56,7 +56,7 @@ parameters:
     label_long: "@ST:Pan Pan"
     label_short: "@ST:Pan Pan"
     control_position: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Global, clock: Fast, signal: None }
     info: >
       Panning of the dual effect chain (not available in Single Sounds).
@@ -70,7 +70,7 @@ parameters:
     label_long: Serial FX
     label_short: Serial FX
     control_position: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Global, clock: Fast, signal: None }
     info: >
       The output of an FX chain can be routed to the input of the other FX chain,
