@@ -29,3 +29,8 @@ function(add_nltools TARGET)
     target_link_libraries(${TARGET} PUBLIC nltools)
     target_include_directories(${TARGET} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared/nltools/include/)
 endfunction()
+
+function(add_nltools_2 TARGET)
+    target_link_libraries(${TARGET} PUBLIC nltools-2)
+    target_include_directories(${TARGET} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared/nltools-2/include/)
+endfunction()

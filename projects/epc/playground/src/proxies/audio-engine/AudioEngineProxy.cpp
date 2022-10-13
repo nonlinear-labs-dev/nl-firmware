@@ -35,6 +35,7 @@
 #include <device-settings/GlobalLocalEnableSetting.h>
 #include <device-settings/NoteShift.h>
 #include <Application.h>
+#include <PresetMessages.h>
 
 AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, PlaycontrollerProxy &playProxy)
     : m_sendMidiSettingThrottler(Application::get().getMainContext(), std::chrono::milliseconds { 250 })
@@ -46,6 +47,10 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
   onConnectionEstablished(EndPoint::AudioEngine, sigc::mem_fun(this, &AudioEngineProxy::sendEditBuffer));
   onConnectionEstablished(EndPoint::AudioEngine,
                           sigc::mem_fun(this, &AudioEngineProxy::connectSettingsToAudioEngineMessage));
+
+  receive<GenericSinglePresetMessage>(EndPoint::Playground, [](auto& ms) {
+    //TODO use like this! but not actually here!
+  });
 
   receive<HardwareSourcePollEnd>(EndPoint::Playground,
                                  [this](auto &msg)

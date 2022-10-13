@@ -110,6 +110,7 @@ set(${TEST_BINARY_NAME}_SOURCES ${UNIT_TEST_FILES})
 ## LIB
 add_library(${LIB_NAME} STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
 add_nltools(${LIB_NAME})
+add_nltools_2(${LIB_NAME})
 
 foreach(lib ${LIBS})
   pkg_check_modules(${lib} REQUIRED ${lib})
