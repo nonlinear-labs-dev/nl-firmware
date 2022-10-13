@@ -2,6 +2,8 @@
 #include <xml/MemoryInStream.h>
 #include <device-settings/DebugLevel.h>
 
+#include <utility>
+
 namespace
 {
   std::vector<uint8_t> toBuffer(const Glib::ustring &mem)
@@ -27,9 +29,9 @@ MemoryInStream::MemoryInStream(SoupBuffer *buffer, bool zipped)
 }
 
 MemoryInStream::MemoryInStream(std::vector<uint8_t> buffer, bool zipped)
-    : m_buffer(buffer)
+    : m_buffer(std::move(buffer))
 {
-  if(GInputStream *memStream = g_memory_input_stream_new_from_data(m_buffer.data(), m_buffer.size(), nullptr))
+  if(GInputStream *memStream = g_memory_input_stream_new_from_data(m_buffer.data(), static_cast<long>(m_buffer.size()), nullptr))
   {
     if(zipped)
     {
@@ -69,7 +71,9 @@ Glib::ustring MemoryInStream::read()
   if(error)
   {
     DebugLevel::error(__PRETTY_FUNCTION__, error->message);
+    auto message = error->message;
     g_error_free(error);
+    throw std::runtime_error(message);
   }
 
   if(!str)

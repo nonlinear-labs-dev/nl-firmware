@@ -621,7 +621,7 @@ void HWUI::startSplash()
 void HWUI::finishSplash()
 {
   auto &boled = getPanelUnit().getEditPanel().getBoled();
-  if(boled.getOverlay().get() == m_splashLayout)
+  if(boled.getOverlay().get() == m_splashLayout || dynamic_cast<SplashLayout*>(boled.getOverlay().get()))
     boled.resetOverlay();
 }
 
@@ -647,16 +647,10 @@ void HWUI::setSplashStatus(const std::string &msg)
 
 void HWUI::registerSplash(SplashLayout *l)
 {
-  if(m_splashLayout != nullptr)
-  {
-    nltools::Log::error("overwriting m_splashLayout");
-  }
   m_splashLayout = l;
 }
 
 void HWUI::unregisterSplash(SplashLayout *l)
 {
-  nltools_detailedAssertAlways(l == m_splashLayout,
-                               "unregisterSplash called with different Splashscreen pointer than installed");
   m_splashLayout = nullptr;
 }

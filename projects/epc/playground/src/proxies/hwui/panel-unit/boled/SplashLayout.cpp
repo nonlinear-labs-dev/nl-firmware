@@ -93,7 +93,10 @@ SplashLayout::~SplashLayout()
 void SplashLayout::setMessage(const std::string &txt)
 {
   m_text = txt;
-  m_message->setText(m_text, FrameBufferColors::C179);
+  if(m_message)
+  {
+    m_message->setText(m_text, FrameBufferColors::C179);
+  }
   Application::get().getHWUI()->getOleds().syncRedraw(true);
 }
 
@@ -103,7 +106,10 @@ void SplashLayout::addMessage(const std::string &txt)
     m_text += "\n";
 
   m_text += txt;
-  m_message->setText(m_text, FrameBufferColors::C179);
+  if(m_message)
+  {
+    m_message->setText(m_text, FrameBufferColors::C179);
+  }
   scrollToMax();
 
   Application::get().getHWUI()->getOleds().syncRedraw(true);

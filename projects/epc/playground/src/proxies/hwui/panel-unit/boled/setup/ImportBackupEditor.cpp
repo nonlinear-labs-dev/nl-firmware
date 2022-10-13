@@ -131,18 +131,15 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
     };
 
     auto ret = useCase.importBackupFile(in, { start, addStatus, finish }, ae);
-    switch(ret)
+    if(ret ==  PresetManagerUseCases::ImportExitCode::OK)
     {
-      case PresetManagerUseCases::ImportExitCode::Unsupported:
-        hwui->setSplashStatus(
-            "Unsupported File Version. The backup was created with a newer firmware. Please update your C15.");
-        std::this_thread::sleep_for(2s);
-        break;
-      default:
-      case PresetManagerUseCases::ImportExitCode::OK:
-        hwui->setSplashStatus("Restore Complete!");
-        std::this_thread::sleep_for(0.7s);
-        break;
+      hwui->setSplashStatus("Restore Complete!");
+      std::this_thread::sleep_for(0.7s);
+    }
+    else
+    {
+      hwui->setSplashStatus(PresetManagerUseCases::exitCodeToErrorMessage(ret));
+      std::this_thread::sleep_for(2s);
     }
   }
 
