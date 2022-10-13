@@ -1,6 +1,5 @@
 #include <groups/ScaleGroup.h>
 #include <parameters/ScaleParameter.h>
-#include <parameters/scale-converters/ScaleConverter.h>
 #include "parameter_declarations.h"
 #include <Application.h>
 

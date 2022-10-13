@@ -4,7 +4,6 @@
 #include <xml/Writer.h>
 #include "scale-converters/dimension/NoteDimension.h"
 #include "parameter_declarations.h"
-#include "parameters/scale-converters/Fine12STScaleConverter.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 
 ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId& id)
