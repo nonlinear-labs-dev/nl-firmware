@@ -15,7 +15,7 @@ epc_fix() {
   mount /dev/sda2 /tmp/sda2
   mount /dev/sda1 /tmp/sda2/boot
 
-  if ! cat /tmp/sda2/etc/default/grub | grep "net.ifnames=0 biosdevname=0" > /dev/null; then
+  if ! cat /proc/cmdline | grep "net.ifnames=0 biosdevname=0" > /dev/null; then
     arch-chroot /tmp/sda2 /bin/bash -c "sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT.*$/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet net.ifnames=0 biosdevname=0 ip=192.168.10.10:::::eth0:none mitigations=off isolcpus=0,2\"/g' /etc/default/grub" \
       && arch-chroot /tmp/sda2 /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg" \
       || printf "E48 ePC2 fix: setting Kernel Params failed" >> /tmp/fix_error.log && ((fix_errors++))
