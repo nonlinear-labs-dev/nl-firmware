@@ -29,7 +29,7 @@ parameters:
     label_long: Drive
     label_short: Drive
     control_position: { coarse: 100, fine: 500, scale: LINEAR_50_DB, initial: 0.4f }
-    modulation_aspects: { coarse: 50, fine: 500, scale: LINEAR_BIPOLAR_50_DB }
+    modulation_aspects: { coarse: 100, fine: 500, scale: LINEAR_BIPOLAR_50_DB }
     rendering_args: { scaling: Expon_Gain, factor: 50.0f, offset: 0.0f, section: Mono, clock: Fast, signal: Mono_Signal }
     info: >
       Gain [in dB] for the input signal. Higher gains will increase the amount of distortion/saturation.
@@ -66,7 +66,7 @@ parameters:
     label_long: Tilt
     label_short: Tilt
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: -0.2f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 100.0f, offset: 0.0f, section: Mono, clock: Fast, signal: None }
     info: >
       Controls two inverted shelving EQs before and after the distortion stage.\n
@@ -77,9 +77,9 @@ parameters:
     id: 194
     token: Hi_Cut
     label_long: Hi Cut
-    label_short: Cut
+    label_short: Hi Cut
     control_position: { coarse: 80, fine: 800, scale: LINEAR_60_140_ST, initial: 50.0f / 80.0f }
-    modulation_aspects: { coarse: 80, fine: 800, scale: LINEAR_BIPOLAR_160_ST }
+    modulation_aspects: { coarse: 80, fine: 800, scale: LINEAR_BIPOLAR_80_ST }
     rendering_args: { scaling: Expon_Lin_Pitch, factor: 80.0f, offset: 60.0f, section: Mono, clock: Slow, signal: None }
     info: >
       Cutoff frequency [in semitones] of the lowpass filter at the output.
@@ -88,9 +88,9 @@ parameters:
     id: 196
     token: Lo_Cut
     label_long: Lo Cut
-    label_short: Cut
+    label_short: Lo Cut
     control_position: { coarse: 80, fine: 800, scale: LINEAR_20_100_ST, initial: 10.0f / 80.0f }
-    modulation_aspects: { coarse: 80, fine: 800, scale: LINEAR_BIPOLAR_160_ST }
+    modulation_aspects: { coarse: 80, fine: 800, scale: LINEAR_BIPOLAR_80_ST }
     rendering_args: { scaling: Expon_Lin_Pitch, factor: 80.0f, offset: 20.0f, section: Mono, clock: Slow, signal: None }
     info: >
       Cutoff frequency [in semitones] of the highpass filter at the input.

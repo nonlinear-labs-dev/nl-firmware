@@ -1,14 +1,9 @@
 #include <groups/ParameterGroup.h>
-#include <groups/ScaleGroup.h>
 #include <libundo/undo/StringTools.h>
 #include <parameters/ScaleParameter.h>
-#include <proxies/hwui/HWUIEnums.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/ScaleParameterLayout.h>
 #include <xml/Writer.h>
 #include "scale-converters/dimension/NoteDimension.h"
 #include "parameter_declarations.h"
-#include "parameters/scale-converters/Fine12STScaleConverter.h"
-#include "parameters/scale-converters/FineBipolar1200CTScaleConverter.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 
 ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId& id)

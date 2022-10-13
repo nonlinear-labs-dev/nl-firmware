@@ -112,7 +112,7 @@ parameters:
     label_long: Gain
     label_short: Gain
     control_position: { <<: *ENV_CP_GAIN, scale: LINEAR_BIPOLAR_24_DB, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *ENV_CP_GAIN, scale: LINEAR_BIPOLAR_48_DB }
+    modulation_aspects: { coarse: 96, fine: 960, scale: LINEAR_BIPOLAR_48_DB }
     rendering_args: { scaling: Expon_Gain, factor: 24.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       Gain [in dB] of the envelope signal.
@@ -126,6 +126,7 @@ parameters:
     control_position: { <<: *ENV_CP_VELOCITY, scale: LINEAR_BIPOLAR_60_DB, initial: 0.5f }
     info: >
       Influence of the key velocity on the peak, breakpoint and sustain levels of the envelope [maximum dynamic range in dB].
+      Changing this parameter is only effective when a key is pressed.
   - <<: *ENV_VELOCITY
     id: 34
     token: Att_Vel
@@ -136,6 +137,7 @@ parameters:
       Velocity influence on the Attack time.
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Attack time by high Note-On velocities.
+      Changing this parameter is only effective when a key is pressed.
   - <<: *ENV_VELOCITY
     id: 334
     token: Dec_1_Vel
@@ -146,6 +148,7 @@ parameters:
       Velocity influence on the Decay 1 time.
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Decay 1 time by high Note-On velocities.
+      Changing this parameter is only effective when a key is pressed.
   - <<: *ENV_VELOCITY
     id: 336
     token: Dec_2_Vel
@@ -156,6 +159,7 @@ parameters:
       Velocity influence on the Decay 2 time.
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Decay 2 time by high Note-On velocities.
+      Changing this parameter is only effective when a key is pressed.
   - <<: *ENV_VELOCITY
     id: 35
     token: Rel_Vel
@@ -166,6 +170,7 @@ parameters:
       Velocity influence on the Release time.
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Release time by high Note-Off velocities.
+      Changing this parameter is only effective when a key is released.
   - <<: *ENV_KEYTRACKING
     id: 36
     token: Lvl_KT
@@ -176,7 +181,8 @@ parameters:
       Key tracking of the envelope's peak, breakpoint and sustain levels [dB per semitone].\n
       Positive values: higher levels for higher notes (+1.0 = +12 dB per octave).\n
       Negative values: lower levels for higher notes (-1.0 = -12 dB per octave).\n
-      Origin at C3 = 60 semitones.
+      Origin at C3 = 60 semitones.\n
+      Changing this parameter is only effective when a key is pressed.
   - <<: *ENV_KEYTRACKING
     id: 37
     token: Time_KT
@@ -186,24 +192,26 @@ parameters:
     info: >
       Key tracking of the attack, decay and release times.
       The value determines time reduction (positive values) or gain (negative values) for higher notes.
+      Changing this parameter is only effective when a key is pressed.
   - <<: *MODULATEABLE
     id: 295
     token: Att_Curve
     label_long: Attack Curve
     label_short: Curve
     control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
     info: >
       Curvature of the (polynomial) Attack segment.
       (negative: decelerating slope, zero: linear, positive: accelerating slope)
+      Changing this parameter is only effective when a key is pressed.
   - <<: *MODULATEABLE
     id: 338
     token: Elevate
     label_long: Elevate T - A
     label_short: Elevate
     control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       Transforms the breakpoints of the Envelope signal, becoming more and more a flat organ-like curve towards the control's edges.

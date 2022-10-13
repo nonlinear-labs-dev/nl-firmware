@@ -16,7 +16,8 @@ class VoiceGroupAndLoadToPartManager : public sigc::trackable
   void toggleLoadToPart();
   void setLoadToPart(bool state);
   bool isInLoadToPart() const;
-  void setCurrentVoiceGroup(UNDO::Transaction* t, VoiceGroup v);
+  void setCurrentVoiceGroupSilent(VoiceGroup vg);
+  void setCurrentVoiceGroup(UNDO::Transaction *t, VoiceGroup v, bool shouldSendParameterSelectionSignal);
   void setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v);
 
   VoiceGroup getCurrentVoiceGroup() const;

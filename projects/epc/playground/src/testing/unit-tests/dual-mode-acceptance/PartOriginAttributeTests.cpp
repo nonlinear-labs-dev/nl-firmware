@@ -131,7 +131,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Step Direct Load and Load to Pa
   auto vgManager = Application::get().getVGManager();
   {
     auto scope = TestHelper::createTestScope();
-    vgManager->setCurrentVoiceGroup(scope->getTransaction(), VoiceGroup::I);
+    vgManager->setCurrentVoiceGroup(scope->getTransaction(), VoiceGroup::I, true);
   }
   auto currentVG = vgManager->getCurrentVoiceGroup();
 

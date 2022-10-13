@@ -31,3 +31,13 @@ void VoiceGroupUseCases::toggleVoiceGroupSelection()
 {
   setVoiceGroup(detail::invert(m_manager->getCurrentVoiceGroup()));
 }
+
+void VoiceGroupUseCases::toggleVoiceGroupSelectionSilent()
+{
+  setVoiceGroupSilent(detail::invert(m_manager->getCurrentVoiceGroup()));
+}
+
+void VoiceGroupUseCases::setVoiceGroupSilent(VoiceGroup vg)
+{
+  m_manager->setCurrentVoiceGroupSilent(vg);
+}

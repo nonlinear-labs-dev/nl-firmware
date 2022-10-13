@@ -13,10 +13,10 @@
 
 namespace C15
 {
-    const char * const ParameterUnits[] = {
+    constexpr const char * const ParameterUnits[] = {
         ${parameter_units}
     };
-    const DisplayScalingTypeDescriptor DisplayScalingTypes[] = {
+    constexpr DisplayScalingTypeDescriptor DisplayScalingTypes[] = {
         ${display_scaling_types}
     };
 } // namespace C15

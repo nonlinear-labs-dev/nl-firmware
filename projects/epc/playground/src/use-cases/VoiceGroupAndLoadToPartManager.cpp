@@ -20,17 +20,25 @@ void VoiceGroupAndLoadToPartManager::setLoadToPart(bool state)
     m_loadToPartSignal.send(m_loadToPartActive);
 }
 
-void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(UNDO::Transaction *t, VoiceGroup v)
+void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroupSilent(VoiceGroup vg)
+{
+  auto scope = m_editBuffer.getParent()->getUndoScope().startTransaction("Select Part " + std::to_string(vg));
+  setCurrentVoiceGroup(scope->getTransaction(), vg, false);
+}
+
+void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(UNDO::Transaction *t, VoiceGroup v,
+                                                          bool shouldSendParameterSelectionSignal)
 {
   if(v == VoiceGroup::Global)
     return;
 
   auto swap = UNDO::createSwapData(v);
-  t->addSimpleCommand([this, swap](auto) {
+  t->addSimpleCommand([this, swap, shouldSendParameterSelectionSignal](auto) {
                                   auto oldVG = m_currentVoiceGroup;
                                   swap->swapWith(m_currentVoiceGroup);
-                                  m_voiceGroupSignal.send(m_currentVoiceGroup);
-                                  m_editBuffer.fakeParameterSelectionSignal(oldVG, m_currentVoiceGroup);
+                                  m_voiceGoupSignal.send(m_currentVoiceGroup);
+                                  if(shouldSendParameterSelectionSignal)
+                                    m_editBuffer.fakeParameterSelectionSignal(oldVG, m_currentVoiceGroup);
                                   m_editBuffer.onChange(UpdateDocumentContributor::ChangeFlags::Generic);
                                 });
 }
@@ -38,7 +46,7 @@ void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(UNDO::Transaction *t, 
 void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction,
                                                                                      VoiceGroup v)
 {
-  setCurrentVoiceGroup(transaction, v);
+  setCurrentVoiceGroup(transaction, v, true);
   auto selected = m_editBuffer.getSelected(getCurrentVoiceGroup());
   auto id = selected->getID();
 

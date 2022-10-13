@@ -440,19 +440,18 @@ tRet scaleValueToRange(const ValueRange<tTcdValue> &tcdRange, const tInValue &in
 
 int16_t PlaycontrollerProxy::ribbonRelativeFactorToTCDValue(tControlPositionValue d)
 {
-  static ValueRange<tTcdValue> m_ribbonRelativeFactorTcdRange { 256, 2560 };
-  return scaleValueToRange<int16_t>(m_ribbonRelativeFactorTcdRange, d, ValueRange<tControlPositionValue>(0, 1), false);
+  static ValueRange<tTcdValue> s_ribbonRelativeFactorTcdRange { 256, 2560 };
+  return scaleValueToRange<int16_t>(s_ribbonRelativeFactorTcdRange, d, ValueRange<tControlPositionValue>(0, 1), false);
 }
 
 int16_t PlaycontrollerProxy::ribbonCPValueToTCDValue(tControlPositionValue d, bool bipolar)
 {
-  static ValueRange<tTcdValue> m_ribbonValueTcdRangeBipolar { -8000, 8000 };
-  static ValueRange<tTcdValue> m_ribbonValueTcdRangeUnipolar { 0, 16000 };
+  static ValueRange<tTcdValue> s_ribbonValueTcdRangeUnipolar { 0, 16000 };
 
   if(bipolar)
-    return scaleValueToRange<int16_t>(m_ribbonValueTcdRangeBipolar, d, ValueRange<tControlPositionValue>(-1, 1), false);
+    return scaleValueToRange<int16_t>(s_ribbonValueTcdRangeUnipolar, d, ValueRange<tControlPositionValue>(-1, 1), false);
   else
-    return scaleValueToRange<int16_t>(m_ribbonValueTcdRangeUnipolar, d, ValueRange<tControlPositionValue>(0, 1), false);
+    return scaleValueToRange<int16_t>(s_ribbonValueTcdRangeUnipolar, d, ValueRange<tControlPositionValue>(0, 1), false);
 }
 
 void PlaycontrollerProxy::onSelectedRibbonsChanged(const Setting *s)

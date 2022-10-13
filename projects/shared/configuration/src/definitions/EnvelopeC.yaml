@@ -113,6 +113,7 @@ parameters:
     control_position: { <<: *ENV_CP_VELOCITY, scale: LINEAR_BIPOLAR_60_DB, initial: 0.5f }
     info: >
       Influence of the key velocity on the peak, breakpoint and sustain levels of the envelope [maximum dynamic range in dB].
+      Changing this parameter is only effective when a key is pressed.
   - <<: *ENV_VELOCITY
     id: 49
     token: Att_Vel
@@ -123,6 +124,7 @@ parameters:
       Velocity influence on the Attack time.
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Attack time by high Note-On velocities.
+      Changing this parameter is only effective when a key is pressed.
   - <<: *ENV_VELOCITY
     id: 425
     token: Dec_1_Vel
@@ -133,6 +135,7 @@ parameters:
       Velocity influence on the Decay 1 time.
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Decay 1 time by high Note-On velocities.
+      Changing this parameter is only effective when a key is pressed.
   - <<: *ENV_VELOCITY
     id: 426
     token: Dec_2_Vel
@@ -143,6 +146,7 @@ parameters:
       Velocity influence on the Decay 2 time.
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Decay 2 time by high Note-On velocities.
+      Changing this parameter is only effective when a key is pressed.
   - <<: *ENV_VELOCITY
     id: 50
     token: Rel_Vel
@@ -153,6 +157,7 @@ parameters:
       Velocity influence on the Release time.
       The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
       of the Release time by high Note-Off velocities.
+      Changing this parameter is only effective when a key is released.
   - <<: *ENV_KEYTRACKING
     id: 51
     token: Lvl_KT
@@ -163,7 +168,8 @@ parameters:
       Key tracking of the envelope's peak, breakpoint and sustain levels [dB per semitone].\n
       Positive values: higher levels for higher notes (+1.0 = +12 dB per octave).\n
       Negative values: lower levels for higher notes (-1.0 = -12 dB per octave).\n
-      Origin at C3 = 60 semitones.
+      Origin at C3 = 60 semitones.\n
+      Changing this parameter is only effective when a key is pressed.
   - <<: *ENV_KEYTRACKING
     id: 52
     token: Time_KT
@@ -173,17 +179,19 @@ parameters:
     info: >
       Key tracking of the attack, decay and release times.
       The value determines time reduction (positive values) or gain (negative values) for higher notes.
+      Changing this parameter is only effective when a key is pressed.
   - <<: *MODULATEABLE
     id: 296
     token: Att_Curve
     label_long: Attack Curve
     label_short: Curve
     control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
     info: >
       Curvature of the (polynomial) Attack segment.
       (negative: decelerating slope, zero: linear, positive: accelerating slope)
+      Changing this parameter is only effective when a key is pressed.
   - <<: *UNMODULATEABLE
     id: 340
     token: Retr_H
@@ -195,6 +203,7 @@ parameters:
       Determines how much the Envelope signal is forced to start at zero instead of the current level
       (usually from the Release phase).
       At 100.0 % the Envelope always starts at zero, independant from the previous signal level.
+      Changing this parameter is only effective when a key is pressed.
   - <<: *MODULATEABLE
     id: 427
     token: Loop
@@ -210,4 +219,5 @@ parameters:
       At 100%, the loop will repeat indefinetely. After releasing a pressed key, the normal Release segment will start.
       The Decay 2 segment is linear during loops.\n
       > 100%: the loop will repeat at full presence until a pressed key is released. Then, the loop will still repeat and approach zero.
-      Smaller Loop values produce a faster loop decay. At 200%, the loop will repeat indefinetely.
+      Smaller Loop values produce a faster loop decay. At 200%, the loop will repeat indefinetely.\n
+      Changing this parameter is only effective when a key is pressed.
