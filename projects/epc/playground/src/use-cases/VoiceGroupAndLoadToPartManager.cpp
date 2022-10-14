@@ -33,14 +33,16 @@ void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(UNDO::Transaction *t, 
     return;
 
   auto swap = UNDO::createSwapData(v);
-  t->addSimpleCommand([this, swap, shouldSendParameterSelectionSignal](auto) {
-                                  auto oldVG = m_currentVoiceGroup;
-                                  swap->swapWith(m_currentVoiceGroup);
-                                  m_voiceGoupSignal.send(m_currentVoiceGroup);
-                                  if(shouldSendParameterSelectionSignal)
-                                    m_editBuffer.fakeParameterSelectionSignal(oldVG, m_currentVoiceGroup);
-                                  m_editBuffer.onChange(UpdateDocumentContributor::ChangeFlags::Generic);
-                                });
+  t->addSimpleCommand(
+      [this, swap, shouldSendParameterSelectionSignal](auto)
+      {
+        auto oldVG = m_currentVoiceGroup;
+        swap->swapWith(m_currentVoiceGroup);
+        m_voiceGroupSignal.send(m_currentVoiceGroup);
+        if(shouldSendParameterSelectionSignal)
+          m_editBuffer.fakeParameterSelectionSignal(oldVG, m_currentVoiceGroup);
+        m_editBuffer.onChange(UpdateDocumentContributor::ChangeFlags::Generic);
+      });
 }
 
 void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction,
