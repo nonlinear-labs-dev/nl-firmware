@@ -16,22 +16,29 @@ endfunction()
 function(enable_ccache)
     find_program(CCACHE_PROGRAM ccache)
 
-    if(CCACHE_PROGRAM)
+    if (CCACHE_PROGRAM)
         set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-    endif()
+    endif ()
 endfunction()
 
 
 function(prepare_nltools_1_and_2)
-    set(CMAKE_INSTALL_RPATH ${C15_INSTALL_PATH}/nltools ${C15_INSTALL_PATH}/nltools-2 PARENT_SCOPE)
+    set(CMAKE_INSTALL_RPATH
+            "${C15_INSTALL_PATH}/nltools"
+            "${C15_INSTALL_PATH}/nltools-2"
+            PARENT_SCOPE)
 endfunction()
 
 function(prepare_nltools)
-    set(CMAKE_INSTALL_RPATH ${C15_INSTALL_PATH}/nltools PARENT_SCOPE)
+    set(CMAKE_INSTALL_RPATH
+            ${C15_INSTALL_PATH}/nltools
+            PARENT_SCOPE)
 endfunction()
 
 function(prepare_nltools_2)
-    set(CMAKE_INSTALL_RPATH ${C15_INSTALL_PATH}/nltools-2 PARENT_SCOPE)
+    set(CMAKE_INSTALL_RPATH
+            ${C15_INSTALL_PATH}/nltools-2
+            PARENT_SCOPE)
 endfunction()
 
 function(add_nltools TARGET)
