@@ -4,6 +4,7 @@ project(playground)
 find_systemd()
 enable_ccache()
 prepare_nltools()
+prepare_nltools_2()
 
 # PRECONDITIONS
 find_package(PkgConfig REQUIRED)

@@ -6,6 +6,7 @@ SET(AE_LIB_NAME ${PROJECT_NAME}-lib)
 find_systemd()
 enable_ccache()
 prepare_nltools()
+prepare_nltools_2()
 
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 list(REMOVE_ITEM SOURCE_FILES EXCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)

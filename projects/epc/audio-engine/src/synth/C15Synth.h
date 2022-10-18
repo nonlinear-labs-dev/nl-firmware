@@ -3,6 +3,7 @@
 #include "Synth.h"
 #include "c15-audio-engine/dsp_host_dual.h"
 #include <nltools/messaging/Message.h>
+#include "PresetMessages.h"
 #include <sigc++/sigc++.h>
 #include <thread>
 #include <condition_variable>
@@ -41,9 +42,9 @@ class C15Synth : public Synth, public sigc::trackable
   void logStatus();
   void toggleTestTone();
   void onSettingInitialSinglePreset();
-  void onLayerPresetMessage(const nltools::msg::LayerPresetMessage& msg);
-  void onSplitPresetMessage(const nltools::msg::SplitPresetMessage& msg);
-  void onSinglePresetMessage(const nltools::msg::SinglePresetMessage& msg);
+  void onLayerPresetMessage(const nltools2::msg::LayerPresetMessage& msg);
+  void onSplitPresetMessage(const nltools2::msg::SplitPresetMessage& msg);
+  void onSinglePresetMessage(const nltools2::msg::SinglePresetMessage& msg);
 
   void onModulateableParameterMessage(const nltools::msg::ModulateableParameterChangedMessage& msg);
   void onUnmodulateableParameterMessage(const nltools::msg::UnmodulateableParameterChangedMessage& msg);

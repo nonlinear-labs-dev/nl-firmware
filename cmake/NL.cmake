@@ -30,7 +30,11 @@ function(add_nltools TARGET)
     target_include_directories(${TARGET} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared/nltools/include/)
 endfunction()
 
+function(prepare_nltools_2)
+    set(CMAKE_INSTALL_RPATH ${C15_INSTALL_PATH}/nltools-2 PARENT_SCOPE)
+endfunction()
+
 function(add_nltools_2 TARGET)
-    target_link_libraries(${TARGET} PUBLIC nltools-2)
+    target_link_libraries(${TARGET} PUBLIC nltools2)
     target_include_directories(${TARGET} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared/nltools-2/include/)
 endfunction()

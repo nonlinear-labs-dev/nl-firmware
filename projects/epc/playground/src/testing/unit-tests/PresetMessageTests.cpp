@@ -1,6 +1,5 @@
 #include <catch.hpp>
 #include "proxies/audio-engine/AudioEngineProxy.h"
-#include "presets/EditBuffer.h"
 #include "testing/TestHelper.h"
 #include "mock/MockPresetStorage.h"
 
@@ -25,7 +24,7 @@ template <typename T> void collectIDs(const T &range, std::unordered_map<int, in
   }
 }
 
-void collectIDs(const nltools::msg::ParameterGroups::MonoGroup &group, std::unordered_map<int, int> &counts)
+void collectIDs(const nltools2::msg::ParameterGroups::MonoGroup &group, std::unordered_map<int, int> &counts)
 {
   collectID(group.legato, counts);
   collectID(group.priority, counts);
@@ -33,7 +32,7 @@ void collectIDs(const nltools::msg::ParameterGroups::MonoGroup &group, std::unor
   collectID(group.glide, counts);
 }
 
-void collectIDs(const nltools::msg::ParameterGroups::UnisonGroup &group, std::unordered_map<int, int> &counts)
+void collectIDs(const nltools2::msg::ParameterGroups::UnisonGroup &group, std::unordered_map<int, int> &counts)
 {
   collectID(group.phase, counts);
   collectID(group.pan, counts);
@@ -49,7 +48,7 @@ template <typename T> void assertMap(const T &t)
   }
 }
 
-void assertNoIDTwice(const nltools::msg::SinglePresetMessage &msg)
+void assertNoIDTwice(const nltools2::msg::SinglePresetMessage &msg)
 {
   std::unordered_map<int, int> count;
   collectIDs(msg.unison, count);
@@ -78,7 +77,7 @@ template <int vg, typename tMsg> void collectDual(const tMsg &msg)
   assertMap(count);
 }
 
-template <int vg> void collectDual(const nltools::msg::LayerPresetMessage &msg)
+template <int vg> void collectDual(const nltools2::msg::LayerPresetMessage &msg)
 {
   std::unordered_map<int, int> count;
   collectIDs(msg.unison, count);
@@ -92,19 +91,19 @@ template <int vg> void collectDual(const nltools::msg::LayerPresetMessage &msg)
   assertMap(count);
 }
 
-void assertNoIDTwice(const nltools::msg::SplitPresetMessage &msg)
+void assertNoIDTwice(const nltools2::msg::SplitPresetMessage &msg)
 {
   collectDual<0>(msg);
   collectDual<1>(msg);
 }
 
-void assertNoIDTwice(const nltools::msg::LayerPresetMessage &msg)
+void assertNoIDTwice(const nltools2::msg::LayerPresetMessage &msg)
 {
   collectDual<0>(msg);
   collectDual<1>(msg);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Single Preset Message")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Single Preset Message")
 {
   MockPresetStorage presets;
   auto single = presets.getSinglePreset();
