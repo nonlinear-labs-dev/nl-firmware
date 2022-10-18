@@ -730,8 +730,9 @@ PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(UN
       return ImportExitCode::UnsupportedVersion;
     }
   }
-  catch(const std::runtime_error& e)
+  catch(...)
   {
+    nltools::Log::error("got error with backup file! rolling back...");
     transaction->rollBack();
     progress.finish();
     return ImportExitCode::InvalidFile;

@@ -19,11 +19,16 @@ FileInStream::FileInStream(const Glib::ustring &fileName, bool tryZip)
 
   if(tryZip)
   {
+    const auto isZip = doesPathEndWithZip(fileName);
+    const auto isGZ = doesPathEndWithGZ(fileName);
+    const auto existsAsIs = FileSystem::doesFileExist(fileName);
+    const auto zipOrGZExists = existsAsIs && (isZip || isGZ);
+
     if(doesZipFileExist(fileName))
       file = Gio::File::create_for_path(fileName + ".zip");
     else if(doesGzFileExist(fileName))
       file = Gio::File::create_for_path(fileName + ".gz");
-    else
+    else if(!zipOrGZExists)
       tryZip = false;
   }
 
@@ -86,7 +91,7 @@ Glib::ustring FileInStream::read()
 
     if(error)
     {
-      DebugLevel::error(__PRETTY_FUNCTION__, __LINE__, error->message);
+      nltools::Log::error(__PRETTY_FUNCTION__, __LINE__, "error:", error->message);
       g_error_free(error);
     }
 
@@ -95,7 +100,7 @@ Glib::ustring FileInStream::read()
   }
   catch(...)
   {
-    DebugLevel::error("exception on reading file");
+    nltools::Log::error("exception on reading file");
     m_eof = true;
     return "";
   }
@@ -135,4 +140,28 @@ std::vector<uint8_t> FileInStream::readAll()
 bool FileInStream::eof() const
 {
   return m_eof;
+}
+
+bool FileInStream::doesPathEndWithZip(const Glib::ustring &fileName)
+{
+  auto suffix = std::string(".zip");
+  const auto len = suffix.length();
+
+  if(fileName.length() < len)
+    return false;
+
+  auto charsFromFile = fileName.substr(fileName.length() - len);
+  return charsFromFile == ".zip";
+}
+
+bool FileInStream::doesPathEndWithGZ(const Glib::ustring &fileName)
+{
+  auto suffix = std::string(".gz");
+  const auto len = suffix.length();
+
+  if(fileName.length() < len)
+    return false;
+
+  auto charsFromFile = fileName.substr(fileName.length() - len);
+  return charsFromFile == ".gz";
 }
