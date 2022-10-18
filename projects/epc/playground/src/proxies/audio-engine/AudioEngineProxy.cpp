@@ -225,9 +225,9 @@ void forEachParameterInGroup(const EditBuffer *eb, const GroupId &group, tParame
   }
 }
 
-nltools2::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage(const EditBuffer &eb)
+nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage(const EditBuffer &eb)
 {
-  nltools2::msg::SinglePresetMessage msg {};
+  nltools::msg::SinglePresetMessage msg {};
   fillMessageWithGlobalParams(msg, eb);
 
   size_t mc = 0;
@@ -281,7 +281,7 @@ nltools2::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessa
   return msg;
 }
 
-void AudioEngineProxy::fillMonoPart(nltools2::msg::ParameterGroups::MonoGroup &monoGroup, ParameterGroup *const &g)
+void AudioEngineProxy::fillMonoPart(nltools::msg::ParameterGroups::MonoGroup &monoGroup, ParameterGroup *const &g)
 {
   auto from = g->getVoiceGroup();
 
@@ -319,7 +319,7 @@ void AudioEngineProxy::fillMonoPart(nltools2::msg::ParameterGroups::MonoGroup &m
   }
 }
 
-void AudioEngineProxy::fillUnisonPart(nltools2::msg::ParameterGroups::UnisonGroup &unisonGroup, ParameterGroup *const &g)
+void AudioEngineProxy::fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup &unisonGroup, ParameterGroup *const &g)
 {
   auto from = g->getVoiceGroup();
 
@@ -399,9 +399,9 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, const EditBuffer &editB
   }
 }
 
-nltools2::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(const EditBuffer &eb)
+nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(const EditBuffer &eb)
 {
-  nltools2::msg::SplitPresetMessage msg {};
+  nltools::msg::SplitPresetMessage msg {};
   fillMessageWithGlobalParams(msg, eb);
   fillDualMessage(msg, eb);
 
@@ -435,9 +435,9 @@ nltools2::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage
   return msg;
 }
 
-nltools2::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(const EditBuffer &eb)
+nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(const EditBuffer &eb)
 {
-  nltools2::msg::LayerPresetMessage msg {};
+  nltools::msg::LayerPresetMessage msg {};
   fillMessageWithGlobalParams(msg, eb);
   fillDualMessage(msg, eb);
 

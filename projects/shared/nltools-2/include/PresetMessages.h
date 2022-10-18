@@ -4,7 +4,7 @@
 #include <parameter_declarations.h>
 #include <nltools/messaging/Message.h>
 
-namespace nltools2
+namespace nltools
 {
   namespace msg
   {

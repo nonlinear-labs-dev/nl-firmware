@@ -1,33 +1,33 @@
 #ifdef _DEVELOPMENT_PC
 #include "EditBufferMockFactory.h"
 
-nltools2::msg::SinglePresetMessage EditBufferMockFactory::initialMessage()
+nltools::msg::SinglePresetMessage EditBufferMockFactory::initialMessage()
 {
-  nltools2::msg::SinglePresetMessage ret {};
+  nltools::msg::SinglePresetMessage ret {};
   return ret;
 }
 
-nltools2::msg::SplitPresetMessage EditBufferMockFactory::splitMessage()
+nltools::msg::SplitPresetMessage EditBufferMockFactory::splitMessage()
 {
-  nltools2::msg::SplitPresetMessage ret {};
+  nltools::msg::SplitPresetMessage ret {};
   return ret;
 }
 
-nltools2::msg::SinglePresetMessage EditBufferMockFactory::splitToSingleMessage()
+nltools::msg::SinglePresetMessage EditBufferMockFactory::splitToSingleMessage()
 {
-  nltools2::msg::SinglePresetMessage ret {};
+  nltools::msg::SinglePresetMessage ret {};
   return ret;
 }
 
-nltools2::msg::LayerPresetMessage EditBufferMockFactory::layerMessage()
+nltools::msg::LayerPresetMessage EditBufferMockFactory::layerMessage()
 {
-  nltools2::msg::LayerPresetMessage ret {};
+  nltools::msg::LayerPresetMessage ret {};
   return ret;
 }
 
-nltools2::msg::SinglePresetMessage EditBufferMockFactory::layerToSingleMessage()
+nltools::msg::SinglePresetMessage EditBufferMockFactory::layerToSingleMessage()
 {
-  nltools2::msg::SinglePresetMessage ret {};
+  nltools::msg::SinglePresetMessage ret {};
   return ret;
 }
 

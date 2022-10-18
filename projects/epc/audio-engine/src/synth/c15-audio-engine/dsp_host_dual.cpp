@@ -411,7 +411,7 @@ void dsp_host_dual::logStatus() {
 }
 
 DSPInterface::OutputResetEventSource
-dsp_host_dual::onPresetMessage(const nltools2::msg::SinglePresetMessage &_msg) {
+dsp_host_dual::onPresetMessage(const nltools::msg::SinglePresetMessage &_msg) {
   if (LOG_RECALL) {
     // log preset with primitive timestamp (for debugging fade events)
     nltools::Log::info("Received Single Preset Message! (@", m_clock.m_index,
@@ -444,7 +444,7 @@ dsp_host_dual::onPresetMessage(const nltools2::msg::SinglePresetMessage &_msg) {
 }
 
 DSPInterface::OutputResetEventSource
-dsp_host_dual::onPresetMessage(const nltools2::msg::SplitPresetMessage &_msg) {
+dsp_host_dual::onPresetMessage(const nltools::msg::SplitPresetMessage &_msg) {
   if (LOG_RECALL) {
     nltools::Log::info("Received Split Preset Message!, (@", m_clock.m_index,
                        ")");
@@ -476,7 +476,7 @@ dsp_host_dual::onPresetMessage(const nltools2::msg::SplitPresetMessage &_msg) {
 }
 
 DSPInterface::OutputResetEventSource
-dsp_host_dual::onPresetMessage(const nltools2::msg::LayerPresetMessage &_msg) {
+dsp_host_dual::onPresetMessage(const nltools::msg::LayerPresetMessage &_msg) {
   if (LOG_RECALL) {
     nltools::Log::info("Received Layer Preset Message!, (@", m_clock.m_index,
                        ")");
@@ -1645,8 +1645,8 @@ void dsp_host_dual::localTransition(const uint32_t _layer,
 
 bool dsp_host_dual::evalPolyChg(
     const C15::Properties::LayerId _layerId,
-    const nltools2::msg::ParameterGroups::UnmodulateableParameter &_unisonVoices,
-    const nltools2::msg::ParameterGroups::UnmodulateableParameter &_monoEnable) {
+    const nltools::msg::ParameterGroups::UnmodulateableParameter &_unisonVoices,
+    const nltools::msg::ParameterGroups::UnmodulateableParameter &_monoEnable) {
   const uint32_t layerId = static_cast<uint32_t>(_layerId);
   auto unison_voices = m_params.get_local_unison_voices(_layerId);
   bool unisonChanged = unison_voices->update_position(
@@ -1730,7 +1730,7 @@ dsp_host_dual::determineOutputEventSource(const bool _detected,
 }
 
 DSPInterface::OutputResetEventSource
-dsp_host_dual::recallSingle(const nltools2::msg::SinglePresetMessage &_msg) {
+dsp_host_dual::recallSingle(const nltools::msg::SinglePresetMessage &_msg) {
   auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Single);
   auto layerChanged = oldLayerMode != m_layer_mode;
 
@@ -1874,7 +1874,7 @@ dsp_host_dual::recallSingle(const nltools2::msg::SinglePresetMessage &_msg) {
 }
 
 DSPInterface::OutputResetEventSource
-dsp_host_dual::recallSplit(const nltools2::msg::SplitPresetMessage &_msg) {
+dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage &_msg) {
   auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Split);
   auto layerChanged = oldLayerMode != m_layer_mode;
 
@@ -2026,7 +2026,7 @@ dsp_host_dual::recallSplit(const nltools2::msg::SplitPresetMessage &_msg) {
 }
 
 DSPInterface::OutputResetEventSource
-dsp_host_dual::recallLayer(const nltools2::msg::LayerPresetMessage &_msg) {
+dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage &_msg) {
   auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Layer);
   auto layerChanged = oldLayerMode != m_layer_mode;
 
@@ -2173,7 +2173,7 @@ dsp_host_dual::recallLayer(const nltools2::msg::LayerPresetMessage &_msg) {
 }
 
 void dsp_host_dual::globalParRcl(
-    const nltools2::msg::ParameterGroups::HardwareSourceParameter &_param) {
+    const nltools::msg::ParameterGroups::HardwareSourceParameter &_param) {
   auto element = getParameter(_param.id);
   if (element.m_param.m_type ==
       C15::Descriptors::ParameterType::Hardware_Source) {
@@ -2186,7 +2186,7 @@ void dsp_host_dual::globalParRcl(
   }
 }
 void dsp_host_dual::globalParRcl(
-    const nltools2::msg::ParameterGroups::HardwareAmountParameter &_param) {
+    const nltools::msg::ParameterGroups::HardwareAmountParameter &_param) {
   auto element = getParameter(_param.id);
   if (element.m_param.m_type ==
       C15::Descriptors::ParameterType::Hardware_Amount) {
@@ -2199,7 +2199,7 @@ void dsp_host_dual::globalParRcl(
 }
 
 void dsp_host_dual::globalParRcl(
-    const nltools2::msg::ParameterGroups::MacroParameter &_param) {
+    const nltools::msg::ParameterGroups::MacroParameter &_param) {
   auto element = getParameter(_param.id);
   if (element.m_param.m_type ==
       C15::Descriptors::ParameterType::Macro_Control) {
@@ -2214,7 +2214,7 @@ void dsp_host_dual::globalParRcl(
 }
 
 void dsp_host_dual::globalParRcl(
-    const nltools2::msg::ParameterGroups::ModulateableParameter &_param) {
+    const nltools::msg::ParameterGroups::ModulateableParameter &_param) {
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Modulateable)
   {
@@ -2242,7 +2242,7 @@ void dsp_host_dual::globalParRcl(
 }
 
 void dsp_host_dual::globalParRcl(
-    const nltools2::msg::ParameterGroups::UnmodulateableParameter &_param) {
+    const nltools::msg::ParameterGroups::UnmodulateableParameter &_param) {
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Unmodulateable)
   {
@@ -2264,7 +2264,7 @@ void dsp_host_dual::globalParRcl(
 }
 
 void dsp_host_dual::globalParRcl(
-    const nltools2::msg::ParameterGroups::GlobalParameter &_param) {
+    const nltools::msg::ParameterGroups::GlobalParameter &_param) {
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Unmodulateable)
   {
@@ -2286,7 +2286,7 @@ void dsp_host_dual::globalParRcl(
 }
 
 void dsp_host_dual::globalTimeRcl(
-    const nltools2::msg::ParameterGroups::UnmodulateableParameter &_param) {
+    const nltools::msg::ParameterGroups::UnmodulateableParameter &_param) {
   auto element = getParameter(_param.id);
   if (element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Time) {
     auto param = m_params.get_macro_time(element.m_param.m_index);
@@ -2299,7 +2299,7 @@ void dsp_host_dual::globalTimeRcl(
 }
 void dsp_host_dual::localParRcl(
     const uint32_t _layerId,
-    const nltools2::msg::ParameterGroups::ModulateableParameter &_param) {
+    const nltools::msg::ParameterGroups::ModulateableParameter &_param) {
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Modulateable)
   {
@@ -2329,7 +2329,7 @@ void dsp_host_dual::localParRcl(
 
 void dsp_host_dual::localParRcl(
     const uint32_t _layerId,
-    const nltools2::msg::ParameterGroups::SplitPoint &_param) {
+    const nltools::msg::ParameterGroups::SplitPoint &_param) {
   auto element = getParameter(_param.id);
   if(element.m_param.m_index == static_cast<uint32_t>(C15::Parameters::Local_Modulateables::Split_Split_Point))
   {
@@ -2363,7 +2363,7 @@ void dsp_host_dual::localParRcl(
 
 void dsp_host_dual::localParRcl(
     const uint32_t _layerId,
-    const nltools2::msg::ParameterGroups::UnmodulateableParameter &_param) {
+    const nltools::msg::ParameterGroups::UnmodulateableParameter &_param) {
   auto element = getParameter(_param.id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Unmodulateable)
   {
@@ -2385,8 +2385,8 @@ void dsp_host_dual::localParRcl(
 
 void dsp_host_dual::localPolyRcl(
     const uint32_t _layerId, const bool _va_update,
-    const nltools2::msg::ParameterGroups::UnisonGroup &_unison,
-    const nltools2::msg::ParameterGroups::MonoGroup &_mono) {
+    const nltools::msg::ParameterGroups::UnisonGroup &_unison,
+    const nltools::msg::ParameterGroups::MonoGroup &_mono) {
   localParRcl(_layerId, _unison.detune);
   localParRcl(_layerId, _unison.pan);
   localParRcl(_layerId, _unison.phase);

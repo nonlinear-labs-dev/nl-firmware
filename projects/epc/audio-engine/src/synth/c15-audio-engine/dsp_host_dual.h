@@ -192,9 +192,9 @@ class dsp_host_dual : public DSPInterface
   C15::Properties::HW_Return_Behavior getBehaviour(HardwareSource id) override;
 
   // event bindings: Preset Messages
-  OutputResetEventSource onPresetMessage(const nltools2::msg::SinglePresetMessage& _msg);
-  OutputResetEventSource onPresetMessage(const nltools2::msg::SplitPresetMessage& _msg);
-  OutputResetEventSource onPresetMessage(const nltools2::msg::LayerPresetMessage& _msg);
+  OutputResetEventSource onPresetMessage(const nltools::msg::SinglePresetMessage& _msg);
+  OutputResetEventSource onPresetMessage(const nltools::msg::SplitPresetMessage& _msg);
+  OutputResetEventSource onPresetMessage(const nltools::msg::LayerPresetMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::HWAmountChangedMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::MacroControlChangedMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage& _msg);
@@ -311,26 +311,26 @@ class dsp_host_dual : public DSPInterface
   void localTransition(const uint32_t _layer, const Target_Param* _param, const Time_Aspect _time);
 
   bool evalPolyChg(const C15::Properties::LayerId _layerId,
-                   const nltools2::msg::ParameterGroups::UnmodulateableParameter& _unisonVoices,
-                   const nltools2::msg::ParameterGroups::UnmodulateableParameter& _monoEnable);
+                   const nltools::msg::ParameterGroups::UnmodulateableParameter& _unisonVoices,
+                   const nltools::msg::ParameterGroups::UnmodulateableParameter& _monoEnable);
   void evalVoiceFadeChg(const uint32_t _layer);
   OutputResetEventSource determineOutputEventSource(const bool _detected, const LayerMode _type);
-  OutputResetEventSource recallSingle(const nltools2::msg::SinglePresetMessage& _msg);
-  OutputResetEventSource recallSplit(const nltools2::msg::SplitPresetMessage& _msg);
-  OutputResetEventSource recallLayer(const nltools2::msg::LayerPresetMessage& _msg);
-  void globalParRcl(const nltools2::msg::ParameterGroups::HardwareSourceParameter& _param);
-  void globalParRcl(const nltools2::msg::ParameterGroups::HardwareAmountParameter& _param);
-  void globalParRcl(const nltools2::msg::ParameterGroups::MacroParameter& _param);
-  void globalParRcl(const nltools2::msg::ParameterGroups::ModulateableParameter& _param);
-  void globalParRcl(const nltools2::msg::ParameterGroups::UnmodulateableParameter& _param);
-  void globalParRcl(const nltools2::msg::ParameterGroups::GlobalParameter& _param);
-  void globalTimeRcl(const nltools2::msg::ParameterGroups::UnmodulateableParameter& _param);
-  void localParRcl(const uint32_t _layerId, const nltools2::msg::ParameterGroups::ModulateableParameter& _param);
-  void localParRcl(const uint32_t _layerId, const nltools2::msg::ParameterGroups::SplitPoint& _param);
-  void localParRcl(const uint32_t _layerId, const nltools2::msg::ParameterGroups::UnmodulateableParameter& _param);
+  OutputResetEventSource recallSingle(const nltools::msg::SinglePresetMessage& _msg);
+  OutputResetEventSource recallSplit(const nltools::msg::SplitPresetMessage& _msg);
+  OutputResetEventSource recallLayer(const nltools::msg::LayerPresetMessage& _msg);
+  void globalParRcl(const nltools::msg::ParameterGroups::HardwareSourceParameter& _param);
+  void globalParRcl(const nltools::msg::ParameterGroups::HardwareAmountParameter& _param);
+  void globalParRcl(const nltools::msg::ParameterGroups::MacroParameter& _param);
+  void globalParRcl(const nltools::msg::ParameterGroups::ModulateableParameter& _param);
+  void globalParRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter& _param);
+  void globalParRcl(const nltools::msg::ParameterGroups::GlobalParameter& _param);
+  void globalTimeRcl(const nltools::msg::ParameterGroups::UnmodulateableParameter& _param);
+  void localParRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::ModulateableParameter& _param);
+  void localParRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::SplitPoint& _param);
+  void localParRcl(const uint32_t _layerId, const nltools::msg::ParameterGroups::UnmodulateableParameter& _param);
   void localPolyRcl(const uint32_t _layerId, const bool _va_update,
-                    const nltools2::msg::ParameterGroups::UnisonGroup& _unison,
-                    const nltools2::msg::ParameterGroups::MonoGroup& _mono);
+                    const nltools::msg::ParameterGroups::UnisonGroup& _unison,
+                    const nltools::msg::ParameterGroups::MonoGroup& _mono);
   void debugLevels();
 
   friend class DspHostDualTester;

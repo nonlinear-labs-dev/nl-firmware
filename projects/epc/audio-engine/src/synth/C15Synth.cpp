@@ -25,9 +25,9 @@ C15Synth::C15Synth(AudioEngineOptions* options)
 
   using namespace nltools::msg;
 
-  receive<nltools2::msg::SinglePresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onSinglePresetMessage));
-  receive<nltools2::msg::LayerPresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onLayerPresetMessage));
-  receive<nltools2::msg::SplitPresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onSplitPresetMessage));
+  receive<nltools::msg::SinglePresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onSinglePresetMessage));
+  receive<nltools::msg::LayerPresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onLayerPresetMessage));
+  receive<nltools::msg::SplitPresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onSplitPresetMessage));
 
   receive<UnmodulateableParameterChangedMessage>(EndPoint::AudioEngine,
                                                  sigc::mem_fun(this, &C15Synth::onUnmodulateableParameterMessage));
@@ -415,19 +415,19 @@ void C15Synth::queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m
   m_syncExternalsWaiter.notify_all();
 }
 
-void C15Synth::onSplitPresetMessage(const nltools2::msg::SplitPresetMessage& msg)
+void C15Synth::onSplitPresetMessage(const nltools::msg::SplitPresetMessage& msg)
 {
   const auto externalReset = m_dsp->onPresetMessage(msg);
   m_inputEventStage.requestExternalReset(externalReset);
 }
 
-void C15Synth::onSinglePresetMessage(const nltools2::msg::SinglePresetMessage& msg)
+void C15Synth::onSinglePresetMessage(const nltools::msg::SinglePresetMessage& msg)
 {
   const auto externalReset = m_dsp->onPresetMessage(msg);
   m_inputEventStage.requestExternalReset(externalReset);
 }
 
-void C15Synth::onLayerPresetMessage(const nltools2::msg::LayerPresetMessage& msg)
+void C15Synth::onLayerPresetMessage(const nltools::msg::LayerPresetMessage& msg)
 {
   const auto externalReset = m_dsp->onPresetMessage(msg);
   m_inputEventStage.requestExternalReset(externalReset);
