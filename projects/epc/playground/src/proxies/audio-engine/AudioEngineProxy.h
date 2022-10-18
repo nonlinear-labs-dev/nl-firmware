@@ -4,6 +4,7 @@
 #include <parameters/messaging/ParameterMessageFactory.h>
 #include <groups/MonoGroup.h>
 #include <tools/RecursionGuard.h>
+#include <nltools-2/include/PresetMessages.h>
 
 namespace UNDO
 {

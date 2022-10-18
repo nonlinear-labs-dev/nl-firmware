@@ -23,6 +23,7 @@
 #include "ae_poly_section.h"
 
 #include "midi_handle.h"
+#include "PresetMessages.h"
 
 #include <array>
 #include <Types.h>
@@ -70,6 +71,7 @@ constexpr static auto tNUM_HW = static_cast<int>(C15::Parameters::Hardware_Sourc
 class DSPInterface
 {
  public:
+  virtual ~DSPInterface() = default;
   //remove or move somewhere else
   //TCD and MIDI should not be known to DSP
 

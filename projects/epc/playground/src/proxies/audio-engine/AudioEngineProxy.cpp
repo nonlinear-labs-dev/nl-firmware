@@ -35,6 +35,7 @@
 #include <device-settings/GlobalLocalEnableSetting.h>
 #include <device-settings/NoteShift.h>
 #include <Application.h>
+#include <PresetMessages.h>
 
 AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, PlaycontrollerProxy &playProxy)
     : m_sendMidiSettingThrottler(Application::get().getMainContext(), std::chrono::milliseconds { 250 })

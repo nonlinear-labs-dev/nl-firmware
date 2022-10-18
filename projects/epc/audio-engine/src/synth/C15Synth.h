@@ -3,6 +3,7 @@
 #include "Synth.h"
 #include "c15-audio-engine/dsp_host_dual.h"
 #include <nltools/messaging/Message.h>
+#include "PresetMessages.h"
 #include <sigc++/sigc++.h>
 #include <thread>
 #include <condition_variable>
