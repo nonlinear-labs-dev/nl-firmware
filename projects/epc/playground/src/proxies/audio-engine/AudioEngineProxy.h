@@ -4,6 +4,7 @@
 #include <parameters/messaging/ParameterMessageFactory.h>
 #include <groups/MonoGroup.h>
 #include <tools/RecursionGuard.h>
+#include <nltools-2/include/PresetMessages.h>
 
 namespace UNDO
 {
@@ -65,13 +66,13 @@ class AudioEngineProxy : public sigc::trackable
 
   Parameter* findPhysicalControlParameterFromAudioEngineHWSourceID(int index);
 
-  static nltools::msg::LayerPresetMessage createLayerEditBufferMessage(const EditBuffer& eb);
-  static nltools::msg::SplitPresetMessage createSplitEditBufferMessage(const EditBuffer& eb);
-  static nltools::msg::SinglePresetMessage createSingleEditBufferMessage(const EditBuffer& eb);
+  static nltools2::msg::LayerPresetMessage createLayerEditBufferMessage(const EditBuffer& eb);
+  static nltools2::msg::SplitPresetMessage createSplitEditBufferMessage(const EditBuffer& eb);
+  static nltools2::msg::SinglePresetMessage createSingleEditBufferMessage(const EditBuffer& eb);
 
  private:
-  static void fillMonoPart(nltools::msg::ParameterGroups::MonoGroup& monoGroup, ParameterGroup* const& g);
-  static void fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup& unisonGroup, ParameterGroup* const& g);
+  static void fillMonoPart(nltools2::msg::ParameterGroups::MonoGroup& monoGroup, ParameterGroup* const& g);
+  static void fillUnisonPart(nltools2::msg::ParameterGroups::UnisonGroup& unisonGroup, ParameterGroup* const& g);
 
   void onMidiBankSelectionChanged(const Uuid& newMidiBankUuid);
   void setLastKnownMIDIProgramChangeNumber(int pc);

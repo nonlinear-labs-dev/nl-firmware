@@ -48,10 +48,6 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
   onConnectionEstablished(EndPoint::AudioEngine,
                           sigc::mem_fun(this, &AudioEngineProxy::connectSettingsToAudioEngineMessage));
 
-  receive<GenericSinglePresetMessage>(EndPoint::Playground, [](auto& ms) {
-    //TODO use like this! but not actually here!
-  });
-
   receive<HardwareSourcePollEnd>(EndPoint::Playground,
                                  [this](auto &msg)
                                  {
@@ -229,9 +225,9 @@ void forEachParameterInGroup(const EditBuffer *eb, const GroupId &group, tParame
   }
 }
 
-nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage(const EditBuffer &eb)
+nltools2::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage(const EditBuffer &eb)
 {
-  nltools::msg::SinglePresetMessage msg {};
+  nltools2::msg::SinglePresetMessage msg {};
   fillMessageWithGlobalParams(msg, eb);
 
   size_t mc = 0;
@@ -285,7 +281,7 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
   return msg;
 }
 
-void AudioEngineProxy::fillMonoPart(nltools::msg::ParameterGroups::MonoGroup &monoGroup, ParameterGroup *const &g)
+void AudioEngineProxy::fillMonoPart(nltools2::msg::ParameterGroups::MonoGroup &monoGroup, ParameterGroup *const &g)
 {
   auto from = g->getVoiceGroup();
 
@@ -323,7 +319,7 @@ void AudioEngineProxy::fillMonoPart(nltools::msg::ParameterGroups::MonoGroup &mo
   }
 }
 
-void AudioEngineProxy::fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup &unisonGroup, ParameterGroup *const &g)
+void AudioEngineProxy::fillUnisonPart(nltools2::msg::ParameterGroups::UnisonGroup &unisonGroup, ParameterGroup *const &g)
 {
   auto from = g->getVoiceGroup();
 
@@ -403,9 +399,9 @@ template <typename tMsg> void fillDualMessage(tMsg &msg, const EditBuffer &editB
   }
 }
 
-nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(const EditBuffer &eb)
+nltools2::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(const EditBuffer &eb)
 {
-  nltools::msg::SplitPresetMessage msg {};
+  nltools2::msg::SplitPresetMessage msg {};
   fillMessageWithGlobalParams(msg, eb);
   fillDualMessage(msg, eb);
 
@@ -439,9 +435,9 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
   return msg;
 }
 
-nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(const EditBuffer &eb)
+nltools2::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(const EditBuffer &eb)
 {
-  nltools::msg::LayerPresetMessage msg {};
+  nltools2::msg::LayerPresetMessage msg {};
   fillMessageWithGlobalParams(msg, eb);
   fillDualMessage(msg, eb);
 
