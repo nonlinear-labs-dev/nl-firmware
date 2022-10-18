@@ -10,9 +10,12 @@ namespace nltools2
   {
     namespace ParameterGroups
     {
-      constexpr auto numMacros = 6;
-      constexpr auto numHWSources = 10;
-      constexpr auto numRouters = numMacros * numHWSources;
+      constexpr auto numMacros = static_cast<size_t>(C15::Parameters::Macro_Controls::_LENGTH_) - 1; //not cool!
+      static_assert(numMacros == 6);
+      constexpr auto numHWSources = static_cast<size_t>(C15::Parameters::Hardware_Sources::_LENGTH_); //cool!
+      static_assert(numHWSources == 10);
+      constexpr auto numRouters = static_cast<size_t>(C15::Parameters::Hardware_Amounts::_LENGTH_);
+      static_assert(numRouters == (numMacros * numHWSources));
 
       struct Parameter
       {
