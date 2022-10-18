@@ -71,9 +71,7 @@ Glib::ustring MemoryInStream::read()
   if(error)
   {
     DebugLevel::error(__PRETTY_FUNCTION__, error->message);
-    auto message = error->message;
     g_error_free(error);
-    throw std::runtime_error(message);
   }
 
   if(!str)
