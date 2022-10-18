@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.2)
 
 project(nltools2)
 
-set(BUILD_SHARED_LIBS ON)
-
 file(GLOB_RECURSE HEADER_FILES ./include/*.h)
 file(GLOB_RECURSE SOURCE_FILES ./*.cpp)
 
