@@ -5,15 +5,13 @@ SET(AE_LIB_NAME ${PROJECT_NAME}-lib)
 
 find_systemd()
 enable_ccache()
-prepare_nltools()
-prepare_nltools_2()
+prepare_nltools_1_and_2()
 
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp)
 list(REMOVE_ITEM SOURCE_FILES EXCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 
 add_library(${AE_LIB_NAME} STATIC ${SOURCE_FILES})
-add_nltools(${AE_LIB_NAME})
-add_nltools_2(${AE_LIB_NAME})
+add_nltools_1_and_2(${AE_LIB_NAME})
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${AE_LIB_NAME})

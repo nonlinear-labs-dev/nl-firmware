@@ -3,8 +3,7 @@ project(playground)
 
 find_systemd()
 enable_ccache()
-prepare_nltools()
-prepare_nltools_2()
+prepare_nltools_1_and_2()
 
 # PRECONDITIONS
 find_package(PkgConfig REQUIRED)
@@ -110,8 +109,7 @@ set(${TEST_BINARY_NAME}_SOURCES ${UNIT_TEST_FILES})
 # TARGETS
 ## LIB
 add_library(${LIB_NAME} STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
-add_nltools(${LIB_NAME})
-add_nltools_2(${LIB_NAME})
+add_nltools_1_and_2(${LIB_NAME})
 
 foreach(lib ${LIBS})
   pkg_check_modules(${lib} REQUIRED ${lib})
