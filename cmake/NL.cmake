@@ -21,14 +21,6 @@ function(enable_ccache)
     endif ()
 endfunction()
 
-
-function(prepare_nltools_1_and_2)
-    set(CMAKE_INSTALL_RPATH
-            "${C15_INSTALL_PATH}/nltools"
-            "${C15_INSTALL_PATH}/nltools-2"
-            PARENT_SCOPE)
-endfunction()
-
 function(prepare_nltools)
     set(CMAKE_INSTALL_RPATH
             ${C15_INSTALL_PATH}/nltools
@@ -37,6 +29,7 @@ endfunction()
 
 function(prepare_nltools_2)
     set(CMAKE_INSTALL_RPATH
+            ${C15_INSTALL_PATH}/nltools
             ${C15_INSTALL_PATH}/nltools-2
             PARENT_SCOPE)
 endfunction()
@@ -49,9 +42,4 @@ endfunction()
 function(add_nltools_2 TARGET)
     target_link_libraries(${TARGET} PUBLIC nltools2)
     target_include_directories(${TARGET} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared/nltools-2/include/)
-endfunction()
-
-function(add_nltools_1_and_2 TARGET)
-    add_nltools(${TARGET})
-    add_nltools_2(${TARGET})
 endfunction()
