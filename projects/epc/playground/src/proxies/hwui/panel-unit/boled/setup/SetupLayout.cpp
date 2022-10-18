@@ -454,7 +454,7 @@ namespace NavTree
       children.emplace_back(new Aftertouch(this));
       if(Application::get().getDeviceInformation()->getItem<AftertouchCalibratedStatus>()->isCalibrated())
       {
-        children.emplace_back(new EnumSettingItem<AftertouchLegacyMode>(this, "Legacy Aftertouch mode"));
+        children.emplace_back(new EnumSettingItem<AftertouchLegacyMode>(this, "Legacy Aftertouch Mode"));
       }
       children.emplace_back(new BenderCurveSetting(this));
       children.emplace_back(new PedalSettings(this));
