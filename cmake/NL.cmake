@@ -22,7 +22,8 @@ function(enable_ccache)
 endfunction()
 
 function(prepare_nltools)
-    set(CMAKE_INSTALL_RPATH ${C15_INSTALL_PATH}/nltools PARENT_SCOPE)
+    string(JOIN " " CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_RPATH} ${C15_INSTALL_PATH}/nltools)
+    set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_RPATH} PARENT_SCOPE)
 endfunction()
 
 function(add_nltools TARGET)
@@ -31,7 +32,8 @@ function(add_nltools TARGET)
 endfunction()
 
 function(prepare_nltools_2)
-    set(CMAKE_INSTALL_RPATH ${C15_INSTALL_PATH}/nltools-2 PARENT_SCOPE)
+    string(JOIN " " CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_RPATH} ${C15_INSTALL_PATH}/nltools-2)
+    set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_RPATH} PARENT_SCOPE)
 endfunction()
 
 function(add_nltools_2 TARGET)
