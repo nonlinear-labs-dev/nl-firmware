@@ -370,6 +370,8 @@ function processDefinitions(result: Result) {
     }, new Array<string>()).join(",\n");
     result.parameters = Object.entries(parameterType).reduce((out: Array<string>, [key, entries]) => {
         out.push(`enum class ${key} {\n${indent}${[...entries, "_LENGTH_"].join(`,\n${indent}`)}\n};`);
+        const shift = entries[0] === "None" ? " - 1" : "";
+        out.push(`static constexpr unsigned num_of_${key} = static_cast<unsigned>(${key}::_LENGTH_)${shift};\n`);
         return out;
     }, []).join("\n");
     result.smoothers = Object.entries(smootherType).reduce((out: Array<string>, [key, entries]) => {
