@@ -29,7 +29,7 @@
 #include <set>
 #include <use-cases/EditBufferUseCases.h>
 #include <sync/JsonAdlSerializers.h>
-
+#include <use-cases/SplashScreenUseCases.h>
 #include <Application.h>
 
 constexpr static auto s_saveInterval = std::chrono::seconds(5);
@@ -937,8 +937,9 @@ PresetManagerMetadataSerializer::Progress PresetManager::getProgressDecorator()
   {
     return [](auto str) {
       auto hwui = Application::get().getHWUI();
-      if(hwui)
-        hwui->addSplashStatus(str);
+      auto settings = Application::get().getSettings();
+      SplashScreenUseCases ssuc(*hwui, *settings);
+      ssuc.addSplashScreenMessage(str);
     };
   }
   return Serializer::MockProgress;

@@ -932,8 +932,7 @@ public class ServerProxy {
 																	oReq.onreadystatechange = function() {
 																	if (oReq.readyState == 4 && oReq.status == 200) {
 																	var ret = oReq.responseText;
-																	var sub = "Invalid";
-																	if (ret.includes(sub)) {
+																	if (ret !== "") {
 																	alert(oReq.responseText);
 																	}
 																	}
@@ -953,8 +952,7 @@ public class ServerProxy {
 																		if (oReq.readyState == 4 && oReq.status == 200) {
 																		var ret = oReq.responseText;
 																		uploadDoneReceiver.@com.nonlinearlabs.client.world.overlay.html.setup.Setup.UploadDoneReceiver::onUploadFinished(Lcom/google/gwt/xhr/client/XMLHttpRequest;)(oReq);
-																		var sub = "Invalid";
-																		if (ret.includes(sub)) {
+																		if (ret !== "") {
 																		alert(oReq.responseText);
 																		}
 																		}

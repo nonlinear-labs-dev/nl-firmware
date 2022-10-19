@@ -6,17 +6,17 @@
 
 TEST_CASE("File in Stream")
 {
-  CHECK(FileInStream::doesPathEndWithGZ("/tmp/test.xml.tar.gz") == true);
-  CHECK(FileInStream::doesPathEndWithGZ("/tmp/test.xml.tar.gez") == false);
-  CHECK(FileInStream::doesPathEndWithGZ("gz./tmp/test.xml.tar.gz") == true);
-  CHECK(FileInStream::doesPathEndWithGZ("/tmp/gz.test.xml.gz.tar.gz.gez") == false);
-  CHECK(FileInStream::doesPathEndWithGZ("") == false);
+  CHECK(StringTools::hasEnding("/tmp/test.xml.tar.gz", ".gz") == true);
+  CHECK(StringTools::hasEnding("/tmp/test.xml.tar.gez", ".gz") == false);
+  CHECK(StringTools::hasEnding("gz./tmp/test.xml.tar.gz", ".gz") == true);
+  CHECK(StringTools::hasEnding("/tmp/gz.test.xml.gz.tar.gz.gez", ".gz") == false);
+  CHECK(StringTools::hasEnding("", ".gz") == false);
 
-  CHECK(FileInStream::doesPathEndWithZip("/tmp/test.xml.tar.zip") == true);
-  CHECK(FileInStream::doesPathEndWithZip("/tmp/test.xml.tar.zp") == false);
-  CHECK(FileInStream::doesPathEndWithZip(".zip./tmp/test.xml.tar.zip") == true);
-  CHECK(FileInStream::doesPathEndWithZip("/tmp/zip.test.xml.zip.tar.zip.zeip") == false);
-  CHECK(FileInStream::doesPathEndWithZip("") == false);
+  CHECK(StringTools::hasEnding("/tmp/test.xml.tar.zip", ".zip") == true);
+  CHECK(StringTools::hasEnding("/tmp/test.xml.tar.zp", ".zip") == false);
+  CHECK(StringTools::hasEnding(".zip./tmp/test.xml.tar.zip", ".zip") == true);
+  CHECK(StringTools::hasEnding("/tmp/zip.test.xml.zip.tar.zip.zeip", ".zip") == false);
+  CHECK(StringTools::hasEnding("", ".zip") == false);
 }
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "3343 - Can't Load Backup")

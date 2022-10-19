@@ -21,6 +21,7 @@
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
 #include <device-settings/DateTimeAdjustment.h>
+#include "use-cases/SplashScreenUseCases.h"
 
 PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, PresetManager& presetManager,
                                            AudioEngineProxy& aeProxy, Settings& settings)
@@ -110,22 +111,25 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
                 auto* buffer = http->getFlattenedBuffer();
 
                 PresetManagerUseCases useCase(m_presetManager, m_settings);
-                auto start = []()
+                auto hwui = Application::get().getHWUI();
+                auto* settings = &m_settings;
+
+                auto start = [hwui, settings]()
                 {
-                  auto hwui = Application::get().getHWUI();
-                  hwui->startSplash();
+                  SplashScreenUseCases ssuc(*hwui, *settings);
+                  ssuc.startSplashScreen();
                 };
 
-                auto addStatus = [](auto str)
+                auto addStatus = [hwui, settings](auto str)
                 {
-                  auto hwui = Application::get().getHWUI();
-                  hwui->addSplashStatus(str);
+                  SplashScreenUseCases ssuc(*hwui, *settings);
+                  ssuc.addSplashScreenMessage(str);
                 };
 
-                auto finish = []()
+                auto finish = [hwui, settings]()
                 {
-                  auto hwui = Application::get().getHWUI();
-                  hwui->finishSplash();
+                  SplashScreenUseCases ssuc(*hwui, *settings);
+                  ssuc.finishSplashScreen();
                 };
 
                 auto ret = useCase.importBackupFile(buffer, { start, addStatus, finish }, m_aeProxy);
@@ -208,7 +212,10 @@ bool PresetManagerActions::handleRequest(const Glib::ustring& path, std::shared_
     {
       auto hwui = Application::get().getHWUI();
       auto settings = Application::get().getSettings();
-      hwui->startSplash();
+
+      SplashScreenUseCases ssuc(*hwui, *settings);
+      ssuc.startSplashScreen();
+
       const auto time = TimeTools::getDisplayStringFromStamp(
           TimeTools::getAdjustedTimestamp(settings->getSetting<DateTimeAdjustment>()));
       const auto timeWithoutWhitespaces = StringTools::replaceAll(time, " ", "-");
@@ -218,7 +225,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring& path, std::shared_
       ExportBackupEditor::writeBackupToStream(stream);
       httpRequest->respondComplete(SOUP_STATUS_OK, "application/zip", { { "Content-Disposition", disposition } },
                                    stream.exhaust());
-      hwui->finishSplash();
+      ssuc.finishSplashScreen();
       return true;
     }
   }

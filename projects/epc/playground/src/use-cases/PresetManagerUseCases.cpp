@@ -988,11 +988,11 @@ Glib::ustring PresetManagerUseCases::exitCodeToErrorMessage(PresetManagerUseCase
 {
     switch(code) {
         case ImportExitCode::PresetManagerLocked:
-            return "Invalid PresetManager state! The PresetManager is locked..";
+            return "C15 is currently busy. Please try again. Contact support if you need assistance.";
         case ImportExitCode::InvalidFile:
-            return "Invalid File! Please select a correct xml.tar.gz backup file..";
+            return "Invalid file! Please select a correct xml.tar.gz backup file. Contact support if you need assistance.";
         case ImportExitCode::UnsupportedVersion:
-            return "Invalid Version! Unsupported File Version in uploaded Backup-file. The backup was created with a newer firmware. Please update your C15.";
+            return "Invalid version! Unsupported file version in uploaded backup file. Backup was created with a newer firmware. Please update the C15 to the latest software version.";
         default:
         case ImportExitCode::OK:
             return "";

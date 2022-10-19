@@ -2,6 +2,7 @@
 #include <device-settings/DebugLevel.h>
 #include <tools/FileSystem.h>
 #include <giomm/file.h>
+#include "tools/StringTools.h"
 
 static bool doesZipFileExist(const Glib::ustring &fileName)
 {
@@ -19,8 +20,8 @@ FileInStream::FileInStream(const Glib::ustring &fileName, bool tryZip)
 
   if(tryZip)
   {
-    const auto isZip = doesPathEndWithZip(fileName);
-    const auto isGZ = doesPathEndWithGZ(fileName);
+    const auto isZip = StringTools::hasEnding(fileName, ".zip");
+    const auto isGZ = StringTools::hasEnding(fileName, ".gz");
     const auto existsAsIs = FileSystem::doesFileExist(fileName);
     const auto zipOrGZExists = existsAsIs && (isZip || isGZ);
 
@@ -140,28 +141,4 @@ std::vector<uint8_t> FileInStream::readAll()
 bool FileInStream::eof() const
 {
   return m_eof;
-}
-
-bool FileInStream::doesPathEndWithZip(const Glib::ustring &fileName)
-{
-  auto suffix = std::string(".zip");
-  const auto len = suffix.length();
-
-  if(fileName.length() < len)
-    return false;
-
-  auto charsFromFile = fileName.substr(fileName.length() - len);
-  return charsFromFile == ".zip";
-}
-
-bool FileInStream::doesPathEndWithGZ(const Glib::ustring &fileName)
-{
-  auto suffix = std::string(".gz");
-  const auto len = suffix.length();
-
-  if(fileName.length() < len)
-    return false;
-
-  auto charsFromFile = fileName.substr(fileName.length() - len);
-  return charsFromFile == ".gz";
 }
