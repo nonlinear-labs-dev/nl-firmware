@@ -297,7 +297,8 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
       m_modeOverlay->highlight<SelectedMacroControlsHWSourceSlider>();
       m_modeOverlay->highlight<SelectedMacroControlsHWSourceValue>();
 
-      findControlOfType<HWSourceAmountCarousel>()->highlightSelected();
+      if(auto carousel = findControlOfType<HWSourceAmountCarousel>())
+        carousel->highlightSelected();
       break;
 
     case Mode::PlayControlSelection:
@@ -312,7 +313,8 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
       m_modeOverlay->addControl(new SelectedMacroControlsHWSourceAmount(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)));
       m_modeOverlay->addControl(new DottedLine(Rect(60, 27, 13, 1)));
       highlightButtonWithCaption("HW Sel");
-      findControlOfType<HWSourceAmountCarousel>()->highlightSelected();
+      if(auto carousel = findControlOfType<HWSourceAmountCarousel>())
+        carousel->highlightSelected();
       break;
 
     case Mode::PlayControlAmount:
@@ -349,6 +351,11 @@ void MacroControlParameterLayout2::selectSmoothingParameterForMC()
 Control *MacroControlParameterLayout2::createMCAssignmentIndicator()
 {
   return new MCAssignedIndicator(Rect(25, 15, 52, 24), getCurrentParameter());
+}
+
+Overlay *MacroControlParameterLayout2::getOverlay()
+{
+  return m_modeOverlay;
 }
 
 MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
@@ -422,9 +429,7 @@ void MacroControlParameterEditLayout2::setMode(Mode desiredMode)
   getMenu()->highlightSelectedButton();
 
   for(auto &button : getControls<Button>())
-  {
     remove(button.get());
-  }
 
   addControl(new Button("", Buttons::BUTTON_A));
   addControl(new Button("", Buttons::BUTTON_B));
@@ -432,12 +437,23 @@ void MacroControlParameterEditLayout2::setMode(Mode desiredMode)
 
   if(auto vgIndi = findControlOfType<VoiceGroupIndicator>())
     remove(vgIndi.get());
+
+  if(auto slider = findControlOfType<SelectedMacroControlsHWSourceSlider>())
+    remove(slider.get());
+
+  if(auto overlay = getOverlay())
+    overlay->clear();
+
+  addControl(createParameterValueControl())->setHighlight(true);
+  if(auto name = findControlOfType<ParameterNameLabel>())
+    name->setHighlight(true);
 }
 
 Control *MacroControlParameterEditLayout2::createMCAssignmentIndicator()
 {
   return nullptr;
 }
+
 bool MacroControlParameterEditLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   if(super1::onButton(i, down, modifiers))

@@ -29,6 +29,7 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
   virtual void setMode(Mode desiredMode);
 
  protected:
+  Overlay* getOverlay();
   void setButtonText(Buttons b, const std::string &s);
   std::string getButtonText(Buttons b) const;
   void setButtonAText(const std::string &s);
