@@ -10,12 +10,10 @@ namespace nltools
   {
     namespace ParameterGroups
     {
-      constexpr auto numMacros = static_cast<size_t>(C15::Parameters::Macro_Controls::_LENGTH_) - 1; //not cool!
-      static_assert(numMacros == 6);
-      constexpr auto numHWSources = static_cast<size_t>(C15::Parameters::Hardware_Sources::_LENGTH_); //cool!
-      static_assert(numHWSources == 10);
-      constexpr auto numRouters = static_cast<size_t>(C15::Parameters::Hardware_Amounts::_LENGTH_);
-      static_assert(numRouters == (numMacros * numHWSources));
+      static_assert(C15::Parameters::num_of_Macro_Controls == 6);
+      static_assert(C15::Parameters::num_of_Hardware_Sources == 10);
+      static_assert(C15::Parameters::num_of_Hardware_Amounts
+                    == (C15::Parameters::num_of_Macro_Controls * C15::Parameters::num_of_Hardware_Sources));
 
       struct Parameter
       {
@@ -141,14 +139,14 @@ namespace nltools
         return nltools::msg::MessageType::SinglePreset;
       }
 
-      std::array<ParameterGroups::MacroParameter, ParameterGroups::numMacros> macros;
-      std::array<ParameterGroups::UnmodulateableParameter, ParameterGroups::numMacros> macrotimes;
+      std::array<ParameterGroups::MacroParameter, C15::Parameters::num_of_Macro_Controls> macros;
+      std::array<ParameterGroups::UnmodulateableParameter, C15::Parameters::num_of_Macro_Times> macrotimes;
 
       std::array<ParameterGroups::ModulateableParameter, 169> modulateables;
       std::array<ParameterGroups::UnmodulateableParameter, 29> unmodulateables;
 
-      std::array<ParameterGroups::HardwareSourceParameter, ParameterGroups::numHWSources> hwsources;
-      std::array<ParameterGroups::HardwareAmountParameter, ParameterGroups::numRouters> hwamounts;
+      std::array<ParameterGroups::HardwareSourceParameter, C15::Parameters::num_of_Hardware_Sources> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, C15::Parameters::num_of_Hardware_Amounts> hwamounts;
 
       ParameterGroups::UnisonGroup unison;
       ParameterGroups::MonoGroup mono;
@@ -195,11 +193,11 @@ namespace nltools
 
       ParameterGroups::MasterGroup master;
 
-      std::array<ParameterGroups::HardwareSourceParameter, ParameterGroups::numHWSources> hwsources;
-      std::array<ParameterGroups::HardwareAmountParameter, ParameterGroups::numRouters> hwamounts;
+      std::array<ParameterGroups::HardwareSourceParameter, C15::Parameters::num_of_Hardware_Sources> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, C15::Parameters::num_of_Hardware_Amounts> hwamounts;
 
-      std::array<ParameterGroups::MacroParameter, ParameterGroups::numMacros> macros;
-      std::array<ParameterGroups::UnmodulateableParameter, ParameterGroups::numMacros> macrotimes;
+      std::array<ParameterGroups::MacroParameter, C15::Parameters::num_of_Macro_Controls> macros;
+      std::array<ParameterGroups::UnmodulateableParameter, C15::Parameters::num_of_Macro_Times> macrotimes;
 
       ParameterGroups::GlobalParameter scaleBaseKey;
       std::array<ParameterGroups::ModulateableParameter, 12> scaleOffsets;
@@ -234,11 +232,11 @@ namespace nltools
       {
         return nltools::msg::MessageType::LayerPreset;
       }
-      std::array<ParameterGroups::HardwareSourceParameter, ParameterGroups::numHWSources> hwsources;
-      std::array<ParameterGroups::HardwareAmountParameter, ParameterGroups::numRouters> hwamounts;
+      std::array<ParameterGroups::HardwareSourceParameter, C15::Parameters::num_of_Hardware_Sources> hwsources;
+      std::array<ParameterGroups::HardwareAmountParameter, C15::Parameters::num_of_Hardware_Amounts> hwamounts;
 
-      std::array<ParameterGroups::MacroParameter, ParameterGroups::numMacros> macros;
-      std::array<ParameterGroups::UnmodulateableParameter, ParameterGroups::numMacros> macrotimes;
+      std::array<ParameterGroups::MacroParameter, C15::Parameters::num_of_Macro_Controls> macros;
+      std::array<ParameterGroups::UnmodulateableParameter, C15::Parameters::num_of_Macro_Times> macrotimes;
 
       std::array<std::array<ParameterGroups::ModulateableParameter, 169>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulateableParameter, 29>, 2> unmodulateables;
