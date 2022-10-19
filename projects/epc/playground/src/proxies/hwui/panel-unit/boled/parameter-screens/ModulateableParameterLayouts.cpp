@@ -184,9 +184,6 @@ void ModulateableParameterSelectLayout2::fixModeIfNecessary(const Parameter *p)
 
 void ModulateableParameterSelectLayout2::copyFrom(Layout *other)
 {
-  if(auto p = dynamic_cast<ModulateableParameterSelectLayout2 *>(other))
-    setMode(p->m_mode);
-
   super1::copyFrom(other);
   super2::copyFrom(other);
 }
@@ -195,6 +192,8 @@ void ModulateableParameterSelectLayout2::init()
 {
   super1::init();
   super2::init();
+
+  highlight<ParameterNameLabel>();
 }
 
 bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modifiers)

@@ -15,5 +15,7 @@ public class AmountsCol3 extends AmountsCol {
 		addChild(new ModulationRoutingParameter(this, 282));
 		addChild(new RibbonModulationRoutingParameter(this, 287));
 		addChild(new RibbonModulationRoutingParameter(this, 292));
+		addChild(new RibbonModulationRoutingParameter(this, 415));
+		addChild(new RibbonModulationRoutingParameter(this, 421));
 	}
 }

@@ -31,11 +31,10 @@ bool MCAssignedIndicator::redraw(FrameBuffer& fb)
   if(m_parameter)
   {
     drawBackground(fb);
-  }
-
-  if(!m_parameter->getTargets().empty())
-  {
-    drawNonLEDTargets(fb);
+    if(!m_parameter->getTargets().empty())
+    {
+      drawNonLEDTargets(fb);
+    }
   }
 
   return true;
@@ -155,45 +154,49 @@ void MCAssignedIndicator::drawLayer(FrameBuffer& fb, const AffectedGroups& mods)
 
 void MCAssignedIndicator::drawNonLEDTargets(FrameBuffer& fb)
 {
-  auto targets = m_parameter->getTargets();
-
-  AffectedGroups mods {};
-
-  mods.currentHWUIVG = Application::get().getVGManager()->getCurrentVoiceGroup();
-
-  auto color = isHighlight() ? FrameBufferColors::C128 : FrameBufferColors::C204;
-
-  m_middleRowLabel->setText(StringAndSuffix { "", 0 });
-  m_middleRowLabel->setFontColor(color);
-
-  for(auto& t : targets)
+  if(m_parameter)
   {
-    auto groupName = t->getParentGroup()->getID().getName();
-    mods.scale |= groupName == "Scale";
-    mods.master |= groupName == "Master";
 
-    if(t->getID().getVoiceGroup() != VoiceGroup::Global)
+    auto targets = m_parameter->getTargets();
+
+    AffectedGroups mods {};
+
+    mods.currentHWUIVG = Application::get().getVGManager()->getCurrentVoiceGroup();
+
+    auto color = isHighlight() ? FrameBufferColors::C128 : FrameBufferColors::C204;
+
+    m_middleRowLabel->setText(StringAndSuffix { "", 0 });
+    m_middleRowLabel->setFontColor(color);
+
+    for(auto& t : targets)
     {
-      auto index = t->getID().getVoiceGroup() == VoiceGroup::I ? 0 : 1;
-      mods.unison.at(index) |= groupName == "Unison";
-      mods.mono.at(index) |= groupName == "Mono";
-      mods.part.at(index) |= groupName == "Part";
-      mods.part.at(index) |= groupName == "Split";
-    }
-  }
+      auto groupName = t->getParentGroup()->getID().getName();
+      mods.scale |= groupName == "Scale";
+      mods.master |= groupName == "Master";
 
-  switch(Application::get().getPresetManager()->getEditBuffer()->getType())
-  {
-    case SoundType::Split:
-      drawSplit(fb, mods);
-      break;
-    case SoundType::Layer:
-      drawLayer(fb, mods);
-      break;
-    default:
-    case SoundType::Single:
-      drawSingle(fb, mods);
-      break;
+      if(t->getID().getVoiceGroup() != VoiceGroup::Global)
+      {
+        auto index = t->getID().getVoiceGroup() == VoiceGroup::I ? 0 : 1;
+        mods.unison.at(index) |= groupName == "Unison";
+        mods.mono.at(index) |= groupName == "Mono";
+        mods.part.at(index) |= groupName == "Part";
+        mods.part.at(index) |= groupName == "Split";
+      }
+    }
+
+    switch(Application::get().getPresetManager()->getEditBuffer()->getType())
+    {
+      case SoundType::Split:
+        drawSplit(fb, mods);
+        break;
+      case SoundType::Layer:
+        drawLayer(fb, mods);
+        break;
+      default:
+      case SoundType::Single:
+        drawSingle(fb, mods);
+        break;
+    }
   }
 }
 

@@ -42,6 +42,10 @@ public class PhysicalControlParameterModel extends BasicParameterModel {
                 return 404;
             case 289:
                 return 405;
+            case 409:
+                return 410;
+            case 411:
+                return 412;
         }
         return -1;
     }

@@ -14,9 +14,9 @@
 #include <device-settings/SplitPointSyncParameters.h>
 #include <presets/PresetManager.h>
 
-SettingsUseCases::SettingsUseCases(Settings &s)
+SettingsUseCases::SettingsUseCases(Settings& s)
     : m_settings { s }
-    , m_focusAndModeSetting{ *s.getSetting<FocusAndModeSetting>() }
+    , m_focusAndModeSetting { *s.getSetting<FocusAndModeSetting>() }
 {
 }
 
@@ -30,6 +30,8 @@ void SettingsUseCases::setMappingsToHighRes()
   static auto p4 = m_settings.getSetting<PedalCCMapping<4>>();
   static auto r1 = m_settings.getSetting<RibbonCCMapping<1>>();
   static auto r2 = m_settings.getSetting<RibbonCCMapping<2>>();
+  static auto r3 = m_settings.getSetting<RibbonCCMapping<3>>();
+  static auto r4 = m_settings.getSetting<RibbonCCMapping<4>>();
   static auto at = m_settings.getSetting<AftertouchCCMapping>();
   static auto be = m_settings.getSetting<BenderCCMapping>();
 
@@ -41,7 +43,9 @@ void SettingsUseCases::setMappingsToHighRes()
   p4->set(PedalCC::CC23);
   r1->set(RibbonCC::CC24);
   r2->set(RibbonCC::CC25);
-  at->set(AftertouchCC::CC26);
+  r3->set(RibbonCC::CC26);
+  r4->set(RibbonCC::CC27);
+  at->set(AftertouchCC::CC28);
   be->set(BenderCC::Pitchbend);
 }
 
@@ -55,6 +59,8 @@ void SettingsUseCases::setMappingsToClassicMidi()
   static auto p4 = m_settings.getSetting<PedalCCMapping<4>>();
   static auto r1 = m_settings.getSetting<RibbonCCMapping<1>>();
   static auto r2 = m_settings.getSetting<RibbonCCMapping<2>>();
+  static auto r3 = m_settings.getSetting<RibbonCCMapping<3>>();
+  static auto r4 = m_settings.getSetting<RibbonCCMapping<4>>();
   static auto at = m_settings.getSetting<AftertouchCCMapping>();
   static auto be = m_settings.getSetting<BenderCCMapping>();
 
@@ -66,6 +72,8 @@ void SettingsUseCases::setMappingsToClassicMidi()
   p4->set(PedalCC::CC23);
   r1->set(RibbonCC::CC24);
   r2->set(RibbonCC::CC25);
+  r3->set(RibbonCC::CC26);
+  r4->set(RibbonCC::CC27);
   at->set(AftertouchCC::ChannelPressure);
   be->set(BenderCC::Pitchbend);
 }
@@ -82,6 +90,19 @@ void SettingsUseCases::updateRoutingAspect(int entry, int aspect, bool value)
   }
 }
 
+void SettingsUseCases::toggleRibbonSelection()
+{
+  if(m_settings.getSetting<SelectedRibbonsSetting>()->get() == SelectedRibbons::Ribbon1_2)
+    setRibbonSelection(SelectedRibbons::Ribbon3_4);
+  else
+    setRibbonSelection(SelectedRibbons::Ribbon1_2);
+}
+
+void SettingsUseCases::setRibbonSelection(SelectedRibbons ribbonsToSelect)
+{
+  m_settings.getSetting<SelectedRibbonsSetting>()->set(ribbonsToSelect);
+}
+
 void SettingsUseCases::panicAudioEngine()
 {
   using namespace nltools::msg;
@@ -96,7 +117,6 @@ void SettingsUseCases::setRoutingAspectsForEntry(nltools::msg::Setting::MidiSett
     s->setAllAspectsForIndex(index, b);
   }
 }
-
 
 void SettingsUseCases::setAllRoutingEntries(bool state)
 {
@@ -150,17 +170,17 @@ void SettingsUseCases::setFocusAndMode(const FocusAndMode& focusAndMode)
   m_focusAndModeSetting.set(focusAndMode);
 }
 
-void SettingsUseCases::setUIFocus(const UIFocus &focus)
+void SettingsUseCases::setUIFocus(const UIFocus& focus)
 {
   m_focusAndModeSetting.set(focus);
 }
 
-void SettingsUseCases::setUIMode(const UIMode &mode)
+void SettingsUseCases::setUIMode(const UIMode& mode)
 {
   m_focusAndModeSetting.set(mode);
 }
 
-void SettingsUseCases::setUIDetail(const UIDetail &detail)
+void SettingsUseCases::setUIDetail(const UIDetail& detail)
 {
   auto focusAndMode = m_focusAndModeSetting.getState();
   focusAndMode.detail = detail;

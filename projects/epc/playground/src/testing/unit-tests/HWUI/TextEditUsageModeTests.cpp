@@ -44,4 +44,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"TextEditUsageMode", "[HWUI")
 
   mode.handleShiftButton(false);
   g_assert_true(mode.getLayout() == TextEditUsageMode::Layout::Shift);
+
+  CHECK(true);
 }

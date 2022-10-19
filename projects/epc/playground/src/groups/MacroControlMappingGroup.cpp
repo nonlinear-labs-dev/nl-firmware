@@ -31,8 +31,10 @@ void MacroControlMappingGroup::init()
   auto pedal4 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getPedal4ParameterID());
   auto pitchbend = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getPitchbendParameterID());
   auto aftertouch = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getAftertouchParameterID());
-  auto ribbon1 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getUpperRibbonParameterID());
-  auto ribbon2 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getLowerRibbonParameterID());
+  auto ribbon1 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getUpperRibbon1ParameterID());
+  auto ribbon2 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getLowerRibbon2ParameterID());
+  auto ribbon3 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getUpperRibbon3ParameterID());
+  auto ribbon4 = m_hw->findAndCastParameterByID<PhysicalControlParameter>(HardwareSourcesGroup::getLowerRibbon4ParameterID());
 
   using namespace C15::PID;
   appendParameter(new ModulationRoutingParameter(this, { Pedal_1_to_MC_A, VoiceGroup::Global }, pedal1, mc_a));
@@ -83,6 +85,18 @@ void MacroControlMappingGroup::init()
   appendParameter(new ModulationRoutingParameter(this, { Ribbon_2_to_MC_D, VoiceGroup::Global }, ribbon2, mc_d));
   appendParameter(new ModulationRoutingParameter(this, { Ribbon_2_to_MC_E, VoiceGroup::Global }, ribbon2, mc_e));
   appendParameter(new ModulationRoutingParameter(this, { Ribbon_2_to_MC_F, VoiceGroup::Global }, ribbon2, mc_f));
+  appendParameter(new ModulationRoutingParameter(this, { Ribbon_3_to_MC_A, VoiceGroup::Global}, ribbon3, mc_a));
+  appendParameter(new ModulationRoutingParameter(this, { Ribbon_3_to_MC_B, VoiceGroup::Global}, ribbon3, mc_b));
+  appendParameter(new ModulationRoutingParameter(this, { Ribbon_3_to_MC_C, VoiceGroup::Global}, ribbon3, mc_c));
+  appendParameter(new ModulationRoutingParameter(this, { Ribbon_3_to_MC_D, VoiceGroup::Global}, ribbon3, mc_d));
+  appendParameter(new ModulationRoutingParameter(this, { Ribbon_3_to_MC_E, VoiceGroup::Global}, ribbon3, mc_e));
+  appendParameter(new ModulationRoutingParameter(this, { Ribbon_3_to_MC_F, VoiceGroup::Global}, ribbon3, mc_f));
+  appendParameter(new ModulationRoutingParameter(this, { Ribbon_4_to_MC_A, VoiceGroup::Global}, ribbon4, mc_a));
+  appendParameter(new ModulationRoutingParameter(this, { Ribbon_4_to_MC_B, VoiceGroup::Global}, ribbon4, mc_b));
+  appendParameter(new ModulationRoutingParameter(this, { Ribbon_4_to_MC_C, VoiceGroup::Global}, ribbon4, mc_c));
+  appendParameter(new ModulationRoutingParameter(this, { Ribbon_4_to_MC_D, VoiceGroup::Global}, ribbon4, mc_d));
+  appendParameter(new ModulationRoutingParameter(this, { Ribbon_4_to_MC_E, VoiceGroup::Global}, ribbon4, mc_e));
+  appendParameter(new ModulationRoutingParameter(this, { Ribbon_4_to_MC_F, VoiceGroup::Global}, ribbon4, mc_f));
 }
 
 MacroControlMappingGroup::tModRoutingParams

@@ -162,6 +162,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 
 		presenter.showContextMenu = false;
 		presenter.isMacroControl = false;
+		presenter.relative = false;
 
 		if (e instanceof ModulateableParameterModel)
 			updatePresenter((ModulateableParameterModel) e);
@@ -441,7 +442,8 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			RibbonParameterModel r = (RibbonParameterModel) p;
 			presenter.drawCenterReturnIndicator = r.mode.getValue() == ReturnModes.return_to_center;
 			presenter.drawZeroReturnIndicator = false;
-			presenter.isReturning = r.mode.getValue() != ReturnModes.non_return;
+			presenter.isReturning = r.mode.getValue() != ReturnModes.non_return;		
+			presenter.relative = r.isRelative();
 		}
 
 		if (p instanceof PedalParameterModel) {

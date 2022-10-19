@@ -9,13 +9,6 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
   MacroControlParameterLayout2();
   ~MacroControlParameterLayout2() override;
 
-  void copyFrom(Layout *other) override;
-
- protected:
-  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
-  bool onRotary(int inc, ButtonModifiers modifiers) override;
-  Parameter *getCurrentEditParameter() const override;
-
   enum class Mode
   {
     MacroControlValue,
@@ -24,11 +17,19 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
     PlayControlAmount
   };
 
-  void toggleMode(Mode desiredMode);
-  virtual void setMode(Mode desiredMode);
+  void copyFrom(Layout *other) override;
   Mode getMode() const;
 
  protected:
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
+  bool onRotary(int inc, ButtonModifiers modifiers) override;
+  Parameter *getCurrentEditParameter() const override;
+
+  void toggleMode(Mode desiredMode);
+  virtual void setMode(Mode desiredMode);
+
+ protected:
+  Overlay* getOverlay();
   void setButtonText(Buttons b, const std::string &s);
   std::string getButtonText(Buttons b) const;
   void setButtonAText(const std::string &s);
@@ -46,6 +47,7 @@ class MacroControlParameterLayout2 : public virtual ParameterLayout2
 
   Mode m_mode = Mode::MacroControlValue;
   Overlay *m_modeOverlay = nullptr;
+
   void selectSmoothingParameterForMC();
 };
 
@@ -55,6 +57,7 @@ class MacroControlParameterSelectLayout2 : public ParameterSelectLayout2, public
   typedef ParameterSelectLayout2 super1;
   typedef MacroControlParameterLayout2 super2;
   MacroControlParameterSelectLayout2();
+  MacroControlParameterSelectLayout2(MacroControlParameter* tgt, PhysicalControlParameter* src);
 
  protected:
   void init() override;
@@ -71,7 +74,6 @@ class MacroControlParameterEditLayout2 : public ParameterEditLayout2, public Mac
   typedef MacroControlParameterLayout2 super2;
 
   MacroControlParameterEditLayout2();
-
  protected:
   void setMode(Mode desiredMode) override;
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;

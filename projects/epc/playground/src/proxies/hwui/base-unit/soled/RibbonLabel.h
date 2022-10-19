@@ -5,6 +5,7 @@
 
 class PhysicalControlParameter;
 class Application;
+class Setting;
 
 class RibbonLabel : public Label
 {
@@ -20,14 +21,17 @@ class RibbonLabel : public Label
   RibbonLabel(const RibbonLabel &other) = delete;
   RibbonLabel &operator=(const RibbonLabel &) = delete;
 
+  std::shared_ptr<Font> getFont() const override;
+
  protected:
   int getXOffset() const override;
+  void onRibbonSelectionChanged(const Setting *s);
+  int getFontHeight() const override;
 
  private:
   Glib::ustring crop(const Glib::ustring &text) const;
-  Glib::ustring binarySearchLength(const Glib::ustring &text, unsigned long min, unsigned long max) const;
 
-  using tRibbonEnables = std::pair<bool, bool>;
+  using tRibbonEnables = std::tuple<bool, bool, bool, bool>;
   tRibbonEnables getRibbonEnabledStates() const;
 
   std::vector<sigc::connection> m_signalsChanged;

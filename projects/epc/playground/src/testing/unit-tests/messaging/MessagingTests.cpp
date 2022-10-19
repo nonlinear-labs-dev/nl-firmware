@@ -9,7 +9,6 @@
 using namespace nltools::msg;
 using namespace std::chrono_literals;
 
-#warning "This Test is unreliable and leads to hung playground-test process if unlucky"
 TEST_CASE_METHOD(TestHelper::MainContextFixture, "Notify on discovery", "[Messaging][nltools]")
 {
   TestHelper::ScopedMessagingConfiguration scopeEndPoint {
@@ -41,7 +40,6 @@ TEST_CASE_METHOD(TestHelper::MainContextFixture, "Send Receive", "[Messaging][nl
   c.disconnect();
 }
 
-#warning "unreliable test-case I aborted after 7 Minutes"
 TEST_CASE_METHOD(TestHelper::MainContextFixture, "No packet lost if bombed", "[Messaging][nltools]")
 {
   REQUIRE(g_main_context_default() != nullptr);

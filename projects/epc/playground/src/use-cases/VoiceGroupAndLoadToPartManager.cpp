@@ -4,7 +4,7 @@
 
 VoiceGroupAndLoadToPartManager::VoiceGroupAndLoadToPartManager(EditBuffer &eb)
     : m_editBuffer { eb }
-    , m_voiceGoupSignal {}
+    , m_voiceGroupSignal {}
     , m_currentVoiceGroup { VoiceGroup::I }
 {
 }
@@ -29,15 +29,20 @@ void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroupSilent(VoiceGroup vg)
 void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(UNDO::Transaction *t, VoiceGroup v,
                                                           bool shouldSendParameterSelectionSignal)
 {
+  if(v == VoiceGroup::Global)
+    return;
+
   auto swap = UNDO::createSwapData(v);
-  t->addSimpleCommand([this, swap, shouldSendParameterSelectionSignal](auto) {
-                                  auto oldVG = m_currentVoiceGroup;
-                                  swap->swapWith(m_currentVoiceGroup);
-                                  m_voiceGoupSignal.send(m_currentVoiceGroup);
-                                  if(shouldSendParameterSelectionSignal)
-                                    m_editBuffer.fakeParameterSelectionSignal(oldVG, m_currentVoiceGroup);
-                                  m_editBuffer.onChange(UpdateDocumentContributor::ChangeFlags::Generic);
-                                });
+  t->addSimpleCommand(
+      [this, swap, shouldSendParameterSelectionSignal](auto)
+      {
+        auto oldVG = m_currentVoiceGroup;
+        swap->swapWith(m_currentVoiceGroup);
+        m_voiceGroupSignal.send(m_currentVoiceGroup);
+        if(shouldSendParameterSelectionSignal)
+          m_editBuffer.fakeParameterSelectionSignal(oldVG, m_currentVoiceGroup);
+        m_editBuffer.onChange(UpdateDocumentContributor::ChangeFlags::Generic);
+      });
 }
 
 void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction,
@@ -74,7 +79,7 @@ void VoiceGroupAndLoadToPartManager::toggleCurrentVoiceGroupAndUpdateParameterSe
 
 sigc::connection VoiceGroupAndLoadToPartManager::onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb)
 {
-  return m_voiceGoupSignal.connectAndInit(cb, m_currentVoiceGroup);
+  return m_voiceGroupSignal.connectAndInit(cb, m_currentVoiceGroup);
 }
 
 sigc::connection VoiceGroupAndLoadToPartManager::onLoadToPartModeChanged(const sigc::slot<void, bool> &cb)
