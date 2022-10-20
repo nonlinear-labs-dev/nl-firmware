@@ -134,7 +134,7 @@ function check_iface_names() {
 function check_ping_timeout() {
     executeAsRoot \
         "Ping timeout workaround is installed in initramfs?" \
-        "mkdir -p /mnt/sda1; mount /dev/sda1 /mnt/sda1; lsinitcpio -x /mnt/sda1/initramfs-linux-rt.img && cat hooks/nlhook | grep ping_bbb"
+        "mkdir -p /mnt/sda1; mount /dev/sda1 /mnt/sda1; zstdcat /mnt/sda1/initramfs-linux-rt.img | grep ping_bbb"
 }
 
 function check_date() {
