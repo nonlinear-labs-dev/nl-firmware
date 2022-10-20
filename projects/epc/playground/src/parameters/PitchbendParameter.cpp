@@ -68,5 +68,5 @@ void PitchbendParameter::onLocalEnableChanged(bool localEnableState)
 
 void PitchbendParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
-  PhysicalControlParameter::loadFromPreset(transaction, value);
+  PhysicalControlParameter::loadFromPreset(transaction, getDefValueAccordingToMode());
 }
