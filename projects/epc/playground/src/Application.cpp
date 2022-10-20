@@ -25,6 +25,7 @@
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include <nltools/system/SpawnAsyncCommandLine.h>
 #include <proxies/hwui/HardwareFeatures.h>
+#include <use-cases/SplashScreenUseCases.h>
 
 using namespace std::chrono_literals;
 
@@ -115,7 +116,13 @@ Application::Application(int numArgs, char **argv)
   m_settings->init();
   m_hwui->init();
   m_http->init();
-  m_presetManager->init(m_audioEngineProxy.get(), *m_settings, [this](auto str) { m_hwui->addSplashStatus(str); });
+  m_presetManager->init(m_audioEngineProxy.get(), *m_settings,
+                        [this](auto str)
+                        {
+                          SplashScreenUseCases ssuc(*m_hwui.get(), *m_settings.get());
+                          ssuc.addSplashScreenMessage(str);
+                        });
+
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
   m_voiceGroupManager->init();
 
