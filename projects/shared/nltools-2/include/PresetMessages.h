@@ -135,6 +135,7 @@ namespace nltools
     template<nltools::msg::MessageType M>
     struct PresetMessage
     {
+        // nltools requirements
         static_assert(
                 M == nltools::msg::MessageType::SinglePreset
              || M == nltools::msg::MessageType::SplitPreset
@@ -145,32 +146,33 @@ namespace nltools
         {
           return M;
         }
+
         // provide types
         using ParameterType = C15::Descriptors::ParameterType;
         template<ParameterType P, typename T>
         using ParameterArray = C15::Storage::Array<P, T>;
-        // shared data (global, present in any sound type)
+
+        // shared data (present in any sound type)
         ParameterArray<ParameterType::Hardware_Source, ParameterGroups::HardwareSourceParameter> hwsources;
         ParameterArray<ParameterType::Hardware_Amount, ParameterGroups::HardwareAmountParameter> hwamounts;
         ParameterArray<ParameterType::Macro_Control, ParameterGroups::MacroParameter> macros;
         ParameterArray<ParameterType::Macro_Time, ParameterGroups::UnmodulateableParameter> macrotimes;
+
+        // comparison
+        static bool compareCommon(const PresetMessage<M>& _lhs, const PresetMessage<M>& _rhs)
+        {
+            auto ret = _lhs.hwsources == _rhs.hwsources;
+            ret &= _lhs.hwamounts == _rhs.hwamounts;
+            ret &= _lhs.macros == _rhs.macros;
+            ret &= _lhs.macrotimes == _rhs.macrotimes;
+            return ret;
+        }
     };
 
     struct SinglePresetMessage : public PresetMessage<nltools::msg::MessageType::SinglePreset>
     {
-//      constexpr static nltools::msg::MessageType getType()
-//      {
-//        return nltools::msg::MessageType::SinglePreset;
-//      }
-
-//      std::array<ParameterGroups::MacroParameter, C15::Parameters::num_of_Macro_Controls> macros;
-//      std::array<ParameterGroups::UnmodulateableParameter, C15::Parameters::num_of_Macro_Times> macrotimes;
-
       std::array<ParameterGroups::ModulateableParameter, 169> modulateables;
       std::array<ParameterGroups::UnmodulateableParameter, 29> unmodulateables;
-
-//      std::array<ParameterGroups::HardwareSourceParameter, C15::Parameters::num_of_Hardware_Sources> hwsources;
-//      std::array<ParameterGroups::HardwareAmountParameter, C15::Parameters::num_of_Hardware_Amounts> hwamounts;
 
       ParameterGroups::UnisonGroup unison;
       ParameterGroups::MonoGroup mono;
@@ -183,17 +185,14 @@ namespace nltools
 
     inline bool operator==(const SinglePresetMessage& lhs, const SinglePresetMessage& rhs)
     {
-      auto ret = lhs.unmodulateables == rhs.unmodulateables;
+      auto ret = SinglePresetMessage::compareCommon(lhs, rhs);
+      ret &= lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
       ret &= lhs.scaleOffsets == rhs.scaleOffsets;
       ret &= lhs.scaleBaseKey == rhs.scaleBaseKey;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
       ret &= lhs.master == rhs.master;
-      ret &= lhs.hwamounts == rhs.hwamounts;
-      ret &= lhs.hwsources == rhs.hwsources;
-      ret &= lhs.macros == rhs.macros;
-      ret &= lhs.macrotimes == rhs.macrotimes;
       return ret;
     }
 
@@ -204,10 +203,6 @@ namespace nltools
 
     struct SplitPresetMessage : public PresetMessage<nltools::msg::MessageType::SplitPreset>
     {
-//      constexpr static nltools::msg::MessageType getType()
-//      {
-//        return nltools::msg::MessageType::SplitPreset;
-//      }
 
       std::array<std::array<ParameterGroups::ModulateableParameter, 169>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulateableParameter, 29>, 2> unmodulateables;
@@ -217,12 +212,6 @@ namespace nltools
 
       ParameterGroups::MasterGroup master;
 
-//      std::array<ParameterGroups::HardwareSourceParameter, C15::Parameters::num_of_Hardware_Sources> hwsources;
-//      std::array<ParameterGroups::HardwareAmountParameter, C15::Parameters::num_of_Hardware_Amounts> hwamounts;
-
-//      std::array<ParameterGroups::MacroParameter, C15::Parameters::num_of_Macro_Controls> macros;
-//      std::array<ParameterGroups::UnmodulateableParameter, C15::Parameters::num_of_Macro_Times> macrotimes;
-
       ParameterGroups::GlobalParameter scaleBaseKey;
       std::array<ParameterGroups::ModulateableParameter, 12> scaleOffsets;
       std::array<ParameterGroups::SplitPoint, 2> splitpoint;
@@ -230,17 +219,14 @@ namespace nltools
 
     inline bool operator==(const SplitPresetMessage& lhs, const SplitPresetMessage& rhs)
     {
-      auto ret = lhs.unmodulateables == rhs.unmodulateables;
+      auto ret = SplitPresetMessage::compareCommon(lhs, rhs);
+      ret &= lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
       ret &= lhs.scaleOffsets == rhs.scaleOffsets;
       ret &= lhs.scaleBaseKey == rhs.scaleBaseKey;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
       ret &= lhs.master == rhs.master;
-      ret &= lhs.hwamounts == rhs.hwamounts;
-      ret &= lhs.hwsources == rhs.hwsources;
-      ret &= lhs.macros == rhs.macros;
-      ret &= lhs.macrotimes == rhs.macrotimes;
       ret &= lhs.splitpoint == rhs.splitpoint;
       return ret;
     }
@@ -252,15 +238,6 @@ namespace nltools
 
     struct LayerPresetMessage : public PresetMessage<nltools::msg::MessageType::LayerPreset>
     {
-//      constexpr static nltools::msg::MessageType getType()
-//      {
-//        return nltools::msg::MessageType::LayerPreset;
-//      }
-//      std::array<ParameterGroups::HardwareSourceParameter, C15::Parameters::num_of_Hardware_Sources> hwsources;
-//      std::array<ParameterGroups::HardwareAmountParameter, C15::Parameters::num_of_Hardware_Amounts> hwamounts;
-
-//      std::array<ParameterGroups::MacroParameter, C15::Parameters::num_of_Macro_Controls> macros;
-//      std::array<ParameterGroups::UnmodulateableParameter, C15::Parameters::num_of_Macro_Times> macrotimes;
 
       std::array<std::array<ParameterGroups::ModulateableParameter, 169>, 2> modulateables;
       std::array<std::array<ParameterGroups::UnmodulateableParameter, 29>, 2> unmodulateables;
@@ -276,17 +253,14 @@ namespace nltools
 
     inline bool operator==(const LayerPresetMessage& lhs, const LayerPresetMessage& rhs)
     {
-      auto ret = lhs.unmodulateables == rhs.unmodulateables;
+      auto ret = LayerPresetMessage::compareCommon(lhs, rhs);
+      ret &= lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
       ret &= lhs.scaleOffsets == rhs.scaleOffsets;
       ret &= lhs.scaleBaseKey == rhs.scaleBaseKey;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
       ret &= lhs.master == rhs.master;
-      ret &= lhs.hwamounts == rhs.hwamounts;
-      ret &= lhs.hwsources == rhs.hwsources;
-      ret &= lhs.macros == rhs.macros;
-      ret &= lhs.macrotimes == rhs.macrotimes;
       return ret;
     }
 
