@@ -9,6 +9,8 @@
     @todo       
 *******************************************************************************/
 
+#include <array>
+
 namespace C15
 {
     namespace Descriptors
@@ -77,4 +79,9 @@ namespace C15
             ${enums.pid}
         };
     } // namespace C15::PID
+    namespace Storage {
+        template<Descriptors::ParameterType P, typename T>
+        struct Array;
+        ${storage}
+    } // namespace C15::Storage
 } // namespace C15

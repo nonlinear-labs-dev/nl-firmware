@@ -20,6 +20,7 @@ type Result = ConfigType & DeclarationsType & {
     display_scaling_types: string;
     parameter_groups: string;
     group_map: string;
+    storage: string;
 };
 
 type ParamType = {
@@ -397,6 +398,14 @@ function processDefinitions(result: Result) {
             ].join("\n"));
         return out;
     }, []).join("\n");
+    result.storage = Object.entries(result.declarations.parameter_type).filter(([key]) => key !== "None").map(([key, props]) => {
+        return [
+            "template<typename T>",
+            `struct Array<Descriptors::ParameterType::${key}, T> : public std::array<T, Parameters::num_of_${key}s>`,
+            "{",
+            "};",
+        ].join("\n");
+    }).join("\n");
 }
 
 function generateOverview(result: Result, sourceDir: string, outDir: string) {
@@ -478,7 +487,7 @@ function main(outDir: string, sourceDir: string) {
         result: Result = {
             timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "",
             parameter_list: "", parameter_units: "", display_scaling_types: "", parameter_groups: "",
-            group_map: "",
+            group_map: "", storage: "",
             ...ConfigParser.parse(sourceDir + "/src/c15_config.yaml"),
             ...DeclarationsParser.parse(sourceDir + "/src/parameter_declarations.yaml"),
             definitions: DefinitionsParser.parseAll(...definitions).map((definition, index) => {
