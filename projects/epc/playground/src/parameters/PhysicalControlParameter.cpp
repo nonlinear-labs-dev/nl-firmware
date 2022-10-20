@@ -100,7 +100,7 @@ void PhysicalControlParameter::loadFromPreset(UNDO::Transaction *transaction, co
   m_changingFromHWUI = m_lastChangedFromHWUI;
   m_returnModeBeforeLastLoad = getReturnMode();
   m_valueBeforeLastLoad = getControlPositionValue();
-  setIndirect(transaction, value);
+  setIndirect(transaction, getDefValueAccordingToMode());
 }
 
 void PhysicalControlParameter::registerTarget(ModulationRoutingParameter *target)

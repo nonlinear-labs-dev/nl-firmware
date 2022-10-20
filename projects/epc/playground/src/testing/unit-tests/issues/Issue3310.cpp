@@ -6,7 +6,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "issue 3310 [3310]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "issue 3310 [3035]")
 {
   PresetManagerUseCases uc(*TestHelper::getPresetManager(), *TestHelper::getSettings());
   auto bank = uc.importBankFromPath(
