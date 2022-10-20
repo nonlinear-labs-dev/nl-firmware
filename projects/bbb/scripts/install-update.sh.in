@@ -48,6 +48,7 @@ check_preconditions() {
 
     rm -rf /update/*
     pretty "C15 update rejected." "Update is no longer supported."
+    sleep 5
     return 1
 }
 
