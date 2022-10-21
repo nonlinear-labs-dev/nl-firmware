@@ -164,6 +164,10 @@ namespace nltools
       ParameterArray<ParameterType::Hardware_Amount, Parameters::HardwareAmountParameter> hwamounts;
       ParameterArray<ParameterType::Macro_Control, Parameters::MacroParameter> macros;
       ParameterArray<ParameterType::Macro_Time, Parameters::UnmodulateableParameter> macrotimes;
+      // todo: refactor (into Global Modulateables/Unmodulateables, deprecating ParameterGroups)
+      ParameterGroups::MasterGroup master;
+      Parameters::GlobalParameter scaleBaseKey;
+      std::array<Parameters::ModulateableParameter, 12> scaleOffsets;
 
       // comparison
       static bool compareCommon(const PresetMessage<M>& _lhs, const PresetMessage<M>& _rhs)
@@ -172,22 +176,22 @@ namespace nltools
         ret &= _lhs.hwamounts == _rhs.hwamounts;
         ret &= _lhs.macros == _rhs.macros;
         ret &= _lhs.macrotimes == _rhs.macrotimes;
+        ret &= _lhs.master == _rhs.master;
+        ret &= _lhs.scaleBaseKey == _rhs.scaleBaseKey;
+        ret &= _lhs.scaleOffsets == _rhs.scaleOffsets;
         return ret;
       }
     };
 
     struct SinglePresetMessage : public PresetMessage<nltools::msg::MessageType::SinglePreset>
     {
+      // todo: refactor (into Global or Polyphonic/Monophonic Modulateables/Unmodulateables)
       std::array<Parameters::ModulateableParameter, 169> modulateables;
       std::array<Parameters::UnmodulateableParameter, 29> unmodulateables;
 
+      // todo: refactor (into Polyphonic Modulateables/Unmodulateables, deprecating ParameterGroups)
       ParameterGroups::UnisonGroup unison;
       ParameterGroups::MonoGroup mono;
-
-      ParameterGroups::MasterGroup master;
-
-      Parameters::GlobalParameter scaleBaseKey;
-      std::array<Parameters::ModulateableParameter, 12> scaleOffsets;
     };
 
     inline bool operator==(const SinglePresetMessage& lhs, const SinglePresetMessage& rhs)
@@ -195,11 +199,8 @@ namespace nltools
       auto ret = SinglePresetMessage::compareCommon(lhs, rhs);
       ret &= lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.scaleOffsets == rhs.scaleOffsets;
-      ret &= lhs.scaleBaseKey == rhs.scaleBaseKey;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
-      ret &= lhs.master == rhs.master;
       return ret;
     }
 
@@ -210,17 +211,13 @@ namespace nltools
 
     struct SplitPresetMessage : public PresetMessage<nltools::msg::MessageType::SplitPreset>
     {
-
+      // todo: refactor (into Global or Polyphonic/Monophonic Modulateables/Unmodulateables)
       std::array<std::array<Parameters::ModulateableParameter, 169>, 2> modulateables;
       std::array<std::array<Parameters::UnmodulateableParameter, 29>, 2> unmodulateables;
 
+      // todo: refactor (into Polyphonic Modulateables/Unmodulateables, deprecating ParameterGroups)
       std::array<ParameterGroups::UnisonGroup, 2> unison;
       std::array<ParameterGroups::MonoGroup, 2> mono;
-
-      ParameterGroups::MasterGroup master;
-
-      Parameters::GlobalParameter scaleBaseKey;
-      std::array<Parameters::ModulateableParameter, 12> scaleOffsets;
       std::array<Parameters::SplitPoint, 2> splitpoint;
     };
 
@@ -229,11 +226,8 @@ namespace nltools
       auto ret = SplitPresetMessage::compareCommon(lhs, rhs);
       ret &= lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.scaleOffsets == rhs.scaleOffsets;
-      ret &= lhs.scaleBaseKey == rhs.scaleBaseKey;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
-      ret &= lhs.master == rhs.master;
       ret &= lhs.splitpoint == rhs.splitpoint;
       return ret;
     }
@@ -245,17 +239,14 @@ namespace nltools
 
     struct LayerPresetMessage : public PresetMessage<nltools::msg::MessageType::LayerPreset>
     {
-
+      // todo: refactor (into Global or Polyphonic/Monophonic Modulateables/Unmodulateables)
       std::array<std::array<Parameters::ModulateableParameter, 169>, 2> modulateables;
       std::array<std::array<Parameters::UnmodulateableParameter, 29>, 2> unmodulateables;
 
+      // todo: refactor (into Polyphonic Modulateables/Unmodulateables, deprecating ParameterGroups)
+      // note: yes, unison and mono will be present twice in a LayerPresetMsg (although only one VoiceGroup is relevant)
       ParameterGroups::UnisonGroup unison;
       ParameterGroups::MonoGroup mono;
-
-      ParameterGroups::MasterGroup master;
-
-      Parameters::GlobalParameter scaleBaseKey;
-      std::array<Parameters::ModulateableParameter, 12> scaleOffsets;
     };
 
     inline bool operator==(const LayerPresetMessage& lhs, const LayerPresetMessage& rhs)
@@ -263,11 +254,8 @@ namespace nltools
       auto ret = LayerPresetMessage::compareCommon(lhs, rhs);
       ret &= lhs.unmodulateables == rhs.unmodulateables;
       ret &= lhs.modulateables == rhs.modulateables;
-      ret &= lhs.scaleOffsets == rhs.scaleOffsets;
-      ret &= lhs.scaleBaseKey == rhs.scaleBaseKey;
       ret &= lhs.mono == rhs.mono;
       ret &= lhs.unison == rhs.unison;
-      ret &= lhs.master == rhs.master;
       return ret;
     }
 
