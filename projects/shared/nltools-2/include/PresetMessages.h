@@ -1,5 +1,5 @@
 #pragma once
-#include <parameter_list.h>
+
 #include <parameter_descriptor.h>
 #include <parameter_declarations.h>
 #include <nltools/messaging/Message.h>
@@ -277,7 +277,8 @@ namespace nltools
       std::array<std::array<Parameters::UnmodulateableParameter, 29>, 2> unmodulateables;
 
       // todo: refactor (into Polyphonic Modulateables/Unmodulateables, deprecating ParameterGroups)
-      // note: yes, unison and mono will be present twice in a LayerPresetMsg (although only one VoiceGroup is relevant)
+      // note: yes, Unison and Mono will be present twice in a LayerPresetMsg (although only one VoiceGroup is relevant)
+      //       (for comparisons to work properly, Unison/Mono should be identical in both VoiceGroups)
       ParameterGroups::UnisonGroup unison;
       ParameterGroups::MonoGroup mono;
 
