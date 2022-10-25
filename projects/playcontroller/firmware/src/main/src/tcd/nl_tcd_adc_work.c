@@ -666,9 +666,12 @@ static void ProcessRibbons(void)
       inc = position - ribbon[i].incBase;
     ribbon[i].incBase = position;
 
-    if (inc > 18 || inc < -14)           // apply scale factor only if there is enough delta, this eliminates noise ...
-      inc *= ribbon[i].relFactor / 256;  // ... and allows for fine adjustment even with large gains
-                                         // the asymmetry accounts for the skew in value flow introduced by "potentialRelease"
+    if (inc > 18 || inc < -14)     // apply scale factor only if there is enough delta, this eliminates noise when holding a point ...
+    {                              // (the asymmetry accounts for the skew in value flow introduced by "potentialRelease")
+      inc *= ribbon[i].relFactor;  // ... and allows for fine adjustment even with large gains
+      inc /= 256;
+    };
+
     if (ribbon[i].isEditControl)
     {
       SendEditMessageToBB(i, position, inc);
