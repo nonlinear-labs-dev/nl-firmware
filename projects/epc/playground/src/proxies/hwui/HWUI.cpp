@@ -34,6 +34,7 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include "UsageMode.h"
 #include "use-cases/SettingsUseCases.h"
+#include <proxies/hwui/HardwareFeatures.h>
 
 HWUI::HWUI(Settings &settings)
     : m_voiceGoupSignal {}
