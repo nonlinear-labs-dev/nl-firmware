@@ -47,3 +47,10 @@ void AftertouchParameter::onLocalEnableChanged(bool localEnableState)
     PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
   }
 }
+
+void AftertouchParameter::loadFromPreset(UNDO::Transaction* transaction, const tControlPositionValue& value)
+{
+  auto val = getDefValueAccordingToMode();
+  PhysicalControlParameter::loadFromPreset(transaction, val);
+  setIndirect(transaction, val);
+}

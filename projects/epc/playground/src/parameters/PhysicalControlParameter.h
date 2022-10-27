@@ -17,6 +17,7 @@ class PhysicalControlParameter : public Parameter
 
   void registerTarget(ModulationRoutingParameter *target);
   Glib::ustring generateName() const;
+  void doPreload();
   void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
   void setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue) override;

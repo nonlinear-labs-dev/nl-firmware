@@ -115,10 +115,7 @@ Glib::ustring PhysicalControlParameter::getCurrentModulatingMacroControlString()
 
 void PhysicalControlParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
 {
-  m_changingFromHWUI = m_lastChangedFromHWUI;
-  m_returnModeBeforeLastLoad = getReturnMode();
-  m_valueBeforeLastLoad = getControlPositionValue();
-  setIndirect(transaction, value);
+  doPreload();
 }
 
 void PhysicalControlParameter::registerTarget(ModulationRoutingParameter *target)
@@ -358,4 +355,11 @@ bool PhysicalControlParameter::isMCAssignedToThisAlsoAssignedToAnyPedal() const
   }
 
   return false;
+}
+
+void PhysicalControlParameter::doPreload()
+{
+  m_changingFromHWUI = m_lastChangedFromHWUI;
+  m_returnModeBeforeLastLoad = getReturnMode();
+  m_valueBeforeLastLoad = getControlPositionValue();
 }

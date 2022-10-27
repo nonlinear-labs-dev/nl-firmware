@@ -146,6 +146,7 @@ Application::Application(int numArgs, char **argv)
 
 Application::~Application()
 {
+  m_isQuit = true;
   stopWatchDog();
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 
@@ -357,4 +358,9 @@ VoiceGroupAndLoadToPartManager *Application::getVGManager()
 RecorderManager *Application::getRecorderManager()
 {
   return m_recorderManager.get();
+}
+
+bool Application::isQuit() const
+{
+  return m_isQuit;
 }

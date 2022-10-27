@@ -99,17 +99,7 @@ Glib::ustring RibbonParameter::getShortName() const
 
 tControlPositionValue RibbonParameter::getDefValueAccordingToMode() const
 {
-  switch(getReturnMode())
-  {
-    case ReturnMode::None:
-      return 0.5;
-
-    case ReturnMode::Center:
-    case ReturnMode::Zero:
-      return 0.0;
-  }
-
-  return 0.0;
+  return getDefValueAccordingToMode(m_returnMode);
 }
 
 void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, const Glib::ustring &mode)
@@ -141,6 +131,9 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
 {
   if(mode != RibbonReturnMode::STAY && mode != RibbonReturnMode::RETURN)
     mode = RibbonReturnMode::STAY;
+
+  if(initiator == Initiator::EXPLICIT_LOAD)
+    setIndirect(transaction, getDefValueAccordingToMode(mode));
 
   if(m_returnMode != mode)
   {
@@ -458,4 +451,18 @@ bool RibbonParameter::isRibbonCurrentlySelectedInBaseUnit() const
   const auto isRibbon1_2 = selRibbons == SelectedRibbons::Ribbon1_2;
   const auto isRibbon3_4 = selRibbons == SelectedRibbons::Ribbon3_4;
   return (isRibbon1_2 && (isRibbon1 || isRibbon2)) || (isRibbon3_4 && (isRibbon3 || isRibbon4));
+}
+
+tControlPositionValue RibbonParameter::getDefValueAccordingToMode(RibbonReturnMode mode) const
+{
+  switch(mode)
+  {
+    case RibbonReturnMode::STAY:
+      return 0.5;
+
+    case RibbonReturnMode::RETURN:
+    case RibbonReturnMode::NUM_RETURN_MODES:
+      return 0.0;
+  }
+  return 0.0;
 }

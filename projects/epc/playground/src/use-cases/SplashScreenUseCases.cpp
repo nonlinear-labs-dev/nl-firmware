@@ -3,6 +3,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
+#include <Application.h>
 
 SplashScreenUseCases::SplashScreenUseCases(HWUI &hwui, Settings &settings)
     : m_hwui { hwui }
@@ -45,9 +46,12 @@ void SplashScreenUseCases::finishSplashScreen()
 
 SplashLayout *SplashScreenUseCases::getSplashScreenOverlay()
 {
-  if(auto overlayPtr = m_hwui.getPanelUnit().getEditPanel().getBoled().getOverlay())
+  if(!Application::get().isQuit())
   {
-    return dynamic_cast<SplashLayout *>(overlayPtr.get());
+    if(auto overlayPtr = m_hwui.getPanelUnit().getEditPanel().getBoled().getOverlay())
+    {
+      return dynamic_cast<SplashLayout *>(overlayPtr.get());
+    }
   }
   return nullptr;
 }

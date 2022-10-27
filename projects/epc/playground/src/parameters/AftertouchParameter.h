@@ -13,6 +13,7 @@ class AftertouchParameter : public PhysicalControlParameter
   ReturnMode getReturnMode() const override;
   tControlPositionValue getDefValueAccordingToMode() const override;
   void onLocalEnableChanged(bool localEnableState) override;
+  void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
  private:
   bool isLocalEnabled() const override;

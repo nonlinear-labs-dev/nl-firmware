@@ -58,6 +58,7 @@ class Application
   RecorderManager* getRecorderManager();
   HardwareFeatures* getHardwareFeatures();
 
+  bool isQuit() const;
   void quit();
   void runWatchDog();
   void stopWatchDog();
