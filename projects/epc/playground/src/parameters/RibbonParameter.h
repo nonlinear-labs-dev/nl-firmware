@@ -28,15 +28,16 @@ class RibbonParameter : public PhysicalControlParameter
 
   void boundToMacroControl(tControlPositionValue v);
 
-  Layout *createLayout(FocusAndMode focusAndMode) const override;
-
   void sendModeToPlaycontroller() const;
   tControlPositionValue getDefValueAccordingToMode() const override;
   bool isLocalEnabled() const override;
   void onLocalEnableChanged(bool localEnableState) override;
   void setCPFromSetting(UNDO::Transaction *transaction, const tControlPositionValue &cpValue) override;
+  Glib::ustring getLongName() const override;
+  Glib::ustring getShortName() const override;
 
  protected:
+  bool isRibbonCurrentlySelectedInBaseUnit() const;
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
 
   bool shouldWriteDocProperties(tUpdateID knownRevision) const override;

@@ -240,3 +240,45 @@ parameters:
       This parameter will be visible next to the internal representation of \"Ribbon 2\"
       (which reflects changes from the User Interface or MIDI Input, only affecting the Synth).
       Editing the actual \"Ribbon 2\" parameter will not be reflected.
+
+  - <<: *RIBBON
+    id: 409
+    token: Ribbon_3
+    label_long: Ribbon 3
+    label_short: Ribbon 3
+    info: >
+      This control is the parameter representation of the \"Ribbon 3\" Hardware Source.
+      If a pedal is connected, it will directly follow the Ribbon and vice versa.
+      If the source's return behavior is set to \"Center\", the parameter will be bipolar.
+  - <<: *RIBBON_SEND
+    id: 410
+    token: Ribbon_3_Send
+    label_long: Ribbon 3 Send
+    label_short: Ribbon 3 Snd
+    info: >
+      When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Ribbon 3\" Hardware Source.
+      It reflects changes that will be sent via MIDI without affecting the Synth.
+      This parameter will be visible next to the internal representation of \"Ribbon 3\"
+      (which reflects changes from the User Interface or MIDI Input, only affecting the Synth).
+      Editing the actual \"Ribbon 3\" parameter will not be reflected.
+
+  - <<: *RIBBON
+    id: 411
+    token: Ribbon_4
+    label_long: Ribbon 4
+    label_short: Ribbon 4
+    info: >
+      This control is the parameter representation of the \"Ribbon 4\" Hardware Source.
+      If a pedal is connected, it will directly follow the Ribbon and vice versa.
+      If the source's return behavior is set to \"Center\", the parameter will be bipolar.
+  - <<: *RIBBON_SEND
+    id: 412
+    token: Ribbon_4_Send
+    label_long: Ribbon 4 Send
+    label_short: Ribbon 4 Snd
+    info: >
+      When Local is disabled in the MIDI Settings, this control is the parameter representation of the \"Ribbon 4\" Hardware Source.
+      It reflects changes that will be sent via MIDI without affecting the Synth.
+      This parameter will be visible next to the internal representation of \"Ribbon 4\"
+      (which reflects changes from the User Interface or MIDI Input, only affecting the Synth).
+      Editing the actual \"Ribbon 4\" parameter will not be reflected.

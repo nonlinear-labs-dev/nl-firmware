@@ -34,13 +34,14 @@ public class FineButton extends SVGImage {
             BasicParameterModel bpm = EditBufferModel.get().getSelectedParameter();
             if(bpm != null)
             {
-                isEnabled = bpm.value.metaData.fineDenominator != bpm.value.metaData.coarseDenominator;
+                isEnabled = bpm.value.metaData.fineDenominator.getValue() != bpm.value.metaData.coarseDenominator.getValue();
 
                 if(!isEnabled && SetupModel.get().localSettings.localFineEnabled.getBool())
                 {
                     SetupModel.get().localSettings.localFineEnabled.setValue(false);
                 }
 
+                setVisible(isEnabled);
                 invalidate(INVALIDATION_FLAG_UI_CHANGED);
             }
             return true;

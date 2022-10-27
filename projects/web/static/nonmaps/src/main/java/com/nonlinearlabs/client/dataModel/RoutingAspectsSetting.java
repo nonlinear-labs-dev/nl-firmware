@@ -8,7 +8,7 @@ import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 public class RoutingAspectsSetting {
     
     public static int numAspects = 5;
-    public static int numRoutings = 10;
+    public static int numRoutings = 12;
 
     public RoutingAspectsSetting() {
         m_data = new boolean[numRoutings][numAspects];
@@ -81,6 +81,12 @@ public class RoutingAspectsSetting {
             case 279:
             case 403:
                 return 5;
+            case 409:
+            case 410:
+                return 10;
+            case 411:
+            case 412:
+                return 11;
         }
         return 0;
     }

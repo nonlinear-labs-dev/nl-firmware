@@ -8,19 +8,22 @@ class MidiRuntimeOptions;
 class TCDDecoder
 {
  public:
-  //use references
+  constexpr static auto INVALID_KEY = -1;
+
   TCDDecoder(DSPInterface* dsp, MidiRuntimeOptions* options, KeyShift* shift);
   bool decode(const MidiEvent& event);
 
   [[nodiscard]] DecoderEventType getEventType() const;
-  [[nodiscard]] int getKeyOrController() const;
+  [[nodiscard]] int getKey() const;
+  [[nodiscard]] HardwareSource getHardwareSource() const;
   [[nodiscard]] float getValue() const;
 
   void reset();
 
  protected:
-  int keyOrController = -1;
-  float value = 0;
+  int m_key = INVALID_KEY;
+  HardwareSource m_hwSource = HardwareSource::NONE;
+  float m_value = 0;
   DecoderEventType m_type = DecoderEventType::UNKNOWN;
 
  private:

@@ -11,7 +11,10 @@
 
 set -x
 
-EPC_IP=$1
+
+EPC_IP="$1"
+FIX_EPC_1="$2"
+FIX_EPC_2="$3"
 TIMEOUT=300
 
 report_and_quit(){
@@ -44,16 +47,27 @@ add_ping_test_to_nlhook() {
   executeAsRoot "mount /dev/sda1 /mnt/boot/"
 
   if ! executeAsRoot "cat /mnt/usr/lib/initcpio/hooks/nlhook | grep ping_bbb"; then
-    LINE_NUMBER=$(executeAsRoot "cat /mnt/usr/lib/initcpio/hooks/nlhook | grep -n \"try_update_from_network() {\" | cut -f1 -d:")
-    NEXT_LINE=$(( ${LINE_NUMBER} + 1 ))
-    executeAsRoot "sed -i \"${NEXT_LINE}i       ping_bbb\" /mnt/usr/lib/initcpio/hooks/nlhook"
-    executeAsRoot "sed -i \"${LINE_NUMBER}i ping_bbb() { for R in \$\(seq 20\)\; do ping -c1 -W1 192.168.10.11 \&\& break\; done \; }\" /mnt/usr/lib/initcpio/hooks/nlhook"
-    executeAsRoot "mount /dev/sda1 /mnt/boot/"
-    executeAsRoot "systemd-nspawn -D /mnt mkinitcpio -p linux-rt"
+    LINE_NUMBER=$(executeAsRoot "cat /mnt/usr/lib/initcpio/hooks/nlhook | grep -n \"try_update_from_network() {\" | cut -f1 -d:") \
+    && NEXT_LINE=$(( ${LINE_NUMBER} + 1 )) \
+    && executeAsRoot "sed -i \"${NEXT_LINE}i       ping_bbb\" /mnt/usr/lib/initcpio/hooks/nlhook" \
+    && executeAsRoot "sed -i \"${LINE_NUMBER}i ping_bbb() { for R in \$\(seq 20\)\; do ping -c1 -W1 192.168.10.11 \&\& break\; done \; }\" /mnt/usr/lib/initcpio/hooks/nlhook" \
+    && executeAsRoot "systemd-nspawn -D /mnt mkinitcpio -p linux-rt" \
+    || printf "E48 ePC fix: adding ping test to nlhook" >> /update/errors.log
   fi
 
   executeAsRoot "umount /mnt/boot"
   executeAsRoot "umount /mnt"
+}
+
+epc_fix() {
+    if [[ "$FIX_EPC_1" = "true" ]]; then
+        /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_1_fix.sh sscl@192.168.10.10:/tmp/epc_fix.sh
+    elif [[ "$FIX_EPC_2" = "true" ]]; then
+        /update/utilities/sshpass -p "sscl" scp -r /update/EPC/epc_2_fix.sh sscl@192.168.10.10:/tmp/epc_fix.sh
+    fi
+
+    executeAsRoot "cd /tmp && chmod +x epc_fix.sh && ./epc_fix.sh" || return $?
+    return 0
 }
 
 update(){
@@ -64,6 +78,7 @@ update(){
     fi
     
     add_ping_test_to_nlhook
+    epc_fix || /update/utilities/sshpass -p "sscl" scp -r sscl@$EPC_IP:/tmp/fix_error.log /dev/stdout | cat - >> /update/errors.log
 
     for RETRYCOUNTER in {1..5}; do
         echo "restarting epc (try $RETRYCOUNTER)"
@@ -81,6 +96,7 @@ update(){
     done
 
     killall thttpd
+    cat /update/EPC/server.log >> /update/errors.log
     rm /update/EPC/server.log
     report_and_quit "E47 ePC update: pulling update failed ..." "47"
     return 0

@@ -60,7 +60,7 @@ parameters:
     label_long: Pitch - Env C
     label_short: Env C
     control_position: { coarse: 80, fine: 8000, scale: FINE_BIPOLAR_80_ST, initial: 0.0f }
-    modulation_aspects: { coarse: 80, fine: 8000, scale: FINE_BIPOLAR_160_ST }
+    modulation_aspects: { coarse: 160, fine: 16000, scale: FINE_BIPOLAR_160_ST }
     rendering_args: { scaling: Linear, factor: 80.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
       Amount of pitch modulation by Envelope C [in semitones].
@@ -93,7 +93,7 @@ parameters:
     label_long: PM Self
     label_short: PM Self
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Parabolic, factor: 0.5f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       Amount of phase modulation by Oscillator & Shaper B (local feedback).
@@ -114,7 +114,7 @@ parameters:
     label_long: PM Self - Shaper
     label_short: Shaper
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: Quasipoly_Signal }
     info: >
       Mix amount of Shaper B in the signal being used for phase modulation (self).
@@ -125,7 +125,7 @@ parameters:
     label_long: PM A
     label_short: PM A
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Parabolic, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       Amount of phase modulation by Oscillator & Shaper A (cross feedback).
@@ -146,7 +146,7 @@ parameters:
     label_long: PM A - Shaper
     label_short: Shaper
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: Quasipoly_Signal }
     info: >
       Mix amount of Shaper A in the signal being used for phase modulation (A -> B).
@@ -157,7 +157,7 @@ parameters:
     label_long: PM FB
     label_short: PM FB
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_200_PERCENT }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Parabolic, factor: 0.5f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
     info: >
       Amount of phase modulation by the Feedback signal.
@@ -177,8 +177,8 @@ parameters:
     token: Phase
     label_long: Phase
     label_short: Phase
-    control_position: { coarse: 90, fine: 1800, scale: LINEAR_BIPOLAR_180_DEG, initial: 0.0f, inactive: 0 }
-    modulation_aspects: { coarse: 90, fine: 1800, scale: LINEAR_BIPOLAR_360_DEG }
+    control_position: { coarse: 36, fine: 1800, scale: LINEAR_BIPOLAR_180_DEG, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { coarse: 72, fine: 3600, scale: LINEAR_BIPOLAR_360_DEG }
     rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.0f, section: Poly, clock: Audio, signal: Quasipoly_Signal }
     info: >
       Start phase [in degrees]. The Oscillator will be set to this phase position with each Note-On.
@@ -204,3 +204,4 @@ parameters:
     info: >
       If enabled, the Oscillator will reset its phase everytime the envelopes start (in the corresponding voice).
       If disabled, the Oscillator is in free-running mode.
+      Changing this parameter is only effective when a key is pressed.

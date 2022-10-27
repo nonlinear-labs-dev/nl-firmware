@@ -7,12 +7,7 @@
 
 void BaseUnitEditMode::toggleTouchBehaviour()
 {
-  auto p = Application::get().getPlaycontrollerProxy();
-
-  if(p->getLastTouchedRibbonParameterID() == HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
-    toggleParameterEditModeRibbonBehaviour();
-  else
-    super::toggleTouchBehaviour();
+  toggleParameterEditModeRibbonBehaviour();
 }
 
 void BaseUnitEditMode::toggleParameterEditModeRibbonBehaviour()

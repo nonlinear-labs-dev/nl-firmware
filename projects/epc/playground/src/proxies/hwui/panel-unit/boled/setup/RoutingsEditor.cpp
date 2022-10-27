@@ -303,10 +303,9 @@ bool RoutingsEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 void RoutingsEditor::stepEntry(int inc)
 {
   constexpr auto len = static_cast<int>(tID::LENGTH);
-  static std::array<tID, len> customOrder {
-    tID::Notes,  tID::ProgramChange, tID::Pedal1,     tID::Pedal2,  tID::Pedal3,
-    tID::Pedal4, tID::Bender,        tID::Aftertouch, tID::Ribbon1, tID::Ribbon2
-  };
+  static std::array<tID, len> customOrder { tID::Notes,   tID::ProgramChange, tID::Pedal1,  tID::Pedal2,
+                                            tID::Pedal3,  tID::Pedal4,        tID::Bender,  tID::Aftertouch,
+                                            tID::Ribbon1, tID::Ribbon2,       tID::Ribbon3, tID::Ribbon4 };
 
   auto it = std::find(customOrder.begin(), customOrder.end(), m_id);
   auto currentIdx = std::distance(customOrder.begin(), it) + inc;
@@ -384,8 +383,8 @@ void RoutingsEditor::update()
 const Glib::ustring& RoutingsEditor::getTextFor(tID index)
 {
   static const std::vector<Glib::ustring> sRet
-      = { "Pedal 1",  "Pedal 2",  "Pedal 3",   "Pedal 4", "Bender", "Aftertouch",
-          "Ribbon 1", "Ribbon 2", "Prog. Ch.", "Notes",   "LENGTH" };
+      = { "Pedal 1",  "Pedal 2",   "Pedal 3", "Pedal 4",  "Bender",   "Aftertouch", "Ribbon 1",
+          "Ribbon 2", "Prog. Ch.", "Notes",   "Ribbon 3", "Ribbon 4", "LENGTH" };
   return sRet.at(static_cast<int>(index));
 }
 

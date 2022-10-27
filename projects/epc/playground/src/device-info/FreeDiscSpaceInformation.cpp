@@ -9,6 +9,8 @@
 #include "nltools/system/AsyncCommandLine.h"
 #include "nltools/system/SpawnAsyncCommandLine.h"
 #include "Application.h"
+#include "CompileTimeOptions.h"
+#include <filesystem>
 
 FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation* parent)
     : DeviceInformationItem(parent)
@@ -24,10 +26,12 @@ FreeDiscSpaceInformation::FreeDiscSpaceInformation(DeviceInformation* parent)
 
 bool FreeDiscSpaceInformation::refresh()
 {
+  using std::filesystem::path;
+  auto scriptPath = path(getResourcesDir()).concat("/free-diskspace-information.sh");
   SpawnAsyncCommandLine::spawn(
-      Application::get().getMainContext(),
-      { "sh", "-c", "\"df", "-h", "|", "grep", "'persistent'", "|", "awk", "'{print $4}'\"" },
-      [&](const std::string& success) {
+      Application::get().getMainContext(), { "sh", scriptPath.string() },
+      [&](const std::string& success)
+      {
         if(success.empty())
           m_value = "N/A";
         else
@@ -42,7 +46,7 @@ bool FreeDiscSpaceInformation::refresh()
           }
         }
       },
-      [](auto err) {});
+      [](auto err) { nltools::Log::error(__PRETTY_FUNCTION__, "error trying to get free disk space", err); });
   return true;
 }
 

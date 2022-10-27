@@ -104,7 +104,7 @@ void BankButton::installDual()
       {
         VoiceGroupUseCases vgUseCases(Application::get().getVGManager(),
                                       Application::get().getPresetManager()->getEditBuffer());
-        vgUseCases.toggleVoiceGroupSelection();
+        vgUseCases.toggleVoiceGroupSelectionSilent();
       },
       toggleBankFocus);
 }

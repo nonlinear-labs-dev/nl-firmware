@@ -1,8 +1,5 @@
 #include <groups/ScaleGroup.h>
 #include <parameters/ScaleParameter.h>
-#include <parameters/scale-converters/BaseKeyScaleConverter.h>
-#include <parameters/scale-converters/KeyScaleConverter.h>
-#include <parameters/scale-converters/ScaleConverter.h>
 #include "parameter_declarations.h"
 #include <Application.h>
 

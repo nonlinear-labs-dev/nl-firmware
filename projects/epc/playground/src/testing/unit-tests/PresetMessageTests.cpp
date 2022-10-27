@@ -1,6 +1,5 @@
 #include <catch.hpp>
 #include "proxies/audio-engine/AudioEngineProxy.h"
-#include "presets/EditBuffer.h"
 #include "testing/TestHelper.h"
 #include "mock/MockPresetStorage.h"
 
@@ -104,7 +103,7 @@ void assertNoIDTwice(const nltools::msg::LayerPresetMessage &msg)
   collectDual<1>(msg);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Single Preset Message")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Single Preset Message")
 {
   MockPresetStorage presets;
   auto single = presets.getSinglePreset();

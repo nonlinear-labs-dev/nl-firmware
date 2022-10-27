@@ -22,7 +22,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Preset Load sends EditBuffer")
   bool singleMessageRecieved = false;
 
   CHECK(waitForConnection(EndPoint::AudioEngine));
-  auto c = receive<SinglePresetMessage>(EndPoint::AudioEngine,
+  auto c = receive<nltools::msg::SinglePresetMessage>(EndPoint::AudioEngine,
                                         [&](const auto &singleEditMessage) { singleMessageRecieved = true; });
 
   auto eb = TestHelper::getEditBuffer();
@@ -56,7 +56,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Store Action does not send Edi
   bool singleMessageReceived = false;
 
   CHECK(waitForConnection(EndPoint::AudioEngine, std::chrono::seconds(1000)));
-  auto c = receive<SinglePresetMessage>(EndPoint::AudioEngine,
+  auto c = receive<nltools::msg::SinglePresetMessage>(EndPoint::AudioEngine,
                                         [&](const auto &singleEditMessage) { singleMessageReceived = true; });
   PresetManagerUseCases useCases(*pm, *settings);
 

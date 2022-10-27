@@ -4,7 +4,6 @@
 #include <proxies/hwui/OLEDProxy.h>
 #include <glib.h>
 #include <proxies/hwui/Oleds.h>
-
 #include <utility>
 #include <Application.h>
 #include <proxies/hwui/HWUI.h>
@@ -33,7 +32,7 @@ void OLEDProxy::invalidate()
   if(auto l = std::dynamic_pointer_cast<Layout>(getLayout()))
     l->setDirty();
   else
-    DebugLevel::warning("Oled proxy has NO screen set !??");
+    nltools::Log::info("Oled proxy has NO screen set !??");
 }
 
 OLEDProxy::tLayoutPtr OLEDProxy::getLayout() const
@@ -57,37 +56,37 @@ OLEDProxy::tLayoutPtr OLEDProxy::getOverlay() const
   return m_overlay;
 }
 
-void OLEDProxy::reset(Layout *layout)
-{
-  tLayoutPtr s(layout);
-  reset(s);
-}
-
-void OLEDProxy::reset(tLayoutPtr layout)
+void OLEDProxy::reset(const OLEDProxy::tLayoutPtr &layout)
 {
   resetOverlay();
 
   if(m_layout)
     m_layout->removeButtonRepeat();
 
+  tLayoutPtr oldLayout = m_layout;
   m_layout = layout;
 
   if(!layout->isInitialized())
     layout->init();
 
-  m_sigLayoutInstalled.emit(layout.get());
+  if(oldLayout)
+  {
+    layout->copyFrom(oldLayout.get());
+  }
 
-  DebugLevel::info(G_STRLOC, typeid(layout.get()).name());
+  m_sigLayoutInstalled.emit(m_layout.get());
+
+  nltools::Log::info(G_STRLOC, typeid(layout.get()).name());
   invalidate();
 }
 
-void OLEDProxy::setOverlay(Layout *layout)
+void OLEDProxy::reset(Layout *layout)
 {
-  tLayoutPtr s(layout);
-  setOverlay(s);
+  tLayoutPtr lay(layout);
+  reset(lay);
 }
 
-void OLEDProxy::setOverlay(tLayoutPtr layout)
+void OLEDProxy::setOverlay(const OLEDProxy::tLayoutPtr &layout)
 {
   if(m_layout)
     m_layout->removeButtonRepeat();
@@ -97,8 +96,14 @@ void OLEDProxy::setOverlay(tLayoutPtr layout)
   if(!layout->isInitialized())
     layout->init();
 
-  DebugLevel::info(G_STRLOC, typeid(layout.get()).name());
+  nltools::Log::info(G_STRLOC, typeid(layout.get()).name());
   invalidate();
+}
+
+void OLEDProxy::setOverlay(Layout *layout)
+{
+  tLayoutPtr lay(layout);
+  setOverlay(lay);
 }
 
 void OLEDProxy::resetOverlay()

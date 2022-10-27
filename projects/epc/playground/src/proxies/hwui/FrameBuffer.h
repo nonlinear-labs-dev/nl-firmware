@@ -93,6 +93,8 @@ class FrameBuffer : public Uncopyable, public sigc::trackable
   bool swapBuffers(bool force = false);
   bool isValidColor(Colors c) const;
 
+  void drawDottedLine(int left, int top, int length);
+
  private:
   void setOffsetPixel(tCoordinate x, tCoordinate y);
   void setRawPixel(tCoordinate x, tCoordinate y);

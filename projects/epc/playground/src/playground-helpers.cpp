@@ -1,14 +1,10 @@
 #include "playground-helpers.h"
-#include <device-settings/DebugLevel.h>
 #include <execinfo.h>
 #include <nltools/logging/Log.h>
-
 #include <glib.h>
 #include <iomanip>
 #include <limits>
-#include <dirent.h>
-#include <stddef.h>
-#include <sys/types.h>
+#include <cstddef>
 
 std::string to_string(double d)
 {
@@ -24,7 +20,7 @@ std::ostream& wirteIntToStream(std::ostream& stream, int i)
 
 namespace Environment
 {
-  void printStackTrace(int i)
+  void printStackTrace(int)
   {
     nltools::Log::error("Crash signal caught!");
 
@@ -36,18 +32,18 @@ namespace Environment
 
     if(addrlen == 0)
     {
-      DebugLevel::warning("");
+      nltools::Log::error("");
       return;
     }
 
     nltools::Log::error("\n\nThe stack trace:");
 
     // create readable strings to each frame. __attribute__((no_instrument_function))
-    char** symbollist = backtrace_symbols(addrlist, addrlen);
+    char** symbollist = backtrace_symbols(addrlist, static_cast<int>(addrlen));
 
     // print the stack trace.
-    for(guint32 i = 0; i < addrlen; i++)
-      nltools::Log::error(symbollist[i]);
+    for(guint32 idx = 0; idx < addrlen; idx++)
+      nltools::Log::error(symbollist[idx]);
 
     free(symbollist);
     exit(EXIT_FAILURE);
@@ -64,7 +60,7 @@ namespace Environment
 
     if(addrlen != 0)
     {
-      char** symbollist = backtrace_symbols(addrlist, addrlen);
+      char** symbollist = backtrace_symbols(addrlist, static_cast<int>(addrlen));
 
       for(guint32 i = 0; i < addrlen; i++)
         str << symbollist[i] << std::endl;
@@ -72,7 +68,7 @@ namespace Environment
       free(symbollist);
     }
 
-    DebugLevel::error("Collected StackTrace: ", str.str());
+    nltools::Log::error("Collected StackTrace: ", str.str());
     return str.str();
   }
 
@@ -105,16 +101,16 @@ namespace Environment
 
     if(auto ret = setlocale(LC_ALL, preferedLocale); ret && !g_strcmp0(ret, preferedLocale))
     {
-      DebugLevel::warning("Successfully set locale to", preferedLocale);
+      nltools::Log::info("Successfully set locale to", preferedLocale);
     }
-    else if(auto ret = setlocale(LC_ALL, fallbackLocale); ret && !g_strcmp0(ret, fallbackLocale))
+    else if(auto ret2 = setlocale(LC_ALL, fallbackLocale); ret2 && !g_strcmp0(ret2, fallbackLocale))
     {
-      DebugLevel::error("Could not set locale to", preferedLocale, "but installed fallback", fallbackLocale,
+      nltools::Log::info("Could not set locale to", preferedLocale, "but installed fallback", fallbackLocale,
                         "- strings containing NL special chars will not be sortable, some tests will fail!");
     }
     else
     {
-      DebugLevel::throwException("Could not set locale to", preferedLocale, "or at least", fallbackLocale);
+      nltools::Log::throwException("Could not set locale to", preferedLocale, "or at least", fallbackLocale);
     }
   }
 }

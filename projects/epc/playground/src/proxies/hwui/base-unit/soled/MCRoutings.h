@@ -6,6 +6,7 @@
 class Application;
 class EditBuffer;
 class Parameter;
+class Setting;
 
 class MCRoutings : public Control
 {
@@ -22,6 +23,7 @@ class MCRoutings : public Control
   MCRoutings &operator=(const MCRoutings &) = delete;
 
  private:
+  void onRibbonSelectionChanged(const Setting* s);
   EditBuffer *getEditBuffer() const;
   void connectToRoutingParameters();
   void onRoutingParameterChanged(const Parameter *p);

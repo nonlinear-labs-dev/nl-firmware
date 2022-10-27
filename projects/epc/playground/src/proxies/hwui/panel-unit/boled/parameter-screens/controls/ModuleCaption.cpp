@@ -16,19 +16,22 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include <sigc++/sigc++.h>
 
-ModuleCaption::ModuleCaption(const Rect &pos)
+ModuleCaption::ModuleCaption(const Rect &pos, bool subscribeToSignals)
     : super(pos)
 {
-  auto vgManager = Application::get().getVGManager();
-  auto currentVG = vgManager->getCurrentVoiceGroup();
+  if(subscribeToSignals)
+  {
+    auto vgManager = Application::get().getVGManager();
+    auto currentVG = vgManager->getCurrentVoiceGroup();
 
-  Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &ModuleCaption::onParameterSelected)), currentVG);
+    Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
+        sigc::hide<0>(sigc::mem_fun(this, &ModuleCaption::onParameterSelected)), currentVG);
 
-  vgManager->onCurrentVoiceGroupChanged(sigc::hide(sigc::mem_fun(this, &ModuleCaption::onSelectionChanged)));
+    vgManager->onCurrentVoiceGroupChanged(sigc::hide(sigc::mem_fun(this, &ModuleCaption::onSelectionChanged)));
 
-  Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
-      sigc::hide(sigc::mem_fun(this, &ModuleCaption::onSoundTypeChanged)));
+    Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
+        sigc::hide(sigc::mem_fun(this, &ModuleCaption::onSoundTypeChanged)));
+  }
 }
 
 StringAndSuffix ModuleCaption::shortenStringIfNeccessary(const std::shared_ptr<Font> &font,

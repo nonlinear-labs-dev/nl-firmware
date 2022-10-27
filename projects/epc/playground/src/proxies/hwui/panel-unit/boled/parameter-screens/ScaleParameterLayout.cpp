@@ -27,11 +27,11 @@ bool ScaleParameterSelectLayout::onButton(Buttons i, bool down, ButtonModifiers 
     {
 
       case Buttons::BUTTON_A:
-        {
-          auto eb = Application::get().getPresetManager()->getEditBuffer();
-          EditBufferUseCases ebUseCases(*eb);
-          ebUseCases.selectParameter({C15::PID::Master_Volume, VoiceGroup::Global}, true);
-        }
+      {
+        auto eb = Application::get().getPresetManager()->getEditBuffer();
+        EditBufferUseCases ebUseCases(*eb);
+        ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global }, true);
+      }
         return true;
     }
   }
@@ -45,15 +45,27 @@ Carousel* ScaleParameterSelectLayout::createCarousel(const Rect& rect)
 
 void ScaleParameterSelectLayout::selectParameter(int inc)
 {
-  static const auto ids = std::vector<int> { 312, 391, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323 };
+  static const auto ids = std::vector<int> { C15::PID::Scale_Base_Key,
+                                             C15::PID::Scale_Offset_0,
+                                             C15::PID::Scale_Offset_1,
+                                             C15::PID::Scale_Offset_2,
+                                             C15::PID::Scale_Offset_3,
+                                             C15::PID::Scale_Offset_4,
+                                             C15::PID::Scale_Offset_5,
+                                             C15::PID::Scale_Offset_6,
+                                             C15::PID::Scale_Offset_7,
+                                             C15::PID::Scale_Offset_8,
+                                             C15::PID::Scale_Offset_9,
+                                             C15::PID::Scale_Offset_10,
+                                             C15::PID::Scale_Offset_11 };
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   EditBufferUseCases ebUseCases { *eb };
   auto id = eb->getSelectedParameterNumber();
 
   auto idIt = std::find(ids.begin(), ids.end(), id);
-  if(idIt == ids.end() || (*idIt == 323 && inc > 0))
+  if(idIt == ids.end() || (*idIt == C15::PID::Scale_Offset_11 && inc > 0))
   {
-    id = 312;
+    id = C15::PID::Scale_Base_Key;
   }
   else
   {
@@ -61,12 +73,12 @@ void ScaleParameterSelectLayout::selectParameter(int inc)
     auto toBegin = std::distance(ids.begin(), idIt);
 
     if(inc > 0 && toEnd != 1)
-      inc = std::min<int>(toEnd, inc);
+      inc = std::min<long>(toEnd, inc);
     else if(inc > 0)
       idIt = ids.begin();
 
     if(inc < 0 && toBegin != 0)
-      inc = std::min<int>(toBegin, inc);
+      inc = std::min<long>(toBegin, inc);
     else if(inc < 0)
       idIt = ids.end();
 

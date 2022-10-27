@@ -17,12 +17,12 @@ class ParameterNameLabel : public Label
 
  protected:
   void setSuffixFontColor(FrameBuffer &fb) const override;
+  virtual void onParameterSelected(Parameter *param);
 
  private:
   ParameterNameLabel(const ParameterNameLabel &other);
   ParameterNameLabel &operator=(const ParameterNameLabel &);
 
-  void onParameterSelected(Parameter *param);
   void onParameterChanged(const Parameter *param);
 
   void setFontColor(FrameBuffer &fb) const override;
@@ -36,4 +36,13 @@ class ParameterNameLabel : public Label
   void handleSendParameterName(const Parameter *pParameter);
   Glib::ustring truncateMCName(bool changed, const Glib::ustring &name) const;
   void onPresetLoaded();
+};
+
+
+class ParameterNameLabelForMCOfModulationRouter : public ParameterNameLabel
+{
+ public:
+  using ParameterNameLabel::ParameterNameLabel;
+ protected:
+  void onParameterSelected(Parameter *param) override;
 };

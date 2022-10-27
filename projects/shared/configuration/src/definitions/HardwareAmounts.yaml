@@ -460,3 +460,113 @@ parameters:
       Determines the influence of Ribbon 2 on Macro Control F.
       If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
       Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+
+  - <<: *HARDWARE_AMOUNT
+    id: 413
+    token: Ribbon_3_to_MC_A
+    label_long: Ribbon 3 to @MC:A
+    label_short: Rib 3 to @MC:A
+    info: >
+      Determines the influence of Ribbon 3 on Macro Control A.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 414
+    token: Ribbon_3_to_MC_B
+    label_long: Ribbon 3 to @MC:B
+    label_short: Rib 3 to @MC:B
+    info: >
+      Determines the influence of Ribbon 3 on Macro Control B.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 415
+    token: Ribbon_3_to_MC_C
+    label_long: Ribbon 3 to @MC:C
+    label_short: Rib 3 to @MC:C
+    info: >
+      Determines the influence of Ribbon 3 on Macro Control C.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 416
+    token: Ribbon_3_to_MC_D
+    label_long: Ribbon 3 to @MC:D
+    label_short: Rib 3 to @MC:D
+    info: >
+      Determines the influence of Ribbon 3 on Macro Control D.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 417
+    token: Ribbon_3_to_MC_E
+    label_long: Ribbon 3 to @MC:E
+    label_short: Rib 3 to @MC:E
+    info: >
+      Determines the influence of Ribbon 3 on Macro Control E.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 418
+    token: Ribbon_3_to_MC_F
+    label_long: Ribbon 3 to @MC:F
+    label_short: Rib 3 to @MC:F
+    info: >
+      Determines the influence of Ribbon 3 on Macro Control F.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+
+  - <<: *HARDWARE_AMOUNT
+    id: 419
+    token: Ribbon_4_to_MC_A
+    label_long: Ribbon 4 to @MC:A
+    label_short: Rib 4 to @MC:A
+    info: >
+      Determines the influence of Ribbon 4 on Macro Control A.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 420
+    token: Ribbon_4_to_MC_B
+    label_long: Ribbon 4 to @MC:B
+    label_short: Rib 4 to @MC:B
+    info: >
+      Determines the influence of Ribbon 4 on Macro Control B.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 421
+    token: Ribbon_4_to_MC_C
+    label_long: Ribbon 4 to @MC:C
+    label_short: Rib 4 to @MC:C
+    info: >
+      Determines the influence of Ribbon 4 on Macro Control C.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 422
+    token: Ribbon_4_to_MC_D
+    label_long: Ribbon 4 to @MC:D
+    label_short: Rib 4 to @MC:D
+    info: >
+      Determines the influence of Ribbon 4 on Macro Control D.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 423
+    token: Ribbon_4_to_MC_E
+    label_long: Ribbon 4 to @MC:E
+    label_short: Rib 4 to @MC:E
+    info: >
+      Determines the influence of Ribbon 4 on Macro Control E.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).
+  - <<: *HARDWARE_AMOUNT
+    id: 424
+    token: Ribbon_4_to_MC_F
+    label_long: Ribbon 4 to @MC:F
+    label_short: Rib 4 to @MC:F
+    info: >
+      Determines the influence of Ribbon 4 on Macro Control F.
+      If the ribbon is set to a returning mode, the amount can be adjusted continuously, otherwise it will be switch-like.
+      Continuous amounts can be set [in percent] and can cover the whole range of the Macro Control in both directions (-100.0 ... 100.0 %).

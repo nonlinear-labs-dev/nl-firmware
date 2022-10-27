@@ -5,6 +5,7 @@
 #include <tools/StringTools.h>
 #include <parameters/Parameter.h>
 #include <parameter_list.h>
+#include <parameter_group.h>
 #include <placeholder.h>
 #include <cassert>
 #include <nltools/logging/Log.h>
@@ -17,7 +18,7 @@ namespace C15::Placeholder
 {
   static Glib::ustring replaceGlobal(const Glib::ustring &_text, const SoundType &_st, const bool &_multiple = false)
   {
-    Glib::ustring ret{ _text };
+    Glib::ustring ret { _text };
     std::size_t pos;
     while((pos = ret.find(Qualifier)) != std::string::npos)
     {
@@ -36,7 +37,7 @@ namespace C15::Placeholder
   static Glib::ustring replaceLocal(const Glib::ustring &_text, const SoundType &_st, const VoiceGroup &_vg,
                                     const bool &_multiple = false)
   {
-    Glib::ustring ret{ _text };
+    Glib::ustring ret { _text };
     std::size_t pos;
     while((pos = ret.find(Qualifier)) != std::string::npos)
     {
@@ -103,11 +104,12 @@ Glib::ustring ParameterDB::getDescription(const ParameterId &id) const
 std::optional<Glib::ustring> ParameterDB::getLongGroupName(const ParameterId &id) const
 {
   auto d = C15::ParameterList[id.getNumber()];
+  auto g = C15::ParameterGroups[(unsigned) d.m_group];
 
-  if(!d.m_pg.m_group_label_long)
+  if(!g.m_label_long)
     return {};
 
-  return replaceInDynamicLabels(d.m_pg.m_group_label_long, id, m_editBuffer.getType());
+  return replaceInDynamicLabels(g.m_label_long, id, m_editBuffer.getType());
 }
 
 Glib::ustring ParameterDB::getDescription(const int num) const
@@ -160,25 +162,25 @@ Glib::ustring ParameterDB::replaceInDynamicLabels(const Glib::ustring &name, con
 
 tControlPositionValue ParameterDB::getCourseDenominator(const ParameterId &id)
 {
-  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  auto &desc = C15::ParameterList[id.getNumber()].m_pg;
   return desc.m_coarse_cp;
 }
 
 tControlPositionValue ParameterDB::getFineDenominator(const ParameterId &id)
 {
-  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  auto &desc = C15::ParameterList[id.getNumber()].m_pg;
   return desc.m_fine_cp;
 }
 
 tControlPositionValue ParameterDB::getCourseModulationDenominator(const ParameterId &id)
 {
-  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  auto &desc = C15::ParameterList[id.getNumber()].m_pg;
   return desc.m_coarse_amt;
 }
 
 tControlPositionValue ParameterDB::getFineModulationDenominator(const ParameterId &id)
 {
-  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  auto &desc = C15::ParameterList[id.getNumber()].m_pg;
   return desc.m_fine_amt;
 }
 
@@ -204,14 +206,14 @@ double ParameterDB::getDefaultValue(const ParameterId &id)
   return static_cast<double>(C15::ParameterList[id.getNumber()].m_initial);
 }
 
-C15::Properties::DisplayScalingType ParameterDB::getValueDisplayScalingType(const ParameterId& id)
+C15::Properties::DisplayScalingType ParameterDB::getValueDisplayScalingType(const ParameterId &id)
 {
-  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  auto &desc = C15::ParameterList[id.getNumber()].m_pg;
   return desc.m_cp_display_scaling_type;
 }
 
 C15::Properties::DisplayScalingType ParameterDB::getModulationAmountDisplayScalingType(const ParameterId &id)
 {
-  auto& desc = C15::ParameterList[id.getNumber()].m_pg;
+  auto &desc = C15::ParameterList[id.getNumber()].m_pg;
   return desc.m_ma_display_scaling_type;
 }

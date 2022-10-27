@@ -11,7 +11,7 @@ class SplashLayout : public InfoLayout
   typedef InfoLayout super;
 
  public:
-  SplashLayout(HWUI *hwui);
+  SplashLayout();
   ~SplashLayout() override;
 
   void setMessage(const std::string &txt);

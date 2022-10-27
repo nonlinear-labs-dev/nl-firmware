@@ -46,7 +46,6 @@ namespace DETAIL
    public:
     Message(ControlOwner *parent)
         : super("")
-        , m_parent(parent)
     {
     }
 
@@ -71,29 +70,26 @@ namespace DETAIL
     {
       return Fonts::get().getFont("Emphase-8-TXT-Regular", 8);
     }
-
-   private:
-    ControlOwner *m_parent;
   };
 }
 
-SplashLayout::SplashLayout(HWUI *hwui)
-  : m_hwui(hwui)
+SplashLayout::SplashLayout()
 {
-  hwui->registerSplash(this);
   Application::get().stopWatchDog();
 }
 
 SplashLayout::~SplashLayout()
 {
-  m_hwui->unregisterSplash(this);
   Application::get().runWatchDog();
 }
 
 void SplashLayout::setMessage(const std::string &txt)
 {
   m_text = txt;
-  m_message->setText(m_text, FrameBufferColors::C179);
+  if(m_message)
+  {
+    m_message->setText(m_text, FrameBufferColors::C179);
+  }
   Application::get().getHWUI()->getOleds().syncRedraw(true);
 }
 
@@ -103,7 +99,10 @@ void SplashLayout::addMessage(const std::string &txt)
     m_text += "\n";
 
   m_text += txt;
-  m_message->setText(m_text, FrameBufferColors::C179);
+  if(m_message)
+  {
+    m_message->setText(m_text, FrameBufferColors::C179);
+  }
   scrollToMax();
 
   Application::get().getHWUI()->getOleds().syncRedraw(true);

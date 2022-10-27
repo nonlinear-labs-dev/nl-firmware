@@ -23,6 +23,7 @@
 #include "ae_poly_section.h"
 
 #include "midi_handle.h"
+#include "PresetMessages.h"
 
 #include <array>
 #include <Types.h>
@@ -39,7 +40,7 @@ inline constexpr bool LOG_FAIL = false;
 inline constexpr bool LOG_INIT = false;
 inline constexpr bool LOG_MIDI_TCD = false;
 inline constexpr bool LOG_MIDI_RAW = false;
-inline constexpr bool LOG_MIDI_DETAIL = true;
+inline constexpr bool LOG_MIDI_DETAIL = false;
 inline constexpr bool LOG_MIDI_OUT = false;
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = false;
@@ -56,6 +57,7 @@ inline constexpr bool LOG_HW = false;
 // more detailed logging of specific parameters
 inline constexpr bool LOG_ENGINE_STATUS = false;
 inline constexpr bool LOG_ENGINE_EDITS = false;
+inline constexpr bool LOG_INPUT_EVENT_STAGE = false;
 inline constexpr uint32_t LOG_PARAMS_LENGTH = 3;
 // use tcd ids here (currently: Split Point, Unison Detune)
 static const uint32_t LOG_PARAMS[LOG_PARAMS_LENGTH] = { 356, 250, 367 };
@@ -64,9 +66,12 @@ class MidiRuntimeOptions;
 
 using KeyShift = ShifteableKeys<C15::Config::physical_key_from, C15::Config::physical_key_to>;
 
+constexpr static auto tNUM_HW = static_cast<int>(C15::Parameters::Hardware_Sources::_LENGTH_);
+
 class DSPInterface
 {
  public:
+  virtual ~DSPInterface() = default;
   //remove or move somewhere else
   //TCD and MIDI should not be known to DSP
 
@@ -154,7 +159,7 @@ class DSPInterface
   }
 
  private:
-  std::array<HWChangeSource, 8> m_hwSourceLastChangeSources;
+  std::array<HWChangeSource, tNUM_HW> m_hwSourceLastChangeSources;
 };
 
 class dsp_host_dual : public DSPInterface

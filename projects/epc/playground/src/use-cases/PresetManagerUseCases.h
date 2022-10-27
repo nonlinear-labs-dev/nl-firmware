@@ -26,9 +26,13 @@ class PresetManagerUseCases
 
   enum class ImportExitCode
   {
-    Unsupported,
+    PresetManagerLocked,
+    InvalidFile,
+    UnsupportedVersion,
     OK
   };
+
+  static Glib::ustring exitCodeToErrorMessage(ImportExitCode code);
 
   explicit PresetManagerUseCases(PresetManager& pm, Settings& settings);
 
@@ -118,8 +122,8 @@ class PresetManagerUseCases
 
   PresetManagerUseCases::ImportExitCode importBackupFile(FileInStream& in, const ProgressIndication& progress,
                                                          AudioEngineProxy& ae);
-  bool importBackupFile(SoupBuffer* buffer, ProgressIndication progress, AudioEngineProxy& ae);
-  bool importBackupFile(UNDO::Transaction* transaction, InStream& in, const ProgressIndication& progress,
+  PresetManagerUseCases::ImportExitCode importBackupFile(SoupBuffer* buffer, ProgressIndication progress, AudioEngineProxy& ae);
+  PresetManagerUseCases::ImportExitCode importBackupFile(UNDO::Transaction* transaction, InStream& in, const ProgressIndication& progress,
                         AudioEngineProxy& aeProxy);
 
   bool loadPresetFromCompareXML(const Glib::ustring& xml);

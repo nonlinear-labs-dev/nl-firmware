@@ -372,6 +372,8 @@ public class SetupModel {
 		public PedalMappingDataModelEntity pedal4Mapping = new PedalMappingDataModelEntity();
 		public RibbonMappingDataModelEntity ribbon1Mapping = new RibbonMappingDataModelEntity();
 		public RibbonMappingDataModelEntity ribbon2Mapping = new RibbonMappingDataModelEntity();
+		public RibbonMappingDataModelEntity ribbon3Mapping = new RibbonMappingDataModelEntity();
+		public RibbonMappingDataModelEntity ribbon4Mapping = new RibbonMappingDataModelEntity();
 		public AftertouchMappingDataModelEntity aftertouchMapping = new AftertouchMappingDataModelEntity();
 		public PitchbendMappingDataModelEntity benderMapping = new PitchbendMappingDataModelEntity();
 		public BooleanDataModelEntity highVelocityCC = new BooleanDataModelEntity();

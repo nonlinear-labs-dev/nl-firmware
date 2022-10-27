@@ -10,6 +10,8 @@ class PhysicalControlParameterUseCases : public ParameterUseCases
 
   void setIndirect(tControlPositionValue position);
   bool applyPolledHWPosition(float value);
+  void stepBehaviour(int inc);
+
  private:
   PhysicalControlParameter* m_physicalParam;
 };

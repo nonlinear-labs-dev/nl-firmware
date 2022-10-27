@@ -1,4 +1,6 @@
 #include "RoutingSettings.h"
+#include "ParameterId.h"
+#include "parameter_declarations.h"
 #include <tools/StringTools.h>
 #include <playcontroller/playcontroller-defs.h>
 
@@ -121,34 +123,40 @@ void RoutingSettings::setAllValues(bool value)
     notify();
 }
 
-bool RoutingSettings::getState(int hwId, RoutingSettings::tAspectIndex aspect) const
+bool RoutingSettings::getState(const ParameterId& hwId, RoutingSettings::tAspectIndex aspect) const
 {
   tRoutingIndex idx = tRoutingIndex::LENGTH;
-  switch(hwId)
+  switch(hwId.getNumber())
   {
-    case HW_SOURCE_ID_PEDAL_1:
+    case C15::PID::Pedal_1:
       idx = tRoutingIndex::Pedal1;
       break;
-    case HW_SOURCE_ID_PEDAL_2:
+    case C15::PID::Pedal_2:
       idx = tRoutingIndex::Pedal2;
       break;
-    case HW_SOURCE_ID_PEDAL_3:
+    case C15::PID::Pedal_3:
       idx = tRoutingIndex::Pedal3;
       break;
-    case HW_SOURCE_ID_PEDAL_4:
+    case C15::PID::Pedal_4:
       idx = tRoutingIndex::Pedal4;
       break;
-    case HW_SOURCE_ID_PITCHBEND:
+    case C15::PID::Bender:
       idx = tRoutingIndex::Bender;
       break;
-    case HW_SOURCE_ID_AFTERTOUCH:
+    case C15::PID::Aftertouch:
       idx = tRoutingIndex::Aftertouch;
       break;
-    case HW_SOURCE_ID_RIBBON_1:
+    case C15::PID::Ribbon_1:
       idx = tRoutingIndex::Ribbon1;
       break;
-    case HW_SOURCE_ID_RIBBON_2:
+    case C15::PID::Ribbon_2:
       idx = tRoutingIndex::Ribbon2;
+      break;
+    case C15::PID::Ribbon_3:
+      idx = tRoutingIndex::Ribbon3;
+      break;
+    case C15::PID::Ribbon_4:
+      idx = tRoutingIndex ::Ribbon4;
       break;
     default:
       break;
@@ -178,8 +186,8 @@ bool RoutingSettings::sanitizeReceiveHWSourcesAndPC()
 
   auto changed = false;
 
-  for(auto idx : { HW::Aftertouch, HW::Bender, HW::Ribbon1, HW::Ribbon2, HW::Pedal1, HW::Pedal2, HW::Pedal3, HW::Pedal4,
-                   HW::ProgramChange })
+  for(auto idx : { HW::Aftertouch, HW::Bender, HW::Ribbon1, HW::Ribbon2, HW::Ribbon3, HW::Ribbon4, HW::Pedal1,
+                   HW::Pedal2, HW::Pedal3, HW::Pedal4, HW::ProgramChange })
   {
     auto i = static_cast<size_t>(idx);
     auto rP = static_cast<size_t>(tAspectIndex::RECEIVE_PRIMARY);

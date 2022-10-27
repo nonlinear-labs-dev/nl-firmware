@@ -23,6 +23,7 @@ class UpperRibbon : public Ribbon
   void onSendValueChanged(const Parameter* param);
 
   void onSettingChanged(const Setting* setting);
+  void onRibbonSelectionChanged(const Setting* setting);
   void reconnect();
   Parameter* getResponsibleParameter();
 
@@ -33,4 +34,6 @@ class UpperRibbon : public Ribbon
 
   sigc::connection m_parameterSelectionChangedSignal;
   sigc::connection m_settingChangedSignal;
+
+  sigc::connection m_ribbonSelectionSignal;
 };

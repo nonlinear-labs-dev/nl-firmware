@@ -45,8 +45,8 @@ HWUIActions::HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuff
             {
               auto& boled = hwui.getPanelUnit().getEditPanel().getBoled();
               auto& soled = hwui.getBaseUnit().getPlayPanel().getSOLED();
-              auto panelTestLayout = dynamic_cast<TestLayout*>(boled.getLayout().get());
-              auto baseTestLayout = dynamic_cast<TestLayout*>(soled.getLayout().get());
+              auto panelTestLayout = std::dynamic_pointer_cast<TestLayout>(boled.getLayout());
+              auto baseTestLayout = std::dynamic_pointer_cast<TestLayout>(soled.getLayout());
               if(panelTestLayout && baseTestLayout)
               {
                 baseTestLayout->iterate();

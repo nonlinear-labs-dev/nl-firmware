@@ -454,7 +454,7 @@ namespace NavTree
       children.emplace_back(new Aftertouch(this));
       if(Application::get().getDeviceInformation()->getItem<AftertouchCalibratedStatus>()->isCalibrated())
       {
-        children.emplace_back(new EnumSettingItem<AftertouchLegacyMode>(this, "Legacy Aftertouch mode"));
+        children.emplace_back(new EnumSettingItem<AftertouchLegacyMode>(this, "Legacy Aftertouch Mode"));
       }
       children.emplace_back(new BenderCurveSetting(this));
       children.emplace_back(new PedalSettings(this));
@@ -916,6 +916,8 @@ namespace NavTree
       children.emplace_back(new EnumSettingItem<PedalCCMapping<4>>(this, "Pedal 4"));
       children.emplace_back(new EnumSettingItem<RibbonCCMapping<1>>(this, "Ribbon 1"));
       children.emplace_back(new EnumSettingItem<RibbonCCMapping<2>>(this, "Ribbon 2"));
+      children.emplace_back(new EnumSettingItem<RibbonCCMapping<3>>(this, "Ribbon 3"));
+      children.emplace_back(new EnumSettingItem<RibbonCCMapping<4>>(this, "Ribbon 4"));
       children.emplace_back(new EnumSettingItem<BenderCCMapping>(this, "Bender"));
       children.emplace_back(new EnumSettingItem<AftertouchCCMapping>(this, "Aftertouch"));
       children.emplace_back(new EnumSettingItem<Enable14BitSupport>(this, "High-Res. CCs (use LSB)"));
@@ -1123,6 +1125,8 @@ namespace NavTree
       children.emplace_back(new RoutingsEntry(tID::Aftertouch, this, "Aftertouch", m_selectedRouting));
       children.emplace_back(new RoutingsEntry(tID::Ribbon1, this, "Ribbon 1", m_selectedRouting));
       children.emplace_back(new RoutingsEntry(tID::Ribbon2, this, "Ribbon 2", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Ribbon3, this, "Ribbon 3", m_selectedRouting));
+      children.emplace_back(new RoutingsEntry(tID::Ribbon4, this, "Ribbon 4", m_selectedRouting));
       children.emplace_back(new SetRoutingsTo<true>(this));
       children.emplace_back(new SetRoutingsTo<false>(this));
     }

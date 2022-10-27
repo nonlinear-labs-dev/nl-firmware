@@ -30,23 +30,35 @@ void PhysicalControlParameterUseCases::setIndirect(tControlPositionValue positio
 
 bool PhysicalControlParameterUseCases::applyPolledHWPosition(float value)
 {
-    if(value != std::numeric_limits<float>::max())
-    {
-      auto dValue = static_cast<double>(value);
+  if(value != std::numeric_limits<float>::max())
+  {
+    auto dValue = static_cast<double>(value);
 
-      if(m_physicalParam->getValue().differs(dValue))
+    if(m_physicalParam->getValue().differs(dValue))
+    {
+      if(auto pedal = dynamic_cast<PedalParameter *>(m_physicalParam))
       {
-        if(auto pedal = dynamic_cast<PedalParameter*>(m_physicalParam))
+        if(pedal->getReturnMode() == ReturnMode::None)
         {
-          if(pedal->getReturnMode() == ReturnMode::None)
-          {
-            setIndirect(dValue);
-            return true;
-          }
+          setIndirect(dValue);
+          return true;
         }
-        changeFromAudioEngine(dValue, HWChangeSource::TCD);
-        return true;
       }
+      changeFromAudioEngine(dValue, HWChangeSource::TCD);
+      return true;
     }
-    return false;
+  }
+  return false;
+}
+
+void PhysicalControlParameterUseCases::stepBehaviour(int inc)
+{
+  auto scope = m_physicalParam->getUndoScope().startContinuousTransaction(m_physicalParam, "Set '%0'",
+                                                                          m_physicalParam->getGroupAndParameterName());
+  int step = inc > 0 ? 1 : -1;
+
+  for(int j = 0; j < std::abs(inc); j++)
+  {
+    m_physicalParam->undoableStepBehavior(scope->getTransaction(), step);
+  }
 }

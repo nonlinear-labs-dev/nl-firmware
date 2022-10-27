@@ -15,9 +15,6 @@ class PitchbendParameter : public PhysicalControlParameter
   void onLocalEnableChanged(bool localEnableState) override;
   void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
- protected:
-  Layout *createLayout(FocusAndMode focusAndMode) const override;
-
  private:
   bool isLocalEnabled() const override;
 };

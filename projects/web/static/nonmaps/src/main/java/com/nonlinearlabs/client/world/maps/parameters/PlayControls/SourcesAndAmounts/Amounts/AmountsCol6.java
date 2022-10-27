@@ -20,7 +20,9 @@ public class AmountsCol6 extends AmountsCol {
 		addChild(new ModulationRoutingParameter(this, 382));
 		addChild(new ModulationRoutingParameter(this, 384));
 		addChild(new RibbonModulationRoutingParameter(this, 386));
-		addChild(new RibbonModulationRoutingParameter(this, 388) {
+		addChild(new RibbonModulationRoutingParameter(this, 388));
+		addChild(new RibbonModulationRoutingParameter(this, 418));
+		addChild(new RibbonModulationRoutingParameter(this, 424) {
 			@Override
 			protected int getBackgroundRoundings() {
 				return Rect.ROUNDING_RIGHT_BOTTOM;
