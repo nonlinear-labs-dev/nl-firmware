@@ -24,6 +24,9 @@ class SettingsUseCases
   void toggleRibbonSelection();
   void setRibbonSelection(SelectedRibbons ribbonsToSelect);
 
+  //Screensaver
+  void refreshScreenSaverTimeout();
+
   //AE
   static void panicAudioEngine();
 
