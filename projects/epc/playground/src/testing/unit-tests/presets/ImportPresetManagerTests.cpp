@@ -29,7 +29,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Import PresetManager consumes 
     uc.importBackupFile(stream, {}, TestHelper::getAudioEngineProxy());
   }
 
-  CHECK(memUsage.getUsage() < 9 * 1024 * 1024);
+  CHECK(memUsage.getUsage() < static_cast<long>(9.1 * 1024 * 1024));
 }
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Import PresetManager overwrites banks")

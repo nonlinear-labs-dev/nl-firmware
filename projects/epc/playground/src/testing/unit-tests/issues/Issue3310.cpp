@@ -20,7 +20,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "issue 3310 [3310]")
   auto benderPos = GENERATE(-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1);
 
   const auto oldMCPos = 0.5;
-  const auto mcCResult = std::clamp(oldMCPos + (0.5 * benderPos), 0.0, 1.0);
+  const auto hwAmt = 0.5;
+  const auto mcCResult = std::clamp(oldMCPos + (hwAmt * benderPos), 0.0, 1.0);
 
   INFO("With pre-load bender-cp: " << benderPos);
 
@@ -32,7 +33,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "issue 3310 [3310]")
   REQUIRE(preset->findParameterByID({ C15::PID::Bender, VoiceGroup::Global }, false)->getValue() == Approx(1));
   REQUIRE(preset->findParameterByID({ C15::PID::MC_C, VoiceGroup::Global }, false)->getValue() == Approx(0.5));
   REQUIRE(preset->findParameterByID({ C15::PID::Bender_to_MC_C, VoiceGroup::Global }, false)->getValue()
-          == Approx(0.5));
+          == Approx(hwAmt));
 
   EditBufferUseCases ebUC(*eb);
   ebUC.load(preset);
@@ -43,4 +44,25 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "issue 3310 [3310]")
   INFO("With new modulated MC_C-cp: " << mcCResult)
 
   CHECK(eb->findParameterByID({ C15::PID::MC_C, VoiceGroup::Global })->getControlPositionValue() == Approx(mcCResult));
+}
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "When loading any preset from 'dirty' Bank leads to no changed",
+                 "[3035]")
+{
+  PresetManagerUseCases pmUseCases(*TestHelper::getPresetManager(), *TestHelper::getSettings());
+  auto bank = pmUseCases.importBankFromPath(
+      std::filesystem::directory_entry(getSourceDir() + "/projects/epc/playground/test-resources/Peter_Work_04.xml"),
+      [](const auto&) {});
+
+  TestHelper::initSingleEditBuffer();
+  REQUIRE(TestHelper::getEditBuffer()->findAnyParameterChanged() == false);
+
+  bank->forEachPreset([](const Preset* p) {
+     EditBufferUseCases ebUseCases(*TestHelper::getEditBuffer());
+     ebUseCases.load(p);
+     TestHelper::doMainLoopIteration();
+
+     INFO("Preset " << p->getName() << " loaded as changed");
+     REQUIRE(TestHelper::getEditBuffer()->findAnyParameterChanged() == false);
+  });
 }

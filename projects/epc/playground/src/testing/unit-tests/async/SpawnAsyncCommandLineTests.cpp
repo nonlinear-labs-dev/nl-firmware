@@ -3,12 +3,22 @@
 #include <thread>
 #include <nltools/system/SpawnAsyncCommandLine.h>
 
+void cleanPendingJobs(Application* app) {
+  TestHelper::doMainLoop(
+      std::chrono::milliseconds(20), std::chrono::seconds(5), [] { return SpawnAsyncCommandLine::removeDone() == 0; },
+      app->getMainContext());
+  REQUIRE(SpawnAsyncCommandLine::getNumCommands() == 0);
+}
+
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Async Command Line does not block")
 {
+  cleanPendingJobs(app.get());
+
   bool blocked = true;
   bool done = false;
+
   AsyncCommandLine cmd(
-      Application::get().getMainContext(), { "sleep", "1" },
+      app->getMainContext(), { "sleep", "1" },
       [&](auto o) {
         CHECK_FALSE(blocked);
         done = true;
@@ -19,57 +29,58 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Async Command Line does not bl
 
   TestHelper::doMainLoop(
       std::chrono::milliseconds { 10 }, std::chrono::milliseconds { 2000 }, [&] { return done; },
-      Application::get().getMainContext());
+      app->getMainContext());
 }
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Async Completion will mark job as done")
 {
+  cleanPendingJobs(app.get());
+
   auto done = false;
   SpawnAsyncCommandLine::spawn(
-      Application::get().getMainContext(), { "sleep", "1" }, [&](auto) { done = true; }, [](auto) {});
+      app->getMainContext(), { "sleep", "1" }, [&](auto) { done = true; }, [](auto) {});
   TestHelper::doMainLoop(
       std::chrono::milliseconds { 10 }, std::chrono::milliseconds { 2000 }, [&] { return done; },
-      Application::get().getMainContext());
+      app->getMainContext());
   CHECK(SpawnAsyncCommandLine::removeDone() == 0);
 }
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Async Spawn increments job count")
 {
+  cleanPendingJobs(app.get());
+
   auto done = false;
 
   auto old = SpawnAsyncCommandLine::getNumCommands();
 
   SpawnAsyncCommandLine::spawn(
-      Application::get().getMainContext(), { "sleep", "1" }, [](auto) {}, [](auto) {});
+      app->getMainContext(), { "sleep", "1" }, [](auto) {}, [](auto) {});
   SpawnAsyncCommandLine::spawn(
-      Application::get().getMainContext(), { "sleep", "1" }, [&](auto) { done = true; }, [](auto) {});
+      app->getMainContext(), { "sleep", "1" }, [&](auto) { done = true; }, [](auto) {});
 
   auto newCount = SpawnAsyncCommandLine::getNumCommands();
   CHECK(newCount > old);
 
   TestHelper::doMainLoop(
       std::chrono::milliseconds { 10 }, std::chrono::milliseconds { 2000 }, [&] { return done; },
-      Application::get().getMainContext());
+      app->getMainContext());
 }
 
-//TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Async Spawn will remove done Jobs")
-//{
-//  TestHelper::doMainLoop(
-//      std::chrono::milliseconds(20), std::chrono::seconds(5), [] { return SpawnAsyncCommandLine::removeDone() == 0; },
-//      Application::get().getMainContext());
-//  REQUIRE(SpawnAsyncCommandLine::getNumCommands() == 0);
-//
-//  auto done = false;
-//
-//  SpawnAsyncCommandLine::spawn(
-//      Application::get().getMainContext(), { "echo", "x" }, [&](auto) { done = true; }, [](auto) {});
-//  CHECK(SpawnAsyncCommandLine::getNumCommands() == 1);
-//
-//  TestHelper::doMainLoop(
-//      std::chrono::milliseconds(200), std::chrono::milliseconds(2000), [&] { return done; },
-//      Application::get().getMainContext());
-//
-//  SpawnAsyncCommandLine::spawn(
-//      Application::get().getMainContext(), { "echo", "x" }, [](auto) {}, [](auto) {});
-//  CHECK(SpawnAsyncCommandLine::getNumCommands() == 1);
-//}
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Async Spawn will remove done Jobs")
+{
+  cleanPendingJobs(app.get());
+
+  auto done = false;
+
+  SpawnAsyncCommandLine::spawn(
+      app->getMainContext(), { "echo", "x" }, [&](auto) { done = true; }, [](auto) {});
+  CHECK(SpawnAsyncCommandLine::getNumCommands() == 1);
+
+  TestHelper::doMainLoop(
+      std::chrono::milliseconds(200), std::chrono::milliseconds(2000), [&] { return done; },
+      app->getMainContext());
+
+  SpawnAsyncCommandLine::spawn(
+      app->getMainContext(), { "echo", "x" }, [](auto) {}, [](auto) {});
+  CHECK(SpawnAsyncCommandLine::getNumCommands() == 1);
+}
