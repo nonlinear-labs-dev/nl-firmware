@@ -308,7 +308,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Preset with differing Retu
     WHEN("initial")
     {
       CHECK(ribbon1->getReturnMode() == ReturnMode::None);
-      CHECK(ribbon1->getDisplayString() == "50.0 %");
+      CHECK(ribbon1->getDisplayString() == "0.0 %");
       ribbonUseCase.changeFromAudioEngine(0.5, HWChangeSource::TCD);
       TestHelper::doMainLoopIteration();
       CHECK(ribbon1->getDisplayString() == "50.0 %");

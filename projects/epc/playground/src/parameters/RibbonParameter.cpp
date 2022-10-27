@@ -152,11 +152,6 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
           {
             setupScalingAndDefaultValue(true);
           }
-          else if(initiator == Initiator::EXPLICIT_LOAD && getRibbonReturnMode() == RibbonReturnMode::STAY
-                  && oldMode == RibbonReturnMode::RETURN)
-          {
-            setupScalingAndDefaultValue(true);
-          }
           onChange();
         });
   }
