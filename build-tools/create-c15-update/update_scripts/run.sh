@@ -159,7 +159,7 @@ epc_update() {
       return 1
     fi
 
-    pretty "" "$MSG_UPDATING_EPC" "$MSG_OK" "$MSG_UPDATING_EPC" "$MSG_OK"
+    pretty "" "$MSG_UPDATING_EPC" "$MSG_DONE" "$MSG_UPDATING_EPC" "$MSG_DONE"
     sleep 2
     return 0
 }
