@@ -2,7 +2,13 @@ SET(USER $ENV{USER})
 SET(DOCKERNAME nl-playcontroller-cross-build-environment)
 
 SET(RT_SOURCES_DIR ${CMAKE_SOURCE_DIR}/projects/playcontroller/firmware)
-file(GLOB_RECURSE ALL_FILES_IN_PROJECT ${RT_SOURCES_DIR}/*.c ${RT_SOURCES_DIR}/*.h ${RT_SOURCES_DIR}/*.txt ${RT_SOURCES_DIR}/*.ld ${CMAKE_SOURCE_DIR}/projects/shared/* ${CMAKE_SOURCE_DIR}/build-tools/*)
+file(GLOB_RECURSE ALL_FILES_IN_PROJECT 
+      ${RT_SOURCES_DIR}/*.c 
+      ${RT_SOURCES_DIR}/*.h 
+      ${RT_SOURCES_DIR}/*.txt 
+      ${RT_SOURCES_DIR}/*.ld 
+      ${CMAKE_SOURCE_DIR}/projects/shared/* 
+      ${CMAKE_SOURCE_DIR}/build-tools/playcontroller/*)
 
 EXECUTE_PROCESS(OUTPUT_VARIABLE GROUP_ID COMMAND sh -c "id -g $USER")
 EXECUTE_PROCESS(OUTPUT_VARIABLE USER_ID COMMAND sh -c "id -u $USER")
@@ -39,7 +45,6 @@ add_custom_command(
     DEPENDS ${ALL_FILES_IN_PROJECT}
     COMMAND ${CMAKE_SOURCE_DIR}/build-tools/create-c15-update/create-c15-update.sh
         "unused-epc"
-        "unused-epc2"
         ${CMAKE_BINARY_DIR}/build-tools/bbb/rootfs.tar.gz
         "unused-mlo"
         "usused-uboot"

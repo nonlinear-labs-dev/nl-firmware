@@ -2,17 +2,20 @@
 #include <device-settings/EditSmoothingTime.h>
 #include <testing/TestHelper.h>
 #include <device-settings/Settings.h>
+#include <proxies/hwui/HardwareFeatures.h>
 
 TEST_CASE("Edit Smoothing Time - Scales")
 {
-  Settings settings("", nullptr);
+  HardwareFeatures hw;
+  Settings settings("", nullptr, hw);
   EditSmoothingTime time(settings);
   REQUIRE(time.getParent() != nullptr);
 }
 
 TEST_CASE("Edit Smoothing Time - To String")
 {
-  Settings settings("", nullptr);
+  HardwareFeatures hw;
+  Settings settings("", nullptr, hw);
   EditSmoothingTime time(settings);
 
   SECTION("0.000 ms")

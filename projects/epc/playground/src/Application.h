@@ -23,6 +23,7 @@ class Settings;
 class EmbeddedPC;
 class Clipboard;
 class WebUISupport;
+class HardwareFeatures;
 
 namespace Glib
 {
@@ -54,10 +55,9 @@ class Application
   DeviceInformation *getDeviceInformation();
   Clipboard *getClipboard();
   WebUISupport *getWebUISupport();
+  HardwareFeatures* getHardwareFeatures();
 
   void quit();
-  [[nodiscard]] bool isQuit() const;
-
   void runWatchDog();
   void stopWatchDog();
 
@@ -68,9 +68,11 @@ class Application
   static std::unique_ptr<Options> initStatic(Application *app, std::unique_ptr<Options> options);
 
   static Application *theApp;
+
   std::unique_ptr<Options> m_options;
   Glib::RefPtr<Glib::MainLoop> m_theMainLoop;
 
+  std::unique_ptr<HardwareFeatures> m_hwFeatures;
   std::unique_ptr<HTTPServer> m_http;
   std::unique_ptr<Settings> m_settings;
   std::unique_ptr<UndoScope> m_undoScope;

@@ -1,6 +1,7 @@
 #include "RawValue.h"
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <cmath>
+#include <utility>
 
 RawValue::RawValue(const ScaleConverter *scale, tValueType def)
     : m_defaultValue(def)

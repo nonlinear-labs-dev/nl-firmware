@@ -34,6 +34,7 @@
 #include <proxies/hwui/FrameBuffer.h>
 #include "UsageMode.h"
 #include "use-cases/SettingsUseCases.h"
+#include <proxies/hwui/HardwareFeatures.h>
 
 HWUI::HWUI(Settings &settings)
     : m_voiceGoupSignal {}
@@ -241,6 +242,12 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
       else if(line == "inc-all-fine")
       {
         Application::get().getPresetManager()->incAllParamsFine();
+      }
+      else if(line == "epc-info")
+      {
+        auto hwInfo = Application::get().getHardwareFeatures();
+        nltools::Log::error("epc model:", toString(hwInfo->getModel()));
+        nltools::Log::error("has epc wifi:", hwInfo->hasEPCWiFi());
       }
       else if(line.at(0) == '!')
       {

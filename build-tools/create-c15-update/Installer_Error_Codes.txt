@@ -17,8 +17,7 @@ List of current Error Messages
 - 45 :: "E45 ePC update: Reboot taking too long... timed out"
 - 46 :: "E46 ePC update: Could not start server on BBB..."
 - 47 :: "E47 ePC update: pulling update failed ..."
-- 48 :: "E48 ePC update: "fixing Overlay order failed" or "setting Kernel Params failed" or "fixing sda4 failed"
-- 49 :: "E49 ePC update: pushing update failed ..."
+- 48 :: "E48 ePC fix: "fixing Overlay order failed" or "setting Kernel Params failed" or "fixing sda4 failed" or "adding ping test to nlhook"
 
 5. BBB
 - 54 :: "E54 BBB update: User partition not mounted om ePC ..."
@@ -35,7 +34,7 @@ List of current Error Messages
 - 83 :: "E83: Can't logon to ePC OS ..."
 - 84 :: "E84: Upgrade OS first!"
 - 85 :: "E85: OS too old for update!"
-- 86 :: "E86: ePC update missing" "Please retry download!"
+- 86 :: "E86: ePC update/fix missing" "Please retry download!"
 - 87 :: "E87: BBB update missing" "Please retry download!"
 - 88 :: "E88: playcontroller update missing" "Please retry download!"
 - 89 :: "Update aborted! E89" "Please use USB update!"
