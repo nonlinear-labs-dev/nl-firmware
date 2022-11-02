@@ -56,11 +56,7 @@ function processDefinitions(result: Result) {
         parameterType = Object.entries(result.declarations.parameter_type).reduce((out: ParamType, [typeName, props]) => {
             if(typeName !== "None") {
                 // every type !== None can collect tokens
-                if(!props.includes("parameter_id_none")) {
-                    out[`${typeName}s`] = [];
-                } else {
-                    out[`${typeName}s`] = ["None"];
-                }
+                out[`${typeName}s`] = [];
             }
             return out;
         }, {}),
@@ -369,10 +365,13 @@ function processDefinitions(result: Result) {
         
         return out;
     }, new Array<string>()).join(",\n");
-    result.parameters = Object.entries(parameterType).reduce((out: Array<string>, [key, entries]) => {
-        out.push(`enum class ${key} {\n${indent}${[...entries, "_LENGTH_"].join(`,\n${indent}`)}\n};`);
-        const shift = entries[0] === "None" ? " - 1" : "";
-        out.push(`static constexpr unsigned num_of_${key} = static_cast<unsigned>(${key}::_LENGTH_)${shift};\n`);
+    result.parameters = Object.entries(result.declarations.parameter_type).reduce((out: Array<string>, [typeName, props]) => {
+        if(typeName === "None") return out;
+        const key = `${typeName}s`, entries = parameterType[key];
+        entries.push("_LENGTH_");
+        if(props.includes("parameter_id_none")) entries.push("None = _LENGTH_", "_OPTIONS_");
+        out.push(`enum class ${key} {\n${indent}${entries.join(`,\n${indent}`)}\n};`);
+        out.push(`static constexpr unsigned num_of_${key} = static_cast<unsigned>(${key}::_LENGTH_);\n`);
         return out;
     }, []).join("\n");
     result.smoothers = Object.entries(smootherType).reduce((out: Array<string>, [key, entries]) => {

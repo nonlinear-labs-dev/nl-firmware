@@ -16,10 +16,11 @@ TEST_CASE("MC_Assignment")
   {
     auto param = C15::Parameters::Global_Modulateables::Master_Pan;
     auto mc = C15::Parameters::Macro_Controls::MC_A;
+    auto mcId = (uint32_t) mc;
     m_params.m_global.m_assignment.reassign(param, mc);
 
     int numModulated = 0;
-    for(auto modParam = m_params.globalChainFirst(1); modParam; modParam = m_params.globalChainNext())
+    for(auto modParam = m_params.globalChainFirst(mcId); modParam; modParam = m_params.globalChainNext())
     {
       numModulated++;
     }
@@ -28,7 +29,7 @@ TEST_CASE("MC_Assignment")
     REQUIRE(numModulated == 1);
 
     numModulated = 0;
-    for(auto modParam = m_params.globalChainFirst(1); modParam; modParam = m_params.globalChainNext())
+    for(auto modParam = m_params.globalChainFirst(mcId); modParam; modParam = m_params.globalChainNext())
     {
       numModulated++;
     }
@@ -40,11 +41,12 @@ TEST_CASE("MC_Assignment")
     auto param1 = C15::Parameters::Global_Modulateables::Master_Pan;
     auto param2 = C15::Parameters::Global_Modulateables::Master_Volume;
     auto mc = C15::Parameters::Macro_Controls::MC_A;
+    auto mcId = (uint32_t) mc;
     m_params.m_global.m_assignment.reassign(param1, mc);
     m_params.m_global.m_assignment.reassign(param2, mc);
 
     int numModulated = 0;
-    for(auto modParam = m_params.globalChainFirst(1); modParam; modParam = m_params.globalChainNext())
+    for(auto modParam = m_params.globalChainFirst(mcId); modParam; modParam = m_params.globalChainNext())
     {
       numModulated++;
     }
@@ -53,7 +55,7 @@ TEST_CASE("MC_Assignment")
     REQUIRE(numModulated == 2);
 
     numModulated = 0;
-    for(auto modParam = m_params.globalChainFirst(1); modParam; modParam = m_params.globalChainNext())
+    for(auto modParam = m_params.globalChainFirst(mcId); modParam; modParam = m_params.globalChainNext())
     {
       numModulated++;
     }
@@ -63,7 +65,7 @@ TEST_CASE("MC_Assignment")
     WHEN("Iterating is breaked")
     {
       numModulated = 0;
-      for(auto modParam = m_params.globalChainFirst(1); modParam; modParam = m_params.globalChainNext())
+      for(auto modParam = m_params.globalChainFirst(mcId); modParam; modParam = m_params.globalChainNext())
       {
         numModulated++;
         break;
@@ -72,7 +74,7 @@ TEST_CASE("MC_Assignment")
       CHECK(numModulated == 1);
 
       numModulated = 0;
-      for(auto modParam = m_params.globalChainFirst(1); modParam; modParam = m_params.globalChainNext())
+      for(auto modParam = m_params.globalChainFirst(mcId); modParam; modParam = m_params.globalChainNext())
       {
         numModulated++;
       }

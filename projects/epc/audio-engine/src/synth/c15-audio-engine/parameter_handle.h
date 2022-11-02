@@ -56,10 +56,10 @@ namespace Engine
         m_global.m_source[5].m_behavior = C15::Properties::HW_Return_Behavior::Zero;
         for(uint32_t s = 0; s < m_global.m_source_count; s++)
         {
-          m_global.m_source[s].m_offset = s * (m_global.m_macro_count - 1);
-          for(uint32_t i = 1; i < m_global.m_macro_count; i++)
+          m_global.m_source[s].m_offset = s * C15::Parameters::num_of_Macro_Controls;
+          for(uint32_t i = 0; i < C15::Parameters::num_of_Macro_Controls; i++)
           {
-            const uint32_t index = m_global.m_source[s].m_offset + i - 1;
+            const uint32_t index = m_global.m_source[s].m_offset + i;
             m_global.m_amount[index].m_sourceId = s;
           }
         }
@@ -68,7 +68,7 @@ namespace Engine
       {
         auto param = get_macro(_element.m_param.m_index);
         param->m_id = _element.m_param.m_index;
-        param->m_index = _element.m_param.m_index - 1;
+        param->m_index = _element.m_param.m_index;
         param->m_position = _element.m_initial;
         param->m_initial = _element.m_initial;
       }

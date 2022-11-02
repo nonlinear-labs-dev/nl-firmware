@@ -204,13 +204,13 @@ namespace Engine
     {
       HW_Src_Param m_source[static_cast<uint32_t>(HW::_LENGTH_)];
       HW_Amt_Param m_amount[static_cast<uint32_t>(HA::_LENGTH_)];
-      Macro_Param m_macro[static_cast<uint32_t>(MC::_LENGTH_)];
+      Macro_Param m_macro[static_cast<uint32_t>(MC::_OPTIONS_)];
       Target_Param m_target[static_cast<uint32_t>(TP::_LENGTH_)];
       Direct_Param m_direct[static_cast<uint32_t>(DP::_LENGTH_)];
       MC_Assignment<MC, TP> m_assignment;
       const uint32_t m_source_count
           = static_cast<uint32_t>(HW::_LENGTH_),
-          m_amount_count = static_cast<uint32_t>(HA::_LENGTH_), m_macro_count = static_cast<uint32_t>(MC::_LENGTH_),
+          m_amount_count = static_cast<uint32_t>(HA::_LENGTH_), m_macro_count = static_cast<uint32_t>(MC::_OPTIONS_),
           m_target_count = static_cast<uint32_t>(TP::_LENGTH_), m_direct_count = static_cast<uint32_t>(DP::_LENGTH_);
     };
 

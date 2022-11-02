@@ -496,7 +496,7 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::MacroCo
   {
     if(LOG_EDITS)
     {
-      nltools::Log::info("mc_edit(pos:", param->m_position, ")");
+      nltools::Log::info("mc_edit(id:", _id, ", pos:", param->m_position, ")");
     }
     param->m_unclipped = param->m_position;  // fixing #2023: unclipped always up-to-date
     globalModChain(param);
@@ -576,7 +576,7 @@ void dsp_host_dual::globalTimeChg(const uint32_t _id, const nltools::msg::Unmodu
   {
     if(LOG_EDITS)
     {
-      nltools::Log::info("mc_edit(time:", param->m_position, ")");
+      nltools::Log::info("mc_edit(id:", _id, ", time:", param->m_position, ")");
     }
     param->m_scaled = scale(param->m_scaling, param->m_position);
     updateTime(&param->m_dx, param->m_scaled);
@@ -1136,34 +1136,28 @@ C15::Properties::HW_Return_Behavior dsp_host_dual::getBehavior(const RibbonRetur
 
 C15::Parameters::Macro_Controls dsp_host_dual::getMacro(const MacroControls _mc)
 {
-  static_assert(static_cast<int>(MacroControls::NONE) == static_cast<int>(C15::Parameters::Macro_Controls::None));
-  static_assert(static_cast<int>(MacroControls::MC1) == static_cast<int>(C15::Parameters::Macro_Controls::MC_A));
-  static_assert(static_cast<int>(MacroControls::MC2) == static_cast<int>(C15::Parameters::Macro_Controls::MC_B));
-  static_assert(static_cast<int>(MacroControls::MC3) == static_cast<int>(C15::Parameters::Macro_Controls::MC_C));
-  static_assert(static_cast<int>(MacroControls::MC4) == static_cast<int>(C15::Parameters::Macro_Controls::MC_D));
-  static_assert(static_cast<int>(MacroControls::MC5) == static_cast<int>(C15::Parameters::Macro_Controls::MC_E));
-  static_assert(static_cast<int>(MacroControls::MC6) == static_cast<int>(C15::Parameters::Macro_Controls::MC_F));
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::NONE)
-                == C15::Parameters::Macro_Controls::None);
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC1)
-                == C15::Parameters::Macro_Controls::MC_A);
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC2)
-                == C15::Parameters::Macro_Controls::MC_B);
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC3)
-                == C15::Parameters::Macro_Controls::MC_C);
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC4)
-                == C15::Parameters::Macro_Controls::MC_D);
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC5)
-                == C15::Parameters::Macro_Controls::MC_E);
-  static_assert(static_cast<C15::Parameters::Macro_Controls>(MacroControls::MC6)
-                == C15::Parameters::Macro_Controls::MC_F);
-
-  return static_cast<C15::Parameters::Macro_Controls>(_mc);
+  switch(_mc)
+  {
+    case MacroControls::MC1:
+      return C15::Parameters::Macro_Controls::MC_A;
+    case MacroControls::MC2:
+      return C15::Parameters::Macro_Controls::MC_B;
+    case MacroControls::MC3:
+      return C15::Parameters::Macro_Controls::MC_C;
+    case MacroControls::MC4:
+      return C15::Parameters::Macro_Controls::MC_D;
+    case MacroControls::MC5:
+      return C15::Parameters::Macro_Controls::MC_E;
+    case MacroControls::MC6:
+      return C15::Parameters::Macro_Controls::MC_F;
+    default:
+      return C15::Parameters::Macro_Controls::None;
+  }
 }
 
 uint32_t dsp_host_dual::getMacroId(const MacroControls _mc)
 {
-  return static_cast<uint32_t>(_mc);  // assuming idential MC enumeration
+  return static_cast<uint32_t>(getMacro(_mc));
 }
 
 C15::Properties::LayerId dsp_host_dual::getLayer(const VoiceGroup _vg)
@@ -1303,9 +1297,9 @@ void dsp_host_dual::hwModChain(HW_Src_Param *_src, const uint32_t _id, const flo
   }
   if(_src->m_behavior == C15::Properties::HW_Return_Behavior::Stay)
   {
-    for(uint32_t macroId = 1; macroId < m_params.m_global.m_macro_count; macroId++)
+    for(uint32_t macroId = 0; macroId < C15::Parameters::num_of_Macro_Controls; macroId++)
     {
-      const uint32_t amountIndex = _src->m_offset + macroId - 1;
+      const uint32_t amountIndex = _src->m_offset + macroId;
       auto amount = m_params.get_hw_amt(amountIndex);
       if(amount->m_position != 0.0f)
       {
@@ -1340,9 +1334,9 @@ void dsp_host_dual::hwModChain(HW_Src_Param *_src, const uint32_t _id, const flo
   }
   else
   {
-    for(uint32_t macroId = 1; macroId < m_params.m_global.m_macro_count; macroId++)
+    for(uint32_t macroId = 0; macroId < C15::Parameters::num_of_Macro_Controls; macroId++)
     {
-      const uint32_t amountIndex = _src->m_offset + macroId - 1;
+      const uint32_t amountIndex = _src->m_offset + macroId;
       auto amount = m_params.get_hw_amt(amountIndex);
       if(amount->m_position != 0.0f)
       {
