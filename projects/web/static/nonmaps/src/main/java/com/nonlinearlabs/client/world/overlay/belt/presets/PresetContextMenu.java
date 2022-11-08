@@ -29,22 +29,18 @@ public class PresetContextMenu extends ContextMenu {
 		this.preset = preset;
 		final PresetManager pm = preset.getParent().getParent();
 		final boolean hasMultipleSelection = pm.hasMultiplePresetSelection();
-		final boolean multipleSelectionAllowed = SetupModel.get().localSettings.presetDragDrop
-				.getValue() == BooleanValues.on;
 
-		if (multipleSelectionAllowed) {
-			addChild(new ContextMenuItem(this,
-					pm.hasMultiplePresetSelection() ? "Disable Multiple Selection" : "Start Multiple Selection") {
-				@Override
-				public Control click(Position eventPoint) {
-					if (pm.hasMultiplePresetSelection())
-						pm.closeMultiSelection();
-					else
-						pm.startMultiSelection(preset, false);
-					return super.click(eventPoint);
-				}
-			});
-		}
+		addChild(new ContextMenuItem(this,
+				pm.hasMultiplePresetSelection() ? "Disable Multiple Selection" : "Start Multiple Selection") {
+			@Override
+			public Control click(Position eventPoint) {
+				if (pm.hasMultiplePresetSelection())
+					pm.closeMultiSelection();
+				else
+					pm.startMultiSelection(preset, false);
+				return super.click(eventPoint);
+			}
+		});
 
 		if (!hasMultipleSelection) {
 			if (!PresetInfoDialog.isShown()) {
