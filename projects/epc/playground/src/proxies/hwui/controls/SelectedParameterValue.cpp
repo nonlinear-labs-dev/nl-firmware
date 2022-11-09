@@ -228,7 +228,7 @@ HardwareSourceCCLabel::HardwareSourceCCLabel(const Rect &e)
                      { .size = FontSize::Size8,
                        .decoration = FontDecoration::Regular,
                        .justification = Font::Justification::Left,
-                       .backgroundColor = FrameBufferColors::Transparent })
+                       .backgroundColor = FrameBufferColors::C43 })
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   eb->onSelectionChanged(sigc::mem_fun(this, &HardwareSourceCCLabel::onParameterSelectionHappened), VoiceGroup::Global);
