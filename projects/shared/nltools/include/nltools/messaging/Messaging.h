@@ -47,7 +47,22 @@ namespace nltools
 
          SyncFS, UpdateUploaded, AutoStartRecorderMessage, AEPanic, GlobalLocalSetting, WifiDevBBBEnable,
          BufferUnderrunsChanged, SetFramesPerPeriod, FlacRecorderStateChanged, HardwarePollEnded,
-         StopRecorderPlaybackMessage, NotifyNoRecorderClients);
+         StopRecorderPlaybackMessage, NotifyNoRecorderClients,
+
+         // new ParameterChanged protocol           ( todo: use )
+         HardwareSourceParameterChanged,
+         HardwareSourceSendParameterChanged,
+         HardwareAmountParameterChanged,
+         MacroControlParameterChanged,
+         MacroTimeParameterChanged,
+         GlobalModulateableParameterChanged,
+         GlobalUnmodulateableParameterChanged,
+         LocalModulateableParameterChanged,         // todo: deprecate
+         LocalUnmodulateableParameterChanged,       // todo: deprecate
+         PolyphonicModulateableParameterChanged,
+         PolyphonicUnmodulateableParameterChanged,
+         MonophonicModulateableParameterChanged,
+         MonophonicUnmodulateableParameterChanged);
 
     namespace detail
     {

@@ -306,7 +306,7 @@ void C15Synth::onSettingInitialSinglePreset()
 void C15Synth::onModulateableParameterMessage(const nltools::msg::ModulateableParameterChangedMessage& msg)
 {
   // (fail-safe) dispatch by ParameterList
-  auto element = m_dsp->getParameter(msg.parameterId);
+  auto element = m_dsp->getParameter(msg.m_id);
   switch(element.m_param.m_type)
   {
     case C15::Descriptors::ParameterType::Global_Modulateable:
@@ -324,7 +324,7 @@ void C15Synth::onModulateableParameterMessage(const nltools::msg::ModulateablePa
 void C15Synth::onUnmodulateableParameterMessage(const nltools::msg::UnmodulateableParameterChangedMessage& msg)
 {
   // (fail-safe) dispatch by ParameterList
-  auto element = m_dsp->getParameter(msg.parameterId);
+  auto element = m_dsp->getParameter(msg.m_id);
   // further (subtype) distinction
   switch(element.m_param.m_type)
   {
@@ -372,7 +372,7 @@ void C15Synth::onUnmodulateableParameterMessage(const nltools::msg::Unmodulateab
 void C15Synth::onMacroControlParameterMessage(const nltools::msg::MacroControlChangedMessage& msg)
 {
   // (fail-safe) dispatch by ParameterList
-  auto element = m_dsp->getParameter(msg.parameterId);
+  auto element = m_dsp->getParameter(msg.m_id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Control)
   {
     m_dsp->globalParChg(element.m_param.m_index, msg);
@@ -386,7 +386,7 @@ void C15Synth::onMacroControlParameterMessage(const nltools::msg::MacroControlCh
 void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg)
 {
   // (fail-safe) dispatch by ParameterList
-  auto element = m_dsp->getParameter(msg.parameterId);
+  auto element = m_dsp->getParameter(msg.m_id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Amount)
   {
     m_dsp->globalParChg(element.m_param.m_index, msg);
@@ -399,14 +399,14 @@ void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg
 
 void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg)
 {
-  auto element = m_dsp->getParameter(msg.parameterId);
-  auto latchIndex = InputEventStage::parameterIDToHWID(msg.parameterId);
+  auto element = m_dsp->getParameter(msg.m_id);
+  auto latchIndex = InputEventStage::parameterIDToHWID(msg.m_id);
 
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HardwareSource::NONE)
   {
-    auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.returnMode);
+    auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.m_returnMode);
     m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)][static_cast<int>(HWChangeSource::UI)]
-        = static_cast<float>(msg.controlPosition);
+        = static_cast<float>(msg.m_controlPosition);
     m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
   }
 }

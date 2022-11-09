@@ -480,7 +480,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::onPresetMessage(const nltool
 void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::HWAmountChangedMessage &_msg)
 {
   auto param = m_params.get_hw_amt(_id);
-  if(param->update_position(static_cast<float>(_msg.controlPosition)))
+  if(param->update_position(static_cast<float>(_msg.m_controlPosition)))
   {
     if(LOG_EDITS)
     {
@@ -492,7 +492,7 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::HWAmoun
 void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::MacroControlChangedMessage &_msg)
 {
   auto param = m_params.get_macro(_id);
-  if(param->update_position(static_cast<float>(_msg.controlPosition)))
+  if(param->update_position(static_cast<float>(_msg.m_controlPosition)))
   {
     if(LOG_EDITS)
     {
@@ -516,15 +516,15 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::MacroCo
 
 void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage &_msg)
 {
-  const uint32_t macroId = getMacroId(_msg.sourceMacro);
+  const uint32_t macroId = getMacroId(_msg.m_macro);
   auto param = m_params.get_global_target(_id);
-  bool aspect_update = param->update_source(getMacro(_msg.sourceMacro));
+  bool aspect_update = param->update_source(getMacro(_msg.m_macro));
   if(aspect_update)
   {
     m_params.m_global.m_assignment.reassign(_id, macroId);
   }
-  aspect_update |= param->update_amount(static_cast<float>(_msg.mcAmount));
-  if(param->update_position(param->depolarize(static_cast<float>(_msg.controlPosition))))
+  aspect_update |= param->update_amount(static_cast<float>(_msg.m_modulationAmount));
+  if(param->update_position(param->depolarize(static_cast<float>(_msg.m_controlPosition))))
   {
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
     param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
@@ -551,7 +551,7 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::Modulat
 void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
 {
   auto param = m_params.get_global_direct(_id);
-  if(param->update_position(static_cast<float>(_msg.controlPosition)))
+  if(param->update_position(static_cast<float>(_msg.m_controlPosition)))
   {
     param->m_scaled = scale(param->m_scaling, param->m_position);
     if(LOG_EDITS)
@@ -572,7 +572,7 @@ void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::Unmodul
 void dsp_host_dual::globalTimeChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
 {
   auto param = m_params.get_macro_time(_id);
-  if(param->update_position(static_cast<float>(_msg.controlPosition)))
+  if(param->update_position(static_cast<float>(_msg.m_controlPosition)))
   {
     if(LOG_EDITS)
     {
@@ -585,15 +585,15 @@ void dsp_host_dual::globalTimeChg(const uint32_t _id, const nltools::msg::Unmodu
 
 void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage &_msg)
 {
-  const uint32_t layerId = getLayerId(_msg.voiceGroup), macroId = getMacroId(_msg.sourceMacro);
+  const uint32_t layerId = getLayerId(_msg.m_voiceGroup), macroId = getMacroId(_msg.m_macro);
   auto param = m_params.get_local_target(layerId, _id);
-  bool aspect_update = param->update_source(getMacro(_msg.sourceMacro));
+  bool aspect_update = param->update_source(getMacro(_msg.m_macro));
   if(aspect_update)
   {
     m_params.m_layer[layerId].m_assignment.reassign(_id, macroId);
   }
-  aspect_update |= param->update_amount(static_cast<float>(_msg.mcAmount));
-  if(param->update_position(param->depolarize(static_cast<float>(_msg.controlPosition))))
+  aspect_update |= param->update_amount(static_cast<float>(_msg.m_modulationAmount));
+  if(param->update_position(param->depolarize(static_cast<float>(_msg.m_controlPosition))))
   {
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
     param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
@@ -657,9 +657,9 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Modulate
 
 void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
 {
-  const uint32_t layerId = getLayerId(_msg.voiceGroup);
+  const uint32_t layerId = getLayerId(_msg.m_voiceGroup);
   auto param = m_params.get_local_direct(layerId, _id);
-  if(param->update_position(static_cast<float>(_msg.controlPosition)))
+  if(param->update_position(static_cast<float>(_msg.m_controlPosition)))
   {
     param->m_scaled = scale(param->m_scaling, param->m_position);
     if(LOG_EDITS)
@@ -696,10 +696,10 @@ void dsp_host_dual::localParChg(const uint32_t _id, const nltools::msg::Unmodula
 DSPInterface::OutputResetEventSource
     dsp_host_dual::localUnisonVoicesChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
 {
-  const uint32_t layerId = getLayerId(_msg.voiceGroup);
-  auto param = m_params.get_local_unison_voices(getLayer(_msg.voiceGroup));
+  const uint32_t layerId = getLayerId(_msg.m_voiceGroup);
+  auto param = m_params.get_local_unison_voices(getLayer(_msg.m_voiceGroup));
 
-  if(param->update_position(static_cast<float>(_msg.controlPosition)))
+  if(param->update_position(static_cast<float>(_msg.m_controlPosition)))
   {
     if(LOG_EDITS)
     {
@@ -756,9 +756,9 @@ DSPInterface::OutputResetEventSource
 DSPInterface::OutputResetEventSource
     dsp_host_dual::localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
 {
-  const uint32_t layerId = getLayerId(_msg.voiceGroup);
-  auto param = m_params.get_local_mono_enable(getLayer(_msg.voiceGroup));
-  if(param->update_position(static_cast<float>(_msg.controlPosition)))
+  const uint32_t layerId = getLayerId(_msg.m_voiceGroup);
+  auto param = m_params.get_local_mono_enable(getLayer(_msg.m_voiceGroup));
+  if(param->update_position(static_cast<float>(_msg.m_controlPosition)))
   {
     if(LOG_EDITS)
     {
@@ -813,9 +813,9 @@ DSPInterface::OutputResetEventSource
 
 void dsp_host_dual::localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
 {
-  const uint32_t layerId = getLayerId(_msg.voiceGroup);
-  auto param = m_params.get_local_mono_priority(getLayer(_msg.voiceGroup));
-  if(param->update_position(static_cast<float>(_msg.controlPosition)))
+  const uint32_t layerId = getLayerId(_msg.m_voiceGroup);
+  auto param = m_params.get_local_mono_priority(getLayer(_msg.m_voiceGroup));
+  if(param->update_position(static_cast<float>(_msg.m_controlPosition)))
   {
     if(LOG_EDITS)
     {
@@ -827,9 +827,9 @@ void dsp_host_dual::localMonoPriorityChg(const nltools::msg::UnmodulateableParam
 }
 void dsp_host_dual::localMonoLegatoChg(const nltools::msg::UnmodulateableParameterChangedMessage &_msg)
 {
-  const uint32_t layerId = getLayerId(_msg.voiceGroup);
-  auto param = m_params.get_local_mono_legato(getLayer(_msg.voiceGroup));
-  if(param->update_position(static_cast<float>(_msg.controlPosition)))
+  const uint32_t layerId = getLayerId(_msg.m_voiceGroup);
+  auto param = m_params.get_local_mono_legato(getLayer(_msg.m_voiceGroup));
+  if(param->update_position(static_cast<float>(_msg.m_controlPosition)))
   {
     if(LOG_EDITS)
     {
@@ -1675,9 +1675,9 @@ bool dsp_host_dual::evalPolyChg(const C15::Properties::LayerId _layerId,
 {
   const uint32_t layerId = static_cast<uint32_t>(_layerId);
   auto unison_voices = m_params.get_local_unison_voices(_layerId);
-  bool unisonChanged = unison_voices->update_position(static_cast<float>(_unisonVoices.controlPosition));
+  bool unisonChanged = unison_voices->update_position(static_cast<float>(_unisonVoices.m_controlPosition));
   auto mono_enable = m_params.get_local_mono_enable(_layerId);
-  bool monoChanged = mono_enable->update_position(static_cast<float>(_monoEnable.controlPosition));
+  bool monoChanged = mono_enable->update_position(static_cast<float>(_monoEnable.m_controlPosition));
   return unisonChanged || monoChanged;
 }
 
@@ -2247,206 +2247,206 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
 
 void dsp_host_dual::globalParRcl(const nltools::msg::Parameters::HardwareSourceParameter &_param)
 {
-  auto element = getParameter(_param.id);
+  auto element = getParameter(_param.m_id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source)
   {
     auto param = m_params.get_hw_src(element.m_param.m_index);
-    param->update_behavior(getBehavior(_param.returnMode));
-    param->update_position(static_cast<float>(_param.controlPosition));
+    param->update_behavior(getBehavior(_param.m_returnMode));
+    param->update_position(static_cast<float>(_param.m_controlPosition));
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall HW Source(id:", _param.id, ")");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall HW Source(id:", _param.m_id, ")");
   }
 }
 void dsp_host_dual::globalParRcl(const nltools::msg::Parameters::HardwareAmountParameter &_param)
 {
-  auto element = getParameter(_param.id);
+  auto element = getParameter(_param.m_id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Amount)
   {
     auto param = m_params.get_hw_amt(element.m_param.m_index);
-    param->update_position(static_cast<float>(_param.controlPosition));
+    param->update_position(static_cast<float>(_param.m_controlPosition));
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall HW Amount(id:", _param.id, ")");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall HW Amount(id:", _param.m_id, ")");
   }
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::Parameters::MacroParameter &_param)
 {
-  auto element = getParameter(_param.id);
+  auto element = getParameter(_param.m_id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Control)
   {
     auto param = m_params.get_macro(element.m_param.m_index);
-    param->update_position(static_cast<float>(_param.controlPosition));
+    param->update_position(static_cast<float>(_param.m_controlPosition));
     param->m_unclipped = param->m_position;  // fixing #2023: unclipped always up-to-date
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Macro(id:", _param.id, ")");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Macro(id:", _param.m_id, ")");
   }
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::Parameters::ModulateableParameter &_param)
 {
-  auto element = getParameter(_param.id);
+  auto element = getParameter(_param.m_id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Modulateable)
   {
     if(LOG_RECALL_DETAILS)
     {
       nltools::Log::info(
-          "recall(id:", _param.id, ", label:", C15::ParameterGroups[(unsigned) element.m_group].m_label_short,
-          element.m_pg.m_param_label_short, ", value:", _param.controlPosition, ", initial:", element.m_initial, ")");
+          "recall(id:", _param.m_id, ", label:", C15::ParameterGroups[(unsigned) element.m_group].m_label_short,
+          element.m_pg.m_param_label_short, ", value:", _param.m_controlPosition, ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_global_target(element.m_param.m_index);
-    param->update_source(getMacro(_param.mc));
-    param->update_amount(static_cast<float>(_param.modulationAmount));
-    param->update_position(param->depolarize(static_cast<float>(_param.controlPosition)));
+    param->update_source(getMacro(_param.m_macro));
+    param->update_amount(static_cast<float>(_param.m_modulationAmount));
+    param->update_position(param->depolarize(static_cast<float>(_param.m_controlPosition)));
     param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
-    const uint32_t macroId = getMacroId(_param.mc);
+    const uint32_t macroId = getMacroId(_param.m_macro);
     m_params.m_global.m_assignment.reassign(element.m_param.m_index, macroId);
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Global Modulateable(id:", _param.id, ")");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Global Modulateable(id:", _param.m_id, ")");
   }
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::Parameters::UnmodulateableParameter &_param)
 {
-  auto element = getParameter(_param.id);
+  auto element = getParameter(_param.m_id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Unmodulateable)
   {
     if(LOG_RECALL_DETAILS)
     {
-      nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.id,
+      nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.m_id,
                          ", label:", C15::ParameterGroups[(unsigned) element.m_group].m_label_short,
-                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                         element.m_pg.m_param_label_short, ", value:", _param.m_controlPosition,
                          ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_global_direct(element.m_param.m_index);
-    param->update_position(static_cast<float>(_param.controlPosition));
+    param->update_position(static_cast<float>(_param.m_controlPosition));
     param->m_scaled = scale(param->m_scaling, param->m_position);
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Global Unmodulateable(id:", _param.id, ")");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Global Unmodulateable(id:", _param.m_id, ")");
   }
 }
 
 void dsp_host_dual::globalParRcl(const nltools::msg::Parameters::GlobalParameter &_param)
 {
-  auto element = getParameter(_param.id);
+  auto element = getParameter(_param.m_id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Global_Unmodulateable)
   {
     if(LOG_RECALL_DETAILS)
     {
-      nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.id,
+      nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.m_id,
                          ", label:", C15::ParameterGroups[(unsigned) element.m_group].m_label_short,
-                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                         element.m_pg.m_param_label_short, ", value:", _param.m_controlPosition,
                          ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_global_direct(element.m_param.m_index);
-    param->update_position(static_cast<float>(_param.controlPosition));
+    param->update_position(static_cast<float>(_param.m_controlPosition));
     param->m_scaled = scale(param->m_scaling, param->m_position);
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall GlobalParameter(id:", _param.id, ")");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall GlobalParameter(id:", _param.m_id, ")");
   }
 }
 
 void dsp_host_dual::globalTimeRcl(const nltools::msg::Parameters::UnmodulateableParameter &_param)
 {
-  auto element = getParameter(_param.id);
+  auto element = getParameter(_param.m_id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Time)
   {
     auto param = m_params.get_macro_time(element.m_param.m_index);
-    param->update_position(static_cast<float>(_param.controlPosition));
+    param->update_position(static_cast<float>(_param.m_controlPosition));
     updateTime(&param->m_dx, scale(param->m_scaling, param->m_position));
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Macro Time(id:", _param.id, ")");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Macro Time(id:", _param.m_id, ")");
   }
 }
 void dsp_host_dual::localParRcl(const uint32_t _layerId, const nltools::msg::Parameters::ModulateableParameter &_param)
 {
-  auto element = getParameter(_param.id);
+  auto element = getParameter(_param.m_id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Modulateable)
   {
     if(LOG_RECALL_DETAILS)
     {
-      nltools::Log::info(__PRETTY_FUNCTION__, "recall(layer:", _layerId, ", id:", _param.id,
+      nltools::Log::info(__PRETTY_FUNCTION__, "recall(layer:", _layerId, ", id:", _param.m_id,
                          ", label:", C15::ParameterGroups[(unsigned) element.m_group].m_label_short,
-                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                         element.m_pg.m_param_label_short, ", value:", _param.m_controlPosition,
                          ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_local_target(_layerId, element.m_param.m_index);
-    param->update_source(getMacro(_param.mc));
-    param->update_amount(static_cast<float>(_param.modulationAmount));
-    param->update_position(param->depolarize(static_cast<float>(_param.controlPosition)));
+    param->update_source(getMacro(_param.m_macro));
+    param->update_amount(static_cast<float>(_param.m_modulationAmount));
+    param->update_position(param->depolarize(static_cast<float>(_param.m_controlPosition)));
     param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
-    const uint32_t macroId = getMacroId(_param.mc);
+    const uint32_t macroId = getMacroId(_param.m_macro);
     m_params.m_layer[_layerId].m_assignment.reassign(element.m_param.m_index, macroId);
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Local Target(id:", _param.id, ")");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Local Target(id:", _param.m_id, ")");
   }
 }
 
 void dsp_host_dual::localParRcl(const uint32_t _layerId, const nltools::msg::Parameters::SplitPoint &_param)
 {
-  auto element = getParameter(_param.id);
+  auto element = getParameter(_param.m_id);
   if(element.m_param.m_index == static_cast<uint32_t>(C15::Parameters::Local_Modulateables::Split_Split_Point))
   {
     if(LOG_RECALL_DETAILS)
     {
-      nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.id,
+      nltools::Log::info(__PRETTY_FUNCTION__, "recall(id:", _param.m_id,
                          ", label:", C15::ParameterGroups[(unsigned) element.m_group].m_label_short,
-                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                         element.m_pg.m_param_label_short, ", value:", _param.m_controlPosition,
                          ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_local_target(_layerId, element.m_param.m_index);
-    param->update_source(getMacro(_param.mc));
-    param->update_amount(static_cast<float>(_param.modulationAmount));
-    param->update_position(param->depolarize(static_cast<float>(_param.controlPosition)));
+    param->update_source(getMacro(_param.m_macro));
+    param->update_amount(static_cast<float>(_param.m_modulationAmount));
+    param->update_position(param->depolarize(static_cast<float>(_param.m_controlPosition)));
     param->m_scaled = scale(param->m_scaling, param->polarize(param->m_position));
-    const uint32_t macroId = getMacroId(_param.mc);
+    const uint32_t macroId = getMacroId(_param.m_macro);
     m_params.m_layer[_layerId].m_assignment.reassign(element.m_param.m_index, macroId);
     param->update_modulation_aspects(m_params.get_macro(macroId)->m_position);
     m_alloc.setSplitPoint(static_cast<uint32_t>(param->m_scaled) + C15::Config::physical_key_from, _layerId);
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Global Modulateable(id:", _param.id, ")");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Global Modulateable(id:", _param.m_id, ")");
   }
 }
 
 void dsp_host_dual::localParRcl(const uint32_t _layerId,
                                 const nltools::msg::Parameters::UnmodulateableParameter &_param)
 {
-  auto element = getParameter(_param.id);
+  auto element = getParameter(_param.m_id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Unmodulateable)
   {
     if(LOG_RECALL_DETAILS)
     {
-      nltools::Log::info(__PRETTY_FUNCTION__, "recall(layer:", _layerId, ", id:", _param.id,
+      nltools::Log::info(__PRETTY_FUNCTION__, "recall(layer:", _layerId, ", id:", _param.m_id,
                          ", label:", C15::ParameterGroups[(unsigned) element.m_group].m_label_short,
-                         element.m_pg.m_param_label_short, ", value:", _param.controlPosition,
+                         element.m_pg.m_param_label_short, ", value:", _param.m_controlPosition,
                          ", initial:", element.m_initial, ")");
     }
     auto param = m_params.get_local_direct(_layerId, element.m_param.m_index);
-    param->update_position(static_cast<float>(_param.controlPosition));
+    param->update_position(static_cast<float>(_param.m_controlPosition));
     param->m_scaled = scale(param->m_scaling, param->m_position);
   }
   else if(LOG_FAIL)
   {
-    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Local Direct(id:", _param.id, ")");
+    nltools::Log::warning(__PRETTY_FUNCTION__, "failed to recall Local Direct(id:", _param.m_id, ")");
   }
 }
 

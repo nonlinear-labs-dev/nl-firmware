@@ -418,10 +418,10 @@ namespace nltools
         return MessageType::HWSourceParameter;
       }
 
-      tID parameterId;
-      tControlPosition controlPosition;
-      ReturnMode returnMode;
-      bool isLocalEnabled;
+      tID m_id;
+      tControlPosition m_controlPosition;
+      ReturnMode m_returnMode;
+      bool m_isLocalEnabled;
     };
 
     struct HWSourceSendChangedMessage
@@ -431,11 +431,11 @@ namespace nltools
         return MessageType::HWSourceSendParameter;
       }
 
-      tID parameterId;
-      tID siblingId;
-      tControlPosition controlPosition;
-      ReturnMode returnMode;
-      bool localEnabled;
+      tID m_id;
+      tID m_siblingId;
+      tControlPosition m_controlPosition;
+      ReturnMode m_returnMode;
+      bool m_isLocalEnabled;
     };
 
     struct HWAmountChangedMessage
@@ -445,8 +445,8 @@ namespace nltools
         return MessageType::HWAmountParameter;
       }
 
-      tID parameterId;
-      tControlPosition controlPosition;
+      tID m_id;
+      tControlPosition m_controlPosition;
     };
 
     struct MacroControlChangedMessage
@@ -456,8 +456,8 @@ namespace nltools
         return MessageType::MacroControlParameter;
       }
 
-      tID parameterId;
-      tControlPosition controlPosition;
+      tID m_id;
+      tControlPosition m_controlPosition;
     };
 
     struct UnmodulateableParameterChangedMessage
@@ -467,9 +467,9 @@ namespace nltools
         return MessageType::UnmodulateableParameter;
       }
 
-      tID parameterId;
-      tControlPosition controlPosition;
-      VoiceGroup voiceGroup;
+      tID m_id;
+      tControlPosition m_controlPosition;
+      VoiceGroup m_voiceGroup;
     };
 
     struct ModulateableParameterChangedMessage
@@ -479,13 +479,13 @@ namespace nltools
         return MessageType::ModulateableParameter;
       }
 
-      tID parameterId;
-      tControlPosition controlPosition;
-      MacroControls sourceMacro;
-      tControlPosition mcAmount;
-      tControlPosition mcUpper;
-      tControlPosition mcLower;
-      VoiceGroup voiceGroup;
+      tID m_id;
+      tControlPosition m_controlPosition;
+      MacroControls m_macro;
+      tControlPosition m_modulationAmount;
+      tControlPosition m_modulationUpper;
+      tControlPosition m_modulationLower;
+      VoiceGroup m_voiceGroup;
     };
 
     struct RotaryChangedMessage

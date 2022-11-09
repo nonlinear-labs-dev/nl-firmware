@@ -63,7 +63,7 @@ void DspHostDualTester::applyMonoMessage(const Polyphony _mono, const VoiceGroup
   {
     case SoundType::Split:
     case SoundType::Layer:
-      msg.voiceGroup = _group;
+      msg.m_voiceGroup = _group;
       break;
   }
   // propagate message
@@ -78,12 +78,12 @@ void DspHostDualTester::applyUnisonMessage(const unsigned int _unison, const Voi
   switch(m_host->getType())
   {
     case SoundType::Single:
-      msg.controlPosition = encodeUnisonVoice(_unison, C15::Config::total_polyphony);
+      msg.m_controlPosition = encodeUnisonVoice(_unison, C15::Config::total_polyphony);
       break;
     case SoundType::Split:
     case SoundType::Layer:
-      msg.controlPosition = encodeUnisonVoice(_unison, C15::Config::local_polyphony);
-      msg.voiceGroup = _group;
+      msg.m_controlPosition = encodeUnisonVoice(_unison, C15::Config::local_polyphony);
+      msg.m_voiceGroup = _group;
   }
   // propagate message
   m_host->localUnisonVoicesChg(msg);
@@ -93,8 +93,8 @@ void DspHostDualTester::applyMalformedSinglePreset(const MalformedPresetDescript
 {
   // prepare message
   nltools::msg::SinglePresetMessage msg;
-  msg.mono.monoEnable.controlPosition = static_cast<float>(_preset.m_mono);
-  msg.unison.unisonVoices.controlPosition = encodeUnisonVoice(_preset.m_unison, C15::Config::total_polyphony);
+  msg.mono.monoEnable.m_controlPosition = static_cast<float>(_preset.m_mono);
+  msg.unison.unisonVoices.m_controlPosition = encodeUnisonVoice(_preset.m_unison, C15::Config::total_polyphony);
   // propagate message
   m_host->onPresetMessage(msg);
 }
@@ -104,10 +104,10 @@ void DspHostDualTester::applyMalformedSplitPreset(const MalformedPresetDescripto
 {
   // prepare message
   nltools::msg::SplitPresetMessage msg;
-  msg.mono[0].monoEnable.controlPosition = static_cast<float>(_partI.m_mono);
-  msg.mono[1].monoEnable.controlPosition = static_cast<float>(_partII.m_mono);
-  msg.unison[0].unisonVoices.controlPosition = encodeUnisonVoice(_partI.m_unison, C15::Config::local_polyphony);
-  msg.unison[1].unisonVoices.controlPosition = encodeUnisonVoice(_partII.m_unison, C15::Config::local_polyphony);
+  msg.mono[0].monoEnable.m_controlPosition = static_cast<float>(_partI.m_mono);
+  msg.mono[1].monoEnable.m_controlPosition = static_cast<float>(_partII.m_mono);
+  msg.unison[0].unisonVoices.m_controlPosition = encodeUnisonVoice(_partI.m_unison, C15::Config::local_polyphony);
+  msg.unison[1].unisonVoices.m_controlPosition = encodeUnisonVoice(_partII.m_unison, C15::Config::local_polyphony);
   // propagate message
   m_host->onPresetMessage(msg);
 }
@@ -116,8 +116,8 @@ void DspHostDualTester::applyMalformedLayerPreset(const MalformedPresetDescripto
 {
   // prepare message
   nltools::msg::LayerPresetMessage msg;
-  msg.mono.monoEnable.controlPosition = static_cast<float>(_preset.m_mono);
-  msg.unison.unisonVoices.controlPosition = encodeUnisonVoice(_preset.m_unison, C15::Config::local_polyphony);
+  msg.mono.monoEnable.m_controlPosition = static_cast<float>(_preset.m_mono);
+  msg.unison.unisonVoices.m_controlPosition = encodeUnisonVoice(_preset.m_unison, C15::Config::local_polyphony);
   // propagate message
   m_host->onPresetMessage(msg);
 }
@@ -241,11 +241,11 @@ double DspHostDualTester::encodeUnisonVoice(const unsigned int _unison, const un
 void DspHostDualTester::setSplit(VoiceGroup vg, float pos)
 {
   nltools::msg::ModulateableParameterChangedMessage msg{};
-  msg.controlPosition = static_cast<double>(pos);
-  msg.parameterId = C15::PID::Split_Split_Point;
-  msg.voiceGroup = vg;
+  msg.m_controlPosition = static_cast<double>(pos);
+  msg.m_id = C15::PID::Split_Split_Point;
+  msg.m_voiceGroup = vg;
 
-  auto element = m_host->getParameter(msg.parameterId);
+  auto element = m_host->getParameter(msg.m_id);
   if(element.m_param.m_type == C15::Descriptors::ParameterType::Local_Modulateable)
   {
     m_host->localParChg(element.m_param.m_index, msg);
@@ -257,12 +257,12 @@ void DspHostDualTester::applyMalformedSplitPreset(const DspHostDualTester::Malfo
                                                   float split)
 {
   nltools::msg::SplitPresetMessage msg;
-  msg.mono[0].monoEnable.controlPosition = static_cast<double>(_partI.m_mono);
-  msg.mono[1].monoEnable.controlPosition = static_cast<double>(_partII.m_mono);
-  msg.unison[0].unisonVoices.controlPosition = encodeUnisonVoice(_partI.m_unison, C15::Config::local_polyphony);
-  msg.unison[1].unisonVoices.controlPosition = encodeUnisonVoice(_partII.m_unison, C15::Config::local_polyphony);
-  msg.splitpoint[0].controlPosition = static_cast<double>(split);
-  msg.splitpoint[1].controlPosition = static_cast<double>(split) + (1.0 / 61.0);
+  msg.mono[0].monoEnable.m_controlPosition = static_cast<double>(_partI.m_mono);
+  msg.mono[1].monoEnable.m_controlPosition = static_cast<double>(_partII.m_mono);
+  msg.unison[0].unisonVoices.m_controlPosition = encodeUnisonVoice(_partI.m_unison, C15::Config::local_polyphony);
+  msg.unison[1].unisonVoices.m_controlPosition = encodeUnisonVoice(_partII.m_unison, C15::Config::local_polyphony);
+  msg.splitpoint[0].m_controlPosition = static_cast<double>(split);
+  msg.splitpoint[1].m_controlPosition = static_cast<double>(split) + (1.0 / 61.0);
   // propagate message
   m_host->onPresetMessage(msg);
 }

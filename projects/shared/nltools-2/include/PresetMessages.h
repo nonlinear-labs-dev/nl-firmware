@@ -1,8 +1,6 @@
 #pragma once
 
-#include <parameter_descriptor.h>
-#include <parameter_declarations.h>
-#include <nltools/messaging/Message.h>
+#include "Parameters.h"
 
 namespace nltools
 {
@@ -18,23 +16,23 @@ namespace nltools
 
       struct Parameter
       {
-        uint16_t id {};
-        double controlPosition = 0;
+        uint16_t m_id {};
+        double m_controlPosition = 0;
       };
 
       // todo: remove (unused)
-      struct RibbonParameter : Parameter
-      {
-        RibbonTouchBehaviour ribbonTouchBehaviour {};
-        RibbonReturnMode ribbonReturnMode {};
-      };
+//      struct RibbonParameter : Parameter
+//      {
+//        RibbonTouchBehaviour ribbonTouchBehaviour {};
+//        RibbonReturnMode ribbonReturnMode {};
+//      };
 
       // todo: remove (unused)
-      struct PedalParameter : Parameter
-      {
-        PedalModes pedalMode {};
-        ReturnMode returnMode {};
-      };
+//      struct PedalParameter : Parameter
+//      {
+//        PedalModes pedalMode {};
+//        ReturnMode returnMode {};
+//      };
 
       struct MacroParameter : Parameter
       {
@@ -42,8 +40,8 @@ namespace nltools
 
       struct ModulateableParameter : Parameter
       {
-        MacroControls mc = MacroControls::NONE;
-        double modulationAmount = 0;
+        MacroControls m_macro = MacroControls::NONE;
+        double m_modulationAmount = 0;
       };
 
       struct UnmodulateableParameter : Parameter
@@ -57,7 +55,7 @@ namespace nltools
 
       struct HardwareSourceParameter : Parameter
       {
-        ReturnMode returnMode = ReturnMode::None;
+        ReturnMode m_returnMode = ReturnMode::None;
       };
 
       struct HardwareAmountParameter : Parameter
@@ -71,17 +69,17 @@ namespace nltools
 
       inline bool operator==(const Parameter& lhs, const Parameter& rhs)
       {
-        auto ret = lhs.id == rhs.id;
-        ret &= lhs.controlPosition == rhs.controlPosition;
+        auto ret = lhs.m_id == rhs.m_id;
+        ret &= lhs.m_controlPosition == rhs.m_controlPosition;
         return ret;
       }
 
       inline bool operator==(const ModulateableParameter& lhs, const ModulateableParameter& rhs)
       {
-        auto ret = lhs.id == rhs.id;
-        ret &= lhs.controlPosition == rhs.controlPosition;
-        ret &= lhs.modulationAmount == rhs.modulationAmount;
-        ret &= lhs.mc == rhs.mc;
+        auto ret = lhs.m_id == rhs.m_id;
+        ret &= lhs.m_controlPosition == rhs.m_controlPosition;
+        ret &= lhs.m_modulationAmount == rhs.m_modulationAmount;
+        ret &= lhs.m_macro == rhs.m_macro;
         return ret;
       }
 

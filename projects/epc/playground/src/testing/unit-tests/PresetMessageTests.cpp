@@ -7,12 +7,12 @@ template <typename T> void collectID(const T &t, std::unordered_map<int, int> &c
 {
   try
   {
-    auto &i = counts.at(t.id);
+    auto &i = counts.at(t.m_id);
     i++;
   }
   catch(...)
   {
-    counts[t.id] = 1;
+    counts[t.m_id] = 1;
   }
 }
 
