@@ -467,7 +467,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return getParent().getParent().hasMultiplePresetSelection();
 	}
 
-	private boolean isDraggedWhenPresetDragDropNotEnabled = true;
+	private boolean isDraggedWhenPresetDragDropNotEnabled = false;
 
 	@Override
 	public Control startDragging(Position pos) {
