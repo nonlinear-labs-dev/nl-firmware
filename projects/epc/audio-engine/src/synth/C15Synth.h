@@ -18,7 +18,7 @@ namespace nltools
 {
   namespace msg
   {
-    struct ParameterChangedMessage;
+//    struct ParameterChangedMessage; // wtf is this?
     struct SetPresetMessage;
   }
 }

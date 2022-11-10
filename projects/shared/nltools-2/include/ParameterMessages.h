@@ -6,116 +6,126 @@ namespace nltools {
 
     namespace msg {
 
-        // generic structures
+        namespace detail {
 
-        template<MessageType T>
-        struct ParameterChangedMessage {
-            static_assert(
-                T == MessageType::HardwareSourceParameterChanged || T == MessageType::HardwareSourceSendParameterChanged ||
-                T == MessageType::HardwareAmountParameterChanged ||
-                T == MessageType::MacroControlParameterChanged || T == MessageType::MacroTimeParameterChanged ||
-                T == MessageType::GlobalModulateableParameterChanged || T == MessageType::GlobalUnmodulateableParameterChanged ||
-                T == MessageType::LocalModulateableParameterChanged || T == MessageType::LocalUnmodulateableParameterChanged ||
-                T == MessageType::PolyphonicModulateableParameterChanged || T == MessageType::PolyphonicUnmodulateableParameterChanged ||
-                T == MessageType::MonophonicModulateableParameterChanged || T == MessageType::MonophonicUnmodulateableParameterChanged,
-                "MessageType must fit category ParameterChanged"
-            );
-            constexpr static MessageType getType()
+            // generic structures
+
+            template<MessageType M>
+            struct ParameterChangedMessage
             {
-              return T;
-            }
-        };
+                static_assert(
+                    M == MessageType::HardwareSourceParameterChanged || M == MessageType::HardwareSourceSendParameterChanged ||
+                    M == MessageType::HardwareAmountParameterChanged ||
+                    M == MessageType::MacroControlParameterChanged || M == MessageType::MacroTimeParameterChanged ||
+                    M == MessageType::GlobalModulateableParameterChanged || M == MessageType::GlobalUnmodulateableParameterChanged ||
+                    M == MessageType::LocalModulateableParameterChanged || M == MessageType::LocalUnmodulateableParameterChanged ||
+                    M == MessageType::PolyphonicModulateableParameterChanged || M == MessageType::PolyphonicUnmodulateableParameterChanged ||
+                    M == MessageType::MonophonicModulateableParameterChanged || M == MessageType::MonophonicUnmodulateableParameterChanged,
+                    "MessageType must fit category ParameterChanged"
+                );
+                constexpr static MessageType getType()
+                {
+                  return M;
+                }
+            };
 
-        struct ModulateableChangedMessage {
-            ParameterData::Position m_modulationUpper = {};
-            ParameterData::Position m_modulationLower = {};
-        };
+            struct ModulateableChangedMessage {
+                controls::Position m_modulationUpper = {};
+                controls::Position m_modulationLower = {};
+            };
 
-        struct LocalChangedMessage {
-            VoiceGroup m_voiceGroup = VoiceGroup::Invalid;
-        };
+            struct LocalChangedMessage {
+                VoiceGroup m_voiceGroup = VoiceGroup::Invalid;
+            };
+
+        } // namespace nltools::msg::detail
 
         // usable messages
 
         struct HardwareSourceParameterChangedMessage
-            : public ParameterChangedMessage<MessageType::HardwareSourceParameterChanged>
-            , public ParameterData::HardwareSourceParameter
+            : public detail::ParameterChangedMessage<MessageType::HardwareSourceParameterChanged>
+            , public controls::HardwareSourceParameter
         {
             bool m_isLocalEnabled = {};
         };
 
         struct HardwareSourceSendParameterChangedMessage
-            : public ParameterChangedMessage<MessageType::HardwareSourceSendParameterChanged>
-            , public ParameterData::HardwareSourceSendParameter
+            : public detail::ParameterChangedMessage<MessageType::HardwareSourceSendParameterChanged>
+            , public controls::HardwareSourceSendParameter
         {
-            ParameterData::Id m_siblingId = ParameterData::Id::None;
+            controls::Id m_siblingId = controls::Id::None;
             bool m_isLocalEnabled = {};
         };
 
+        struct HardwareAmountParameterChangedMessage
+            : public detail::ParameterChangedMessage<MessageType::HardwareAmountParameterChanged>
+            , public controls::HardwareAmountParameter
+        {};
+
         struct MacroControlParameterChangedMessage
-            : public ParameterChangedMessage<MessageType::MacroControlParameterChanged>
-            , public ParameterData::MacroControlParameter
+            : public detail::ParameterChangedMessage<MessageType::MacroControlParameterChanged>
+            , public controls::MacroControlParameter
         {};
 
         struct MacroTimeParameterChangedMessage
-            : public ParameterChangedMessage<MessageType::MacroTimeParameterChanged>
-            , public ParameterData::MacroTimeParameter
+            : public detail::ParameterChangedMessage<MessageType::MacroTimeParameterChanged>
+            , public controls::MacroTimeParameter
         {};
 
         struct GlobalModulateableParameterChangedMessage
-            : public ParameterChangedMessage<MessageType::GlobalModulateableParameterChanged>
-            , public ParameterData::GlobalModulateableParameter
-            , public ModulateableChangedMessage
+            : public detail::ParameterChangedMessage<MessageType::GlobalModulateableParameterChanged>
+            , public controls::GlobalModulateableParameter
+            , public detail::ModulateableChangedMessage
         {
             static constexpr VoiceGroup m_voiceGroup = VoiceGroup::Global; // necessary?
         };
 
         struct GlobalUnmodulateableParameterChangedMessage
-            : public ParameterChangedMessage<MessageType::GlobalUnmodulateableParameterChanged>
-            , public ParameterData::GlobalUnmodulateableParameter
+            : public detail::ParameterChangedMessage<MessageType::GlobalUnmodulateableParameterChanged>
+            , public controls::GlobalUnmodulateableParameter
         {
             static constexpr VoiceGroup m_voiceGroup = VoiceGroup::Global; // necessary?
         };
 
         // todo: deprecate
         struct LocalModulateableParameterChangedMessage
-            : public ParameterChangedMessage<MessageType::LocalModulateableParameterChanged>
-            , public ParameterData::LocalModulateableParameter
-            , public ModulateableChangedMessage
-            , public LocalChangedMessage
+            : public detail::ParameterChangedMessage<MessageType::LocalModulateableParameterChanged>
+            , public controls::LocalModulateableParameter
+            , public detail::ModulateableChangedMessage
+            , public detail::LocalChangedMessage
         {};
 
         // todo: deprecate
         struct LocalUnmodulateableParameterChangedMessage
-            : public ParameterChangedMessage<MessageType::LocalUnmodulateableParameterChanged>
-            , public ParameterData::LocalUnmodulateableParameter
-            , public LocalChangedMessage
+            : public detail::ParameterChangedMessage<MessageType::LocalUnmodulateableParameterChanged>
+            , public controls::LocalUnmodulateableParameter
+            , public detail::LocalChangedMessage
         {};
 
         struct PolyphonicModulateableParameterChangedMessage
-            : public ParameterChangedMessage<MessageType::PolyphonicModulateableParameterChanged>
-            , public ParameterData::PolyphonicModulateableParameter
-            , public ModulateableChangedMessage
-            , public LocalChangedMessage
+            : public detail::ParameterChangedMessage<MessageType::PolyphonicModulateableParameterChanged>
+            , public controls::PolyphonicModulateableParameter
+            , public detail::ModulateableChangedMessage
+            , public detail::LocalChangedMessage
         {};
 
         struct PolyphonicUnmodulateableParameterChangedMessage
-            : public ParameterChangedMessage<MessageType::PolyphonicUnmodulateableParameterChanged>
-            , public ParameterData::PolyphonicUnmodulateableParameter
-            , public LocalChangedMessage
+            : public detail::ParameterChangedMessage<MessageType::PolyphonicUnmodulateableParameterChanged>
+            , public controls::PolyphonicUnmodulateableParameter
+            , public detail::LocalChangedMessage
         {};
 
         struct MonophonicModulateableParameterChangedMessage
-            : public ParameterChangedMessage<MessageType::MonophonicModulateableParameterChanged>
-            , public ParameterData::MonophonicModulateableParameter
-            , public ModulateableChangedMessage
-            , public LocalChangedMessage
+            : public detail::ParameterChangedMessage<MessageType::MonophonicModulateableParameterChanged>
+            , public controls::MonophonicModulateableParameter
+            , public detail::ModulateableChangedMessage
+            , public detail::LocalChangedMessage
         {};
 
         struct MonophonicUnmodulateableParameterChangedMessage
-            : public ParameterChangedMessage<MessageType::MonophonicUnmodulateableParameterChanged>
-            , public ParameterData::MonophonicUnmodulateableParameter
-            , public LocalChangedMessage
+            : public detail::ParameterChangedMessage<MessageType::MonophonicUnmodulateableParameterChanged>
+            , public controls::MonophonicUnmodulateableParameter
+            , public detail::LocalChangedMessage
         {};
 
     } // namespace nltools::msg

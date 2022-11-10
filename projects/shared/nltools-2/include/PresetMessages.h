@@ -6,6 +6,8 @@ namespace nltools
 {
   namespace msg
   {
+
+    // todo: deprecate
     namespace Parameters
     {
       // note: hard-coded counts should only be temporary
@@ -142,63 +144,67 @@ namespace nltools
 
     }  // namespace nltools::msg::ParameterGroups
 
-    // prototype, not to use directly
-    template <nltools::msg::MessageType M> struct PresetMessage
-    {
-     protected:
-      // nltools requirements - message type safety
-      static_assert(M == nltools::msg::MessageType::SinglePreset || M == nltools::msg::MessageType::SplitPreset
-                        || M == nltools::msg::MessageType::LayerPreset,
-                    "PresetMessage can only be of MessageType (Single/Split/Layer)Preset");
-      // provide types
-      using ParameterType = C15::Descriptors::ParameterType;
-      template <ParameterType P, typename T> using SingularParameterArray = C15::Storage::Array<P, T>;
-      template <ParameterType P, typename T>
-      using DualParameterArray = std::array<SingularParameterArray<P, T>, C15::Properties::num_of_VoiceGroups>;
+    namespace detail {
 
-     public:
-      // nltools requirements - message type retrieval
-      constexpr static nltools::msg::MessageType getType()
-      {
-        return M;
-      }
+        // prototype, not to use directly
+        template <MessageType M> struct PresetMessage
+        {
+         protected:
+          // nltools requirements - message type safety
+          static_assert(M == MessageType::SinglePreset || M == MessageType::SplitPreset
+                            || M == MessageType::LayerPreset,
+                        "PresetMessage can only be of MessageType (Single/Split/Layer)Preset");
+          // provide types
+          using ParameterType = C15::Descriptors::ParameterType;
+          template <ParameterType P, typename T> using SingularParameterArray = C15::Storage::Array<P, T>;
+          template <ParameterType P, typename T>
+          using DualParameterArray = std::array<SingularParameterArray<P, T>, C15::Properties::num_of_VoiceGroups>;
 
-      // shared data (present in any sound type)
-      SingularParameterArray<ParameterType::Hardware_Source, Parameters::HardwareSourceParameter> hwsources;
-      SingularParameterArray<ParameterType::Hardware_Amount, Parameters::HardwareAmountParameter> hwamounts;
-      SingularParameterArray<ParameterType::Macro_Control, Parameters::MacroParameter> macros;
-      SingularParameterArray<ParameterType::Macro_Time, Parameters::UnmodulateableParameter> macrotimes;
-      // todo: refactor (into Global Modulateables/Unmodulateables, deprecating ParameterGroups)
-      ParameterGroups::MasterGroup master;
-      Parameters::GlobalParameter scaleBaseKey;
-      std::array<Parameters::ModulateableParameter, 12> scaleOffsets;
-      // todo: use
-      //      SingularParameterArray<ParameterType::Global_Modulateable, Parameters::ModulateableParameter> globalModulateables;
-      //      SingularParameterArray<ParameterType::Global_Unmodulateable, Parameters::UnmodulateableParameter> globalUnmodulateables;
-      //      DualParameterArray<ParameterType::Monophonic_Modulateable, Parameters::ModulateableParameter> monophonicModulateables;
-      //      DualParameterArray<ParameterType::Monophonic_Unmodulateable, Parameters::UnmodulateableParameter> monophonicUnmodulateables;
+         public:
+          // nltools requirements - message type retrieval
+          constexpr static nltools::msg::MessageType getType()
+          {
+            return M;
+          }
 
-      // comparison
-      static bool compareCommon(const PresetMessage<M>& _lhs, const PresetMessage<M>& _rhs)
-      {
-        auto ret = _lhs.hwsources == _rhs.hwsources;
-        ret &= _lhs.hwamounts == _rhs.hwamounts;
-        ret &= _lhs.macros == _rhs.macros;
-        ret &= _lhs.macrotimes == _rhs.macrotimes;
-        // todo: remove (when refactored into Global Modulateables/Unmodulateables)
-        ret &= _lhs.master == _rhs.master;
-        ret &= _lhs.scaleBaseKey == _rhs.scaleBaseKey;
-        ret &= _lhs.scaleOffsets == _rhs.scaleOffsets;
-        // todo: use
-        //        ret &= _lhs.globalModulateables == _rhs.globalModulateables;
-        //        ret &= _lhs.globalUnmodulateables == _rhs.globalUnmodulateables;
-        //        ret &= _lhs.monophonicModulateables == _rhs.monophonicModulateables;
-        //        ret &= _lhs.monophonicUnmodulateables == _rhs.monophonicUnmodulateables;
-        return ret;
-      }
-    };
+          // shared data (present in any sound type)
+          SingularParameterArray<ParameterType::Hardware_Source, Parameters::HardwareSourceParameter> hwsources;
+          SingularParameterArray<ParameterType::Hardware_Amount, Parameters::HardwareAmountParameter> hwamounts;
+          SingularParameterArray<ParameterType::Macro_Control, Parameters::MacroParameter> macros;
+          SingularParameterArray<ParameterType::Macro_Time, Parameters::UnmodulateableParameter> macrotimes;
+          // todo: refactor (into Global Modulateables/Unmodulateables, deprecating ParameterGroups)
+          ParameterGroups::MasterGroup master;
+          Parameters::GlobalParameter scaleBaseKey;
+          std::array<Parameters::ModulateableParameter, 12> scaleOffsets;
+          // todo: use
+          //      SingularParameterArray<ParameterType::Global_Modulateable, Parameters::ModulateableParameter> globalModulateables;
+          //      SingularParameterArray<ParameterType::Global_Unmodulateable, Parameters::UnmodulateableParameter> globalUnmodulateables;
+          //      DualParameterArray<ParameterType::Monophonic_Modulateable, Parameters::ModulateableParameter> monophonicModulateables;
+          //      DualParameterArray<ParameterType::Monophonic_Unmodulateable, Parameters::UnmodulateableParameter> monophonicUnmodulateables;
 
-    struct SinglePresetMessage : public PresetMessage<nltools::msg::MessageType::SinglePreset>
+          // comparison
+          static inline bool compareCommon(const PresetMessage<M>& _lhs, const PresetMessage<M>& _rhs)
+          {
+            auto ret = _lhs.hwsources == _rhs.hwsources;
+            ret &= _lhs.hwamounts == _rhs.hwamounts;
+            ret &= _lhs.macros == _rhs.macros;
+            ret &= _lhs.macrotimes == _rhs.macrotimes;
+            // todo: remove (when refactored into Global Modulateables/Unmodulateables)
+            ret &= _lhs.master == _rhs.master;
+            ret &= _lhs.scaleBaseKey == _rhs.scaleBaseKey;
+            ret &= _lhs.scaleOffsets == _rhs.scaleOffsets;
+            // todo: use
+            //        ret &= _lhs.globalModulateables == _rhs.globalModulateables;
+            //        ret &= _lhs.globalUnmodulateables == _rhs.globalUnmodulateables;
+            //        ret &= _lhs.monophonicModulateables == _rhs.monophonicModulateables;
+            //        ret &= _lhs.monophonicUnmodulateables == _rhs.monophonicUnmodulateables;
+            return ret;
+          }
+        };
+
+    } // namespace nltools::msg::detail
+
+    struct SinglePresetMessage : public detail::PresetMessage<nltools::msg::MessageType::SinglePreset>
     {
       // todo: refactor (into Polyphonic/Monophonic Modulateables/Unmodulateables)
       std::array<Parameters::ModulateableParameter, 169> modulateables;
@@ -232,7 +238,7 @@ namespace nltools
       return !(lhs == rhs);
     }
 
-    struct SplitPresetMessage : public PresetMessage<nltools::msg::MessageType::SplitPreset>
+    struct SplitPresetMessage : public detail::PresetMessage<nltools::msg::MessageType::SplitPreset>
     {
       // todo: refactor (into Polyphonic/Monophonic Modulateables/Unmodulateables)
       std::array<std::array<Parameters::ModulateableParameter, 169>, 2> modulateables;
@@ -268,7 +274,7 @@ namespace nltools
       return !(lhs == rhs);
     }
 
-    struct LayerPresetMessage : public PresetMessage<nltools::msg::MessageType::LayerPreset>
+    struct LayerPresetMessage : public detail::PresetMessage<nltools::msg::MessageType::LayerPreset>
     {
       // todo: refactor (into Polyphonic/Monophonic Modulateables/Unmodulateables)
       std::array<std::array<Parameters::ModulateableParameter, 169>, 2> modulateables;
