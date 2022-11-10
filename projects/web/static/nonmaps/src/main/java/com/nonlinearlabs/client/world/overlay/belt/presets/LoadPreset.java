@@ -17,8 +17,8 @@ class LoadPreset extends SVGImage {
 	LoadPreset(OverlayLayout parent) {
 		super(parent, "Load_Enabled.svg", "Load_Active.svg", "Load_Disabled.svg");
 
-		EditBufferModel.get().loadedPreset.onChange(s -> {
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+		EditBufferPresenterProvider.get().onChange(s -> {
+			invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
 			return true;
 		});
 	}
