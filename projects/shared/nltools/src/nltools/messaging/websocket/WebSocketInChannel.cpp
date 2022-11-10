@@ -19,10 +19,10 @@ namespace nltools
           : InChannel(std::move(cb))
           , m_port(port)
           , m_server(soup_server_new(nullptr, nullptr), g_object_unref)
-          , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(c))
           , m_backgroundCtx(Glib::MainContext::create())
           , m_backgroundLoop(Glib::MainLoop::create(m_backgroundCtx))
           , m_backgroundTask(std::async(std::launch::async, [=] { this->backgroundThread(p); }))
+          , m_mainContextQueue(std::make_unique<threading::ContextBoundMessageQueue>(c))
       {
         m_conditionEstablishedThreadWaiter.wait();
       }

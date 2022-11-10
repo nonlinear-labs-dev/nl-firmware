@@ -1,0 +1,9 @@
+When introducing epc3os we broke support for differential updates as used for epc1 and epc2. 
+Thus, installing epc1/2 updates will brick C15 with epc3os installed.
+
+So we invented this mechanism:
+- the update will contain a stamp file indicating that this point-of-no-return was installed
+- all updates from now on will be checked for existence of the according file, 
+-- see projects/bbb/scripts/install-updates.sh
+-- see projects/bbb/scripts/install-update-from-epc.sh
+
