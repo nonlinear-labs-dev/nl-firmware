@@ -320,7 +320,7 @@ void ScaleParameterCarousel::setup(Parameter* selectedParameter)
   auto baseParam = new MiniParameter(baseParameter, Rect(0, yPos, miniParamWidth, miniParamHeight));
   addControl(baseParam);
   baseParam->setSelected(selectedParameter == baseParameter);
-  yPos += miniParamHeight + 3;
+  yPos += miniParamHeight + 5;
   const auto labelHeight = 8;
   auto offsetLabel = addControl(new LabelRegular8({ "Offsets" }, Rect { 0, yPos, miniParamWidth, labelHeight }));
   offsetLabel->setHighlight(selectedParameter != baseParameter);
@@ -346,7 +346,7 @@ void ScaleParameterCarousel::setup(Parameter* selectedParameter)
       {
         if(yIdx % 2 == 0)
         {
-          yPos += (sliderHeight * 4);
+          yPos += (sliderHeight * 4) - 1;
         }
         else
         {
