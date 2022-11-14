@@ -9,9 +9,8 @@
     @todo
 *******************************************************************************/
 
-#include <c15_config.h>
-#include <nltools/messaging/Message.h>
-#include <parameter_list.h>
+#include <ParameterMessages.h>
+#include <PresetMessages.h>
 
 #include "parameter_handle.h"
 #include "pe_exponentiator.h"
@@ -23,7 +22,6 @@
 #include "ae_poly_section.h"
 
 #include "midi_handle.h"
-#include "PresetMessages.h"
 
 #include <array>
 #include <Types.h>
@@ -43,17 +41,17 @@ inline constexpr bool LOG_MIDI_RAW = false;
 inline constexpr bool LOG_MIDI_DETAIL = false;
 inline constexpr bool LOG_MIDI_OUT = false;
 inline constexpr bool LOG_DISPATCH = false;
-inline constexpr bool LOG_EDITS = true;
-inline constexpr bool LOG_TIMES = true;
+inline constexpr bool LOG_EDITS = false;
+inline constexpr bool LOG_TIMES = false;
 inline constexpr bool LOG_SETTINGS = false;
 inline constexpr bool LOG_RECALL = false;
 inline constexpr bool LOG_RECALL_DETAILS = false;
 inline constexpr bool LOG_RECALL_LEVELS = false;
 inline constexpr bool LOG_KEYS = false;
 inline constexpr bool LOG_KEYS_POLY = false;
-inline constexpr bool LOG_TRANSITIONS = true;
+inline constexpr bool LOG_TRANSITIONS = false;
 inline constexpr bool LOG_RESET = false;
-inline constexpr bool LOG_HW = true;
+inline constexpr bool LOG_HW = false;
 // more detailed logging of specific parameters
 inline constexpr bool LOG_ENGINE_STATUS = false;
 inline constexpr bool LOG_ENGINE_EDITS = false;
@@ -196,6 +194,21 @@ class dsp_host_dual : public DSPInterface
   OutputResetEventSource onPresetMessage(const nltools::msg::SinglePresetMessage& _msg);
   OutputResetEventSource onPresetMessage(const nltools::msg::SplitPresetMessage& _msg);
   OutputResetEventSource onPresetMessage(const nltools::msg::LayerPresetMessage& _msg);
+
+  // new ParameterChanged protocol
+  void onParameterChangedMessage(const nltools::msg::HardwareAmountParameterChangedMessage& _msg);
+  void onParameterChangedMessage(const nltools::msg::MacroControlParameterChangedMessage& _msg);
+  void onParameterChangedMessage(const nltools::msg::MacroTimeParameterChangedMessage& _msg);
+  void onParameterChangedMessage(const nltools::msg::GlobalModulateableParameterChangedMessage& _msg);
+  void onParameterChangedMessage(const nltools::msg::GlobalUnmodulateableParameterChangedMessage& _msg);
+  void onParameterChangedMessage(const nltools::msg::LocalModulateableParameterChangedMessage& _msg);
+  void onParameterChangedMessage(const nltools::msg::LocalUnmodulateableParameterChangedMessage& _msg);
+  void onParameterChangedMessage(const nltools::msg::PolyphonicModulateableParameterChangedMessage& _msg);
+  void onParameterChangedMessage(const nltools::msg::PolyphonicUnmodulateableParameterChangedMessage& _msg);
+  void onParameterChangedMessage(const nltools::msg::MonophonicModulateableParameterChangedMessage& _msg);
+  void onParameterChangedMessage(const nltools::msg::MonophonicUnmodulateableParameterChangedMessage& _msg);
+
+  // todo: remove when unused
   void globalParChg(const uint32_t _id, const nltools::msg::HWAmountChangedMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::MacroControlChangedMessage& _msg);
   void globalParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage& _msg);
@@ -203,6 +216,7 @@ class dsp_host_dual : public DSPInterface
   void globalTimeChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage& _msg);
   void localParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
+
   OutputResetEventSource localUnisonVoicesChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   OutputResetEventSource localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);

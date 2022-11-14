@@ -5,7 +5,6 @@
 #include <synth/input/TCDDecoder.h>
 #include <synth/input/MIDIDecoder.h>
 #include <functional>
-#include <nltools/messaging/Message.h>
 #include <synth/c15-audio-engine/dsp_host_dual.h>
 #include "MidiChannelModeMessages.h"
 #include <Types.h>
@@ -30,7 +29,14 @@ class InputEventStage
                   ChannelModeMessageCB specialFunctionOut);
   void onTCDMessage(const MidiEvent& tcdEvent);
   void onMIDIMessage(const MidiEvent& midiEvent);
+
+  // new ParameterChanged protocol
+  void onParameterChangedMessage(const nltools::msg::HardwareSourceParameterChangedMessage& message, bool didBehaviourChange);
+  void onParameterChangedMessage(const nltools::msg::HardwareSourceSendParameterChangedMessage& message);
+
+  // todo: remove when unused
   void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message, bool didBehaviourChange);
+
   void setNoteShift(int i);
   [[nodiscard]] int getNoteShift() const;
 
@@ -47,6 +53,7 @@ class InputEventStage
   static HardwareSource parameterIDToHWID(int id);
   bool getAndResetKeyBedStatus();
 
+  // todo: remove when unused
   void onSendParameterReceived(const nltools::msg::HWSourceSendChangedMessage& message);
 
  private:

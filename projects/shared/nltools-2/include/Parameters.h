@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include <parameter_descriptor.h>
+#include <parameter_list.h>
 #include <nltools/messaging/Message.h>
 
 namespace nltools
@@ -9,7 +9,6 @@ namespace nltools
 
     namespace controls
     {
-
 
         using Id = C15::PID::ParameterID;               // note: may be reducible
         using Position = double;                        // note: unfortunately not generic
@@ -36,6 +35,10 @@ namespace nltools
                     auto ret = _lhs.m_id == _rhs.m_id;
                     ret &= _lhs.m_controlPosition == _rhs.m_controlPosition;
                     return ret;
+                }
+                bool validateParameterType() const
+                {
+                    return C15::ParameterList[m_id].m_param.m_type == getParameterType();
                 }
                 Position m_controlPosition = {};
             };

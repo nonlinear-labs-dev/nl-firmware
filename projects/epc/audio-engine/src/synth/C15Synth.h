@@ -2,8 +2,6 @@
 
 #include "Synth.h"
 #include "c15-audio-engine/dsp_host_dual.h"
-#include <nltools/messaging/Message.h>
-#include "PresetMessages.h"
 #include <sigc++/sigc++.h>
 #include <thread>
 #include <condition_variable>
@@ -46,6 +44,11 @@ class C15Synth : public Synth, public sigc::trackable
   void onSplitPresetMessage(const nltools::msg::SplitPresetMessage& msg);
   void onSinglePresetMessage(const nltools::msg::SinglePresetMessage& msg);
 
+  // new ParameterChanged protocol
+  void onHardwareSourceParameterChangedMessage(const nltools::msg::HardwareSourceParameterChangedMessage& _msg);
+  void onHardwareSourceSendParameterChangedMessage(const nltools::msg::HardwareSourceSendParameterChangedMessage& _msg);
+
+  // todo: remove when unused
   void onModulateableParameterMessage(const nltools::msg::ModulateableParameterChangedMessage& msg);
   void onUnmodulateableParameterMessage(const nltools::msg::UnmodulateableParameterChangedMessage& msg);
   void onMacroControlParameterMessage(const nltools::msg::MacroControlChangedMessage& msg);

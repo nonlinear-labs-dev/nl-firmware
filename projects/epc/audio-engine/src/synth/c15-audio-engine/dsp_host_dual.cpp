@@ -477,6 +477,53 @@ DSPInterface::OutputResetEventSource dsp_host_dual::onPresetMessage(const nltool
   }
 }
 
+// new ParameterChanged protocol
+
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::HardwareAmountParameterChangedMessage &_msg)
+{
+}
+
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MacroControlParameterChangedMessage &_msg)
+{
+}
+
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MacroTimeParameterChangedMessage &_msg)
+{
+}
+
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::GlobalModulateableParameterChangedMessage &_msg)
+{
+}
+
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::GlobalUnmodulateableParameterChangedMessage &_msg)
+{
+}
+
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::LocalModulateableParameterChangedMessage &_msg)
+{
+}
+
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::LocalUnmodulateableParameterChangedMessage &_msg)
+{
+}
+
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicModulateableParameterChangedMessage &_msg)
+{
+}
+
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicUnmodulateableParameterChangedMessage &_msg)
+{
+}
+
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicModulateableParameterChangedMessage &_msg)
+{
+}
+
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicUnmodulateableParameterChangedMessage &_msg)
+{
+}
+
+// todo: remove (when unused)
 void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::HWAmountChangedMessage &_msg)
 {
   auto param = m_params.get_hw_amt(_id);

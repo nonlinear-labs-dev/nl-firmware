@@ -1,5 +1,5 @@
 #pragma once
-#include <parameters/Parameter.h>
+//#include <parameters/Parameter.h>
 //#include <nltools/messaging/Message.h>
 #include <ParameterMessages.h>
 #include <parameters/ModulateableParameter.h>
@@ -41,6 +41,8 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     ret.m_controlPosition = param->getControlPositionValue();
     ret.m_returnMode = param->getReturnMode();
     ret.m_isLocalEnabled = param->isLocalEnabled();
+    // safety proposal: id pointing to non hw-source descriptor will fail
+    nltools_assertAlways(ret.validateParameterType());
     return ret;
 }
 
@@ -54,6 +56,8 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     ret.m_returnMode = param->getReturnMode();
     ret.m_siblingId = (C15::PID::ParameterID) param->getSiblingParameter()->getID().getNumber();
     ret.m_isLocalEnabled = param->isLocalEnabled();
+    // safety proposal: id pointing to non hw-source-send descriptor will fail
+    nltools_assertAlways(ret.validateParameterType());
     return ret;
 }
 
@@ -64,6 +68,8 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     auto ret = nltools::msg::HardwareAmountParameterChangedMessage {};
     ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
     ret.m_controlPosition = param->getControlPositionValue();
+    // safety proposal: id pointing to non hw-amount descriptor will fail
+    nltools_assertAlways(ret.validateParameterType());
     return ret;
 }
 
@@ -74,6 +80,8 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     auto ret = nltools::msg::MacroControlParameterChangedMessage {};
     ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
     ret.m_controlPosition = param->getControlPositionValue();
+    // safety proposal: id pointing to non macro-control descriptor will fail
+    nltools_assertAlways(ret.validateParameterType());
     return ret;
 }
 
@@ -84,6 +92,8 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     auto ret = nltools::msg::MacroTimeParameterChangedMessage {};
     ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
     ret.m_controlPosition = param->getControlPositionValue();
+    // safety proposal: id pointing to non macro-time descriptor will fail
+    nltools_assertAlways(ret.validateParameterType());
     return ret;
 }
 
@@ -100,6 +110,8 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     ret.m_modulationUpper = range.second;
     ret.m_modulationLower= range.first;
     // voicegroup is global (static constexpr)
+    // safety proposal: id pointing to non global-modulateable descriptor will fail
+    nltools_assertAlways(ret.validateParameterType());
     return ret;
 }
 
@@ -111,6 +123,8 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
     ret.m_controlPosition = param->getControlPositionValue();
     // voicegroup is global (static constexpr)
+    // safety proposal: id pointing to non global-unmodulateable descriptor will fail
+    nltools_assertAlways(ret.validateParameterType());
     return ret;
 }
 
@@ -128,6 +142,8 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     ret.m_modulationUpper = range.second;
     ret.m_modulationLower= range.first;
     ret.m_voiceGroup = param->getID().getVoiceGroup();
+    // safety proposal: id pointing to non local-modulateable descriptor will fail
+    nltools_assertAlways(ret.validateParameterType());
     return ret;
 }
 
@@ -140,6 +156,8 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
     ret.m_controlPosition = param->getControlPositionValue();
     ret.m_voiceGroup = param->getID().getVoiceGroup();
+    // safety proposal: id pointing to non local-unmodulateable descriptor will fail
+    nltools_assertAlways(ret.validateParameterType());
     return ret;
 }
 
@@ -156,6 +174,8 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     ret.m_modulationUpper = range.second;
     ret.m_modulationLower= range.first;
     ret.m_voiceGroup = param->getID().getVoiceGroup();
+    // safety proposal: id pointing to non polyphonic-modulateable descriptor will fail
+    nltools_assertAlways(ret.validateParameterType());
     return ret;
 }
 
@@ -167,6 +187,8 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
     ret.m_controlPosition = param->getControlPositionValue();
     ret.m_voiceGroup = param->getID().getVoiceGroup();
+    // safety proposal: id pointing to non polyphonic-unmodulateable descriptor will fail
+    nltools_assertAlways(ret.validateParameterType());
     return ret;
 }
 
@@ -183,6 +205,8 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     ret.m_modulationUpper = range.second;
     ret.m_modulationLower= range.first;
     ret.m_voiceGroup = param->getID().getVoiceGroup();
+    // safety proposal: id pointing to non monophonic-modulateable descriptor will fail
+    nltools_assertAlways(ret.validateParameterType());
     return ret;
 }
 
@@ -194,5 +218,7 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
     ret.m_controlPosition = param->getControlPositionValue();
     ret.m_voiceGroup = param->getID().getVoiceGroup();
+    // safety proposal: id pointing to non monophonic-unmodulateable descriptor will fail
+    nltools_assertAlways(ret.validateParameterType());
     return ret;
 }

@@ -303,6 +303,34 @@ void C15Synth::onSettingInitialSinglePreset()
   m_dsp->onSettingInitialSinglePreset();  // initial sound, out a mix: 100%
 }
 
+// new ParameterChanged protocol
+
+void C15Synth::onHardwareSourceParameterChangedMessage(const nltools::msg::HardwareSourceParameterChangedMessage& _msg)
+{
+  const auto latchIndex = InputEventStage::parameterIDToHWID(_msg.m_id);
+  if(latchIndex != HardwareSource::NONE)
+  {
+    auto element = m_dsp->getParameter(_msg.m_id);
+    const auto didBehaviorChange = m_dsp->updateBehaviour(element, _msg.m_returnMode);
+    m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)][static_cast<int>(HWChangeSource::UI)]
+        = static_cast<float>(_msg.m_controlPosition);
+    m_inputEventStage.onParameterChangedMessage(_msg, didBehaviorChange);
+    return;
+  }
+  if constexpr(LOG_FAIL)
+  {
+    nltools::Log::error(__PRETTY_FUNCTION__, "invalid parameter id: ", _msg.m_id);
+  }
+}
+
+void C15Synth::onHardwareSourceSendParameterChangedMessage(
+    const nltools::msg::HardwareSourceSendParameterChangedMessage& _msg)
+{
+  m_inputEventStage.onParameterChangedMessage(_msg);
+}
+
+// todo: remove when unused
+
 void C15Synth::onModulateableParameterMessage(const nltools::msg::ModulateableParameterChangedMessage& msg)
 {
   // (fail-safe) dispatch by ParameterList
