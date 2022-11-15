@@ -7,9 +7,9 @@ EditBufferStorePreparation::EditBufferStorePreparation(EditBuffer& eb) : m_eb{eb
 {
   auto scope = UNDO::Scope::startTrashTransaction();
   auto transaction = scope->getTransaction();
+  m_eb.getAudioEngineProxy().freezeParameterMessages();
+  m_eb.getAudioEngineProxy().freezePresetMessages();
   m_oldPositions = m_eb.setHWSourcesToDefaultValues(transaction);
-  eb.getAudioEngineProxy().freezeParameterMessages();
-  eb.getAudioEngineProxy().freezePresetMessages();
 }
 
 EditBufferStorePreparation::~EditBufferStorePreparation()
