@@ -20,11 +20,6 @@ namespace nltools
       std::unique_lock<std::recursive_mutex> lock(*m_mutex);
       m_jobs.clear();
       lock.unlock();
-
-      while(!m_pendingCalls.unique())
-      {
-        std::this_thread::sleep_for(10ms);
-      }
     }
 
     void ContextBoundMessageQueue::pushMessage(tMessage &&m)
