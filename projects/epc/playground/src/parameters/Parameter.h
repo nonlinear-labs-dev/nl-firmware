@@ -151,6 +151,8 @@ class Parameter : public UpdateDocumentContributor,
 
   [[nodiscard]] C15::Descriptors::ParameterType getType() const;
 
+  void sendParameterMessage() const;
+
  protected:
   virtual void sendToAudioEngine() const;
   virtual void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
@@ -183,6 +185,4 @@ class Parameter : public UpdateDocumentContributor,
 
   tControlPositionValue m_lastSnapshotedValue;
   bool m_isLocked = false;
-
-  virtual void sendParameterMessage() const;
 };

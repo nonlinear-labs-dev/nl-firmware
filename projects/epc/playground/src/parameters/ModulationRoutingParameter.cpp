@@ -149,11 +149,3 @@ Layout *ModulationRoutingParameter::createLayout(FocusAndMode focusAndMode) cons
 void ModulationRoutingParameter::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
 }
-
-void ModulationRoutingParameter::sendParameterMessage() const
-{
-  if(Application::exists())
-  {
-    Application::get().getAudioEngineProxy()->createAndSendParameterMessage<ModulationRoutingParameter>(this);
-  }
-}

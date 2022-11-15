@@ -101,3 +101,21 @@ TEST_CASE("ContextBoundMessageQueue - no send after destruction")
   CHECK(firstCBReached);
   CHECK(!secondCBReached);
 }
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Send all Parameter Messages")
+{
+  int testedParams = 0;
+  for(auto vg: {VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II})
+  {
+    for(auto g: app->getPresetManager()->getEditBuffer()->getParameterGroups(vg))
+    {
+      for(auto& p: g->getParameters())
+      {
+        testedParams++;
+        REQUIRE_NOTHROW(p->sendParameterMessage());
+      }
+    }
+  }
+
+  REQUIRE(testedParams > 0);
+}

@@ -11,6 +11,7 @@
 #include "proxies/playcontroller/PlaycontrollerProxy.h"
 #include "proxies/audio-engine/AudioEngineProxy.h"
 #include "parameter_list.h"
+#include "MacroControlSmoothingParameter.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/UnmodulatebaleParameterLayouts.h>
 #include <presets/EditBuffer.h>
@@ -27,6 +28,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <parameter_declarations.h>
 #include <sync/JsonAdlSerializers.h>
+#include <parameters/ModulateableParameter.h>
 
 static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionValue>::max();
 
@@ -630,7 +632,89 @@ void Parameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
 void Parameter::sendParameterMessage() const
 {
   if(auto eb = getParentEditBuffer())
-    eb->getAudioEngineProxy().createAndSendParameterMessage<Parameter>(this);
+    switch(getType())
+    {
+      case C15::Descriptors::ParameterType::Hardware_Source:
+      {
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Hardware_Source>(dynamic_cast<const PhysicalControlParameter*>(this));
+        eb->getAudioEngineProxy().sendParameterMessage(ret);
+        break;
+      }
+      case C15::Descriptors::ParameterType::Display_Parameter:
+      {
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Display_Parameter>(dynamic_cast<const HardwareSourceSendParameter*>(this));
+        eb->getAudioEngineProxy().sendParameterMessage(ret);
+        break;
+      }
+      case C15::Descriptors::ParameterType::Hardware_Amount:
+      {
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Hardware_Amount>(dynamic_cast<const ModulationRoutingParameter*>(this));
+        eb->getAudioEngineProxy().sendParameterMessage(ret);
+        break;
+      }
+      case C15::Descriptors::ParameterType::Macro_Control:
+      {
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Macro_Control>(dynamic_cast<const MacroControlParameter*>(this));
+        eb->getAudioEngineProxy().sendParameterMessage(ret);
+        break;
+      }
+      case C15::Descriptors::ParameterType::Macro_Time:
+      {
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Macro_Time>(this);
+        eb->getAudioEngineProxy().sendParameterMessage(ret);
+        break;
+      }
+      case C15::Descriptors::ParameterType::Global_Modulateable:
+      {
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Global_Modulateable>(dynamic_cast<const ModulateableParameter*>(this));
+        eb->getAudioEngineProxy().sendParameterMessage(ret);
+        break;
+      }
+      case C15::Descriptors::ParameterType::Global_Unmodulateable:
+      {
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Global_Unmodulateable>(this);
+        eb->getAudioEngineProxy().sendParameterMessage(ret);
+        break;
+      }
+      case C15::Descriptors::ParameterType::Local_Modulateable:
+      {
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Local_Modulateable>(dynamic_cast<const ModulateableParameter*>(this));
+        eb->getAudioEngineProxy().sendParameterMessage(ret);
+        break;
+      }
+      case C15::Descriptors::ParameterType::Local_Unmodulateable:
+      {
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Local_Unmodulateable>(this);
+        eb->getAudioEngineProxy().sendParameterMessage(ret);
+        break;
+      }
+      case C15::Descriptors::ParameterType::Polyphonic_Modulateable:
+      {
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Polyphonic_Modulateable>(dynamic_cast<const ModulateableParameter*>(this));
+        eb->getAudioEngineProxy().sendParameterMessage(ret);
+        break;
+      }
+      case C15::Descriptors::ParameterType::Polyphonic_Unmodulateable:
+      {
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Polyphonic_Unmodulateable>(this);
+        eb->getAudioEngineProxy().sendParameterMessage(ret);
+        break;
+      }
+      case C15::Descriptors::ParameterType::Monophonic_Modulateable:
+      {
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Monophonic_Modulateable>(dynamic_cast<const ModulateableParameter*>(this));
+        eb->getAudioEngineProxy().sendParameterMessage(ret);
+        break;
+      }
+      case C15::Descriptors::ParameterType::Monophonic_Unmodulateable:
+      {
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Monophonic_Unmodulateable>(this);
+        eb->getAudioEngineProxy().sendParameterMessage(ret);
+        break;
+      }
+      case C15::Descriptors::ParameterType::None:
+        break;
+    }
 }
 
 bool Parameter::isValueDifferentFrom(double d) const
