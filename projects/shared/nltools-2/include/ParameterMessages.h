@@ -29,6 +29,7 @@ namespace nltools {
                 }
             };
 
+            // note: redundant (implemented but unused)
             struct ModulateableChangedMessage {
                 controls::Position m_modulationUpper = {};
                 controls::Position m_modulationLower = {};
