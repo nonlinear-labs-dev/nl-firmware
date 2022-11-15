@@ -71,6 +71,62 @@ namespace nltools
 
     }  // namespace nltools::msg::Parameters
 
+    namespace ParameterGroups
+    {
+
+      struct UnisonGroup
+      {
+        Parameters::UnmodulateableParameter unisonVoices;
+        Parameters::ModulateableParameter detune;
+        Parameters::UnmodulateableParameter phase;
+        Parameters::UnmodulateableParameter pan;
+      };
+
+      struct MonoGroup
+      {
+        Parameters::UnmodulateableParameter monoEnable;
+        Parameters::UnmodulateableParameter legato;
+        Parameters::UnmodulateableParameter priority;
+        Parameters::ModulateableParameter glide;
+      };
+
+      struct MasterGroup
+      {
+        Parameters::ModulateableParameter volume;
+        Parameters::ModulateableParameter tune;
+        Parameters::ModulateableParameter pan;
+        Parameters::ModulateableParameter serialFX;
+      };
+
+      inline bool operator==(const MonoGroup& lhs, const MonoGroup& rhs)
+      {
+        auto ret = lhs.glide == rhs.glide;
+        ret &= lhs.monoEnable == rhs.monoEnable;
+        ret &= lhs.priority == rhs.priority;
+        ret &= lhs.legato == rhs.legato;
+        return ret;
+      }
+
+      inline bool operator==(const UnisonGroup& lhs, const UnisonGroup& rhs)
+      {
+        auto ret = lhs.unisonVoices == rhs.unisonVoices;
+        ret &= lhs.detune == rhs.detune;
+        ret &= lhs.pan == rhs.pan;
+        ret &= lhs.phase == rhs.phase;
+        return ret;
+      }
+
+      inline bool operator==(const MasterGroup& lhs, const MasterGroup& rhs)
+      {
+        auto ret = lhs.volume == rhs.volume;
+        ret &= lhs.tune == rhs.tune;
+        ret &= lhs.pan == rhs.pan;
+        ret &= lhs.serialFX == rhs.serialFX;
+        return ret;
+      }
+
+    }  // namespace nltools::msg::ParameterGroups
+
     namespace detail
     {
 
@@ -95,6 +151,10 @@ namespace nltools
         }
 
         // shared data (present in any sound type)
+        SingularParameterArray<ParameterType::Hardware_Source, Parameters::HardwareSourceParameter> hwsources;
+        SingularParameterArray<ParameterType::Hardware_Amount, Parameters::HardwareAmountParameter> hwamounts;
+        SingularParameterArray<ParameterType::Macro_Control, Parameters::MacroParameter> macros;
+        SingularParameterArray<ParameterType::Macro_Time, Parameters::UnmodulateableParameter> macrotimes;
         // ... into:
         SingularParameterArray<ParameterType::Hardware_Source, controls::HardwareSourceParameter> m_hardwareSources;
         SingularParameterArray<ParameterType::Display_Parameter, controls::HardwareSourceSendParameter>
@@ -103,6 +163,12 @@ namespace nltools
         SingularParameterArray<ParameterType::Macro_Control, controls::MacroControlParameter> m_macroControls;
         SingularParameterArray<ParameterType::Macro_Time, controls::MacroTimeParameter> m_macroTimes;
 
+        //todo: remove:
+        ParameterGroups::MasterGroup master;
+        Parameters::GlobalParameter scaleBaseKey;
+        std::array<Parameters::ModulateableParameter, 12> scaleOffsets;
+
+        // done: use
         SingularParameterArray<ParameterType::Global_Modulateable, controls::GlobalModulateableParameter>
             m_globalModulateables;
         SingularParameterArray<ParameterType::Global_Unmodulateable, controls::GlobalUnmodulateableParameter>
@@ -163,6 +229,15 @@ namespace nltools
 
     struct SinglePresetMessage : public detail::PresetMessage<nltools::msg::MessageType::SinglePreset>
     {
+      // todo: refactor (into Polyphonic/Monophonic Modulateables/Unmodulateables)
+      std::array<Parameters::ModulateableParameter, 169> modulateables;
+      std::array<Parameters::UnmodulateableParameter, 29> unmodulateables;
+
+      // todo: refactor (into Polyphonic Modulateables/Unmodulateables, deprecating ParameterGroups)
+      ParameterGroups::UnisonGroup unison;
+      ParameterGroups::MonoGroup mono;
+
+      // todo: use
       SingularParameterArray<ParameterType::Polyphonic_Modulateable, controls::PolyphonicModulateableParameter>
           m_polyphonicModulateables;
       SingularParameterArray<ParameterType::Polyphonic_Unmodulateable, controls::PolyphonicUnmodulateableParameter>
@@ -199,6 +274,16 @@ namespace nltools
 
     struct SplitPresetMessage : public detail::PresetMessage<nltools::msg::MessageType::SplitPreset>
     {
+      // todo: refactor (into Polyphonic/Monophonic Modulateables/Unmodulateables)
+      std::array<std::array<Parameters::ModulateableParameter, 169>, 2> modulateables;
+      std::array<std::array<Parameters::UnmodulateableParameter, 29>, 2> unmodulateables;
+
+      // todo: refactor (into Polyphonic Modulateables/Unmodulateables, deprecating ParameterGroups)
+      std::array<ParameterGroups::UnisonGroup, 2> unison;
+      std::array<ParameterGroups::MonoGroup, 2> mono;
+      std::array<Parameters::SplitPoint, 2> splitpoint;
+
+      // todo: use
       DualParameterArray<ParameterType::Polyphonic_Modulateable, controls::PolyphonicModulateableParameter>
           m_polyphonicModulateables;
       DualParameterArray<ParameterType::Polyphonic_Unmodulateable, controls::PolyphonicUnmodulateableParameter>
@@ -236,9 +321,17 @@ namespace nltools
 
     struct LayerPresetMessage : public detail::PresetMessage<nltools::msg::MessageType::LayerPreset>
     {
+      // todo: refactor (into Polyphonic/Monophonic Modulateables/Unmodulateables)
+      std::array<std::array<Parameters::ModulateableParameter, 169>, 2> modulateables;
+      std::array<std::array<Parameters::UnmodulateableParameter, 29>, 2> unmodulateables;
+
+      // todo: refactor (into Polyphonic Modulateables/Unmodulateables, deprecating ParameterGroups)
       // note: yes, Unison and Mono will be present twice in a LayerPresetMsg (although only one VoiceGroup is relevant)
       //       (for comparisons to work properly, Unison/Mono should be identical in both VoiceGroups)
+      ParameterGroups::UnisonGroup unison;
+      ParameterGroups::MonoGroup mono;
 
+      // todo: use
       DualParameterArray<ParameterType::Polyphonic_Modulateable, controls::PolyphonicModulateableParameter>
           m_polyphonicModulateables;
       DualParameterArray<ParameterType::Polyphonic_Unmodulateable, controls::PolyphonicUnmodulateableParameter>
