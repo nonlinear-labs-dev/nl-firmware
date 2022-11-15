@@ -666,3 +666,9 @@ void Parameter::onSoundTypeChanged(SoundType t)
 {
   invalidate();
 }
+
+C15::Descriptors::ParameterType Parameter::getType() const
+{
+  auto& desc = C15::ParameterList[getID().getNumber()];
+  return desc.m_param.m_type;
+}

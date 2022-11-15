@@ -8,6 +8,7 @@
 #include <ParameterId.h>
 #include <tools/Signal.h>
 #include <sync/SyncedItem.h>
+#include <parameter_declarations.h>
 
 class Layout;
 class EditBuffer;
@@ -147,6 +148,8 @@ class Parameter : public UpdateDocumentContributor,
 
   bool isDisabledForType(SoundType type) const;
   bool isDisabled() const;
+
+  [[nodiscard]] C15::Descriptors::ParameterType getType() const;
 
  protected:
   virtual void sendToAudioEngine() const;

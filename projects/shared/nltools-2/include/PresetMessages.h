@@ -175,6 +175,8 @@ namespace nltools
         SingularParameterArray<ParameterType::Macro_Time, Parameters::UnmodulateableParameter> macrotimes;
         // ... into:
         SingularParameterArray<ParameterType::Hardware_Source, controls::HardwareSourceParameter> m_hardwareSources;
+        SingularParameterArray<ParameterType::Display_Parameter, controls::HardwareSourceSendParameter>
+            m_hardwareSourceSends;
         SingularParameterArray<ParameterType::Hardware_Amount, controls::HardwareAmountParameter> m_hardwareAmounts;
         SingularParameterArray<ParameterType::Macro_Control, controls::MacroControlParameter> m_macroControls;
         SingularParameterArray<ParameterType::Macro_Time, controls::MacroTimeParameter> m_macroTimes;
@@ -219,25 +221,33 @@ namespace nltools
         // validation
         static inline bool validateCommon(const PresetMessage<M>& _msg)
         {
-            for(const auto &element : _msg.m_hardwareSources)
-                if(!element.validateParameterType()) return false;
-            for(const auto &element : _msg.m_hardwareAmounts)
-                if(!element.validateParameterType()) return false;
-            for(const auto &element : _msg.m_macroControls)
-                if(!element.validateParameterType()) return false;
-            for(const auto &element : _msg.m_macroTimes)
-                if(!element.validateParameterType()) return false;
-            for(const auto &element : _msg.m_globalModulateables)
-                if(!element.validateParameterType()) return false;
-            for(const auto &element : _msg.m_globalUnmodulateables)
-                if(!element.validateParameterType()) return false;
-            for(const auto &layer : _msg.m_monophonicModulateables)
-                for(const auto &element : layer)
-                    if(!element.validateParameterType()) return false;
-            for(const auto &layer : _msg.m_monophonicUnmodulateables)
-                for(const auto &element : layer)
-                    if(!element.validateParameterType()) return false;
-            return true;
+          for(const auto& element : _msg.m_hardwareSources)
+            if(!element.validateParameterType())
+              return false;
+          for(const auto& element : _msg.m_hardwareAmounts)
+            if(!element.validateParameterType())
+              return false;
+          for(const auto& element : _msg.m_macroControls)
+            if(!element.validateParameterType())
+              return false;
+          for(const auto& element : _msg.m_macroTimes)
+            if(!element.validateParameterType())
+              return false;
+          for(const auto& element : _msg.m_globalModulateables)
+            if(!element.validateParameterType())
+              return false;
+          for(const auto& element : _msg.m_globalUnmodulateables)
+            if(!element.validateParameterType())
+              return false;
+          for(const auto& layer : _msg.m_monophonicModulateables)
+            for(const auto& element : layer)
+              if(!element.validateParameterType())
+                return false;
+          for(const auto& layer : _msg.m_monophonicUnmodulateables)
+            for(const auto& element : layer)
+              if(!element.validateParameterType())
+                return false;
+          return true;
         }
       };
 
@@ -262,12 +272,14 @@ namespace nltools
       // validation
       static inline bool validate(const SinglePresetMessage& _msg)
       {
-          if(!SinglePresetMessage::validateCommon(_msg)) return false;
-          for(const auto &element : _msg.m_polyphonicModulateables)
-              if(!element.validateParameterType()) return false;
-          for(const auto &element : _msg.m_polyphonicUnmodulateables)
-              if(!element.validateParameterType()) return false;
-          return true;
+        if(!SinglePresetMessage::validateCommon(_msg))
+          return false;
+
+        auto modulateablesValid = std::all_of(_msg.m_polyphonicModulateables.begin(), _msg.m_polyphonicModulateables.end(),
+                           [](auto e) { return e.validateParameterType(); });
+        auto unmodulateablesValid = std::all_of(_msg.m_polyphonicUnmodulateables.begin(), _msg.m_polyphonicUnmodulateables.end(),
+                           [](auto e) { return e.validateParameterType(); });
+        return modulateablesValid && unmodulateablesValid;
       }
     };
 
@@ -309,14 +321,17 @@ namespace nltools
       // validation
       static inline bool validate(const SplitPresetMessage& _msg)
       {
-          if(!SplitPresetMessage::validateCommon(_msg)) return false;
-          for(const auto &layer : _msg.m_polyphonicModulateables)
-              for(const auto &element : layer)
-                  if(!element.validateParameterType()) return false;
-          for(const auto &layer : _msg.m_polyphonicUnmodulateables)
-              for(const auto &element : layer)
-                  if(!element.validateParameterType()) return false;
-          return true;
+        if(!SplitPresetMessage::validateCommon(_msg))
+          return false;
+        for(const auto& layer : _msg.m_polyphonicModulateables)
+          for(const auto& element : layer)
+            if(!element.validateParameterType())
+              return false;
+        for(const auto& layer : _msg.m_polyphonicUnmodulateables)
+          for(const auto& element : layer)
+            if(!element.validateParameterType())
+              return false;
+        return true;
       }
     };
 
@@ -360,14 +375,17 @@ namespace nltools
       // validation
       static inline bool validate(const LayerPresetMessage& _msg)
       {
-          if(!LayerPresetMessage::validateCommon(_msg)) return false;
-          for(const auto &layer : _msg.m_polyphonicModulateables)
-              for(const auto &element : layer)
-                  if(!element.validateParameterType()) return false;
-          for(const auto &layer : _msg.m_polyphonicUnmodulateables)
-              for(const auto &element : layer)
-                  if(!element.validateParameterType()) return false;
-          return true;
+        if(!LayerPresetMessage::validateCommon(_msg))
+          return false;
+        for(const auto& layer : _msg.m_polyphonicModulateables)
+          for(const auto& element : layer)
+            if(!element.validateParameterType())
+              return false;
+        for(const auto& layer : _msg.m_polyphonicUnmodulateables)
+          for(const auto& element : layer)
+            if(!element.validateParameterType())
+              return false;
+        return true;
       }
     };
 

@@ -225,3 +225,28 @@ nlohmann::json ParameterGroup::serialize() const
 {
   return { { "id", getID() }, { "name", getLongName() }, { "parameters", m_parameters } };
 }
+
+void ParameterGroup::validateParameterTypes() const
+{
+  bool hasAny = false;
+  bool isPoly = false;
+  bool isMono = false;
+
+  C15::Descriptors::ParameterType firstFoundType = C15::Descriptors::ParameterType::None;
+  for(const auto& p: getParameters())
+  {
+    auto foundType = p->getType();
+    auto isPolyParam = foundType == C15::Descriptors::ParameterType::Polyphonic_Unmodulateable || foundType == C15::Descriptors::ParameterType::Polyphonic_Modulateable;
+    auto isMonoParam = foundType == C15::Descriptors::ParameterType::Monophonic_Unmodulateable || foundType == C15::Descriptors::ParameterType::Monophonic_Modulateable;
+
+    if(!hasAny)
+    {
+      isPoly = isPolyParam;
+      isMono = isMonoParam;
+    }
+    else if(isPoly != isPolyParam || isMono != isMonoParam)
+    {
+      nltools_assertAlways(false);
+    }
+  }
+}

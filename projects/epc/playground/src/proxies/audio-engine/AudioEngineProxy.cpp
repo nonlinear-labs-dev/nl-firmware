@@ -1,6 +1,7 @@
 #include "AudioEngineProxy.h"
 #include "parameters/PedalParameter.h"
 #include "parameters/RibbonParameter.h"
+#include "parameters/MacroControlSmoothingParameter.h"
 #include <presets/PresetManager.h>
 #include <presets/Bank.h>
 #include <presets/EditBuffer.h>
@@ -108,345 +109,277 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
   m_presetManager.onLoadHappened(sigc::mem_fun(this, &AudioEngineProxy::onPresetManagerLoaded));
 }
 
-template <typename tMsg> void fillMessageWithGlobalParams(tMsg &msg, const EditBuffer &editBuffer)
+template <nltools::msg::MessageType tMsgType>
+void fillMessageWithMacroControlsAndMacroTimes(nltools::msg::detail::PresetMessage<tMsgType> &msg,
+                                               const EditBuffer &editBuffer)
 {
-  size_t hwSource = 0;
-  size_t scaleOffsets = 0;
-  size_t mc = 0;
-  size_t mcT = 0;
-  size_t modR = 0;
+  size_t macroTimes = 0;
+  size_t macroControls = 0;
 
-  auto masterParameter
-      = editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Master_Volume, VoiceGroup::Global });
-  nltools_assertOnDevPC(masterParameter != nullptr);
-  auto &master = msg.master.volume;
-  master.m_id = masterParameter->getID().getNumber();
-  master.m_controlPosition = masterParameter->getControlPositionValue();
-  master.m_modulationAmount = masterParameter->getModulationAmount();
-  master.m_macro = masterParameter->getModulationSource();
-
-  auto tuneParameter
-      = editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Master_Tune, VoiceGroup::Global });
-  nltools_assertOnDevPC(tuneParameter != nullptr);
-  auto &tune = msg.master.tune;
-  tune.m_id = tuneParameter->getID().getNumber();
-  tune.m_controlPosition = tuneParameter->getControlPositionValue();
-  tune.m_modulationAmount = tuneParameter->getModulationAmount();
-  tune.m_macro = tuneParameter->getModulationSource();
-
-  auto panParameter
-      = editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Master_Pan, VoiceGroup::Global });
-  nltools_assertOnDevPC(panParameter != nullptr);
-  auto &pan = msg.master.pan;
-  pan.m_id = panParameter->getID().getNumber();
-  pan.m_controlPosition = panParameter->getControlPositionValue();
-  pan.m_modulationAmount = panParameter->getModulationAmount();
-  pan.m_macro = panParameter->getModulationSource();
-
-  auto sepParam
-      = editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Master_Serial_FX, VoiceGroup::Global });
-  nltools_assertOnDevPC(sepParam != nullptr);
-  auto &sep = msg.master.serialFX;
-  sep.m_id = sepParam->getID().getNumber();
-  sep.m_controlPosition = sepParam->getControlPositionValue();
-  sep.m_modulationAmount = sepParam->getModulationAmount();
-  sep.m_macro = sepParam->getModulationSource();
-
-  for(auto &g : editBuffer.getParameterGroups(VoiceGroup::Global))
+  for(auto &param : editBuffer.getParameterGroupByID({ "MCs", VoiceGroup::Global })->getParameters())
   {
-    for(auto p : g->getParameters())
+    if(auto smoothing = dynamic_cast<const MacroControlSmoothingParameter *>(param))
     {
-      auto isScale = dynamic_cast<ScaleGroup *>(p->getParentGroup()) != nullptr;
+      auto &e = msg.m_macroTimes[macroTimes++];
+      e.m_id = static_cast<C15::PID::ParameterID>(smoothing->getID().getNumber());
+      e.m_controlPosition = smoothing->getControlPositionValue();
+    }
+    else if(auto mc = dynamic_cast<const MacroControlParameter *>(param))
+    {
+      auto &e = msg.m_macroControls[macroControls++];
+      e.m_id = static_cast<C15::PID::ParameterID>(mc->getID().getNumber());
+      e.m_controlPosition = mc->getControlPositionValue();
+    }
+  }
 
-      if(auto hwSrcParam = dynamic_cast<PhysicalControlParameter *>(p))
+  nltools_assertAlways(msg.m_macroTimes.size() == macroTimes);
+  nltools_assertAlways(msg.m_macroControls.size() == macroControls);
+}
+
+template <nltools::msg::MessageType tMsgType>
+void fillMessageWithHardwareSourceAndSends(nltools::msg::detail::PresetMessage<tMsgType> &msg,
+                                           const EditBuffer &editBuffer)
+{
+  size_t hw = 0;
+  size_t hw_send = 0;
+
+  for(auto &param : editBuffer.getParameterGroupByID({ "CS", VoiceGroup::Global })->getParameters())
+  {
+    if(auto hwParam = dynamic_cast<const PhysicalControlParameter *>(param))
+    {
+      auto &e = msg.m_hardwareSources[hw++];
+      e.m_id = static_cast<C15::PID::ParameterID>(hwParam->getID().getNumber());
+      e.m_controlPosition = hwParam->getControlPositionValue();
+      e.m_returnMode = hwParam->getReturnMode();
+    }
+    else if(auto send = dynamic_cast<const HardwareSourceSendParameter *>(param))
+    {
+      auto &e = msg.m_hardwareSourceSends[hw_send++];
+      e.m_id = static_cast<C15::PID::ParameterID>(send->getID().getNumber());
+      e.m_controlPosition = send->getControlPositionValue();
+      e.m_returnMode = send->getReturnMode();
+    }
+  }
+
+  nltools_assertAlways(msg.m_hardwareSourceSends.size() == hw_send);
+  nltools_assertAlways(msg.m_hardwareSources.size() == hw);
+}
+
+template <nltools::msg::MessageType tMsgType>
+void fillMessageWithHWAmounts(nltools::msg::detail::PresetMessage<tMsgType> &msg, const EditBuffer &editBuffer)
+{
+  size_t hwAmounts = 0;
+
+  for(auto &param : editBuffer.getParameterGroupByID({ "MCM", VoiceGroup::Global })->getParameters())
+  {
+    auto &e = msg.m_hardwareAmounts[hwAmounts++];
+    e.m_id = static_cast<C15::PID::ParameterID>(param->getID().getNumber());
+    e.m_controlPosition = param->getControlPositionValue();
+  }
+
+  nltools_assertAlways(hwAmounts == msg.m_hardwareAmounts.size());
+}
+
+template <nltools::msg::MessageType tMsgType>
+void fillMessageWithGlobalNotHandledGroups(nltools::msg::detail::PresetMessage<tMsgType> &msg,
+                                           const EditBuffer &editBuffer)
+{
+  const std::vector<std::string> alreadyParsedGroups = { "MCs", "CS", "MCM" };
+
+  size_t modulateable = 0;
+  size_t unmodulateable = 0;
+
+  for(auto g : editBuffer.getParameterGroups(VoiceGroup::Global))
+  {
+    const auto wasNotAlreadyParsed
+        = std::find(alreadyParsedGroups.begin(), alreadyParsedGroups.end(), g->getID().getName())
+        == alreadyParsedGroups.end();
+
+    if(wasNotAlreadyParsed)
+    {
+      for(auto &p : g->getParameters())
       {
-        auto &pItem = msg.hwsources[hwSource++];
-        pItem.m_id = p->getID().getNumber();
-        pItem.m_controlPosition = p->getControlPositionValue();
-        pItem.m_returnMode = hwSrcParam->getReturnMode();
-      }
-      else if(isScale)
-      {
-        if(p->getID().getNumber() == C15::PID::Scale_Base_Key)
+        if(auto modP = dynamic_cast<ModulateableParameter *>(p))
         {
-          nltools_assertOnDevPC(dynamic_cast<ModulateableParameter *>(p) == nullptr);
-          auto &pItem = msg.scaleBaseKey;
-          pItem.m_id = p->getID().getNumber();
-          pItem.m_controlPosition = p->getControlPositionValue();
+          auto &e = msg.m_globalModulateables[modulateable++];
+          e.m_id = static_cast<C15::PID::ParameterID>(modP->getID().getNumber());
+          e.m_controlPosition = modP->getControlPositionValue();
+          e.m_modulationAmount = modP->getModulationAmount();
+          e.m_macro = modP->getModulationSource();
         }
-        else if(auto modP = dynamic_cast<ModulateableParameter *>(p))
+        else
         {
-          auto &pItem = msg.scaleOffsets[scaleOffsets++];
-          pItem.m_id = p->getID().getNumber();
-          pItem.m_controlPosition = p->getControlPositionValue();
-          pItem.m_macro = modP->getModulationSource();
-          pItem.m_modulationAmount = modP->getModulationAmount();
+          auto &e = msg.m_globalUnmodulateables[unmodulateable++];
+          e.m_id = static_cast<C15::PID::ParameterID>(p->getID().getNumber());
+          e.m_controlPosition = p->getControlPositionValue();
         }
-      }
-      else if(auto mcParameter = dynamic_cast<MacroControlParameter *>(p))
-      {
-        auto &macro = msg.macros[mc++];
-        macro.m_id = mcParameter->getID().getNumber();
-        macro.m_controlPosition = mcParameter->getControlPositionValue();
-      }
-      else if(auto hwAmounts = dynamic_cast<ModulationRoutingParameter *>(p))
-      {
-        auto &hwAmount = msg.hwamounts[modR++];
-        hwAmount.m_id = hwAmounts->getID().getNumber();
-        hwAmount.m_controlPosition = hwAmounts->getControlPositionValue();
-      }
-      else if(MacroControlsGroup::isMacroTime(p->getID()))
-      {
-        auto &mcTime = msg.macrotimes[mcT++];
-        mcTime.m_id = p->getID().getNumber();
-        mcTime.m_controlPosition = p->getControlPositionValue();
       }
     }
   }
 
-  nltools_assertAlways(msg.scaleOffsets.size() == scaleOffsets);
-  nltools_assertAlways(msg.hwsources.size() == hwSource);
-  nltools_assertAlways(msg.macros.size() == mc);
-  nltools_assertAlways(msg.hwamounts.size() == modR);
-  nltools_assertAlways(msg.macrotimes.size() == mcT);
+  nltools_assertAlways(msg.m_globalModulateables.size() == modulateable);
+  nltools_assertAlways(msg.m_globalUnmodulateables.size() == unmodulateable);
 }
 
-template <typename tParameterType, typename tParameterArray>
-void forEachParameterInGroup(const EditBuffer *eb, const GroupId &group, tParameterArray &array, size_t &index)
+template <nltools::msg::MessageType tMsgType>
+void fillMessageWithMonophonicParameters(nltools::msg::detail::PresetMessage<tMsgType> &msg,
+                                         const EditBuffer &editBuffer)
 {
-  for(auto &p : eb->getParameterGroupByID(group)->getParameters())
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    if(auto param = dynamic_cast<tParameterType *>(p))
+    size_t mono_modulateable = 0;
+    size_t mono_unmodulateable = 0;
+
+    auto &mono_modulateables = msg.m_monophonicModulateables[static_cast<int>(vg)];
+    auto &mono_unmodulateables = msg.m_monophonicUnmodulateables[static_cast<int>(vg)];
+
+    for(auto g : editBuffer.getParameterGroups(vg))
     {
-      auto &msgParam = array[index++];
-      msgParam.m_controlPosition = param->getControlPositionValue();
-      msgParam.m_id = param->getID().getNumber();
+      for(auto p : g->getParameters())
+      {
+        switch(p->getType())
+        {
+          case C15::Descriptors::ParameterType::Monophonic_Modulateable:
+          {
+            if(auto modP = dynamic_cast<ModulateableParameter *>(p))
+            {
+              auto &e = mono_modulateables[mono_modulateable++];
+              e.m_id = static_cast<C15::PID::ParameterID>(modP->getID().getNumber());
+              e.m_controlPosition = modP->getControlPositionValue();
+              e.m_modulationAmount = modP->getModulationAmount();
+              e.m_macro = modP->getModulationSource();
+            }
+          }
+          break;
+          case C15::Descriptors::ParameterType::Monophonic_Unmodulateable:
+          {
+            auto &e = mono_unmodulateables[mono_unmodulateable++];
+            e.m_id = static_cast<C15::PID::ParameterID>(p->getID().getNumber());
+            e.m_controlPosition = p->getControlPositionValue();
+          }
+          break;
+        }
+      }
     }
+
+    nltools_assertAlways(mono_unmodulateable == mono_unmodulateables.size());
+    nltools_assertAlways(mono_modulateable == mono_modulateables.size());
+  }
+}
+
+template <nltools::msg::MessageType tMsgType>
+void fillMessageWithSharedParameters(nltools::msg::detail::PresetMessage<tMsgType> &msg, const EditBuffer &editBuffer)
+{
+  fillMessageWithMacroControlsAndMacroTimes(msg, editBuffer);
+  fillMessageWithHardwareSourceAndSends(msg, editBuffer);
+  fillMessageWithHWAmounts(msg, editBuffer);
+  fillMessageWithGlobalNotHandledGroups(msg, editBuffer);
+  fillMessageWithMonophonicParameters(msg, editBuffer);
+}
+
+void fillSingleMessageWithPolyParameters(nltools::msg::SinglePresetMessage &msg, const EditBuffer &eb)
+{
+  size_t modulateables = 0;
+  size_t unmodulateables = 0;
+
+  for(auto &g : eb.getParameterGroups(VoiceGroup::I))
+  {
+    for(auto &p : g->getParameters())
+    {
+      switch(p->getType())
+      {
+        case C15::Descriptors::ParameterType::Polyphonic_Modulateable:
+        {
+          if(auto modP = dynamic_cast<ModulateableParameter *>(p))
+          {
+            auto &e = msg.m_polyphonicModulateables[modulateables++];
+            e.m_id = static_cast<C15::PID::ParameterID>(modP->getID().getNumber());
+            e.m_controlPosition = modP->getControlPositionValue();
+            e.m_modulationAmount = modP->getModulationAmount();
+            e.m_macro = modP->getModulationSource();
+          }
+        }
+        break;
+        case C15::Descriptors::ParameterType::Polyphonic_Unmodulateable:
+        {
+          auto &e = msg.m_polyphonicUnmodulateables[unmodulateables++];
+          e.m_id = static_cast<C15::PID::ParameterID>(p->getID().getNumber());
+          e.m_controlPosition = p->getControlPositionValue();
+        }
+        break;
+      }
+    }
+  }
+
+  nltools_assertAlways(unmodulateables == msg.m_polyphonicUnmodulateables.size());
+  nltools_assertAlways(modulateables == msg.m_polyphonicModulateables.size());
+}
+
+template <typename tMSG> void fillDualMessageWithPolyParameters(tMSG &msg, const EditBuffer &editBuffer)
+{
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    auto &modParams = msg.m_polyphonicModulateables[static_cast<int>(vg)];
+    auto &unmodParams = msg.m_polyphonicUnmodulateables[static_cast<int>(vg)];
+
+    size_t modulateables = 0;
+    size_t unmodulateables = 0;
+
+    for(auto &g : editBuffer.getParameterGroups(vg))
+    {
+      for(auto &p : g->getParameters())
+      {
+        switch(p->getType())
+        {
+          case C15::Descriptors::ParameterType::Polyphonic_Modulateable:
+          {
+            if(auto modP = dynamic_cast<ModulateableParameter *>(p))
+            {
+              auto &e = modParams[modulateables++];
+              e.m_id = static_cast<C15::PID::ParameterID>(modP->getID().getNumber());
+              e.m_controlPosition = modP->getControlPositionValue();
+              e.m_modulationAmount = modP->getModulationAmount();
+              e.m_macro = modP->getModulationSource();
+            }
+          }
+          break;
+          case C15::Descriptors::ParameterType::Polyphonic_Unmodulateable:
+          {
+            auto &e = unmodParams[unmodulateables++];
+            e.m_id = static_cast<C15::PID::ParameterID>(p->getID().getNumber());
+            e.m_controlPosition = p->getControlPositionValue();
+          }
+          break;
+        }
+      }
+    }
+
+    nltools_assertAlways(unmodulateables == unmodParams.size());
+    nltools_assertAlways(modulateables == modParams.size());
   }
 }
 
 nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage(const EditBuffer &eb)
 {
   nltools::msg::SinglePresetMessage msg {};
-  fillMessageWithGlobalParams(msg, eb);
-
-  size_t mc = 0;
-  size_t modR = 0;
-  size_t modP = 0;
-  size_t unMod = 0;
-
-  forEachParameterInGroup<MacroControlParameter>(&eb, { "MCs", VoiceGroup::Global }, msg.macros, mc);
-  forEachParameterInGroup<ModulationRoutingParameter>(&eb, { "MCM", VoiceGroup::Global }, msg.hwamounts, modR);
-
-  for(auto &g : eb.getParameterGroups(VoiceGroup::I))
-  {
-    if(auto unisonGroup = dynamic_cast<UnisonGroup *>(g))
-    {
-      fillUnisonPart(msg.unison, unisonGroup);
-    }
-    else if(auto monoGroup = dynamic_cast<MonoGroup *>(g))
-    {
-      fillMonoPart(msg.mono, monoGroup);
-    }
-    else if(auto splitGroup = dynamic_cast<SplitParameterGroups *>(g))
-    {
-      //Ignore
-    }
-    else
-    {
-      for(auto p : g->getParameters())
-      {
-        if(auto modParam = dynamic_cast<ModulateableParameter *>(p))
-        {
-          auto &mod = msg.modulateables[modP++];
-          mod.m_id = modParam->getID().getNumber();
-          mod.m_controlPosition = modParam->getControlPositionValue();
-          mod.m_modulationAmount = modParam->getModulationAmount();
-          mod.m_macro = modParam->getModulationSource();
-        }
-        else
-        {
-          auto &unModulateable = msg.unmodulateables[unMod++];
-          unModulateable.m_id = p->getID().getNumber();
-          unModulateable.m_controlPosition = p->getControlPositionValue();
-        }
-      }
-    }
-  }
-
-  nltools_assertAlways(msg.modulateables.size() == modP);
-  nltools_assertAlways(msg.unmodulateables.size() == unMod);
-  nltools_assertAlways(msg.macros.size() == mc);
-  nltools_assertAlways(msg.hwamounts.size() == modR);
+  fillMessageWithSharedParameters(msg, eb);
+  fillSingleMessageWithPolyParameters(msg, eb);
   return msg;
-}
-
-void AudioEngineProxy::fillMonoPart(nltools::msg::ParameterGroups::MonoGroup &monoGroup, ParameterGroup *const &g)
-{
-  auto from = g->getVoiceGroup();
-
-  if(auto enable = g->findParameterByID({ C15::PID::Mono_Grp_Enable, from }))
-  {
-    nltools_assertOnDevPC(dynamic_cast<ModulateableParameter *>(enable) == nullptr);
-    auto &monoEnable = monoGroup.monoEnable;
-    monoEnable.m_id = C15::PID::Mono_Grp_Enable;
-    monoEnable.m_controlPosition = enable->getControlPositionValue();
-  }
-
-  if(auto prio = g->findParameterByID({ C15::PID::Mono_Grp_Prio, from }))
-  {
-    nltools_assertOnDevPC(dynamic_cast<ModulateableParameter *>(prio) == nullptr);
-    auto &item = monoGroup.priority;
-    item.m_id = C15::PID::Mono_Grp_Prio;
-    item.m_controlPosition = prio->getControlPositionValue();
-  }
-
-  if(auto legato = g->findParameterByID({ C15::PID::Mono_Grp_Legato, from }))
-  {
-    nltools_assertOnDevPC(dynamic_cast<ModulateableParameter *>(legato) == nullptr);
-    auto &item = monoGroup.legato;
-    item.m_id = C15::PID::Mono_Grp_Legato;
-    item.m_controlPosition = legato->getControlPositionValue();
-  }
-
-  if(auto glide = dynamic_cast<ModulateableParameter *>(g->findParameterByID({ C15::PID::Mono_Grp_Glide, from })))
-  {
-    auto &item = monoGroup.glide;
-    item.m_id = C15::PID::Mono_Grp_Glide;
-    item.m_controlPosition = glide->getControlPositionValue();
-    item.m_macro = glide->getModulationSource();
-    item.m_modulationAmount = glide->getModulationAmount();
-  }
-}
-
-void AudioEngineProxy::fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup &unisonGroup, ParameterGroup *const &g)
-{
-  auto from = g->getVoiceGroup();
-
-  if(auto unisonParam = g->getParameterByID({ C15::PID::Unison_Voices, from }))
-  {
-    auto &unisonVoices = unisonGroup.unisonVoices;
-    unisonVoices.m_id = C15::PID::Unison_Voices;
-    unisonVoices.m_controlPosition = unisonParam->getControlPositionValue();
-  }
-
-  if(auto unisonDetune = dynamic_cast<ModulateableParameter *>(g->getParameterByID({ C15::PID::Unison_Detune, from })))
-  {
-    auto &detune = unisonGroup.detune;
-    detune.m_id = unisonDetune->getID().getNumber();
-    detune.m_controlPosition = unisonDetune->getControlPositionValue();
-    detune.m_macro = unisonDetune->getModulationSource();
-    detune.m_modulationAmount = unisonDetune->getModulationAmount();
-  }
-
-  if(auto unisonPan = g->getParameterByID(
-         { C15::PID::Unison_Pan, from }))  // previously was 252: Unison Phase (seems like a bugfix..?)
-  {
-    auto &pan = unisonGroup.pan;
-    pan.m_id = unisonPan->getID().getNumber();
-    pan.m_controlPosition = unisonPan->getControlPositionValue();
-  }
-
-  if(auto unisonPhase = g->getParameterByID(
-         { C15::PID::Unison_Phase, from }))  // previously was 253: Unison Pan (seems like a bugfix..?)
-  {
-    auto &phase = unisonGroup.phase;
-    phase.m_id = unisonPhase->getID().getNumber();
-    phase.m_controlPosition = unisonPhase->getControlPositionValue();
-  }
-}
-
-template <typename tMsg> void fillDualMessage(tMsg &msg, const EditBuffer &editBuffer)
-{
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-  {
-    size_t modP = 0;
-    size_t unMod = 0;
-
-    auto arrayIndex = static_cast<int>(vg);
-    for(auto &g : editBuffer.getParameterGroups(vg))
-    {
-      if(dynamic_cast<UnisonGroup *>(g) || dynamic_cast<MonoGroup *>(g))
-        continue;
-
-      for(auto p : g->getParameters())
-      {
-        if(auto modParam = dynamic_cast<ModulateableParameter *>(p))
-        {
-          if(modParam->getID().getNumber() != C15::PID::Split_Split_Point)
-          {
-            auto &mod = msg.modulateables[arrayIndex][modP++];
-            mod.m_id = modParam->getID().getNumber();
-            mod.m_controlPosition = modParam->getControlPositionValue();
-            mod.m_modulationAmount = modParam->getModulationAmount();
-            mod.m_macro = modParam->getModulationSource();
-          }
-        }
-        else
-        {
-          if(p->getID().getNumber() != C15::PID::Unison_Voices && p->getID().getNumber() != C15::PID::Mono_Grp_Enable)
-          {
-            auto &unModulateable = msg.unmodulateables[arrayIndex][unMod++];
-            unModulateable.m_id = p->getID().getNumber();
-            unModulateable.m_controlPosition = p->getControlPositionValue();
-          }
-        }
-      }
-    }
-
-    nltools_assertAlways(msg.modulateables[arrayIndex].size() == modP);
-    nltools_assertAlways(msg.unmodulateables[arrayIndex].size() == unMod);
-  }
 }
 
 nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(const EditBuffer &eb)
 {
   nltools::msg::SplitPresetMessage msg {};
-  fillMessageWithGlobalParams(msg, eb);
-  fillDualMessage(msg, eb);
-
-  for(auto i = 0; i < 2; i++)
-  {
-    const auto vg = i == 0 ? VoiceGroup::I : VoiceGroup::II;
-    auto param = dynamic_cast<ModulateableParameter *>(eb.findParameterByID({ C15::PID::Split_Split_Point, vg }));
-
-    auto &t = msg.splitpoint[i];
-    t.m_id = param->getID().getNumber();
-    t.m_controlPosition = param->getControlPositionValue();
-    t.m_modulationAmount = param->getModulationAmount();
-    t.m_macro = param->getModulationSource();
-  }
-
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-  {
-    auto vgIndex = static_cast<int>(vg);
-
-    if(auto monoGroup = eb.getParameterGroupByID({ "Mono", vg }))
-    {
-      fillMonoPart(msg.mono[vgIndex], monoGroup);
-    }
-
-    if(auto unisonGroup = eb.getParameterGroupByID({ "Unison", vg }))
-    {
-      fillUnisonPart(msg.unison[vgIndex], unisonGroup);
-    }
-  }
-
+  fillMessageWithSharedParameters(msg, eb);
+  fillDualMessageWithPolyParameters(msg, eb);
   return msg;
 }
 
 nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(const EditBuffer &eb)
 {
   nltools::msg::LayerPresetMessage msg {};
-  fillMessageWithGlobalParams(msg, eb);
-  fillDualMessage(msg, eb);
-
-  if(auto unisonGroup = eb.getParameterGroupByID({ "Unison", VoiceGroup::I }))
-    fillUnisonPart(msg.unison, unisonGroup);
-
-  if(auto monoGroup = eb.getParameterGroupByID({ "Mono", VoiceGroup::I }))
-    fillMonoPart(msg.mono, monoGroup);
-
+  fillMessageWithSharedParameters(msg, eb);
+  fillDualMessageWithPolyParameters(msg, eb);
   return msg;
 }
 
