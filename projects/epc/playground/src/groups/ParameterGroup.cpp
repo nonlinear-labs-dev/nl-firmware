@@ -231,6 +231,8 @@ void ParameterGroup::validateParameterTypes() const
   bool hasAny = false;
   bool isPoly = false;
   bool isMono = false;
+  bool isGlobal = false;
+  bool isLocal = false;
 
   C15::Descriptors::ParameterType firstFoundType = C15::Descriptors::ParameterType::None;
   for(const auto& p: getParameters())
@@ -238,15 +240,31 @@ void ParameterGroup::validateParameterTypes() const
     auto foundType = p->getType();
     auto isPolyParam = foundType == C15::Descriptors::ParameterType::Polyphonic_Unmodulateable || foundType == C15::Descriptors::ParameterType::Polyphonic_Modulateable;
     auto isMonoParam = foundType == C15::Descriptors::ParameterType::Monophonic_Unmodulateable || foundType == C15::Descriptors::ParameterType::Monophonic_Modulateable;
+    auto isGlobalParam = foundType == C15::Descriptors::ParameterType::Global_Modulateable || foundType == C15::Descriptors::ParameterType::Global_Unmodulateable;
+    auto isLocalParam = foundType == C15::Descriptors::ParameterType::Local_Modulateable || foundType == C15::Descriptors::ParameterType::Local_Unmodulateable;
 
     if(!hasAny)
     {
       isPoly = isPolyParam;
       isMono = isMonoParam;
+      isGlobal = isGlobalParam;
+      isLocal = isLocalParam;
     }
-    else if(isPoly != isPolyParam || isMono != isMonoParam)
+    else if(isPoly != isPolyParam)
     {
-      nltools_assertAlways(false);
+      nltools_detailedAssertAlways(false, "poly not consistent");
+    }
+    else if(isMono != isMonoParam)
+    {
+      nltools_detailedAssertAlways(false, "mono not consistent");
+    }
+    else if(isGlobal != isGlobalParam)
+    {
+      nltools_detailedAssertAlways(false, "global not consistent");
+    }
+    else if(isLocal != isLocalParam)
+    {
+      nltools_detailedAssertAlways(false, "local not consistent");
     }
   }
 }

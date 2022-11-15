@@ -71,14 +71,17 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Layer
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
+    auto oldHash = eb->getHash();
     auto oldAEMessage = AudioEngineProxy::createLayerEditBufferMessage(*eb);
 
     eb->undoableLoadToPart(transaction, preset, VoiceGroup::I, VoiceGroup::I);
 
     THEN("AudioEngine Message is different")
     {
+      auto newHash = eb->getHash();
       auto newAEMessage = AudioEngineProxy::createLayerEditBufferMessage(*eb);
       CHECK_FALSE(newAEMessage == oldAEMessage);
+      CHECK_FALSE(newHash == oldHash);
     }
 
     THEN("Type is Same")
