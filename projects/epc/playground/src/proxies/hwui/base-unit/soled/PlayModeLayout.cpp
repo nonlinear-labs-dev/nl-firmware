@@ -36,23 +36,29 @@ void PlayModeLayout::onRibbonSelectionChanged(const Setting* s)
   createUpperLabels();
 }
 
+inline Rect getPedalIndicationRect(bool isMapped)
+{
+  if(isMapped)
+    return { 25, 1, 11, 14 };
+  else
+    return { 25, 1, 0, 14 };
+}
+
+inline Rect getRibbonLabelRect(bool isMapped)
+{
+  if(isMapped)
+    return { 36, 1, 77, 14 };
+  else
+    return { 25, 1, 88, 14 };
+}
+
 void PlayModeLayout::createUpperLabels()
 {
-  remove(m_pedalSymbol);
-  m_pedalSymbol = nullptr;
-  remove(m_ribbonLabel);
-  m_ribbonLabel = nullptr;
+  remove(std::exchange(m_pedalSymbol, nullptr));
+  remove(std::exchange(m_ribbonLabel, nullptr));
 
-  if(isPedalMappedToCurrentUpperRibbon())
-  {
-    m_pedalSymbol = addControl(new PedalMappedToRibbonIndication(Rect(25, 1, 11, 14)));
-    m_ribbonLabel
-        = addControl(new RibbonLabel(HardwareSourcesGroup::getUpperRibbon1ParameterID(), Rect(36, 1, 77, 14)));
-  }
-  else
-  {
-    m_pedalSymbol = addControl(new PedalMappedToRibbonIndication(Rect(25, 1, 0, 14)));
-    m_ribbonLabel
-        = addControl(new RibbonLabel(HardwareSourcesGroup::getUpperRibbon1ParameterID(), Rect(25, 1, 88, 14)));
-  }
+  const auto id = HardwareSourcesGroup::getUpperRibbon1ParameterID();
+  auto pedalMapped = isPedalMappedToCurrentUpperRibbon();
+  m_pedalSymbol = addControl(new PedalMappedToRibbonIndication(getPedalIndicationRect(pedalMapped)));
+  m_ribbonLabel = addControl(new RibbonLabel(id, getRibbonLabelRect(pedalMapped)));
 }

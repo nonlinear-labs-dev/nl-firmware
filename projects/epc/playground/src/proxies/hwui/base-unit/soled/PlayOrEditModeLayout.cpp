@@ -48,25 +48,31 @@ void PlayOrEditModeLayout::onParameterSelectionChanged(const Parameter* old, Par
 {
 }
 
+inline Rect getPedalIndicationRect(bool isMapped)
+{
+  if(isMapped)
+    return { 25, 17, 11, 14 };
+  else
+    return { 25, 17, 0, 14 };
+}
+
+inline Rect getRibbonLabelRect(bool isMapped)
+{
+  if(isMapped)
+    return { 36, 17, 77, 14 };
+  else
+    return { 25, 17, 88, 14 };
+}
+
 void PlayOrEditModeLayout::createLowerLabels()
 {
-  remove(m_pedalIndicationLower);
-  m_pedalIndicationLower = nullptr;
-  remove(m_ribbonLabelLower);
-  m_ribbonLabelLower = nullptr;
+  remove(std::exchange(m_pedalIndicationLower, nullptr));
+  remove(std::exchange(m_ribbonLabelLower, nullptr));
 
-  if(isPedalMappedToCurrentLowerRibbon())
-  {
-    m_pedalIndicationLower = addControl(new PedalMappedToRibbonIndication(Rect(25, 17, 11, 14)));
-    m_ribbonLabelLower
-        = addControl(new RibbonLabel(HardwareSourcesGroup::getLowerRibbon2ParameterID(), Rect(36, 17, 77, 14)));
-  }
-  else
-  {
-    m_pedalIndicationLower = addControl(new PedalMappedToRibbonIndication(Rect(25, 17, 0, 14)));
-    m_ribbonLabelLower
-        = addControl(new RibbonLabel(HardwareSourcesGroup::getLowerRibbon2ParameterID(), Rect(25, 17, 88, 14)));
-  }
+  const auto id = HardwareSourcesGroup::getLowerRibbon2ParameterID();
+  auto isMapped = isPedalMappedToCurrentLowerRibbon();
+  m_pedalIndicationLower = addControl(new PedalMappedToRibbonIndication(getPedalIndicationRect(isMapped)));
+  m_ribbonLabelLower = addControl(new RibbonLabel(id, getRibbonLabelRect(isMapped)));
 }
 
 void PlayOrEditModeLayout::onRibbonSelectionChanged(const Setting* s)
@@ -82,33 +88,17 @@ bool is1_2Selected()
 bool PlayOrEditModeLayout::isPedalMappedToCurrentLowerRibbon()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto is1_2Ribbons = is1_2Selected();
-  if(is1_2Ribbons)
-  {
-    RibbonParameter* param = eb->findAndCastParameterByID<RibbonParameter>({ C15::PID::Ribbon_2, VoiceGroup::Global });
-    return param->isMCAssignedToThisAlsoAssignedToAnyPedal();
-  }
-  else
-  {
-    RibbonParameter* param = eb->findAndCastParameterByID<RibbonParameter>({ C15::PID::Ribbon_4, VoiceGroup::Global });
-    return param->isMCAssignedToThisAlsoAssignedToAnyPedal();
-  }
+  RibbonParameter* param = eb->findAndCastParameterByID<RibbonParameter>(
+      { is1_2Selected() ? C15::PID::Ribbon_2 : C15::PID::Ribbon_4, VoiceGroup::Global });
+  return param->isMCAssignedToThisAlsoAssignedToAnyPedal();
 }
 
 bool PlayOrEditModeLayout::isPedalMappedToCurrentUpperRibbon()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  auto is1_2Ribbons = is1_2Selected();
-  if(is1_2Ribbons)
-  {
-    RibbonParameter* param = eb->findAndCastParameterByID<RibbonParameter>({ C15::PID::Ribbon_1, VoiceGroup::Global });
-    return param->isMCAssignedToThisAlsoAssignedToAnyPedal();
-  }
-  else
-  {
-    RibbonParameter* param = eb->findAndCastParameterByID<RibbonParameter>({ C15::PID::Ribbon_3, VoiceGroup::Global });
-    return param->isMCAssignedToThisAlsoAssignedToAnyPedal();
-  }
+  RibbonParameter* param = eb->findAndCastParameterByID<RibbonParameter>(
+      { is1_2Selected() ? C15::PID::Ribbon_1 : C15::PID::Ribbon_3, VoiceGroup::Global });
+  return param->isMCAssignedToThisAlsoAssignedToAnyPedal();
 }
 
 void PlayOrEditModeLayout::onMacroMappingsChanged()
