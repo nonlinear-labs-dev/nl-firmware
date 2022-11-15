@@ -71,20 +71,20 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
                                    }
                                  });
 
-  receive<HardwareSourceChangedNotification>(
-      EndPoint::Playground,
-      [this](auto &msg)
-      {
-        if(auto param = findPhysicalControlParameterFromAudioEngineHWSourceID(msg.hwSource))
-        {
-          if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
-          {
-            PhysicalControlParameterUseCases useCase(p);
-            useCase.changeFromAudioEngine(msg.position, msg.source);
-            m_playcontrollerProxy.notifyRibbonTouch(p->getID().getNumber());
-          }
-        }
-      });
+  receive<HardwareSourceChangedNotification>(EndPoint::Playground,
+                                             [this](auto &msg)
+                                             {
+                                               if(auto param
+                                                  = findPhysicalControlParameterFromAudioEngineHWSourceID(msg.hwSource))
+                                               {
+                                                 if(auto p = dynamic_cast<PhysicalControlParameter *>(param))
+                                                 {
+                                                   PhysicalControlParameterUseCases useCase(p);
+                                                   useCase.changeFromAudioEngine(msg.position, msg.source);
+                                                   m_playcontrollerProxy.notifyRibbonTouch(p->getID().getNumber());
+                                                 }
+                                               }
+                                             });
 
   receive<Midi::ProgramChangeMessage>(EndPoint::Playground,
                                       [=](const auto &msg)
@@ -630,4 +630,17 @@ Parameter *AudioEngineProxy::findPhysicalControlParameterFromAudioEngineHWSource
     default:
       return nullptr;
   }
+}
+
+void AudioEngineProxy::freezePresetMessages()
+{
+  m_suppressPresetChanges++;
+}
+
+void AudioEngineProxy::thawPresetMessages(bool send)
+{
+  m_suppressPresetChanges--;
+
+  if(m_suppressPresetChanges == 0 && send)
+    sendEditBuffer();
 }

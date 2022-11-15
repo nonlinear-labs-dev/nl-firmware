@@ -10,7 +10,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single to Dual Sound Ch
   EditBufferUseCases ebUseCase(*eb);
   TestHelper::initSingleEditBuffer();
 
-  auto unisonVoices = eb->findParameterByID({ 249, VoiceGroup::I });
+  auto unisonVoices = eb->findParameterByID({ C15::PID::Unison_Voices, VoiceGroup::I });
   ParameterUseCases unisonUseCases(unisonVoices);
 
   WHEN("Unison Voices: 1")
@@ -25,8 +25,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single to Dual Sound Ch
     }
   }
 
-  for(auto steps = 1; steps < 24; steps++)
+  SECTION("Steps")
   {
+    auto steps = GENERATE(range(1, 23));
     auto voices = steps + 1;
 
     WHEN("Unison Voices: " + std::to_string(voices))
@@ -56,7 +57,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Dual to Single Sound", 
   useCase.convertToLayer(VoiceGroup::I);
   useCase.initSound(Defaults::FactoryDefault);
 
-  auto unisonVoices = eb->findParameterByID({ 249, VoiceGroup::I });
+  auto unisonVoices = eb->findParameterByID({ C15::PID::Unison_Voices, VoiceGroup::I });
   ParameterUseCases unisonUseCase(unisonVoices);
 
   WHEN("Unison Voices: 1")
@@ -71,8 +72,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Dual to Single Sound", 
     }
   }
 
-  for(auto steps = 1; steps < 12; steps++)
+  SECTION("Steps")
   {
+    auto steps = GENERATE(range(1, 11));
     auto voices = steps + 1;
 
     WHEN("Unison Voices: " + std::to_string(voices))
@@ -91,8 +93,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Undo Convert Sound resets Scali
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases useCase(*eb);
-  auto unisonVoicesI = eb->findParameterByID({ 249, VoiceGroup::I });
-  auto unisonVoicesII = eb->findParameterByID({ 249, VoiceGroup::II });
+  auto unisonVoicesI = eb->findParameterByID({ C15::PID::Unison_Voices, VoiceGroup::I });
+  auto unisonVoicesII = eb->findParameterByID({ C15::PID::Unison_Voices, VoiceGroup::II });
   ParameterUseCases unisonI(unisonVoicesI);
   ParameterUseCases unisonII(unisonVoicesII);
 

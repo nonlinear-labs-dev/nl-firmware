@@ -93,7 +93,7 @@ Application::Application(int numArgs, char **argv)
     , m_settings(new Settings(m_options->getSettingsFile(), m_http->getUpdateDocumentMaster(), *m_hwFeatures))
     , m_presetManager(
           new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
-    , m_hwui(new HWUI(*m_settings, *m_recorderManager.get()))
+    , m_hwui(new HWUI(*m_settings, *m_recorderManager))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
     , m_audioEngineProxy(new AudioEngineProxy(*m_presetManager, *m_settings, *m_playcontrollerProxy))
@@ -119,7 +119,7 @@ Application::Application(int numArgs, char **argv)
   m_presetManager->init(m_audioEngineProxy.get(), *m_settings,
                         [this](auto str)
                         {
-                          SplashScreenUseCases ssuc(*m_hwui.get(), *m_settings.get());
+                          SplashScreenUseCases ssuc(*m_hwui, *m_settings);
                           ssuc.addSplashScreenMessage(str);
                         });
 
@@ -281,6 +281,11 @@ WebUISupport *Application::getWebUISupport()
 HardwareFeatures *Application::getHardwareFeatures()
 {
   return m_hwFeatures.get();
+}
+
+bool Application::isQuit() const
+{
+  return m_isQuit;
 }
 
 const Options *Application::getOptions() const

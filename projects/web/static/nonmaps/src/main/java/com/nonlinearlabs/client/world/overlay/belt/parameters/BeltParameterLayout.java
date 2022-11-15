@@ -261,7 +261,7 @@ public class BeltParameterLayout extends OverlayLayout {
 		slider.doLayout(sliderLeft, third, w - sliderLeft - sliderLeft, third);
 		mcUpperClip.doLayout(sliderLeft + w - sliderLeft - sliderLeft, third, clipW, third);
 
-		double ccW = Millimeter.toPixels(25);
+		double ccW = Millimeter.toPixels(35);
 		double ccHeight = third / 2;
 		ccDisplay.doLayout(sliderLeft, third - ccHeight, ccW, ccHeight);
 

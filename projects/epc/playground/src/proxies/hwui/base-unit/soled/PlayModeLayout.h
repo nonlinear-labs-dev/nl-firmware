@@ -13,4 +13,12 @@ class PlayModeLayout : public PlayOrEditModeLayout
  public:
   PlayModeLayout();
   ~PlayModeLayout() override;
+
+ private:
+  void createUpperLabels();
+  void onMacroControlMappingsChanged();
+  void onRibbonSelectionChanged(const Setting* s);
+
+  Control* m_pedalSymbol;
+  Control* m_ribbonLabel;
 };

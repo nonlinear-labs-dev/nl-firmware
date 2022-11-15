@@ -61,6 +61,9 @@ class AudioEngineProxy : public sigc::trackable
 
   void sendEditBuffer();
 
+  void freezePresetMessages();
+  void thawPresetMessages(bool send);
+
   void freezeParameterMessages();
   void thawParameterMessages(bool send);
 
@@ -81,6 +84,7 @@ class AudioEngineProxy : public sigc::trackable
 
   uint8_t m_lastMIDIKnownProgramNumber = std::numeric_limits<uint8_t>::max();
   uint m_suppressParamChanges = 0;
+  uint m_suppressPresetChanges = 0;
 
   sigc::connection m_midiBankChangedConnection;
   sigc::connection m_midiBankConnection;

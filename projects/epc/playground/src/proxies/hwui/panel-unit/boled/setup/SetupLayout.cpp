@@ -1442,6 +1442,7 @@ void SetupLayout::diveUp()
 bool SetupLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
   SettingsUseCases useCases(*Application::get().getSettings());
+  useCases.refreshScreenSaverTimeout();
 
   if(down)
   {
@@ -1520,6 +1521,9 @@ void SetupLayout::onEnterInEditMode()
 
 bool SetupLayout::onRotary(int inc, ButtonModifiers modifiers)
 {
+  SettingsUseCases useCases(*Application::get().getSettings());
+  useCases.refreshScreenSaverTimeout();
+
   if(m_focusAndMode.mode == UIMode::Select)
   {
     m_tree->incFocus(inc);
