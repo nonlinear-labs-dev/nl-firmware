@@ -851,7 +851,13 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
   }
   else if(source != HWChangeSource::MIDI)
   {
-    m_localDisabledPositions[static_cast<unsigned int>(hwID)] = { pos, source };
+    auto pedalPos = pos;
+    const auto isPedal = hwID >= HardwareSource::PEDAL1 && hwID <= HardwareSource::PEDAL4;
+    if(isPedal && m_options->isSwitchingCC(hwID))
+    {
+      pedalPos = pos >= 0.5f ? 1.0f : 0.0f;
+    }
+    m_localDisabledPositions[static_cast<unsigned int>(hwID)] = { pedalPos, source };
     m_hwChangedCB();
   }
 
