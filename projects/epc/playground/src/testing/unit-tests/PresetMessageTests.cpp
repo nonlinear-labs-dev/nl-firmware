@@ -24,22 +24,6 @@ template <typename T> void collectIDs(const T &range, std::unordered_map<int, in
   }
 }
 
-void collectIDs(const nltools::msg::ParameterGroups::MonoGroup &group, std::unordered_map<int, int> &counts)
-{
-  collectID(group.legato, counts);
-  collectID(group.priority, counts);
-  collectID(group.monoEnable, counts);
-  collectID(group.glide, counts);
-}
-
-void collectIDs(const nltools::msg::ParameterGroups::UnisonGroup &group, std::unordered_map<int, int> &counts)
-{
-  collectID(group.phase, counts);
-  collectID(group.pan, counts);
-  collectID(group.detune, counts);
-  collectID(group.unisonVoices, counts);
-}
-
 template <typename T> void assertMap(const T &t)
 {
   for(auto &idCount : t)
@@ -51,43 +35,32 @@ template <typename T> void assertMap(const T &t)
 void assertNoIDTwice(const nltools::msg::SinglePresetMessage &msg)
 {
   std::unordered_map<int, int> count;
-  collectIDs(msg.unison, count);
-  collectIDs(msg.mono, count);
-  collectIDs(msg.unmodulateables, count);
-  collectIDs(msg.modulateables, count);
-  collectIDs(msg.hwamounts, count);
-  collectIDs(msg.hwsources, count);
-  collectIDs(msg.macros, count);
-  collectIDs(msg.scaleOffsets, count);
+  collectIDs(msg.m_polyphonicUnmodulateables, count);
+  collectIDs(msg.m_polyphonicModulateables, count);
+  collectIDs(msg.m_monophonicUnmodulateables[0], count);
+  collectIDs(msg.m_monophonicModulateables[0], count);
+  collectIDs(msg.m_globalUnmodulateables, count);
+  collectIDs(msg.m_globalModulateables, count);
+  collectIDs(msg.m_hardwareAmounts, count);
+  collectIDs(msg.m_hardwareSources, count);
+  collectIDs(msg.m_macroControls, count);
+  collectIDs(msg.m_macroTimes, count);
   assertMap(count);
 }
 
 template <int vg, typename tMsg> void collectDual(const tMsg &msg)
 {
   std::unordered_map<int, int> count;
-  collectIDs(msg.unison[vg], count);
-  collectIDs(msg.mono[vg], count);
-  collectIDs(msg.unmodulateables[vg], count);
-  collectIDs(msg.modulateables[vg], count);
-  collectID(msg.splitpoint[vg], count);
-  collectIDs(msg.hwamounts, count);
-  collectIDs(msg.hwsources, count);
-  collectIDs(msg.macros, count);
-  collectIDs(msg.scaleOffsets, count);
-  assertMap(count);
-}
-
-template <int vg> void collectDual(const nltools::msg::LayerPresetMessage &msg)
-{
-  std::unordered_map<int, int> count;
-  collectIDs(msg.unison, count);
-  collectIDs(msg.mono, count);
-  collectIDs(msg.unmodulateables[vg], count);
-  collectIDs(msg.modulateables[vg], count);
-  collectIDs(msg.hwamounts, count);
-  collectIDs(msg.hwsources, count);
-  collectIDs(msg.macros, count);
-  collectIDs(msg.scaleOffsets, count);
+  collectIDs(msg.m_polyphonicUnmodulateables[vg], count);
+  collectIDs(msg.m_polyphonicModulateables[vg], count);
+  collectIDs(msg.m_monophonicUnmodulateables[vg], count);
+  collectIDs(msg.m_monophonicModulateables[vg], count);
+  collectIDs(msg.m_globalUnmodulateables, count);
+  collectIDs(msg.m_globalModulateables, count);
+  collectIDs(msg.m_hardwareAmounts, count);
+  collectIDs(msg.m_hardwareSources, count);
+  collectIDs(msg.m_macroControls, count);
+  collectIDs(msg.m_macroTimes, count);
   assertMap(count);
 }
 

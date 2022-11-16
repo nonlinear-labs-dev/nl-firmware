@@ -71,9 +71,6 @@ class AudioEngineProxy : public sigc::trackable
   static nltools::msg::SinglePresetMessage createSingleEditBufferMessage(const EditBuffer& eb);
 
  private:
-  static void fillMonoPart(nltools::msg::ParameterGroups::MonoGroup& monoGroup, ParameterGroup* const& g);
-  static void fillUnisonPart(nltools::msg::ParameterGroups::UnisonGroup& unisonGroup, ParameterGroup* const& g);
-
   void onMidiBankSelectionChanged(const Uuid& newMidiBankUuid);
   void setLastKnownMIDIProgramChangeNumber(int pc);
   void sendSelectedMidiPresetAsProgramChange();

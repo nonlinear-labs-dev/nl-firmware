@@ -71,14 +71,17 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Layer
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
+    auto oldHash = eb->getHash();
     auto oldAEMessage = AudioEngineProxy::createLayerEditBufferMessage(*eb);
 
     eb->undoableLoadToPart(transaction, preset, VoiceGroup::I, VoiceGroup::I);
 
     THEN("AudioEngine Message is different")
     {
+      auto newHash = eb->getHash();
       auto newAEMessage = AudioEngineProxy::createLayerEditBufferMessage(*eb);
       CHECK_FALSE(newAEMessage == oldAEMessage);
+      CHECK_FALSE(newHash == oldHash);
     }
 
     THEN("Type is Same")
@@ -217,10 +220,21 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Layer
     const auto oldVoicesIHash = EBL::createValueHash(EBL::getVoices<VoiceGroup::I>());
     const auto oldCrossFBIIHash = EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>());
 
+    const auto oldAEMessage = AudioEngineProxy::createLayerEditBufferMessage(*eb);
+    const auto oldHash = eb->getHash();
+
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
     eb->undoableLoadToPart(transaction, preset, VoiceGroup::I, VoiceGroup::II);
+
+    THEN("AudioEngine Message is different")
+    {
+      auto newHash = eb->getHash();
+      auto newAEMessage = AudioEngineProxy::createLayerEditBufferMessage(*eb);
+      CHECK_FALSE(newHash == oldHash);
+      CHECK_FALSE(newAEMessage == oldAEMessage);
+    }
 
     THEN("Type is Same")
     {

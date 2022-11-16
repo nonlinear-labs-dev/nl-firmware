@@ -35,7 +35,4 @@ class ModulationRoutingParameter : public Parameter, public IntrusiveListItem<Mo
   Layout *createLayout(FocusAndMode focusAndMode) const override;
 
   void onExclusiveRoutingLost();
-
- private:
-  void sendParameterMessage() const override;
 };
