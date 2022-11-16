@@ -10,7 +10,38 @@
 *******************************************************************************/
 
 #include "parameter_storage.h"
-#include <parameter_list.h>
+//#include <parameter_list.h>
+
+// new Handle
+
+namespace Engine
+{
+
+    namespace Handle
+    {
+
+        struct ParameterHandle
+        {
+            Storage::LayerParameterStorage m_layer[C15::Properties::num_of_VoiceGroups] = {};
+            Storage::GlobalParameterStorage m_global = {};
+            inline void init()
+            {
+                m_global.m_parameters.m_assignment.reset();
+                for(uint32_t vg = 0; vg < C15::Properties::num_of_VoiceGroups; vg++)
+                {
+                    m_layer[vg].m_assignment.reset(); // resets local modulateables
+                    m_layer[vg].m_polyphonic.m_assignment.reset();
+                    m_layer[vg].m_monophonic.m_assignment.reset();
+                }
+                m_global.init();
+            }
+        };
+
+    } // namespace Engine::Handle
+
+} // namespace Engine
+
+// old stuff
 
 namespace Engine
 {

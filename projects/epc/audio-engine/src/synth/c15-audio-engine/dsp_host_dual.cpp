@@ -76,10 +76,12 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_mono[0].init(&m_convert, &m_z_layers[0], m_time.m_millisecond, samplerate, upsampleFactor);
   m_mono[1].init(&m_convert, &m_z_layers[1], m_time.m_millisecond, samplerate, upsampleFactor);
   // init parameters by parameter list
+  m_parameters.init();
   m_params.init_modMatrix();
 
   for(auto element : C15::ParameterList)
   {
+
     switch(element.m_param.m_type)
     {
       // (global) unmodulateable parameters need their properties and can directly
@@ -481,22 +483,61 @@ DSPInterface::OutputResetEventSource dsp_host_dual::onPresetMessage(const nltool
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::HardwareAmountParameterChangedMessage &_msg)
 {
+  auto param = &m_parameters.m_global.m_hardwareAmounts[getParameter(_msg.m_id).m_param.m_index];
+  if(param->update_position((float) _msg.m_controlPosition))
+  {
+    if constexpr(LOG_EDITS)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__);
+    }
+  }
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MacroControlParameterChangedMessage &_msg)
 {
+  auto param = &m_parameters.m_global.m_macroControls[getParameter(_msg.m_id).m_param.m_index];
+  if(param->update_position((float) _msg.m_controlPosition))
+  {
+    if constexpr(LOG_EDITS)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__);
+    }
+    param->m_unclipped = param->m_position;  // fixing #2023: unclipped always up-to-date
+    globalModChain(param);
+    if(m_layer_mode == LayerMode::Single)
+    {
+      localModChain(param);
+    }
+    else
+    {
+      for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
+      {
+        localModChain(layerId, param);
+      }
+    }
+  }
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MacroTimeParameterChangedMessage &_msg)
 {
+  auto param = &m_parameters.m_global.m_macroTimes[getParameter(_msg.m_id).m_param.m_index];
+  if(param->update_position((float) _msg.m_controlPosition))
+  {
+    if constexpr(LOG_EDITS)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__);
+    }
+  }
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::GlobalModulateableParameterChangedMessage &_msg)
 {
+  auto param = &m_parameters.m_global.m_parameters.m_modulateables[getParameter(_msg.m_id).m_param.m_index];
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::GlobalUnmodulateableParameterChangedMessage &_msg)
 {
+  auto param = &m_parameters.m_global.m_parameters.m_unmodulateables[getParameter(_msg.m_id).m_param.m_index];
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::LocalModulateableParameterChangedMessage &_msg)
@@ -1448,6 +1489,10 @@ void dsp_host_dual::globalModChain(Macro_Param *_mc)
   }
 }
 
+void dsp_host_dual::globalModChain(Engine::Parameters::MacroControl *_mc)
+{
+}
+
 void dsp_host_dual::localModChain(Macro_Param *_mc)
 {
   for(auto param = m_params.localChainFirst(0, _mc->m_id); param; param = m_params.localChainNext(0))
@@ -1485,6 +1530,14 @@ void dsp_host_dual::localModChain(const uint32_t _layer, Macro_Param *_mc)
       }
     }
   }
+}
+
+void dsp_host_dual::localModChain(Engine::Parameters::MacroControl *_mc)
+{
+}
+
+void dsp_host_dual::localModChain(const uint32_t _layer, Engine::Parameters::MacroControl *_mc)
+{
 }
 
 void dsp_host_dual::globalTransition(const Target_Param *_param, const Time_Aspect _time)

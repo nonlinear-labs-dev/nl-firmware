@@ -276,7 +276,8 @@ class dsp_host_dual : public DSPInterface
     }
     return SoundType::Single;
   }
-  // parameters
+  // parameters (todo: migrate)
+  Engine::Handle::ParameterHandle m_parameters;
   Engine::Param_Handle m_params;
   Time_Param m_edit_time, m_transition_time;
   Setting_Param m_reference;
@@ -318,8 +319,11 @@ class dsp_host_dual : public DSPInterface
   void updateTime(Time_Aspect* _param, const float _ms);
   void hwModChain(HW_Src_Param* _src, const uint32_t _id, const float _inc);
   void globalModChain(Macro_Param* _mc);
+  void globalModChain(Engine::Parameters::MacroControl* _mc);
   void localModChain(Macro_Param* _mc);
   void localModChain(const uint32_t _layer, Macro_Param* _mc);
+  void localModChain(Engine::Parameters::MacroControl* _mc);
+  void localModChain(const uint32_t _layer, Engine::Parameters::MacroControl* _mc);
   void globalTransition(const Target_Param* _param, const Time_Aspect _time);
   void globalTransition(const Direct_Param* _param, const Time_Aspect _time);
   void localTransition(const uint32_t _layer, const Direct_Param* _param, const Time_Aspect _time);
