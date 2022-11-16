@@ -153,6 +153,17 @@ namespace Engine
       }
     };
 
+    struct TimeParameter : public Aspects::ParameterAspect, public Aspects::ScaleAspect, public Aspects::TimeAspect
+    {
+        inline void init(const C15::Properties::SmootherScale &_id, const float &_factor, const float &_offset, const float &_value)
+        {
+            ParameterAspect::init(_value);
+            m_scaling.m_scaleId = _id;
+            m_scaling.m_scaleFactor = _factor;
+            m_scaling.m_scaleOffset = _offset;
+        }
+    };
+
     struct MacroTime : public Aspects::ParameterAspect, public Aspects::ScaleAspect, public Aspects::TimeAspect
     {
         inline void init(const C15::ParameterDescriptor &_desc)

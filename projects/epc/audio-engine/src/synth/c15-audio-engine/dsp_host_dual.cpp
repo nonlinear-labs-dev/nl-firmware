@@ -42,12 +42,18 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_time.init(upsampleIndex);
   m_fade.init(samplerate);
   // proper time init
-  m_edit_time.init(C15::Properties::SmootherScale::Linear, 200.0f, 0.0f, 0.1f);
-  m_edit_time.m_scaled = scale(m_edit_time.m_scaling, m_edit_time.m_position);
-  updateTime(&m_edit_time.m_dx, m_edit_time.m_scaled);
-  m_transition_time.init(C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, 0.0f);
-  m_transition_time.m_scaled = scale(m_transition_time.m_scaling, m_transition_time.m_position);
-  updateTime(&m_transition_time.m_dx, m_transition_time.m_scaled);
+  m_edit_time.init(C15::Properties::SmootherScale::Linear, 200.0f, 0.0f, 0.1f);  // todo: remove
+  m_edit_time.m_scaled = scale(m_edit_time.m_scaling, m_edit_time.m_position);   // todo: remove
+  updateTime(&m_edit_time.m_dx, m_edit_time.m_scaled);                           // todo: remove
+  m_editTime.init(C15::Properties::SmootherScale::Linear, 200.0f, 0.0f, 0.1f);
+  m_editTime.m_scaled = scale(m_editTime.m_scaling, m_editTime.m_position);
+  updateTime(m_editTime.m_time, m_editTime.m_scaled);
+  m_transition_time.init(C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, 0.0f);     // todo: remove
+  m_transition_time.m_scaled = scale(m_transition_time.m_scaling, m_transition_time.m_position);  // todo: remove
+  updateTime(&m_transition_time.m_dx, m_transition_time.m_scaled);                                // todo: remove
+  m_transitionTime.init(C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, 0.0f);
+  m_transitionTime.m_scaled = scale(m_transitionTime.m_scaling, m_transitionTime.m_position);
+  updateTime(m_transitionTime.m_time, m_transitionTime.m_scaled);
   // note: time and reference setting params are currently hard-coded but could
   // also be part of parameter list
   m_reference.init(C15::Properties::SmootherScale::Linear, 80.0f, 400.0f, 0.5f);
@@ -77,7 +83,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_mono[1].init(&m_convert, &m_z_layers[1], m_time.m_millisecond, samplerate, upsampleFactor);
   // init parameters by parameter list
   m_parameters.init();
-  m_params.init_modMatrix();
+  //  m_params.init_modMatrix(); // todo: remove
 
   for(auto element : C15::ParameterList)
   {
@@ -119,6 +125,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
         initLocalParameter(element);
         break;
     }
+#if 0
     switch(element.m_param.m_type)
     {
       // (global) unmodulateable parameters need their properties and can directly
@@ -282,7 +289,9 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
         updateTime(&mc->m_time.m_dx, mc->m_time.m_scaled);
         break;
     }
+#endif
   }
+
   // temporary: load initials in order to have valid osc reset params
   //onSettingInitialSinglePreset();
 
@@ -293,7 +302,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   }
 }
 
-void dsp_host_dual::initLocalParameter(const C15::ParameterDescriptor &_desc)
+inline void dsp_host_dual::initLocalParameter(const C15::ParameterDescriptor &_desc)
 {
   using Type = C15::Descriptors::ParameterType;
   const uint32_t index = _desc.m_param.m_index;
@@ -305,39 +314,117 @@ void dsp_host_dual::initLocalParameter(const C15::ParameterDescriptor &_desc)
       {
         auto &param = m_parameters.m_layer[layer].m_modulateables[index];
         param.init(_desc);
-        // todo: scale, smoothing...
+        initSmoothing(layer, _desc);
         break;
       }
       case Type::Local_Unmodulateable:
       {
+        auto &param = m_parameters.m_layer[layer].m_unmodulateables[index];
+        param.init(_desc);
+        initSmoothing(layer, _desc);
         break;
       }
       case Type::Polyphonic_Modulateable:
       {
+        auto &param = m_parameters.m_layer[layer].m_polyphonic.m_modulateables[index];
+        param.init(_desc);
+        initSmoothing(layer, _desc);
         break;
       }
       case Type::Polyphonic_Unmodulateable:
       {
+        auto &param = m_parameters.m_layer[layer].m_polyphonic.m_unmodulateables[index];
+        param.init(_desc);
+        initSmoothing(layer, _desc);
         break;
       }
       case Type::Monophonic_Modulateable:
       {
+        auto &param = m_parameters.m_layer[layer].m_monophonic.m_modulateables[index];
+        param.init(_desc);
+        initSmoothing(layer, _desc);
         break;
       }
       case Type::Monophonic_Unmodulateable:
       {
+        auto &param = m_parameters.m_layer[layer].m_monophonic.m_unmodulateables[index];
+        param.init(_desc);
+        initSmoothing(layer, _desc);
         break;
       }
       default:
-      {
         break;
-      }
     }
   }
 }
 
-void dsp_host_dual::initSmoothing(const C15::ParameterDescriptor &_desc)
+inline void dsp_host_dual::initSmoothing(const C15::ParameterDescriptor &_desc)
 {
+  switch(_desc.m_ae.m_signal.m_signal)
+  {
+    case C15::Descriptors::ParameterSignal::Global_Signal:
+      switch(_desc.m_ae.m_smoother.m_clock)
+      {
+        case C15::Descriptors::SmootherClock::Sync:
+          m_global.add_copy_sync_id(_desc.m_ae.m_smoother.m_index, _desc.m_ae.m_signal.m_index);
+          break;
+        case C15::Descriptors::SmootherClock::Audio:
+          m_global.add_copy_audio_id(_desc.m_ae.m_smoother.m_index, _desc.m_ae.m_signal.m_index);
+          break;
+        case C15::Descriptors::SmootherClock::Fast:
+          m_global.add_copy_fast_id(_desc.m_ae.m_smoother.m_index, _desc.m_ae.m_signal.m_index);
+          break;
+        case C15::Descriptors::SmootherClock::Slow:
+          m_global.add_copy_slow_id(_desc.m_ae.m_smoother.m_index, _desc.m_ae.m_signal.m_index);
+          break;
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+inline void dsp_host_dual::initSmoothing(const uint32_t &_layer, const C15::ParameterDescriptor &_desc)
+{
+  switch(_desc.m_ae.m_signal.m_signal)
+  {
+    case C15::Descriptors::ParameterSignal::Quasipoly_Signal:
+      switch(_desc.m_ae.m_smoother.m_clock)
+      {
+        case C15::Descriptors::SmootherClock::Sync:
+          m_poly[_layer].add_copy_sync_id(_desc.m_ae.m_smoother.m_index, _desc.m_ae.m_signal.m_index);
+          break;
+        case C15::Descriptors::SmootherClock::Audio:
+          m_poly[_layer].add_copy_audio_id(_desc.m_ae.m_smoother.m_index, _desc.m_ae.m_signal.m_index);
+          break;
+        case C15::Descriptors::SmootherClock::Fast:
+          m_poly[_layer].add_copy_fast_id(_desc.m_ae.m_smoother.m_index, _desc.m_ae.m_signal.m_index);
+          break;
+        case C15::Descriptors::SmootherClock::Slow:
+          m_poly[_layer].add_copy_slow_id(_desc.m_ae.m_smoother.m_index, _desc.m_ae.m_signal.m_index);
+          break;
+      }
+      break;
+    case C15::Descriptors::ParameterSignal::Mono_Signal:
+      switch(_desc.m_ae.m_smoother.m_clock)
+      {
+        case C15::Descriptors::SmootherClock::Sync:
+          m_mono[_layer].add_copy_sync_id(_desc.m_ae.m_smoother.m_index, _desc.m_ae.m_signal.m_index);
+          break;
+        case C15::Descriptors::SmootherClock::Audio:
+          m_mono[_layer].add_copy_audio_id(_desc.m_ae.m_smoother.m_index, _desc.m_ae.m_signal.m_index);
+          break;
+        case C15::Descriptors::SmootherClock::Fast:
+          m_mono[_layer].add_copy_fast_id(_desc.m_ae.m_smoother.m_index, _desc.m_ae.m_signal.m_index);
+          break;
+        case C15::Descriptors::SmootherClock::Slow:
+          m_mono[_layer].add_copy_slow_id(_desc.m_ae.m_smoother.m_index, _desc.m_ae.m_signal.m_index);
+          break;
+      }
+      break;
+    default:
+      break;
+  }
 }
 
 C15::ParameterDescriptor dsp_host_dual::getParameter(const int _id)
@@ -567,88 +654,293 @@ DSPInterface::OutputResetEventSource dsp_host_dual::onPresetMessage(const nltool
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::HardwareAmountParameterChangedMessage &_msg)
 {
-  auto param = &m_parameters.m_global.m_hardwareAmounts[getParameter(_msg.m_id).m_param.m_index];
-  if(param->update_position((float) _msg.m_controlPosition))
-  {
+  auto &param = m_parameters.m_global.m_hardwareAmounts[getParameter(_msg.m_id).m_param.m_index];
+  if(param.update_position((float) _msg.m_controlPosition))
     if constexpr(LOG_EDITS)
-    {
       nltools::Log::info(__PRETTY_FUNCTION__);
-    }
-  }
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MacroControlParameterChangedMessage &_msg)
 {
-  auto param = &m_parameters.m_global.m_macroControls[getParameter(_msg.m_id).m_param.m_index];
-  if(param->update_position((float) _msg.m_controlPosition))
+  auto &param = m_parameters.m_global.m_macroControls[getParameter(_msg.m_id).m_param.m_index];
+  if(param.update_position((float) _msg.m_controlPosition))
   {
     if constexpr(LOG_EDITS)
-    {
       nltools::Log::info(__PRETTY_FUNCTION__);
-    }
-    param->m_unclipped = param->m_position;  // fixing #2023: unclipped always up-to-date
+    param.m_unclipped = param.m_position;  // fixing #2023: unclipped always up-to-date
     globalModChain(param);
     if(m_layer_mode == LayerMode::Single)
-    {
       localModChain(param);
-    }
     else
-    {
       for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
-      {
         localModChain(layerId, param);
-      }
-    }
   }
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MacroTimeParameterChangedMessage &_msg)
 {
-  auto param = &m_parameters.m_global.m_macroTimes[getParameter(_msg.m_id).m_param.m_index];
-  if(param->update_position((float) _msg.m_controlPosition))
+  auto &param = m_parameters.m_global.m_macroTimes[getParameter(_msg.m_id).m_param.m_index];
+  if(param.update_position((float) _msg.m_controlPosition))
   {
     if constexpr(LOG_EDITS)
-    {
       nltools::Log::info(__PRETTY_FUNCTION__);
-    }
+    param.m_scaled = scale(param.m_scaling, param.m_position);
+    updateTime(param.m_time, param.m_scaled);
   }
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::GlobalModulateableParameterChangedMessage &_msg)
 {
-  auto param = &m_parameters.m_global.m_parameters.m_modulateables[getParameter(_msg.m_id).m_param.m_index];
+  const uint32_t index = getParameter(_msg.m_id).m_param.m_index, macroId = getMacroId(_msg.m_macro);
+  auto &param = m_parameters.m_global.m_parameters.m_modulateables[index];
+  bool aspect_update = param.update_source(getMacro(_msg.m_macro));
+  if(aspect_update)
+    m_parameters.m_global.m_parameters.m_assignment.reassign(index, macroId);
+  aspect_update |= param.update_amount((float) _msg.m_modulationAmount);
+  if(param.update_position(param.depolarize((float) _msg.m_controlPosition)))
+  {
+    param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
+    param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
+    if constexpr(LOG_EDITS)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__);
+      if(aspect_update)
+        nltools::Log::info("");
+    }
+    globalTransition(param, m_editTime.m_time);
+  }
+  else if(aspect_update)
+  {
+    param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
+    if constexpr(LOG_EDITS)
+      nltools::Log::info(__PRETTY_FUNCTION__);
+  }
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::GlobalUnmodulateableParameterChangedMessage &_msg)
 {
-  auto param = &m_parameters.m_global.m_parameters.m_unmodulateables[getParameter(_msg.m_id).m_param.m_index];
+  auto &param = m_parameters.m_global.m_parameters.m_unmodulateables[getParameter(_msg.m_id).m_param.m_index];
+  if(param.update_position((float) _msg.m_controlPosition))
+  {
+    param.m_scaled = scale(param.m_scaling, param.m_position);
+    if constexpr(LOG_EDITS)
+      nltools::Log::info(__PRETTY_FUNCTION__);
+    if(_msg.m_id == C15::PID::Scale_Base_Key)
+      m_global.start_base_key(m_edit_time.m_dx.m_dx_slow, param.m_scaled);
+    else
+      globalTransition(param, m_editTime.m_time);
+  }
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::LocalModulateableParameterChangedMessage &_msg)
 {
+  const uint32_t index = getParameter(_msg.m_id).m_param.m_index, macroId = getMacroId(_msg.m_macro),
+                 layerId = getLayerId(_msg.m_voiceGroup);
+  auto &param = m_parameters.m_layer[layerId].m_modulateables[index];
+  bool aspect_update = param.update_source(getMacro(_msg.m_macro));
+  if(aspect_update)
+    m_parameters.m_layer[layerId].m_assignment.reassign(index, macroId);
+  aspect_update |= param.update_amount((float) _msg.m_modulationAmount);
+  if(param.update_position((float) param.depolarize(_msg.m_controlPosition)))
+  {
+    param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
+    param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
+    if constexpr(LOG_EDITS)
+    {
+      nltools::Log::info(__PRETTY_FUNCTION__);
+      if(aspect_update)
+        nltools::Log::info("");
+    }
+    switch(_msg.m_id)
+    {
+      case C15::PID::Unison_Detune:
+      case C15::PID::Unison_Phase:
+      case C15::PID::Unison_Pan:
+      case C15::PID::Mono_Grp_Glide:
+        if(m_layer_mode != LayerMode::Split)
+          for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+            localTransition(layer, param, m_editTime.m_time);
+        else
+          localTransition(layerId, param, m_editTime.m_time);
+        break;
+      case C15::PID::Split_Split_Point:
+        if(m_layer_mode == LayerMode::Split)
+          m_alloc.setSplitPoint(static_cast<uint32_t>(param.m_scaled) + C15::Config::physical_key_from, layerId);
+        break;
+      default:
+        if(m_layer_mode == LayerMode::Single)
+          for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+            localTransition(layer, param, m_editTime.m_time);
+        else
+          localTransition(layerId, param, m_editTime.m_time);
+        break;
+    }
+  }
 }
 
-void dsp_host_dual::onParameterChangedMessage(const nltools::msg::LocalUnmodulateableParameterChangedMessage &_msg)
+DSPInterface::OutputResetEventSource
+    dsp_host_dual::onParameterChangedMessage(const nltools::msg::LocalUnmodulateableParameterChangedMessage &_msg)
 {
+  const uint32_t index = getParameter(_msg.m_id).m_param.m_index, layerId = getLayerId(_msg.m_voiceGroup);
+  auto &param = m_parameters.m_layer[layerId].m_unmodulateables[index];
+  if(param.update_position((float) _msg.m_controlPosition))
+  {
+    param.m_scaled = scale(param.m_scaling, param.m_position);
+    if constexpr(LOG_EDITS)
+      nltools::Log::info(__PRETTY_FUNCTION__);
+    switch(_msg.m_id)
+    {
+      case C15::PID::Voice_Grp_Fade_From:
+      case C15::PID::Voice_Grp_Fade_Range:
+        if(m_layer_mode == LayerMode::Layer)
+          evalVoiceFadeChg(layerId);
+        break;
+      case C15::PID::Unison_Voices:
+        return onUnisonVoicesChanged(layerId, param.m_position);
+      case C15::PID::Mono_Grp_Enable:
+        return onMonoEnableChanged(layerId, param.m_scaled);
+      case C15::PID::Mono_Grp_Prio:
+        m_alloc.setMonoPriority(layerId, param.m_scaled, m_layer_mode);
+        break;
+      case C15::PID::Mono_Grp_Legato:
+        m_alloc.setMonoLegato(layerId, param.m_scaled, m_layer_mode);
+        break;
+      default:
+        if(m_layer_mode == LayerMode::Single)
+          for(uint32_t layer = 0; layer < m_params.m_layer_count; layer++)
+            localTransition(layer, param, m_editTime.m_time);
+        else
+          localTransition(layerId, param, m_editTime.m_time);
+        break;
+    }
+    return OutputResetEventSource::None;
+  }
+}
+
+inline DSPInterface::OutputResetEventSource dsp_host_dual::onUnisonVoicesChanged(const uint32_t &_layer,
+                                                                                 const float &_pos)
+{
+  const OutputResetEventSource outputEvent
+      = determineOutputEventSource(areKeysPressed(fromType(m_layer_mode)), m_layer_mode);
+  // application now via fade point
+  m_fade.muteAndDo(
+      [&]
+      {
+        // apply (preloaded) unison change
+        m_alloc.setUnison(_layer, _pos, m_layer_mode, m_layer_mode);
+        // apply reset to affected poly compoments
+        m_poly[_layer].resetEnvelopes();
+        m_poly[_layer].m_uVoice = m_alloc.m_unison - 1;
+        m_poly[_layer].m_key_active = 0;
+        if(m_layer_mode != LayerMode::Split)
+        {
+          m_alloc.m_internal_keys.m_global = 0;
+          // apply reset to other poly components (when not in split mode)
+          const uint32_t layer = 1 - _layer;
+          m_poly[layer].resetEnvelopes();
+          m_poly[layer].m_uVoice = m_alloc.m_unison - 1;
+          m_poly[layer].m_key_active = 0;
+        }
+        else
+        {
+          m_alloc.m_internal_keys.m_local[_layer] = 0;
+        }
+      });
+  // return detected reset event
+  if(m_layer_mode != LayerMode::Split)
+  {
+    return outputEvent;
+  }
+  else
+  {
+    const bool isPartI = _layer == 0;
+    switch(outputEvent)
+    {
+      case OutputResetEventSource::Local_I:
+        return isPartI ? outputEvent : OutputResetEventSource::None;
+      case OutputResetEventSource::Local_II:
+        return !isPartI ? outputEvent : OutputResetEventSource::None;
+      case OutputResetEventSource::Local_Both:
+        return isPartI ? OutputResetEventSource::Local_I : OutputResetEventSource::Local_II;
+      default:
+        return OutputResetEventSource::None;
+    }
+  }
+}
+
+inline DSPInterface::OutputResetEventSource dsp_host_dual::onMonoEnableChanged(const uint32_t &_layer,
+                                                                               const float &_pos)
+{
+  const OutputResetEventSource outputEvent
+      = determineOutputEventSource(areKeysPressed(fromType(m_layer_mode)), m_layer_mode);
+  // application now via fade point
+  m_fade.muteAndDo(
+      [&]
+      {
+        // apply (preloaded) mono change
+        m_alloc.setMonoEnable(_layer, _pos, m_layer_mode);
+        // apply reset to affected poly compoments
+        m_poly[_layer].resetEnvelopes();
+        m_poly[_layer].m_key_active = 0;
+        if(m_layer_mode != LayerMode::Split)
+        {
+          m_alloc.m_internal_keys.m_global = 0;
+          // apply reset to other poly components (when not in split mode)
+          const uint32_t lId = 1 - _layer;
+          m_poly[lId].resetEnvelopes();
+          m_poly[lId].m_key_active = 0;
+        }
+        else
+        {
+          m_alloc.m_internal_keys.m_local[_layer] = 0;
+        }
+      });
+  // return detected reset event
+  if(m_layer_mode != LayerMode::Split)
+  {
+    return outputEvent;
+  }
+  else
+  {
+    const bool isPartI = _layer == 0;
+    switch(outputEvent)
+    {
+      case OutputResetEventSource::Local_I:
+        return isPartI ? outputEvent : OutputResetEventSource::None;
+      case OutputResetEventSource::Local_II:
+        return !isPartI ? outputEvent : OutputResetEventSource::None;
+      case OutputResetEventSource::Local_Both:
+        return isPartI ? OutputResetEventSource::Local_I : OutputResetEventSource::Local_II;
+      default:
+        return OutputResetEventSource::None;
+    }
+  }
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicModulateableParameterChangedMessage &_msg)
 {
+  // todo
 }
 
-void dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicUnmodulateableParameterChangedMessage &_msg)
+DSPInterface::OutputResetEventSource
+    dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicUnmodulateableParameterChangedMessage &_msg)
 {
+  // todo
+  return OutputResetEventSource::None;
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicModulateableParameterChangedMessage &_msg)
 {
+  // todo
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicUnmodulateableParameterChangedMessage &_msg)
 {
+  // todo
 }
 
 // todo: remove (when unused)
+
 void dsp_host_dual::globalParChg(const uint32_t _id, const nltools::msg::HWAmountChangedMessage &_msg)
 {
   auto param = m_params.get_hw_amt(_id);
@@ -1407,7 +1699,7 @@ void dsp_host_dual::keyUpTraversal(const uint32_t _note, const float _vel, const
   }
 }
 
-float dsp_host_dual::scale(const Engine::Parameters::Aspects::ScaleAspect::Scaling &_scl, float &_value)
+float dsp_host_dual::scale(const Engine::Parameters::Aspects::ScaleAspect::Scaling &_scl, float _value)
 {
   float result = 0.0f;
   switch(_scl.m_scaleId)
@@ -1629,8 +1921,25 @@ void dsp_host_dual::globalModChain(Macro_Param *_mc)
   }
 }
 
-void dsp_host_dual::globalModChain(Engine::Parameters::MacroControl *_mc)
+void dsp_host_dual::globalModChain(const Engine::Parameters::MacroControl &_mc)
 {
+  auto &assignment = m_parameters.m_global.m_parameters.m_assignment;
+  auto &time = m_parameters.m_global.m_macroTimes[_mc.m_index].m_time;
+  //  auto &time = m_params.get_macro_time(_mc.m_index)->m_dx;  // temporary
+  for(auto index = assignment.first(_mc.m_index); assignment.running(); index = assignment.next())
+  {
+    auto &param = m_parameters.m_global.m_parameters.m_modulateables[index];
+    if(param.modulate(_mc.m_position))
+    {
+      const float clipped = param.m_unclipped < 0.0f ? 0.0f : param.m_unclipped > 1.0f ? 1.0f : param.m_unclipped;
+      if(param.m_position != clipped)
+      {
+        param.m_position = clipped;
+        param.m_scaled = scale(param.m_scaling, param.polarize(clipped));
+        globalTransition(param, time);
+      }
+    }
+  }
 }
 
 void dsp_host_dual::localModChain(Macro_Param *_mc)
@@ -1672,12 +1981,50 @@ void dsp_host_dual::localModChain(const uint32_t _layer, Macro_Param *_mc)
   }
 }
 
-void dsp_host_dual::localModChain(Engine::Parameters::MacroControl *_mc)
+void dsp_host_dual::localModChain(const Engine::Parameters::MacroControl &_mc)
 {
+  auto &assignment = m_parameters.m_layer[0].m_assignment;
+  auto &time = m_parameters.m_global.m_macroTimes[_mc.m_index].m_time;
+  //  auto &time = m_params.get_macro_time(_mc.m_index)->m_dx;  // temporary
+  for(auto index = assignment.first(_mc.m_index); assignment.running(); index = assignment.next())
+  {
+    auto &param = m_parameters.m_global.m_parameters.m_modulateables[index];
+    if(param.modulate(_mc.m_position))
+    {
+      const float clipped = param.m_unclipped < 0.0f ? 0.0f : param.m_unclipped > 1.0f ? 1.0f : param.m_unclipped;
+      if(param.m_position != clipped)
+      {
+        param.m_position = clipped;
+        param.m_scaled = scale(param.m_scaling, param.polarize(clipped));
+        for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+          localTransition(layer, param, time);
+      }
+    }
+  }
 }
 
-void dsp_host_dual::localModChain(const uint32_t _layer, Engine::Parameters::MacroControl *_mc)
+void dsp_host_dual::localModChain(const uint32_t &_layer, const Engine::Parameters::MacroControl &_mc)
 {
+  auto &assignment = m_parameters.m_layer[_layer].m_assignment;
+  auto &time = m_parameters.m_global.m_macroTimes[_mc.m_index].m_time;
+  //  auto &time = m_params.get_macro_time(_mc.m_index)->m_dx;  // temporary
+  for(auto index = assignment.first(_mc.m_index); assignment.running(); index = assignment.next())
+  {
+    auto &param = m_parameters.m_global.m_parameters.m_modulateables[index];
+    if(param.modulate(_mc.m_position))
+    {
+      const float clipped = param.m_unclipped < 0.0f ? 0.0f : param.m_unclipped > 1.0f ? 1.0f : param.m_unclipped;
+      if(param.m_position != clipped)
+      {
+        param.m_position = clipped;
+        param.m_scaled = scale(param.m_scaling, param.polarize(clipped));
+        if(param.m_splitpoint)
+          m_alloc.setSplitPoint(static_cast<uint32_t>(param.m_scaled) + C15::Config::physical_key_from, _layer);
+        else
+          localTransition(_layer, param, time);
+      }
+    }
+  }
 }
 
 void dsp_host_dual::globalTransition(const Target_Param *_param, const Time_Aspect _time)
@@ -1772,6 +2119,33 @@ void dsp_host_dual::globalTransition(const Direct_Param *_param, const Time_Aspe
         __PRETTY_FUNCTION__, "failed to start global_transition(section:", static_cast<int>(_param->m_render.m_section),
         ", index:", _param->m_render.m_index, ", clock:", static_cast<int>(_param->m_render.m_clock), ")");
   }
+}
+
+template <typename T>
+inline void dsp_host_dual::globalTransition(const T &_param, const Engine::Parameters::Aspects::TimeAspect::Time &_time)
+{
+  if(_param.m_rendering.m_renderSection == C15::Descriptors::SmootherSection::Global)
+  {
+    switch(_param.m_rendering.m_renderClock)
+    {
+      case C15::Descriptors::SmootherClock::Sync:
+        m_global.start_sync(_param.m_rendering.m_renderIndex, _param.m_scaled);
+        break;
+      case C15::Descriptors::SmootherClock::Audio:
+        m_global.start_audio(_param.m_rendering.m_renderIndex, _time.m_dxAudio, _param.m_scaled);
+        break;
+      case C15::Descriptors::SmootherClock::Fast:
+        m_global.start_fast(_param.m_rendering.m_renderIndex, _time.m_dxFast, _param.m_scaled);
+        break;
+      case C15::Descriptors::SmootherClock::Slow:
+        m_global.start_slow(_param.m_rendering.m_renderIndex, _time.m_dxSlow, _param.m_scaled);
+        break;
+    }
+    if constexpr(LOG_TRANSITIONS)
+      nltools::Log::warning(__PRETTY_FUNCTION__);
+  }
+  else if constexpr(LOG_FAIL)
+    nltools::Log::warning(__PRETTY_FUNCTION__);
 }
 
 void dsp_host_dual::localTransition(const uint32_t _layer, const Direct_Param *_param, const Time_Aspect _time)
@@ -1907,6 +2281,54 @@ void dsp_host_dual::localTransition(const uint32_t _layer, const Target_Param *_
                           ", index:", _param->m_render.m_index, ", clock:", static_cast<int>(_param->m_render.m_clock),
                           ")");
   }
+}
+
+template <typename T>
+inline void dsp_host_dual::localTransition(const uint32_t &_layer, const T &_param,
+                                           const Engine::Parameters::Aspects::TimeAspect::Time &_time)
+{
+  if(_param.m_rendering.m_renderSection == C15::Descriptors::SmootherSection::Poly)
+  {
+    switch(_param.m_rendering.m_renderClock)
+    {
+      case C15::Descriptors::SmootherClock::Sync:
+        m_poly[_layer].start_sync(_param.m_rendering.m_renderIndex, _param.m_scaled);
+        break;
+      case C15::Descriptors::SmootherClock::Audio:
+        m_poly[_layer].start_audio(_param.m_rendering.m_renderIndex, _time.m_dxAudio, _param.m_scaled);
+        break;
+      case C15::Descriptors::SmootherClock::Fast:
+        m_poly[_layer].start_fast(_param.m_rendering.m_renderIndex, _time.m_dxFast, _param.m_scaled);
+        break;
+      case C15::Descriptors::SmootherClock::Slow:
+        m_poly[_layer].start_slow(_param.m_rendering.m_renderIndex, _time.m_dxSlow, _param.m_scaled);
+        break;
+    }
+    if constexpr(LOG_TRANSITIONS)
+      nltools::Log::warning(__PRETTY_FUNCTION__);
+  }
+  else if(_param.m_rendering.m_renderSection == C15::Descriptors::SmootherSection::Mono)
+  {
+    switch(_param.m_rendering.m_renderClock)
+    {
+      case C15::Descriptors::SmootherClock::Sync:
+        m_mono[_layer].start_sync(_param.m_rendering.m_renderIndex, _param.m_scaled);
+        break;
+      case C15::Descriptors::SmootherClock::Audio:
+        m_mono[_layer].start_audio(_param.m_rendering.m_renderIndex, _time.m_dxAudio, _param.m_scaled);
+        break;
+      case C15::Descriptors::SmootherClock::Fast:
+        m_mono[_layer].start_fast(_param.m_rendering.m_renderIndex, _time.m_dxFast, _param.m_scaled);
+        break;
+      case C15::Descriptors::SmootherClock::Slow:
+        m_mono[_layer].start_slow(_param.m_rendering.m_renderIndex, _time.m_dxSlow, _param.m_scaled);
+        break;
+    }
+    if constexpr(LOG_TRANSITIONS)
+      nltools::Log::warning(__PRETTY_FUNCTION__);
+  }
+  else if constexpr(LOG_FAIL)
+    nltools::Log::warning(__PRETTY_FUNCTION__);
 }
 
 bool dsp_host_dual::evalPolyChg(const C15::Properties::LayerId _layerId,

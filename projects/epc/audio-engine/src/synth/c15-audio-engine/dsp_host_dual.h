@@ -202,9 +202,11 @@ class dsp_host_dual : public DSPInterface
   void onParameterChangedMessage(const nltools::msg::GlobalModulateableParameterChangedMessage& _msg);
   void onParameterChangedMessage(const nltools::msg::GlobalUnmodulateableParameterChangedMessage& _msg);
   void onParameterChangedMessage(const nltools::msg::LocalModulateableParameterChangedMessage& _msg);
-  void onParameterChangedMessage(const nltools::msg::LocalUnmodulateableParameterChangedMessage& _msg);
+  OutputResetEventSource
+      onParameterChangedMessage(const nltools::msg::LocalUnmodulateableParameterChangedMessage& _msg);
   void onParameterChangedMessage(const nltools::msg::PolyphonicModulateableParameterChangedMessage& _msg);
-  void onParameterChangedMessage(const nltools::msg::PolyphonicUnmodulateableParameterChangedMessage& _msg);
+  OutputResetEventSource
+      onParameterChangedMessage(const nltools::msg::PolyphonicUnmodulateableParameterChangedMessage& _msg);
   void onParameterChangedMessage(const nltools::msg::MonophonicModulateableParameterChangedMessage& _msg);
   void onParameterChangedMessage(const nltools::msg::MonophonicUnmodulateableParameterChangedMessage& _msg);
 
@@ -216,12 +218,12 @@ class dsp_host_dual : public DSPInterface
   void globalTimeChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage& _msg);
   void localParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
-
   OutputResetEventSource localUnisonVoicesChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   OutputResetEventSource localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
   void localMonoLegatoChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
-  bool updateBehaviour(C15::ParameterDescriptor& param, ReturnMode mode);
+
+  bool updateBehaviour(C15::ParameterDescriptor& param, ReturnMode mode);  // todo: refactor
   // evend bindings: Settings
   void onSettingEditTime(const float _position);
   void onSettingTransitionTime(const float _position);
@@ -278,8 +280,9 @@ class dsp_host_dual : public DSPInterface
   }
   // parameters (todo: migrate)
   Engine::Handle::ParameterHandle m_parameters;
-  Engine::Param_Handle m_params;
-  Time_Param m_edit_time, m_transition_time;
+  Engine::Param_Handle m_params;  // todo: remove
+  Engine::Parameters::TimeParameter m_editTime, m_transitionTime;
+  Time_Param m_edit_time, m_transition_time;  // todo: remove
   Setting_Param m_reference;
   const C15::ParameterDescriptor m_invalid_param = { C15::None };
   // essential tools
@@ -305,8 +308,9 @@ class dsp_host_dual : public DSPInterface
   uint32_t m_tone_state = 0;
   bool m_glitch_suppression = false;
 
-  void initLocalParameter(const C15::ParameterDescriptor &_desc);
-  void initSmoothing(const C15::ParameterDescriptor &_desc);
+  inline void initLocalParameter(const C15::ParameterDescriptor& _desc);
+  inline void initSmoothing(const C15::ParameterDescriptor& _desc);
+  inline void initSmoothing(const uint32_t& _layer, const C15::ParameterDescriptor& _desc);
   // handles for inconvenient stuff
   C15::Properties::HW_Return_Behavior getBehavior(const ReturnMode _mode);
   C15::Properties::HW_Return_Behavior getBehavior(const RibbonReturnMode _mode);
@@ -317,43 +321,58 @@ class dsp_host_dual : public DSPInterface
   // key events
   void keyDownTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId);
   void keyUpTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId);
-  float scale(const Engine::Parameters::Aspects::ScaleAspect::Scaling &_scl, float &_value);
-  float scale(const Scale_Aspect _scl, float _value);
-  void updateTime(Engine::Parameters::Aspects::TimeAspect::Time &_time, const float &_ms);
-  void updateTime(Time_Aspect* _param, const float _ms);
-  void hwModChain(HW_Src_Param* _src, const uint32_t _id, const float _inc);
-  void globalModChain(Macro_Param* _mc);
-  void globalModChain(Engine::Parameters::MacroControl* _mc);
-  void localModChain(Macro_Param* _mc);
-  void localModChain(const uint32_t _layer, Macro_Param* _mc);
-  void localModChain(Engine::Parameters::MacroControl* _mc);
-  void localModChain(const uint32_t _layer, Engine::Parameters::MacroControl* _mc);
-  void globalTransition(const Target_Param* _param, const Time_Aspect _time);
-  void globalTransition(const Direct_Param* _param, const Time_Aspect _time);
-  void localTransition(const uint32_t _layer, const Direct_Param* _param, const Time_Aspect _time);
-  void localTransition(const uint32_t _layer, const Target_Param* _param, const Time_Aspect _time);
+  float scale(const Engine::Parameters::Aspects::ScaleAspect::Scaling& _scl, float _value);
+  float scale(const Scale_Aspect _scl, float _value);  // todo: remove
+  void updateTime(Engine::Parameters::Aspects::TimeAspect::Time& _time, const float& _ms);
+  void updateTime(Time_Aspect* _param, const float _ms);                      // todo: remove
+  void hwModChain(HW_Src_Param* _src, const uint32_t _id, const float _inc);  // todo: refactor
+  void globalModChain(Macro_Param* _mc);                                      // todo: remove
+  void globalModChain(const Engine::Parameters::MacroControl& _mc);
+  void localModChain(Macro_Param* _mc);                         // todo: remove
+  void localModChain(const uint32_t _layer, Macro_Param* _mc);  // todo: remove
+  void localModChain(const Engine::Parameters::MacroControl& _mc);
+  void localModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);
+  void globalTransition(const Target_Param* _param, const Time_Aspect _time);  // todo: remove
+  void globalTransition(const Direct_Param* _param, const Time_Aspect _time);  // todo: remove
+  template <typename T>
+  inline void globalTransition(const T& _param, const Engine::Parameters::Aspects::TimeAspect::Time& _time);
+  void localTransition(const uint32_t _layer, const Direct_Param* _param, const Time_Aspect _time);  // todo: remove
+  void localTransition(const uint32_t _layer, const Target_Param* _param, const Time_Aspect _time);  // todo: remove
+  template <typename T>
+  inline void localTransition(const uint32_t& _layer, const T& _param,
+                              const Engine::Parameters::Aspects::TimeAspect::Time& _time);
+  template <typename T>
+  inline void polyphonicTransition(const uint32_t& _layer, const T& _param,
+                                   const Engine::Parameters::Aspects::TimeAspect::Time& _time);  // todo: implement
+  template <typename T>
+  inline void monophonicTransition(const uint32_t& _layer, const T& _param,
+                                   const Engine::Parameters::Aspects::TimeAspect::Time& _time);  // todo: implement
 
+  inline OutputResetEventSource onUnisonVoicesChanged(const uint32_t& _layer, const float& _pos);
+  inline OutputResetEventSource onMonoEnableChanged(const uint32_t& _layer, const float& _pos);
   bool evalPolyChg(const C15::Properties::LayerId _layerId,
                    const nltools::msg::Parameters::UnmodulateableParameter& _unisonVoices,
-                   const nltools::msg::Parameters::UnmodulateableParameter& _monoEnable);
+                   const nltools::msg::Parameters::UnmodulateableParameter& _monoEnable);  // todo: refactor
   void evalVoiceFadeChg(const uint32_t _layer);
   OutputResetEventSource determineOutputEventSource(const bool _detected, const LayerMode _type);
-  OutputResetEventSource recallSingle(const nltools::msg::SinglePresetMessage& _msg);
-  OutputResetEventSource recallSplit(const nltools::msg::SplitPresetMessage& _msg);
-  OutputResetEventSource recallLayer(const nltools::msg::LayerPresetMessage& _msg);
-  void globalParRcl(const nltools::msg::Parameters::HardwareSourceParameter& _param);
-  void globalParRcl(const nltools::msg::Parameters::HardwareAmountParameter& _param);
-  void globalParRcl(const nltools::msg::Parameters::MacroParameter& _param);
-  void globalParRcl(const nltools::msg::Parameters::ModulateableParameter& _param);
-  void globalParRcl(const nltools::msg::Parameters::UnmodulateableParameter& _param);
-  void globalParRcl(const nltools::msg::Parameters::GlobalParameter& _param);
-  void globalTimeRcl(const nltools::msg::Parameters::UnmodulateableParameter& _param);
-  void localParRcl(const uint32_t _layerId, const nltools::msg::Parameters::ModulateableParameter& _param);
-  void localParRcl(const uint32_t _layerId, const nltools::msg::Parameters::SplitPoint& _param);
-  void localParRcl(const uint32_t _layerId, const nltools::msg::Parameters::UnmodulateableParameter& _param);
+  OutputResetEventSource recallSingle(const nltools::msg::SinglePresetMessage& _msg);   // todo: refactor
+  OutputResetEventSource recallSplit(const nltools::msg::SplitPresetMessage& _msg);     // todo: refactor
+  OutputResetEventSource recallLayer(const nltools::msg::LayerPresetMessage& _msg);     // todo: refactor
+  void globalParRcl(const nltools::msg::Parameters::HardwareSourceParameter& _param);   // todo: refactor
+  void globalParRcl(const nltools::msg::Parameters::HardwareAmountParameter& _param);   // todo: refactor
+  void globalParRcl(const nltools::msg::Parameters::MacroParameter& _param);            // todo: refactor
+  void globalParRcl(const nltools::msg::Parameters::ModulateableParameter& _param);     // todo: refactor
+  void globalParRcl(const nltools::msg::Parameters::UnmodulateableParameter& _param);   // todo: refactor
+  void globalParRcl(const nltools::msg::Parameters::GlobalParameter& _param);           // todo: refactor
+  void globalTimeRcl(const nltools::msg::Parameters::UnmodulateableParameter& _param);  // todo: refactor
+  void localParRcl(const uint32_t _layerId,
+                   const nltools::msg::Parameters::ModulateableParameter& _param);                // todo: refactor
+  void localParRcl(const uint32_t _layerId, const nltools::msg::Parameters::SplitPoint& _param);  // todo: refactor
+  void localParRcl(const uint32_t _layerId,
+                   const nltools::msg::Parameters::UnmodulateableParameter& _param);  // todo: refactor
   void localPolyRcl(const uint32_t _layerId, const bool _va_update,
                     const nltools::msg::ParameterGroups::UnisonGroup& _unison,
-                    const nltools::msg::ParameterGroups::MonoGroup& _mono);
+                    const nltools::msg::ParameterGroups::MonoGroup& _mono);  // todo: refactor
   void debugLevels();
 
   friend class DspHostDualTester;
