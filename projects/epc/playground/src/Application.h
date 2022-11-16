@@ -59,8 +59,6 @@ class Application
   RecorderManager* getRecorderManager();
   HardwareFeatures* getHardwareFeatures();
 
-  [[nodiscard]] bool isQuit() const;
-
   void quit();
   void runWatchDog();
   void stopWatchDog();

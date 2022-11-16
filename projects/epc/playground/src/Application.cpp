@@ -366,8 +366,3 @@ RecorderManager *Application::getRecorderManager()
 {
   return m_recorderManager.get();
 }
-
-bool Application::isQuit() const
-{
-  return m_isQuit;
-}
