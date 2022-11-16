@@ -137,11 +137,10 @@ void fillMessageWithMacroControlsAndMacroTimes(nltools::msg::detail::PresetMessa
 }
 
 template <nltools::msg::MessageType tMsgType>
-void fillMessageWithHardwareSourceAndSends(nltools::msg::detail::PresetMessage<tMsgType> &msg,
+void fillMessageWithHardwareSources(nltools::msg::detail::PresetMessage<tMsgType> &msg,
                                            const EditBuffer &editBuffer)
 {
   size_t hw = 0;
-  size_t hw_send = 0;
 
   for(auto &param : editBuffer.getParameterGroupByID({ "CS", VoiceGroup::Global })->getParameters())
   {
@@ -152,16 +151,8 @@ void fillMessageWithHardwareSourceAndSends(nltools::msg::detail::PresetMessage<t
       e.m_controlPosition = hwParam->getControlPositionValue();
       e.m_returnMode = hwParam->getReturnMode();
     }
-    else if(auto send = dynamic_cast<const HardwareSourceSendParameter *>(param))
-    {
-      auto &e = msg.m_hardwareSourceSends[hw_send++];
-      e.m_id = static_cast<C15::PID::ParameterID>(send->getID().getNumber());
-      e.m_controlPosition = send->getControlPositionValue();
-      e.m_returnMode = send->getReturnMode();
-    }
   }
 
-  nltools_assertAlways(msg.m_hardwareSourceSends.size() == hw_send);
   nltools_assertAlways(msg.m_hardwareSources.size() == hw);
 }
 
@@ -271,7 +262,7 @@ template <nltools::msg::MessageType tMsgType>
 void fillMessageWithSharedParameters(nltools::msg::detail::PresetMessage<tMsgType> &msg, const EditBuffer &editBuffer)
 {
   fillMessageWithMacroControlsAndMacroTimes(msg, editBuffer);
-  fillMessageWithHardwareSourceAndSends(msg, editBuffer);
+  fillMessageWithHardwareSources(msg, editBuffer);
   fillMessageWithHWAmounts(msg, editBuffer);
   fillMessageWithGlobalNotHandledGroups(msg, editBuffer);
   fillMessageWithMonophonicParameters(msg, editBuffer);

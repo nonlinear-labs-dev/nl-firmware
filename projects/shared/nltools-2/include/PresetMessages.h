@@ -157,8 +157,6 @@ namespace nltools
         SingularParameterArray<ParameterType::Macro_Time, Parameters::UnmodulateableParameter> macrotimes;
         // ... into:
         SingularParameterArray<ParameterType::Hardware_Source, controls::HardwareSourceParameter> m_hardwareSources;
-        SingularParameterArray<ParameterType::Display_Parameter, controls::HardwareSourceSendParameter>
-            m_hardwareSourceSends;
         SingularParameterArray<ParameterType::Hardware_Amount, controls::HardwareAmountParameter> m_hardwareAmounts;
         SingularParameterArray<ParameterType::Macro_Control, controls::MacroControlParameter> m_macroControls;
         SingularParameterArray<ParameterType::Macro_Time, controls::MacroTimeParameter> m_macroTimes;

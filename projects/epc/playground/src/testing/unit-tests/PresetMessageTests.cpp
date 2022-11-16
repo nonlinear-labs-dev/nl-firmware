@@ -42,7 +42,6 @@ void assertNoIDTwice(const nltools::msg::SinglePresetMessage &msg)
   collectIDs(msg.m_globalUnmodulateables, count);
   collectIDs(msg.m_globalModulateables, count);
   collectIDs(msg.m_hardwareAmounts, count);
-  collectIDs(msg.m_hardwareSourceSends, count);
   collectIDs(msg.m_hardwareSources, count);
   collectIDs(msg.m_macroControls, count);
   collectIDs(msg.m_macroTimes, count);
@@ -59,7 +58,6 @@ template <int vg, typename tMsg> void collectDual(const tMsg &msg)
   collectIDs(msg.m_globalUnmodulateables, count);
   collectIDs(msg.m_globalModulateables, count);
   collectIDs(msg.m_hardwareAmounts, count);
-  collectIDs(msg.m_hardwareSourceSends, count);
   collectIDs(msg.m_hardwareSources, count);
   collectIDs(msg.m_macroControls, count);
   collectIDs(msg.m_macroTimes, count);

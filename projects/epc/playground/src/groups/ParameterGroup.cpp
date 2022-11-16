@@ -234,7 +234,11 @@ void ParameterGroup::validateParameterTypes() const
   bool isGlobal = false;
   bool isLocal = false;
 
-  C15::Descriptors::ParameterType firstFoundType = C15::Descriptors::ParameterType::None;
+  int polyCount = 0;
+  int monoCount = 0;
+  int globalCount = 0;
+  int localCount = 0;
+
   for(const auto& p: getParameters())
   {
     auto foundType = p->getType();
@@ -243,28 +247,27 @@ void ParameterGroup::validateParameterTypes() const
     auto isGlobalParam = foundType == C15::Descriptors::ParameterType::Global_Modulateable || foundType == C15::Descriptors::ParameterType::Global_Unmodulateable;
     auto isLocalParam = foundType == C15::Descriptors::ParameterType::Local_Modulateable || foundType == C15::Descriptors::ParameterType::Local_Unmodulateable;
 
+    polyCount += isPolyParam;
+    monoCount += isMonoParam;
+    globalCount += isGlobalParam;
+    localCount += isLocalParam;
+
     if(!hasAny)
     {
+      hasAny = true;
       isPoly = isPolyParam;
       isMono = isMonoParam;
       isGlobal = isGlobalParam;
       isLocal = isLocalParam;
     }
-    else if(isPoly != isPolyParam)
+    else
     {
-      nltools_detailedAssertAlways(false, "poly not consistent");
-    }
-    else if(isMono != isMonoParam)
-    {
-      nltools_detailedAssertAlways(false, "mono not consistent");
-    }
-    else if(isGlobal != isGlobalParam)
-    {
-      nltools_detailedAssertAlways(false, "global not consistent");
-    }
-    else if(isLocal != isLocalParam)
-    {
-      nltools_detailedAssertAlways(false, "local not consistent");
+      nltools::Log::error("polyCount:", polyCount, "monoCount:", monoCount, "globalCount:", globalCount, "localCount:", localCount);
+
+      nltools_detailedAssertAlways(isPoly == isPolyParam, "poly not consistent");
+      nltools_detailedAssertAlways(isMono == isMonoParam, "mono not consistent");
+      nltools_detailedAssertAlways(isGlobal == isGlobalParam, "global not consistent");
+      nltools_detailedAssertAlways(isLocal == isLocalParam, "local not consistent");
     }
   }
 }
