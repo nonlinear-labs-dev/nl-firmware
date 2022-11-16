@@ -81,7 +81,44 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
 
   for(auto element : C15::ParameterList)
   {
-
+    using Type = C15::Descriptors::ParameterType;
+    const uint32_t index = element.m_param.m_index;
+    switch(element.m_param.m_type)
+    {
+      case Type::None:
+      case Type::Hardware_Source:
+      case Type::Display_Parameter:
+      case Type::Hardware_Amount:
+        break;
+      case Type::Macro_Control:
+        m_parameters.m_global.m_macroControls[index].init(element);
+        break;
+      case Type::Macro_Time:
+      {
+        auto &param = m_parameters.m_global.m_macroTimes[index];
+        param.init(element);
+        param.m_scaled = scale(param.m_scaling, param.m_position);
+        updateTime(param.m_time, param.m_scaled);
+        break;
+      }
+      case Type::Global_Modulateable:
+      {
+        auto &param = m_parameters.m_global.m_parameters.m_modulateables[index];
+        param.init(element);
+        initSmoothing(element);
+        break;
+      }
+      case Type::Global_Unmodulateable:
+      {
+        auto &param = m_parameters.m_global.m_parameters.m_unmodulateables[index];
+        param.init(element);
+        initSmoothing(element);
+        break;
+      }
+      default:
+        initLocalParameter(element);
+        break;
+    }
     switch(element.m_param.m_type)
     {
       // (global) unmodulateable parameters need their properties and can directly
@@ -254,6 +291,53 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
     //nltools::Log::info("dsp_host_dual::init - engine dsp status: global");
     //nltools::Log::info("missing: nltools::msg - reference, initial:", m_reference.m_scaled);
   }
+}
+
+void dsp_host_dual::initLocalParameter(const C15::ParameterDescriptor &_desc)
+{
+  using Type = C15::Descriptors::ParameterType;
+  const uint32_t index = _desc.m_param.m_index;
+  for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+  {
+    switch(_desc.m_param.m_type)
+    {
+      case Type::Local_Modulateable:
+      {
+        auto &param = m_parameters.m_layer[layer].m_modulateables[index];
+        param.init(_desc);
+        // todo: scale, smoothing...
+        break;
+      }
+      case Type::Local_Unmodulateable:
+      {
+        break;
+      }
+      case Type::Polyphonic_Modulateable:
+      {
+        break;
+      }
+      case Type::Polyphonic_Unmodulateable:
+      {
+        break;
+      }
+      case Type::Monophonic_Modulateable:
+      {
+        break;
+      }
+      case Type::Monophonic_Unmodulateable:
+      {
+        break;
+      }
+      default:
+      {
+        break;
+      }
+    }
+  }
+}
+
+void dsp_host_dual::initSmoothing(const C15::ParameterDescriptor &_desc)
+{
 }
 
 C15::ParameterDescriptor dsp_host_dual::getParameter(const int _id)
@@ -1323,6 +1407,49 @@ void dsp_host_dual::keyUpTraversal(const uint32_t _note, const float _vel, const
   }
 }
 
+float dsp_host_dual::scale(const Engine::Parameters::Aspects::ScaleAspect::Scaling &_scl, float &_value)
+{
+  float result = 0.0f;
+  switch(_scl.m_scaleId)
+  {
+    case C15::Properties::SmootherScale::None:
+      break;
+    case C15::Properties::SmootherScale::Linear:
+      result = _scl.m_scaleOffset + (_scl.m_scaleFactor * _value);
+      break;
+    case C15::Properties::SmootherScale::Parabolic:
+      result = _scl.m_scaleOffset + (_scl.m_scaleFactor * _value * std::abs(_value));
+      break;
+    case C15::Properties::SmootherScale::Cubic:
+      result = _scl.m_scaleOffset + (_scl.m_scaleFactor * _value * _value * _value);
+      break;
+    case C15::Properties::SmootherScale::S_Curve:
+      _value = (2.0f * (1.0f - _value)) - 1.0f;
+      result
+          = _scl.m_scaleOffset + (_scl.m_scaleFactor * ((_value * _value * _value * -0.25f) + (_value * 0.75f) + 0.5f));
+      break;
+    case C15::Properties::SmootherScale::Expon_Gain:
+      result = m_convert.eval_level(_scl.m_scaleOffset + (_scl.m_scaleFactor * _value));
+      break;
+    case C15::Properties::SmootherScale::Expon_Osc_Pitch:
+      result = m_convert.eval_osc_pitch(_scl.m_scaleOffset + (_scl.m_scaleFactor * _value));
+      break;
+    case C15::Properties::SmootherScale::Expon_Lin_Pitch:
+      result = m_convert.eval_lin_pitch(_scl.m_scaleOffset + (_scl.m_scaleFactor * _value));
+      break;
+    case C15::Properties::SmootherScale::Expon_Shaper_Drive:
+      result = (m_convert.eval_level(_value * _scl.m_scaleFactor) * _scl.m_scaleOffset) - _scl.m_scaleOffset;
+      break;
+    case C15::Properties::SmootherScale::Expon_Mix_Drive:
+      result = _scl.m_scaleOffset * m_convert.eval_level(_scl.m_scaleFactor * _value);
+      break;
+    case C15::Properties::SmootherScale::Expon_Env_Time:
+      result = m_convert.eval_time((_value * _scl.m_scaleFactor * 104.0781f) + _scl.m_scaleOffset);
+      break;
+  }
+  return result;
+}
+
 float dsp_host_dual::scale(const Scale_Aspect _scl, float _value)
 {
   float result = 0.0f;
@@ -1363,6 +1490,19 @@ float dsp_host_dual::scale(const Scale_Aspect _scl, float _value)
       break;
   }
   return result;
+}
+
+void dsp_host_dual::updateTime(Engine::Parameters::Aspects::TimeAspect::Time &_time, const float &_ms)
+{
+  m_time.update_ms(_ms);
+  _time.m_dxAudio = m_time.m_dx_audio;
+  _time.m_dxFast = m_time.m_dx_fast;
+  _time.m_dxSlow = m_time.m_dx_slow;
+  if constexpr(LOG_TIMES)
+  {
+    nltools::Log::info(__PRETTY_FUNCTION__, "(ms: ", _ms, ", dx: [", m_time.m_dx_audio, ", ", m_time.m_dx_fast, ", ",
+                       m_time.m_dx_slow, "])");
+  }
 }
 
 void dsp_host_dual::updateTime(Time_Aspect *_param, const float _ms)

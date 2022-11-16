@@ -15,6 +15,11 @@ namespace Engine
       struct ParameterAspect
       {
         float m_position = {}, m_initial = {};
+        inline void init(const float &_initial)
+        {
+            m_initial = _initial;
+            m_position = _initial;
+        }
         inline bool update_position(const float &_position)
         {
           if(_position != m_position)
@@ -23,11 +28,6 @@ namespace Engine
             return true;
           }
           return false;
-        }
-        inline void init(const float &_initial)
-        {
-            m_initial = _initial;
-            m_position = _initial;
         }
       };
 
@@ -83,31 +83,38 @@ namespace Engine
 
       struct ScaleAspect
       {
-        C15::Properties::SmootherScale m_scaleId;
-        float m_scaleFactor = {}, m_scaleOffset = {}, m_scaled = {};
+        struct Scaling {
+            C15::Properties::SmootherScale m_scaleId;
+            float m_scaleFactor = {}, m_scaleOffset = {};
+        } m_scaling = {};
+        float m_scaled = {};
         inline void init(const C15::Descriptors::AudioEngineParamDescriptor &_desc)
         {
-            m_scaleId = _desc.m_scaleId;
-            m_scaleFactor = _desc.m_scaleFactor;
-            m_scaleOffset = _desc.m_scaleOffset;
+            m_scaling.m_scaleId = _desc.m_scaleId;
+            m_scaling.m_scaleFactor = _desc.m_scaleFactor;
+            m_scaling.m_scaleOffset = _desc.m_scaleOffset;
         }
       };
 
       struct TimeAspect
       {
-        float m_dxAudio = {}, m_dxFast = {}, m_dxSlow = {};
+        struct Time {
+            float m_dxAudio = {}, m_dxFast = {}, m_dxSlow = {};
+        } m_time = {};
       };
 
       struct RenderAspect
       {
-        C15::Descriptors::SmootherSection m_renderSection;
-        C15::Descriptors::SmootherClock m_renderClock;
-        uint32_t m_renderIndex = {};
+          struct Rendering {
+              C15::Descriptors::SmootherSection m_renderSection;
+              C15::Descriptors::SmootherClock m_renderClock;
+              uint32_t m_renderIndex = {};
+          } m_rendering = {};
         inline void init(const C15::Descriptors::SmootherDescriptor &_desc)
         {
-            m_renderSection = _desc.m_section;
-            m_renderClock = _desc.m_clock;
-            m_renderIndex = _desc.m_index;
+            m_rendering.m_renderSection = _desc.m_section;
+            m_rendering.m_renderClock = _desc.m_clock;
+            m_rendering.m_renderIndex = _desc.m_index;
         }
       };
 

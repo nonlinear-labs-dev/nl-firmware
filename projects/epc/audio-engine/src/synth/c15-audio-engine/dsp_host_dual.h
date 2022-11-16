@@ -305,6 +305,8 @@ class dsp_host_dual : public DSPInterface
   uint32_t m_tone_state = 0;
   bool m_glitch_suppression = false;
 
+  void initLocalParameter(const C15::ParameterDescriptor &_desc);
+  void initSmoothing(const C15::ParameterDescriptor &_desc);
   // handles for inconvenient stuff
   C15::Properties::HW_Return_Behavior getBehavior(const ReturnMode _mode);
   C15::Properties::HW_Return_Behavior getBehavior(const RibbonReturnMode _mode);
@@ -315,7 +317,9 @@ class dsp_host_dual : public DSPInterface
   // key events
   void keyDownTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId);
   void keyUpTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId);
+  float scale(const Engine::Parameters::Aspects::ScaleAspect::Scaling &_scl, float &_value);
   float scale(const Scale_Aspect _scl, float _value);
+  void updateTime(Engine::Parameters::Aspects::TimeAspect::Time &_time, const float &_ms);
   void updateTime(Time_Aspect* _param, const float _ms);
   void hwModChain(HW_Src_Param* _src, const uint32_t _id, const float _inc);
   void globalModChain(Macro_Param* _mc);
