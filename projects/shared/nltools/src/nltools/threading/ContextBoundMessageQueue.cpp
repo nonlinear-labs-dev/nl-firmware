@@ -44,10 +44,6 @@ namespace nltools
           lock.unlock();
           (*jobCopy)();
         }
-        else
-        {
-          nltools::Log::error("We tried to run a Job but the queue is already done!");
-        }
         return false;
       });
     }
