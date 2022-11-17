@@ -45,7 +45,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
 
   bool isZombie() const;
 
-  void setMacroControlValueFromMCView(ParameterId id, double value, const Glib::ustring &uuid);
+  void setMacroControlValueFromMCView(const ParameterId& id, double value, const Glib::ustring &uuid);
 
   void undoableSelectParameter(UNDO::Transaction *transaction, Parameter *p, bool sendReselectionSignal);
   void undoableSelectParameter(UNDO::Transaction *transaction, const ParameterId &id, bool sendReselectionSignal);
