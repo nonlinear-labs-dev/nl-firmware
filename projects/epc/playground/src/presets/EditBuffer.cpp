@@ -612,6 +612,9 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction, Defaults mode
   setAttribute(transaction, "origin-I-vg", "");
   setAttribute(transaction, "origin-II-vg", "");
 
+  setAttribute(transaction, "color", "");
+  setAttribute(transaction, "Comment", "");
+
   m_recallSet.copyFromEditBuffer(transaction, this);
 }
 
