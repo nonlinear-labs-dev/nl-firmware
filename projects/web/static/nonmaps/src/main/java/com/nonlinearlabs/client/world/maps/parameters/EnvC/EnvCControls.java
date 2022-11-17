@@ -30,8 +30,7 @@ class EnvCControls extends ParameterGroupControls {
 	@Override
 	protected NonDimension layoutChildren(double levelOfDetail) {
 		NonDimension ret = super.layoutChildren(levelOfDetail);
-		extraBlock.moveTo(80 + 20, ret.getHeight() - extraBlock.getNonPosition().getHeight() - 15);
-		return new NonDimension(ret.getWidth() - getPadding(), ret.getHeight());
+		extraBlock.moveTo(80 + 20, ret.getHeight() - extraBlock.getNonPosition().getHeight() + 5);
+		return new NonDimension(ret.getWidth() - getPadding(), ret.getHeight() + 10);
 	}
-
 }

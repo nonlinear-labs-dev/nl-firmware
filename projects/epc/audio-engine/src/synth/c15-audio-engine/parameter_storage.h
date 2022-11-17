@@ -11,7 +11,7 @@
 *******************************************************************************/
 
 #include <c15_config.h>
-#include <parameter_info.h>
+#include <parameter_declarations.h>
 #include "macro_assignment.h"
 
 // first run - prototypical stuff

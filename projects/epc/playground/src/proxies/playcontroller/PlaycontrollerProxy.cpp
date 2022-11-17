@@ -19,6 +19,7 @@
 #include "device-settings/VelocityCurve.h"
 #include "use-cases/ParameterUseCases.h"
 #include "parameters/ValueRange.h"
+#include "device-settings/SelectedRibbonsSetting.h"
 #include <device-settings/ParameterEditModeRibbonBehaviour.h>
 #include <memory.h>
 #include <nltools/messaging/Message.h>
@@ -28,7 +29,7 @@
 #include <use-cases/IncrementalChangerUseCases.h>
 
 PlaycontrollerProxy::PlaycontrollerProxy()
-    : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
+    : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbon1ParameterID().getNumber())
     , m_throttledRelativeParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
     , m_throttledAbsoluteParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
 {
@@ -45,13 +46,13 @@ PlaycontrollerProxy::PlaycontrollerProxy()
     nltools::msg::receive<nltools::msg::Keyboard::NoteEventHappened>(
         nltools::msg::EndPoint::Playground,
         sigc::hide(sigc::mem_fun(this, &PlaycontrollerProxy::notifyKeyBedActionHappened)));
+
+    Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->onChange(
+        sigc::mem_fun(this, &PlaycontrollerProxy::onSelectedRibbonsChanged));
   }
 }
 
-PlaycontrollerProxy::~PlaycontrollerProxy()
-{
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
-}
+PlaycontrollerProxy::~PlaycontrollerProxy() = default;
 
 void PlaycontrollerProxy::onPlaycontrollerMessage(const nltools::msg::PlaycontrollerMessage &msg)
 {
@@ -66,11 +67,6 @@ void PlaycontrollerProxy::onPlaycontrollerMessage(const nltools::msg::Playcontro
       m_msgParser.reset(new MessageParser());
     }
   }
-}
-
-sigc::connection PlaycontrollerProxy::onRibbonTouched(const sigc::slot<void, int> &s)
-{
-  return m_signalRibbonTouched.connectAndInit(s, m_lastTouchedRibbon);
 }
 
 int PlaycontrollerProxy::getLastTouchedRibbonParameterID() const
@@ -132,7 +128,7 @@ void PlaycontrollerProxy::onAssertionMessageReceived(const MessageParser::NLMess
   char txt[numBytes + 2];
   strncpy(txt, bytes, numBytes);
   txt[numBytes] = '\0';
-  DebugLevel::error("!!! Assertion from playcontroller in", (const char *) txt);
+  nltools::Log::error("!!! Assertion from playcontroller in", (const char *) txt);
 }
 
 void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLMessage &msg)
@@ -146,6 +142,17 @@ void PlaycontrollerProxy::onNotificationMessageReceived(const MessageParser::NLM
     {
       m_playcontrollerSoftwareVersion = value;
       m_signalPlaycontrollerSoftwareVersionChanged.send(m_playcontrollerSoftwareVersion);
+    }
+  }
+
+  else if(id == MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_AT_STATUS)
+  {
+    AT_status_T atStatus = AT_uint16ToStatus(value);
+
+    if(m_hasAftertouchCalibrationData != (atStatus.calibrated != 0))
+    {
+      m_hasAftertouchCalibrationData = (atStatus.calibrated != 0);
+      m_signalCalibrationStatus.send(m_hasAftertouchCalibrationData);
     }
   }
 }
@@ -172,6 +179,7 @@ void PlaycontrollerProxy::onPlaycontrollerConnected()
   requestPlaycontrollerSoftwareVersion();
   requestPlaycontrollerUHID();
   requestHWPositions();
+  requestCalibrationStatus();
 }
 
 void PlaycontrollerProxy::sendCalibrationData()
@@ -190,49 +198,14 @@ void PlaycontrollerProxy::sendCalibrationData()
   }
 }
 
-Parameter *PlaycontrollerProxy::findPhysicalControlParameterFromPlaycontrollerHWSourceID(uint16_t id) const
-{
-  auto paramId = [](uint16_t id) {
-    switch(id)
-    {
-      case HW_SOURCE_ID_PEDAL_1:
-        return HardwareSourcesGroup::getPedal1ParameterID();
-      case HW_SOURCE_ID_PEDAL_2:
-        return HardwareSourcesGroup::getPedal2ParameterID();
-      case HW_SOURCE_ID_PEDAL_3:
-        return HardwareSourcesGroup::getPedal3ParameterID();
-      case HW_SOURCE_ID_PEDAL_4:
-        return HardwareSourcesGroup::getPedal4ParameterID();
-      case HW_SOURCE_ID_PITCHBEND:
-        return HardwareSourcesGroup::getPitchbendParameterID();
-      case HW_SOURCE_ID_AFTERTOUCH:
-        return HardwareSourcesGroup::getAftertouchParameterID();
-      case HW_SOURCE_ID_RIBBON_1:
-        return HardwareSourcesGroup::getUpperRibbonParameterID();
-      case HW_SOURCE_ID_RIBBON_2:
-        return HardwareSourcesGroup::getLowerRibbonParameterID();
-      case HW_SOURCE_ID_PEDAL_5:
-      case HW_SOURCE_ID_PEDAL_6:
-      case HW_SOURCE_ID_PEDAL_7:
-      case HW_SOURCE_ID_PEDAL_8:
-        //todo new pedals
-      case HW_SOURCE_ID_LAST_KEY:
-      //todo last key
-      default:
-        return ParameterId::invalid();
-    }
-  }(id);
-
-  return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(paramId);
-}
-
 void PlaycontrollerProxy::onEditControlMessageReceived(const MessageParser::NLMessage &msg)
 {
-  DebugLevel::info("it is an edit control message");
-
   uint16_t id = msg.params[0];
-  auto ribbonParam = findPhysicalControlParameterFromPlaycontrollerHWSourceID(id);
-  notifyRibbonTouch(ribbonParam->getID().getNumber());
+  if(auto ribbonParam
+     = Application::get().getAudioEngineProxy()->findPhysicalControlParameterFromAudioEngineHWSourceID(id))
+  {
+    notifyRibbonTouch(ribbonParam->getID().getNumber());
+  }
 
   gint16 value = separateSignedBitToComplementary(msg.params[1]);
 
@@ -243,12 +216,10 @@ void PlaycontrollerProxy::onEditControlMessageReceived(const MessageParser::NLMe
 
     if(ribbonModeBehaviour == ParameterEditModeRibbonBehaviours::PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR_RELATIVE)
     {
-      DebugLevel::info(G_STRLOC, value);
       onRelativeEditControlMessageReceived(p, value);
     }
     else
     {
-      DebugLevel::info(G_STRLOC, value);
       onAbsoluteEditControlMessageReceived(p, value);
     }
   }
@@ -258,39 +229,45 @@ void PlaycontrollerProxy::onRelativeEditControlMessageReceived(Parameter *p, gin
 {
   m_throttledRelativeParameterAccumulator += value;
 
-  m_throttledRelativeParameterChange.doTask([this, p]() {
-    if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
-      m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
+  m_throttledRelativeParameterChange.doTask(
+      [this, p]()
+      {
+        if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
+          m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
 
-    auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
-    IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
-    useCase.changeBy(amount, false);
-    m_throttledRelativeParameterAccumulator = 0;
-  });
+        auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
+        IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
+        useCase.changeBy(amount, false);
+        m_throttledRelativeParameterAccumulator = 0;
+      });
 }
 
 void PlaycontrollerProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gint16 value)
 {
   m_throttledAbsoluteParameterValue = value;
 
-  m_throttledAbsoluteParameterChange.doTask([this, p]() {
-    ParameterUseCases useCase(p);
+  m_throttledAbsoluteParameterChange.doTask(
+      [this, p]()
+      {
+        ParameterUseCases useCase(p);
 
-    if(p->isBiPolar())
-    {
-      useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
-    }
-    else
-    {
-      useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
-    }
-  });
+        if(p->isBiPolar())
+        {
+          useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
+        }
+        else
+        {
+          useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
+        }
+      });
 }
 
 void PlaycontrollerProxy::notifyRibbonTouch(int ribbonsParameterID)
 {
-  if(ribbonsParameterID == HardwareSourcesGroup::getLowerRibbonParameterID().getNumber()
-     || ribbonsParameterID == HardwareSourcesGroup::getUpperRibbonParameterID().getNumber())
+  if(ribbonsParameterID == HardwareSourcesGroup::getLowerRibbon2ParameterID().getNumber()
+     || ribbonsParameterID == HardwareSourcesGroup::getUpperRibbon1ParameterID().getNumber()
+     || ribbonsParameterID == HardwareSourcesGroup::getLowerRibbon4ParameterID().getNumber()
+     || ribbonsParameterID == HardwareSourcesGroup::getUpperRibbon3ParameterID().getNumber())
   {
     m_lastTouchedRibbon = ribbonsParameterID;
     m_signalRibbonTouched.send(ribbonsParameterID);
@@ -332,8 +309,6 @@ void PlaycontrollerProxy::sendSetting(uint16_t key, uint16_t value)
   *cmp << key;
   *cmp << value;
   queueToPlaycontroller(cmp);
-
-  DebugLevel::info("sending setting", key, "=", value);
 }
 
 void PlaycontrollerProxy::sendPedalSetting(uint16_t pedal, PedalTypes pedalType, bool reset)
@@ -345,14 +320,13 @@ void PlaycontrollerProxy::sendPedalSetting(uint16_t pedal, PedalTypes pedalType,
                                                               reset ? EHC_RESET : EHC_NORESET, buffer))
 
   {
-    DebugLevel::info("EHC: send pedal setting", pedal, "=", pedalType);
     nltools::msg::PlaycontrollerMessage msg;
     msg.message = Glib::Bytes::create(buffer, written);
     nltools::msg::send(nltools::msg::EndPoint::Playcontroller, msg);
   }
   else
   {
-    DebugLevel::warning("Could not compose pedal preset", pedal, "=", pedalType);
+    DebugLevel::error("Could not compose pedal preset", pedal, "=", pedalType);
   }
 }
 
@@ -362,8 +336,6 @@ void PlaycontrollerProxy::sendSetting(uint16_t key, gint16 value)
   *cmp << key;
   *cmp << value;
   queueToPlaycontroller(cmp);
-
-  DebugLevel::info("sending setting", key, "=", value);
 }
 
 void PlaycontrollerProxy::onHeartbeatStumbled()
@@ -376,6 +348,7 @@ void PlaycontrollerProxy::onHeartbeatStumbled()
   requestPlaycontrollerSoftwareVersion();
   requestPlaycontrollerUHID();
   requestHWPositions();
+  requestCalibrationStatus();
 }
 
 sigc::connection PlaycontrollerProxy::onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s)
@@ -391,18 +364,15 @@ sigc::connection PlaycontrollerProxy::onLastKeyChanged(sigc::slot<void> s)
 void PlaycontrollerProxy::requestPlaycontrollerSoftwareVersion()
 {
   sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_SW_VERSION);
-  nltools::Log::info("sending request SOFTWARE_VERSION to LPC");
 }
 
 void PlaycontrollerProxy::requestPlaycontrollerUHID()
 {
   sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_UHID64);
-  nltools::Log::info("sending request UHID64 to LPC");
 }
 
 void PlaycontrollerProxy::requestHWPositions()
 {
-  nltools::Log::info("sending request POLLHWS to LPC");
   sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_POLLHWS);
 }
 
@@ -443,6 +413,16 @@ void PlaycontrollerProxy::setUHID(uint64_t uhid)
   }
 }
 
+sigc::connection PlaycontrollerProxy::onCalibrationStatusChanged(const sigc::slot<void, bool> &slot)
+{
+  return m_signalCalibrationStatus.connect(slot);
+}
+
+void PlaycontrollerProxy::requestCalibrationStatus()
+{
+  sendRequestToPlaycontroller(MessageParser::PlaycontrollerRequestTypes::PLAYCONTROLLER_REQUEST_ID_AT_STATUS);
+}
+
 template <typename tRet, typename tInValue>
 tRet scaleValueToRange(const ValueRange<tTcdValue> &tcdRange, const tInValue &in, const ValueRange<tInValue> &inRange,
                        bool clip)
@@ -460,17 +440,29 @@ tRet scaleValueToRange(const ValueRange<tTcdValue> &tcdRange, const tInValue &in
 
 int16_t PlaycontrollerProxy::ribbonRelativeFactorToTCDValue(tControlPositionValue d)
 {
-  static ValueRange<tTcdValue> m_ribbonRelativeFactorTcdRange { 256, 2560 };
-  return scaleValueToRange<int16_t>(m_ribbonRelativeFactorTcdRange, d, ValueRange<tControlPositionValue>(0, 1), false);
+  static ValueRange<tTcdValue> s_ribbonRelativeFactorTcdRange { 256, 2560 };
+  return scaleValueToRange<int16_t>(s_ribbonRelativeFactorTcdRange, d, ValueRange<tControlPositionValue>(0, 1), false);
 }
 
 int16_t PlaycontrollerProxy::ribbonCPValueToTCDValue(tControlPositionValue d, bool bipolar)
 {
-  static ValueRange<tTcdValue> m_ribbonValueTcdRangeBipolar { -8000, 8000 };
-  static ValueRange<tTcdValue> m_ribbonValueTcdRangeUnipolar { 0, 16000 };
+  static ValueRange<tTcdValue> s_ribbonValueTcdRangeUnipolar { 0, 16000 };
 
   if(bipolar)
-    return scaleValueToRange<int16_t>(m_ribbonValueTcdRangeBipolar, d, ValueRange<tControlPositionValue>(-1, 1), false);
+    return scaleValueToRange<int16_t>(s_ribbonValueTcdRangeUnipolar, d, ValueRange<tControlPositionValue>(-1, 1), false);
   else
-    return scaleValueToRange<int16_t>(m_ribbonValueTcdRangeUnipolar, d, ValueRange<tControlPositionValue>(0, 1), false);
+    return scaleValueToRange<int16_t>(s_ribbonValueTcdRangeUnipolar, d, ValueRange<tControlPositionValue>(0, 1), false);
+}
+
+void PlaycontrollerProxy::onSelectedRibbonsChanged(const Setting *s)
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto r1 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_1, VoiceGroup::Global }));
+  auto r2 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_2, VoiceGroup::Global }));
+  auto r3 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_3, VoiceGroup::Global }));
+  auto r4 = dynamic_cast<RibbonParameter *>(eb->findParameterByID({ C15::PID::Ribbon_4, VoiceGroup::Global }));
+  r1->sendModeToPlaycontroller();
+  r2->sendModeToPlaycontroller();
+  r3->sendModeToPlaycontroller();
+  r4->sendModeToPlaycontroller();
 }

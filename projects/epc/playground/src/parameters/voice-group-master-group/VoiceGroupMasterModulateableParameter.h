@@ -7,7 +7,7 @@
 class VoiceGroupMasterModulateableParameter : public ModulateableParameter
 {
  public:
-  VoiceGroupMasterModulateableParameter(ParameterGroup *group, const ParameterId &id, const ScaleConverter *scaling);
+  VoiceGroupMasterModulateableParameter(ParameterGroup *group, const ParameterId &id);
   Layout *createLayout(FocusAndMode focusAndMode) const override;
 };
 

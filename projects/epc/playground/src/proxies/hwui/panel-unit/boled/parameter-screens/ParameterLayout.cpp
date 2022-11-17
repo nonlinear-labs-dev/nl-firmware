@@ -40,7 +40,6 @@ ParameterLayout2::ParameterLayout2()
     : super(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
     , m_soundTypeRedrawThrottler { Application::get().getMainContext(), std::chrono::milliseconds(50) }
 {
-  addControl(new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11)));
   addControl(new LockedIndicator(Rect(65, 1, 10, 11)));
   addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), false));
   addControl(new UndoIndicator(Rect(22, 15, 10, 8)));
@@ -55,8 +54,14 @@ ModuleCaption *ParameterLayout2::createModuleCaption() const
   return new ModuleCaption(Rect(0, 0, 64, 13));
 }
 
+Control* ParameterLayout2::createParameterNameLabel() const
+{
+  return new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11));
+}
+
 void ParameterLayout2::init()
 {
+  addControl(createParameterNameLabel());
   addControl(createModuleCaption());
   showRecallScreenIfAppropriate();
 }

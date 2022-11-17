@@ -1,7 +1,9 @@
 #include "MockSettingsObject.h"
 
+static HardwareFeatures s_hwFeatures;
+
 MockSettingsObject::MockSettingsObject(const Glib::ustring& file, UpdateDocumentMaster* m)
-    : Settings(file, m)
+    : Settings(file, m, s_hwFeatures)
 {
 }
 

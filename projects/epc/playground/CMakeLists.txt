@@ -3,7 +3,7 @@ project(playground)
 
 find_systemd()
 enable_ccache()
-prepare_nltools()
+prepare_nltools_2()
 
 # PRECONDITIONS
 find_package(PkgConfig REQUIRED)
@@ -64,7 +64,12 @@ ENDIF(DSL_LAYOUTS)
 # CONFIGURED FILES
 configure_file(src/CompileTimeOptions.h.in src/CompileTimeOptions.h)
 configure_file(src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp.in src/proxies/hwui/panel-unit/boled/setup/UISoftwareVersionEditor.cpp)
-configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
+
+IF (${TARGET_PLATFORM} STREQUAL "pi4")
+  configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.pi4.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
+ELSE()
+  configure_file(${PROJECT_SOURCE_DIR}/systemd/${BINARY_NAME}.service.epc.in ${PROJECT_BINARY_DIR}/systemd/${BINARY_NAME}.service @ONLY)
+ENDIF()
 
 add_custom_command(
   COMMENT "Generate BuildVersion.cpp"
@@ -104,7 +109,7 @@ set(${TEST_BINARY_NAME}_SOURCES ${UNIT_TEST_FILES})
 # TARGETS
 ## LIB
 add_library(${LIB_NAME} STATIC ${SOURCE_FILES} ${GENERATED_SOURCES})
-add_nltools(${LIB_NAME})
+add_nltools_2(${LIB_NAME})
 
 foreach(lib ${LIBS})
   pkg_check_modules(${lib} REQUIRED ${lib})
@@ -115,10 +120,11 @@ endforeach(lib)
 
 target_include_directories(${LIB_NAME} PUBLIC src)
 target_include_directories(${LIB_NAME} PUBLIC ${PROJECT_BINARY_DIR}/src)
-target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared/parameter-db/generated/)
+target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_BINARY_DIR}/projects/shared/configuration/generated/)
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/epc/playground/src)
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/projects/shared)
 target_link_libraries(${LIB_NAME} PUBLIC pthread stdc++fs)
+add_dependencies(${LIB_NAME} configuration)
 
 ## BINARY
 add_executable(${BINARY_NAME} ${${BINARY_NAME}_SOURCES})

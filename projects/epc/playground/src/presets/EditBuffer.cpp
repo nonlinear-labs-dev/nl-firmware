@@ -37,6 +37,7 @@
 #include "LoadedPresetLog.h"
 #include <sync/JsonAdlSerializers.h>
 #include <use-cases/EditBufferUseCases.h>
+#include <groups/MacroControlsGroup.h>
 
 EditBuffer::EditBuffer(PresetManager *parent, Settings &settings, std::unique_ptr<AudioEngineProxy> &aeContainer)
     : ParameterGroupSet(parent)
@@ -50,6 +51,7 @@ EditBuffer::EditBuffer(PresetManager *parent, Settings &settings, std::unique_pt
     , m_loadedPresetLog(std::make_unique<LoadedPresetLog>())
     , m_settings { settings }
     , m_audioEngineProxyContainer { aeContainer }
+    , m_lastSelectedMacroControl { C15::PID::MC_A, VoiceGroup::Global }
 {
   m_hashOnStore = getHash();
 }
@@ -354,6 +356,9 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
   if(m_lastSelectedParameter != p->getID())
   {
     auto swapData = UNDO::createSwapData(p->getID());
+    ParameterId newMCID
+        = MacroControlsGroup::isMacroControl(p->getID().getNumber()) ? p->getID() : m_lastSelectedMacroControl;
+    auto incomingMCSwapData = UNDO::createSwapData(newMCID);
 
     p->resetWasDefaulted(transaction);
 
@@ -363,6 +368,7 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
           auto oldSelection = m_lastSelectedParameter;
 
           swapData->swapWith(m_lastSelectedParameter);
+          incomingMCSwapData->swapWith(m_lastSelectedMacroControl);
 
           auto oldP = findParameterByID(oldSelection);
           auto newP = findParameterByID(m_lastSelectedParameter);
@@ -1195,11 +1201,11 @@ void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)
   }
 }
 
-void EditBuffer::initMasterPanAndSeperation(UNDO::Transaction* transaction)
+void EditBuffer::initMasterPanAndSeperation(UNDO::Transaction *transaction)
 {
-  auto masterPan = findParameterByID({C15::PID::Master_Pan, VoiceGroup::Global});
+  auto masterPan = findParameterByID({ C15::PID::Master_Pan, VoiceGroup::Global });
   masterPan->loadDefault(transaction, Defaults::FactoryDefault);
-  auto masterSep = findParameterByID({C15::PID::Master_Serial_FX, VoiceGroup::Global});
+  auto masterSep = findParameterByID({ C15::PID::Master_Serial_FX, VoiceGroup::Global });
   masterSep->loadDefault(transaction, Defaults::FactoryDefault);
 }
 
@@ -1270,7 +1276,7 @@ void EditBuffer::initCrossFB(UNDO::Transaction *transaction)
   }
 }
 
-void EditBuffer::initCrossFBExceptFromFX(UNDO::Transaction* transaction)
+void EditBuffer::initCrossFBExceptFromFX(UNDO::Transaction *transaction)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
@@ -1583,7 +1589,7 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
           vg = VoiceGroup::I;
 
         undoableSelectParameter(transaction, { itConv->second, vg }, false);
-        vgManager->setCurrentVoiceGroup(vg);
+        vgManager->setCurrentVoiceGroup(transaction, vg, true);
       }
     }
 
@@ -1593,7 +1599,7 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
       if(!ParameterId::isGlobal(selNum))
         undoableSelectParameter(transaction, { selNum, VoiceGroup::I }, false);
 
-      vgManager->setCurrentVoiceGroup(VoiceGroup::I);
+      vgManager->setCurrentVoiceGroup(transaction, VoiceGroup::I, true);
     }
   }
 }
@@ -1733,7 +1739,8 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
   {
     if(auto hw = dynamic_cast<PhysicalControlParameter *>(p))
     {
-      if(hw->getID().getNumber() == C15::PID::Ribbon_1 || hw->getID().getNumber() == C15::PID::Ribbon_2)
+      if(hw->getID().getNumber() == C15::PID::Ribbon_1 || hw->getID().getNumber() == C15::PID::Ribbon_2 ||
+         hw->getID().getNumber() == C15::PID::Ribbon_3 || hw->getID().getNumber() == C15::PID::Ribbon_4)
       {
         auto oldMode = hw->getLastReturnModeBeforePresetLoad();
         auto newMode = hw->getReturnMode();
@@ -1755,4 +1762,9 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
 ParameterDB &EditBuffer::getParameterDB()
 {
   return m_parameterDB;
+}
+
+ParameterId EditBuffer::getLastSelectedMacroId() const
+{
+  return m_lastSelectedMacroControl;
 }

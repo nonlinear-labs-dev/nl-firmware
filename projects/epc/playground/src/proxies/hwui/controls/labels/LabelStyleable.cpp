@@ -44,6 +44,11 @@ void LabelStyleable::setBackgroundColor(FrameBuffer& fb) const
   fb.setColor(m_styleSheet.backgroundColor);
 }
 
+void LabelStyleable::setSuffixFontColor(FrameBuffer& fb) const
+{
+  fb.setColor(m_styleSheet.suffixTextColor);
+}
+
 std::shared_ptr<Font> LabelStyleable::getFont() const
 {
   try

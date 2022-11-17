@@ -193,7 +193,7 @@ namespace DescriptiveLayouts
       }
       if(!found)
       {
-        m_out << "Control class " << a.first << " is never used in a layout." << std::endl;
+        nltools::Log::info("Control class", a.first, "is never used in a layout.");
         return false;
       }
     }

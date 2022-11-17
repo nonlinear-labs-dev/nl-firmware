@@ -1,6 +1,7 @@
 #pragma once
 #include <device-settings/Settings.h>
 #include <functional>
+#include <proxies/hwui/HardwareFeatures.h>
 
 class MockSettingsObject : public Settings
 {

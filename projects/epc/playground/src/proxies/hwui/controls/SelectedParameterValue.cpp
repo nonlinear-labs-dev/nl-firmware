@@ -108,7 +108,8 @@ PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
   LabelStyle style { .size = FontSize::Size9,
                      .decoration = FontDecoration::Regular,
                      .justification = Font::Justification::Center,
-                     .backgroundColor = FrameBufferColors::Transparent };
+                     .backgroundColor = FrameBufferColors::Transparent,
+                     .suffixTextColor = FrameBufferColors::C128 };
 
   m_localEnabledLabel = addControl(new LabelStyleable({ 0, 0, pos.getWidth(), pos.getHeight() }));
   m_localDisabledLabelSnd = addControl(new LabelStyleable(left));
@@ -116,16 +117,24 @@ PhysicalControlValueLabel::PhysicalControlValueLabel(const Rect &rect)
   m_localEnabledLabel->setLabelStyle(style);
   m_localDisabledLabelSnd->setLabelStyle(style);
   m_localDisabledLabelRcv->setLabelStyle(style);
-  m_localEnabledLabel->setHighlight(true);
+  m_localEnabledLabel->setHighlight(m_allowHighlights);
 
   auto settings = Application::get().getSettings();
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   eb->onSelectionChanged(sigc::mem_fun(this, &PhysicalControlValueLabel::onParameterSelectionHappened),
                          VoiceGroup::Global);
+
+  Application::get().getHWUI()->onModifiersChanged(sigc::mem_fun(this, &PhysicalControlValueLabel::onModifiersChanged));
 }
 
 void PhysicalControlValueLabel::setHighlight(bool isHighlight)
 {
+  m_allowHighlights = isHighlight;
+}
+
+bool PhysicalControlValueLabel::isHighlight() const
+{
+  return m_allowHighlights;
 }
 
 void PhysicalControlValueLabel::onParameterSelectionHappened(const Parameter *old, Parameter *newP)
@@ -135,13 +144,13 @@ void PhysicalControlValueLabel::onParameterSelectionHappened(const Parameter *ol
     m_hw = hw;
     m_snd = hw->getSendParameter();
     m_localDisabledLabelSnd->setHighlight(false);
-    m_localDisabledLabelRcv->setHighlight(true);
+    m_localDisabledLabelRcv->setHighlight(m_allowHighlights);
   }
   else if(auto snd = dynamic_cast<HardwareSourceSendParameter *>(newP))
   {
     m_hw = snd->getSiblingParameter();
     m_snd = snd;
-    m_localDisabledLabelSnd->setHighlight(true);
+    m_localDisabledLabelSnd->setHighlight(m_allowHighlights);
     m_localDisabledLabelRcv->setHighlight(false);
   }
 
@@ -170,7 +179,14 @@ void PhysicalControlValueLabel::onSendChanged(const Parameter *p)
     m_isLocalEnabled = send->isLocalEnabled();
     auto str = send->getDisplayString();
     auto shorter = nltools::string::removeCharacters(str, { '%', ' ' });
-    m_localDisabledLabelSnd->setText({ shorter });
+    if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
+    {
+       m_localDisabledLabelSnd->setText({ shorter, " F"});
+    }
+    else
+    {
+        m_localDisabledLabelSnd->setText({ shorter });
+    }
     ControlWithChildren::setDirty();
   }
 }
@@ -182,10 +198,29 @@ void PhysicalControlValueLabel::onHWChanged(const Parameter *p)
     m_isLocalEnabled = hw->isLocalEnabled();
     auto str = hw->getDisplayString();
     auto shorter = nltools::string::removeCharacters(str, { '%', ' ' });
-    m_localEnabledLabel->setText({ str });
-    m_localDisabledLabelRcv->setText({ shorter });
+    if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
+    {
+        StringAndSuffix temp{ str, " F"};
+        m_localEnabledLabel->setText(temp);
+        m_localDisabledLabelRcv->setText({ shorter, " F"});
+    }
+    else
+    {
+      m_localEnabledLabel->setText({ str });
+      m_localDisabledLabelRcv->setText({ shorter });
+    }
+
     ControlWithChildren::setDirty();
   }
+}
+
+void PhysicalControlValueLabel::onModifiersChanged(ButtonModifiers mods)
+{
+  if(m_hw)
+    onHWChanged(m_hw);
+
+  if(m_snd)
+    onSendChanged(m_snd);
 }
 
 HardwareSourceCCLabel::HardwareSourceCCLabel(const Rect &e)
@@ -193,7 +228,7 @@ HardwareSourceCCLabel::HardwareSourceCCLabel(const Rect &e)
                      { .size = FontSize::Size8,
                        .decoration = FontDecoration::Regular,
                        .justification = Font::Justification::Left,
-                       .backgroundColor = FrameBufferColors::Transparent })
+                       .backgroundColor = FrameBufferColors::C43 })
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   eb->onSelectionChanged(sigc::mem_fun(this, &HardwareSourceCCLabel::onParameterSelectionHappened), VoiceGroup::Global);
@@ -215,6 +250,10 @@ Setting *getMappingSetting(int id, Settings *settings)
       return settings->getSetting<RibbonCCMapping<1>>();
     case C15::PID::Ribbon_2:
       return settings->getSetting<RibbonCCMapping<2>>();
+    case C15::PID::Ribbon_3:
+      return settings->getSetting<RibbonCCMapping<3>>();
+    case C15::PID::Ribbon_4:
+      return settings->getSetting<RibbonCCMapping<4>>();
     case C15::PID::Bender:
       return settings->getSetting<BenderCCMapping>();
     case C15::PID::Aftertouch:

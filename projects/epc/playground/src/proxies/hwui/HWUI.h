@@ -20,6 +20,7 @@ class Application;
 class UsageMode;
 class Settings;
 class LayoutFolderMonitor;
+class RecorderManager;
 
 namespace UNDO
 {
@@ -34,10 +35,10 @@ namespace nltools::msg
 class PresetPartSelection;
 class SplashLayout;
 
-class HWUI
+class HWUI : public sigc::trackable
 {
  public:
-  HWUI(Settings &settings);
+  HWUI(Settings &settings, RecorderManager &recorderManager);
   virtual ~HWUI();
   void init();
   void indicateBlockingMainThread();
@@ -60,14 +61,6 @@ class HWUI
   std::string exportBoled();
 
   Oleds &getOleds();
-
-  //SplashScreen
-  void startSplash();
-  void finishSplash();
-  void setSplashStatus(const std::string &msg);
-  void addSplashStatus(const std::string &msg);
-  void registerSplash(SplashLayout *l);
-  void unregisterSplash(SplashLayout *l);
 
  private:
   void exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std::string &fileName) const;
@@ -129,7 +122,6 @@ class HWUI
   ScopedGuard m_parameterFocusLock;
   Settings &m_settings;
   FocusAndModeSetting &m_famSetting;
-  SplashLayout *m_splashLayout = nullptr;
 
   bool m_currentParameterIsFineAllowed = false;
 };

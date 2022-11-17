@@ -4,7 +4,6 @@
 class ModulateableMonoParameter : public ModulateableParameter
 {
  public:
-  ModulateableMonoParameter(ParameterGroup* group, const ParameterId& id, const ScaleConverter* scaling);
-
-  Layout *createLayout(FocusAndMode focusAndMode) const override;
+  ModulateableMonoParameter(ParameterGroup* group, const ParameterId& id);
+  Layout* createLayout(FocusAndMode focusAndMode) const override;
 };

@@ -7,6 +7,8 @@
 #include "parameters/Parameter.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
 #include "parameter_declarations.h"
+#include "parameters/ModulationRoutingParameter.h"
+#include "parameters/MacroControlParameter.h"
 #include <proxies/hwui/Oleds.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <sigc++/sigc++.h>
@@ -145,4 +147,16 @@ void ParameterNameLabel::onPresetLoaded()
   auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   const auto param = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
   onParameterChanged(param);
+}
+
+void ParameterNameLabelForMCOfModulationRouter::onParameterSelected(Parameter *param)
+{
+  if(auto modRouter = dynamic_cast<ModulationRoutingParameter*>(param))
+  {
+    ParameterNameLabel::onParameterSelected(modRouter->getTargetParameter());
+  }
+  else
+  {
+    ParameterNameLabel::onParameterSelected(param);
+  }
 }

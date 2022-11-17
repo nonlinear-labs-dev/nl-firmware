@@ -26,24 +26,6 @@ bool PitchbendParameter::isLocalEnabled() const
   return false;
 }
 
-Layout *PitchbendParameter::createLayout(FocusAndMode focusAndMode) const
-{
-  switch(focusAndMode.mode)
-  {
-    case UIMode::Info:
-      return new ParameterInfoLayout();
-
-    case UIMode::Edit:
-      return new PitchbendParameterEditLayout2();
-
-    case UIMode::Select:
-    default:
-      return new PitchbendParameterSelectLayout2();
-  }
-
-  g_return_val_if_reached(nullptr);
-}
-
 tControlPositionValue PitchbendParameter::getDefValueAccordingToMode() const
 {
   return 0;

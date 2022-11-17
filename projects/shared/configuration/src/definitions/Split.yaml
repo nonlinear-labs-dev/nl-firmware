@@ -1,0 +1,28 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Split
+
+parameters:
+  - availability: {
+      Single: { hidden: false, disabled: false, count: 0 },
+      Split: { hidden: false, disabled: false, count: 1 },
+      Layer: { hidden: true, disabled: false, count: 0 }
+    }
+    type: Local_Modulateable
+    id: 356
+    token: Split_Point
+    label_long: Split Point
+    label_short: Split Pnt
+    control_position: { coarse: 60, fine: 60, scale: LINEAR_61_KEYS, initial: 30.0f / 60.0f }
+    modulation_aspects: { coarse: 60, fine: 60, scale: INTEGRAL_BIPOLAR_60_ST }
+    rendering_args: { scaling: Linear, factor: 60.0f, offset: 0.05f, section: Poly, clock: Sync, signal: None }
+    info: >
+      Determines the split position of a sound as a key number.
+      Keys from the lower end up to the Split Point will be associated to Part I,
+      keys from the Split Point up to the upper end will be associated to Part II.
+      When linked, both split positions are sticked together and the Split Point behaves as
+      one global parameter applying to both Parts.
+      When unlinked, the Split Point behaves as two local parameters which can be adjusted and modulated separately, allowing for overlapping key ranges.
+      Changing this parameter is only effective when a key is pressed or released.

@@ -152,7 +152,7 @@ public class MidiSettings {
     }
 
     static public class RoutingSetting {
-        public static final int numRoutings = 10;
+        public static final int numRoutings = 12;
         RoutingSetting() {
             for(int i = 0; i < numRoutings; i++) {
                 routings[i] = new RoutingEntry();
@@ -182,6 +182,8 @@ public class MidiSettings {
     public PedalMapping pedalMapping4 = new PedalMapping();
     public RibbonMapping ribbonMapping1 = new RibbonMapping();
     public RibbonMapping ribbonMapping2 = new RibbonMapping();
+    public RibbonMapping ribbonMapping3 = new RibbonMapping();
+    public RibbonMapping ribbonMapping4 = new RibbonMapping();
     public BenderMapping benderMapping = new BenderMapping();
     public AftertouchMapping aftertouchMapping = new AftertouchMapping();
     public OnOffOption highVelocityCC = new OnOffOption();

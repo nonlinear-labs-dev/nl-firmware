@@ -14,7 +14,7 @@
 #include <device-settings/HighlightChangedParametersSetting.h>
 #include <sigc++/sigc++.h>
 #include <device-settings/Settings.h>
-#include <parameter-db/generated/parameter_list.h>
+#include <parameter_list.h>
 
 PanelUnitPresetMode::PanelUnitPresetMode()
     : m_bruteForceLedThrottler(Application::get().getMainContext(), std::chrono::milliseconds(40))

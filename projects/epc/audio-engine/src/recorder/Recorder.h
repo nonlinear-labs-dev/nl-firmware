@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Types.h"
+#include "nltools/threading/Expiration.h"
 #include <nltools/nlohmann/json.hpp>
 #include <memory>
 #include <sigc++/connection.h>
@@ -35,6 +36,8 @@ class Recorder
   void notifyStateChange();
   
 private:
+ void checkAndSendNoClientsStatus();
+
   nlohmann::json generateInfo() const;
   nlohmann::json prepareDownload(FrameId begin, FrameId end) const;
   nlohmann::json queryFrames(FrameId begin, FrameId end) const;
@@ -45,4 +48,8 @@ private:
   std::unique_ptr<nltools::msg::WebSocketJsonAPI> m_api;
   std::unique_ptr<NetworkServer> m_http;
   sigc::connection m_settingConnection;
+  sigc::connection m_stopConnection;
+
+  Expiration m_checkForActiveClients;
+  bool m_hadClientsAtLastCheck = false;
 };

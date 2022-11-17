@@ -12,6 +12,7 @@ class PedalParameter : public PhysicalControlParameter
  public:
   using super::super;
   void onLocalEnableChanged(bool localEnableState) override;
+  void init(Settings& s);
 
  public:
   void undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode, Initiator initiator);
@@ -23,6 +24,8 @@ class PedalParameter : public PhysicalControlParameter
   void loadDefault(UNDO::Transaction *transaction, Defaults mode) override;
 
   PedalType *getAssociatedPedalTypeSetting() const;
+  Glib::ustring getLongName() const override;
+  Glib::ustring getShortName() const override;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
@@ -32,16 +35,18 @@ class PedalParameter : public PhysicalControlParameter
   Glib::ustring getCurrentBehavior() const override;
   void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
 
-  Layout *createLayout(FocusAndMode focusAndMode) const override;
   size_t getHash() const override;
   tControlPositionValue getDefValueAccordingToMode() const override;
 
  private:
+  void onPedalTypeChanged(const Setting* s);
   const ScaleConverter *createScaleConverter() const;
   void sendModeToPlaycontroller() const;
   void setRoutersModeAccordingToReturnMode();
   bool isLocalEnabled() const override;
+  bool isHardwareDisabled() const;
 
   PedalModes m_mode = PedalModes::STAY;
   tUpdateID m_updateIdWhenModeChanged = 0;
+  PedalType* m_setting;
 };

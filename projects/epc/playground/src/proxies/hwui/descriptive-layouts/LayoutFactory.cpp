@@ -63,13 +63,14 @@ namespace DescriptiveLayouts
                                  toString(fam.detail));
     }
 
-    DebugLevel::gassy("Current Modes:", toString(fam.focus), toString(fam.mode), toString(fam.detail));
+    nltools::Log::info("Current Modes:", toString(fam.focus), toString(fam.mode), toString(fam.detail));
 
     return *it;
   }
 
   std::shared_ptr<Layout> BoledLayoutFactory::instantiate(FocusAndMode fam)
   {
-    return std::shared_ptr<Layout>(find(fam).instantiate());
+    std::shared_ptr<Layout> ret(find(fam).instantiate());
+    return ret;
   }
 }

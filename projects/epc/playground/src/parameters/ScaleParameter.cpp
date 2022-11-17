@@ -1,24 +1,19 @@
 #include <groups/ParameterGroup.h>
-#include <groups/ScaleGroup.h>
 #include <libundo/undo/StringTools.h>
 #include <parameters/ScaleParameter.h>
-#include <proxies/hwui/HWUIEnums.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/ScaleParameterLayout.h>
 #include <xml/Writer.h>
 #include "scale-converters/dimension/NoteDimension.h"
 #include "parameter_declarations.h"
-#include "parameters/scale-converters/Fine12STScaleConverter.h"
-#include "parameters/scale-converters/FineBipolar1200CTScaleConverter.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 
-ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId& id, const ScaleConverter *scaling)
-    : super(group, id, scaling, ScaleConverter::get<FineBipolar1200CTScaleConverter>())
+ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId& id)
+    : super(group, id)
 {
 }
 
 void ScaleParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
 {
-  ModulateableParameterWithUnusualModUnit::writeDocProperties(writer, knownRevision);
+  ModulateableParameter::writeDocProperties(writer, knownRevision);
 
   if(!shouldWriteDocProperties(knownRevision))
   {
@@ -51,8 +46,8 @@ Glib::ustring ScaleParameter::getLongName() const
   return super::getLongName();
 }
 
-BaseScaleParameter::BaseScaleParameter(ParameterGroup *group, const ParameterId &id, const ScaleConverter *scaling)
-: super(group, id, scaling)
+BaseScaleParameter::BaseScaleParameter(ParameterGroup *group, const ParameterId &id)
+: super(group, id)
 {
 }
 

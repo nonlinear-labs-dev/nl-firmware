@@ -167,6 +167,16 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().setSetting("Ribbon2Mapping", value.name());
 	}
 
+	public void setRibbon3Mapping(RibbonCCMapping value) {
+		SetupModel.get().systemSettings.ribbon3Mapping.setValue(value);
+		NonMaps.theMaps.getServerProxy().setSetting("Ribbon3Mapping", value.name());
+	}
+
+	public void setRibbon4Mapping(RibbonCCMapping value) {
+		SetupModel.get().systemSettings.ribbon4Mapping.setValue(value);
+		NonMaps.theMaps.getServerProxy().setSetting("Ribbon4Mapping", value.name());
+	}
+
 	public void setAftertouchMapping(AftertouchCCMapping value) {
 		SetupModel.get().systemSettings.aftertouchMapping.setValue(value);
 		NonMaps.theMaps.getServerProxy().setSetting("AftertouchMapping", value.name());
@@ -241,6 +251,10 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().triggerPanic();
 	}
 
+	public void stopRecorderPlayback() {
+		NonMaps.theMaps.getServerProxy().stopRecorderPlayback();
+	}
+
     public void resetRoutings(boolean b) {
 		NonMaps.theMaps.getServerProxy().resetRoutings(b);
 	}
@@ -248,5 +262,10 @@ public class SystemSettings {
 	public void setPassphrase(String value) {
 		SetupModel.get().systemSettings.passPhrase.setValue(value);
 		NonMaps.theMaps.getServerProxy().setSetting("Passphrase", value);
+    }
+
+    public void setLegacyAftertouch(BooleanValues on) {
+		SetupModel.get().systemSettings.legacyAftertouch.setValue(on);
+		NonMaps.theMaps.getServerProxy().setSetting("AftertouchLegacyMode", netify(on.name()));
     }
 }

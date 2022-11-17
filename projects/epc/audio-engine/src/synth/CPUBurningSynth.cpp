@@ -1,6 +1,7 @@
 #include "CPUBurningSynth.h"
 #include "AudioEngineOptions.h"
 #include <math.h>
+#include <cmath>
 
 CPUBurningSynth::CPUBurningSynth(const AudioEngineOptions *options)
     : Synth(options)

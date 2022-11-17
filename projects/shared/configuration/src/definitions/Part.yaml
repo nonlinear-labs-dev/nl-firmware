@@ -1,0 +1,99 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Voice_Grp
+
+static: [
+  &NO_SINGLE {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 0 },
+      Split: { hidden: false, disabled: false, count: 2 },
+      Layer: { hidden: false, disabled: false, count: 2 }
+    }
+  },
+  &ONLY_LAYER {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 0 },
+      Split: { hidden: false, disabled: false, count: 0 },
+      Layer: { hidden: false, disabled: false, count: 2 }
+    }
+  },
+  &ONLY_LAYER_HIDDEN {
+    availability: {
+      Single: { hidden: true, disabled: true, count: 0 },
+      Split: { hidden: true, disabled: true, count: 0 },
+      Layer: { hidden: false, disabled: false, count: 2 }
+    }
+  }
+]
+
+parameters:
+  - <<: *NO_SINGLE
+    type: Local_Modulateable
+    id: 358
+    token: Volume
+    label_long: Part Volume
+    label_short: Volume
+    control_position: { coarse: 100, fine: 1000, scale: PARABOLIC_GAIN_DB, initial: 0.5f }
+    modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 4.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Part volume [in dB], available when using Split or Layer mode.
+      Applied at the end of the corresponding effect chain, before the Master Volume.
+  - <<: *NO_SINGLE
+    type: Local_Modulateable
+    id: 360
+    token: Tune
+    label_long: Part Tune
+    label_short: Tune
+    control_position: { coarse: 48, fine: 4800, scale: FINE_BIPOLAR_48_ST, initial: 0.0f }
+    modulation_aspects: { coarse: 96, fine: 9600, scale: FINE_BIPOLAR_96_ST }
+    rendering_args: { scaling: Linear, factor: 48.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Part pitch transposition [in semitones], available when using Split or Layer mode.
+      Applied for the corresponding Part only.
+  - <<: *ONLY_LAYER
+    type: Local_Unmodulateable
+    id: 395
+    token: Mute
+    label_long: Part Mute
+    label_short: Part Mute
+    control_position: { coarse: 1, fine: 1, scale: SWITCH_ON_OFF, initial: 0.0f }
+    rendering_args: { scaling: Linear, factor: -1.0f, offset: 1.0f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Part mute, available when usig Split or Layer mode. When enabled, the corresponding Part will be muted.
+  - <<: *ONLY_LAYER_HIDDEN
+    type: Local_Unmodulateable
+    id: 396
+    token: Fade_From
+    label_long: Fade From
+    label_short: Fade From
+    control_position: { coarse: 60, fine: 60, scale: LINEAR_0_60_KEY, initial: 0.0f }
+    rendering_args: { scaling: Linear, factor: 60.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
+    info: >
+      Available when using Layer mode.
+      For Part I the full level range spans from the lowest key (C1) to the key set by this parameter.
+      This key defines the breakpoint where the fade-out begins.
+      The fade-out width is adjustable by the \"Fade Range\" parameter.
+      For Part II the full level range spans from the highest key (C6) to the key set here.
+      For the keys below this breakpoint the level is faded out.\n
+      By default this parameter is set to the highest key (C6) for Part I and to the lowest key (C1) for Part II,
+      so that both Parts cover the whole key range without fading.\n
+      Changing this parameter is only effective when a key is pressed.
+  - <<: *ONLY_LAYER_HIDDEN
+    type: Local_Unmodulateable
+    id: 397
+    token: Fade_Range
+    label_long: Fade Range
+    label_short: Fade Range
+    control_position: { coarse: 60, fine: 600, scale: LINEAR_0_60_ST, initial: 0.0f }
+    rendering_args: { scaling: Linear, factor: 60.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
+    info: >
+      Available when using Layer mode.
+      This parameter adjusts the width of a key range [in semitones] where the level of a Part is faded out.
+      For Part I the fade-out applies to keys above the breakpoint set by \"Fade From\".
+      For Part II the fade-out applies to keys below the breakpoint set by \"Fade From\".\n
+      With a Fade Range of zero the Part is muted for all keys beyond the breakpoint, which is the default behavior.
+      You can set this parameter in fractions of semitones to make subtle changes to the curve of the fade-out.\n
+      Changing this parameter is only effective when a key is pressed.

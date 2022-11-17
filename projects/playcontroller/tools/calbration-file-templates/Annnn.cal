@@ -1,0 +1,4 @@
+[Header]
+#insert 2 values here, comma separated and no spaces: Aftertouch(Keybed) serial #, used test force in mN (typically 10000 -> 10N)
+[Data]
+#insert 61 values here, comma separated and no spaces: ADC raw readout for test-force, leftmost key first

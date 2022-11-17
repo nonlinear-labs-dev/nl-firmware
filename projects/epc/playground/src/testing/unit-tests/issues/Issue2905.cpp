@@ -19,7 +19,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Sort Bank Numbers deletes Bank
   {
     FileInStream stream(
         getSourceDir() + "/projects/epc/playground/test-resources/issue-2905-nonlinear-c15-banks.xml.tar", true);
-    uc.importBackupFile(stream, {}, TestHelper::getAudioEngineProxy());
+    CHECK(uc.importBackupFile(stream, {}, TestHelper::getAudioEngineProxy()) == PresetManagerUseCases::ImportExitCode::OK);
   }
 
   WHEN("Banks are Loaded")

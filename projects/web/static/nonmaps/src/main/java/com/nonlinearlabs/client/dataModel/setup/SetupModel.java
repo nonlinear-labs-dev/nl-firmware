@@ -372,6 +372,8 @@ public class SetupModel {
 		public PedalMappingDataModelEntity pedal4Mapping = new PedalMappingDataModelEntity();
 		public RibbonMappingDataModelEntity ribbon1Mapping = new RibbonMappingDataModelEntity();
 		public RibbonMappingDataModelEntity ribbon2Mapping = new RibbonMappingDataModelEntity();
+		public RibbonMappingDataModelEntity ribbon3Mapping = new RibbonMappingDataModelEntity();
+		public RibbonMappingDataModelEntity ribbon4Mapping = new RibbonMappingDataModelEntity();
 		public AftertouchMappingDataModelEntity aftertouchMapping = new AftertouchMappingDataModelEntity();
 		public PitchbendMappingDataModelEntity benderMapping = new PitchbendMappingDataModelEntity();
 		public BooleanDataModelEntity highVelocityCC = new BooleanDataModelEntity();
@@ -380,6 +382,8 @@ public class SetupModel {
 
 		public RoutingAspectsDataModelEntity routingAspects = new RoutingAspectsDataModelEntity();
 		public BooleanDataModelEntity localEnabled = new BooleanDataModelEntity();
+
+		public BooleanDataModelEntity legacyAftertouch = new BooleanDataModelEntity();
 	};
 
 	public class LocalSettings {
@@ -395,6 +399,7 @@ public class SetupModel {
 		public BooleanDataModelEntity bitmapCache = new BooleanDataModelEntity();
 		public BooleanDataModelEntity showDeveloperOptions = new BooleanDataModelEntity();
 		public BooleanDataModelEntity alertOnBufferUnderruns = new BooleanDataModelEntity();
+		public BooleanDataModelEntity localFineEnabled = new BooleanDataModelEntity();
 	}
 
 	public SystemSettings systemSettings = new SystemSettings();

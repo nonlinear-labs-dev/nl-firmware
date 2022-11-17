@@ -16,15 +16,19 @@ class PlayOrEditModeLayout : public Layout
   ~PlayOrEditModeLayout() override;
 
  protected:
-  int getBehaviourLeft() const;
   void onParameterSelectionChanged(const Parameter* old, Parameter* newP);
 
  private:
   PlayOrEditModeLayout(const PlayOrEditModeLayout& other);
   PlayOrEditModeLayout& operator=(const PlayOrEditModeLayout&);
 
-  void onLastTouchedRibbonChanged(int lastTouchedRibbonParameterID);
+  Control* m_pedalIndicationLower;
+  Control* m_ribbonLabelLower;
+  void createLowerLabels();
+  void onRibbonSelectionChanged(const Setting* s);
+  void onMacroMappingsChanged();
 
-  Label* m_upperArrow = nullptr;
-  Label* m_lowerArrow = nullptr;
+ protected:
+  bool isPedalMappedToCurrentLowerRibbon();
+  bool isPedalMappedToCurrentUpperRibbon();
 };

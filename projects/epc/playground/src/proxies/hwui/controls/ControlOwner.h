@@ -113,9 +113,9 @@ class ControlOwner : public Uncopyable
     this->setDirty();
     return ctrl;
   }
+  void remove(const Control *ctrl);
 
  protected:
-  void remove(const Control *ctrl);
   virtual void clear();
   [[nodiscard]] size_t getNumChildren() const;
 

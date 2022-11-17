@@ -1,12 +1,5 @@
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
-#include <parameters/scale-converters/LinearBipolar48StScaleConverter.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterModulateableParameter.h>
-#include <parameters/voice-group-master-group/VoiceGroupMasterModulateableParameterWithUnusualModUnit.h>
-#include <parameters/scale-converters/OnOffScaleConverter.h>
-#include <parameters/scale-converters/Linear60KeyScaleConverter.h>
-#include <parameters/scale-converters/dimension/PitchDimension.h>
-#include <parameters/scale-converters/Linear60StScaleConverter.h>
-#include <parameters/scale-converters/LinearBipolar96StScaleConverterFine.h>
 #include "VoiceGroupMasterGroup.h"
 #include "parameter_declarations.h"
 
@@ -19,7 +12,7 @@ class FadeFrom : public VoiceGroupMasterUnmodulateableParameter
 {
  public:
   FadeFrom(ParameterGroup* parent, const ParameterId& id, double initial)
-      : VoiceGroupMasterUnmodulateableParameter(parent, id, ScaleConverter::get<Linear60KeyScaleConverter>())
+      : VoiceGroupMasterUnmodulateableParameter(parent, id)
   {
     getValue().setFactoryDefault(initial);
   }
@@ -27,20 +20,13 @@ class FadeFrom : public VoiceGroupMasterUnmodulateableParameter
 
 void VoiceGroupMasterGroup::init()
 {
-  appendParameter(new VoiceGroupMasterModulateableParameter(this, { C15::PID::Voice_Grp_Volume, getVoiceGroup() },
-                                                            ScaleConverter::get<ParabolicGainDbScaleConverter>()));
-
-  appendParameter(new VoiceGroupMasterModulateableParameterWithUnusualModUnit(
-      this, { C15::PID::Voice_Grp_Tune, getVoiceGroup() }, ScaleConverter::get<LinearBipolar48StScaleConverter>(),
-      ScaleConverter::get<LinearBipolar96StScaleConverterFine>()));
-
-  appendParameter(new VoiceGroupMasterUnmodulateableParameter(this, { C15::PID::Voice_Grp_Mute, getVoiceGroup() },
-                                                              ScaleConverter::get<OnOffScaleConverter>()));
+  appendParameter(new VoiceGroupMasterModulateableParameter(this, { C15::PID::Voice_Grp_Volume, getVoiceGroup() }));
+  appendParameter(new VoiceGroupMasterModulateableParameter(this, { C15::PID::Voice_Grp_Tune, getVoiceGroup() }));
+  appendParameter(new VoiceGroupMasterUnmodulateableParameter(this, { C15::PID::Voice_Grp_Mute, getVoiceGroup() }));
 
   auto fadeFromInitial = getVoiceGroup() == VoiceGroup::I ? 1 : 0;
 
   appendParameter(new FadeFrom(this, { C15::PID::Voice_Grp_Fade_From, getVoiceGroup() }, fadeFromInitial));
-
-  appendParameter(new VoiceGroupMasterUnmodulateableParameter(this, { C15::PID::Voice_Grp_Fade_Range, getVoiceGroup() },
-                                                              ScaleConverter::get<Linear60StScaleConverter>()));
+  appendParameter(
+      new VoiceGroupMasterUnmodulateableParameter(this, { C15::PID::Voice_Grp_Fade_Range, getVoiceGroup() }));
 }

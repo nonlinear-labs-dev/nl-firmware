@@ -84,5 +84,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load Presets", "[Benchmark]")
       ebUseCases.load(presets1.getSplitPreset());
       ebUseCases.load(presets2.getSplitPreset());
     }));
+
+    CHECK(true);
   }
 }

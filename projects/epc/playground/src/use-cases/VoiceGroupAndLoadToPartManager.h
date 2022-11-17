@@ -16,14 +16,14 @@ class VoiceGroupAndLoadToPartManager : public sigc::trackable
   void toggleLoadToPart();
   void setLoadToPart(bool state);
   bool isInLoadToPart() const;
-  void setCurrentVoiceGroup(VoiceGroup v);
+  void setCurrentVoiceGroupSilent(VoiceGroup vg);
+  void setCurrentVoiceGroup(UNDO::Transaction *t, VoiceGroup v, bool shouldSendParameterSelectionSignal);
   void setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction, VoiceGroup v);
 
   VoiceGroup getCurrentVoiceGroup() const;
 
   void toggleCurrentVoiceGroupAndUpdateParameterSelection();
   void toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction);
-  void toggleCurrentVoiceGroup();
 
   sigc::connection onCurrentVoiceGroupChanged(const sigc::slot<void, VoiceGroup> &cb);
   sigc::connection onLoadToPartModeChanged(const sigc::slot<void, bool> &cb);
@@ -35,7 +35,7 @@ class VoiceGroupAndLoadToPartManager : public sigc::trackable
 
   EditBuffer& m_editBuffer;
 
-  Signal<void, VoiceGroup> m_voiceGoupSignal;
+  Signal<void, VoiceGroup> m_voiceGroupSignal;
   Signal<void, bool> m_loadToPartSignal;
 
   sigc::connection m_editBufferSoundTypeConnection;

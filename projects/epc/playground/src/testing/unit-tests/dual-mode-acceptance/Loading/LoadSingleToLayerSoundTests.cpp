@@ -25,7 +25,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Layer Part I")
     TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    Application::get().getVGManager()->setCurrentVoiceGroup(VoiceGroup::I);
+    Application::get().getVGManager()->setCurrentVoiceGroup(transaction, VoiceGroup::I, true);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
     envAAttack->setValue(transaction, 0.666);
@@ -147,7 +147,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Layer Part II"
     TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
-    Application::get().getVGManager()->setCurrentVoiceGroup(VoiceGroup::II);
+    Application::get().getVGManager()->setCurrentVoiceGroup(transaction, VoiceGroup::II, true);
 
     auto envAAttack = preset->findParameterByID({ 0, VoiceGroup::I }, true);
     envAAttack->setValue(transaction, 0.666);

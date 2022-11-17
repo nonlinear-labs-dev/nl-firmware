@@ -1,0 +1,66 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Mono_Grp
+
+static: [
+  &ALL_EXPOSED {
+    availability: {
+      Single: &AVAILABILITY { hidden: false, disabled: false, count: 1},
+      Split: { hidden: false, disabled: false, count: 2},
+      Layer: *AVAILABILITY
+    }
+  },
+  &MODULATEABLE {
+    <<: *ALL_EXPOSED,
+    type: Local_Modulateable
+  },
+  &UNMODULATEABLE {
+    <<: *ALL_EXPOSED,
+    type: Local_Unmodulateable
+  }
+]
+
+parameters:
+  - <<: *UNMODULATEABLE
+    id: 364
+    token: Enable
+    label_long: Enable
+    label_short: Enable
+    control_position: { coarse: 1, fine: 1, scale: SWITCH_ON_OFF, initial: 0.0f, inactive: 0 }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: None, clock: None, signal: None }
+    info: >
+      When enabled, only one voice will be assigned, even when multiple keys are pressed.
+  - <<: *UNMODULATEABLE
+    id: 365
+    token: Prio
+    label_long: Key Priority
+    label_short: Priority
+    control_position: { coarse: 2, fine: 2, scale: SWITCH_PRIO, initial: 0.0f }
+    rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: None, clock: None, signal: None }
+    info: >
+      When pressing multiple keys in Mono mode, they are sorted according to the priority set by this parameter.
+      The key matching the priority determines the pitch of the Mono voice.
+  - <<: *MODULATEABLE
+    id: 367
+    token: Glide
+    label_long: Glide Time
+    label_short: Glide
+    control_position: { coarse: 100, fine: 1000, scale: ENVELOPE_TIME_MS, initial: 0.0f }
+    modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Expon_Env_Time, factor: 1.0f, offset: -20.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      In Legato mode this time can be used to smooth the transitions of the pitches.
+  - <<: *UNMODULATEABLE
+    id: 366
+    token: Legato
+    label_long: Legato
+    label_short: Legato
+    control_position: { coarse: 3, fine: 3, scale: MODES_LEGATO, initial: 1.0f, inactive: 0 }
+    rendering_args: { scaling: Linear, factor: 3.0f, offset: 0.0f, section: None, clock: None, signal: None }
+    info: >
+      When a new key matches the Priority, it will take over.
+      When the priorized key is released the second priorized key takes over.
+      Envelopes will start if the state of this parameter allows for it.
+      Glide will be applied if the state of this parameter allows for it.

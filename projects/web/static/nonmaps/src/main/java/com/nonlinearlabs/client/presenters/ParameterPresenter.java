@@ -66,6 +66,7 @@ public class ParameterPresenter {
 	public boolean isReturning = false;
 	public boolean isMacroControl = false;
 	public String parameterInfo = "";
+	public boolean relative = false;
 
 	public void getHash(Checksum crc) {
 		crc.eat((long) hash);
@@ -116,6 +117,7 @@ public class ParameterPresenter {
 		c.eat(isReturning);
 		c.eat(isMacroControl);
 		c.eat(parameterInfo);
+		c.eat(relative);
 
 		c.eat(SetupModel.get().systemSettings.highlightChangedParameters.getValue().toString());
 		c.eat(SetupModel.get().systemSettings.forceHighlightChangedParameters.getValue().toString());

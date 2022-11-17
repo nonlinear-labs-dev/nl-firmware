@@ -1,0 +1,223 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Env_C
+
+signals:
+  Truepoly_Signal: [ Clip, Uncl ]
+
+static: [
+  &ALL_EXPOSED {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 1 },
+      Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &VALUE_PERCENT { coarse: 100, fine: 1000 },
+  &MODULATEABLE {
+    <<: *ALL_EXPOSED,
+    type: Local_Modulateable
+  },
+  &UNMODULATEABLE {
+    <<: *ALL_EXPOSED,
+    type: Local_Unmodulateable
+  },
+  &ENV_CP_LEVEL { <<: *VALUE_PERCENT },
+  &ENV_MA_LEVEL { <<: *VALUE_PERCENT },
+  &ENV_CP_FINITE { <<: *VALUE_PERCENT, scale: ENVELOPE_TIME_MS },
+  &ENV_CP_INFINITE { coarse: 101, fine: 1010, scale: ENVELOPE_TIME_MS_INF },
+  &ENV_CP_VELOCITY { coarse: 60, fine: 600 },
+  &ENV_CP_KEYTRACKING { <<: *VALUE_PERCENT },
+  &ENV_TIME_FINITE {
+    <<: *MODULATEABLE,
+    modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT },
+    rendering_args: { scaling: Expon_Env_Time, factor: 1.0f, offset: -20.0f, section: Poly, clock: Slow, signal: None }
+  },
+  &ENV_TIME_INFINITE {
+    <<: *MODULATEABLE,
+    modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT },
+    rendering_args: { scaling: Expon_Env_Time, factor: 1.01f, offset: -20.0f, section: Poly, clock: Slow, signal: None }
+  },
+  &ENV_LEVEL {
+    <<: *MODULATEABLE,
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+  },
+  &ENV_VELOCITY {
+    <<: *UNMODULATEABLE,
+    rendering_args: { scaling: Linear, factor: 60.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
+  },
+  &ENV_KEYTRACKING {
+    <<: *UNMODULATEABLE,
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
+  }
+]
+
+parameters:
+  - <<: *ENV_TIME_FINITE
+    id: 38
+    token: Att
+    label_long: Attack Time
+    label_short: Attack
+    control_position: { <<: *ENV_CP_FINITE, initial: 0.0f }
+    info: >
+      Time of the (polynomial) Attack segment in milliseconds.
+  - <<: *ENV_TIME_FINITE
+    id: 40
+    token: Dec_1
+    label_long: Decay 1 Time
+    label_short: Decay 1
+    control_position: { <<: *ENV_CP_FINITE, initial: 0.59f }
+    info: >
+      Time of the first (linear) Decay segment in milliseconds.
+  - <<: *ENV_LEVEL
+    id: 42
+    token: BP
+    label_long: Breakpoint Level
+    label_short: Breakpoint
+    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.5f }
+    modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT }
+    info: >
+      Level of the Breakpoint between the two Decay segments.
+  - <<: *ENV_TIME_FINITE
+    id: 44
+    token: Dec_2
+    label_long: Decay 2 Time
+    label_short: Decay 2
+    control_position: { <<: *ENV_CP_FINITE, initial: 0.79f }
+    info: >
+      Time of the second (exponential) Decay segment in milliseconds.
+  - <<: *ENV_LEVEL
+    id: 297
+    token: Sus
+    label_long: Sustain Level
+    label_short: Sustain
+    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *ENV_MA_LEVEL, scale: LINEAR_BIPOLAR_200_PERCENT }
+    info: >
+      Sustain level (bipolar, target of the second Decay segment).
+  - <<: *ENV_TIME_INFINITE
+    id: 46
+    token: Rel
+    label_long: Release Time
+    label_short: Release
+    control_position: { <<: *ENV_CP_INFINITE, initial: 0.53f }
+    info: >
+      Time of the (exponential) Release segment in milliseconds (infinite at maximum).
+  - <<: *ENV_VELOCITY
+    id: 48
+    token: Lvl_Vel
+    label_long: Level Velocity
+    label_short: Level Vel
+    control_position: { <<: *ENV_CP_VELOCITY, scale: LINEAR_BIPOLAR_60_DB, initial: 0.5f }
+    info: >
+      Influence of the key velocity on the peak, breakpoint and sustain levels of the envelope [maximum dynamic range in dB].
+      Changing this parameter is only effective when a key is pressed.
+  - <<: *ENV_VELOCITY
+    id: 49
+    token: Att_Vel
+    label_long: Attack Velocity
+    label_short: Velocity
+    control_position: { <<: *ENV_CP_VELOCITY, scale: LINEAR_BIPOLAR_INVERTED_60_DBT, initial: 0.0f }
+    info: >
+      Velocity influence on the Attack time.
+      The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
+      of the Attack time by high Note-On velocities.
+      Changing this parameter is only effective when a key is pressed.
+  - <<: *ENV_VELOCITY
+    id: 425
+    token: Dec_1_Vel
+    label_long: Decay 1 Velocity
+    label_short: Velocity
+    control_position: { <<: *ENV_CP_VELOCITY, scale: LINEAR_BIPOLAR_INVERTED_60_DBT, initial: 0.0f }
+    info: >
+      Velocity influence on the Decay 1 time.
+      The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
+      of the Decay 1 time by high Note-On velocities.
+      Changing this parameter is only effective when a key is pressed.
+  - <<: *ENV_VELOCITY
+    id: 426
+    token: Dec_2_Vel
+    label_long: Decay 2 Velocity
+    label_short: Velocity
+    control_position: { <<: *ENV_CP_VELOCITY, scale: LINEAR_BIPOLAR_INVERTED_60_DBT, initial: 0.0f }
+    info: >
+      Velocity influence on the Decay 2 time.
+      The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
+      of the Decay 2 time by high Note-On velocities.
+      Changing this parameter is only effective when a key is pressed.
+  - <<: *ENV_VELOCITY
+    id: 50
+    token: Rel_Vel
+    label_long: Release Velocity
+    label_short: Velocity
+    control_position: { <<: *ENV_CP_VELOCITY, scale: LINEAR_BIPOLAR_INVERTED_60_DBT, initial: 0.0f }
+    info: >
+      Velocity influence on the Release time.
+      The value represents the logarithmic amount of the reduction (negative values) or gain (positive values)
+      of the Release time by high Note-Off velocities.
+      Changing this parameter is only effective when a key is released.
+  - <<: *ENV_KEYTRACKING
+    id: 51
+    token: Lvl_KT
+    label_long: Level Key Trk
+    label_short: Level KT
+    control_position: { <<: *ENV_CP_KEYTRACKING, scale: LINEAR_BIPOLAR_1_DBST, initial: 0.0f }
+    info: >
+      Key tracking of the envelope's peak, breakpoint and sustain levels [dB per semitone].\n
+      Positive values: higher levels for higher notes (+1.0 = +12 dB per octave).\n
+      Negative values: lower levels for higher notes (-1.0 = -12 dB per octave).\n
+      Origin at C3 = 60 semitones.\n
+      Changing this parameter is only effective when a key is pressed.
+  - <<: *ENV_KEYTRACKING
+    id: 52
+    token: Time_KT
+    label_long: Time Key Trk
+    label_short: Time KT
+    control_position: { <<: *ENV_CP_KEYTRACKING, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.05f }
+    info: >
+      Key tracking of the attack, decay and release times.
+      The value determines time reduction (positive values) or gain (negative values) for higher notes.
+      Changing this parameter is only effective when a key is pressed.
+  - <<: *MODULATEABLE
+    id: 296
+    token: Att_Curve
+    label_long: Attack Curve
+    label_short: Curve
+    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
+    info: >
+      Curvature of the (polynomial) Attack segment.
+      (negative: decelerating slope, zero: linear, positive: accelerating slope)
+      Changing this parameter is only effective when a key is pressed.
+  - <<: *UNMODULATEABLE
+    id: 340
+    token: Retr_H
+    label_long: Retrig Hardness
+    label_short: Retrig
+    control_position: { <<: *ENV_CP_LEVEL, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
+    info: >
+      Determines how much the Envelope signal is forced to start at zero instead of the current level
+      (usually from the Release phase).
+      At 100.0 % the Envelope always starts at zero, independant from the previous signal level.
+      Changing this parameter is only effective when a key is pressed.
+  - <<: *MODULATEABLE
+    id: 427
+    token: Loop
+    label_long: Loop
+    label_short: Loop
+    control_position: { coarse: 200, fine: 2000, scale: LINEAR_200_PERCENT, initial: 0.0f }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 200.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
+    info: >
+      Determines the presence and decay speed of looped envelope segments (Decay 1 and 2).\n
+      0%: no looped segments, normal envelope behavior with an exponential Decay 1 segment.\n
+      <= 100%: the loop will repeat and approach zero until a pressed key is released. Smaller Loop values produce a faster loop decay.
+      At 100%, the loop will repeat indefinetely. After releasing a pressed key, the normal Release segment will start.
+      The Decay 2 segment is linear during loops.\n
+      > 100%: the loop will repeat at full presence until a pressed key is released. Then, the loop will still repeat and approach zero.
+      Smaller Loop values produce a faster loop decay. At 200%, the loop will repeat indefinetely.\n
+      Changing this parameter is only effective when a key is pressed.

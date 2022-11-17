@@ -2,6 +2,7 @@
 #include "scale-converters/LinearBipolar100PercentScaleConverter.h"
 #include "scale-converters/Linear100PercentScaleConverter.h"
 #include "ModulationRoutingParameter.h"
+#include "device-settings/SelectedRibbonsSetting.h"
 #include <http/UpdateDocumentMaster.h>
 #include <Application.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
@@ -80,6 +81,20 @@ std::list<ModulationRoutingParameter *> RibbonParameter::getRoutingParameters() 
     }
   }
   return {};
+}
+
+Glib::ustring RibbonParameter::getLongName() const
+{
+  if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
+    return Parameter::getLongName() + "\uE282";
+  return Parameter::getLongName();
+}
+
+Glib::ustring RibbonParameter::getShortName() const
+{
+  if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
+    return Parameter::getShortName() + "\uE282";
+  return Parameter::getShortName();
 }
 
 tControlPositionValue RibbonParameter::getDefValueAccordingToMode() const
@@ -232,20 +247,27 @@ const ScaleConverter *RibbonParameter::createScaleConverter() const
 
 void RibbonParameter::sendModeToPlaycontroller() const
 {
-  uint16_t id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAY_MODE_UPPER_RIBBON_BEHAVIOUR
-                                                                             : PLAY_MODE_LOWER_RIBBON_BEHAVIOUR;
-  uint16_t v = 0;
+  const auto id = getID().getNumber();
+  const auto isRibbon1 = id == C15::PID::Ribbon_1;
+  const auto isRibbon3 = id == C15::PID::Ribbon_3;
 
-  if(getRibbonReturnMode() == RibbonReturnMode::RETURN)
-    v += 1;
-
-  if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
-    v += 2;
-
-  if(Application::exists())
+  if(isRibbonCurrentlySelectedInBaseUnit())
   {
-    Application::get().getPlaycontrollerProxy()->sendSetting(id, v);
-    sendToPlaycontroller();
+    uint16_t settingId = (isRibbon1 || isRibbon3) ? PLAYCONTROLLER_SETTING_ID_PLAY_MODE_UPPER_RIBBON_BEHAVIOUR
+                                                  : PLAYCONTROLLER_SETTING_ID_PLAY_MODE_LOWER_RIBBON_BEHAVIOUR;
+    uint16_t v = 0;
+
+    if(getRibbonReturnMode() == RibbonReturnMode::RETURN)
+      v += 1;
+
+    if(getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
+      v += 2;
+
+    if(Application::exists())
+    {
+      Application::get().getPlaycontrollerProxy()->sendSetting(settingId, v);
+      sendToAudioEngine();
+    }
   }
 }
 
@@ -271,21 +293,35 @@ void RibbonParameter::boundToMacroControl(tControlPositionValue v)
   getValue().setRawValue(Initiator::INDIRECT, v);
   onChange();
   invalidate();
+  sendToAudioEngine();
+}
+
+RoutingSettings::tRoutingIndex indexFromID(const ParameterId& id)
+{
+  using tIndex = RoutingSettings::tRoutingIndex;
+  switch(id.getNumber())
+  {
+    case C15::PID::Ribbon_1:
+      return tIndex::Ribbon1;
+    case C15::PID::Ribbon_2:
+      return tIndex::Ribbon2;
+    case C15::PID::Ribbon_3:
+      return tIndex::Ribbon3;
+    case C15::PID::Ribbon_4:
+      return tIndex::Ribbon4;
+  }
+  nltools_assertAlways(false);
 }
 
 bool RibbonParameter::isLocalEnabled() const
 {
   if(auto eb = getParentEditBuffer())
   {
-    using tIndex = RoutingSettings::tRoutingIndex;
     using tAspect = RoutingSettings::tAspectIndex;
     auto &s = eb->getSettings();
     const auto setting = s.getSetting<RoutingSettings>();
     const auto globalState = s.getSetting<GlobalLocalEnableSetting>()->get();
-
-    const auto ribbonIDX
-        = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? tIndex::Ribbon1 : tIndex::Ribbon2;
-    auto state = setting->getState(ribbonIDX, tAspect::LOCAL);
+    auto state = setting->getState(indexFromID(getID()), tAspect::LOCAL);
     return state && globalState;
   }
   return false;
@@ -328,24 +364,6 @@ void RibbonParameter::undoableStepBehavior(UNDO::Transaction *transaction, int d
   undoableSetRibbonReturnMode(transaction, static_cast<RibbonReturnMode>(v), Initiator::EXPLICIT_USECASE);
 }
 
-Layout *RibbonParameter::createLayout(FocusAndMode focusAndMode) const
-{
-  switch(focusAndMode.mode)
-  {
-    case UIMode::Info:
-      return new ParameterInfoLayout();
-
-    case UIMode::Edit:
-      return new RibbonParameterEditLayout2();
-
-    case UIMode::Select:
-    default:
-      return new RibbonParameterSelectLayout2();
-  }
-
-  g_return_val_if_reached(nullptr);
-}
-
 void RibbonParameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
   super::loadDefault(transaction, mode);
@@ -361,14 +379,22 @@ size_t RibbonParameter::getHash() const
   return hash;
 }
 
-void RibbonParameter::sendToPlaycontroller() const
+void RibbonParameter::sendToAudioEngine() const
 {
-  PhysicalControlParameter::sendToPlaycontroller();
-  auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
-                                                                         : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
+  PhysicalControlParameter::sendToAudioEngine();
+
   auto proxy = Application::get().getPlaycontrollerProxy();
-  auto newValue = proxy->ribbonCPValueToTCDValue(getValue().getQuantizedClipped(), isBiPolar());
-  proxy->sendSetting(id, newValue);
+  const auto id = getID().getNumber();
+  const auto isRibbon1 = id == C15::PID::Ribbon_1;
+  const auto isRibbon3 = id == C15::PID::Ribbon_3;
+
+  if(isRibbonCurrentlySelectedInBaseUnit())
+  {
+    uint16_t settingId = (isRibbon1 || isRibbon3) ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
+                                                  : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
+    auto newValue = proxy->ribbonCPValueToTCDValue(getValue().getQuantizedClipped(), isBiPolar());
+    proxy->sendSetting(settingId, newValue);
+  }
 }
 
 void RibbonParameter::onLocalEnableChanged(bool localEnableState)
@@ -406,9 +432,30 @@ void RibbonParameter::onLocalEnableChanged(bool localEnableState)
 void RibbonParameter::setCPFromSetting(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
   Parameter::setCPFromSetting(transaction, cpValue);
-  auto id = getID() == HardwareSourcesGroup::getUpperRibbonParameterID() ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
-                                                                         : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
-  auto proxy = Application::get().getPlaycontrollerProxy();
-  auto v = proxy->ribbonCPValueToTCDValue(getValue().getQuantizedClipped(), isBiPolar());
-  proxy->sendSetting(id, v);
+
+  const auto id = getID().getNumber();
+  const auto isRibbon1 = id == C15::PID::Ribbon_1;
+  const auto isRibbon3 = id == C15::PID::Ribbon_3;
+
+  if(isRibbonCurrentlySelectedInBaseUnit())
+  {
+    auto settingId = (isRibbon1 || isRibbon3) ? PLAYCONTROLLER_SETTING_ID_UPPER_RIBBON_VALUE
+                                              : PLAYCONTROLLER_SETTING_ID_LOWER_RIBBON_VALUE;
+    auto proxy = Application::get().getPlaycontrollerProxy();
+    auto v = proxy->ribbonCPValueToTCDValue(getValue().getQuantizedClipped(), isBiPolar());
+    proxy->sendSetting(settingId, v);
+  }
+}
+
+bool RibbonParameter::isRibbonCurrentlySelectedInBaseUnit() const
+{
+  auto selRibbons = getParentEditBuffer()->getSettings().getSetting<SelectedRibbonsSetting>()->get();
+  const auto id = getID().getNumber();
+  const auto isRibbon1 = id == C15::PID::Ribbon_1;
+  const auto isRibbon2 = id == C15::PID::Ribbon_2;
+  const auto isRibbon3 = id == C15::PID::Ribbon_3;
+  const auto isRibbon4 = id == C15::PID::Ribbon_4;
+  const auto isRibbon1_2 = selRibbons == SelectedRibbons::Ribbon1_2;
+  const auto isRibbon3_4 = selRibbons == SelectedRibbons::Ribbon3_4;
+  return (isRibbon1_2 && (isRibbon1 || isRibbon2)) || (isRibbon3_4 && (isRibbon3 || isRibbon4));
 }

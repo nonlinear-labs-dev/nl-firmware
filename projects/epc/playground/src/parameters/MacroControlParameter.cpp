@@ -30,7 +30,7 @@
 static ParameterId lastSelectedMacroControl = MacroControlsGroup::modSrcToParamId(MacroControls::MC1);
 
 MacroControlParameter::MacroControlParameter(ParameterGroup *group, const ParameterId &id)
-    : Parameter(group, id, ScaleConverter::get<MacroControlScaleConverter>())
+    : Parameter(group, id)
     , m_UiSelectedHardwareSourceParameterID(HardwareSourcesGroup::getPedal1ParameterID().getNumber(),
                                             id.getVoiceGroup())
     , m_lastMCViewUuid { "NONE" }
@@ -74,12 +74,14 @@ void MacroControlParameter::registerTarget(ModulateableParameter *target)
 {
   m_targets.insert(target);
   m_targetListChanged();
+  onChange(UpdateDocumentContributor::ChangeFlags::DontTrustOracle);
 }
 
 void MacroControlParameter::unregisterTarget(ModulateableParameter *target)
 {
   m_targets.erase(target);
   m_targetListChanged();
+  onChange(UpdateDocumentContributor::ChangeFlags::DontTrustOracle);
 }
 
 void MacroControlParameter::setLastMCViewUUID(const Glib::ustring &uuid)
@@ -201,10 +203,12 @@ void MacroControlParameter::undoableSetGivenName(UNDO::Transaction *transaction,
   if(m_givenName != newName)
   {
     auto swapData = UNDO::createSwapData(newName);
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      swapData->swapWith(m_givenName);
-      invalidate();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          swapData->swapWith(m_givenName);
+          invalidate();
+        });
   }
 }
 
@@ -214,10 +218,12 @@ void MacroControlParameter::undoableSetInfo(UNDO::Transaction *transaction, cons
   {
     auto swapData = UNDO::createSwapData(info);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      swapData->swapWith(m_info);
-      invalidate();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          swapData->swapWith(m_info);
+          invalidate();
+        });
   }
 }
 
@@ -272,6 +278,24 @@ Glib::ustring MacroControlParameter::getLongName() const
 {
   Glib::ustring b = super::getLongName();
 
+  auto replace = [](auto s, auto p, auto r) { return StringTools::replaceAll(s, p, r); };
+
+  auto invertLabel = [replace](auto str)
+  {
+    auto mcA = replace(str, "\uE000", "\uE400");
+    auto mcB = replace(mcA, "\uE001", "\uE401");
+    auto mcC = replace(mcB, "\uE002", "\uE402");
+    auto mcD = replace(mcC, "\uE003", "\uE403");
+    auto mcE = replace(mcD, "\uE200", "\uE404");
+    auto mcF = replace(mcE, "\uE201", "\uE405");
+    return mcF;
+  };
+
+  if(getTargets().empty())
+  {
+    b = invertLabel(b);
+  }
+
   if(!m_givenName.empty())
     return b + " " + m_givenName;
 
@@ -283,6 +307,7 @@ size_t MacroControlParameter::getHash() const
   size_t hash = super::getHash();
   hash_combine(hash, getLongName());
   hash_combine(hash, getInfo());
+  hash_combine(hash, getTargets().size());
   return hash;
 }
 
@@ -390,4 +415,26 @@ void MacroControlParameter::setCPFromMCView(UNDO::Transaction *transaction, cons
 void MacroControlParameter::sendParameterMessage() const
 {
   Application::get().getAudioEngineProxy()->createAndSendParameterMessage<MacroControlParameter>(this);
+}
+
+bool MacroControlParameter::hasRelativeRibbonAsSource() const
+{
+  auto group = getParentEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global });
+  if(auto mcm = dynamic_cast<MacroControlMappingGroup *>(group))
+  {
+    for(auto router : mcm->getModulationRoutingParametersFor(this))
+    {
+      if(auto ribbon = dynamic_cast<RibbonParameter*>(router->getSourceParameter()))
+      {
+        if(std::abs(router->getControlPositionValue()) > 0)
+        {
+          if(ribbon->getRibbonTouchBehaviour() == RibbonTouchBehaviour::RELATIVE)
+          {
+            return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
 }

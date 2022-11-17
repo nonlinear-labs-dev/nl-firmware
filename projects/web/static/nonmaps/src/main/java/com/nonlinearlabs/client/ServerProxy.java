@@ -22,6 +22,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModelUpdater;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
+import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel.TouchBehaviour;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerUpdater;
@@ -711,6 +712,12 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
+	public void setRibbonBehaviour(int ribbonsParameterId, String behaviour) {
+		StaticURI.Path path = new StaticURI.Path("param-editor", "set-ribbon-behaviour");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", ribbonsParameterId), new StaticURI.KeyValue("mode", behaviour));
+		queueJob(uri, false);
+	}
+
 	public void setPedalMode(int pedalParameterId, String mode) {
 		StaticURI.Path path = new StaticURI.Path("param-editor", "set-pedal-mode");
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", pedalParameterId),
@@ -932,8 +939,7 @@ public class ServerProxy {
 																	oReq.onreadystatechange = function() {
 																	if (oReq.readyState == 4 && oReq.status == 200) {
 																	var ret = oReq.responseText;
-																	var sub = "Invalid";
-																	if (ret.includes(sub)) {
+																	if (ret !== "") {
 																	alert(oReq.responseText);
 																	}
 																	}
@@ -953,8 +959,7 @@ public class ServerProxy {
 																		if (oReq.readyState == 4 && oReq.status == 200) {
 																		var ret = oReq.responseText;
 																		uploadDoneReceiver.@com.nonlinearlabs.client.world.overlay.html.setup.Setup.UploadDoneReceiver::onUploadFinished(Lcom/google/gwt/xhr/client/XMLHttpRequest;)(oReq);
-																		var sub = "Invalid";
-																		if (ret.includes(sub)) {
+																		if (ret !== "") {
 																		alert(oReq.responseText);
 																		}
 																		}
@@ -1263,6 +1268,12 @@ public class ServerProxy {
 
 	public void triggerPanic() {
 		StaticURI.Path path = new StaticURI.Path("settings", "panic-audio-engine");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+
+	public void stopRecorderPlayback() {
+		StaticURI.Path path = new StaticURI.Path("settings", "stop-recorder-playback");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
 	}

@@ -1,0 +1,107 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Echo
+
+signals:
+  Mono_Signal: [ Time_L, Time_R, FB_Local, FB_Cross, LPF, Dry, Wet ]
+
+static: [
+  &ALL_EXPOSED {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 1 },
+      Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &VALUE_PERCENT { coarse: 100, fine: 1000 },
+  &MODULATEABLE {
+    type: Local_Modulateable
+  }
+]
+
+parameters:
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 225
+    token: Time
+    label_long: Time
+    label_short: Time
+    control_position: { coarse: 200, fine: 2000, scale: PARABOLIC_2000_MS, initial: 0.433f }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: FINE_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 2.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Mean delay time [in milliseconds].
+      (As there can be an offset between the left and right channel, this control shows the mean time.)
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 227
+    token: Stereo
+    label_long: Stereo
+    label_short: Stereo
+    control_position: { coarse: 66, fine: 660, scale: FINE_BIPOLAR_33_PERCENT, initial: 0.0f }
+    modulation_aspects: { coarse: 132, fine: 1320, scale: FINE_BIPOLAR_66_PERCENT }
+    rendering_args: { scaling: Linear, factor: 33.0f, offset: 0.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Sets the ratio between the delay times of the left and of the right channel [the value shows the offset to 100.0 %].
+      In the center position, the offset is zero and both delay times are equal.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 229
+    token: Feedback
+    label_long: Feedback
+    label_short: Feedback
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.5f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: None }
+    info: >
+      Amount of internal feedback.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 231
+    token: Cross_FB
+    label_long: Cross FB
+    label_short: Cross FB
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.5f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: None }
+    info: >
+      Amount of the cross feedback between the left and right channel.\n
+      0.0 %: no cross feedback\n
+      100.0 %: all feedback is cross feedback
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 232
+    token: Hi_Cut
+    label_long: Hi Cut
+    label_short: Hi Cut
+    control_position: { coarse: 80, fine: 800, scale: LINEAR_60_140_ST, initial: 0.75f }
+    modulation_aspects: { coarse: 80, fine: 800, scale: LINEAR_BIPOLAR_80_ST }
+    rendering_args: { scaling: Expon_Lin_Pitch, factor: 80.0f, offset: 60.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Cutoff frequency [in semitones] of the filter that damps the higher frequencies of the delayed signal.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 233
+    token: Mix
+    label_long: Mix
+    label_short: Mix
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: None }
+    info: >
+      Crossfades between the dry signal and the delayed signal.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 342
+    token: Send
+    label_long: Send
+    label_short: Send
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 1.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: Mono_Signal }
+    info: >
+      Level control at the input of the effect signal path.
+      In contrast to the Echo Mix parameter,
+      the Delay feedback will still be audible when setting the Send parameter to zero.

@@ -98,7 +98,7 @@ void Init(void)
   POLY_Init();
 
   /* ADC processing */
-  ADC_WORK_Init1();
+  ADC_WORK_Init1();  // NOTE: If new EEPROM data is introduced this must happen after here to retain the data
 
   /* scheduler */
   COOS_Init();

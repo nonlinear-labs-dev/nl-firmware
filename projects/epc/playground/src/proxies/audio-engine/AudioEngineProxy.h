@@ -4,6 +4,7 @@
 #include <parameters/messaging/ParameterMessageFactory.h>
 #include <groups/MonoGroup.h>
 #include <tools/RecursionGuard.h>
+#include <nltools-2/include/PresetMessages.h>
 
 namespace UNDO
 {
@@ -19,6 +20,21 @@ class PlaycontrollerProxy;
 class AudioEngineProxy : public sigc::trackable
 {
  public:
+  enum class HardwareSource_AE : int8_t
+  {
+    PEDAL1 = 0,
+    PEDAL2 = 1,
+    PEDAL3 = 2,
+    PEDAL4 = 3,
+    BENDER = 4,
+    AFTERTOUCH = 5,
+    RIBBON1 = 6,
+    RIBBON2 = 7,
+    RIBBON3 = 8,
+    RIBBON4 = 9,
+    NONE = -1
+  };
+
   AudioEngineProxy(PresetManager& pm, Settings& settings, PlaycontrollerProxy& playProxy);
 
   template <typename tParameter> auto createAndSendParameterMessage(const tParameter* parameter)
@@ -45,8 +61,13 @@ class AudioEngineProxy : public sigc::trackable
 
   void sendEditBuffer();
 
+  void freezePresetMessages();
+  void thawPresetMessages(bool send);
+
   void freezeParameterMessages();
   void thawParameterMessages(bool send);
+
+  Parameter* findPhysicalControlParameterFromAudioEngineHWSourceID(int index);
 
   static nltools::msg::LayerPresetMessage createLayerEditBufferMessage(const EditBuffer& eb);
   static nltools::msg::SplitPresetMessage createSplitEditBufferMessage(const EditBuffer& eb);
@@ -63,6 +84,7 @@ class AudioEngineProxy : public sigc::trackable
 
   uint8_t m_lastMIDIKnownProgramNumber = std::numeric_limits<uint8_t>::max();
   uint m_suppressParamChanges = 0;
+  uint m_suppressPresetChanges = 0;
 
   sigc::connection m_midiBankChangedConnection;
   sigc::connection m_midiBankConnection;

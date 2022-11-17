@@ -7,14 +7,11 @@
 #include <presets/EditBuffer.h>
 #include <presets/PresetManager.h>
 #include <proxies/hwui/buttons.h>
-#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/Button.h>
-#include <proxies/hwui/controls/ControlOwner.h>
 #include <proxies/hwui/controls/DottedLine.h>
 #include <proxies/hwui/controls/Overlay.h>
 #include <proxies/hwui/controls/Rect.h>
 #include <proxies/hwui/controls/SelectedParameterValue.h>
-#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/HWSourceAmountCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MacroControlEditButtonMenu.h>
@@ -31,6 +28,8 @@
 #include <sigc++/adaptors/hide.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAssignedIndicator.h>
 #include "use-cases/EditBufferUseCases.h"
+#include "ModulationRouterParameterLayouts.h"
+#include "use-cases/VoiceGroupUseCases.h"
 
 MacroControlParameterLayout2::MacroControlParameterLayout2()
     : super()
@@ -59,6 +58,25 @@ void MacroControlParameterLayout2::copyFrom(Layout *other)
 {
   if(auto p = dynamic_cast<MacroControlParameterLayout2 *>(other))
     setMode(p->m_mode);
+
+  if(auto p = dynamic_cast<ModulationRouterParameterSelectLayout2 *>(other))
+  {
+    switch(p->getMode())
+    {
+      case ModRouterLayoutMode::HWAmt:
+        setMode(Mode::PlayControlAmount);
+        break;
+      case ModRouterLayoutMode::HWSel:
+        setMode(Mode::PlayControlSelection);
+        break;
+      case ModRouterLayoutMode::HWPos:
+        setMode(Mode::PlayControlPosition);
+        break;
+      case ModRouterLayoutMode::MC:
+        setMode(Mode::MacroControlValue);
+        break;
+    }
+  }
 
   super::copyFrom(other);
 }
@@ -136,7 +154,9 @@ bool MacroControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifier
         }
         else if(buttonText == "I / II")
         {
-          Application::get().getVGManager()->toggleCurrentVoiceGroup();
+          VoiceGroupUseCases vgUseCases(Application::get().getVGManager(),
+                                        getCurrentEditParameter()->getParentEditBuffer());
+          vgUseCases.toggleVoiceGroupSelection();
         }
       }
         return true;
@@ -163,7 +183,19 @@ bool MacroControlParameterLayout2::onRotary(int inc, ButtonModifiers modifiers)
   if(m_mode == Mode::PlayControlSelection)
   {
     if(auto p = dynamic_cast<MacroControlParameter *>(getCurrentParameter()))
+    {
+      auto eb = p->getParentEditBuffer();
+      EditBufferUseCases ebUseCases(*eb);
       p->toggleUiSelectedHardwareSource(inc);
+      auto currentMC = p;
+      auto newHWSrc = p->getUiSelectedHardwareSource();
+      if(auto g = dynamic_cast<MacroControlMappingGroup *>(eb->getParameterGroupByID({ "MCM", VoiceGroup::Global })))
+      {
+        auto hwSrc = eb->findAndCastParameterByID<PhysicalControlParameter>(newHWSrc);
+        auto modP = g->getModulationRoutingParameterFor(hwSrc, currentMC);
+        ebUseCases.selectParameter(modP);
+      }
+    }
 
     return true;
   }
@@ -265,7 +297,8 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
       m_modeOverlay->highlight<SelectedMacroControlsHWSourceSlider>();
       m_modeOverlay->highlight<SelectedMacroControlsHWSourceValue>();
 
-      findControlOfType<HWSourceAmountCarousel>()->highlightSelected();
+      if(auto carousel = findControlOfType<HWSourceAmountCarousel>())
+        carousel->highlightSelected();
       break;
 
     case Mode::PlayControlSelection:
@@ -280,10 +313,12 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
       m_modeOverlay->addControl(new SelectedMacroControlsHWSourceAmount(Rect(131, BUTTON_VALUE_Y_POSITION, 58, 12)));
       m_modeOverlay->addControl(new DottedLine(Rect(60, 27, 13, 1)));
       highlightButtonWithCaption("HW Sel");
-      findControlOfType<HWSourceAmountCarousel>()->highlightSelected();
+      if(auto carousel = findControlOfType<HWSourceAmountCarousel>())
+        carousel->highlightSelected();
       break;
 
     case Mode::PlayControlAmount:
+    {
       setButtonText(Buttons::BUTTON_A, "HW Pos");
       setButtonText(Buttons::BUTTON_B, "HW Sel");
       setButtonText(Buttons::BUTTON_C, "HW Amt");
@@ -296,8 +331,10 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
           ->setHighlight(true);
       m_modeOverlay->addControl(new DottedLine(Rect(60, 27, 13, 1)));
       highlightButtonWithCaption("HW Amt");
-      findControlOfType<HWSourceAmountCarousel>()->highlightSelected();
+      if(auto car = findControlOfType<HWSourceAmountCarousel>())
+        car->highlightSelected();
       break;
+    }
   }
 }
 
@@ -311,10 +348,14 @@ void MacroControlParameterLayout2::selectSmoothingParameterForMC()
     ebUseCases.selectParameter(mc->getSmoothingParameter(), true);
   }
 }
-
 Control *MacroControlParameterLayout2::createMCAssignmentIndicator()
 {
   return new MCAssignedIndicator(Rect(25, 15, 52, 24), getCurrentParameter());
+}
+
+Overlay *MacroControlParameterLayout2::getOverlay()
+{
+  return m_modeOverlay;
 }
 
 MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
@@ -388,9 +429,7 @@ void MacroControlParameterEditLayout2::setMode(Mode desiredMode)
   getMenu()->highlightSelectedButton();
 
   for(auto &button : getControls<Button>())
-  {
     remove(button.get());
-  }
 
   addControl(new Button("", Buttons::BUTTON_A));
   addControl(new Button("", Buttons::BUTTON_B));
@@ -398,6 +437,16 @@ void MacroControlParameterEditLayout2::setMode(Mode desiredMode)
 
   if(auto vgIndi = findControlOfType<VoiceGroupIndicator>())
     remove(vgIndi.get());
+
+  if(auto slider = findControlOfType<SelectedMacroControlsHWSourceSlider>())
+    remove(slider.get());
+
+  if(auto overlay = getOverlay())
+    overlay->clear();
+
+  addControl(createParameterValueControl())->setHighlight(true);
+  if(auto name = findControlOfType<ParameterNameLabel>())
+    name->setHighlight(true);
 }
 
 Control *MacroControlParameterEditLayout2::createMCAssignmentIndicator()

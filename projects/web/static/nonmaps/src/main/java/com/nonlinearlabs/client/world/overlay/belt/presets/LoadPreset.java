@@ -16,6 +16,11 @@ class LoadPreset extends SVGImage {
 
 	LoadPreset(OverlayLayout parent) {
 		super(parent, "Load_Enabled.svg", "Load_Active.svg", "Load_Disabled.svg");
+
+		EditBufferPresenterProvider.get().onChange(s -> {
+			invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
+			return true;
+		});
 	}
 
 	public boolean isSelectedBankEmpty() {
@@ -67,6 +72,10 @@ class LoadPreset extends SVGImage {
 		boolean isDL = SetupModel.get().systemSettings.directLoad.getBool();
 		
 		if (!isSelectedPresetLoaded() && !isDL)
+			return true;
+
+		String loadedPresetUUID = EditBufferModel.get().loadedPreset.getValue();
+		if(loadedPresetUUID == "Init" || loadedPresetUUID == "Converted")
 			return true;
 
 		return EditBufferPresenterProvider.getPresenter().isAnyParameterChanged;

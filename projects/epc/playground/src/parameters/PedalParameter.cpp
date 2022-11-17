@@ -41,19 +41,21 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
   {
     auto swapData = UNDO::createSwapData(mode);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      swapData->swapWith(m_mode);
-      getValue().setScaleConverter(createScaleConverter());
-      getValue().setDefaultValue(getDefValueAccordingToMode());
-      if(m_mode != PedalModes::STAY && initiator == Initiator::EXPLICIT_USECASE)
-        getValue().setToDefault(Initiator::INDIRECT);
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          swapData->swapWith(m_mode);
+          getValue().setScaleConverter(createScaleConverter());
+          getValue().setDefaultValue(getDefValueAccordingToMode());
+          if(m_mode != PedalModes::STAY && initiator == Initiator::EXPLICIT_USECASE)
+            getValue().setToDefault(Initiator::INDIRECT);
 
-      setRoutersModeAccordingToReturnMode();
+          setRoutersModeAccordingToReturnMode();
 
-      invalidate();
-      sendModeToPlaycontroller();
-      m_updateIdWhenModeChanged = getUpdateIDOfLastChange();
-    });
+          invalidate();
+          sendModeToPlaycontroller();
+          m_updateIdWhenModeChanged = getUpdateIDOfLastChange();
+        });
   }
   else
   {
@@ -105,7 +107,8 @@ const ScaleConverter *PedalParameter::createScaleConverter() const
   return ScaleConverter::get<Linear100PercentScaleConverter>();
 }
 
-void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode, Initiator initiator)
+void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, const Glib::ustring &mode,
+                                          Initiator initiator)
 {
   if(mode == "stay")
     undoableSetPedalMode(transaction, PedalModes::STAY, initiator);
@@ -119,7 +122,7 @@ void PedalParameter::sendModeToPlaycontroller() const
 {
   if(Application::exists())
   {
-    sendToPlaycontroller();
+    sendToAudioEngine();
   }
 }
 
@@ -196,22 +199,6 @@ void PedalParameter::undoableStepBehavior(UNDO::Transaction *transaction, int di
     e = static_cast<int>(PedalModes::RETURN_TO_CENTER);
 
   undoableSetPedalMode(transaction, static_cast<PedalModes>(e), Initiator::EXPLICIT_USECASE);
-}
-
-Layout *PedalParameter::createLayout(FocusAndMode focusAndMode) const
-{
-  switch(focusAndMode.mode)
-  {
-    case UIMode::Info:
-      return new ParameterInfoLayout();
-    case UIMode::Edit:
-      return new PedalParameterEditLayout2();
-    case UIMode::Select:
-    default:
-      return new PedalParameterSelectLayout2();
-  }
-
-  return super::createLayout(focusAndMode);
 }
 
 PedalType *PedalParameter::getAssociatedPedalTypeSetting() const
@@ -295,4 +282,56 @@ void PedalParameter::onLocalEnableChanged(bool localEnableState)
     if(isReturning)
       PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
   }
+}
+
+Glib::ustring PedalParameter::getLongName() const
+{
+  if(isHardwareDisabled())
+    return Parameter::getLongName() + " (Off)";
+  return Parameter::getLongName();
+}
+
+Glib::ustring PedalParameter::getShortName() const
+{
+  if(isHardwareDisabled())
+    return Parameter::getShortName() + " (Off)";
+  return Parameter::getShortName();
+}
+
+void PedalParameter::onPedalTypeChanged(const Setting *s)
+{
+  if(auto pedalType = dynamic_cast<const PedalType *>(s))
+  {
+    invalidate();
+  }
+}
+
+void PedalParameter::init(Settings &settings)
+{
+  switch(getID().getNumber())
+  {
+    case C15::PID::Pedal_1:
+      m_setting = dynamic_cast<PedalType*>(settings.getSetting("Pedal1Type"));
+      break;
+    case C15::PID::Pedal_2:
+      m_setting = dynamic_cast<PedalType*>(settings.getSetting("Pedal2Type"));
+      break;
+    case C15::PID::Pedal_3:
+      m_setting = dynamic_cast<PedalType*>(settings.getSetting("Pedal3Type"));
+      break;
+    case C15::PID::Pedal_4:
+      m_setting = dynamic_cast<PedalType*>(settings.getSetting("Pedal4Type"));
+      break;
+  }
+
+  m_setting->onChange(sigc::mem_fun(this, &PedalParameter::onPedalTypeChanged));
+}
+
+bool PedalParameter::isHardwareDisabled() const
+{
+  if(m_setting)
+  {
+    return m_setting->get() == PedalTypes::OFF;
+  }
+  return false;
 }

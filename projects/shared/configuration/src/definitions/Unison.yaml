@@ -1,0 +1,71 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Unison
+
+signals:
+  Truepoly_Signal: [ PolyPhase ]
+
+static: [
+  &ALL_EXPOSED {
+    availability: {
+      Single: &AVAILABILITY { hidden: false, disabled: false, count: 1},
+      Split: { hidden: false, disabled: false, count: 2},
+      Layer: *AVAILABILITY
+    }
+  },
+  &MODULATEABLE {
+    <<: *ALL_EXPOSED,
+    type: Local_Modulateable
+  },
+  &UNMODULATEABLE {
+    <<: *ALL_EXPOSED,
+    type: Local_Unmodulateable
+  }
+]
+
+parameters:
+  - <<: *UNMODULATEABLE
+    id: 249
+    token: Voices
+    label_long: Voices
+    label_short: Voices
+    control_position: { coarse: 23, fine: 23, scale: LINEAR_24_COUNT, initial: 0.0f, inactive: 0 }
+    rendering_args: { scaling: Linear, factor: 23.0f, offset: 1.0f, section: None, clock: None, signal: None }
+    info: >
+      Number of unison voices that will be assigned to a key. At 1, the unison effect is disabled.
+  - <<: *MODULATEABLE
+    id: 250
+    token: Detune
+    label_long: Detune
+    label_short: Detune
+    control_position: { coarse: 240, fine: 24000, scale: VERY_FINE_24_ST, initial: 50.0f / 24000.0f }
+    modulation_aspects: { coarse: 240, fine: 24000, scale: VERY_FINE_BIPOLAR_24_ST }
+    rendering_args: { scaling: Linear, factor: 24.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Spreading of the pitches of the unison voices [in semitones].
+      The Fine mode allows for adjustments in steps of 0.001 semitones (0.1 cents).
+  - <<: *MODULATEABLE
+    id: 252
+    token: Phase
+    label_long: Phase
+    label_short: Phase
+    control_position: { coarse: 72, fine: 3600, scale: LINEAR_360_DEG, initial: 0.0f }
+    modulation_aspects: { coarse: 72, fine: 3600, scale: LINEAR_BIPOLAR_360_DEG }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Audio, signal: None }
+    info: >
+      Spreading the (Oscillators') start phases of the unison voices to get different
+      phase cancellations at the beginning of a note.
+      The value is the phase range [in degrees] covered by a group of unison voices.
+  - <<: *MODULATEABLE
+    id: 253
+    token: Pan
+    label_long: Pan
+    label_short: Pan
+    control_position: { coarse: 100, fine: 1000, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Voice panning inside of a group of unison voices.
+      At 100.0 %, the voices are spread over the full stereo base.

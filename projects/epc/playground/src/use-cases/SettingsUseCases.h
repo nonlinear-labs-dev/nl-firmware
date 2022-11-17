@@ -4,6 +4,8 @@
 #include <nltools/messaging/Message.h>
 #include "proxies/hwui/HWUIEnums.h"
 #include "device-settings/FocusAndModeSetting.h"
+#include "device-settings/SelectedRibbonsSetting.h"
+
 class Settings;
 
 class SettingsUseCases
@@ -18,6 +20,12 @@ class SettingsUseCases
   void setUIDetail(const UIDetail &detail);
   void freezeFocusAndMode();
   void thawFocusAndMode();
+
+  void toggleRibbonSelection();
+  void setRibbonSelection(SelectedRibbons ribbonsToSelect);
+
+  //Screensaver
+  void refreshScreenSaverTimeout();
 
   //AE
   static void panicAudioEngine();

@@ -1,0 +1,118 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Cabinet
+
+signals:
+  Mono_Signal: [ Pre_Sat, Sat, Tilt, LPF, HPF, Dry, Wet ]
+
+static: [
+  &ALL_EXPOSED {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 1 },
+      Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &VALUE_PERCENT { coarse: 100, fine: 1000 },
+  &MODULATEABLE {
+    type: Local_Modulateable
+  }
+]
+
+parameters:
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 188
+    token: Drive
+    label_long: Drive
+    label_short: Drive
+    control_position: { coarse: 100, fine: 500, scale: LINEAR_50_DB, initial: 0.4f }
+    modulation_aspects: { coarse: 100, fine: 500, scale: LINEAR_BIPOLAR_50_DB }
+    rendering_args: { scaling: Expon_Gain, factor: 50.0f, offset: 0.0f, section: Mono, clock: Fast, signal: Mono_Signal }
+    info: >
+      Gain [in dB] for the input signal. Higher gains will increase the amount of distortion/saturation.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 190
+    token: Fold
+    label_long: Fold
+    label_short: Fold
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.25f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Slow, signal: Mono_Signal }
+    info: >
+      Amount of folding back of the shaper curve for high input amplitudes.\n
+      0.0 %: flat saturation, no folding\n
+      100.0 %: fully folded back (periodic sine curve)\n
+      A higher amount of folding leads to a softer but more nasal sound.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 191
+    token: Asym
+    label_long: Asymmetry
+    label_short: Asym
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.25f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Slow, signal: Mono_Signal }
+    info: >
+      Asymmetry of the shaper curve, generating even (2nd, 4th, ...) harmonics.
+      At higher values, it becomes a parabolic curve that shifts the frequency of the fundamental to its double.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 192
+    token: Tilt
+    label_long: Tilt
+    label_short: Tilt
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: -0.2f }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 100.0f, offset: 0.0f, section: Mono, clock: Fast, signal: None }
+    info: >
+      Controls two inverted shelving EQs before and after the distortion stage.\n
+      Negative: more distortions at high frequencies\n
+      Positive: more distortions at low frequencies
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 194
+    token: Hi_Cut
+    label_long: Hi Cut
+    label_short: Hi Cut
+    control_position: { coarse: 80, fine: 800, scale: LINEAR_60_140_ST, initial: 50.0f / 80.0f }
+    modulation_aspects: { coarse: 80, fine: 800, scale: LINEAR_BIPOLAR_80_ST }
+    rendering_args: { scaling: Expon_Lin_Pitch, factor: 80.0f, offset: 60.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Cutoff frequency [in semitones] of the lowpass filter at the output.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 196
+    token: Lo_Cut
+    label_long: Lo Cut
+    label_short: Lo Cut
+    control_position: { coarse: 80, fine: 800, scale: LINEAR_20_100_ST, initial: 10.0f / 80.0f }
+    modulation_aspects: { coarse: 80, fine: 800, scale: LINEAR_BIPOLAR_80_ST }
+    rendering_args: { scaling: Expon_Lin_Pitch, factor: 80.0f, offset: 20.0f, section: Mono, clock: Slow, signal: None }
+    info: >
+      Cutoff frequency [in semitones] of the highpass filter at the input.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 197
+    token: Cab_Lvl
+    label_long: Cab Level
+    label_short: Cab Level
+    control_position: { coarse: 50, fine: 500, scale: LINEAR_MINUS_50_0_DB, initial: 36.0f / 50.0f }
+    modulation_aspects: { coarse: 50, fine: 500, scale: LINEAR_BIPOLAR_50_DB }
+    rendering_args: { scaling: Expon_Gain, factor: 50.0f, offset: -50.0f, section: Mono, clock: Fast, signal: None }
+    info: >
+      Output level [in dB] of the saturation effect before it is mixed with the dry signal.
+  - <<: *MODULATEABLE
+    <<: *ALL_EXPOSED
+    id: 199
+    token: Mix
+    label_long: Mix
+    label_short: Mix
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Mono, clock: Fast, signal: None }
+    info: >
+      Crossfades between the dry signal and the saturated signal.

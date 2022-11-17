@@ -6,14 +6,12 @@
 #include "EpcWifi.h"
 #include "Application.h"
 
-EpcWifi::EpcWifi()
+EpcWifi::EpcWifi(HardwareFeatures& hw)
     : m_currentEpcWifiState(std::nullopt)
     , m_newEpcWifiState(false)
     , m_busy(false)
 {
-  static auto isEpc2 = !strcmp(TARGET_PLATFORM, "epc2");
-
-  if(isEpc2)
+  if(hw.hasEPCWiFi())
   {
     Application::get().getMainContext()->signal_timeout().connect_seconds(
         sigc::mem_fun(this, &EpcWifi::syncCredentials), 2);

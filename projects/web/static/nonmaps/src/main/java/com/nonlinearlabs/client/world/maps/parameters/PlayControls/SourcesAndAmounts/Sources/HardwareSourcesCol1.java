@@ -40,7 +40,9 @@ public class HardwareSourcesCol1 extends ParameterColumn {
 		addChild(new Pitchbend(this));
 		addChild(new Aftertouch(this));
 		addChild(new Ribbon(this, 284));
-		addChild(new Ribbon(this, 289) {
+		addChild(new Ribbon(this, 289));
+		addChild(new Ribbon(this, 409));
+		addChild(new Ribbon(this, 411) {
 			@Override
 			protected int getBackgroundRoundings() {
 				//TODO change to Rounding none if local disabled

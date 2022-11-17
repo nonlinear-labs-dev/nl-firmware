@@ -47,6 +47,10 @@ public class PhysicalControlSendParameter extends PhysicalControlParameter {
                 return 284;
             case 405:
                 return 289;
+            case 410:
+                return 409;
+            case 412:
+                return 411;
         }
         return -1;
     }

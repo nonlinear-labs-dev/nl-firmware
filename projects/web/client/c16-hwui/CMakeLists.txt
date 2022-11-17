@@ -10,6 +10,6 @@ add_custom_command(
     DEPENDS ${ALL_FILES}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMAND tar cfz ${CMAKE_CURRENT_BINARY_DIR}/bundle.tar.gz ./*
-    )
+)
 
 add_custom_target(c16-hwui ALL SOURCES bundle.tar.gz)

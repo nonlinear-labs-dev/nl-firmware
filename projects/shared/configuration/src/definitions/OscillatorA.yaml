@@ -1,0 +1,207 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !definitions
+
+group: Osc_A
+
+signals:
+  Truepoly_Signal: [ Freq, Fluct_Env_C, PM_Self_Env_A, PM_B_Env_B, PM_FB_Env_C ]
+  Quasipoly_Signal: [ Chirp ]
+
+static: [
+  &ALL_EXPOSED {
+    availability: {
+      Single: { hidden: false, disabled: false, count: 1 },
+      Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Layer: *AVAILABILITY_DUAL
+    }
+  },
+  &VALUE_PERCENT { coarse: 100, fine: 1000 },
+  &MODULATEABLE {
+    <<: *ALL_EXPOSED,
+    type: Local_Modulateable
+  },
+  &UNMODULATEABLE {
+    <<: *ALL_EXPOSED,
+    type: Local_Unmodulateable
+  }
+]
+
+parameters:
+  - <<: *MODULATEABLE
+    id: 53
+    token: Pitch
+    label_long: Pitch
+    label_short: Pitch
+    control_position: { coarse: 150, fine: 15000, scale: NUMERIC_150_ST, initial: 80.0f / 150.0f }
+    modulation_aspects: { coarse: 150, fine: 15000, scale: NUMERIC_BIPOLAR_150_ST }
+    rendering_args: { scaling: Linear, factor: 150.0f, offset: -20.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Pitch (logarithmic frequency) of Oscillator A at C3 (MIDI note 60) [in semitones, based on MIDI note numbers].
+      The range below zero is shaped in the way that -20 corresponds to 0 Hz.
+  - <<: *MODULATEABLE
+    id: 55
+    token: Pitch_KT
+    label_long: Pitch - Key Trk
+    label_short: Key Trk
+    control_position: { coarse: 200, fine: 20000, scale: FINE_200_PERCENT, initial: 0.5f }
+    modulation_aspects: { coarse: 200, fine: 20000, scale: FINE_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Key tracking of the oscillator pitch.
+      It's the scaling factor between the key position of a received MIDI note (relative to C3 = 60 semitones) and
+      the pitch of the oscillator.\n
+      At 100.0 %, the pitch follows the equal-tempered scale (when the Scale group is equal-tempered as well).
+      At values larger than 100.0 %, the tuning will be stretched.\n
+      At 50.0 %, a quartertone scale emerges and at 0.0 %, the pitch is constant for all keys.
+  - <<: *MODULATEABLE
+    id: 56
+    token: Pitch_Env_C
+    label_long: Pitch - Env C
+    label_short: Env C
+    control_position: { coarse: 80, fine: 8000, scale: FINE_BIPOLAR_80_ST, initial: 0.0f }
+    modulation_aspects: { coarse: 160, fine: 16000, scale: FINE_BIPOLAR_160_ST }
+    rendering_args: { scaling: Linear, factor: 80.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Amount of pitch modulation by Envelope C [in semitones].
+  - <<: *MODULATEABLE
+    id: 57
+    token: Fluct
+    label_long: Fluctuation
+    label_short: Fluctuation
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 0.95f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Fluctuation of the oscillator frequency.
+      If the parameter is set larger than 0.0 %, the frequency is changed at the beginning of each
+      oscillation period by a random amount. At 100.0 %, the maximum frequency variation is +/- 95 %.
+  - <<: *MODULATEABLE
+    id: 59
+    token: Fluct_Env_C
+    label_long: Fluct - Env C
+    label_short: Env C
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Amount of modulation of the frequency fluctuation by Envelope C.
+      At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.
+  - <<: *MODULATEABLE
+    id: 60
+    token: PM_Self
+    label_long: PM Self
+    label_short: PM Self
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 0.5f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Amount of phase modulation by Oscillator & Shaper A (local feedback).
+  - <<: *MODULATEABLE
+    id: 62
+    token: PM_Self_Env_A
+    label_long: PM Self - Env A
+    label_short: Env A
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Envelope (A) amount for the phase modulation by Oscillator & Shaper A (local feedback).
+      At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.
+  - <<: *MODULATEABLE
+    id: 63
+    token: PM_Self_Shp
+    label_long: PM Self - Shaper
+    label_short: Shaper
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: Quasipoly_Signal }
+    info: >
+      Mix amount of Shaper A in the signal being used for phase modulation (self).
+      At zero, the output signal of Oscillator A is used. At negative values, the signal from the Shaper is inverted.
+  - <<: *MODULATEABLE
+    id: 64
+    token: PM_B
+    label_long: PM B
+    label_short: PM B
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 1.0f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Amount of phase modulation by Oscillator & Shaper B (cross feedback).
+  - <<: *MODULATEABLE
+    id: 66
+    token: PM_B_Env_B
+    label_long: PM B - Env B
+    label_short: Env B
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Envelope (B) amount for the pahse modulation by Oscillator & Shaper B (cross feedback).
+      At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.
+  - <<: *MODULATEABLE
+    id: 67
+    token: PM_B_Shp
+    label_long: PM B - Shaper
+    label_short: Shaper
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: Quasipoly_Signal }
+    info: >
+      Mix amount of Shaper B in the signal being used for phase modulation (B -> A).
+      At zero, the output signal of Oscillator B is used. At negative values, the signal from the Shaper is inverted.
+  - <<: *MODULATEABLE
+    id: 68
+    token: PM_FB
+    label_long: PM FB
+    label_short: PM FB
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
+    rendering_args: { scaling: Parabolic, factor: 0.5f, offset: 0.0f, section: Poly, clock: Fast, signal: None }
+    info: >
+      Amount of phase modulation by the Feedback signal.
+  - <<: *MODULATEABLE
+    id: 70
+    token: PM_FB_Env_C
+    label_long: PM FB - Env C
+    label_short: Env C
+    control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Envelope (C) amount for the phase modulation by the Feedback signal.
+      At zero, the modulation stays constant, at higher values, the envelope applies a time-variant attenuation.
+  - <<: *MODULATEABLE
+    id: 301
+    token: Phase
+    label_long: Phase
+    label_short: Phase
+    control_position: { coarse: 36, fine: 1800, scale: LINEAR_BIPOLAR_180_DEG, initial: 0.0f, inactive: 0 }
+    modulation_aspects: { coarse: 72, fine: 3600, scale: LINEAR_BIPOLAR_360_DEG }
+    rendering_args: { scaling: Linear, factor: 0.5f, offset: 0.0f, section: Poly, clock: Audio, signal: Quasipoly_Signal }
+    info: >
+      Start phase [in degrees]. The Oscillator will be set to this phase position with each Note-On.
+  - <<: *MODULATEABLE
+    id: 303
+    token: Chirp
+    label_long: Chirp
+    label_short: Chirp
+    control_position: { coarse: 60, fine: 600, scale: LINEAR_80_140_ST, initial: 40.0f / 60.0f }
+    modulation_aspects: { coarse: 60, fine: 600, scale: LINEAR_BIPOLAR_60_ST }
+    rendering_args: { scaling: Expon_Lin_Pitch, factor: 60.0f, offset: 80.0f, section: Poly, clock: Slow, signal: None }
+    info: >
+      Cutoff [in semitones] of the lowpass in the phase modulation signal path that can
+      be applied to reduce the level and frequency of \"chirping\" appearing at higher amounts of self modulation,
+      cross-feedback through the other oscillator, or global feedback.
+  - <<: *UNMODULATEABLE
+    id: 393
+    token: Reset
+    label_long: Reset
+    label_short: Reset
+    control_position: { coarse: 1, fine: 1, scale: SWITCH_ON_OFF, initial: 1.0f }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Poly, clock: Sync, signal: Quasipoly_Signal }
+    info: >
+      If enabled, the Oscillator will reset its phase everytime the envelopes start (in the corresponding voice).
+      If disabled, the Oscillator is in free-running mode.
+      Changing this parameter is only effective when a key is pressed.

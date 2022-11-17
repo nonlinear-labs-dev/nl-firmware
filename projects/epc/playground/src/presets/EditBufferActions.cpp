@@ -147,6 +147,17 @@ EditBufferActions::EditBufferActions(UpdateDocumentContributor* parent, EditBuff
     }
   });
 
+  addAction("set-ribbon-behaviour", [&editBuffer](const std::shared_ptr<NetworkRequest>& request) mutable {
+     auto id = request->get("id");
+     auto mode = request->get("mode");
+
+     if(auto param = dynamic_cast<RibbonParameter*>(editBuffer.findParameterByID(ParameterId(id))))
+     {
+       RibbonParameterUseCases useCases(param);
+       useCases.setTouchBehaviour(to<RibbonTouchBehaviour>(mode.uppercase()));
+     }
+  });
+
   addAction("set-pedal-mode", [&editBuffer](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto id = request->get("id");
     Glib::ustring mode = request->get("mode");

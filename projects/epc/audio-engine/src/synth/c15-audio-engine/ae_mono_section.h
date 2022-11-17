@@ -21,6 +21,8 @@
 #include "pe_exponentiator.h"
 #include "pe_lfo_engine.h"
 
+namespace Engine {
+
 class MonoSection
 {
  public:
@@ -50,12 +52,12 @@ class MonoSection
       m_smoothers;
   exponentiator *m_convert;
   LayerSignalCollection *m_z_self;
-  Engine::Envelopes::DecayEnvelope<1> m_flanger_env;
-  Engine::MonoFlanger m_flanger;
-  Engine::MonoCabinet m_cabinet;
-  Engine::MonoGapFilter m_gapfilter;
-  Engine::MonoEcho m_echo;
-  Engine::MonoReverb m_reverb;
+  Envelopes::MonoDecay m_flanger_env;
+  MonoFlanger m_flanger;
+  MonoCabinet m_cabinet;
+  MonoGapFilter m_gapfilter;
+  MonoEcho m_echo;
+  MonoReverb m_reverb;
   NlToolbox::Curves::Shaper_2_BP m_flanger_fb_curve;
   NlToolbox::Curves::Shaper_1_BP m_reverb_color_curve_1, m_reverb_color_curve_2;
   stereo_lfo m_flanger_lfo;
@@ -67,3 +69,5 @@ class MonoSection
   void postProcess_fast();
   void postProcess_slow();
 };
+
+} // namespace Engine

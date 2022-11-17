@@ -3,9 +3,8 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include "ModulateableMonoParameter.h"
 
-ModulateableMonoParameter::ModulateableMonoParameter(ParameterGroup* group, const ParameterId& id,
-                                                     const ScaleConverter* scaling)
-    : ModulateableParameter { group, id, scaling }
+ModulateableMonoParameter::ModulateableMonoParameter(ParameterGroup* group, const ParameterId& id)
+    : ModulateableParameter { group, id }
 {
 }
 

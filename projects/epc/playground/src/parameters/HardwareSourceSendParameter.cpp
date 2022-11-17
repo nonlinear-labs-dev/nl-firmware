@@ -15,13 +15,19 @@
 
 HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* pGroup,
                                                          PhysicalControlParameter& sibling,
-                                                         const ParameterId& id, const ScaleConverter* converter,
-                                                         double def, int coarseDenominator, int fineDenominator, Settings* settings)
-    : Parameter(pGroup, id, converter)
+                                                         const ParameterId& id, Settings* settings)
+    : Parameter(pGroup, id)
     , m_sibling{sibling}
     , m_settings(settings)
 {
-  if(m_settings)
+  m_sibling.onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);
+}
+
+void HardwareSourceSendParameter::init(Settings* settings)
+{
+  m_settings = settings;
+
+  if(settings)
   {
     auto local = settings->getSetting<GlobalLocalEnableSetting>();
     auto routings = settings->getSetting<RoutingSettings>();
@@ -33,8 +39,6 @@ HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* p
     local->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onLocalChanged));
     routings->onChange(sigc::mem_fun(this, &HardwareSourceSendParameter::onRoutingsChanged));
   }
-
-  m_sibling.onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);
 }
 
 void HardwareSourceSendParameter::loadFromPreset(UNDO::Transaction* transaction, const tControlPositionValue& value)
@@ -61,7 +65,7 @@ void HardwareSourceSendParameter::onUnselected()
   {
     m_lastChangedFromHWUI = false;
     getValue().setRawValue(Initiator::EXPLICIT_OTHER, getSiblingParameter()->getDefValueAccordingToMode());
-    sendToPlaycontroller();
+    sendToAudioEngine();
     invalidate();
   }
 }
@@ -148,6 +152,10 @@ RoutingSettings::tRoutingIndex HardwareSourceSendParameter::getIndex(const Param
       return tIdx::Ribbon1;
     case C15::PID::Ribbon_2_Send:
       return tIdx::Ribbon2;
+    case C15::PID::Ribbon_3_Send:
+      return tIdx::Ribbon3;
+    case C15::PID::Ribbon_4_Send:
+      return tIdx::Ribbon4;
   }
   nltools_assertNotReached();
 }
@@ -155,8 +163,8 @@ RoutingSettings::tRoutingIndex HardwareSourceSendParameter::getIndex(const Param
 nlohmann::json HardwareSourceSendParameter::serialize() const
 {
   auto param = Parameter::serialize();
-  param.push_back({"is-enabled", isLocalEnabled() });
-  param.push_back({"return-mode", static_cast<int>(m_returnMode) });
+  param.push_back({ "is-enabled", isLocalEnabled() });
+  param.push_back({ "return-mode", static_cast<int>(m_returnMode) });
   return param;
 }
 
@@ -242,6 +250,10 @@ bool HardwareSourceSendParameter::isAssigned() const
       return m_settings->getSetting<RibbonCCMapping<1>>()->get() != RibbonCC::None;
     case C15::PID::Ribbon_2_Send:
       return m_settings->getSetting<RibbonCCMapping<2>>()->get() != RibbonCC::None;
+    case C15::PID::Ribbon_3_Send:
+      return m_settings->getSetting<RibbonCCMapping<3>>()->get() != RibbonCC::None;
+    case C15::PID::Ribbon_4_Send:
+      return m_settings->getSetting<RibbonCCMapping<4>>()->get() != RibbonCC::None;
     case C15::PID::Pedal_1_Send:
       return m_settings->getSetting<PedalCCMapping<1>>()->get() != PedalCC::None;
     case C15::PID::Pedal_2_Send:

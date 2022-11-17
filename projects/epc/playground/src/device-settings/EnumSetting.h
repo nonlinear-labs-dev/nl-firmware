@@ -99,7 +99,7 @@ template <typename TEnum> class EnumSetting : public Setting
     set((tEnum) e);
   }
 
-  Glib::ustring save() const
+  Glib::ustring save() const override
   {
     int idx = static_cast<int>(get());
     return enumToString()[idx];

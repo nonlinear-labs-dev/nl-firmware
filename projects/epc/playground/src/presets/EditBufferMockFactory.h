@@ -1,6 +1,7 @@
 #pragma once
 #ifdef _DEVELOPMENT_PC
 #include <nltools/messaging/Message.h>
+#include "PresetMessages.h"
 
 class EditBufferMockFactory
 {

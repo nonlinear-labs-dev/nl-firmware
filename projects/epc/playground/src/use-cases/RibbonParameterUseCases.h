@@ -12,8 +12,11 @@ class RibbonParameterUseCases : public PhysicalControlParameterUseCases
   void setTouchBehaviour(const Glib::ustring& mode);
   void setReturnMode(const RibbonReturnMode& mode);
   void setReturnMode(const Glib::ustring& mode);
+  void setTouchBehaviour(RibbonTouchBehaviour mode);
 
   void incTouchBehaviour();
+
+  void stepTouchBehaviour(int i);
 
  private:
   RibbonParameter* m_param;

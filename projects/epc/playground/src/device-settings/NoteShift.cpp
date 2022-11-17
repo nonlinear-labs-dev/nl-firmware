@@ -7,8 +7,6 @@
 #include <nltools/messaging/Message.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 
-static const uint16_t c_NoteShiftSettingKey = NOTE_SHIFT;
-
 NoteShift::NoteShift(Settings &parent)
     : super(parent)
     , m_shift(0)

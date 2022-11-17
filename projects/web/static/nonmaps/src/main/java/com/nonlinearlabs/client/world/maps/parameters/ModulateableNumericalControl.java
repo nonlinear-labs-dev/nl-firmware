@@ -55,6 +55,16 @@ public class ModulateableNumericalControl extends LayoutResizingVertical {
 			protected double getBasicHeight() {
 				return 12;
 			}
+			
+			@Override
+			public double getTopMargin() {
+				return 0;
+			}
+
+			@Override
+			public double getBottomMargin() {
+				return 0;
+			}
 		});
 
 		addChild(new Spacer(this, 80, 9));

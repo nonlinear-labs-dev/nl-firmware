@@ -8,27 +8,24 @@
 #include "http/UndoScope.h"
 #include "Options.h"
 #include "presets/PresetManager.h"
-#include "profiling/Profiler.h"
 #include "proxies/hwui/HWUI.h"
 #include "proxies/playcontroller/PlaycontrollerProxy.h"
 #include "proxies/audio-engine/AudioEngineProxy.h"
 #include <tools/WatchDog.h>
 #include <unistd.h>
 #include <clipboard/Clipboard.h>
-#include <cassert>
-#include <proxies/hwui/debug-oled/DebugLayout.h>
 #include <tools/ExceptionTools.h>
 #include <nltools/messaging/Messaging.h>
 #include <presets/EditBuffer.h>
 #include <giomm.h>
 #include <proxies/usb/USBChangeListener.h>
 #include <http/WebUISupport.h>
-#include <presets/PresetManagerActions.h>
-#include <presets/BankActions.h>
 #include <presets/EditBufferActions.h>
 #include <use-cases/SettingsUseCases.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include <nltools/system/SpawnAsyncCommandLine.h>
+#include <proxies/hwui/HardwareFeatures.h>
+#include <use-cases/SplashScreenUseCases.h>
 
 using namespace std::chrono_literals;
 
@@ -71,7 +68,6 @@ std::unique_ptr<Options> Application::initStatic(Application *app, std::unique_p
 
 void quitApp(int sig)
 {
-  DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__, sig);
   Application::get().quit();
 }
 
@@ -91,22 +87,25 @@ Application::Application(int numArgs, char **argv)
     : m_theMainContext(createMainContext())
     , m_options(initStatic(this, std::make_unique<Options>(numArgs, argv)))
     , m_theMainLoop(Glib::MainLoop::create(m_theMainContext))
+    , m_recorderManager(std::make_unique<RecorderManager>())
+    , m_hwFeatures(new HardwareFeatures())
     , m_http(new HTTPServer())
-    , m_settings(new Settings(m_options->getSettingsFile(), m_http->getUpdateDocumentMaster()))
+    , m_settings(new Settings(m_options->getSettingsFile(), m_http->getUpdateDocumentMaster(), *m_hwFeatures))
     , m_presetManager(
           new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
-    , m_hwui(new HWUI(*m_settings))
+    , m_hwui(new HWUI(*m_settings, *m_recorderManager))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
     , m_audioEngineProxy(new AudioEngineProxy(*m_presetManager, *m_settings, *m_playcontrollerProxy))
     , m_voiceGroupManager(std::make_unique<VoiceGroupAndLoadToPartManager>(*m_presetManager->getEditBuffer()))
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
-    , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster()))
+    , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster(), *m_playcontrollerProxy))
     , m_clipboard(new Clipboard(m_http->getUpdateDocumentMaster()))
     , m_usbChangeListener(std::make_unique<USBChangeListener>())
     , m_webUISupport(std::make_unique<WebUISupport>(m_http->getUpdateDocumentMaster()))
-    , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui, *m_settings, *m_voiceGroupManager)
+    , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui, *m_settings,
+                       *m_voiceGroupManager)
     , m_heartbeatState(false)
     , m_isQuit(false)
 {
@@ -117,7 +116,13 @@ Application::Application(int numArgs, char **argv)
   m_settings->init();
   m_hwui->init();
   m_http->init();
-  m_presetManager->init(m_audioEngineProxy.get(), *m_settings, [this](auto str) { m_hwui->addSplashStatus(str); });
+  m_presetManager->init(m_audioEngineProxy.get(), *m_settings,
+                        [this](auto str)
+                        {
+                          SplashScreenUseCases ssuc(*m_hwui, *m_settings);
+                          ssuc.addSplashScreenMessage(str);
+                        });
+
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
   m_voiceGroupManager->init();
 
@@ -208,11 +213,6 @@ void Application::quit()
   DebugLevel::warning(__PRETTY_FUNCTION__);
 }
 
-bool Application::isQuit() const
-{
-  return m_isQuit;
-}
-
 Glib::RefPtr<Glib::MainContext> Application::getMainContext()
 {
   return m_theMainLoop->get_context();
@@ -273,6 +273,16 @@ Clipboard *Application::getClipboard()
 WebUISupport *Application::getWebUISupport()
 {
   return m_webUISupport.get();
+}
+
+HardwareFeatures *Application::getHardwareFeatures()
+{
+  return m_hwFeatures.get();
+}
+
+bool Application::isQuit() const
+{
+  return m_isQuit;
 }
 
 const Options *Application::getOptions() const
@@ -347,4 +357,9 @@ ActionManagers *Application::getActionManagers()
 VoiceGroupAndLoadToPartManager *Application::getVGManager()
 {
   return m_voiceGroupManager.get();
+}
+
+RecorderManager *Application::getRecorderManager()
+{
+  return m_recorderManager.get();
 }

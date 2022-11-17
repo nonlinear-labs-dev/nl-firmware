@@ -1,0 +1,25 @@
+#pragma once
+
+/******************************************************************************/
+/** @file       parameter_group.h
+    @date       ${timestamp}
+    @version    ${config.milestone}-${config.version}
+    @author     M. Seeber
+    @brief      provide parameter groups
+    @todo       
+*******************************************************************************/
+
+#include "parameter_descriptor.h"
+
+namespace C15
+{
+    // descriptors of individual parameter groups
+    constexpr ParameterGroupDescriptor ParameterGroups[] = {
+        ${parameter_groups}
+    };
+    // elements of individual parameter groups
+    template<Descriptors::ParameterGroup G>
+    struct ParameterGroupElementList;
+    // template specializations
+    ${group_map}
+} // namespace C15

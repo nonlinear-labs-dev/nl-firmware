@@ -41,7 +41,7 @@ class MockTCDDecoder : public TCDDecoder
   using TCDDecoder::TCDDecoder;
   void setValue(float v)
   {
-    value = v;
+    m_value = v;
   }
 
   void setType(DecoderEventType type)
@@ -51,7 +51,7 @@ class MockTCDDecoder : public TCDDecoder
 
   void setKeyOrCtrl(int k)
   {
-    keyOrController = k;
+    m_key = k;
   }
 };
 
@@ -69,7 +69,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"TCD Decoder Reset", "[TCD]")
   decoder.reset();
   CHECK(decoder.getValue() == 0);
   CHECK(decoder.getEventType() == DecoderEventType::UNKNOWN);
-  CHECK(decoder.getKeyOrController() == -1);
+  CHECK(decoder.getKey() == -1);
 }
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture,"TCD in leads to key down and send midi", "[MIDI][TCD]")

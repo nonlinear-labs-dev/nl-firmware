@@ -2,19 +2,63 @@
 #include "groups/HardwareSourcesGroup.h"
 #include "PlayModeLayout.h"
 #include "RibbonLabel.h"
-#include "PlayModeRibbonBehaviourLabel.h"
-#include "MCRoutings.h"
+#include "PedalMappedToRibbonIndication.h"
+#include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
+#include <device-settings/Settings.h>
+#include <device-settings/SelectedRibbonsSetting.h>
 
 PlayModeLayout::PlayModeLayout()
     : super()
 {
-  addControl(new RibbonLabel(HardwareSourcesGroup::getUpperRibbonParameterID(), Rect(25, 1, 74, 14)));
-  addControl(new MCRoutings(HardwareSourcesGroup::getUpperRibbonParameterID(), Rect(99, 4, 8, 8)));
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto& settings = eb->getSettings();
+  auto mcm = eb->getParameterGroupByID({ "MCM", VoiceGroup::Global });
+  mcm->onGroupChanged(sigc::mem_fun(this, &PlayModeLayout::onMacroControlMappingsChanged));
 
-  addControl(new PlayModeRibbonBehaviourLabel(HardwareSourcesGroup::getUpperRibbonParameterID(),
-                                              Rect(getBehaviourLeft(), 1, 12, 14)));
+  settings.getSetting<SelectedRibbonsSetting>()->onChange(
+      sigc::mem_fun(this, &PlayModeLayout::onRibbonSelectionChanged));
+
+  createUpperLabels();
 }
 
 PlayModeLayout::~PlayModeLayout()
 {
+}
+
+void PlayModeLayout::onMacroControlMappingsChanged()
+{
+  createUpperLabels();
+}
+
+void PlayModeLayout::onRibbonSelectionChanged(const Setting* s)
+{
+  createUpperLabels();
+}
+
+inline Rect getPedalIndicationRect(bool isMapped)
+{
+  if(isMapped)
+    return { 25, 1, 11, 14 };
+  else
+    return { 25, 1, 0, 14 };
+}
+
+inline Rect getRibbonLabelRect(bool isMapped)
+{
+  if(isMapped)
+    return { 36, 1, 77, 14 };
+  else
+    return { 25, 1, 88, 14 };
+}
+
+void PlayModeLayout::createUpperLabels()
+{
+  remove(std::exchange(m_pedalSymbol, nullptr));
+  remove(std::exchange(m_ribbonLabel, nullptr));
+
+  const auto id = HardwareSourcesGroup::getUpperRibbon1ParameterID();
+  auto pedalMapped = isPedalMappedToCurrentUpperRibbon();
+  m_pedalSymbol = addControl(new PedalMappedToRibbonIndication(getPedalIndicationRect(pedalMapped)));
+  m_ribbonLabel = addControl(new RibbonLabel(id, getRibbonLabelRect(pedalMapped)));
 }

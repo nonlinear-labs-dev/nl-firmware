@@ -9,7 +9,7 @@ import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 import com.nonlinearlabs.client.world.maps.parameters.SliderHorizontalWithHandle;
 import com.nonlinearlabs.client.world.maps.parameters.UnModulateableParameterName;
-import com.nonlinearlabs.client.world.maps.parameters.ValueDisplayLarge;
+import com.nonlinearlabs.client.world.maps.parameters.ValueDisplaySmall;
 import com.nonlinearlabs.client.world.overlay.ContextMenu;
 import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.ParameterInfoDialog;
@@ -19,42 +19,20 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 
 	private String info = "";
 
-
-	private class MacroControlValueDisplay extends ValueDisplayLarge {
+	private class MacroControlValueDisplay extends ValueDisplaySmall {
 		private MacroControlValueDisplay(MapsLayout parent, int parameterID) {
 			super(parent, parameterID);
 		}
-	}
-
-	private class MacroControlSlider extends SliderHorizontalWithHandle {
-		private boolean hasBottomMargin = false;
-
-		private MacroControlSlider(MapsLayout parent, int parameterID) {
-			super(parent, parameterID);
-		}
 
 		@Override
-		public void doFirstLayoutPass(double levelOfDetail) {
-			super.doFirstLayoutPass(levelOfDetail);
-			
-			double marginLevel = 4.5;
-			hasBottomMargin = levelOfDetail <= marginLevel;
-		}
-
-		@Override
-		public double getBottomMargin()
-		{
-			return hasBottomMargin ? 10 : 0;
+		protected double getFontHeight() {
+			return 11;
 		}
 	}
 
 	MacroControlParameter(MacrosCol parent, String defName, int parameterID) {
 		super(parent, parameterID);
 		addChild(new UnModulateableParameterName(this) {
-			@Override
-			protected double getBasicHeight() {
-				return 23;
-			}
 
 			@Override
 			protected double getBasicWidth() {
@@ -72,7 +50,7 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 			}
 
 		});
-		addChild(new MacroControlSlider(this, getParameterNumber()));
+		addChild(new SliderHorizontalWithHandle(this, getParameterNumber()));
 		addChild(new MacroControlValueDisplay(this, getParameterNumber()));
 	}
 

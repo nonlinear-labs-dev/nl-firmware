@@ -1,6 +1,7 @@
 #!/bin/sh
 
 set -e
+set -x
 
 BINARY_DIR=$(realpath $1)
 shift
@@ -12,6 +13,7 @@ USER_ID=$(id -u)
 
 SCRIPT="
 set -e
+set -x
 mkdir -p /docker-ssh
 rsync -a /host-ssh/ /docker-ssh
 chown -R root /docker-ssh

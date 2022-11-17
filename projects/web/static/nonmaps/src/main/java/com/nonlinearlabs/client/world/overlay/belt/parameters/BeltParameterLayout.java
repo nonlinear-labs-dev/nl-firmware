@@ -128,6 +128,8 @@ public class BeltParameterLayout extends OverlayLayout {
 	private RecallArea currentRecall;
 	private SyncParameterButton syncSplitParameter;
 
+	private FineButton fineButton;
+
 	public BeltParameterLayout(final Belt parent) {
 		super(parent);
 
@@ -156,6 +158,7 @@ public class BeltParameterLayout extends OverlayLayout {
 		addChild(syncSplitParameter = new SyncParameterButton(this));
 
 		addChild(ccDisplay = new SendCCDisplay(this));
+		addChild(fineButton = new FineButton(this));
 
 		EditBufferPresenterProvider.get().onChange(p -> {
 			if (p.selectedParameter.id.getNumber() != lastSelectedParameterNumber) {
@@ -229,6 +232,7 @@ public class BeltParameterLayout extends OverlayLayout {
 		final double undoWidth = Millimeter.toPixels(30);
 		final double undoRedoMargin = Millimeter.toPixels(4.5);
 
+		final double half = h / 2.0;
 		final double third = h / 3.0;
 		final double buttonDim = Millimeter.toPixels(10);
 
@@ -257,7 +261,7 @@ public class BeltParameterLayout extends OverlayLayout {
 		slider.doLayout(sliderLeft, third, w - sliderLeft - sliderLeft, third);
 		mcUpperClip.doLayout(sliderLeft + w - sliderLeft - sliderLeft, third, clipW, third);
 
-		double ccW = Millimeter.toPixels(25);
+		double ccW = Millimeter.toPixels(35);
 		double ccHeight = third / 2;
 		ccDisplay.doLayout(sliderLeft, third - ccHeight, ccW, ccHeight);
 
@@ -284,7 +288,7 @@ public class BeltParameterLayout extends OverlayLayout {
 		layouter.push(mcUpperBoundRadioButton, modulationButtonWidth, modulationButtonWidth, 1, 2);
 		layouter.push(null, 0, sliderWidth, 0, 2);
 		layouter.push(null, margin, margin, 0, 0);
-
+		
 		double walkerX = sliderLeft;
 
 		final double modAndParamValueYValue = h / 2.3;
@@ -314,6 +318,10 @@ public class BeltParameterLayout extends OverlayLayout {
 
 		dottedLine.doLayout(mcSourceDisplay.getRelativePosition().getRight() - dottedLineInset, 0, lineWidth, h);
 		infoButton.doLayout(undoRedoMargin + undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
+		double sliderFourth = sliderWidth / 4;
+		double sliderThreeFourth = sliderFourth * 3;
+		fineButton.doLayout(sliderLeft + sliderThreeFourth, h - modSrcDim * 1.4, modSrcDim, modSrcDim);
+		
 		contextMenu.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
 				modSrcDim);
 
@@ -354,10 +362,10 @@ public class BeltParameterLayout extends OverlayLayout {
 				Mode.paramValue, Mode.modulateableParameter, Mode.unmodulateableParameter) && isEnabled;
 
 		boolean dualSplitPointDisplay = isSplitPoint && isSyncDisabled();
-
+		boolean isInModAspect = isOneOf(Mode.mcValue, Mode.mcAmount, Mode.mcSource, Mode.mcUpper, Mode.mcLower);
 		syncSplitParameter.setVisible(isSplitPoint);
-		splitValueDisplay.setVisible(dualSplitPointDisplay && valueDisplayEnabled);
-		valueDisplay.setVisible(!dualSplitPointDisplay && valueDisplayEnabled);
+		splitValueDisplay.setVisible(dualSplitPointDisplay && valueDisplayEnabled && !isInModAspect);
+		valueDisplay.setVisible((!dualSplitPointDisplay && valueDisplayEnabled) || (dualSplitPointDisplay && isInModAspect));
 
 		dottedLine.setVisible(isOneOf(Mode.modulateableParameter) && isEnabled);
 		infoButton.setVisible(isOneOf(Mode.modulateableParameter, Mode.unmodulateableParameter));
@@ -465,18 +473,23 @@ public class BeltParameterLayout extends OverlayLayout {
 
 	@Override
 	public Control mouseDrag(final Position oldPoint, final Position newPoint, final boolean fine) {
+		
+		boolean newFine = fine || getNonMaps().getNonLinearWorld().isFineActive();
+
 		if (currentIncrementalChanger != null) {
 			final double amount = newPoint.getX() - oldPoint.getX();
-			currentIncrementalChanger.changeBy(fine, amount);
+			currentIncrementalChanger.changeBy(newFine, amount);
 		}
 		return this;
 	}
 
 	@Override
 	public Control pinch(final Position eventPoint, final double touchDist, final TouchPinch pinch) {
+		boolean newFine = getNonMaps().getNonLinearWorld().isFineActive();
+
 		if (currentIncrementalChanger != null) {
 			final double maxDiff = pinch.getMaxTouchDistance();
-			currentIncrementalChanger.changeBy(true, maxDiff);
+			currentIncrementalChanger.changeBy(newFine, maxDiff);
 		} else {
 			mouseDown(eventPoint);
 		}
@@ -549,11 +562,12 @@ public class BeltParameterLayout extends OverlayLayout {
 
 	@Override
 	public Control onKey(final KeyDownEvent event) {
+		boolean fine = getNonMaps().getNonLinearWorld().isFineActive();
 		if (event.getNativeKeyCode() == KeyCodes.KEY_K) {
-			startEdit().inc(event.isShiftKeyDown());
+			startEdit().inc(fine);
 			return this;
 		} else if (event.getNativeKeyCode() == KeyCodes.KEY_M && !event.isControlKeyDown()) {
-			startEdit().dec(event.isShiftKeyDown());
+			startEdit().dec(fine);
 			return this;
 		}
 
@@ -562,10 +576,11 @@ public class BeltParameterLayout extends OverlayLayout {
 
 	@Override
 	public Control wheel(final Position eventPoint, final double amount, final boolean fine) {
+		boolean newFine = fine || getNonMaps().getNonLinearWorld().isFineActive();
 		if (amount > 0)
-			startEdit().inc(fine);
+			startEdit().inc(newFine);
 		else if (amount < 0)
-			startEdit().dec(fine);
+			startEdit().dec(newFine);
 
 		return this;
 	}

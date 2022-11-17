@@ -57,33 +57,6 @@ void FocusAndModeSetting::set(FocusAndMode fam)
   notify();
 }
 
-void FocusAndModeSetting::setUndoable(UNDO::Transaction* transaction, FocusAndMode focusAndMode)
-{
-  if(m_focusAndModeFrozen)
-    return;
-
-  if(focusAndMode.focus == UIFocus::Unchanged)
-    focusAndMode.focus = m_focusAndMode.focus;
-
-  if(focusAndMode.mode == UIMode::Unchanged)
-    focusAndMode.mode = m_focusAndMode.mode;
-
-  if(focusAndMode.focus != m_focusAndMode.focus)
-    if(focusAndMode.mode == UIMode::Unchanged)
-      focusAndMode.mode = UIMode::Select;
-
-  auto swapData = UNDO::createSwapData(focusAndMode);
-  auto oldSwap = UNDO::createSwapData(m_focusAndMode);
-
-  transaction->addSimpleCommand(
-      [=](UNDO::Command::State)
-      {
-        swapData->swapWith(m_focusAndMode);
-        oldSwap->swapWith(m_oldFocusAndMode);
-        notify();
-      });
-}
-
 FocusAndMode FocusAndModeSetting::fixFocusAndModeWithAnys(FocusAndMode in)
 {
   if(in.focus == UIFocus::Any)

@@ -2,12 +2,14 @@ declare var global;
 
 class PresetManagerPresenter {
     banks = new Array<string>();
+    selectedBank = "";
 
     static create(): PresetManagerPresenter {
         try {
             var presenter = new PresetManagerPresenter();
             const pm = global.sync.queryItem("/preset-manager");
             presenter.banks = Array.from(pm.banks); // trigger exception if undefined
+            presenter.selectedBank = pm['selected-bank'];
             return presenter;
         }
         catch (err) {

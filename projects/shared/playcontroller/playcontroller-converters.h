@@ -62,3 +62,59 @@ static inline EHC_ControllerStatus_T EHC_uint16ToStatus(const uint16_t s)
   ret.isRestored    = (s & 0b0000000100000000) >> 8;
   return ret;
 }
+
+// ----------------
+static inline uint16_t AT_statusToUint16(const AT_status_T s)
+{
+  uint16_t ret = 0;
+  ret |= s.legacyMode << 0;
+  ret |= s.calibrated << 1;
+  ret |= s.maskedKeys << 2;
+  ret |= s.silentKeys << 3;
+  ret |= s.eepromValid << 4;
+  return ret;
+}
+
+static inline AT_status_T AT_uint16ToStatus(const uint16_t s)
+{
+  AT_status_T ret;
+  ret.legacyMode  = (s & 0b0000000000000001) >> 0;
+  ret.calibrated  = (s & 0b0000000000000010) >> 1;
+  ret.maskedKeys  = (s & 0b0000000000000100) >> 2;
+  ret.silentKeys  = (s & 0b0000000000001000) >> 3;
+  ret.eepromValid = (s & 0b0000000000010000) >> 4;
+  return ret;
+}
+
+// ----------------
+static inline uint16_t BNDR_statusToUint16(const BNDR_status_T s)
+{
+  uint16_t ret = 0;
+  ret |= s.legacyMode << 0;
+  ret |= s.zeroed << 1;
+  ret |= s.everZeroed << 2;
+  ret |= s.leftEndStop << 3;
+  ret |= s.rightEndStop << 4;
+  ret |= s.offZero << 5;
+  ret |= s.useFineSettling << 6;
+  ret |= s.settledFine << 7;
+  ret |= s.settledCoarse << 8;
+  ret |= s.reasonableZero << 9;
+  return ret;
+}
+
+static inline BNDR_status_T BNDR_uint16ToStatus(const uint16_t s)
+{
+  BNDR_status_T ret;
+  ret.legacyMode      = (s & 0b0000000000000001) >> 0;
+  ret.zeroed          = (s & 0b0000000000000010) >> 1;
+  ret.everZeroed      = (s & 0b0000000000000100) >> 2;
+  ret.leftEndStop     = (s & 0b0000000000001000) >> 3;
+  ret.rightEndStop    = (s & 0b0000000000010000) >> 4;
+  ret.offZero         = (s & 0b0000000000100000) >> 5;
+  ret.useFineSettling = (s & 0b0000000001000000) >> 6;
+  ret.settledFine     = (s & 0b0000000010000000) >> 7;
+  ret.settledCoarse   = (s & 0b0000000100000000) >> 8;
+  ret.reasonableZero  = (s & 0b0000001000000000) >> 9;
+  return ret;
+}

@@ -9,9 +9,9 @@
 #include <parameters/MacroControlParameter.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
 
-ModulationRoutingParameter::ModulationRoutingParameter(ParameterGroup *group, const ParameterId& id, tSrcParameterPtr srcParam,
-                                                       tMCParameterPtr tgtParam, const ScaleConverter *scaling)
-    : super(group, id, scaling)
+ModulationRoutingParameter::ModulationRoutingParameter(ParameterGroup *group, const ParameterId &id,
+                                                       tSrcParameterPtr srcParam, tMCParameterPtr tgtParam)
+    : super(group, id)
     , m_tgtParameter(tgtParam)
     , m_srcParameter(srcParam)
 {
@@ -53,7 +53,7 @@ void ModulationRoutingParameter::onExclusiveRoutingLost()
   getValue().setRawValue(Initiator::INDIRECT, 0);
   onChange();
   invalidate();
-  sendToPlaycontroller();
+  sendToAudioEngine();
 }
 
 void ModulationRoutingParameter::applyPlaycontrollerPhysicalControl(tControlPositionValue diff)

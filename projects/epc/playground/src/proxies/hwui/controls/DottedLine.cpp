@@ -14,10 +14,6 @@ bool DottedLine::redraw(FrameBuffer &fb)
     fb.setColor(FrameBufferColors::C204);
 
   Rect r = getPosition();
-  Point c = r.getCenter();
-
-  for(int i = r.getLeft(); i <= r.getRight(); i += 2)
-    fb.setPixel(i, r.getY());
-
+  fb.drawDottedLine(r.getLeft(), r.getY(), r.getWidth());
   return true;
 }

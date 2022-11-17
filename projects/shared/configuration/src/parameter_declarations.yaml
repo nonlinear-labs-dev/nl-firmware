@@ -1,0 +1,966 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !declarations
+
+sound_type: {
+  Single,
+  Split,
+  Layer
+}
+
+layer_id: {
+  I,
+  II
+}
+
+return_behavior: {
+  Stay,
+  Zero,
+  Center
+}
+
+parameter_properties: [
+  &CONTROL_POSITION control_position,
+  &MODULATION_ASPECTS modulation_aspects,
+  &RETURN_BEHAVIOR return_behavior,
+  &GROUP_LABEL group_label,
+  &RENDERING_ARGS rendering_args,
+  &GLOBAL_PARAMETER global_parameter,
+  &ORDINARY_PARAMETER ordinary_parameter,
+  &PARAMETER_ID_NONE parameter_id_none
+]
+
+parameter_type: {
+  None,
+  Hardware_Source: [*GLOBAL_PARAMETER, *CONTROL_POSITION, *RETURN_BEHAVIOR],
+  Display_Parameter: [*GLOBAL_PARAMETER, *CONTROL_POSITION],
+  Hardware_Amount: [*GLOBAL_PARAMETER, *CONTROL_POSITION],
+  Macro_Control: [*GLOBAL_PARAMETER, *CONTROL_POSITION, *PARAMETER_ID_NONE],
+  Macro_Time: [*GLOBAL_PARAMETER, *CONTROL_POSITION, *RENDERING_ARGS, *PARAMETER_ID_NONE],
+  Global_Modulateable: [*GLOBAL_PARAMETER, *ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *MODULATION_ASPECTS, *RENDERING_ARGS],
+  Global_Unmodulateable: [*GLOBAL_PARAMETER, *ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS],
+  Local_Modulateable: [*ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *MODULATION_ASPECTS, *RENDERING_ARGS],
+  Local_Unmodulateable: [*ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS],
+  Polyphonic_Modulateable: [*ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *MODULATION_ASPECTS, *RENDERING_ARGS],
+  Polyphonic_Unmodulateable: [*ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS],
+  Monophonic_Modulateable: [*ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *MODULATION_ASPECTS, *RENDERING_ARGS],
+  Monophonic_Unmodulateable: [*ORDINARY_PARAMETER, *GROUP_LABEL, *CONTROL_POSITION, *RENDERING_ARGS]
+}
+
+parameter_signal: {
+  None,
+  Global_Signal,
+  Quasipoly_Signal,
+  Truepoly_Signal,
+  Mono_Signal
+}
+
+parameter_unit: {
+  [&UNIT_NONE None]: "",
+  [&UNIT_CT Cent]: ct,
+  [&UNIT_DB Decibel]: dB,
+  [&UNIT_DBT Decibel_Time]: dB_T,
+  [&UNIT_DBST Decibel_Per_Semitone]: dB/st,
+  [&UNIT_DEG Degree]: deg,
+  [&UNIT_HZ Hertz]: Hz,
+  [&UNIT_MS Millisecond]: ms,
+  [&UNIT_ST Semitone]: st,
+  [&UNIT_V Voice]: "",
+  [&UNIT_PERCENT Percent]: "%"
+}
+
+parameter_rounding: {
+  [&ROUNDING_NONE None],
+  [&ROUNDING_NO_DECIMALS No_Decimals],
+  [&ROUNDING_ONE_DECIMAL One_Decimal],
+  [&ROUNDING_TWO_DECIMALS Two_Decimals],
+  [&ROUNDING_THREE_DECIMALS Three_Decimals],
+  [&ROUNDING_THREE_SIGNIFICANT_DIGITS Three_Significant_Digits]
+}
+
+parameter_reference: {
+  None: &REFERENCE_NONE none,
+  Linear: &REFERENCE_LINEAR linear,
+  Parabolic: &REFERENCE_PARABOLIC parabolic,
+  Exponential: &REFERENCE_EXPONENTIAL exponential,
+  Gain: &REFERENCE_GAIN (exponential) gain,
+  Integer: &REFERENCE_INTEGRAL integer
+}
+
+parameter_infinity: {
+  [&INF_FINITE None],
+  [&INF_MIN Min],
+  [&INF_MAX Max]
+}
+
+parameter_rgb: {
+  default: &RGB_DEFAULT [ 195, 199, 203 ],
+  branch_a: &RGB_BRANCH_A [ 242, 184, 136 ],
+  branch_b: &RGB_BRANCH_B [ 227, 212, 154 ],
+  comb: &RGB_COMB [ 186, 230, 189 ],
+  svf: &RGB_SFV [ 171, 216, 222 ],
+  fx: &RGB_FX [ 191, 202, 255 ]
+}
+
+parameter_group: {
+  None,
+  Mod_HW: { label_long: Hardware Source, label_short: HW Source, color: *RGB_DEFAULT, token_java: "CS", global_group: true },
+  Mod_HA: { label_long: Hardware Amount, label_short: HW Amount, color: *RGB_DEFAULT, token_java: "MCM", global_group: true },
+  Macro: { label_long: Macro Control, label_short: Macro Control, color: *RGB_DEFAULT, token_java: "MCs", global_group: true },
+  Split: { label_long: Split, label_short: Split, color: *RGB_DEFAULT, token_java: "Split", global_group: false },
+  Master: { label_long: Master, label_short: Master, color: *RGB_DEFAULT, token_java: "Master", global_group: true },
+  Scale: { label_long: Scale, label_short: Scale, color: *RGB_DEFAULT, token_java: "Scale", global_group: true },
+  Unison: { label_long: Unison, label_short: Unison, color: *RGB_DEFAULT, token_java: "Unison", global_group: false },
+  Voice_Grp: { label_long: Voices, label_short: Voices, color: *RGB_DEFAULT },
+  Part: { label_long: Part, label_short: Part, color: *RGB_DEFAULT, token_java: "Part", global_group: false },
+  Mono_Grp: { label_long: Mono, label_short: Mono, color: *RGB_DEFAULT, token_java: "Mono", global_group: false },
+  Env_A: { label_long: Envelope A, label_short: Envelope A, color: *RGB_BRANCH_A, token_java: "Env A", global_group: false },
+  Env_B: { label_long: Envelope B, label_short: Envelope B, color: *RGB_BRANCH_B, token_java: "Env B", global_group: false },
+  Env_C: { label_long: Envelope C, label_short: Envelope C, color: *RGB_DEFAULT, token_java: "Env C", global_group: false },
+  Env_G,
+  Osc_A: { label_long: Oscillator A, label_short: Oscillator A, color: *RGB_BRANCH_A, token_java: "Osc A", global_group: false },
+  Shp_A: { label_long: Shaper A, label_short: Shaper A, color: *RGB_BRANCH_A, token_java: "Sh A", global_group: false },
+  Osc_B: { label_long: Oscillator B, label_short: Oscillator B, color: *RGB_BRANCH_B, token_java: "Osc B", global_group: false },
+  Shp_B: { label_long: Shaper B, label_short: Shaper B, color: *RGB_BRANCH_B, token_java: "Sh B", global_group: false },
+  Comb_Flt: { label_long: Comb Filter, label_short: Comb Filter, color: *RGB_COMB, token_java: "Comb", global_group: false },
+  SV_Flt: { label_long: State Variable Filter, label_short: SV Filter, color: *RGB_SFV, token_java: "SVF", global_group: false },
+  FB_Mix: { label_long: Feedback Mixer, label_short: FB Mixer, color: *RGB_DEFAULT, token_java: "FB", global_group: false },
+  Out_Mix: { label_long: Output Mixer, label_short: Output Mixer, color: *RGB_DEFAULT, token_java: "Mixer", global_group: false },
+  Flanger: { label_long: Flanger, label_short: Flanger, color: *RGB_FX, token_java: "Flang", global_group: false },
+  Cabinet: { label_long: Cabinet, label_short: Cabinet, color: *RGB_FX, token_java: "Cab", global_group: false },
+  Gap_Flt: { label_long: Gap Filter, label_short: Gap Filter, color: *RGB_FX, token_java: "Gap Filt", global_group: false },
+  Echo: { label_long: Echo, label_short: Echo, color: *RGB_FX, token_java: "Echo", global_group: false },
+  Reverb: { label_long: Reverb, label_short: Reverb, color: *RGB_FX, token_java: "Reverb", global_group: false }
+}
+
+smoother_section: {
+  None,
+  Global,
+  Poly,
+  Mono
+}
+
+smoother_clock: {
+  Sync,
+  Audio,
+  Fast,
+  Slow
+}
+
+smoother_scale: {
+  None,
+  Linear,
+  Parabolic,
+  Cubic,
+  S_Curve,
+  Expon_Gain,
+  Expon_Osc_Pitch,
+  Expon_Lin_Pitch,
+  Expon_Shaper_Drive,
+  Expon_Mix_Drive,
+  Expon_Env_Time
+}
+
+display_scaling_type: {
+
+  # - - - - - - - - - - - - - - - - None - - - - - - - - - - - - - - - - #
+
+  None: {
+    round: *ROUNDING_NONE,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_NONE,
+    inf: *INF_FINITE,
+    values: [],
+    min: 0.0f,
+    max: 0.0f,
+    bipolar: false
+  },
+
+  # - - - - - - - - - - - - - - - - Unit::None - - - - - - - - - - - - - - - - #
+
+  LINEAR_12_KEYS: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_INTEGRAL,
+    inf: *INF_FINITE,
+    values: [ C, D#, F#, G#, B ],
+    min: 0.0f,
+    max: 11.0f,
+    bipolar: false
+  },
+  LINEAR_61_KEYS: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_INTEGRAL,
+    inf: *INF_FINITE,
+    values: [ C1, D#2, F#3, A4, C6 ],
+    min: 0.0f,
+    max: 60.0f,
+    bipolar: false
+  },
+  # effectively the same scaling as above
+  LINEAR_0_60_KEY: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_INTEGRAL,
+    inf: *INF_FINITE,
+    values: [ C1, D#2, F#3, A4, C6 ],
+    min: 0.0f,
+    max: 60.0f,
+    bipolar: false
+  },
+  SWITCH_ON_OFF: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_INTEGRAL,
+    inf: *INF_FINITE,
+    values: [ "Off", "On" ],
+    min: 0.0f,
+    max: 1.0f,
+    bipolar: false
+  },
+  SWITCH_PRIO: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_INTEGRAL,
+    inf: *INF_FINITE,
+    values: [ Latest, Highest, Lowest ],
+    min: 0.0f,
+    max: 2.0f,
+    bipolar: false
+  },
+  MODES_LEGATO: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_INTEGRAL,
+    inf: *INF_FINITE,
+    values: [ None, Env, Glide, Env&Gld ],
+    min: 0.0f,
+    max: 3.0f,
+    bipolar: false
+  },
+
+  # - - - - - - - - - - - - - - - - Unit::CT - - - - - - - - - - - - - - - - #
+
+  LINEAR_BIPOLAR_1200_CENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_CT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-1200.0", "-600.0", "0.0", "600.0", "1200.0" ],
+    min: -1200.0f,
+    max: 1200.0f,
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_2400_CENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_CT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-2400.0", "-1200.0", "0.0", "1200.0", "2400.0" ],
+    min: -2400.0f,
+    max: 2400.0f,
+    bipolar: true
+  },
+
+  # - - - - - - - - - - - - - - - - Unit::DB - - - - - - - - - - - - - - - - #
+
+  LINEAR_50_DB: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "0.0", "12.5", "25.0", "37.5", "50.0" ],
+    min: 0.0f,
+    max: 50.0f,
+    bipolar: false
+  },
+  LINEAR_BIPOLAR_50_DB: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-50.0", "-25.0", "0.0", "25.0", "50.0" ],
+    min: -50.0f,
+    max: 50.0f,
+    bipolar: true
+  },
+  # LINEAR_60_DB: {
+  #   # unused
+  #   round: *ROUNDING_ONE_DECIMAL,
+  #   unit: *UNIT_DB,
+  #   reference: *REFERENCE_LINEAR,
+  #   inf: *INF_FINITE,
+  #   values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ],
+  #   min: 0.0f,
+  #   max: 60.0f,
+  #   bipolar: false
+  # },
+  LINEAR_MINUS_50_0_DB: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-50.0", "-37.5", "-25.0", "-12.5", "0.0" ],
+    min: -50.0f,
+    max: 0.0f,
+    bipolar: false
+  },
+  LINEAR_BIPOLAR_24_DB: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-24.0", "-12.0", "0.0", "12.0", "24.0" ],
+    min: -24.0f,
+    max: 24.0f,
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_48_DB: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-48.0", "-24.0", "0.0", "24.0", "48.0" ],
+    min: -48.0f,
+    max: 48.0f,
+    bipolar: true
+  },
+  PARABOLIC_GAIN_DB: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_GAIN,
+    inf: *INF_MIN,
+    values: [ "-108", "-12.0", "0.000", "7.04", "12.0" ],
+    min: -108.0f, # unclear if this is useful
+    max: 12.0f,   # unclear if this is useful
+    bipolar: false
+  },
+  LINEAR_70_DB: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "0.0", "17.5", "35.0", "52.5", "70.0" ],
+    min: 0.0f,
+    max: 70.0f,
+    bipolar: false
+  },
+  LINEAR_BIPOLAR_70_DB: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-70.0", "-35.0", "0.0", "35.0", "70.0" ],
+    min: -70.0f,
+    max: 70.0f,
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_60_DB: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DB,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
+    min: -60.0f,
+    max: 60.0f,
+    bipolar: true
+  },
+
+  # - - - - - - - - - - - - - - - - Unit::DBT - - - - - - - - - - - - - - - - #
+
+  # LINEAR_60_DBT: {
+  #   # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3176
+  #   round: *ROUNDING_ONE_DECIMAL,
+  #   unit: *UNIT_DBT,
+  #   reference: *REFERENCE_LINEAR,
+  #   inf: *INF_FINITE,
+  #   values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ],
+  #   min: 0.0f,
+  #   max: 60.0f,
+  #   bipolar: false
+  # },
+  # LINEAR_BIPOLAR_60_DBT: {
+  #   # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3182
+  #   round: *ROUNDING_ONE_DECIMAL,
+  #   unit: *UNIT_DBT,
+  #   reference: *REFERENCE_LINEAR,
+  #   inf: *INF_FINITE,
+  #   values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
+  #   min: -60.0f,
+  #   max: 60.0f,
+  #   bipolar: true
+  # },
+  # LINEAR_INVERTED_60_DBT: {
+  #   # deprecated with https://github.com/nonlinear-labs-dev/C15/issues/3176
+  #   round: *ROUNDING_ONE_DECIMAL,
+  #   unit: *UNIT_DBT,
+  #   reference: *REFERENCE_LINEAR,
+  #   inf: *INF_FINITE,
+  #   values: [ "-60.0", "-45.0", "-30.0", "-15.0", "0.0" ],
+  #   min: -60.0f,
+  #   max: 0.0f,
+  #   bipolar: false
+  # },
+  LINEAR_BIPOLAR_INVERTED_60_DBT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DBT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
+    min: -60.0f,
+    max: 60.0f,
+    bipolar: true
+  },
+
+  # - - - - - - - - - - - - - - - - Unit::DB_ST - - - - - - - - - - - - - - - - #
+
+  LINEAR_BIPOLAR_1_DBST: {
+    round: *ROUNDING_THREE_DECIMALS,
+    unit: *UNIT_DBST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-1.000", "-0.500", "0.000", "0.500", "1.000" ],
+    min: -1.0f,
+    max: 1.0f,
+    bipolar: true
+  },
+
+  # - - - - - - - - - - - - - - - - Unit::DEG - - - - - - - - - - - - - - - - #
+
+  LINEAR_180_DEG: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DEG,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "0.0", "45.0", "90.0", "135.0", "180.0" ],
+    min: 0.0f,
+    max: 180.0f,
+    bipolar: false
+  },
+  LINEAR_360_DEG: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DEG,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "0.0", "90.0", "180.0", "270.0", "360.0" ],
+    min: 0.0f,
+    max: 360.0f,
+    bipolar: false
+  },
+  LINEAR_BIPOLAR_360_DEG: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DEG,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-360.0", "-180.0", "0.0", "180.0", "360.0" ],
+    min: -360.0f,
+    max: 360.0f,
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_180_DEG: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_DEG,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-180.0", "-90.0", "0", "90.0", "180.0" ],
+    min: -180.0f,
+    max: 180.0f,
+    bipolar: true
+  },
+
+  # - - - - - - - - - - - - - - - - Unit::HZ - - - - - - - - - - - - - - - - #
+
+  PARABOLIC_10_HZ: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_HZ,
+    reference: *REFERENCE_PARABOLIC,
+    inf: *INF_FINITE,
+    values: [ "0.000", "0.625", "2.50", "5.63", "10.0" ],
+    min: 0.0f,
+    max: 10.0f,
+    bipolar: false
+  },
+
+  # - - - - - - - - - - - - - - - - Unit::MS - - - - - - - - - - - - - - - - #
+
+  COMB_DECAY_BIPOLAR_MS: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_MS,
+    reference: *REFERENCE_EXPONENTIAL,
+    inf: *INF_FINITE,
+    values: [ "-100000", "-316", "0.000", "316", "100000" ],
+    min: -100000.0f,
+    max: 100000.0f,
+    bipolar: true
+  },
+  ENVELOPE_TIME_MS: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_MS,
+    reference: *REFERENCE_EXPONENTIAL,
+    inf: *INF_FINITE,
+    values: [ "0.000", "2.00", "40.0", "800", "16000" ],
+    min: 0.0f,
+    max: 16000.0f,
+    bipolar: false
+  },
+  ENVELOPE_TIME_MS_INF: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_MS,
+    reference: *REFERENCE_EXPONENTIAL,
+    inf: *INF_MAX,
+    values: [ "0.000", "2.00", "40.0", "800", "16000" ],
+    min: 0.0f,
+    max: 16000.0f, # unclear if this is useful
+    bipolar: false
+  },
+  PARABOLIC_50_MS: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_MS,
+    reference: *REFERENCE_PARABOLIC,
+    inf: *INF_FINITE,
+    values: [ "0.000", "3.14", "12.5", "28.2", "50.0" ],
+    min: 0.0f,
+    max: 50.0f,
+    bipolar: false
+  },
+  PARABOLIC_2000_MS: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_MS,
+    reference: *REFERENCE_PARABOLIC,
+    inf: *INF_FINITE,
+    values: [ "0.000", "125", "500", "1130", "2000" ],
+    min: 0.0f,
+    max: 2000.0f,
+    bipolar: false
+  },
+
+  # - - - - - - - - - - - - - - - - Unit::ST - - - - - - - - - - - - - - - - #
+
+  FINE_BIPOLAR_48_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-48.00", "-24.00", "0.00", "24.00", "48.00" ],
+    min: -48.0f,
+    max: 48.0f,
+    bipolar: true
+  },
+  FINE_BIPOLAR_96_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-96.00", "-48.00", "0.00", "48.00", "96.00" ],
+    min: -96.0f,
+    max: 96.0f,
+    bipolar: true
+  },
+  FINE_BIPOLAR_80_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-80.00", "-40.00", "0.00", "40.00", "80.00" ],
+    min: -80.0f,
+    max: 80.0f,
+    bipolar: true
+  },
+  FINE_BIPOLAR_160_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-160.00", "-80.00", "0.00", "80.00", "160.00" ],
+    min: -160.0f,
+    max: 160.0f,
+    bipolar: true
+  },
+  INTEGRAL_BIPOLAR_60_ST: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_INTEGRAL,
+    inf: *INF_FINITE,
+    values: [ "-60", "-30", "0", "30", "60" ],
+    min: -60.0f,
+    max: 60.0f,
+    bipolar: true
+  },
+  FINE_BIPOLAR_36_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-36.00", "-18.00", "0.00", "18.00", "36.00" ],
+    min: -36.0f,
+    max: 36.0f,
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_60_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-60.0", "-30.0", "0.0", "30.0", "60.0" ],
+    min: -60.0f,
+    max: 60.0f,
+    bipolar: true
+  },
+  LINEAR_96_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "0.0", "24.0", "48.0", "72.0", "96.0" ],
+    min: 0.0f,
+    max: 96.0f,
+    bipolar: false
+  },
+  LINEAR_BIPOLAR_96_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-96.0", "-48.0", "0.0", "48.0", "96.0" ],
+    min: -96.0f,
+    max: 96.0f,
+    bipolar: true
+  },
+  LINEAR_0_140_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "0.0", "35.0", "70.0", "105.0", "140.0" ],
+    min: 0.0f,
+    max: 140.0f,
+    bipolar: false
+  },
+  LINEAR_BIPOLAR_140_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-140.0", "-70.0", "0.0", "70.0", "140.0" ],
+    min: -140.0f,
+    max: 140.0f,
+    bipolar: true
+  },
+  LINEAR_20_100_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "20.0", "40.0", "60.0", "80.0", "100.0" ],
+    min: 20.0f,
+    max: 100.0f,
+    bipolar: false
+  },
+  LINEAR_20_140_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "20.0", "50.0", "80.0", "110.0", "140.0" ],
+    min: 20.0f,
+    max: 140.0f,
+    bipolar: false
+  },
+  LINEAR_24_120_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "24.0", "48.0", "72.0", "96.0", "120.0" ],
+    min: 24.0f,
+    max: 120.0f,
+    bipolar: false
+  },
+  LINEAR_40_140_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "40.0", "65.0", "90.0", "115.0", "140.0" ],
+    min: 40.0f,
+    max: 140.0f,
+    bipolar: false
+  },
+  LINEAR_60_140_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "60.0", "80.0", "100.0", "120.0", "140.0" ],
+    min: 60.0f,
+    max: 140.0f,
+    bipolar: false
+  },
+  LINEAR_80_140_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "80.0", "95.0", "110.0", "125.0", "140.0" ],
+    min: 80.0f,
+    max: 140.0f,
+    bipolar: false
+  },
+  FINE_BIPOLAR_72_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-72.00", "-36.00", "0.00", "36.00", "72.00" ],
+    min: -72.0f,
+    max: 72.0f,
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_80_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-80.0", "-40.0", "0.0", "40.0", "80.0" ],
+    min: -80.0f,
+    max: 80.0f,
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_100_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-100.0", "-50.0", "0.0", "50.0", "100.0" ],
+    min: -100.0f,
+    max: 100.0f,
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_120_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-120.0", "-60.0", "0.0", "60.0", "120.0" ],
+    min: -120.0f,
+    max: 120.0f,
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_160_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-160.0", "-80.0", "0.0", "80.0", "160.0" ],
+    min: -160.0f,
+    max: 160.0f,
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_200_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-200.0", "-100.0", "0.0", "100.0", "200.0" ],
+    min: -200.0f,
+    max: 200.0f,
+    bipolar: true
+  },
+  NUMERIC_120_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "0.00", "30.00", "60.00", "90.00", "120.00" ],
+    min: 0.0f,
+    max: 120.0f,
+    bipolar: false
+  },
+  NUMERIC_BIPOLAR_120_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-120.00", "-60.00", "0.00", "60.00", "120.00" ],
+    min: -120.0f,
+    max: 120.0f,
+    bipolar: true
+  },
+  NUMERIC_150_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-20.00", "17.50", "55.00", "92.50", "130.00" ],
+    min: -20.0f,
+    max: 130.0f,
+    bipolar: false
+  },
+  NUMERIC_BIPOLAR_150_ST: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-150.00", "-75.00", "0.00", "75.00", "150.00" ],
+    min: -150.0f,
+    max: 150.0f,
+    bipolar: true
+  },
+  VERY_FINE_24_ST: {
+    round: *ROUNDING_THREE_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "0.000", "6.000", "12.000", "18.000", "24.000" ],
+    min: 0.0f,
+    max: 24.0f,
+    bipolar: false
+  },
+  VERY_FINE_BIPOLAR_24_ST: {
+    round: *ROUNDING_THREE_DECIMALS,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-24.000", "-12.000", "0.000", "12.000", "24.000" ],
+    min: -24.0f,
+    max: 24.0f,
+    bipolar: true
+  },
+  LINEAR_0_60_ST: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_ST,
+    reference: *REFERENCE_INTEGRAL,
+    inf: *INF_FINITE,
+    values: [ "0.0", "15.0", "30.0", "45.0", "60.0" ],
+    min: 0.0f,
+    max: 60.0f,
+    bipolar: false
+  },
+
+  # - - - - - - - - - - - - - - - - Unit::V - - - - - - - - - - - - - - - - #
+
+  LINEAR_24_COUNT: {
+    round: *ROUNDING_NO_DECIMALS,
+    unit: *UNIT_V,
+    reference: *REFERENCE_INTEGRAL,
+    inf: *INF_FINITE,
+    values: [ "1", "7", "13", "18", "24" ],
+    min: 1.0f,  # unclear if this is useful
+    max: 24.0f, # unclear if this is useful
+    bipolar: false
+  },
+
+  # - - - - - - - - - - - - - - - - Unit::PERCENT - - - - - - - - - - - - - - - - #
+
+  FINE_200_PERCENT: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "0.00", "50.00", "100.00", "150.00", "200.00" ],
+    min: 0.0f,
+    max: 200.0f,
+    bipolar: false
+  },
+  FINE_BIPOLAR_100_PERCENT: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-100.00", "-50.00", "0.00", "50.00", "200.00" ],
+    min: -100.0f,
+    max: 100.0f,
+    bipolar: true
+  },
+  FINE_BIPOLAR_200_PERCENT: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-200.00", "-100.00", "0.00", "100.00", "200.00" ],
+    min: -200.0f,
+    max: 200.0f,
+    bipolar: true
+  },
+  LINEAR_100_PERCENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "0.0", "25.0", "50.0", "75.0", "100.0" ],
+    min: 0.0f,
+    max: 100.0f,
+    bipolar: false
+  },
+  FINE_BIPOLAR_33_PERCENT: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-33.00", "-16.50", "0.00", "16.50", "33.00" ],
+    min: -33.0f,
+    max: 33.0f,
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_50_PERCENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-50.0", "-25.0", "0.0", "25.0", "50.0" ],
+    min: -50.0f,
+    max: 50.0f,
+    bipolar: true
+  },
+  FINE_BIPOLAR_66_PERCENT: {
+    round: *ROUNDING_TWO_DECIMALS,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-66.00", "-33.00", "0.00", "33.00", "66.00" ],
+    min: -66.0f,
+    max: 66.0f,
+    bipolar: true
+  },
+  PARABOLIC_BIP_100_PERCENT: {
+    round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_PARABOLIC,
+    inf: *INF_FINITE,
+    values: [ "-100.0", "-25.0", "0.0", "25.0", "100.0" ],
+    min: -100.0f,
+    max: 100.0f,
+    bipolar: true
+  },
+  LINEAR_200_PERCENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "0.0", "50.0", "100.0" , "150.0", "200.0"],
+    min: 0.0f,
+    max: 200.0f,
+    bipolar: false
+  },  
+  LINEAR_BIPOLAR_100_PERCENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-100.0", "-50.0", "0.0", "50.0", "100.0" ],
+    min: -100.0f,
+    max: 100.0f,
+    bipolar: true
+  },
+  LINEAR_BIPOLAR_200_PERCENT: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_PERCENT,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "-200.0", "-100.0", "0.0", "100.0", "200.0" ],
+    min: -200.0f,
+    max: 200.0f,
+    bipolar: true
+  }
+}

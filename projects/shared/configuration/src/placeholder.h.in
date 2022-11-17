@@ -1,0 +1,186 @@
+#pragma once
+
+/******************************************************************************/
+/** @file       placeholder.h
+    @date       ${timestamp}
+    @version    ${config.milestone}-${config.version}
+    @author     M. Seeber
+    @brief      placeholders for parameter label/info string replacements
+    @todo       
+*******************************************************************************/
+
+#include <stddef.h>
+
+namespace C15
+{
+
+  namespace Placeholder
+  {
+
+    using Text = char const *const;
+
+    static constexpr Text Qualifier = "@";
+    static constexpr Text None = "";
+
+    class Replacer
+    {
+     protected:
+      class VoiceGroupReplacer
+      {
+        static constexpr size_t s_size = 2;  // probably temporary: I, II
+        using Replacement = Text[s_size];
+        const Replacement m_replacement;
+
+       public:
+        inline constexpr VoiceGroupReplacer(const Text &_both)
+            : m_replacement{ _both, _both }
+        {
+        }
+        inline constexpr VoiceGroupReplacer(const Text &_I, const Text &_II)
+            : m_replacement{ _I, _II }
+        {
+        }
+        template<typename VoiceGroup>
+        inline const Text &getReplacement(const VoiceGroup &_vg) const
+        {
+          if((size_t) _vg < s_size)
+            return m_replacement[(bool) _vg];
+          return None;
+        }
+      };
+      class GlobalSoundTypeReplacer
+      {
+        static constexpr size_t s_size = 3;  // probably temporary: single, split, layer
+        using Replacement = Text[s_size];
+        const Replacement m_replacement;
+
+       public:
+        inline constexpr GlobalSoundTypeReplacer(const Text &_single, const Text &_split, const Text &_layer)
+            : m_replacement{ _single, _split, _layer }
+        {
+        }
+        template<typename SoundType>
+        inline const Text &getReplacement(const SoundType &_st) const
+        {
+          if((size_t) _st < s_size)
+            return m_replacement[(size_t) _st];
+          return None;
+        }
+      };
+      class LocalSoundTypeReplacer
+      {
+        static constexpr size_t s_size = 3;  // probably temporary: single, split, layer
+        using Replacement = VoiceGroupReplacer[s_size];
+        const Replacement m_replacement;
+
+       public:
+        inline constexpr LocalSoundTypeReplacer(const VoiceGroupReplacer &_single, const VoiceGroupReplacer &_split,
+                                                const VoiceGroupReplacer &_layer)
+            : m_replacement{ _single, _split, _layer }
+        {
+        }
+        template<typename SoundType, typename VoiceGroup>
+        inline const Text &getReplacement(const SoundType &_st, const VoiceGroup &_vg) const
+        {
+          if((size_t) _st < s_size)
+            return m_replacement[(size_t) _st].getReplacement(_vg);
+          return None;
+        }
+      };
+
+     public:
+      const Text m_qualifier;
+      static constexpr VoiceGroupReplacer createVoiceGroupReplacer(const VoiceGroupReplacer &_vg)
+      {
+        return _vg;
+      }
+    };
+
+    class GlobalReplacer : public Replacer
+    {
+     public:
+      static constexpr bool s_isGlobal = true;
+      template<typename SoundType>
+      inline const Text &getReplacement(const SoundType &_st) const
+      {
+        return m_replacement.getReplacement(_st);
+      }
+      inline constexpr GlobalReplacer(const Text &_qualifier, const Text &_all)
+          : Replacer{ _qualifier }
+          , m_replacement{ _all, _all, _all }
+      {
+      }
+      inline constexpr GlobalReplacer(const Text &_qualifier, const Text &_single, const Text &_dual)
+          : Replacer{ _qualifier }
+          , m_replacement{ _single, _dual, _dual }
+      {
+      }
+      inline constexpr GlobalReplacer(const Text &_qualifier, const Text &_single, const Text &_split,
+                                      const Text &_layer)
+          : Replacer{ _qualifier }
+          , m_replacement{ _single, _split, _layer }
+      {
+      }
+
+     private:
+      const GlobalSoundTypeReplacer m_replacement;
+    };
+
+    class LocalReplacer : public Replacer
+    {
+     public:
+      static constexpr bool s_isGlobal = false;
+      template<typename SoundType, typename VoiceGroup>
+      inline const Text &getReplacement(const SoundType &_st, const VoiceGroup &_vg) const
+      {
+        return m_replacement.getReplacement(_st, _vg);
+      }
+      inline constexpr LocalReplacer(const Text &_qualifier, const VoiceGroupReplacer &_all)
+          : Replacer{ _qualifier }
+          , m_replacement{ _all, _all, _all }
+      {
+      }
+      inline constexpr LocalReplacer(const Text &_qualifier, const VoiceGroupReplacer &_single,
+                                     const VoiceGroupReplacer &_dual)
+          : Replacer{ _qualifier }
+          , m_replacement{ _single, _dual, _dual }
+      {
+      }
+      inline constexpr LocalReplacer(const Text &_qualifier, const VoiceGroupReplacer &_single,
+                                     const VoiceGroupReplacer &_split, const VoiceGroupReplacer &_layer)
+          : Replacer{ _qualifier }
+          , m_replacement{ _single, _split, _layer }
+      {
+      }
+
+     private:
+      const LocalSoundTypeReplacer m_replacement;
+    };
+
+    /******************************************************************************/
+    
+    // common
+    static constexpr Text VgI = u8"\ue071";
+    static constexpr Text VgII = u8"\ue072";
+
+    static constexpr GlobalReplacer GlobalPlaceholders[]
+        = { { "@MC:A", u8"\ue000" }, { "@MC:B", u8"\ue001" }, { "@MC:C", u8"\ue002" },    { "@MC:D", u8"\ue003" },
+            { "@MC:E", u8"\ue200" }, { "@MC:F", u8"\ue201" }, { "@ST:Pan", "FX", "Part" } };
+
+    // common local
+    static constexpr auto VgSelf = Replacer::createVoiceGroupReplacer({ VgI, VgII });
+    static constexpr auto VgOther = Replacer::createVoiceGroupReplacer({ VgII, VgI });
+    static constexpr auto VgBetween = Replacer::createVoiceGroupReplacer({ u8"\ue071-\ue072" });
+
+    static constexpr LocalReplacer LocalPlaceholders[] = {
+      { "@VG:Self", VgSelf },
+      { "@VG:Other", VgOther },
+      { "@ST:Between", VgBetween, VgOther }
+      /* parameters to come */
+      //    { "@ST:FX", { u8"\ue072 to \ue071", u8"\ue071 to \ue072" } }
+    };
+
+  }  // namespace C15::Placeholder
+
+}  // namespace C15
+

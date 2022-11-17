@@ -5,7 +5,7 @@ class MockSettingsObject : public Settings
 {
  public:
   typedef std::function<int(uint64_t)> tOnChangeCB;
-  explicit MockSettingsObject(const Glib::ustring& file, UpdateDocumentMaster* m);
+  explicit MockSettingsObject(const Glib::ustring& file, UpdateDocumentMaster* m, HardwareFeatures& hw);
 
   void setOnChangeCB(tOnChangeCB&& cb);
   tUpdateID onChange(uint64_t flags) override;

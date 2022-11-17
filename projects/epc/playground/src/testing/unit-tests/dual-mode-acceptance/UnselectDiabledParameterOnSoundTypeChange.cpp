@@ -12,7 +12,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"FROM Layer")
   EditBufferUseCases ebUseCases(*eb);
   ebUseCases.load(presets.getLayerPreset());
 
-  Application::get().getVGManager()->setCurrentVoiceGroup(VoiceGroup::II);
+  {
+    auto scope = TestHelper::createTestScope();
+    Application::get().getVGManager()->setCurrentVoiceGroup(scope->getTransaction(), VoiceGroup::II, true);
+  }
 
   CHECK(eb->getType() == SoundType::Layer);
 
@@ -281,7 +284,11 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Loaded")
 
   ebUseCases.load(presets.getSplitPreset());
 
-  Application::get().getVGManager()->setCurrentVoiceGroup(VoiceGroup::II);
+  {
+    auto scope = TestHelper::createTestScope();
+    Application::get().getVGManager()->setCurrentVoiceGroup(scope->getTransaction(), VoiceGroup::II, true);
+  }
+
   CHECK(eb->getType() == SoundType::Split);
 
   WHEN("OUT: To FX x selected")
