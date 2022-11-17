@@ -542,19 +542,19 @@ Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
 {
   switch(getID().getNumber())
   {
-    case 135:
-    case 155:
-    case 113:
-    case 136:
-    case 243:
-    case 246:
-    case 244:
-    case 245:
-    case 348:
-    case 350:
-    case 352:
-    case 354:
-    case 362:
+    case C15::PID::Comb_Flt_PM_A_B:
+    case C15::PID::SV_Flt_FM_A_B:
+    case C15::PID::Comb_Flt_In_A_B:
+    case C15::PID::SV_Flt_In_A_B:
+    case C15::PID::MC_A:
+    case C15::PID::MC_D:
+    case C15::PID::MC_B:
+    case C15::PID::MC_C:
+    case C15::PID::FB_Mix_Osc_Src:
+    case C15::PID::FB_Mix_Comb_Src:
+    case C15::PID::FB_Mix_SVF_Src:
+    case C15::PID::FB_Mix_FX_Src:
+    case C15::PID::Out_Mix_To_FX:
       return VisualizationStyle::Dot;
     case C15::PID::Voice_Grp_Fade_From:
     {

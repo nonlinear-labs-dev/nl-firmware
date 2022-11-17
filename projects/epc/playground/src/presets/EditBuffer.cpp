@@ -509,8 +509,8 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
-  initRecallValues(transaction);
   setHWSourcesToLoadRulePostionsAndModulate(transaction);
+  initRecallValues(transaction);
   resetModifiedIndicator(transaction, getHash());
 }
 
@@ -667,11 +667,12 @@ Parameter *EditBuffer::searchForAnyParameterWithLock(VoiceGroup vg) const
   return nullptr;
 }
 
-void EditBuffer::setMacroControlValueFromMCView(ParameterId id, double value, const Glib::ustring &uuid)
+void EditBuffer::setMacroControlValueFromMCView(const ParameterId& id, double value, const Glib::ustring &uuid)
 {
   if(auto mc = dynamic_cast<MacroControlParameter *>(findParameterByID(id)))
   {
-    mc->setCPFromMCView(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
+    auto scope = UNDO::Scope::startTrashTransaction();
+    mc->setCPFromMCView(scope->getTransaction(), value);
     mc->setLastMCViewUUID(uuid);
   }
 }
