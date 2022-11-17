@@ -271,6 +271,10 @@ namespace nltools
     inline bool operator==(const SinglePresetMessage& _lhs, const SinglePresetMessage& _rhs)
     {
       auto ret = SinglePresetMessage::compareCommon(_lhs, _rhs);
+      // temporary: local parameters
+      ret &= _lhs.m_localModulateables == _rhs.m_localModulateables;
+      ret &= _lhs.m_localUnmodulateables == _rhs.m_localUnmodulateables;
+      // polyphonic parameters
       ret &= _lhs.m_polyphonicModulateables == _rhs.m_polyphonicModulateables;
       ret &= _lhs.m_polyphonicUnmodulateables == _rhs.m_polyphonicUnmodulateables;
       return ret;
@@ -332,6 +336,10 @@ namespace nltools
     inline bool operator==(const SplitPresetMessage& _lhs, const SplitPresetMessage& _rhs)
     {
       auto ret = SplitPresetMessage::compareCommon(_lhs, _rhs);
+      // temporary: local parameters
+      ret &= _lhs.m_localModulateables == _rhs.m_localModulateables;
+      ret &= _lhs.m_localUnmodulateables == _rhs.m_localUnmodulateables;
+      // polyphonic parameters
       ret &= _lhs.m_polyphonicModulateables == _rhs.m_polyphonicModulateables;
       ret &= _lhs.m_polyphonicUnmodulateables == _rhs.m_polyphonicUnmodulateables;
       return ret;
@@ -394,6 +402,10 @@ namespace nltools
     inline bool operator==(const LayerPresetMessage& _lhs, const LayerPresetMessage& _rhs)
     {
       auto ret = LayerPresetMessage::compareCommon(_lhs, _rhs);
+      // temporary: local parameters
+      ret &= _lhs.m_localModulateables == _rhs.m_localModulateables;
+      ret &= _lhs.m_localUnmodulateables == _rhs.m_localUnmodulateables;
+      // polyphonic parameters
       ret &= _lhs.m_polyphonicModulateables == _rhs.m_polyphonicModulateables;
       ret &= _lhs.m_polyphonicUnmodulateables == _rhs.m_polyphonicUnmodulateables;
       return ret;
