@@ -137,8 +137,7 @@ void fillMessageWithMacroControlsAndMacroTimes(nltools::msg::detail::PresetMessa
 }
 
 template <nltools::msg::MessageType tMsgType>
-void fillMessageWithHardwareSources(nltools::msg::detail::PresetMessage<tMsgType> &msg,
-                                           const EditBuffer &editBuffer)
+void fillMessageWithHardwareSources(nltools::msg::detail::PresetMessage<tMsgType> &msg, const EditBuffer &editBuffer)
 {
   size_t hw = 0;
 
@@ -306,6 +305,45 @@ void fillSingleMessageWithPolyParameters(nltools::msg::SinglePresetMessage &msg,
   nltools_assertAlways(modulateables == msg.m_polyphonicModulateables.size());
 }
 
+// temporary
+void fillSingleMessageWithLocalParameters(nltools::msg::SinglePresetMessage &msg, const EditBuffer &eb)
+{
+  size_t modulateables = 0;
+  size_t unmodulateables = 0;
+
+  for(auto &g : eb.getParameterGroups(VoiceGroup::I))
+  {
+    for(auto &p : g->getParameters())
+    {
+      switch(p->getType())
+      {
+        case C15::Descriptors::ParameterType::Local_Modulateable:
+        {
+          if(auto modP = dynamic_cast<ModulateableParameter *>(p))
+          {
+            auto &e = msg.m_localModulateables[modulateables++];
+            e.m_id = static_cast<C15::PID::ParameterID>(modP->getID().getNumber());
+            e.m_controlPosition = modP->getControlPositionValue();
+            e.m_modulationAmount = modP->getModulationAmount();
+            e.m_macro = modP->getModulationSource();
+          }
+        }
+        break;
+        case C15::Descriptors::ParameterType::Local_Unmodulateable:
+        {
+          auto &e = msg.m_localUnmodulateables[unmodulateables++];
+          e.m_id = static_cast<C15::PID::ParameterID>(p->getID().getNumber());
+          e.m_controlPosition = p->getControlPositionValue();
+        }
+        break;
+      }
+    }
+  }
+
+  nltools_assertAlways(unmodulateables == msg.m_localUnmodulateables.size());
+  nltools_assertAlways(modulateables == msg.m_localModulateables.size());
+}
+
 template <typename tMSG> void fillDualMessageWithPolyParameters(tMSG &msg, const EditBuffer &editBuffer)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
@@ -350,11 +388,58 @@ template <typename tMSG> void fillDualMessageWithPolyParameters(tMSG &msg, const
   }
 }
 
+// temporary
+template <typename tMSG> void fillDualMessageWithLocalParameters(tMSG &msg, const EditBuffer &editBuffer)
+{
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    auto &modParams = msg.m_localModulateables[static_cast<int>(vg)];
+    auto &unmodParams = msg.m_localUnmodulateables[static_cast<int>(vg)];
+
+    size_t modulateables = 0;
+    size_t unmodulateables = 0;
+
+    for(auto &g : editBuffer.getParameterGroups(vg))
+    {
+      for(auto &p : g->getParameters())
+      {
+        switch(p->getType())
+        {
+          case C15::Descriptors::ParameterType::Local_Modulateable:
+          {
+            if(auto modP = dynamic_cast<ModulateableParameter *>(p))
+            {
+              auto &e = modParams[modulateables++];
+              e.m_id = static_cast<C15::PID::ParameterID>(modP->getID().getNumber());
+              e.m_controlPosition = modP->getControlPositionValue();
+              e.m_modulationAmount = modP->getModulationAmount();
+              e.m_macro = modP->getModulationSource();
+            }
+          }
+          break;
+          case C15::Descriptors::ParameterType::Local_Unmodulateable:
+          {
+            auto &e = unmodParams[unmodulateables++];
+            e.m_id = static_cast<C15::PID::ParameterID>(p->getID().getNumber());
+            e.m_controlPosition = p->getControlPositionValue();
+          }
+          break;
+        }
+      }
+    }
+
+    nltools_assertAlways(unmodulateables == unmodParams.size());
+    nltools_assertAlways(modulateables == modParams.size());
+  }
+}
+
 nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessage(const EditBuffer &eb)
 {
   nltools::msg::SinglePresetMessage msg {};
   fillMessageWithSharedParameters(msg, eb);
+  fillSingleMessageWithLocalParameters(msg, eb);
   fillSingleMessageWithPolyParameters(msg, eb);
+  nltools::msg::SinglePresetMessage::validate(msg);  // validation ?
   return msg;
 }
 
@@ -362,7 +447,9 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
 {
   nltools::msg::SplitPresetMessage msg {};
   fillMessageWithSharedParameters(msg, eb);
+  fillDualMessageWithLocalParameters(msg, eb);
   fillDualMessageWithPolyParameters(msg, eb);
+  nltools::msg::SplitPresetMessage::validate(msg);  // validation ?
   return msg;
 }
 
@@ -370,7 +457,9 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
 {
   nltools::msg::LayerPresetMessage msg {};
   fillMessageWithSharedParameters(msg, eb);
+  fillDualMessageWithLocalParameters(msg, eb);
   fillDualMessageWithPolyParameters(msg, eb);
+  nltools::msg::LayerPresetMessage::validate(msg);  // validation ?
   return msg;
 }
 

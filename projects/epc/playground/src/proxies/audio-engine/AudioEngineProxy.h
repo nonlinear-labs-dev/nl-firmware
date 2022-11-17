@@ -37,16 +37,16 @@ class AudioEngineProxy : public sigc::trackable
 
   AudioEngineProxy(PresetManager& pm, Settings& settings, PlaycontrollerProxy& playProxy);
 
-  template <typename tParameter> auto createAndSendParameterMessage(const tParameter* parameter)
-  {
-    if(!m_suppressParamChanges)
-      sendParameterMessage(createMessage<tParameter>(parameter));
-  }
+//  template <typename tParameter> auto createAndSendParameterMessage(const tParameter* parameter)
+//  {
+//    if(!m_suppressParamChanges)
+//      sendParameterMessage(createMessage<tParameter>(parameter));
+//  }
 
-  template <typename tParameter> auto createMessage(const tParameter* parameter)
-  {
-    return ParameterMessageFactory::createMessage<tParameter>(parameter);
-  }
+//  template <typename tParameter> auto createMessage(const tParameter* parameter)
+//  {
+//    return ParameterMessageFactory::createMessage<tParameter>(parameter);
+//  }
 
   template <class tMessage> void sendParameterMessage(const tMessage& msg)
   {

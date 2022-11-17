@@ -235,6 +235,10 @@ namespace nltools
       ParameterGroups::UnisonGroup unison;
       ParameterGroups::MonoGroup mono;
 
+      // temporary: local parameters
+      SingularParameterArray<ParameterType::Local_Modulateable, controls::LocalModulateableParameter> m_localModulateables;
+      SingularParameterArray<ParameterType::Local_Unmodulateable, controls::LocalUnmodulateableParameter> m_localUnmodulateables;
+
       // todo: use
       SingularParameterArray<ParameterType::Polyphonic_Modulateable, controls::PolyphonicModulateableParameter>
           m_polyphonicModulateables;
@@ -246,14 +250,21 @@ namespace nltools
       {
         if(!SinglePresetMessage::validateCommon(_msg))
           return false;
-
-        auto modulateablesValid
-            = std::all_of(_msg.m_polyphonicModulateables.begin(), _msg.m_polyphonicModulateables.end(),
-                          [](auto e) { return e.validateParameterType(); });
-        auto unmodulateablesValid
-            = std::all_of(_msg.m_polyphonicUnmodulateables.begin(), _msg.m_polyphonicUnmodulateables.end(),
-                          [](auto e) { return e.validateParameterType(); });
-        return modulateablesValid && unmodulateablesValid;
+        // temporary: local parameters
+          for(const auto& element : _msg.m_localUnmodulateables)
+            if(!element.validateParameterType())
+              return false;
+          for(const auto& element : _msg.m_localUnmodulateables)
+            if(!element.validateParameterType())
+              return false;
+        // polyphonic parameters
+          for(const auto& element : _msg.m_polyphonicUnmodulateables)
+            if(!element.validateParameterType())
+              return false;
+          for(const auto& element : _msg.m_polyphonicUnmodulateables)
+            if(!element.validateParameterType())
+              return false;
+          return true;
       }
     };
 
@@ -281,6 +292,10 @@ namespace nltools
       std::array<ParameterGroups::MonoGroup, 2> mono;
       std::array<Parameters::SplitPoint, 2> splitpoint;
 
+      // temporary: local parameters
+      DualParameterArray<ParameterType::Local_Modulateable, controls::LocalModulateableParameter> m_localModulateables;
+      DualParameterArray<ParameterType::Local_Unmodulateable, controls::LocalUnmodulateableParameter> m_localUnmodulateables;
+
       // todo: use
       DualParameterArray<ParameterType::Polyphonic_Modulateable, controls::PolyphonicModulateableParameter>
           m_polyphonicModulateables;
@@ -292,6 +307,16 @@ namespace nltools
       {
         if(!SplitPresetMessage::validateCommon(_msg))
           return false;
+        // temporary: local parameters
+        for(const auto& layer : _msg.m_localUnmodulateables)
+          for(const auto& element : layer)
+            if(!element.validateParameterType())
+              return false;
+        for(const auto& layer : _msg.m_localModulateables)
+          for(const auto& element : layer)
+            if(!element.validateParameterType())
+              return false;
+        // polyphonic parameters
         for(const auto& layer : _msg.m_polyphonicModulateables)
           for(const auto& element : layer)
             if(!element.validateParameterType())
@@ -329,6 +354,10 @@ namespace nltools
       ParameterGroups::UnisonGroup unison;
       ParameterGroups::MonoGroup mono;
 
+      // temporary: local parameters
+      DualParameterArray<ParameterType::Local_Modulateable, controls::LocalModulateableParameter> m_localModulateables;
+      DualParameterArray<ParameterType::Local_Unmodulateable, controls::LocalUnmodulateableParameter> m_localUnmodulateables;
+
       // todo: use
       DualParameterArray<ParameterType::Polyphonic_Modulateable, controls::PolyphonicModulateableParameter>
           m_polyphonicModulateables;
@@ -340,6 +369,16 @@ namespace nltools
       {
         if(!LayerPresetMessage::validateCommon(_msg))
           return false;
+        // temporary: local parameters
+        for(const auto& layer : _msg.m_localUnmodulateables)
+          for(const auto& element : layer)
+            if(!element.validateParameterType())
+              return false;
+        for(const auto& layer : _msg.m_localModulateables)
+          for(const auto& element : layer)
+            if(!element.validateParameterType())
+              return false;
+        // polyphonic parameters
         for(const auto& layer : _msg.m_polyphonicModulateables)
           for(const auto& element : layer)
             if(!element.validateParameterType())
