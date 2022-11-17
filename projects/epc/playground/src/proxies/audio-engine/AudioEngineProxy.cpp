@@ -118,17 +118,21 @@ void fillMessageWithMacroControlsAndMacroTimes(nltools::msg::detail::PresetMessa
 
   for(auto &param : editBuffer.getParameterGroupByID({ "MCs", VoiceGroup::Global })->getParameters())
   {
+    const auto id = param->getID().getNumber();
+    const auto index = C15::ParameterList[id].m_param.m_index;
     if(auto smoothing = dynamic_cast<const MacroControlSmoothingParameter *>(param))
     {
-      auto &e = msg.m_macroTimes[macroTimes++];
-      e.m_id = static_cast<C15::PID::ParameterID>(smoothing->getID().getNumber());
+      auto &e = msg.m_macroTimes[index];
+      e.m_id = static_cast<C15::PID::ParameterID>(id);
       e.m_controlPosition = smoothing->getControlPositionValue();
+      macroTimes++;
     }
     else if(auto mc = dynamic_cast<const MacroControlParameter *>(param))
     {
-      auto &e = msg.m_macroControls[macroControls++];
-      e.m_id = static_cast<C15::PID::ParameterID>(mc->getID().getNumber());
+      auto &e = msg.m_macroControls[index];
+      e.m_id = static_cast<C15::PID::ParameterID>(id);
       e.m_controlPosition = mc->getControlPositionValue();
+      macroControls++;
     }
   }
 
@@ -145,10 +149,13 @@ void fillMessageWithHardwareSources(nltools::msg::detail::PresetMessage<tMsgType
   {
     if(auto hwParam = dynamic_cast<const PhysicalControlParameter *>(param))
     {
-      auto &e = msg.m_hardwareSources[hw++];
-      e.m_id = static_cast<C15::PID::ParameterID>(hwParam->getID().getNumber());
+      const auto id = param->getID().getNumber();
+      const auto index = C15::ParameterList[id].m_param.m_index;
+      auto &e = msg.m_hardwareSources[index];
+      e.m_id = static_cast<C15::PID::ParameterID>(id);
       e.m_controlPosition = hwParam->getControlPositionValue();
       e.m_returnMode = hwParam->getReturnMode();
+      hw++;
     }
   }
 
@@ -162,9 +169,12 @@ void fillMessageWithHWAmounts(nltools::msg::detail::PresetMessage<tMsgType> &msg
 
   for(auto &param : editBuffer.getParameterGroupByID({ "MCM", VoiceGroup::Global })->getParameters())
   {
-    auto &e = msg.m_hardwareAmounts[hwAmounts++];
-    e.m_id = static_cast<C15::PID::ParameterID>(param->getID().getNumber());
+    const auto id = param->getID().getNumber();
+    const auto index = C15::ParameterList[id].m_param.m_index;
+    auto &e = msg.m_hardwareAmounts[index];
+    e.m_id = static_cast<C15::PID::ParameterID>(id);
     e.m_controlPosition = param->getControlPositionValue();
+    hwAmounts++;
   }
 
   nltools_assertAlways(hwAmounts == msg.m_hardwareAmounts.size());
@@ -189,19 +199,23 @@ void fillMessageWithGlobalNotHandledGroups(nltools::msg::detail::PresetMessage<t
     {
       for(auto &p : g->getParameters())
       {
+        const auto id = p->getID().getNumber();
+        const auto index = C15::ParameterList[id].m_param.m_index;
         if(auto modP = dynamic_cast<ModulateableParameter *>(p))
         {
-          auto &e = msg.m_globalModulateables[modulateable++];
-          e.m_id = static_cast<C15::PID::ParameterID>(modP->getID().getNumber());
+          auto &e = msg.m_globalModulateables[index];
+          e.m_id = static_cast<C15::PID::ParameterID>(id);
           e.m_controlPosition = modP->getControlPositionValue();
           e.m_modulationAmount = modP->getModulationAmount();
           e.m_macro = modP->getModulationSource();
+          modulateable++;
         }
         else
         {
-          auto &e = msg.m_globalUnmodulateables[unmodulateable++];
-          e.m_id = static_cast<C15::PID::ParameterID>(p->getID().getNumber());
+          auto &e = msg.m_globalUnmodulateables[index];
+          e.m_id = static_cast<C15::PID::ParameterID>(id);
           e.m_controlPosition = p->getControlPositionValue();
+          unmodulateable++;
         }
       }
     }
@@ -227,25 +241,29 @@ void fillMessageWithMonophonicParameters(nltools::msg::detail::PresetMessage<tMs
     {
       for(auto p : g->getParameters())
       {
+        const auto id = p->getID().getNumber();
+        const auto index = C15::ParameterList[id].m_param.m_index;
         switch(p->getType())
         {
           case C15::Descriptors::ParameterType::Monophonic_Modulateable:
           {
             if(auto modP = dynamic_cast<ModulateableParameter *>(p))
             {
-              auto &e = mono_modulateables[mono_modulateable++];
-              e.m_id = static_cast<C15::PID::ParameterID>(modP->getID().getNumber());
+              auto &e = mono_modulateables[index];
+              e.m_id = static_cast<C15::PID::ParameterID>(id);
               e.m_controlPosition = modP->getControlPositionValue();
               e.m_modulationAmount = modP->getModulationAmount();
               e.m_macro = modP->getModulationSource();
+              mono_modulateable++;
             }
           }
           break;
           case C15::Descriptors::ParameterType::Monophonic_Unmodulateable:
           {
-            auto &e = mono_unmodulateables[mono_unmodulateable++];
-            e.m_id = static_cast<C15::PID::ParameterID>(p->getID().getNumber());
+            auto &e = mono_unmodulateables[index];
+            e.m_id = static_cast<C15::PID::ParameterID>(id);
             e.m_controlPosition = p->getControlPositionValue();
+            mono_unmodulateable++;
           }
           break;
         }
@@ -276,25 +294,29 @@ void fillSingleMessageWithPolyParameters(nltools::msg::SinglePresetMessage &msg,
   {
     for(auto &p : g->getParameters())
     {
+      const auto id = p->getID().getNumber();
+      const auto index = C15::ParameterList[id].m_param.m_index;
       switch(p->getType())
       {
         case C15::Descriptors::ParameterType::Polyphonic_Modulateable:
         {
           if(auto modP = dynamic_cast<ModulateableParameter *>(p))
           {
-            auto &e = msg.m_polyphonicModulateables[modulateables++];
-            e.m_id = static_cast<C15::PID::ParameterID>(modP->getID().getNumber());
+            auto &e = msg.m_polyphonicModulateables[index];
+            e.m_id = static_cast<C15::PID::ParameterID>(id);
             e.m_controlPosition = modP->getControlPositionValue();
             e.m_modulationAmount = modP->getModulationAmount();
             e.m_macro = modP->getModulationSource();
+            modulateables++;
           }
         }
         break;
         case C15::Descriptors::ParameterType::Polyphonic_Unmodulateable:
         {
-          auto &e = msg.m_polyphonicUnmodulateables[unmodulateables++];
-          e.m_id = static_cast<C15::PID::ParameterID>(p->getID().getNumber());
+          auto &e = msg.m_polyphonicUnmodulateables[index];
+          e.m_id = static_cast<C15::PID::ParameterID>(id);
           e.m_controlPosition = p->getControlPositionValue();
+          unmodulateables++;
         }
         break;
       }
@@ -315,25 +337,29 @@ void fillSingleMessageWithLocalParameters(nltools::msg::SinglePresetMessage &msg
   {
     for(auto &p : g->getParameters())
     {
+      const auto id = p->getID().getNumber();
+      const auto index = C15::ParameterList[id].m_param.m_index;
       switch(p->getType())
       {
         case C15::Descriptors::ParameterType::Local_Modulateable:
         {
           if(auto modP = dynamic_cast<ModulateableParameter *>(p))
           {
-            auto &e = msg.m_localModulateables[modulateables++];
-            e.m_id = static_cast<C15::PID::ParameterID>(modP->getID().getNumber());
+            auto &e = msg.m_localModulateables[index];
+            e.m_id = static_cast<C15::PID::ParameterID>(id);
             e.m_controlPosition = modP->getControlPositionValue();
             e.m_modulationAmount = modP->getModulationAmount();
             e.m_macro = modP->getModulationSource();
+            modulateables++;
           }
         }
         break;
         case C15::Descriptors::ParameterType::Local_Unmodulateable:
         {
-          auto &e = msg.m_localUnmodulateables[unmodulateables++];
-          e.m_id = static_cast<C15::PID::ParameterID>(p->getID().getNumber());
+          auto &e = msg.m_localUnmodulateables[index];
+          e.m_id = static_cast<C15::PID::ParameterID>(id);
           e.m_controlPosition = p->getControlPositionValue();
+          unmodulateables++;
         }
         break;
       }
@@ -358,25 +384,29 @@ template <typename tMSG> void fillDualMessageWithPolyParameters(tMSG &msg, const
     {
       for(auto &p : g->getParameters())
       {
+        const auto id = p->getID().getNumber();
+        const auto index = C15::ParameterList[id].m_param.m_index;
         switch(p->getType())
         {
           case C15::Descriptors::ParameterType::Polyphonic_Modulateable:
           {
             if(auto modP = dynamic_cast<ModulateableParameter *>(p))
             {
-              auto &e = modParams[modulateables++];
-              e.m_id = static_cast<C15::PID::ParameterID>(modP->getID().getNumber());
+              auto &e = modParams[index];
+              e.m_id = static_cast<C15::PID::ParameterID>(id);
               e.m_controlPosition = modP->getControlPositionValue();
               e.m_modulationAmount = modP->getModulationAmount();
               e.m_macro = modP->getModulationSource();
+              modulateables++;
             }
           }
           break;
           case C15::Descriptors::ParameterType::Polyphonic_Unmodulateable:
           {
-            auto &e = unmodParams[unmodulateables++];
-            e.m_id = static_cast<C15::PID::ParameterID>(p->getID().getNumber());
+            auto &e = unmodParams[index];
+            e.m_id = static_cast<C15::PID::ParameterID>(id);
             e.m_controlPosition = p->getControlPositionValue();
+            unmodulateables++;
           }
           break;
         }
@@ -403,25 +433,29 @@ template <typename tMSG> void fillDualMessageWithLocalParameters(tMSG &msg, cons
     {
       for(auto &p : g->getParameters())
       {
+        const auto id = p->getID().getNumber();
+        const auto index = C15::ParameterList[id].m_param.m_index;
         switch(p->getType())
         {
           case C15::Descriptors::ParameterType::Local_Modulateable:
           {
             if(auto modP = dynamic_cast<ModulateableParameter *>(p))
             {
-              auto &e = modParams[modulateables++];
-              e.m_id = static_cast<C15::PID::ParameterID>(modP->getID().getNumber());
+              auto &e = modParams[index];
+              e.m_id = static_cast<C15::PID::ParameterID>(id);
               e.m_controlPosition = modP->getControlPositionValue();
               e.m_modulationAmount = modP->getModulationAmount();
               e.m_macro = modP->getModulationSource();
+              modulateables++;
             }
           }
           break;
           case C15::Descriptors::ParameterType::Local_Unmodulateable:
           {
-            auto &e = unmodParams[unmodulateables++];
-            e.m_id = static_cast<C15::PID::ParameterID>(p->getID().getNumber());
+            auto &e = unmodParams[index];
+            e.m_id = static_cast<C15::PID::ParameterID>(id);
             e.m_controlPosition = p->getControlPositionValue();
+            unmodulateables++;
           }
           break;
         }
@@ -439,7 +473,7 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
   fillMessageWithSharedParameters(msg, eb);
   fillSingleMessageWithLocalParameters(msg, eb);
   fillSingleMessageWithPolyParameters(msg, eb);
-  nltools::msg::SinglePresetMessage::validate(msg);  // validation ?
+  nltools_assertAlways(nltools::msg::SinglePresetMessage::validate(msg));
   return msg;
 }
 
@@ -449,7 +483,7 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
   fillMessageWithSharedParameters(msg, eb);
   fillDualMessageWithLocalParameters(msg, eb);
   fillDualMessageWithPolyParameters(msg, eb);
-  nltools::msg::SplitPresetMessage::validate(msg);  // validation ?
+  nltools_assertAlways(nltools::msg::SplitPresetMessage::validate(msg));
   return msg;
 }
 
@@ -459,7 +493,7 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
   fillMessageWithSharedParameters(msg, eb);
   fillDualMessageWithLocalParameters(msg, eb);
   fillDualMessageWithPolyParameters(msg, eb);
-  nltools::msg::LayerPresetMessage::validate(msg);  // validation ?
+  nltools_assertAlways(nltools::msg::LayerPresetMessage::validate(msg));
   return msg;
 }
 
