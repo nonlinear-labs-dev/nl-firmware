@@ -267,6 +267,8 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
       return get<LinearBipolar200PercentScaleConverter>();
     case C15::Properties::DisplayScalingType::FINE_BIPOLAR_100_PERCENT:
       return get<FineBipolar100PercentScaleConverter>();
+    case C15::Properties::DisplayScalingType::LINEAR_2_SECTIONS_BIPOLAR_1200_CENT:
+      return get<LinearBipolar2Sections1200CentScaleConverter>();
     case C15::Properties::DisplayScalingType::FINE_BIPOLAR_200_PERCENT:
       return get<FineBipolar200PercentScaleConverter>();
   }
