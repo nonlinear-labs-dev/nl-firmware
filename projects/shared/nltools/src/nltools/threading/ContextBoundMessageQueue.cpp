@@ -26,10 +26,10 @@ namespace nltools
     {
       std::unique_lock<std::recursive_mutex> lock(*m_mutex);
       m_jobs.remove_if([&](const auto &a) { return a.unique(); });
-      m_pendingCalls->operator++();
+      m_pendingCalls++;
 
-      auto job = std::make_shared<Job>([pendingCalls = m_pendingCalls, m = std::move(m)]() {
-        pendingCalls->operator--();
+      auto job = std::make_shared<Job>([this, m = std::move(m)]() {
+        m_pendingCalls--;
         m();
       });
 
@@ -50,7 +50,7 @@ namespace nltools
 
     bool ContextBoundMessageQueue::isPending() const
     {
-      return *m_pendingCalls > 0;
+      return m_pendingCalls > 0;
     }
 
     Glib::RefPtr<Glib::MainContext> ContextBoundMessageQueue::getContext()
