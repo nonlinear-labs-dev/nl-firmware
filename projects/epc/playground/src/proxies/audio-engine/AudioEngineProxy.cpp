@@ -493,6 +493,8 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
   fillMessageWithSharedParameters(msg, eb);
   fillDualMessageWithLocalParameters(msg, eb);
   fillDualMessageWithPolyParameters(msg, eb);
+  // identical Unison Detune/Phase/Pan and Mono Glide are required (not sure if EditBuffer already facilitates this)
+  msg.guaranteeEqualVoicesParameters();
   nltools_assertAlways(nltools::msg::LayerPresetMessage::validate(msg));
   return msg;
 }

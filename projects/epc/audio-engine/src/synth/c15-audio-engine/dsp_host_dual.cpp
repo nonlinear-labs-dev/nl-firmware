@@ -813,8 +813,8 @@ DSPInterface::OutputResetEventSource
           localTransition(layerId, param, m_editTime.m_time);
         break;
     }
-    return OutputResetEventSource::None;
   }
+  return OutputResetEventSource::None;
 }
 
 inline DSPInterface::OutputResetEventSource dsp_host_dual::onUnisonVoicesChanged(const uint32_t &_layer,
@@ -919,24 +919,24 @@ inline DSPInterface::OutputResetEventSource dsp_host_dual::onMonoEnableChanged(c
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicModulateableParameterChangedMessage &_msg)
 {
-  // todo
+  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
 }
 
 DSPInterface::OutputResetEventSource
     dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicUnmodulateableParameterChangedMessage &_msg)
 {
-  // todo
+  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
   return OutputResetEventSource::None;
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicModulateableParameterChangedMessage &_msg)
 {
-  // todo
+  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicUnmodulateableParameterChangedMessage &_msg)
 {
-  // todo
+  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
 }
 
 // todo: remove (when unused)
@@ -2343,6 +2343,20 @@ bool dsp_host_dual::evalPolyChg(const C15::Properties::LayerId _layerId,
   return unisonChanged || monoChanged;
 }
 
+bool dsp_host_dual::determinePolyChg(const C15::Properties::LayerId _layerId,
+                                     const nltools::controls::LocalUnmodulateableParameter &_unisonVoices,
+                                     const nltools::controls::LocalUnmodulateableParameter &_monoEnable)
+{
+  const uint32_t layerId = (uint32_t) _layerId;
+  auto &unisonVoices = m_parameters.m_layer[layerId]
+                           .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices];
+  const bool unisonChanged = unisonVoices.update_position((float) _unisonVoices.m_controlPosition);
+  auto &monoEnable = m_parameters.m_layer[layerId]
+                         .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable];
+  const bool monoChanged = monoEnable.update_position((float) _monoEnable.m_controlPosition);
+  return unisonChanged || monoChanged;
+}
+
 void dsp_host_dual::evalVoiceFadeChg(const uint32_t _layer)
 {
 
@@ -2415,32 +2429,91 @@ DSPInterface::OutputResetEventSource dsp_host_dual::determineOutputEventSource(c
   return OutputResetEventSource::None;
 }
 
+template <typename T> inline void dsp_host_dual::recallCommon(const T &_msg, const bool _resetVoiceFade)
+{
+  // reset
+  m_parameters.m_global.m_parameters.m_assignment.reset();
+  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+  {
+    // macro assignments
+    m_parameters.m_layer[layerId].m_assignment.reset();
+    // voice fade
+    if(_resetVoiceFade)
+      m_poly[layerId].resetVoiceFade();
+  }
+  // global updates: hw sources
+  if constexpr(LOG_RECALL)
+    nltools::Log::info("recall: hw sources:");
+  for(const auto &param : _msg.m_hardwareSources)
+    onParameterRecall(param);
+  // global updates: hw amounts
+  if constexpr(LOG_RECALL)
+    nltools::Log::info("recall: hw amounts:");
+  for(const auto &param : _msg.m_hardwareAmounts)
+    onParameterRecall(param);
+  // global updates: macros
+  if constexpr(LOG_RECALL)
+    nltools::Log::info("recall: macro controls/times:");
+  for(const auto &param : _msg.m_macroControls)
+    onParameterRecall(param);
+  for(const auto &param : _msg.m_macroTimes)
+    onParameterRecall(param);
+  // global updates: parameters
+  if constexpr(LOG_RECALL)
+    nltools::Log::info("recall: global params (modulateables/unmodulateables):");
+  for(const auto &param : _msg.m_globalModulateables)
+    onParameterRecall(param);
+  for(const auto &param : _msg.m_globalUnmodulateables)
+    onParameterRecall(param);
+}
+
+template <typename T> inline void dsp_host_dual::recallCommonTransition(const T &_msg)
+{
+  if constexpr(LOG_RECALL)
+    nltools::Log::info("recall: start transitions:");
+  // start transitions: global modulateables/unmodulateables
+  for(uint32_t i = 0; i < C15::Parameters::num_of_Global_Modulateables; i++)
+    globalTransition(m_parameters.m_global.m_parameters.m_modulateables[i], m_transitionTime.m_time);
+  for(uint32_t i = 0; i < C15::Parameters::num_of_Global_Unmodulateables; i++)
+    if(i == (uint32_t) C15::Parameters::Global_Unmodulateables::Scale_Base_Key)
+      m_global.start_base_key(m_transitionTime.m_time.m_dxSlow,
+                              m_parameters.m_global.m_parameters.m_unmodulateables[i].m_scaled);
+    else
+      globalTransition(m_parameters.m_global.m_parameters.m_unmodulateables[i], m_transitionTime.m_time);
+}
+
 DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::msg::SinglePresetMessage &_msg)
 {
-  auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Single);
-  auto layerChanged = oldLayerMode != m_layer_mode;
-
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recallSingle(@", m_clock.m_index, ")");
-  }
-  auto msg = &_msg;
-  // update unison and mono groups
-  auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
+  const auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Single);
+  const auto layerChanged = oldLayerMode != m_layer_mode;
+  if constexpr(LOG_RECALL)
+    nltools::Log::info(__PRETTY_FUNCTION__, "(@", m_clock.m_index, ")");
+  // determine poly change (updating unison voices, mono enable)
+  const auto polyChanged = determinePolyChg(
+      C15::Properties::LayerId::I,
+      _msg.m_localUnmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices],
+      _msg.m_localUnmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable]);
   // reset detection
   const bool internalReset = layerChanged || polyChanged;
   const bool externalReset = internalReset && areKeysPressed(fromType(oldLayerMode));
   const OutputResetEventSource outputEvent = determineOutputEventSource(externalReset, oldLayerMode);
   if(internalReset)
   {
-    if(LOG_RESET)
+    if constexpr(LOG_RESET)
     {
       nltools::Log::info("recall single voice reset");
     }
     m_alloc.m_internal_keys.init();  // reset all pressed keys
-    m_alloc.setUnison(0, m_params.get_local_unison_voices(C15::Properties::LayerId::I)->m_position, oldLayerMode,
-                      m_layer_mode);
-    m_alloc.setMonoEnable(0, m_params.get_local_mono_enable(C15::Properties::LayerId::I)->m_position, m_layer_mode);
+    m_alloc.setUnison(0,
+                      m_parameters.m_layer[0]
+                          .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices]
+                          .m_position,
+                      oldLayerMode, m_layer_mode);
+    m_alloc.setMonoEnable(0,
+                          m_parameters.m_layer[0]
+                              .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable]
+                              .m_position,
+                          m_layer_mode);
     const uint32_t uVoice = m_alloc.m_unison - 1;
     for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
     {
@@ -2449,290 +2522,98 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
       m_poly[layerId].m_key_active = 0;
     }
   }
-  // reset
-  m_params.m_global.m_assignment.reset();
-  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-  {
-    // macro assignments
-    m_params.m_layer[layerId].m_assignment.reset();
-    // voice fade
-    m_poly[layerId].resetVoiceFade();
-  }
-  // global updates: hw sources
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: hw sources:");
-  }
-  for(uint32_t i = 0; i < msg->hwsources.size(); i++)
-  {
-    globalParRcl(msg->hwsources[i]);
-  }
-  // global updates: hw amounts
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: hw amounts:");
-  }
-  for(uint32_t i = 0; i < msg->hwamounts.size(); i++)
-  {
-    globalParRcl(msg->hwamounts[i]);
-  }
-  // global updates: macros
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: macros:");
-  }
-  for(uint32_t i = 0; i < msg->macros.size(); i++)
-  {
-    globalParRcl(msg->macros[i]);
-  }
-  for(uint32_t i = 0; i < msg->macrotimes.size(); i++)
-  {
-    globalTimeRcl(msg->macrotimes[i]);
-  }
-  // global updates: parameters
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: global params (modulateables/unmodulateables):");
-  }
-  globalParRcl(msg->master.volume);
-  globalParRcl(msg->master.tune);
-  globalParRcl(msg->master.pan);
-  globalParRcl(msg->master.serialFX);
-
-  globalParRcl(msg->scaleBaseKey);
-  for(uint32_t i = 0; i < msg->scaleOffsets.size(); i++)
-  {
-    globalParRcl(msg->scaleOffsets[i]);
-  }
-
-  // local updates: unison, mono - updating va
-  localPolyRcl(0, true, msg->unison, msg->mono);
-  // local updates: unmodulateables
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: local unmodulateables/mc_times:");
-  }
-  for(uint32_t i = 0; i < msg->unmodulateables.size(); i++)
-  {
-    localParRcl(0, msg->unmodulateables[i]);
-  }
-  // local updates: modulateables
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: local modulateables:");
-  }
-  for(uint32_t i = 0; i < msg->modulateables.size(); i++)
-  {
-    localParRcl(0, msg->modulateables[i]);
-  }
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: start transitions:");
-  }
-  // start transitions: global unmodulateables
-  for(uint32_t i = 0; i < m_params.m_global.m_direct_count; i++)
-  {
-    auto param = m_params.get_global_direct(i);
-    if(i == static_cast<uint32_t>(C15::Parameters::Global_Unmodulateables::Scale_Base_Key))
-    {
-      m_global.start_base_key(m_transition_time.m_dx.m_dx_slow, param->m_scaled);
-    }
-    else
-    {
-      globalTransition(param, m_transition_time.m_dx);
-    }
-  }
-  // start transitions: global modulateables
-  for(uint32_t i = 0; i < m_params.m_global.m_target_count; i++)
-  {
-    auto param = m_params.get_global_target(i);
-    globalTransition(param, m_transition_time.m_dx);
-  }
-  // start transitions: local unmodulateables
-  for(uint32_t i = 0; i < m_params.m_layer[0].m_direct_count; i++)
-  {
-    auto param = m_params.get_local_direct(0, i);
-    for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-    {
-      localTransition(layerId, param, m_transition_time.m_dx);
-    }
-  }
-  // start transitions: local modulateables
-  for(uint32_t i = 0; i < m_params.m_layer[0].m_target_count; i++)
-  {
-    auto param = m_params.get_local_target(0, i);
-    for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-    {
-      localTransition(layerId, param, m_transition_time.m_dx);
-    }
-  }
+  // common updates: parameters, resetting voice fade buffer
+  recallCommon(_msg, true);
+  // local updates: parameters
+  if constexpr(LOG_RECALL)
+    nltools::Log::info("recall: local modulateables/unmodulateables:");
+  for(const auto &param : _msg.m_localModulateables)
+    onParameterRecall(0, param);
+  for(const auto &param : _msg.m_localUnmodulateables)
+    onParameterRecall(0, param, true);
+  // start transitions: common
+  recallCommonTransition(_msg);
+  // start transitions: local modulateables/unmodulateables
+  for(uint32_t i = 0; i < C15::Parameters::num_of_Local_Modulateables; i++)
+    for(uint32_t l = 0; l < C15::Properties::num_of_VoiceGroups; l++)
+      localTransition(l, m_parameters.m_layer[0].m_modulateables[i], m_transitionTime.m_time);
+  for(uint32_t i = 0; i < C15::Parameters::num_of_Local_Unmodulateables; i++)
+    for(uint32_t l = 0; l < C15::Properties::num_of_VoiceGroups; l++)
+      localTransition(l, m_parameters.m_layer[0].m_unmodulateables[i], m_transitionTime.m_time);
   // logging levels after recall for debugging switching dual modes
-  if(LOG_RECALL_LEVELS)
-  {
+  if constexpr(LOG_RECALL_LEVELS)
     debugLevels();
-  }
   // return detected reset event
   return outputEvent;
 }
 
 DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::msg::SplitPresetMessage &_msg)
 {
-  auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Split);
-  auto layerChanged = oldLayerMode != m_layer_mode;
-
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recallSplit(@", m_clock.m_index, ")");
-  }
-
-  auto msg = &_msg;
+  const auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Split);
+  const auto layerChanged = oldLayerMode != m_layer_mode;
+  if constexpr(LOG_RECALL)
+    nltools::Log::info(__PRETTY_FUNCTION__, "(@", m_clock.m_index, ")");
   // #3009: prepare reset detection with pressed local keys
   bool internalReset[2] = { m_alloc.m_internal_keys.pressedLocalKeys(0), m_alloc.m_internal_keys.pressedLocalKeys(1) };
   const bool externalReset = layerChanged && areKeysPressed(fromType(oldLayerMode));
-  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+  for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
   {
     const auto layer = static_cast<C15::Properties::LayerId>(layerId);
 
-    // update unison and mono groups
-    auto polyChanged = evalPolyChg(layer, msg->unison[layerId].unisonVoices, msg->mono[layerId].monoEnable);
+    // determine poly change (updating unison voices, mono enable)
+    const auto polyChanged = determinePolyChg(
+        layer, _msg.m_localUnmodulateables[layerId][(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices],
+        _msg.m_localUnmodulateables[layerId][(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable]);
     internalReset[layerId] &= polyChanged;
     // reset detection
     if((layerChanged || polyChanged))
     {
-      if(LOG_RESET)
-      {
+      if constexpr(LOG_RESET)
         nltools::Log::info("recall split voice reset(layerId:", layerId, ")");
-      }
+
       m_alloc.m_internal_keys.m_local[layerId] = 0;  // reset all pressed keys in part
-      m_alloc.setUnison(layerId, m_params.get_local_unison_voices(layer)->m_position, oldLayerMode, m_layer_mode);
-      m_alloc.setMonoEnable(layerId, m_params.get_local_mono_enable(layer)->m_position, m_layer_mode);
+      m_alloc.setUnison(0,
+                        m_parameters.m_layer[layerId]
+                            .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices]
+                            .m_position,
+                        oldLayerMode, m_layer_mode);
+      m_alloc.setMonoEnable(0,
+                            m_parameters.m_layer[layerId]
+                                .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable]
+                                .m_position,
+                            m_layer_mode);
       const uint32_t uVoice = m_alloc.m_unison - 1;
       m_poly[layerId].resetEnvelopes();
       m_poly[layerId].m_uVoice = uVoice;
       m_poly[layerId].m_key_active = 0;
     }
-    // reset macro assignments
-    m_params.m_layer[layerId].m_assignment.reset();
-    // reset voice fade
-    m_poly[layerId].resetVoiceFade();
   }
-  m_params.m_global.m_assignment.reset();
-  // global updates: hw sources
-  if(LOG_RECALL)
+  // common updates: parameters, resetting voice fade buffer
+  recallCommon(_msg, true);
+  // local updates: parameters
+  if constexpr(LOG_RECALL)
+    nltools::Log::info("recall: local modulateables/unmodulateables:");
+  for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
   {
-    nltools::Log::info("recall: hw sources:");
+    // local updates: modulateables/unmodulateables
+    for(const auto &param : _msg.m_localModulateables[layerId])
+      onParameterRecall(layerId, param);
+    for(const auto &param : _msg.m_localUnmodulateables[layerId])
+      onParameterRecall(layerId, param, true);
   }
-
-  for(const auto &hwsource : msg->hwsources)
+  // start transitions: common
+  recallCommonTransition(_msg);
+  for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
   {
-    globalParRcl(hwsource);
-  }
-  // global updates: hw amounts
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: hw amounts:");
-  }
-  for(auto hwamount : msg->hwamounts)
-  {
-    globalParRcl(hwamount);
-  }
-  // global updates: macros
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: macros:");
-  }
-
-  for(auto macro : msg->macros)
-  {
-    globalParRcl(macro);
-  }
-  for(auto macrotime : msg->macrotimes)
-  {
-    globalTimeRcl(macrotime);
-  }
-  // global updates: parameters
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: global params (modulateables/unmodulateables):");
-  }
-  globalParRcl(msg->master.volume);
-  globalParRcl(msg->master.tune);
-  globalParRcl(msg->master.pan);
-  globalParRcl(msg->master.serialFX);
-
-  globalParRcl(msg->scaleBaseKey);
-  for(auto &i : msg->scaleOffsets)
-  {
-    globalParRcl(i);
-  }
-  // local updates (each layer)
-  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-  {
-    // local updates: split point, unison, mono - updating va
-    localParRcl(layerId, msg->splitpoint[layerId]);
-    localPolyRcl(layerId, true, msg->unison[layerId], msg->mono[layerId]);
-    // local updates: unmodulateables
-    if(LOG_RECALL)
-    {
-      nltools::Log::info("recall: local unmodulateables/mc_times:");
-    }
-    for(uint32_t i = 0; i < msg->unmodulateables[layerId].size(); i++)
-    {
-      localParRcl(layerId, msg->unmodulateables[layerId][i]);
-    }
-    // local updates: modulateables
-    if(LOG_RECALL)
-    {
-      nltools::Log::info("recall: local modulateables:");
-    }
-    for(uint32_t i = 0; i < msg->modulateables[layerId].size(); i++)
-    {
-      localParRcl(layerId, msg->modulateables[layerId][i]);
-    }
-  }
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: start transitions:");
-  }
-  // start transitions: global unmodulateables
-  for(uint32_t i = 0; i < m_params.m_global.m_direct_count; i++)
-  {
-    auto param = m_params.get_global_direct(i);
-    if(i == static_cast<uint32_t>(C15::Parameters::Global_Unmodulateables::Scale_Base_Key))
-    {
-      m_global.start_base_key(m_transition_time.m_dx.m_dx_slow, param->m_scaled);
-    }
-    else
-    {
-      globalTransition(param, m_transition_time.m_dx);
-    }
-  }
-  // start transitions: global modulateables
-  for(uint32_t i = 0; i < m_params.m_global.m_target_count; i++)
-  {
-    auto param = m_params.get_global_target(i);
-    globalTransition(param, m_transition_time.m_dx);
-  }
-  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-  {
-    // start transitions: local unmodulateables
-    for(uint32_t i = 0; i < m_params.m_layer[0].m_direct_count; i++)
-    {
-      auto param = m_params.get_local_direct(layerId, i);
-      localTransition(layerId, param, m_transition_time.m_dx);
-    }
-    // start transitions: local modulateables
-    for(uint32_t i = 0; i < m_params.m_layer[0].m_target_count; i++)
-    {
-      auto param = m_params.get_local_target(layerId, i);
-      localTransition(layerId, param, m_transition_time.m_dx);
-    }
+    // start transitions: local modulateables/unmodulateables
+    for(const auto &param : m_parameters.m_layer[layerId].m_modulateables)
+      localTransition(layerId, param, m_transitionTime.m_time);
+    for(const auto &param : m_parameters.m_layer[layerId].m_unmodulateables)
+      localTransition(layerId, param, m_transitionTime.m_time);
   }
   // logging levels after recall for debugging switching dual modes
-  if(LOG_RECALL_LEVELS)
-  {
+  if constexpr(LOG_RECALL_LEVELS)
     debugLevels();
-  }
   if(layerChanged)
   {
     // non-split -> split: (global or none)
@@ -2746,30 +2627,34 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
 
 DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::msg::LayerPresetMessage &_msg)
 {
-  auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Layer);
-  auto layerChanged = oldLayerMode != m_layer_mode;
-
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recallLayer(@", m_clock.m_index, ")");
-  }
-  auto msg = &_msg;
-  // update unison and mono groups
-  auto polyChanged = evalPolyChg(C15::Properties::LayerId::I, msg->unison.unisonVoices, msg->mono.monoEnable);
+  const auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Layer);
+  const auto layerChanged = oldLayerMode != m_layer_mode;
+  if constexpr(LOG_RECALL)
+    nltools::Log::info(__PRETTY_FUNCTION__, "(@", m_clock.m_index, ")");
+  // determine poly change (updating unison voices, mono enable)
+  const auto polyChanged = determinePolyChg(
+      C15::Properties::LayerId::I,
+      _msg.m_localUnmodulateables[0][(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices],
+      _msg.m_localUnmodulateables[0][(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable]);
   // reset detection
   const bool internalReset = layerChanged || polyChanged;
   const bool externalReset = internalReset && areKeysPressed(fromType(oldLayerMode));
   const OutputResetEventSource outputEvent = determineOutputEventSource(externalReset, oldLayerMode);
   if(internalReset)
   {
-    if(LOG_RESET)
-    {
+    if constexpr(LOG_RESET)
       nltools::Log::info("recall layer voice reset");
-    }
     m_alloc.m_internal_keys.init();  // reset all pressed keys
-    m_alloc.setUnison(0, m_params.get_local_unison_voices(C15::Properties::LayerId::I)->m_position, oldLayerMode,
-                      m_layer_mode);
-    m_alloc.setMonoEnable(0, m_params.get_local_mono_enable(C15::Properties::LayerId::I)->m_position, m_layer_mode);
+    m_alloc.setUnison(0,
+                      m_parameters.m_layer[0]
+                          .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices]
+                          .m_position,
+                      oldLayerMode, m_layer_mode);
+    m_alloc.setMonoEnable(0,
+                          m_parameters.m_layer[0]
+                              .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable]
+                              .m_position,
+                          m_layer_mode);
     const uint32_t uVoice = m_alloc.m_unison - 1;
     for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
     {
@@ -2778,134 +2663,39 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
       m_poly[layerId].m_key_active = 0;
     }
   }
-  // reset macro assignments
-  m_params.m_global.m_assignment.reset();
-  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+  // common updates: parameters, not resetting voice fade buffer
+  recallCommon(_msg, false);
+  // local updates: parameters
+  if constexpr(LOG_RECALL)
+    nltools::Log::info("recall: local modulateables/unmodulateables:");
+  for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
   {
-    m_params.m_layer[layerId].m_assignment.reset();
-  }
-  // global updates: hw sources
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: hw sources:");
-  }
-  for(const auto &hwsource : msg->hwsources)
-  {
-    globalParRcl(hwsource);
-  }
-  // global updates: hw amounts
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: hw amounts:");
-  }
-  for(auto hwamount : msg->hwamounts)
-  {
-    globalParRcl(hwamount);
-  }
-  // global updates: macros
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: macros:");
-  }
-
-  for(auto macro : msg->macros)
-  {
-    globalParRcl(macro);
-  }
-  for(auto macrotime : msg->macrotimes)
-  {
-    globalTimeRcl(macrotime);
-  }
-  // global updates: parameters
-  if(LOG_RECALL)
-  {
-    nltools::Log::info("recall: global params (modulateables/unmodulateables):");
-  }
-  globalParRcl(msg->master.volume);
-  globalParRcl(msg->master.tune);
-  globalParRcl(msg->master.pan);
-  globalParRcl(msg->master.serialFX);
-
-  globalParRcl(msg->scaleBaseKey);
-  for(auto i : msg->scaleOffsets)
-  {
-    globalParRcl(i);
-  }
-
-  // local updates: unison, mono - updating va
-  localPolyRcl(0, true, msg->unison, msg->mono);
-  // transfer unison detune, phase, pan and mono glide to other part for proper
-  // smoother values - ignoring va
-  localPolyRcl(1, false, msg->unison, msg->mono);
-  // local updates (each layer)
-  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-  {
-    // local updates: unmodulateables
-    if(LOG_RECALL)
-    {
-      nltools::Log::info("recall: local unmodulateables/mc_times:");
-    }
-    for(uint32_t i = 0; i < msg->unmodulateables[layerId].size(); i++)
-    {
-      localParRcl(layerId, msg->unmodulateables[layerId][i]);
-    }
+    const bool updateVoiceAlloc = layerId == 0;
+    for(const auto &param : _msg.m_localModulateables[layerId])
+      onParameterRecall(layerId, param);
+    for(const auto &param : _msg.m_localUnmodulateables[layerId])
+      onParameterRecall(layerId, param, updateVoiceAlloc);
+    // re-calculate voice fade buffer
     evalVoiceFadeChg(layerId);
-    // local updates: modulateables
-    if(LOG_RECALL)
-    {
-      nltools::Log::info("recall: local modulateables:");
-    }
-    for(uint32_t i = 0; i < msg->modulateables[layerId].size(); i++)
-    {
-      localParRcl(layerId, msg->modulateables[layerId][i]);
-    }
   }
-  if(LOG_RECALL)
+  // start transitions: common
+  recallCommonTransition(_msg);
+  for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
   {
-    nltools::Log::info("recall: start transitions:");
-  }
-  // start transitions: global unmodulateables
-  for(uint32_t i = 0; i < m_params.m_global.m_direct_count; i++)
-  {
-    auto param = m_params.get_global_direct(i);
-    if(i == static_cast<uint32_t>(C15::Parameters::Global_Unmodulateables::Scale_Base_Key))
-    {
-      m_global.start_base_key(m_transition_time.m_dx.m_dx_slow, param->m_scaled);
-    }
-    else
-    {
-      globalTransition(param, m_transition_time.m_dx);
-    }
-  }
-  // start transitions: global modulateables
-  for(uint32_t i = 0; i < m_params.m_global.m_target_count; i++)
-  {
-    auto param = m_params.get_global_target(i);
-    globalTransition(param, m_transition_time.m_dx);
-  }
-  for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
-  {
-    // start transitions: local unmodulateables
-    for(uint32_t i = 0; i < m_params.m_layer[0].m_direct_count; i++)
-    {
-      auto param = m_params.get_local_direct(layerId, i);
-      localTransition(layerId, param, m_transition_time.m_dx);
-    }
-    // start transitions: local modulateables
-    for(uint32_t i = 0; i < m_params.m_layer[0].m_target_count; i++)
-    {
-      auto param = m_params.get_local_target(layerId, i);
-      localTransition(layerId, param, m_transition_time.m_dx);
-    }
+    // start transitions: local modulateables/unmodulateables
+    for(const auto &param : m_parameters.m_layer[layerId].m_modulateables)
+      localTransition(layerId, param, m_transitionTime.m_time);
+    for(const auto &param : m_parameters.m_layer[layerId].m_unmodulateables)
+      localTransition(layerId, param, m_transitionTime.m_time);
   }
   // logging levels after recall for debugging switching dual modes
-  if(LOG_RECALL_LEVELS)
-  {
+  if constexpr(LOG_RECALL_LEVELS)
     debugLevels();
-  }
   // return detected reset event
   return outputEvent;
 }
+
+// todo: remove (when unused)
 
 void dsp_host_dual::globalParRcl(const nltools::msg::Parameters::HardwareSourceParameter &_param)
 {
@@ -3129,6 +2919,147 @@ void dsp_host_dual::localPolyRcl(const uint32_t _layerId, const bool _va_update,
     m_alloc.setMonoPriority(_layerId, m_params.get_local_mono_priority(layerId)->m_scaled, m_layer_mode);
     m_alloc.setMonoLegato(_layerId, m_params.get_local_mono_legato(layerId)->m_scaled, m_layer_mode);
   }
+}
+
+// new parameter recall protocol
+
+inline void dsp_host_dual::onParameterRecall(const nltools::controls::HardwareSourceParameter &_param)
+{
+  const auto index = getParameter(_param.m_id).m_param.m_index;
+  auto &param = m_parameters.m_global.m_hardwareSources[index];
+  param.update_behavior(getBehavior(_param.m_returnMode));
+  param.update_position((float) _param.m_controlPosition);
+  if constexpr(LOG_RECALL_DETAILS)
+    nltools::Log::info(__PRETTY_FUNCTION__);
+}
+
+inline void dsp_host_dual::onParameterRecall(const nltools::controls::HardwareAmountParameter &_param)
+{
+  const auto index = getParameter(_param.m_id).m_param.m_index;
+  auto &param = m_parameters.m_global.m_hardwareAmounts[index];
+  param.update_position((float) _param.m_controlPosition);
+  if constexpr(LOG_RECALL_DETAILS)
+    nltools::Log::info(__PRETTY_FUNCTION__);
+}
+
+inline void dsp_host_dual::onParameterRecall(const nltools::controls::MacroControlParameter &_param)
+{
+  const auto index = getParameter(_param.m_id).m_param.m_index;
+  auto &param = m_parameters.m_global.m_macroControls[index];
+  param.update_position((float) _param.m_controlPosition);
+  param.m_unclipped = param.m_position;  // fixing #2023: unclipped always up-to-date
+  if constexpr(LOG_RECALL_DETAILS)
+    nltools::Log::info(__PRETTY_FUNCTION__);
+}
+
+inline void dsp_host_dual::onParameterRecall(const nltools::controls::MacroTimeParameter &_param)
+{
+  const auto index = getParameter(_param.m_id).m_param.m_index;
+  auto &param = m_parameters.m_global.m_macroTimes[index];
+  param.update_position((float) _param.m_controlPosition);
+  param.m_scaled = scale(param.m_scaling, param.m_position);
+  updateTime(param.m_time, param.m_scaled);
+  if constexpr(LOG_RECALL_DETAILS)
+    nltools::Log::info(__PRETTY_FUNCTION__);
+}
+
+inline void dsp_host_dual::onParameterRecall(const nltools::controls::GlobalModulateableParameter &_param)
+{
+  const auto index = getParameter(_param.m_id).m_param.m_index;
+  const auto macroId = getMacroId(_param.m_macro);
+  auto &param = m_parameters.m_global.m_parameters.m_modulateables[index];
+  param.update_source(getMacro(_param.m_macro));
+  param.update_amount((float) _param.m_modulationAmount);
+  param.update_position(param.depolarize((float) _param.m_controlPosition));
+  param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
+  m_parameters.m_global.m_parameters.m_assignment.reassign(index, macroId);
+  param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
+  if constexpr(LOG_RECALL_DETAILS)
+    nltools::Log::info(__PRETTY_FUNCTION__);
+}
+
+inline void dsp_host_dual::onParameterRecall(const nltools::controls::GlobalUnmodulateableParameter &_param)
+{
+  const auto index = getParameter(_param.m_id).m_param.m_index;
+  auto &param = m_parameters.m_global.m_parameters.m_unmodulateables[index];
+  param.update_position((float) _param.m_controlPosition);
+  param.m_scaled = scale(param.m_scaling, param.m_position);
+  if constexpr(LOG_RECALL_DETAILS)
+    nltools::Log::info(__PRETTY_FUNCTION__);
+}
+
+inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
+                                             const nltools::controls::LocalModulateableParameter &_param)
+{
+  const auto index = getParameter(_param.m_id).m_param.m_index;
+  const auto macroId = getMacroId(_param.m_macro);
+  auto &param = m_parameters.m_layer[_layerId].m_modulateables[index];
+  param.update_source(getMacro(_param.m_macro));
+  param.update_amount((float) _param.m_modulationAmount);
+  param.update_position(param.depolarize((float) _param.m_controlPosition));
+  param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
+  m_parameters.m_layer[_layerId].m_assignment.reassign(index, macroId);
+  param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
+  if(param.m_splitpoint)
+    m_alloc.setSplitPoint(static_cast<uint32_t>(param.m_scaled) + C15::Config::physical_key_from, _layerId);
+  if constexpr(LOG_RECALL_DETAILS)
+    nltools::Log::info(__PRETTY_FUNCTION__);
+}
+
+inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
+                                             const nltools::controls::LocalUnmodulateableParameter &_param,
+                                             const bool _vaUpdate)
+{
+  const auto index = getParameter(_param.m_id).m_param.m_index;
+  auto &param = m_parameters.m_layer[_layerId].m_unmodulateables[index];
+  switch(_param.m_id)
+  {
+    case C15::PID::Unison_Voices:
+    case C15::PID::Mono_Grp_Enable:
+      break;
+    default:
+      param.update_position((float) _param.m_controlPosition);
+      break;
+  }
+  param.m_scaled = scale(param.m_scaling, param.m_position);
+  if(_vaUpdate)
+    switch(_param.m_id)
+    {
+      case C15::PID::Mono_Grp_Prio:
+        m_alloc.setMonoPriority(_layerId, param.m_scaled, m_layer_mode);
+        break;
+      case C15::PID::Mono_Grp_Legato:
+        m_alloc.setMonoLegato(_layerId, param.m_scaled, m_layer_mode);
+        break;
+      default:
+        break;
+    }
+  if constexpr(LOG_RECALL_DETAILS)
+    nltools::Log::info(__PRETTY_FUNCTION__);
+}
+
+inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
+                                             const nltools::controls::PolyphonicModulateableParameter &_param)
+{
+  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+}
+
+inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
+                                             const nltools::controls::PolyphonicUnmodulateableParameter &_param)
+{
+  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+}
+
+inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
+                                             const nltools::controls::MonophonicModulateableParameter &_param)
+{
+  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+}
+
+inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
+                                             const nltools::controls::MonophonicUnmodulateableParameter &_param)
+{
+  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
 }
 
 void dsp_host_dual::debugLevels()
