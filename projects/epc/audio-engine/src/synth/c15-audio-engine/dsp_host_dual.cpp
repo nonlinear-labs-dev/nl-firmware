@@ -2361,17 +2361,10 @@ void dsp_host_dual::evalVoiceFadeChg(const uint32_t _layer)
 {
 
   /// final version (when fade from range fits 128 keys):
-  //  const float from =
-  //      m_params
-  //          .get_local_direct(_layer,
-  //          static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From))
-  //          ->m_scaled
-  //      + static_cast<float>(C15::Config::physical_key_from);
-  //  const float range
-  //      = m_params
-  //            .get_local_direct(_layer,
-  //                              static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range))
-  //            ->m_scaled;
+  //  const float from = m_parameters.m_layer[_layer]
+  //                         .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From]
+  //                         .m_scaled
+  //      + C15::Config::physical_key_from;
 
   /// temporary version (for 61 key fade from range)
   // this little hack will treat edge fade from cases (Part I: C1, Part II: C6)
@@ -2380,25 +2373,22 @@ void dsp_host_dual::evalVoiceFadeChg(const uint32_t _layer)
   const uint32_t edgeCaseHackKey[2] = { C15::Config::physical_key_to, C15::Config::physical_key_from },
                  edgeCaseHackRemap[2] = { C15::Config::virtual_key_to, C15::Config::virtual_key_from };
 
-  uint32_t from
-      = static_cast<uint32_t>(
-            m_params
-                .get_local_direct(_layer,
-                                  static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From))
-                ->m_scaled)
+  uint32_t from = static_cast<uint32_t>(
+                      m_parameters.m_layer[_layer]
+                          .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From]
+                          .m_scaled)
       + C15::Config::physical_key_from;
 
-  const float range
-      = m_params
-            .get_local_direct(_layer,
-                              static_cast<uint32_t>(C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range))
-            ->m_scaled;
+  const float range = m_parameters.m_layer[_layer]
+                          .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range]
+                          .m_scaled;
+
   if((from == edgeCaseHackKey[_layer]) && (range == 0.0f))
   {
     from = edgeCaseHackRemap[_layer];
   }
   ///
-  if(VOICE_FADE_INTERPOLATION)
+  if constexpr(VOICE_FADE_INTERPOLATION)
   {
     //      m_poly[_layer].evalVoiceFadeInterpolated(from, range);
     m_poly[_layer].evalVoiceFadeInterpolated(static_cast<float>(from), range);
@@ -2656,7 +2646,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
                               .m_position,
                           m_layer_mode);
     const uint32_t uVoice = m_alloc.m_unison - 1;
-    for(uint32_t layerId = 0; layerId < m_params.m_layer_count; layerId++)
+    for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
     {
       m_poly[layerId].resetEnvelopes();
       m_poly[layerId].m_uVoice = uVoice;
@@ -2925,93 +2915,121 @@ void dsp_host_dual::localPolyRcl(const uint32_t _layerId, const bool _va_update,
 
 inline void dsp_host_dual::onParameterRecall(const nltools::controls::HardwareSourceParameter &_param)
 {
-  const auto index = getParameter(_param.m_id).m_param.m_index;
-  auto &param = m_parameters.m_global.m_hardwareSources[index];
+  const auto &descriptor = getParameter(_param.m_id);
+  auto &param = m_parameters.m_global.m_hardwareSources[descriptor.m_param.m_index];
   param.update_behavior(getBehavior(_param.m_returnMode));
   param.update_position((float) _param.m_controlPosition);
   if constexpr(LOG_RECALL_DETAILS)
-    nltools::Log::info(__PRETTY_FUNCTION__);
+    param.log(__PRETTY_FUNCTION__, descriptor);
+  //    nltools::Log::info(__PRETTY_FUNCTION__,
+  //                       "(label:", C15::ParameterGroups[(unsigned) descriptor.m_group].m_label_short,
+  //                       descriptor.m_pg.m_param_label_long, ", index:", descriptor.m_param.m_index,
+  //                       ", position:", param.m_position, ", behavior: ", (int) param.m_behavior, ")");
 }
 
 inline void dsp_host_dual::onParameterRecall(const nltools::controls::HardwareAmountParameter &_param)
 {
-  const auto index = getParameter(_param.m_id).m_param.m_index;
-  auto &param = m_parameters.m_global.m_hardwareAmounts[index];
+  const auto &descriptor = getParameter(_param.m_id);
+  auto &param = m_parameters.m_global.m_hardwareAmounts[descriptor.m_param.m_index];
   param.update_position((float) _param.m_controlPosition);
   if constexpr(LOG_RECALL_DETAILS)
-    nltools::Log::info(__PRETTY_FUNCTION__);
+    param.log(__PRETTY_FUNCTION__, descriptor);
+  //    nltools::Log::info(__PRETTY_FUNCTION__,
+  //                       "(label:", C15::ParameterGroups[(unsigned) descriptor.m_group].m_label_short,
+  //                       descriptor.m_pg.m_param_label_long, ", index:", descriptor.m_param.m_index,
+  //                       ", position:", param.m_position, ")");
 }
 
 inline void dsp_host_dual::onParameterRecall(const nltools::controls::MacroControlParameter &_param)
 {
-  const auto index = getParameter(_param.m_id).m_param.m_index;
-  auto &param = m_parameters.m_global.m_macroControls[index];
+  const auto &descriptor = getParameter(_param.m_id);
+  auto &param = m_parameters.m_global.m_macroControls[descriptor.m_param.m_index];
   param.update_position((float) _param.m_controlPosition);
   param.m_unclipped = param.m_position;  // fixing #2023: unclipped always up-to-date
   if constexpr(LOG_RECALL_DETAILS)
-    nltools::Log::info(__PRETTY_FUNCTION__);
+    param.log(__PRETTY_FUNCTION__, descriptor);
+  //    nltools::Log::info(__PRETTY_FUNCTION__,
+  //                       "(label:", C15::ParameterGroups[(unsigned) descriptor.m_group].m_label_short,
+  //                       descriptor.m_pg.m_param_label_long, ", index:", descriptor.m_param.m_index,
+  //                       ", position:", param.m_position, ")");
 }
 
 inline void dsp_host_dual::onParameterRecall(const nltools::controls::MacroTimeParameter &_param)
 {
-  const auto index = getParameter(_param.m_id).m_param.m_index;
-  auto &param = m_parameters.m_global.m_macroTimes[index];
+  const auto &descriptor = getParameter(_param.m_id);
+  auto &param = m_parameters.m_global.m_macroTimes[descriptor.m_param.m_index];
   param.update_position((float) _param.m_controlPosition);
   param.m_scaled = scale(param.m_scaling, param.m_position);
   updateTime(param.m_time, param.m_scaled);
   if constexpr(LOG_RECALL_DETAILS)
-    nltools::Log::info(__PRETTY_FUNCTION__);
+    param.log(__PRETTY_FUNCTION__, descriptor);
+  //    nltools::Log::info(__PRETTY_FUNCTION__,
+  //                       "(label:", C15::ParameterGroups[(unsigned) descriptor.m_group].m_label_short,
+  //                       descriptor.m_pg.m_param_label_long, ", index:", descriptor.m_param.m_index,
+  //                       ", position:", param.m_position, ")");
 }
 
 inline void dsp_host_dual::onParameterRecall(const nltools::controls::GlobalModulateableParameter &_param)
 {
-  const auto index = getParameter(_param.m_id).m_param.m_index;
+  const auto &descriptor = getParameter(_param.m_id);
   const auto macroId = getMacroId(_param.m_macro);
-  auto &param = m_parameters.m_global.m_parameters.m_modulateables[index];
+  auto &param = m_parameters.m_global.m_parameters.m_modulateables[descriptor.m_param.m_index];
   param.update_source(getMacro(_param.m_macro));
   param.update_amount((float) _param.m_modulationAmount);
   param.update_position(param.depolarize((float) _param.m_controlPosition));
   param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
-  m_parameters.m_global.m_parameters.m_assignment.reassign(index, macroId);
+  m_parameters.m_global.m_parameters.m_assignment.reassign(descriptor.m_param.m_index, macroId);
   param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
   if constexpr(LOG_RECALL_DETAILS)
-    nltools::Log::info(__PRETTY_FUNCTION__);
+    param.log(__PRETTY_FUNCTION__, descriptor);
+  //    nltools::Log::info(__PRETTY_FUNCTION__,
+  //                       "(label:", C15::ParameterGroups[(unsigned) descriptor.m_group].m_label_short,
+  //                       descriptor.m_pg.m_param_label_long, ", index:", descriptor.m_param.m_index,
+  //                       ", position:", param.m_position, ", mc:", (int) param.m_source, ", amt:", param.m_amount, ")");
 }
 
 inline void dsp_host_dual::onParameterRecall(const nltools::controls::GlobalUnmodulateableParameter &_param)
 {
-  const auto index = getParameter(_param.m_id).m_param.m_index;
-  auto &param = m_parameters.m_global.m_parameters.m_unmodulateables[index];
+  const auto &descriptor = getParameter(_param.m_id);
+  auto &param = m_parameters.m_global.m_parameters.m_unmodulateables[descriptor.m_param.m_index];
   param.update_position((float) _param.m_controlPosition);
   param.m_scaled = scale(param.m_scaling, param.m_position);
   if constexpr(LOG_RECALL_DETAILS)
-    nltools::Log::info(__PRETTY_FUNCTION__);
+    param.log(__PRETTY_FUNCTION__, descriptor);
+  //    nltools::Log::info(__PRETTY_FUNCTION__,
+  //                       "(label:", C15::ParameterGroups[(unsigned) descriptor.m_group].m_label_short,
+  //                       descriptor.m_pg.m_param_label_long, ", index:", descriptor.m_param.m_index,
+  //                       ", position:", param.m_position, ")");
 }
 
 inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
                                              const nltools::controls::LocalModulateableParameter &_param)
 {
-  const auto index = getParameter(_param.m_id).m_param.m_index;
+  const auto &descriptor = getParameter(_param.m_id);
   const auto macroId = getMacroId(_param.m_macro);
-  auto &param = m_parameters.m_layer[_layerId].m_modulateables[index];
+  auto &param = m_parameters.m_layer[_layerId].m_modulateables[descriptor.m_param.m_index];
   param.update_source(getMacro(_param.m_macro));
   param.update_amount((float) _param.m_modulationAmount);
   param.update_position(param.depolarize((float) _param.m_controlPosition));
   param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
-  m_parameters.m_layer[_layerId].m_assignment.reassign(index, macroId);
+  m_parameters.m_layer[_layerId].m_assignment.reassign(descriptor.m_param.m_index, macroId);
   param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
   if(param.m_splitpoint)
     m_alloc.setSplitPoint(static_cast<uint32_t>(param.m_scaled) + C15::Config::physical_key_from, _layerId);
   if constexpr(LOG_RECALL_DETAILS)
-    nltools::Log::info(__PRETTY_FUNCTION__);
+    param.log(__PRETTY_FUNCTION__, descriptor);
+  //    nltools::Log::info(__PRETTY_FUNCTION__, "(layer:", _layerId,
+  //                       ", label:", C15::ParameterGroups[(unsigned) descriptor.m_group].m_label_short,
+  //                       descriptor.m_pg.m_param_label_long, ", index:", descriptor.m_param.m_index,
+  //                       ", position:", param.m_position, ", mc: ", (int) param.m_source, ", amt: ", param.m_amount, ")");
 }
 
 inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
                                              const nltools::controls::LocalUnmodulateableParameter &_param,
                                              const bool _vaUpdate)
 {
-  const auto index = getParameter(_param.m_id).m_param.m_index;
-  auto &param = m_parameters.m_layer[_layerId].m_unmodulateables[index];
+  const auto &descriptor = getParameter(_param.m_id);
+  auto &param = m_parameters.m_layer[_layerId].m_unmodulateables[descriptor.m_param.m_index];
   switch(_param.m_id)
   {
     case C15::PID::Unison_Voices:
@@ -3035,7 +3053,11 @@ inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
         break;
     }
   if constexpr(LOG_RECALL_DETAILS)
-    nltools::Log::info(__PRETTY_FUNCTION__);
+    param.log(__PRETTY_FUNCTION__, descriptor);
+  //    nltools::Log::info(__PRETTY_FUNCTION__, "(layer:", _layerId,
+  //                       ", label:", C15::ParameterGroups[(unsigned) descriptor.m_group].m_label_short,
+  //                       descriptor.m_pg.m_param_label_long, ", index:", descriptor.m_param.m_index,
+  //                       ", position:", param.m_position, ")");
 }
 
 inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,

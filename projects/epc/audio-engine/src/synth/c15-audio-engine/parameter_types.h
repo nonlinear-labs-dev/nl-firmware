@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Parameters.h>
+#include <parameter_group.h>
 
 namespace Engine
 {
@@ -135,21 +136,38 @@ namespace Engine
         }
         return false;
       }
+      inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
+      {
+          nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                  _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                  ", position:", m_position, ", behavior: ", (int) m_behavior, ")");
+      }
     };
 
     struct HardwareAmount : public Aspects::ParameterAspect
     {
       uint32_t m_sourceId = {};
+      inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
+      {
+          nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                  _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                  ", position:", m_position, ")");
+      }
     };
 
     struct MacroControl : public Aspects::ParameterAspect, public Aspects::RangeAspect
     {
-      uint32_t m_id = {}, m_index = {};
+      uint32_t m_index = {};
       inline void init(const C15::ParameterDescriptor &_desc)
       {
           ParameterAspect::init(_desc.m_initial);
-          m_id = _desc.m_param.m_index;
           m_index = _desc.m_param.m_index;
+      }
+      inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
+      {
+          nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                  _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                  ", position:", m_position, ")");
       }
     };
 
@@ -162,6 +180,12 @@ namespace Engine
             m_scaling.m_scaleFactor = _factor;
             m_scaling.m_scaleOffset = _offset;
         }
+        inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
+        {
+            nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                    _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                    ", position:", m_position, ")");
+        }
     };
 
     struct MacroTime : public Aspects::ParameterAspect, public Aspects::ScaleAspect, public Aspects::TimeAspect
@@ -170,6 +194,12 @@ namespace Engine
         {
             ParameterAspect::init(_desc.m_initial);
             ScaleAspect::init(_desc.m_ae);
+        }
+        inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
+        {
+            nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                    _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                    ", position:", m_position, ")");
         }
     };
 
@@ -197,6 +227,13 @@ namespace Engine
         m_base = m_position - (m_amount * _mod);
         m_ceil = m_base + m_amount;
       }
+      inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
+      {
+          nltools::Log::info(_msg,
+                             "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                             _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                             ", position:", m_position, ", mc:", (int) m_source, ", amt:", m_amount, ")");
+      }
     };
 
     struct Unmodulateable : public Aspects::ParameterAspect, public Aspects::ScaleAspect, public Aspects::RenderAspect
@@ -206,6 +243,12 @@ namespace Engine
             ParameterAspect::init(_desc.m_initial);
             ScaleAspect::init(_desc.m_ae);
             RenderAspect::init(_desc.m_ae.m_smoother);
+        }
+        inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
+        {
+            nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                    _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                    ", position:", m_position, ")");
         }
     };
 
