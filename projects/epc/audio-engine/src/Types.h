@@ -24,6 +24,7 @@ enum class DecoderEventType
   UNKNOWN
 };
 
+// note: unnecessary code duplication (better use C15::Parameters::Hardware_Sources in <parameter_declarations.h>
 enum class HardwareSource : int8_t
 {
   PEDAL1 = 0,

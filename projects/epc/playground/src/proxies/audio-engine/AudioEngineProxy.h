@@ -20,6 +20,7 @@ class PlaycontrollerProxy;
 class AudioEngineProxy : public sigc::trackable
 {
  public:
+  // note: unnecessary code duplication (better use C15::Parameters::Hardware_Sources in <parameter_declarations.h>
   enum class HardwareSource_AE : int8_t
   {
     PEDAL1 = 0,
@@ -37,16 +38,16 @@ class AudioEngineProxy : public sigc::trackable
 
   AudioEngineProxy(PresetManager& pm, Settings& settings, PlaycontrollerProxy& playProxy);
 
-//  template <typename tParameter> auto createAndSendParameterMessage(const tParameter* parameter)
-//  {
-//    if(!m_suppressParamChanges)
-//      sendParameterMessage(createMessage<tParameter>(parameter));
-//  }
+  //  template <typename tParameter> auto createAndSendParameterMessage(const tParameter* parameter)
+  //  {
+  //    if(!m_suppressParamChanges)
+  //      sendParameterMessage(createMessage<tParameter>(parameter));
+  //  }
 
-//  template <typename tParameter> auto createMessage(const tParameter* parameter)
-//  {
-//    return ParameterMessageFactory::createMessage<tParameter>(parameter);
-//  }
+  //  template <typename tParameter> auto createMessage(const tParameter* parameter)
+  //  {
+  //    return ParameterMessageFactory::createMessage<tParameter>(parameter);
+  //  }
 
   template <class tMessage> void sendParameterMessage(const tMessage& msg)
   {
