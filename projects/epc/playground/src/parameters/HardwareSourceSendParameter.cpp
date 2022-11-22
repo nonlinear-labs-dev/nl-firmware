@@ -98,12 +98,6 @@ void HardwareSourceSendParameter::onSiblingChanged(const Parameter* sibling)
   }
 }
 
-void HardwareSourceSendParameter::sendParameterMessage() const
-{
-  if(auto eb = getParentEditBuffer())
-    eb->getAudioEngineProxy().createAndSendParameterMessage<HardwareSourceSendParameter>(this);
-}
-
 void HardwareSourceSendParameter::onLocalChanged(const Setting* setting)
 {
   if(auto localSetting = dynamic_cast<const GlobalLocalEnableSetting*>(setting))

@@ -41,6 +41,7 @@
 #include <Options.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include <proxies/hwui/HardwareFeatures.h>
+#include <malloc.h>
 
 HWUI::HWUI(Settings &settings, RecorderManager &recorderManager)
     : m_layoutFolderMonitor(std::make_unique<LayoutFolderMonitor>())
@@ -124,11 +125,15 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
   {
     if(!line.empty())
     {
-      if(line == "r")
+      if(line == "mem")
+      {
+        nltools::Log::memUsage(nltools::Log::Level::Error, __PRETTY_FUNCTION__, mallinfo().uordblks);
+      }
+      else if(line == "r")
       {
         m_layoutFolderMonitor->bruteForce();
       }
-      if(line == "t")
+      else if(line == "t")
       {
         onButtonPressed(Buttons::BUTTON_SETUP, true);
       }

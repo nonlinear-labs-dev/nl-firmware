@@ -29,16 +29,46 @@ C15Synth::C15Synth(AudioEngineOptions* options)
   receive<LayerPresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onLayerPresetMessage));
   receive<SplitPresetMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onSplitPresetMessage));
 
-  receive<UnmodulateableParameterChangedMessage>(EndPoint::AudioEngine,
-                                                 sigc::mem_fun(this, &C15Synth::onUnmodulateableParameterMessage));
-  receive<ModulateableParameterChangedMessage>(EndPoint::AudioEngine,
-                                               sigc::mem_fun(this, &C15Synth::onModulateableParameterMessage));
-  receive<MacroControlChangedMessage>(EndPoint::AudioEngine,
-                                      sigc::mem_fun(this, &C15Synth::onMacroControlParameterMessage));
-  receive<HWSourceChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onHWSourceMessage));
-  receive<HWAmountChangedMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onHWAmountMessage));
-  receive<HWSourceSendChangedMessage>(EndPoint::AudioEngine,
-                                      sigc::mem_fun(this, &C15Synth::onHWSourceSendMessageReceived));
+  // new ParameterChanged protocol
+  receive<HardwareSourceParameterChangedMessage>(
+      EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onHardwareSourceParameterChangedMessage));
+  receive<HardwareSourceSendParameterChangedMessage>(
+      EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onHardwareSourceSendParameterChangedMessage));
+  receive<HardwareAmountParameterChangedMessage>(
+      EndPoint::AudioEngine,
+      sigc::mem_fun(this, &C15Synth::onParameterChangedMessage<HardwareAmountParameterChangedMessage>));
+  receive<MacroControlParameterChangedMessage>(
+      EndPoint::AudioEngine,
+      sigc::mem_fun(this, &C15Synth::onParameterChangedMessage<MacroControlParameterChangedMessage>));
+  receive<MacroTimeParameterChangedMessage>(
+      EndPoint::AudioEngine,
+      sigc::mem_fun(this, &C15Synth::onParameterChangedMessage<MacroTimeParameterChangedMessage>));
+  receive<GlobalModulateableParameterChangedMessage>(
+      EndPoint::AudioEngine,
+      sigc::mem_fun(this, &C15Synth::onParameterChangedMessage<GlobalModulateableParameterChangedMessage>));
+  receive<GlobalUnmodulateableParameterChangedMessage>(
+      EndPoint::AudioEngine,
+      sigc::mem_fun(this, &C15Synth::onParameterChangedMessage<GlobalUnmodulateableParameterChangedMessage>));
+  receive<LocalModulateableParameterChangedMessage>(
+      EndPoint::AudioEngine,
+      sigc::mem_fun(this, &C15Synth::onParameterChangedMessage<LocalModulateableParameterChangedMessage>));
+  receive<LocalUnmodulateableParameterChangedMessage>(
+      EndPoint::AudioEngine,
+      sigc::mem_fun(this, &C15Synth::onResettingParameterChangedMessage<LocalUnmodulateableParameterChangedMessage>));
+  receive<PolyphonicModulateableParameterChangedMessage>(
+      EndPoint::AudioEngine,
+      sigc::mem_fun(this, &C15Synth::onParameterChangedMessage<PolyphonicModulateableParameterChangedMessage>));
+  receive<PolyphonicUnmodulateableParameterChangedMessage>(
+      EndPoint::AudioEngine,
+      sigc::mem_fun(this,
+                    &C15Synth::onResettingParameterChangedMessage<PolyphonicUnmodulateableParameterChangedMessage>));
+  receive<MonophonicModulateableParameterChangedMessage>(
+      EndPoint::AudioEngine,
+      sigc::mem_fun(this, &C15Synth::onParameterChangedMessage<MonophonicModulateableParameterChangedMessage>));
+  receive<MonophonicUnmodulateableParameterChangedMessage>(
+      EndPoint::AudioEngine,
+      sigc::mem_fun(this, &C15Synth::onParameterChangedMessage<MonophonicUnmodulateableParameterChangedMessage>));
+
   //Settings
   receive<Setting::NoteShiftMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onNoteShiftMessage));
   receive<Setting::PresetGlitchMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onPresetGlitchMessage));
@@ -303,112 +333,40 @@ void C15Synth::onSettingInitialSinglePreset()
   m_dsp->onSettingInitialSinglePreset();  // initial sound, out a mix: 100%
 }
 
-void C15Synth::onModulateableParameterMessage(const nltools::msg::ModulateableParameterChangedMessage& msg)
-{
-  // (fail-safe) dispatch by ParameterList
-  auto element = m_dsp->getParameter(msg.parameterId);
-  switch(element.m_param.m_type)
-  {
-    case C15::Descriptors::ParameterType::Global_Modulateable:
-      m_dsp->globalParChg(element.m_param.m_index, msg);
-      return;
-    case C15::Descriptors::ParameterType::Local_Modulateable:
-      m_dsp->localParChg(element.m_param.m_index, msg);
-      return;
-  }
-#if LOG_FAIL
-  nltools::Log::warning("invalid Modulateable_Parameter ID:", msg.parameterId);
-#endif
-}
+// new ParameterChanged protocol
 
-void C15Synth::onUnmodulateableParameterMessage(const nltools::msg::UnmodulateableParameterChangedMessage& msg)
+void C15Synth::onHardwareSourceParameterChangedMessage(const nltools::msg::HardwareSourceParameterChangedMessage& _msg)
 {
-  // (fail-safe) dispatch by ParameterList
-  auto element = m_dsp->getParameter(msg.parameterId);
-  // further (subtype) distinction
-  switch(element.m_param.m_type)
+  const auto latchIndex = InputEventStage::parameterIDToHWID(_msg.m_id);
+  if(latchIndex != HardwareSource::NONE)
   {
-    case C15::Descriptors::ParameterType::Global_Unmodulateable:
-      m_dsp->globalParChg(element.m_param.m_index, msg);
-      return;
-    case C15::Descriptors::ParameterType::Macro_Time:
-      m_dsp->globalTimeChg(element.m_param.m_index, msg);
-      return;
-    case C15::Descriptors::ParameterType::Local_Unmodulateable:
-      // poly detection
-      switch(static_cast<C15::Parameters::Local_Unmodulateables>(element.m_param.m_index))
-      {
-        case C15::Parameters::Local_Unmodulateables::Unison_Voices:
-        {
-          const auto externalReset = m_dsp->localUnisonVoicesChg(msg);
-          m_inputEventStage.requestExternalReset(externalReset);
-          break;
-        }
-        case C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable:
-        {
-          const auto externalReset = m_dsp->localMonoEnableChg(msg);
-          m_inputEventStage.requestExternalReset(externalReset);
-          break;
-        }
-        case C15::Parameters::Local_Unmodulateables::Mono_Grp_Prio:
-          m_dsp->localMonoPriorityChg(msg);
-          break;
-        case C15::Parameters::Local_Unmodulateables::Mono_Grp_Legato:
-          m_dsp->localMonoLegatoChg(msg);
-          break;
-        default:
-          m_dsp->localParChg(element.m_param.m_index, msg);
-          break;
-      }
-      return;
-    default:
-      break;
-  }
-#if LOG_FAIL
-  nltools::Log::warning("invalid Unmodulateable_Parameter ID:", msg.parameterId);
-#endif
-}
-
-void C15Synth::onMacroControlParameterMessage(const nltools::msg::MacroControlChangedMessage& msg)
-{
-  // (fail-safe) dispatch by ParameterList
-  auto element = m_dsp->getParameter(msg.parameterId);
-  if(element.m_param.m_type == C15::Descriptors::ParameterType::Macro_Control)
-  {
-    m_dsp->globalParChg(element.m_param.m_index, msg);
-    return;
-  }
-#if LOG_FAIL
-  nltools::Log::warning("invalid Macro_Control ID:", msg.parameterId);
-#endif
-}
-
-void C15Synth::onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg)
-{
-  // (fail-safe) dispatch by ParameterList
-  auto element = m_dsp->getParameter(msg.parameterId);
-  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Amount)
-  {
-    m_dsp->globalParChg(element.m_param.m_index, msg);
-    return;
-  }
-#if LOG_FAIL
-  nltools::Log::warning("invalid HW_Amount ID:", msg.parameterId);
-#endif
-}
-
-void C15Synth::onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg)
-{
-  auto element = m_dsp->getParameter(msg.parameterId);
-  auto latchIndex = InputEventStage::parameterIDToHWID(msg.parameterId);
-
-  if(element.m_param.m_type == C15::Descriptors::ParameterType::Hardware_Source && latchIndex != HardwareSource::NONE)
-  {
-    auto didBehaviourChange = m_dsp->updateBehaviour(element, msg.returnMode);
+    auto element = m_dsp->getParameter(_msg.m_id);
+    const auto didBehaviorChange = m_dsp->updateBehaviour(element, _msg.m_returnMode);
     m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)][static_cast<int>(HWChangeSource::UI)]
-        = static_cast<float>(msg.controlPosition);
-    m_inputEventStage.onUIHWSourceMessage(msg, didBehaviourChange);
+        = static_cast<float>(_msg.m_controlPosition);
+    m_inputEventStage.onParameterChangedMessage(_msg, didBehaviorChange);
+    return;
   }
+  if constexpr(LOG_FAIL)
+  {
+    nltools::Log::error(__PRETTY_FUNCTION__, "invalid parameter id: ", _msg.m_id);
+  }
+}
+
+void C15Synth::onHardwareSourceSendParameterChangedMessage(
+    const nltools::msg::HardwareSourceSendParameterChangedMessage& _msg)
+{
+  m_inputEventStage.onParameterChangedMessage(_msg);
+}
+
+template <typename T> void C15Synth::onParameterChangedMessage(const T& _msg)
+{
+  m_dsp->onParameterChangedMessage(_msg);
+}
+
+template <typename T> void C15Synth::onResettingParameterChangedMessage(const T& _msg)
+{
+  m_inputEventStage.requestExternalReset(m_dsp->onParameterChangedMessage(_msg));
 }
 
 void C15Synth::queueChannelModeMessage(MidiChannelModeMessages function)
@@ -492,9 +450,4 @@ void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&
   sendNotesOffOnChannel(m_midiOptions.getMIDIPrimarySendChannel());
   if(m_dsp->getType() == SoundType::Split)
     sendNotesOffOnChannel(m_midiOptions.getMIDISplitSendChannel());
-}
-
-void C15Synth::onHWSourceSendMessageReceived(const nltools::msg::HWSourceSendChangedMessage& msg)
-{
-  m_inputEventStage.onSendParameterReceived(msg);
 }

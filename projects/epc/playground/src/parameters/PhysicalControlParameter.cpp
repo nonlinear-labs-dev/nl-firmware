@@ -278,12 +278,6 @@ void PhysicalControlParameter::undoableRandomize(UNDO::Transaction *transaction,
 {
 }
 
-void PhysicalControlParameter::sendParameterMessage() const
-{
-  if(auto eb = getParentEditBuffer())
-    eb->getAudioEngineProxy().createAndSendParameterMessage<PhysicalControlParameter>(this);
-}
-
 bool PhysicalControlParameter::lockingEnabled() const
 {
   return false;

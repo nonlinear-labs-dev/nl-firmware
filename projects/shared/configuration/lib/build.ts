@@ -20,6 +20,7 @@ type Result = ConfigType & DeclarationsType & {
     display_scaling_types: string;
     parameter_groups: string;
     group_map: string;
+    storage: string;
 };
 
 type ParamType = {
@@ -52,14 +53,10 @@ function processDefinitions(result: Result) {
         // parameterID collection (resulting in enum)
         pid: Array<string | undefined> = [],
         // parameterType collection (resulting in enum)
-        parameterType = Object.entries(result.declarations.parameter_type).reduce((out: ParamType, [type, props]) => {
-            if(type !== "None") {
+        parameterType = Object.entries(result.declarations.parameter_type).reduce((out: ParamType, [typeName, props]) => {
+            if(typeName !== "None") {
                 // every type !== None can collect tokens
-                if(!props.includes("parameter_id_none")) {
-                    out[`${type}s`] = [];
-                } else {
-                    out[`${type}s`] = ["None"];
-                }
+                out[`${typeName}s`] = [];
             }
             return out;
         }, {}),
@@ -73,8 +70,8 @@ function processDefinitions(result: Result) {
             return out;
         }, {}),
         // signalType collection (resulting in enum)
-        signalType = Object.keys(result.declarations.parameter_signal).reduce((out: SignalType, type: string) => {
-            if(type !== "None") out[`${type}s`] = [];
+        signalType = Object.keys(result.declarations.parameter_signal).reduce((out: SignalType, typeName: string) => {
+            if(typeName !== "None") out[`${typeName}s`] = [];
             return out;
         }, {});
     // automatic detection of number of params (highest parameter id)
@@ -130,7 +127,7 @@ function processDefinitions(result: Result) {
         // for every parameter of the group
         definition.parameters.forEach((parameter, index) => {
             const
-                type = { name: parameter.type, data: result.declarations.parameter_type[parameter.type] },
+                typeDef = { name: parameter.type, data: result.declarations.parameter_type[parameter.type] },
                 {
                     // required
                     token, id, label_long, label_short, control_position, info, availability,
@@ -138,16 +135,16 @@ function processDefinitions(result: Result) {
                     return_behavior, modulation_aspects, rendering_args
                 } = parameter;
             // type sanity checks
-            if(type.data === undefined) {
-                throw new Error(`${err}: unknown parameter type "${type.name}"`);
+            if(typeDef.data === undefined) {
+                throw new Error(`${err}: unknown parameter type "${typeDef.name}"`);
             }
-            type.data.forEach((property) => {
+            typeDef.data.forEach((property) => {
                 if(!result.declarations.parameter_properties.includes(property)) {
                     throw new Error(`${err}: unknown parameter type property "${property}"`);
                 }
             });
             // global/local sanity checks
-            const isGlobalParam = type.data.includes("global_parameter");
+            const isGlobalParam = typeDef.data.includes("global_parameter");
             if(group.data.global_group) {
                 if(!isGlobalParam) {
                     throw new Error(`${err}: global group "${group.name}" cannot contain non-global parameter id ${id}`);
@@ -168,8 +165,8 @@ function processDefinitions(result: Result) {
             }
             // token and descriptor generation
             const
-                tokenStr = type.data.includes("group_label") ? `${group.name}_${token}` : token,
-                typeStr = `${type.name}s`,
+                tokenStr = typeDef.data.includes("group_label") ? `${group.name}_${token}` : token,
+                typeStr = `${typeDef.name}s`,
                 smootherDescriptor: Array<string> = [],
                 playgroundDescriptor: Array<string> = [];
             // parameterId sanity checks
@@ -207,17 +204,17 @@ function processDefinitions(result: Result) {
             // feed playgroundDescriptor
             playgroundDescriptor.push(coarse.toString(), fine.toString());
             // optional returnBehavior - currently unused
-            if(type.data.includes("return_behavior")) {
+            if(typeDef.data.includes("return_behavior")) {
                 // returnBehavior sanity checks
                 if(return_behavior === undefined) {
-                    throw new Error(`${err}: parameter id ${id} of type "${type.name}" requires return_behavior`);
+                    throw new Error(`${err}: parameter id ${id} of type "${typeDef.name}" requires return_behavior`);
                 }
             }
             // optional modulationAspects, feeding playgrounDescriptor
-            if(type.data.includes("modulation_aspects")) {
+            if(typeDef.data.includes("modulation_aspects")) {
                 // modulationAspects sanity checks
                 if(modulation_aspects === undefined) {
-                    throw new Error(`${err}: parameter id ${id} of type "${type.name}" requires modulation_aspects`);
+                    throw new Error(`${err}: parameter id ${id} of type "${typeDef.name}" requires modulation_aspects`);
                 }
                 // modulationAspects properties
                 const
@@ -246,10 +243,10 @@ function processDefinitions(result: Result) {
                 info.trim().replace(/\n/g, "\\n")
             ].map((entry) => `"${entry}"`), displayScaling.cp, displayScaling.ma);
             // optional renderingArgs (relevant for C15Synth only)
-            if(type.data.includes("rendering_args")) {
+            if(typeDef.data.includes("rendering_args")) {
                 // renderingArgs sanity checks
                 if(rendering_args === undefined) {
-                    throw new Error(`${err}: parameter id ${id} of type "${type.name}" requires rendering_args`);
+                    throw new Error(`${err}: parameter id ${id} of type "${typeDef.name}" requires rendering_args`);
                 }
                 // renderingArgs properties
                 const
@@ -368,10 +365,13 @@ function processDefinitions(result: Result) {
         
         return out;
     }, new Array<string>()).join(",\n");
-    result.parameters = Object.entries(parameterType).reduce((out: Array<string>, [key, entries]) => {
-        out.push(`enum class ${key} {\n${indent}${[...entries, "_LENGTH_"].join(`,\n${indent}`)}\n};`);
-        const shift = entries[0] === "None" ? " - 1" : "";
-        out.push(`static constexpr unsigned num_of_${key} = static_cast<unsigned>(${key}::_LENGTH_)${shift};\n`);
+    result.parameters = Object.entries(result.declarations.parameter_type).reduce((out: Array<string>, [typeName, props]) => {
+        if(typeName === "None") return out;
+        const key = `${typeName}s`, entries = parameterType[key];
+        entries.push("_LENGTH_");
+        if(props.includes("parameter_id_none")) entries.push("None = _LENGTH_", "_OPTIONS_");
+        out.push(`enum class ${key} {\n${indent}${entries.join(`,\n${indent}`)}\n};`);
+        out.push(`static constexpr unsigned num_of_${key} = static_cast<unsigned>(${key}::_LENGTH_);\n`);
         return out;
     }, []).join("\n");
     result.smoothers = Object.entries(smootherType).reduce((out: Array<string>, [key, entries]) => {
@@ -397,6 +397,14 @@ function processDefinitions(result: Result) {
             ].join("\n"));
         return out;
     }, []).join("\n");
+    result.storage = Object.entries(result.declarations.parameter_type).filter(([key]) => key !== "None").map(([key, props]) => {
+        return [
+            "template<typename T>",
+            `struct Array<Descriptors::ParameterType::${key}, T> : public std::array<T, Parameters::num_of_${key}s>`,
+            "{",
+            "};",
+        ].join("\n");
+    }).join("\n");
 }
 
 function generateOverview(result: Result, sourceDir: string, outDir: string) {
@@ -478,7 +486,7 @@ function main(outDir: string, sourceDir: string) {
         result: Result = {
             timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "",
             parameter_list: "", parameter_units: "", display_scaling_types: "", parameter_groups: "",
-            group_map: "",
+            group_map: "", storage: "",
             ...ConfigParser.parse(sourceDir + "/src/c15_config.yaml"),
             ...DeclarationsParser.parse(sourceDir + "/src/parameter_declarations.yaml"),
             definitions: DefinitionsParser.parseAll(...definitions).map((definition, index) => {

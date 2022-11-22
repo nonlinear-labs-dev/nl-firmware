@@ -64,8 +64,6 @@ class ModulateableParameter : public Parameter
  private:
   int getModAmountDenominator(const ButtonModifiers &modifiers) const;
 
-  void sendParameterMessage() const override;
-
   tDisplayValue m_modulationAmount;
   MacroControls m_modSource;
   const ScaleConverter* m_modulationAmountScaleConverter = nullptr;

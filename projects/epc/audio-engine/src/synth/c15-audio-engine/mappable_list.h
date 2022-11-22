@@ -160,7 +160,7 @@ template <uint32_t Length> class SortedList
 
 // mappable list (multiple assignments)
 // specify number of sublists and overall length (number of assignable items)
-template <uint32_t Sublists, uint32_t Length> class MappableList
+template <uint32_t Sublists, uint32_t None, uint32_t Length> class MappableList
 {
  public:
   // constructor
@@ -174,25 +174,25 @@ template <uint32_t Sublists, uint32_t Length> class MappableList
     // manipulate entry and exit points
     for(int32_t i = 0; i < Sublists; i++)
     {
-      const bool s = i == 0;
+      const bool s = i == None;
       m_head[i] = s ? 0 : -1;
       m_tail[i] = s ? m_last : -1;
     }
-    // place every element to sublist 0 (serving as "unassigned" sublist)
+    // place every element to sublist None (serving as "unassigned" sublist)
     for(int32_t i = 0; i < Length; i++)
     {
       m_prev[i] = i - 1;
       m_next[i] = i + 1;
-      m_list[i] = 0;
+      m_list[i] = None;
       m_index = m_next[m_last] = -1;
     }
   }
   inline void reset(const uint32_t _listId)
   {
-    // reassigning every sublist element to sublist zero
+    // reassigning every sublist element to sublist None
     while(m_head[_listId] != -1)
     {
-      reassign(m_head[_listId], 0);
+      reassign(m_head[_listId], None);
     }
   }
   // reassign method: move an element from one list to another

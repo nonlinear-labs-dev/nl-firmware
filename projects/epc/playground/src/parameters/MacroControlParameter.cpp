@@ -233,7 +233,8 @@ bool MacroControlParameter::isChangedFromLoaded() const
   {
     auto nameSame = m_givenName == og->getGivenName();
     auto infoSame = m_info == og->getInfo();
-    return !nameSame || !infoSame || Parameter::isChangedFromLoaded();
+    auto changedFromLoaded = Parameter::isChangedFromLoaded();
+    return !nameSame || !infoSame || changedFromLoaded;
   }
   return Parameter::isChangedFromLoaded();
 }
@@ -410,11 +411,6 @@ void MacroControlParameter::undoableRandomize(UNDO::Transaction *, Initiator, do
 void MacroControlParameter::setCPFromMCView(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
 {
   setCpValue(transaction, Initiator::EXPLICIT_MCVIEW, cpValue, true);
-}
-
-void MacroControlParameter::sendParameterMessage() const
-{
-  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<MacroControlParameter>(this);
 }
 
 bool MacroControlParameter::hasRelativeRibbonAsSource() const

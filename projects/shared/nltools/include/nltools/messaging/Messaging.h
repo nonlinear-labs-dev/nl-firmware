@@ -30,8 +30,9 @@ namespace nltools
          SetRibbonLED, SetPanelLED, SetOLED, OLEDState, SetOLEDTimestamped, RotaryChanged, TimestampedRotaryChanged,
          ButtonChanged, Playcontroller, Ping,
 
-         SinglePreset, LayerPreset, SplitPreset, UnmodulateableParameter, ModulateableParameter, MacroControlParameter,
-         HWAmountParameter, HWSourceParameter, HWSourceSendParameter, UpdateLocalDisabledRibbon,
+         SinglePreset, LayerPreset, SplitPreset,
+
+         UpdateLocalDisabledRibbon,
 
          NoteShiftSetting, PresetGlitchSetting, TransitionTimeSetting, EditSmoothingTimeSetting, TuneReference,
 
@@ -47,7 +48,22 @@ namespace nltools
 
          SyncFS, UpdateUploaded, AutoStartRecorderMessage, AEPanic, GlobalLocalSetting, WifiDevBBBEnable,
          BufferUnderrunsChanged, SetFramesPerPeriod, FlacRecorderStateChanged, HardwarePollEnded,
-         StopRecorderPlaybackMessage, NotifyNoRecorderClients);
+         StopRecorderPlaybackMessage, NotifyNoRecorderClients,
+
+         // new ParameterChanged protocol
+         HardwareSourceParameterChanged,
+         HardwareSourceSendParameterChanged,
+         HardwareAmountParameterChanged,
+         MacroControlParameterChanged,
+         MacroTimeParameterChanged,
+         GlobalModulateableParameterChanged,
+         GlobalUnmodulateableParameterChanged,
+         LocalModulateableParameterChanged,         // temporary: deprecate with https://github.com/nonlinear-labs-dev/C15/issues/2995
+         LocalUnmodulateableParameterChanged,       // temporary: deprecate with https://github.com/nonlinear-labs-dev/C15/issues/2995
+         PolyphonicModulateableParameterChanged,
+         PolyphonicUnmodulateableParameterChanged,
+         MonophonicModulateableParameterChanged,
+         MonophonicUnmodulateableParameterChanged);
 
     namespace detail
     {

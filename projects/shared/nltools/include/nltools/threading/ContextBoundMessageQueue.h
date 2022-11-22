@@ -26,7 +26,7 @@ namespace nltools
 
      private:
       Glib::RefPtr<Glib::MainContext> m_context;
-      uint32_t m_pendingCalls = 0;
+      std::atomic<uint32_t> m_pendingCalls = {0};
 
       using Job = std::function<void()>;
       using tJob = std::shared_ptr<Job>;

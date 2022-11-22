@@ -43,7 +43,7 @@ EditBuffer::EditBuffer(PresetManager *parent, Settings &settings, std::unique_pt
     : ParameterGroupSet(parent)
     , SyncedItem(parent->getRoot()->getSyncMaster(), "/editbuffer")
     , m_parameterDB(*this)
-    , m_deferredJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
+    , m_deferredJobs(100, [this]() { doDeferedJobs(); })
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
@@ -60,6 +60,14 @@ void EditBuffer::init(Settings *settings)
 {
   ParameterGroupSet::init(settings);
   m_recallSet.init();
+
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
+  {
+    for(auto &g : getParameterGroups(vg))
+    {
+      g->validateParameterTypes();
+    }
+  }
 }
 
 EditBuffer::~EditBuffer()
@@ -509,8 +517,8 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
-  initRecallValues(transaction);
   setHWSourcesToLoadRulePostionsAndModulate(transaction);
+  initRecallValues(transaction);
   resetModifiedIndicator(transaction, getHash());
 }
 
@@ -612,6 +620,9 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction, Defaults mode
   setAttribute(transaction, "origin-I-vg", "");
   setAttribute(transaction, "origin-II-vg", "");
 
+  setAttribute(transaction, "color", "");
+  setAttribute(transaction, "Comment", "");
+
   m_recallSet.copyFromEditBuffer(transaction, this);
 }
 
@@ -667,11 +678,12 @@ Parameter *EditBuffer::searchForAnyParameterWithLock(VoiceGroup vg) const
   return nullptr;
 }
 
-void EditBuffer::setMacroControlValueFromMCView(ParameterId id, double value, const Glib::ustring &uuid)
+void EditBuffer::setMacroControlValueFromMCView(const ParameterId& id, double value, const Glib::ustring &uuid)
 {
   if(auto mc = dynamic_cast<MacroControlParameter *>(findParameterByID(id)))
   {
-    mc->setCPFromMCView(mc->getUndoScope().startTrashTransaction()->getTransaction(), value);
+    auto scope = UNDO::Scope::startTrashTransaction();
+    mc->setCPFromMCView(scope->getTransaction(), value);
     mc->setLastMCViewUUID(uuid);
   }
 }
@@ -1739,8 +1751,8 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
   {
     if(auto hw = dynamic_cast<PhysicalControlParameter *>(p))
     {
-      if(hw->getID().getNumber() == C15::PID::Ribbon_1 || hw->getID().getNumber() == C15::PID::Ribbon_2 ||
-         hw->getID().getNumber() == C15::PID::Ribbon_3 || hw->getID().getNumber() == C15::PID::Ribbon_4)
+      if(hw->getID().getNumber() == C15::PID::Ribbon_1 || hw->getID().getNumber() == C15::PID::Ribbon_2
+         || hw->getID().getNumber() == C15::PID::Ribbon_3 || hw->getID().getNumber() == C15::PID::Ribbon_4)
       {
         auto oldMode = hw->getLastReturnModeBeforePresetLoad();
         auto newMode = hw->getReturnMode();

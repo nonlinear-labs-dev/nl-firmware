@@ -82,6 +82,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   VoiceGroup getVoiceGroup() const;
 
   void undoableLoadDefault(UNDO::Transaction *transaction, Defaults mode);
+  void validateParameterTypes() const;
 
  protected:
   template<typename T>

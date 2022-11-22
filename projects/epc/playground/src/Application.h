@@ -38,6 +38,7 @@ class Application
 
   static Application &get();
   static bool exists();
+  [[nodiscard]] bool isQuit() const;
 
   void run();
   Glib::RefPtr<Glib::MainContext> getMainContext();
@@ -57,8 +58,6 @@ class Application
   VoiceGroupAndLoadToPartManager* getVGManager();
   RecorderManager* getRecorderManager();
   HardwareFeatures* getHardwareFeatures();
-
-  [[nodiscard]] bool isQuit() const;
 
   void quit();
   void runWatchDog();
