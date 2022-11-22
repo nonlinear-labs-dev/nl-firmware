@@ -75,6 +75,6 @@ TestHelper::ApplicationFixture::~ApplicationFixture()
 
   if(m_numFileDescriptors != n)
   {
-    nltools::Log::error("Test leaks filedescriptors, before:", m_numFileDescriptors, ", now:", n);
+    nltools::Log::info("Test leaks filedescriptors, before:", m_numFileDescriptors, ", now:", n);
   }
 }

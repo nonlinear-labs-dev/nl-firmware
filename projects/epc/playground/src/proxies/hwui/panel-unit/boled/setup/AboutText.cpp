@@ -11,7 +11,7 @@ AboutText::AboutText()
           "Tino Meinert, David Johannes Meyer, Daniel Tzschentke, "
           "Simone Fabbri, Christian Radtke, Pascal Hürst, "
           "Nemanja Nikodijevic, Thomas Jaufmann, Gabriel Mulzer, "
-          "Mike Daliot, Paul Schulz, Ulrich Wappler"
+          "Mike Daliot, Paul Schulz, Ulrich Wappler",
           FrameBufferColors::C255);
 }
 
