@@ -1,4 +1,5 @@
 #include "SettingsUseCases.h"
+#include "device-settings/ScreenSaverTimeoutSetting.h"
 #include <device-settings/Settings.h>
 #include <device-settings/midi/mappings/PedalCCMapping.h>
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
@@ -195,4 +196,9 @@ void SettingsUseCases::freezeFocusAndMode()
 void SettingsUseCases::thawFocusAndMode()
 {
   m_focusAndModeSetting.setFocusAndModeFreeze(false);
+}
+
+void SettingsUseCases::refreshScreenSaverTimeout()
+{
+  m_settings.getSetting<ScreenSaverTimeoutSetting>()->endAndReschedule();
 }

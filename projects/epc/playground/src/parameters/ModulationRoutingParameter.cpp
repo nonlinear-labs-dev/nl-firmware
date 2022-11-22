@@ -20,10 +20,12 @@ ModulationRoutingParameter::ModulationRoutingParameter(ParameterGroup *group, co
 
 ModulationRoutingParameter::~ModulationRoutingParameter() = default;
 
-void ModulationRoutingParameter::onValueChanged(Initiator initiator, tControlPositionValue oldValue,
-                                                tControlPositionValue newValue)
+void ModulationRoutingParameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator,
+                                            tControlPositionValue value, bool dosendToPlaycontroller)
 {
-  Parameter::onValueChanged(initiator, oldValue, newValue);
+  const auto oldValue = getControlPositionValue();
+  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
+  const auto newValue = getControlPositionValue();
 
   if(oldValue == 0.0 && newValue != 0)
   {
@@ -38,7 +40,7 @@ void ModulationRoutingParameter::onValueChanged(Initiator initiator, tControlPos
         {
           if(router != this)
           {
-            router->onExclusiveRoutingLost();
+            router->onExclusiveRoutingLost(transaction);
           }
         }
 
@@ -48,12 +50,17 @@ void ModulationRoutingParameter::onValueChanged(Initiator initiator, tControlPos
   }
 }
 
-void ModulationRoutingParameter::onExclusiveRoutingLost()
+void ModulationRoutingParameter::onExclusiveRoutingLost(UNDO::Transaction *transaction)
 {
-  getValue().setRawValue(Initiator::INDIRECT, 0);
-  onChange();
-  invalidate();
-  sendToAudioEngine();
+  setIndirect(transaction, 0);
+
+  transaction->addSimpleCommand(
+      [=](auto s)
+      {
+        onChange();
+        invalidate();
+        sendToAudioEngine();
+      });
 }
 
 void ModulationRoutingParameter::applyPlaycontrollerPhysicalControl(tControlPositionValue diff)

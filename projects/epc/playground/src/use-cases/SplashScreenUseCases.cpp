@@ -48,7 +48,7 @@ SplashLayout *SplashScreenUseCases::getSplashScreenOverlay()
 {
   if(!Application::get().isQuit())
   {
-    if(auto overlayPtr = m_hwui.getPanelUnit().getEditPanel().getBoled().getOverlay())
+    if(auto overlayPtr = m_hwui.getPanelUnit().getEditPanel().getBoled().getLayout())
     {
       return dynamic_cast<SplashLayout *>(overlayPtr.get());
     }

@@ -69,6 +69,7 @@ TestHelper::ApplicationFixture::ApplicationFixture()
 
 TestHelper::ApplicationFixture::~ApplicationFixture()
 {
+  app->quit();
   app.reset(nullptr);
   auto n = getNumberOfFDs();
 

@@ -64,7 +64,6 @@ void RibbonParameter::setupScalingAndDefaultValue(bool defaultValue)
       router->onChange();
   }
 
-  ensureExclusiveRoutingIfNeeded();
   invalidate();
   sendModeToPlaycontroller();
   m_updateIdWhenModeChanged = getUpdateIDOfLastChange();
@@ -168,6 +167,8 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
     setupScalingAndDefaultValue(false);
     onChange();
   }
+
+  ensureExclusiveRoutingIfNeeded(transaction);
 }
 
 void RibbonParameter::undoableSetHWAmountsForReturnToCenterMode(UNDO::Transaction *transaction,
@@ -207,7 +208,7 @@ ReturnMode RibbonParameter::getReturnMode() const
   return ReturnMode::None;
 }
 
-void RibbonParameter::ensureExclusiveRoutingIfNeeded()
+void RibbonParameter::ensureExclusiveRoutingIfNeeded(UNDO::Transaction* transaction)
 {
   if(getRibbonReturnMode() == RibbonReturnMode::STAY)
   {
@@ -221,7 +222,7 @@ void RibbonParameter::ensureExclusiveRoutingIfNeeded()
 
     for(auto router : routers)
       if(router != highest)
-        router->onExclusiveRoutingLost();
+        router->onExclusiveRoutingLost(transaction);
   }
 }
 

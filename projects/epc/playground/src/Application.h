@@ -38,6 +38,7 @@ class Application
 
   static Application &get();
   static bool exists();
+  [[nodiscard]] bool isQuit() const;
 
   void run();
   Glib::RefPtr<Glib::MainContext> getMainContext();
@@ -58,7 +59,6 @@ class Application
   RecorderManager* getRecorderManager();
   HardwareFeatures* getHardwareFeatures();
 
-  bool isQuit() const;
   void quit();
   void runWatchDog();
   void stopWatchDog();

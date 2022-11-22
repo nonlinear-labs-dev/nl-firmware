@@ -383,11 +383,14 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		}
 
 		if (!isInMultiplePresetSelectionMode() && !isSelected()) {
-			selectPreset();
-			wasJustSelected = true;
+			if(isDraggedWhenPresetDragDropNotEnabled == false) {
+				selectPreset();
+				wasJustSelected = true;
+			}
 		}
 
 		getParent().getParent().pushBankOntoTop(getParent());
+		isDraggedWhenPresetDragDropNotEnabled = false;
 		return this;
 	}
 
@@ -403,7 +406,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return cps != null && cps instanceof LoadToPartMode;
 	}
 
-	private Control clickBehaviour() {
+	private Control clickBehaviour() {		
 		if (isDraggingControl())
 			return this;
 
@@ -464,6 +467,8 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return getParent().getParent().hasMultiplePresetSelection();
 	}
 
+	private boolean isDraggedWhenPresetDragDropNotEnabled = false;
+
 	@Override
 	public Control startDragging(Position pos) {
 		if (SetupModel.get().localSettings.presetDragDrop.getValue() == BooleanValues.on) {
@@ -474,7 +479,9 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			return getNonMaps().getNonLinearWorld().getViewport().getOverlay().createDragProxy(this);
 		}
 
-		return super.startDragging(pos);
+
+		isDraggedWhenPresetDragDropNotEnabled = true;
+		return null;
 	}
 
 	public Control startMultipleSelectionDrag(Position mousePos) {
@@ -506,7 +513,12 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 	@Override
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
-		return this;
+		if (SetupModel.get().localSettings.presetDragDrop.getValue() == BooleanValues.on) {
+			return this;
+		}
+		else {
+			return getNonMaps().getNonLinearWorld().mouseDrag(oldPoint, newPoint, fine);
+		}
 	}
 
 	@Override

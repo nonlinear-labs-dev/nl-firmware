@@ -3,7 +3,8 @@
 #include <thread>
 #include <nltools/system/SpawnAsyncCommandLine.h>
 
-void cleanPendingJobs(Application* app) {
+void cleanPendingJobs(Application* app)
+{
   TestHelper::doMainLoop(
       std::chrono::milliseconds(20), std::chrono::seconds(5), [] { return SpawnAsyncCommandLine::removeDone() == 0; },
       app->getMainContext());
@@ -19,7 +20,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Async Command Line does not bl
 
   AsyncCommandLine cmd(
       app->getMainContext(), { "sleep", "1" },
-      [&](auto o) {
+      [&](auto o)
+      {
         CHECK_FALSE(blocked);
         done = true;
       },
@@ -69,6 +71,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Async Spawn increments job cou
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Async Spawn will remove done Jobs")
 {
   cleanPendingJobs(app.get());
+  TestHelper::doMainLoop(
+      std::chrono::milliseconds(20), std::chrono::seconds(5), [] { return SpawnAsyncCommandLine::removeDone() == 0; },
+      app->getMainContext());
+  REQUIRE(SpawnAsyncCommandLine::getNumCommands() == 0);
 
   auto done = false;
 
@@ -77,8 +83,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Async Spawn will remove done J
   CHECK(SpawnAsyncCommandLine::getNumCommands() == 1);
 
   TestHelper::doMainLoop(
-      std::chrono::milliseconds(200), std::chrono::milliseconds(2000), [&] { return done; },
-      app->getMainContext());
+      std::chrono::milliseconds(200), std::chrono::milliseconds(2000), [&] { return done; }, app->getMainContext());
 
   SpawnAsyncCommandLine::spawn(
       app->getMainContext(), { "echo", "x" }, [](auto) {}, [](auto) {});

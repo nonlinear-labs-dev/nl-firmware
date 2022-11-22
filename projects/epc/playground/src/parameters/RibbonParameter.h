@@ -50,7 +50,7 @@ class RibbonParameter : public PhysicalControlParameter
   void sendToAudioEngine() const override;
 
  private:
-  void ensureExclusiveRoutingIfNeeded();
+  void ensureExclusiveRoutingIfNeeded(UNDO::Transaction* transaction);
   const ScaleConverter *createScaleConverter() const;
   void setupScalingAndDefaultValue(bool defaultValue);
   std::list<ModulationRoutingParameter*> getRoutingParameters() const;
