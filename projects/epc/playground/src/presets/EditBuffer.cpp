@@ -43,7 +43,7 @@ EditBuffer::EditBuffer(PresetManager *parent, Settings &settings, std::unique_pt
     : ParameterGroupSet(parent)
     , SyncedItem(parent->getRoot()->getSyncMaster(), "/editbuffer")
     , m_parameterDB(*this)
-    , m_deferredJobs(100, std::bind(&EditBuffer::doDeferedJobs, this))
+    , m_deferredJobs(100, [this]() { doDeferedJobs(); })
     , m_isModified(false)
     , m_recallSet(this)
     , m_type(SoundType::Single)
@@ -60,6 +60,14 @@ void EditBuffer::init(Settings *settings)
 {
   ParameterGroupSet::init(settings);
   m_recallSet.init();
+
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
+  {
+    for(auto &g : getParameterGroups(vg))
+    {
+      g->validateParameterTypes();
+    }
+  }
 }
 
 EditBuffer::~EditBuffer()
@@ -1743,8 +1751,8 @@ void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *tr
   {
     if(auto hw = dynamic_cast<PhysicalControlParameter *>(p))
     {
-      if(hw->getID().getNumber() == C15::PID::Ribbon_1 || hw->getID().getNumber() == C15::PID::Ribbon_2 ||
-         hw->getID().getNumber() == C15::PID::Ribbon_3 || hw->getID().getNumber() == C15::PID::Ribbon_4)
+      if(hw->getID().getNumber() == C15::PID::Ribbon_1 || hw->getID().getNumber() == C15::PID::Ribbon_2
+         || hw->getID().getNumber() == C15::PID::Ribbon_3 || hw->getID().getNumber() == C15::PID::Ribbon_4)
       {
         auto oldMode = hw->getLastReturnModeBeforePresetLoad();
         auto newMode = hw->getReturnMode();

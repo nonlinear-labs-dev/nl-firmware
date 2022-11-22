@@ -32,10 +32,8 @@ class ModulationRoutingParameter : public Parameter, public IntrusiveListItem<Mo
   tControlPositionValue getControlPositionValue() const override;
   Layout *createLayout(FocusAndMode focusAndMode) const override;
 
+  void onExclusiveRoutingLost();
   void onExclusiveRoutingLost(UNDO::Transaction* transaction);
-
- private:
-  void sendParameterMessage() const override;
 
  protected:
   void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,

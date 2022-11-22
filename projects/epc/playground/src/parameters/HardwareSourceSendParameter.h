@@ -32,8 +32,6 @@ class HardwareSourceSendParameter : public Parameter
   bool shouldWriteDocProperties(tUpdateID knownRevision) const override;
 
  private:
-  void sendParameterMessage() const override;
-
   void onLocalChanged(const Setting* setting);
   void onRoutingsChanged(const Setting* setting);
   void onSiblingChanged(const Parameter* sibling);

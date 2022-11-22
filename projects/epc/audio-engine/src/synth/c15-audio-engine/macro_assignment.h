@@ -63,5 +63,9 @@ template <class MC, class MP> class MC_Assignment
   }
 
  private:
-  MappableList<static_cast<uint32_t>(MC::_LENGTH_), static_cast<uint32_t>(MP::_LENGTH_)> m_list;
+  MappableList<
+    static_cast<uint32_t>(MC::_OPTIONS_),
+    static_cast<uint32_t>(MC::None),
+    static_cast<uint32_t>(MP::_LENGTH_)
+  > m_list;
 };

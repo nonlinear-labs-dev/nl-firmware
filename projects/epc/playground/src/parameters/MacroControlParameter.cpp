@@ -413,11 +413,6 @@ void MacroControlParameter::setCPFromMCView(UNDO::Transaction *transaction, cons
   setCpValue(transaction, Initiator::EXPLICIT_MCVIEW, cpValue, true);
 }
 
-void MacroControlParameter::sendParameterMessage() const
-{
-  Application::get().getAudioEngineProxy()->createAndSendParameterMessage<MacroControlParameter>(this);
-}
-
 bool MacroControlParameter::hasRelativeRibbonAsSource() const
 {
   auto group = getParentEditBuffer()->getParameterGroupByID({ "MCM", VoiceGroup::Global });
