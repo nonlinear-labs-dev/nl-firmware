@@ -262,8 +262,6 @@ void ParameterGroup::validateParameterTypes() const
     }
     else
     {
-      nltools::Log::error("polyCount:", polyCount, "monoCount:", monoCount, "globalCount:", globalCount, "localCount:", localCount);
-
       nltools_detailedAssertAlways(isPoly == isPolyParam, "poly not consistent");
       nltools_detailedAssertAlways(isMono == isMonoParam, "mono not consistent");
       nltools_detailedAssertAlways(isGlobal == isGlobalParam, "global not consistent");
