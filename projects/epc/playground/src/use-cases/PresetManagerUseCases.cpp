@@ -663,14 +663,13 @@ PresetManagerUseCases::ImportExitCode
     if(auto lock = m_presetManager.getLoadingLock())
     {
       auto scope = m_presetManager.getUndoScope().startTransaction("Import Presetmanager Backup");
-      if(importBackupFile(scope->getTransaction(), in, progress, ae))
-        return ImportExitCode::OK;
+      return importBackupFile(scope->getTransaction(), in, progress, ae);
     }
   }
-  return ImportExitCode::Unsupported;
+  return ImportExitCode::PresetManagerLocked;
 }
 
-bool PresetManagerUseCases::importBackupFile(SoupBuffer* buffer, ProgressIndication progress, AudioEngineProxy& ae)
+PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(SoupBuffer* buffer, ProgressIndication progress, AudioEngineProxy& ae)
 {
   if(auto lock = m_presetManager.getLoadingLock())
   {
@@ -678,10 +677,10 @@ bool PresetManagerUseCases::importBackupFile(SoupBuffer* buffer, ProgressIndicat
     MemoryInStream in(buffer, true);
     return importBackupFile(scope->getTransaction(), in, progress, ae);
   }
-  return false;
+  return ImportExitCode::PresetManagerLocked;
 }
 
-bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InStream& in,
+PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InStream& in,
                                              const ProgressIndication& progress, AudioEngineProxy& aeProxy)
 {
   auto swap = UNDO::createSwapData(std::vector<uint8_t> {});
@@ -720,17 +719,28 @@ bool PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InS
     return Reader::FileVersionCheckResult::OK;
   });
 
-  progress.start();
-  m_presetManager.clear(trash->getTransaction());
-  if(!reader.read<PresetManagerSerializer>(&m_presetManager, progress._update))
+  try
   {
+    progress.start();
+    m_presetManager.clear(trash->getTransaction());
+    if(!reader.read<PresetManagerSerializer>(&m_presetManager, progress._update))
+    {
+      transaction->rollBack();
+      progress.finish();
+      return ImportExitCode::UnsupportedVersion;
+    }
+  }
+  catch(...)
+  {
+    nltools::Log::error("got error with backup file! rolling back...");
     transaction->rollBack();
     progress.finish();
-    return false;
+    return ImportExitCode::InvalidFile;
   }
+
   aeProxy.sendEditBuffer();
   progress.finish();
-  return true;
+  return ImportExitCode::OK;
 }
 
 bool PresetManagerUseCases::loadPresetFromCompareXML(const Glib::ustring& xml)
@@ -972,6 +982,21 @@ void PresetManagerUseCases::clear()
 {
   auto scope = m_presetManager.getUndoScope().startTransaction("Clear Banks and Presets");
   m_presetManager.clear(scope->getTransaction());
+}
+
+Glib::ustring PresetManagerUseCases::exitCodeToErrorMessage(PresetManagerUseCases::ImportExitCode code)
+{
+    switch(code) {
+        case ImportExitCode::PresetManagerLocked:
+            return "C15 is currently busy. Please try again. Contact support if you need assistance.";
+        case ImportExitCode::InvalidFile:
+            return "Invalid file! Please select a correct xml.tar.gz backup file. Contact support if you need assistance.";
+        case ImportExitCode::UnsupportedVersion:
+            return "Invalid version! Unsupported file version in uploaded backup file. Backup was created with a newer firmware. Please update the C15 to the latest software version.";
+        default:
+        case ImportExitCode::OK:
+            return "";
+    }
 }
 
 std::string guessNameBasedOnEditBuffer(EditBuffer* eb)

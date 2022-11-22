@@ -680,3 +680,16 @@ Parameter *AudioEngineProxy::findPhysicalControlParameterFromAudioEngineHWSource
       return nullptr;
   }
 }
+
+void AudioEngineProxy::freezePresetMessages()
+{
+  m_suppressPresetChanges++;
+}
+
+void AudioEngineProxy::thawPresetMessages(bool send)
+{
+  m_suppressPresetChanges--;
+
+  if(m_suppressPresetChanges == 0 && send)
+    sendEditBuffer();
+}

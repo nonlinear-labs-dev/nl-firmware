@@ -72,7 +72,7 @@ parameters:
     <<: *ALL_EXPOSED
     id: 207
     token: Bal
-    label_long: Balanace
+    label_long: Balance
     label_short: Balance
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }

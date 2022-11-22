@@ -203,7 +203,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Note to Display")
   CHECK(dim.stringizeNote(29) == "F3");
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "modulate split")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "modulate split", "[!mayfail]")
 {
   auto eb = TestHelper::getEditBuffer();
 

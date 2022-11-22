@@ -41,6 +41,7 @@
 #include <Options.h>
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include <proxies/hwui/HardwareFeatures.h>
+#include <malloc.h>
 
 HWUI::HWUI(Settings &settings, RecorderManager &recorderManager)
     : m_layoutFolderMonitor(std::make_unique<LayoutFolderMonitor>())
@@ -124,11 +125,15 @@ void HWUI::onKeyboardLineRead(Glib::RefPtr<Gio::AsyncResult> &res)
   {
     if(!line.empty())
     {
-      if(line == "r")
+      if(line == "mem")
+      {
+        nltools::Log::memUsage(nltools::Log::Level::Error, __PRETTY_FUNCTION__, mallinfo().uordblks);
+      }
+      else if(line == "r")
       {
         m_layoutFolderMonitor->bruteForce();
       }
-      if(line == "t")
+      else if(line == "t")
       {
         onButtonPressed(Buttons::BUTTON_SETUP, true);
       }
@@ -608,55 +613,4 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
 Oleds &HWUI::getOleds()
 {
   return m_oleds;
-}
-
-void HWUI::startSplash()
-{
-  auto screensaver = m_settings.getSetting<ScreenSaverTimeoutSetting>();
-  auto &boled = getPanelUnit().getEditPanel().getBoled();
-  screensaver->endAndReschedule();
-  boled.setOverlay(new SplashLayout(this));
-}
-
-void HWUI::finishSplash()
-{
-  auto &boled = getPanelUnit().getEditPanel().getBoled();
-  if(boled.getOverlay().get() == m_splashLayout)
-    boled.resetOverlay();
-}
-
-void HWUI::addSplashStatus(const std::string &msg)
-{
-  auto screensaver = m_settings.getSetting<ScreenSaverTimeoutSetting>();
-  screensaver->endAndReschedule();
-  if(m_splashLayout)
-  {
-    m_splashLayout->addMessage(msg);
-  }
-}
-
-void HWUI::setSplashStatus(const std::string &msg)
-{
-  auto screensaver = m_settings.getSetting<ScreenSaverTimeoutSetting>();
-  screensaver->endAndReschedule();
-  if(m_splashLayout)
-  {
-    m_splashLayout->setMessage(msg);
-  }
-}
-
-void HWUI::registerSplash(SplashLayout *l)
-{
-  if(m_splashLayout != nullptr)
-  {
-    nltools::Log::error("overwriting m_splashLayout");
-  }
-  m_splashLayout = l;
-}
-
-void HWUI::unregisterSplash(SplashLayout *l)
-{
-  nltools_detailedAssertAlways(l == m_splashLayout,
-                               "unregisterSplash called with different Splashscreen pointer than installed");
-  m_splashLayout = nullptr;
 }

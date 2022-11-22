@@ -25,6 +25,7 @@
 #include <proxies/hwui/panel-unit/boled/SplashLayout.h>
 #include <nltools/system/SpawnAsyncCommandLine.h>
 #include <proxies/hwui/HardwareFeatures.h>
+#include <use-cases/SplashScreenUseCases.h>
 
 using namespace std::chrono_literals;
 
@@ -92,7 +93,7 @@ Application::Application(int numArgs, char **argv)
     , m_settings(new Settings(m_options->getSettingsFile(), m_http->getUpdateDocumentMaster(), *m_hwFeatures))
     , m_presetManager(
           new PresetManager(m_http->getUpdateDocumentMaster(), false, *m_options, *m_settings, m_audioEngineProxy))
-    , m_hwui(new HWUI(*m_settings, *m_recorderManager.get()))
+    , m_hwui(new HWUI(*m_settings, *m_recorderManager))
     , m_undoScope(new UndoScope(m_http->getUpdateDocumentMaster()))
     , m_playcontrollerProxy(new PlaycontrollerProxy())
     , m_audioEngineProxy(new AudioEngineProxy(*m_presetManager, *m_settings, *m_playcontrollerProxy))
@@ -115,7 +116,13 @@ Application::Application(int numArgs, char **argv)
   m_settings->init();
   m_hwui->init();
   m_http->init();
-  m_presetManager->init(m_audioEngineProxy.get(), *m_settings, [this](auto str) { m_hwui->addSplashStatus(str); });
+  m_presetManager->init(m_audioEngineProxy.get(), *m_settings,
+                        [this](auto str)
+                        {
+                          SplashScreenUseCases ssuc(*m_hwui, *m_settings);
+                          ssuc.addSplashScreenMessage(str);
+                        });
+
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
   m_voiceGroupManager->init();
 
@@ -139,6 +146,9 @@ Application::Application(int numArgs, char **argv)
 
 Application::~Application()
 {
+  if(!m_isQuit)
+    quit();
+
   stopWatchDog();
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 
@@ -271,6 +281,11 @@ WebUISupport *Application::getWebUISupport()
 HardwareFeatures *Application::getHardwareFeatures()
 {
   return m_hwFeatures.get();
+}
+
+bool Application::isQuit() const
+{
+  return m_isQuit;
 }
 
 const Options *Application::getOptions() const

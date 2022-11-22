@@ -33,7 +33,7 @@ BOLED::~BOLED() = default;
 
 void BOLED::init()
 {
-  reset(new SplashLayout(Application::get().getHWUI()));
+  reset(new SplashLayout());
 
   Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
       sigc::mem_fun(this, &BOLED::toggleScreenSaver));

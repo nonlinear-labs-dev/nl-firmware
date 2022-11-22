@@ -22,6 +22,7 @@
 #include <device-settings/Settings.h>
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/PresetManagerUseCases.h"
+#include "use-cases/SplashScreenUseCases.h"
 
 static size_t s_lastSelectedButton = 0;
 
@@ -138,20 +139,23 @@ bool BankEditButtonMenu::applicableBackupFilesFilter(const std::filesystem::dire
 void BankEditButtonMenu::importBankFromPath(const std::filesystem::directory_entry& file)
 {
   auto hwui = Application::get().getHWUI();
+  auto pm = Application::get().getPresetManager();
+  auto settings = Application::get().getSettings();
+  SplashScreenUseCases splashUseCase(*hwui, *settings);
+  PresetManagerUseCases useCase(*pm, *settings);
+  SettingsUseCases settingsUseCases(*Application::get().getSettings());
 
   if(file != std::filesystem::directory_entry())
   {
-    hwui->startSplash();
-    auto pm = Application::get().getPresetManager();
-    auto settings = Application::get().getSettings();
-    PresetManagerUseCases useCase(*pm, *settings);
-    useCase.importBankFromPath(file, [hwui](const std::string& name) { hwui->addSplashStatus("Importing " + name); });
-    hwui->finishSplash();
+    splashUseCase.startSplashScreen();
+    useCase.importBankFromPath(file, [hwui, settings](const std::string& name) {
+                                 SplashScreenUseCases uc(*hwui, *settings);
+                                 uc.addSplashScreenMessage("Importing " + name);
+                               });
   }
 
-  hwui->getPanelUnit().getEditPanel().getBoled().resetOverlay();
-  SettingsUseCases useCases(*Application::get().getSettings());
-  useCases.setFocusAndMode(FocusAndMode{ UIFocus::Presets, UIMode::Select });
+  splashUseCase.finishSplashScreen();
+  settingsUseCases.setFocusAndMode(FocusAndMode{ UIFocus::Presets, UIMode::Select });
 }
 
 void BankEditButtonMenu::importBank()
@@ -176,13 +180,13 @@ void BankEditButtonMenu::exportBank()
   {
     boled.setOverlay(new RenameExportLayout(selBank, [](Glib::ustring newExportName, auto bank) {
       auto hwui = Application::get().getHWUI();
-      auto& panelunit = hwui->getPanelUnit();
-      auto& boled = panelunit.getEditPanel().getBoled();
+      auto settings = Application::get().getSettings();
       auto outPath = BankEditButtonMenu::createValidOutputPath(newExportName);
-      boled.resetOverlay();
-      boled.setOverlay(new SplashLayout(hwui));
+
+      SplashScreenUseCases ssuc(*hwui, *settings);
+      ssuc.startSplashScreen();
       BankEditButtonMenu::writeSelectedBankToFile(bank, outPath);
-      boled.resetOverlay();
+      ssuc.finishSplashScreen();
     }));
   }
 }
@@ -191,8 +195,11 @@ void BankEditButtonMenu::writeSelectedBankToFile(Bank* selBank, const std::strin
 {
   if(selBank)
   {
-    Application::get().getHWUI()->addSplashStatus("Exporting " + selBank->getName(true));
-    BankUseCases useCase(selBank, *Application::get().getSettings());
+    auto hwui = Application::get().getHWUI();
+    auto settings = Application::get().getSettings();
+    SplashScreenUseCases ssuc(*hwui, *settings);
+    ssuc.addSplashScreenMessage("Exporting " + selBank->getName(true));
+    BankUseCases useCase(selBank, *settings);
     useCase.exportBankToFile(outFile);
   }
 }

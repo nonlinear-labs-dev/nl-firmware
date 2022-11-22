@@ -27,6 +27,7 @@
 #include "USBStickAvailableView.h"
 #include "device-settings/DebugLevel.h"
 #include "use-cases/PresetManagerUseCases.h"
+#include "use-cases/SplashScreenUseCases.h"
 #include <tools/FileSystem.h>
 #include <proxies/hwui/panel-unit/boled/file/FileDialogLayout.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
@@ -112,37 +113,40 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
 
     FileInStream in(path, true);
 
-    boled.setOverlay(new SplashLayout(hwui));
-    hwui->addSplashStatus("Restoring Backup from File!");
+    SplashScreenUseCases ssuc(*hwui, *settings);
+    ssuc.startSplashScreen();
+    ssuc.addSplashScreenMessage("Restoring Backup from File!");
 
     PresetManagerUseCases useCase(*app.getPresetManager(), *settings);
     auto& ae = *app.getAudioEngineProxy();
 
-    auto start = [hwui](){
-      hwui->startSplash();
+    auto start = [hwui, settings](){
+      SplashScreenUseCases ssuc(*hwui, *settings);
+      ssuc.startSplashScreen();
     };
 
-    auto addStatus = [hwui](auto str){
-      hwui->addSplashStatus(str);
+    auto addStatus = [hwui, settings](auto str){
+      SplashScreenUseCases ssuc(*hwui, *settings);
+      ssuc.addSplashScreenMessage(str);
     };
 
-    auto finish = [hwui](){
-      hwui->finishSplash();
+    auto finish = [hwui, settings](){
+      SplashScreenUseCases ssuc(*hwui, *settings);
+      ssuc.finishSplashScreen();
     };
 
     auto ret = useCase.importBackupFile(in, { start, addStatus, finish }, ae);
-    switch(ret)
+    SplashScreenUseCases splashUseCases(*hwui, *settings);
+
+    if(ret ==  PresetManagerUseCases::ImportExitCode::OK)
     {
-      case PresetManagerUseCases::ImportExitCode::Unsupported:
-        hwui->setSplashStatus(
-            "Unsupported File Version. The backup was created with a newer firmware. Please update your C15.");
-        std::this_thread::sleep_for(2s);
-        break;
-      default:
-      case PresetManagerUseCases::ImportExitCode::OK:
-        hwui->setSplashStatus("Restore Complete!");
-        std::this_thread::sleep_for(0.7s);
-        break;
+      splashUseCases.setSplashScreenMessage("Restore Complete!");
+      std::this_thread::sleep_for(0.7s);
+    }
+    else
+    {
+      splashUseCases.setSplashScreenMessage(PresetManagerUseCases::exitCodeToErrorMessage(ret));
+      std::this_thread::sleep_for(2s);
     }
   }
 

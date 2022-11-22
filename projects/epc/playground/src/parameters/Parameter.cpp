@@ -35,7 +35,7 @@ static const auto c_invalidSnapshotValue = std::numeric_limits<tControlPositionV
 bool wasDefaultedAndNotUnselected();
 const tControlPositionValue &getPriorDefaultValue();
 
-Parameter::Parameter(ParameterGroup *group, const ParameterId& id)
+Parameter::Parameter(ParameterGroup *group, const ParameterId &id)
     : UpdateDocumentContributor(group)
     , SyncedItem(group->getRoot()->getSyncMaster(), "/parameter/" + id.toString())
     , m_id(id)
@@ -436,7 +436,8 @@ Glib::ustring Parameter::getMiniParameterEditorName() const
 Glib::ustring Parameter::getGroupAndParameterName() const
 {
   if(getParentEditBuffer()->isDual() && getVoiceGroup() != VoiceGroup::Global)
-    return UNDO::StringTools::buildString(getParentGroup()->getShortName(), " - ", getLongName(), " - ", toString(getVoiceGroup()));
+    return UNDO::StringTools::buildString(getParentGroup()->getShortName(), " - ", getLongName(), " - ",
+                                          toString(getVoiceGroup()));
   return UNDO::StringTools::buildString(getParentGroup()->getShortName(), " - ", getLongName());
 }
 
@@ -542,34 +543,28 @@ void Parameter::onSelected()
 
 Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
 {
+  const auto isVG_II = getID().getVoiceGroup() == VoiceGroup::II;
   switch(getID().getNumber())
   {
-    case 135:
-    case 155:
-    case 113:
-    case 136:
-    case 243:
-    case 246:
-    case 244:
-    case 245:
-    case 348:
-    case 350:
-    case 352:
-    case 354:
-    case 362:
+    case C15::PID::Comb_Flt_PM_A_B:
+    case C15::PID::SV_Flt_FM_A_B:
+    case C15::PID::Comb_Flt_In_A_B:
+    case C15::PID::SV_Flt_In_A_B:
+    case C15::PID::MC_A:
+    case C15::PID::MC_C:
+    case C15::PID::MC_B:
+    case C15::PID::MC_D:
+    case C15::PID::MC_E:
+    case C15::PID::MC_F:
+    case C15::PID::FB_Mix_Osc_Src:
+    case C15::PID::FB_Mix_Comb_Src:
+    case C15::PID::FB_Mix_SVF_Src:
+    case C15::PID::FB_Mix_FX_Src:
+    case C15::PID::Out_Mix_To_FX:
       return VisualizationStyle::Dot;
     case C15::PID::Voice_Grp_Fade_From:
-    {
-      if(getID().getVoiceGroup() == VoiceGroup::II)
-        return VisualizationStyle::BarFromRight;
-      else
-        return VisualizationStyle::Bar;
-    }
     case C15::PID::Split_Split_Point:
-      if(getID().getVoiceGroup() == VoiceGroup::II)
-        return VisualizationStyle::BarFromRight;
-      else
-        return VisualizationStyle::Bar;
+      return isVG_II ? VisualizationStyle::BarFromRight : VisualizationStyle::Bar;
   }
   return VisualizationStyle::Bar;
 }

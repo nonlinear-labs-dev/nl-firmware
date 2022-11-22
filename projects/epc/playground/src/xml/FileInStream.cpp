@@ -2,6 +2,7 @@
 #include <device-settings/DebugLevel.h>
 #include <tools/FileSystem.h>
 #include <giomm/file.h>
+#include "tools/StringTools.h"
 
 static bool doesZipFileExist(const Glib::ustring &fileName)
 {
@@ -19,11 +20,16 @@ FileInStream::FileInStream(const Glib::ustring &fileName, bool tryZip)
 
   if(tryZip)
   {
+    const auto isZip = StringTools::hasEnding(fileName, ".zip");
+    const auto isGZ = StringTools::hasEnding(fileName, ".gz");
+    const auto existsAsIs = FileSystem::doesFileExist(fileName);
+    const auto zipOrGZExists = existsAsIs && (isZip || isGZ);
+
     if(doesZipFileExist(fileName))
       file = Gio::File::create_for_path(fileName + ".zip");
     else if(doesGzFileExist(fileName))
       file = Gio::File::create_for_path(fileName + ".gz");
-    else
+    else if(!zipOrGZExists)
       tryZip = false;
   }
 
@@ -86,7 +92,7 @@ Glib::ustring FileInStream::read()
 
     if(error)
     {
-      DebugLevel::error(__PRETTY_FUNCTION__, __LINE__, error->message);
+      nltools::Log::error(__PRETTY_FUNCTION__, __LINE__, "error:", error->message);
       g_error_free(error);
     }
 
@@ -95,7 +101,7 @@ Glib::ustring FileInStream::read()
   }
   catch(...)
   {
-    DebugLevel::error("exception on reading file");
+    nltools::Log::error("exception on reading file");
     m_eof = true;
     return "";
   }

@@ -302,7 +302,7 @@ void ScaleParameterCarousel::setup(Parameter* selectedParameter)
 {
   using namespace C15::PID;
 
-  const int ySpaceing = 9;
+  const int ySpaceing = 4;
   const int miniParamHeight = 12;
   const int miniParamWidth = 56;
   auto yPos = ySpaceing;
@@ -320,38 +320,49 @@ void ScaleParameterCarousel::setup(Parameter* selectedParameter)
   auto baseParam = new MiniParameter(baseParameter, Rect(0, yPos, miniParamWidth, miniParamHeight));
   addControl(baseParam);
   baseParam->setSelected(selectedParameter == baseParameter);
+  yPos += miniParamHeight + 5;
+  const auto labelHeight = 8;
+  auto offsetLabel = addControl(new LabelRegular8({ "Offsets" }, Rect { 0, yPos, miniParamWidth, labelHeight }));
+  offsetLabel->setHighlight(selectedParameter != baseParameter);
+  yPos += labelHeight + 2;
 
-  const int sliderHeight = 3;
+  const int sliderHeight = 2;
   constexpr int paramWidth = 27;
-  constexpr auto offsetYOffset = miniParamHeight + ySpaceing + 3;
-  yPos = offsetYOffset;
 
   auto idx = 0;
+  int xPos = 0;
+  int yIdx = 0;
+
   for(auto o : offsets)
   {
-    auto rowIDX = (idx < 6 ? 0 : 1);
-    if(idx == 6)
-      yPos = offsetYOffset;
-
-    auto isLowerGroup = [](auto idx) {
-      auto lowerGroupIDs = { 3, 4, 5, 9, 10, 11 };
-      auto it = std::find(lowerGroupIDs.begin(), lowerGroupIDs.end(), idx);
-      return it != lowerGroupIDs.end();
-    };
-
-    auto yOffset = 0;
-    if(isLowerGroup(idx))
+    if(idx % 2 == 1)
     {
-      yOffset = 5;
+      xPos = paramWidth + 2;
+    }
+    else
+    {
+      xPos = 0;
+      if(idx != 0)
+      {
+        if(yIdx % 2 == 0)
+        {
+          yPos += (sliderHeight * 4) - 1;
+        }
+        else
+        {
+          yPos += (sliderHeight * 2);
+        }
+      }
     }
 
-    auto xPos = (paramWidth * rowIDX) + (rowIDX * 2);
-
-    auto miniParam = new MiniParameterBarSlider(o, Rect(xPos, yPos + yOffset, paramWidth, sliderHeight));
+    auto miniParam = new MiniParameterBarSlider(o, Rect(xPos, yPos, paramWidth, sliderHeight));
     addControl(miniParam);
     miniParam->setHighlight(o == selectedParameter);
-    yPos += (sliderHeight * 2);
     idx++;
+    if(idx % 2 == 0)
+    {
+      yIdx++;
+    }
   }
 }
 

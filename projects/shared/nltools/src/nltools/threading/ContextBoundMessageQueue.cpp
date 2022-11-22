@@ -1,6 +1,7 @@
 #include <nltools/threading/ContextBoundMessageQueue.h>
 #include <glibmm.h>
 #include <thread>
+#include "nltools/logging/Log.h"
 
 using namespace std::chrono_literals;
 
@@ -18,7 +19,7 @@ namespace nltools
     {
       std::unique_lock<std::recursive_mutex> lock(*m_mutex);
       m_jobs.clear();
-      m_pendingCalls = 0;
+      lock.unlock();
     }
 
     void ContextBoundMessageQueue::pushMessage(tMessage &&m)
@@ -34,10 +35,15 @@ namespace nltools
 
       m_jobs.push_back(job);
 
+      lock.unlock();
+
       m_context->invoke([jobCopy = job, mutex = m_mutex] {
         std::unique_lock<std::recursive_mutex> lock(*mutex);
         if(!jobCopy.unique())
+        {
+          lock.unlock();
           (*jobCopy)();
+        }
         return false;
       });
     }

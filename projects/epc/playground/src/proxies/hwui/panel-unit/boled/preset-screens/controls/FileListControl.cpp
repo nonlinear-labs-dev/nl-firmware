@@ -2,8 +2,8 @@
 #include <proxies/hwui/controls/Label.h>
 
 FileListControl::FileListControl(const Rect &pos)
-    : selectedItem(0)
-    , ControlWithChildren(pos)
+    : ControlWithChildren(pos)
+    , selectedItem(0)
 {
   fileList = std::make_unique<FileSystem::FileList>();
   upperFile = addControl(new Label("", Rect(0, 0, 256, 12)));

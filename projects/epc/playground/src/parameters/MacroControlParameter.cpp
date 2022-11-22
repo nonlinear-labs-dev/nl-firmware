@@ -233,7 +233,8 @@ bool MacroControlParameter::isChangedFromLoaded() const
   {
     auto nameSame = m_givenName == og->getGivenName();
     auto infoSame = m_info == og->getInfo();
-    return !nameSame || !infoSame || Parameter::isChangedFromLoaded();
+    auto changedFromLoaded = Parameter::isChangedFromLoaded();
+    return !nameSame || !infoSame || changedFromLoaded;
   }
   return Parameter::isChangedFromLoaded();
 }

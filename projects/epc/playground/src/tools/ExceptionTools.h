@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <glibmm/ustring.h>
 #include <nltools/logging/Log.h>
+#include <glibmm/exception.h>
 
 namespace ExceptionTools
 {

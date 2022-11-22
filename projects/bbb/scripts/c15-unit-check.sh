@@ -5,7 +5,7 @@ SSH_OPTIONS="-o LogLevel=quiet -o ServerAliveInterval=1 -o ConnectTimeout=1 -o S
 EPC_IP="192.168.10.10"
 LOG_FILE=""
 
-function executeAsRoot() {
+executeAsRoot() {
     if echo "sscl" | sshpass -p 'sscl' ssh ${SSH_OPTIONS} sscl@$EPC_IP "sudo -S /bin/bash -c '$2'" &> /dev/null; then
         echo "$1 Yes!" | tee -a $LOG_FILE
         return 0
@@ -15,47 +15,47 @@ function executeAsRoot() {
     return 1
 }
 
-function getInfoAsRoot() {
+getInfoAsRoot() {
     echo "sscl" | sshpass -p 'sscl' ssh ${SSH_OPTIONS} sscl@$EPC_IP "sudo -S /bin/bash -c '$1'"
 }
 
-function check_userland_exists() {
+check_userland_exists() {
     executeAsRoot \
         "Userland exists?" \
         "ls /usr/local/ | grep C15"
 }
 
-function check_soundcard_driver_param() {
+check_soundcard_driver_param() {
     executeAsRoot \
         "Soundcard driver parameter fix applied?" \
         "cat /etc/modprobe.d/snd_hda_intel.conf | grep 'snd_hda_intel bdl_pos_adj=1,1,1'"
 }
 
-function check_epc_network_exists() {
+check_epc_network_exists() {
     executeAsRoot \
         "EPC Accesspoint is configured?" \
         "test -e /etc/NetworkManager/system-connections/C15.nmconnection'"
 }
 
-function check_isolcpus() {
+check_isolcpus() {
     executeAsRoot \
         "EPC has isolated CPUS for realtime processes?" \
         "cat /proc/cmdline | grep isolcpus"
 }
 
-function check_mitigations() {
+check_mitigations() {
     executeAsRoot \
         "EPC has mitigations switched off?" \
         "cat /proc/cmdline | grep mitigations"
 }
 
-function check_overlay() {
+check_overlay() {
     executeAsRoot \
         "OverlayFS order is correct?" \
         "mount | grep overlay | grep /nloverlay/os-overlay:/lroot"
 }
 
-function check_usb_stick() {
+check_usb_stick() {
     while ! mount | grep /mnt/usb-stick > /dev/null; do
         echo "Please connect a USB stick to the BBB!"
         sleep 2
@@ -87,7 +87,7 @@ function check_usb_stick() {
 
 }
 
-function check_BBB_AP() {
+check_BBB_AP() {
     if executeAsRoot "Is EPC1?" "cat /proc/cpuinfo | grep -e \"i3-5010\" -e \"i3-7100\""; then
         if iw wlan0 info | grep ssid | grep -v "_BBB" > /dev/null; then
             echo "BBB Accesspoint is active and is correctly missing the _BBB suffix? Yes!"
@@ -108,7 +108,7 @@ function check_BBB_AP() {
 
 }
 
-function check_EPC_AP() {
+check_EPC_AP() {
     if ! executeAsRoot "Is EPC1?" "cat /proc/cpuinfo | grep -e \"i3-5010\" -e \"i3-7100\""; then
         if executeAsRoot "Has Wifi device?" "ip a | grep wlan"; then
             if executeAsRoot "Is AP active on epc?" "nmcli con show --active | grep C15"; then
@@ -121,7 +121,7 @@ function check_EPC_AP() {
     fi
 }
 
-function check_iface_names() {
+check_iface_names() {
     executeAsRoot \
         "Ethernet device is named eth0?" \
         "ip a | grep eth0"
@@ -131,25 +131,25 @@ function check_iface_names() {
         "ip a | grep wlan0"
 }
 
-function check_ping_timeout() {
+check_ping_timeout() {
     executeAsRoot \
         "Ping timeout workaround is installed in initramfs?" \
-        "mkdir -p /mnt/sda1; mount /dev/sda1 /mnt/sda1; lsinitcpio -x /mnt/sda1/initramfs-linux-rt.img && cat hooks/nlhook | grep ping_bbb"
+        "mkdir -p /mnt/sda1; mount /dev/sda1 /mnt/sda1; zstdcat /mnt/sda1/initramfs-linux-rt.img | grep ping_bbb"
 }
 
-function check_date() {
+check_date() {
     printf "\nePC - date: $(getInfoAsRoot 'date "+%F %T"')\n" | tee -a $LOG_FILE \
         && printf "BBB - date: $(date "+%F %T")\n" | tee -a $LOG_FILE
     printf "\n" | tee -a $LOG_FILE
 }
 
-function check_ro_mnts() {
+check_ro_mnts() {
     printf "ePC - RO mounts:\n$(getInfoAsRoot 'mount | grep "(ro"')\n" | tee -a $LOG_FILE \
         && printf "BBB - RO mounts:\n$(mount | grep "(ro")\n" | tee -a $LOG_FILE
     printf "\n" | tee -a $LOG_FILE
 }
 
-function get_journal_dmesg() {
+get_journal_dmesg() {
     rm /tmp/journal_epc.log /tmp/dmesg_epc.log /tmp/journal_bbb.log /tmp/dmesg_bbb.log
 
     getInfoAsRoot 'journalctl -b -p "emerg".."warning"' >> /tmp/journal_epc.log \
@@ -166,7 +166,7 @@ function get_journal_dmesg() {
     return 0
 }
 
-function get_partition_info() {
+get_partition_info() {
     printf "ePC - lsblk:\n$(getInfoAsRoot 'lsblk')\n" | tee -a $LOG_FILE \
     && printf "ePC - mount:\n$(getInfoAsRoot 'mount | grep /dev/sda')\n" | tee -a $LOG_FILE
 
@@ -177,7 +177,7 @@ function get_partition_info() {
     return 0
 }
 
-function check_persistent_files() {
+check_persistent_files() {
     executeAsRoot \
         "Calibration files?" \
         "ls /persistent/calibration/*.cal"
@@ -194,27 +194,27 @@ function check_persistent_files() {
     printf "\n" | tee -a $LOG_FILE
 }
 
-function check_alsa_settings() {
+check_alsa_settings() {
     executeAsRoot \
         "Alsamixer set to 100%?" \
         "amixer -D hw:PCH sget 'Master' | grep 100%"
     printf "\n" | tee -a $LOG_FILE
 }
 
-function get_network_settings_bbb() {
+get_network_settings_bbb() {
     cat /etc/network/interfaces | tee -a $LOG_FILE \
     && printf "\n" | tee -a $LOG_FILE \
     && cat /etc/hostapd.conf | tee -a $LOG_FILE
     printf "\n" | tee -a $LOG_FILE
 }
 
-function get_update_script_vers() {
+get_update_script_vers() {
     VERS=$(cat /usr/C15/scripts/install-update.sh | grep version)
     printf "Update script ${VERS} \n" | tee -a $LOG_FILE
     printf "\n" | tee -a $LOG_FILE
 }
 
-function check_for_present_tools() {
+check_for_present_tools() {
     for i in sshpass rsync socat thttpd playcontroller mke2fs; do
         if command -V "$i" &> /dev/null; then
             printf "$i installed: Yes\n" | tee -a $LOG_FILE
@@ -239,7 +239,7 @@ function check_for_present_tools() {
     return 0
 }
 
-function check_lpc() {
+check_lpc() {
     systemctl stop bbbb \
     && lpc reset && printf "LPC reset: Yes\n" | tee -a $LOG_FILE \
     || printf "LPC reset: No\n" | tee -a $LOG_FILE
@@ -252,7 +252,7 @@ function check_lpc() {
     return 0
 }
 
-function run_epc_stress_test() {
+run_epc_stress_test() {
 
     while ( ! getInfoAsRoot 'grep "/dev/sdb " /proc/mounts' ); do
         executeAsRoot "Created /tmp/usb?" "mkdir /tmp/usb"
@@ -290,7 +290,7 @@ function run_epc_stress_test() {
     return 0
 }
 
-function check_buffer_underruns() {
+check_buffer_underruns() {
     TEST_DURATION=$1
     CHECK_FREQ=$2
 
@@ -312,7 +312,7 @@ function check_buffer_underruns() {
     return 0
 }
 
-function usage() {
+usage() {
     echo "Runs a system check. I'd advise to select a singular option!"
     echo
     echo "Syntax: ./foo.sh [ -h ] [ -b DURATION,FACTOR ] [ -s DURATION,FACTOR] [ -g ]"
@@ -326,7 +326,7 @@ function usage() {
     echo
 }
 
-function general_check() {
+general_check() {
         printf "Will run general C15 check on ePC and BBB\n" | tee -a $LOG_FILE
         check_userland_exists
         check_iface_names

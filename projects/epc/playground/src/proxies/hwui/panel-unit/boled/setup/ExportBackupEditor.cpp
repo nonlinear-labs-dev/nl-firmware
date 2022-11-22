@@ -17,6 +17,7 @@
 #include <tools/FileSystem.h>
 #include <tools/StringTools.h>
 #include "USBStickAvailableView.h"
+#include "use-cases/SplashScreenUseCases.h"
 #include <device-settings/DebugLevel.h>
 #include <iostream>
 #include <nltools/GenericScopeGuard.h>
@@ -78,7 +79,9 @@ void ExportBackupEditor::writeBackupToStream(OutStream &stream)
   auto pm = Application::get().getPresetManager();
   auto addStatus = [](auto str) {
     auto hwui = Application::get().getHWUI();
-    hwui->addSplashStatus(str);
+    auto settings = Application::get().getSettings();
+    SplashScreenUseCases uc(*hwui, *settings);
+    uc.addSplashScreenMessage(str);
   };
   PresetManagerSerializer serializer(pm, addStatus);
   serializer.write(writer, VersionAttribute::get());
@@ -116,11 +119,13 @@ void ExportBackupEditor::exportBanks()
 
 void ExportBackupEditor::writeBackupFileXML()
 {
+  auto settings = Application::get().getSettings();
   auto hwui = Application::get().getHWUI();
-  hwui->startSplash();
+  SplashScreenUseCases uc(*hwui, *settings);
+  uc.startSplashScreen();
   FileOutStream stream(c_tempBackupFile, true);
   writeBackupToStream(stream);
-  hwui->finishSplash();
+  uc.finishSplashScreen();
 }
 
 bool ExportBackupEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)

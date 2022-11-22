@@ -21,12 +21,14 @@
 #include <device-settings/DebugLevel.h>
 #include <Application.h>
 #include <device-settings/DateTimeAdjustment.h>
+#include "use-cases/SplashScreenUseCases.h"
 
-PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, PresetManager& presetManager, AudioEngineProxy& aeProxy, Settings& settings)
+PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, PresetManager& presetManager,
+                                           AudioEngineProxy& aeProxy, Settings& settings)
     : SectionAndActionManager(parent, "/presets/")
-    , m_presetManager{presetManager}
-    , m_aeProxy{ aeProxy }
-    , m_settings{settings}
+    , m_presetManager { presetManager }
+    , m_settings { settings }
+    , m_aeProxy { aeProxy }
 {
   addAction("new-bank",
             [&](const std::shared_ptr<NetworkRequest>& request) mutable
@@ -34,7 +36,7 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
               auto x = request->get("x");
               auto y = request->get("y");
               auto name = request->get("name");
-              PresetManagerUseCases useCase{m_presetManager, m_settings};
+              PresetManagerUseCases useCase { m_presetManager, m_settings };
               useCase.newBank(x, y, name);
             });
 
@@ -44,8 +46,8 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
               auto x = request->get("x");
               auto y = request->get("y");
               auto uuid = request->get("uuid");
-              PresetManagerUseCases useCase{m_presetManager, m_settings};
-              useCase.newBank(x, y, Uuid{uuid});
+              PresetManagerUseCases useCase { m_presetManager, m_settings };
+              useCase.newBank(x, y, Uuid { uuid });
             });
 
   addAction("rename-bank",
@@ -64,7 +66,7 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
             [&](const std::shared_ptr<NetworkRequest>& request) mutable
             {
               auto uuid = request->get("uuid");
-              PresetManagerUseCases useCase{m_presetManager, m_settings};
+              PresetManagerUseCases useCase { m_presetManager, m_settings };
               useCase.selectBank(Uuid(uuid));
             });
 
@@ -72,7 +74,7 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
             [&](const std::shared_ptr<NetworkRequest>& request) mutable
             {
               auto uuid = request->get("uuid");
-              PresetManagerUseCases useCase{m_presetManager, m_settings};
+              PresetManagerUseCases useCase { m_presetManager, m_settings };
               useCase.deleteBank(Uuid(uuid));
             });
 
@@ -87,48 +89,54 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
               }
             });
 
-  addAction("store-init", [&](const auto&) mutable
+  addAction("store-init",
+            [&](const auto&) mutable
             {
               SoundUseCases useCase(m_presetManager.getEditBuffer(), &m_presetManager);
               useCase.storeInitSound();
             });
 
-  addAction("reset-init", [&](const auto&) mutable
+  addAction("reset-init",
+            [&](const auto&) mutable
             {
               SoundUseCases useCase(m_presetManager.getEditBuffer(), &m_presetManager);
               useCase.resetInitSound();
             });
 
-  addAction(
-      "import-all-banks",
-      [&](const std::shared_ptr<NetworkRequest>& request) mutable
-      {
-        if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
-        {
-          auto* buffer = http->getFlattenedBuffer();
+  addAction("import-all-banks",
+            [&](const std::shared_ptr<NetworkRequest>& request) mutable
+            {
+              if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
+              {
+                auto* buffer = http->getFlattenedBuffer();
 
-          PresetManagerUseCases useCase(m_presetManager, m_settings);
-          auto start = [](){
-            auto hwui = Application::get().getHWUI();
-            hwui->startSplash();
-          };
+                PresetManagerUseCases useCase(m_presetManager, m_settings);
+                auto hwui = Application::get().getHWUI();
+                auto* settings = &m_settings;
 
-          auto addStatus = [](auto str){
-            auto hwui = Application::get().getHWUI();
-            hwui->addSplashStatus(str);
-          };
+                auto start = [hwui, settings]()
+                {
+                  SplashScreenUseCases ssuc(*hwui, *settings);
+                  ssuc.startSplashScreen();
+                };
 
-          auto finish = [](){
-            auto hwui = Application::get().getHWUI();
-            hwui->finishSplash();
-          };
+                auto addStatus = [hwui, settings](auto str)
+                {
+                  SplashScreenUseCases ssuc(*hwui, *settings);
+                  ssuc.addSplashScreenMessage(str);
+                };
 
-          if(!useCase.importBackupFile(buffer, { start, addStatus, finish }, m_aeProxy))
-            http->respond("Invalid File. Please choose correct xml.tar.gz or xml.zip file.");
+                auto finish = [hwui, settings]()
+                {
+                  SplashScreenUseCases ssuc(*hwui, *settings);
+                  ssuc.finishSplashScreen();
+                };
 
-          soup_buffer_free(buffer);
-        }
-      });
+                auto ret = useCase.importBackupFile(buffer, { start, addStatus, finish }, m_aeProxy);
+                http->respond(PresetManagerUseCases::exitCodeToErrorMessage(ret));
+                soup_buffer_free(buffer);
+              }
+            });
 
   addAction("load-preset-from-xml",
             [&](const std::shared_ptr<NetworkRequest>& request) mutable
@@ -150,7 +158,7 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
               auto csv = request->get("csv");
               std::vector<std::string> uuids;
               boost::split(uuids, csv, boost::is_any_of(","));
-              PresetManagerUseCases useCase{m_presetManager, m_settings};
+              PresetManagerUseCases useCase { m_presetManager, m_settings };
               useCase.moveBankCluster(uuids);
             });
 
@@ -159,7 +167,7 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
             {
               auto bankUuid = request->get("bank", "");
               auto bank = Application::get().getPresetManager()->findBank(Uuid { bankUuid });
-              PresetManagerUseCases useCase{m_presetManager, m_settings};
+              PresetManagerUseCases useCase { m_presetManager, m_settings };
               useCase.selectMidiBank(bank);
             });
 }
@@ -204,8 +212,12 @@ bool PresetManagerActions::handleRequest(const Glib::ustring& path, std::shared_
     {
       auto hwui = Application::get().getHWUI();
       auto settings = Application::get().getSettings();
-      hwui->startSplash();
-      const auto time = TimeTools::getDisplayStringFromStamp(TimeTools::getAdjustedTimestamp(settings->getSetting<DateTimeAdjustment>()));
+
+      SplashScreenUseCases ssuc(*hwui, *settings);
+      ssuc.startSplashScreen();
+
+      const auto time = TimeTools::getDisplayStringFromStamp(
+          TimeTools::getAdjustedTimestamp(settings->getSetting<DateTimeAdjustment>()));
       const auto timeWithoutWhitespaces = StringTools::replaceAll(time, " ", "-");
       const auto timeSanitized = StringTools::replaceAll(timeWithoutWhitespaces, ":", "-");
       auto disposition = "attachment; filename=\"" + timeSanitized + "-nonlinear-c15-banks.xml.tar.gz\"";
@@ -213,7 +225,7 @@ bool PresetManagerActions::handleRequest(const Glib::ustring& path, std::shared_
       ExportBackupEditor::writeBackupToStream(stream);
       httpRequest->respondComplete(SOUP_STATUS_OK, "application/zip", { { "Content-Disposition", disposition } },
                                    stream.exhaust());
-      hwui->finishSplash();
+      ssuc.finishSplashScreen();
       return true;
     }
   }
