@@ -28,8 +28,9 @@ int VersionAttribute::getCurrentFileVersion()
     HW_SEND_PARAMETERS = 11,
     MORE_MOD_PARAMS = 12,
     INVERTED_VELOCITIES = 13,
-    BIPOLAR_RELEASE_VELOCITIES = 14
+    BIPOLAR_RELEASE_VELOCITIES = 14,
+    TWO_SECTION_SCALE_OFFSET_SCALES = 15
   };
 
-  return static_cast<int>(History::BIPOLAR_RELEASE_VELOCITIES);
+  return static_cast<int>(History::TWO_SECTION_SCALE_OFFSET_SCALES);
 }

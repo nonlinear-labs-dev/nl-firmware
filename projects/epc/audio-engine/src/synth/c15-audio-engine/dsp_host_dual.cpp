@@ -1084,6 +1084,25 @@ float dsp_host_dual::scale(const Engine::Parameters::Aspects::ScaleAspect::Scali
     case C15::Properties::SmootherScale::Linear:
       result = _scl.m_scaleOffset + (_scl.m_scaleFactor * _value);
       break;
+    case C15::Properties::SmootherScale::Linear2Sections:
+    {
+      constexpr auto lim = 10.0f / 21.0f;
+      constexpr auto normalizedInner = 1.0f / lim;
+      constexpr auto normalizedOuter = 1.0f / (1.0f - lim);
+      if((_value > -lim) && _value < lim)
+      {
+        result = _value * normalizedInner;
+      }
+      else if(_value >= lim)
+      {
+        result = 1.0f + (11.0f * (_value - lim) * normalizedOuter);
+      }
+      else
+      {
+        result = -1.0f + (11.0f * (_value + lim) * normalizedOuter);
+      }
+      break;
+    }
     case C15::Properties::SmootherScale::Parabolic:
       result = _scl.m_scaleOffset + (_scl.m_scaleFactor * _value * std::abs(_value));
       break;

@@ -2,7 +2,6 @@
 
 #include <parameters/ParameterImportConversions.h>
 #include <parameter_declarations.h>
-
 #include <utility>
 
 ParameterImportConversions& ParameterImportConversions::get()
@@ -102,7 +101,26 @@ ParameterImportConversions::ParameterImportConversions(bool registerDefaults)
         { C15::PID::Scale_Offset_0, C15::PID::Scale_Offset_1, C15::PID::Scale_Offset_2, C15::PID::Scale_Offset_3,
           C15::PID::Scale_Offset_4, C15::PID::Scale_Offset_5, C15::PID::Scale_Offset_6, C15::PID::Scale_Offset_7,
           C15::PID::Scale_Offset_8, C15::PID::Scale_Offset_9, C15::PID::Scale_Offset_10, C15::PID::Scale_Offset_11 })
+    {
       registerConverter(offset, 11, [=](auto v, auto, auto) { return (2. / 3.) * v; });
+      registerConverter(offset, 14, [=](auto v, auto, auto) {
+        const auto oldLim = 1./12.;
+        const auto newLim = 10./21.;
+
+        if ( (v > -oldLim) && (v < oldLim) )
+        {
+          return v * newLim / oldLim;
+        }
+        else if (v >= oldLim)
+        {
+          return newLim + (v - oldLim) * (1.0 - newLim) / (1.0 - oldLim);
+        }
+        else
+        {
+          return -newLim + (v + oldLim) * (1.0 - newLim) / (1.0 - oldLim);
+        }
+      });
+    }
 
     registerConverter(C15::PID::Env_A_Att_Vel, 12, [=](auto v, auto, auto) { return -v; });
     registerConverter(C15::PID::Env_B_Att_Vel, 12, [=](auto v, auto, auto) { return -v; });

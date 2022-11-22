@@ -81,6 +81,7 @@ parameter_rounding: {
 parameter_reference: {
   None: &REFERENCE_NONE none,
   Linear: &REFERENCE_LINEAR linear,
+  WeightedLinear: &REFERENCE_WEIGHTED_LINEAR weighted linear,
   Parabolic: &REFERENCE_PARABOLIC parabolic,
   Exponential: &REFERENCE_EXPONENTIAL exponential,
   Gain: &REFERENCE_GAIN (exponential) gain,
@@ -150,6 +151,7 @@ smoother_clock: {
 smoother_scale: {
   None,
   Linear,
+  Linear2Sections,
   Parabolic,
   Cubic,
   S_Curve,
@@ -242,24 +244,14 @@ display_scaling_type: {
 
   # - - - - - - - - - - - - - - - - Unit::CT - - - - - - - - - - - - - - - - #
 
-  LINEAR_BIPOLAR_1200_CENT: {
+  LINEAR_BIPOLAR_WEIGHTED_1200_CENT: {
     round: *ROUNDING_ONE_DECIMAL,
     unit: *UNIT_CT,
-    reference: *REFERENCE_LINEAR,
+    reference: *REFERENCE_WEIGHTED_LINEAR,
     inf: *INF_FINITE,
-    values: [ "-1200.0", "-600.0", "0.0", "600.0", "1200.0" ],
+    values: [ "-1200.0", "-150.0", "0.0", "150.0", "1200.0" ],
     min: -1200.0f,
     max: 1200.0f,
-    bipolar: true
-  },
-  LINEAR_BIPOLAR_2400_CENT: {
-    round: *ROUNDING_ONE_DECIMAL,
-    unit: *UNIT_CT,
-    reference: *REFERENCE_LINEAR,
-    inf: *INF_FINITE,
-    values: [ "-2400.0", "-1200.0", "0.0", "1200.0", "2400.0" ],
-    min: -2400.0f,
-    max: 2400.0f,
     bipolar: true
   },
 
