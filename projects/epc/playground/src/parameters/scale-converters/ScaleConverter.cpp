@@ -6,12 +6,10 @@
 #include "EnvelopeReleaseTimeMSScaleConverter.h"
 #include "Fine105PercentScaleConverter.h"
 #include "Fine12STScaleConverter.h"
-#include "LinearBipolar2400CtScaleConverter.h"
 #include "FineBipolar12STScaleConverter.h"
 #include "FineBipolar80StScaleConverter.h"
 #include "FineBipolar100PercentScaleConverter.h"
 #include "FineBipolar200PercentScaleConverter.h"
-#include "LinearBipolar1200CtScaleConverter.h"
 #include "LegatoScaleConverter.h"
 #include "Linear0To140StScaleConverter.h"
 #include "Linear100PercentScaleConverter.h"
@@ -70,6 +68,7 @@
 #include "PitchOscLinearStScaleConverter.h"
 #include "PitchOscLinearStScaleModulationConverter.h"
 #include "SplitPointScaleConverter.h"
+#include "LinearBipolarWeighted1200CentScaleConverter.h"
 #include "dimension/VoicesDimension.h"
 #include "nltools/Assert.h"
 #include "FineBipolar160StScaleConverter.h"
@@ -139,10 +138,6 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
       return get<MonoPriorityScaleConverter>();
     case C15::Properties::DisplayScalingType::MODES_LEGATO:
       return get<LegatoScaleConverter>();
-    case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_1200_CENT:
-      return get<LinearBipolar1200CtScaleConverter>();
-    case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_2400_CENT:
-      return get<LinearBipolar2400CtScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_50_DB:
       return get<Linear50DbScaleConverter>();
     case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_50_DB:
@@ -267,8 +262,8 @@ const ScaleConverter *ScaleConverter::getByEnum(C15::Properties::DisplayScalingT
       return get<LinearBipolar200PercentScaleConverter>();
     case C15::Properties::DisplayScalingType::FINE_BIPOLAR_100_PERCENT:
       return get<FineBipolar100PercentScaleConverter>();
-    case C15::Properties::DisplayScalingType::LINEAR_2_SECTIONS_BIPOLAR_1200_CENT:
-      return get<LinearBipolar2Sections1200CentScaleConverter>();
+    case C15::Properties::DisplayScalingType::LINEAR_BIPOLAR_WEIGHTED_1200_CENT:
+      return get<LinearBipolarWeighted1200CentScaleConverter>();
     case C15::Properties::DisplayScalingType::FINE_BIPOLAR_200_PERCENT:
       return get<FineBipolar200PercentScaleConverter>();
   }

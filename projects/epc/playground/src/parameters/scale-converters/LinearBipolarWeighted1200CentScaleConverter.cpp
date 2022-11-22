@@ -1,25 +1,18 @@
-#include "LinearBipolar1200CtScaleConverter.h"
+#include "LinearBipolarWeighted1200CentScaleConverter.h"
 #include "dimension/CentDimension.h"
 #include "nltools/Assert.h"
 
-LinearBipolar1200CtScaleConverter::LinearBipolar1200CtScaleConverter()
-    : LinearScaleConverter(tDisplayRange(-1200, 1200), CentDimension::get())
-{
-}
-
-LinearBipolar1200CtScaleConverter::~LinearBipolar1200CtScaleConverter() = default;
-
-LinearBipolar2Sections1200CentScaleConverter::LinearBipolar2Sections1200CentScaleConverter()
+LinearBipolarWeighted1200CentScaleConverter::LinearBipolarWeighted1200CentScaleConverter()
     : ScaleConverter(CentDimension::get())
     , m_displayRange(tDisplayRange(-1200, 1200))
 {
 }
-LinearBipolar2Sections1200CentScaleConverter::~LinearBipolar2Sections1200CentScaleConverter()
+LinearBipolarWeighted1200CentScaleConverter::~LinearBipolarWeighted1200CentScaleConverter()
 {
 }
 
 tDisplayValue
-    LinearBipolar2Sections1200CentScaleConverter::controlPositionToDisplay(const tControlPositionValue& cpValue) const
+    LinearBipolarWeighted1200CentScaleConverter::controlPositionToDisplay(const tControlPositionValue& cpValue) const
 {
   const auto Lim = 10. / 21.;  // 0.47619
 
@@ -37,7 +30,7 @@ tDisplayValue
   }
 }
 
-Glib::ustring LinearBipolar2Sections1200CentScaleConverter::controlPositionToDisplayJS() const
+Glib::ustring LinearBipolarWeighted1200CentScaleConverter::controlPositionToDisplayJS() const
 {
   std::stringstream s;
   s << "var e = 0;";
@@ -49,7 +42,7 @@ Glib::ustring LinearBipolar2Sections1200CentScaleConverter::controlPositionToDis
   return s.str();
 }
 
-bool LinearBipolar2Sections1200CentScaleConverter::isBiPolar() const
+bool LinearBipolarWeighted1200CentScaleConverter::isBiPolar() const
 {
   return m_displayRange.isBiPolar();
 }
