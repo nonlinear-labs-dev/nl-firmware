@@ -1,6 +1,4 @@
 #pragma once
-//#include <parameters/Parameter.h>
-//#include <nltools/messaging/Message.h>
 #include <ParameterMessages.h>
 #include <parameters/ModulateableParameter.h>
 #include <parameters/MacroControlParameter.h>
@@ -10,23 +8,7 @@
 
 namespace ParameterMessageFactory
 {
-  // todo: deprecate
-  namespace detail
-  {
-    nltools::msg::UnmodulateableParameterChangedMessage createMessage(const Parameter *param);
-    nltools::msg::ModulateableParameterChangedMessage createMessage(const ModulateableParameter *param);
-    nltools::msg::MacroControlChangedMessage createMessage(const MacroControlParameter *param);
-    nltools::msg::HWAmountChangedMessage createMessage(const ModulationRoutingParameter *param);
-    nltools::msg::HWSourceChangedMessage createMessage(const PhysicalControlParameter *param);
-    nltools::msg::HWSourceSendChangedMessage createMessage(const HardwareSourceSendParameter* param);
-  };
 
-  template <typename tParameter> auto createMessage(const tParameter *parameter)
-  {
-    return detail::createMessage(parameter);
-  }
-
-  // todo: use
   template<C15::Descriptors::ParameterType, typename T>
   auto createParameterChangedMessage(const T*);
 

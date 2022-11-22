@@ -748,7 +748,7 @@ void InputEventStage::doSendBenderOut(float value)
 
 // new ParameterChanged protocol
 void InputEventStage::onParameterChangedMessage(const nltools::msg::HardwareSourceParameterChangedMessage &message,
-                                                     bool didBehaviourChange)
+                                                bool didBehaviourChange)
 {
   auto hwID = InputEventStage::parameterIDToHWID(message.m_id);
 
@@ -759,30 +759,7 @@ void InputEventStage::onParameterChangedMessage(const nltools::msg::HardwareSour
   }
 }
 
-void InputEventStage::onParameterChangedMessage(
-    const nltools::msg::HardwareSourceSendParameterChangedMessage &message)
-{
-  auto hwID = InputEventStage::parameterIDToHWID(message.m_siblingId);
-  if(!message.m_isLocalEnabled)
-  {
-    auto pos = static_cast<float>(message.m_controlPosition);
-    sendHardwareChangeAsMidi(hwID, pos);
-  }
-}
-
-// todo: remove when unused
-void InputEventStage::onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage &message, bool didBehaviourChange)
-{
-  auto hwID = InputEventStage::parameterIDToHWID(message.m_id);
-
-  if(hwID != HardwareSource::NONE)
-  {
-    auto cp = static_cast<float>(message.m_controlPosition);
-    onHWChanged(hwID, cp, HWChangeSource::UI, false, false, didBehaviourChange);
-  }
-}
-
-void InputEventStage::onSendParameterReceived(const nltools::msg::HWSourceSendChangedMessage &message)
+void InputEventStage::onParameterChangedMessage(const nltools::msg::HardwareSourceSendParameterChangedMessage &message)
 {
   auto hwID = InputEventStage::parameterIDToHWID(message.m_siblingId);
   if(!message.m_isLocalEnabled)

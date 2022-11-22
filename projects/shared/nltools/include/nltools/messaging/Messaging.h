@@ -30,8 +30,13 @@ namespace nltools
          SetRibbonLED, SetPanelLED, SetOLED, OLEDState, SetOLEDTimestamped, RotaryChanged, TimestampedRotaryChanged,
          ButtonChanged, Playcontroller, Ping,
 
-         SinglePreset, LayerPreset, SplitPreset, UnmodulateableParameter, ModulateableParameter, MacroControlParameter,
-         HWAmountParameter, HWSourceParameter, HWSourceSendParameter, UpdateLocalDisabledRibbon,
+         SinglePreset, LayerPreset, SplitPreset,
+
+         // todo: deprecate?
+         UnmodulateableParameter, ModulateableParameter, MacroControlParameter,
+         HWAmountParameter, HWSourceParameter, HWSourceSendParameter,
+
+         UpdateLocalDisabledRibbon,
 
          NoteShiftSetting, PresetGlitchSetting, TransitionTimeSetting, EditSmoothingTimeSetting, TuneReference,
 
@@ -49,7 +54,7 @@ namespace nltools
          BufferUnderrunsChanged, SetFramesPerPeriod, FlacRecorderStateChanged, HardwarePollEnded,
          StopRecorderPlaybackMessage, NotifyNoRecorderClients,
 
-         // new ParameterChanged protocol           ( todo: use )
+         // new ParameterChanged protocol
          HardwareSourceParameterChanged,
          HardwareSourceSendParameterChanged,
          HardwareAmountParameterChanged,
@@ -57,8 +62,8 @@ namespace nltools
          MacroTimeParameterChanged,
          GlobalModulateableParameterChanged,
          GlobalUnmodulateableParameterChanged,
-         LocalModulateableParameterChanged,         // todo: deprecate
-         LocalUnmodulateableParameterChanged,       // todo: deprecate
+         LocalModulateableParameterChanged,         // temporary: deprecate with https://github.com/nonlinear-labs-dev/C15/issues/2995
+         LocalUnmodulateableParameterChanged,       // temporary: deprecate with https://github.com/nonlinear-labs-dev/C15/issues/2995
          PolyphonicModulateableParameterChanged,
          PolyphonicUnmodulateableParameterChanged,
          MonophonicModulateableParameterChanged,

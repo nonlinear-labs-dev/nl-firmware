@@ -47,14 +47,10 @@ class C15Synth : public Synth, public sigc::trackable
   // new ParameterChanged protocol
   void onHardwareSourceParameterChangedMessage(const nltools::msg::HardwareSourceParameterChangedMessage& _msg);
   void onHardwareSourceSendParameterChangedMessage(const nltools::msg::HardwareSourceSendParameterChangedMessage& _msg);
-
-  // todo: remove when unused
-  void onModulateableParameterMessage(const nltools::msg::ModulateableParameterChangedMessage& msg);
-  void onUnmodulateableParameterMessage(const nltools::msg::UnmodulateableParameterChangedMessage& msg);
-  void onMacroControlParameterMessage(const nltools::msg::MacroControlChangedMessage& msg);
-  void onHWAmountMessage(const nltools::msg::HWAmountChangedMessage& msg);
-  void onHWSourceMessage(const nltools::msg::HWSourceChangedMessage& msg);
-  void onHWSourceSendMessageReceived(const nltools::msg::HWSourceSendChangedMessage& msg);
+  template<typename T>
+  void onParameterChangedMessage(const T& _msg);
+  template<typename T>
+  void onResettingParameterChangedMessage(const T& _msg);
 
   void onNoteShiftMessage(const nltools::msg::Setting::NoteShiftMessage& msg);
   void onPresetGlitchMessage(const nltools::msg::Setting::PresetGlitchMessage& msg);

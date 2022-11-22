@@ -7,126 +7,6 @@ namespace nltools
   namespace msg
   {
 
-    // todo: remove
-    namespace Parameters
-    {
-      // note: hard-coded counts should only be temporary
-      static_assert(C15::Parameters::num_of_Macro_Controls == 6);
-      static_assert(C15::Parameters::num_of_Hardware_Sources == 10);
-      static_assert(C15::Parameters::num_of_Hardware_Amounts
-                    == (C15::Parameters::num_of_Macro_Controls * C15::Parameters::num_of_Hardware_Sources));
-
-      struct Parameter
-      {
-        uint16_t m_id {};
-        double m_controlPosition = 0;
-      };
-
-      struct MacroParameter : Parameter
-      {
-      };
-
-      struct ModulateableParameter : Parameter
-      {
-        MacroControls m_macro = MacroControls::NONE;
-        double m_modulationAmount = 0;
-      };
-
-      struct UnmodulateableParameter : Parameter
-      {
-      };
-
-      struct GlobalParameter : Parameter
-      {
-      };
-
-      struct HardwareSourceParameter : Parameter
-      {
-        ReturnMode m_returnMode = ReturnMode::None;
-      };
-
-      struct HardwareAmountParameter : Parameter
-      {
-      };
-
-      struct SplitPoint : ModulateableParameter
-      {
-      };
-
-      inline bool operator==(const Parameter& lhs, const Parameter& rhs)
-      {
-        auto ret = lhs.m_id == rhs.m_id;
-        ret &= lhs.m_controlPosition == rhs.m_controlPosition;
-        return ret;
-      }
-
-      inline bool operator==(const ModulateableParameter& lhs, const ModulateableParameter& rhs)
-      {
-        auto ret = lhs.m_id == rhs.m_id;
-        ret &= lhs.m_controlPosition == rhs.m_controlPosition;
-        ret &= lhs.m_modulationAmount == rhs.m_modulationAmount;
-        ret &= lhs.m_macro == rhs.m_macro;
-        return ret;
-      }
-
-    }  // namespace nltools::msg::Parameters
-
-    namespace ParameterGroups
-    {
-
-      struct UnisonGroup
-      {
-        Parameters::UnmodulateableParameter unisonVoices;
-        Parameters::ModulateableParameter detune;
-        Parameters::UnmodulateableParameter phase;
-        Parameters::UnmodulateableParameter pan;
-      };
-
-      struct MonoGroup
-      {
-        Parameters::UnmodulateableParameter monoEnable;
-        Parameters::UnmodulateableParameter legato;
-        Parameters::UnmodulateableParameter priority;
-        Parameters::ModulateableParameter glide;
-      };
-
-      struct MasterGroup
-      {
-        Parameters::ModulateableParameter volume;
-        Parameters::ModulateableParameter tune;
-        Parameters::ModulateableParameter pan;
-        Parameters::ModulateableParameter serialFX;
-      };
-
-      inline bool operator==(const MonoGroup& lhs, const MonoGroup& rhs)
-      {
-        auto ret = lhs.glide == rhs.glide;
-        ret &= lhs.monoEnable == rhs.monoEnable;
-        ret &= lhs.priority == rhs.priority;
-        ret &= lhs.legato == rhs.legato;
-        return ret;
-      }
-
-      inline bool operator==(const UnisonGroup& lhs, const UnisonGroup& rhs)
-      {
-        auto ret = lhs.unisonVoices == rhs.unisonVoices;
-        ret &= lhs.detune == rhs.detune;
-        ret &= lhs.pan == rhs.pan;
-        ret &= lhs.phase == rhs.phase;
-        return ret;
-      }
-
-      inline bool operator==(const MasterGroup& lhs, const MasterGroup& rhs)
-      {
-        auto ret = lhs.volume == rhs.volume;
-        ret &= lhs.tune == rhs.tune;
-        ret &= lhs.pan == rhs.pan;
-        ret &= lhs.serialFX == rhs.serialFX;
-        return ret;
-      }
-
-    }  // namespace nltools::msg::ParameterGroups
-
     namespace detail
     {
 
@@ -151,22 +31,10 @@ namespace nltools
         }
 
         // shared data (present in any sound type)
-        SingularParameterArray<ParameterType::Hardware_Source, Parameters::HardwareSourceParameter> hwsources;
-        SingularParameterArray<ParameterType::Hardware_Amount, Parameters::HardwareAmountParameter> hwamounts;
-        SingularParameterArray<ParameterType::Macro_Control, Parameters::MacroParameter> macros;
-        SingularParameterArray<ParameterType::Macro_Time, Parameters::UnmodulateableParameter> macrotimes;
-        // ... into:
         SingularParameterArray<ParameterType::Hardware_Source, controls::HardwareSourceParameter> m_hardwareSources;
         SingularParameterArray<ParameterType::Hardware_Amount, controls::HardwareAmountParameter> m_hardwareAmounts;
         SingularParameterArray<ParameterType::Macro_Control, controls::MacroControlParameter> m_macroControls;
         SingularParameterArray<ParameterType::Macro_Time, controls::MacroTimeParameter> m_macroTimes;
-
-        //todo: remove:
-        ParameterGroups::MasterGroup master;
-        Parameters::GlobalParameter scaleBaseKey;
-        std::array<Parameters::ModulateableParameter, 12> scaleOffsets;
-
-        // done: use
         SingularParameterArray<ParameterType::Global_Modulateable, controls::GlobalModulateableParameter>
             m_globalModulateables;
         SingularParameterArray<ParameterType::Global_Unmodulateable, controls::GlobalUnmodulateableParameter>
@@ -227,19 +95,11 @@ namespace nltools
 
     struct SinglePresetMessage : public detail::PresetMessage<nltools::msg::MessageType::SinglePreset>
     {
-      // todo: refactor (into Polyphonic/Monophonic Modulateables/Unmodulateables)
-      std::array<Parameters::ModulateableParameter, 169> modulateables;
-      std::array<Parameters::UnmodulateableParameter, 29> unmodulateables;
-
-      // todo: refactor (into Polyphonic Modulateables/Unmodulateables, deprecating ParameterGroups)
-      ParameterGroups::UnisonGroup unison;
-      ParameterGroups::MonoGroup mono;
-
-      // temporary: local parameters
-      SingularParameterArray<ParameterType::Local_Modulateable, controls::LocalModulateableParameter> m_localModulateables;
-      SingularParameterArray<ParameterType::Local_Unmodulateable, controls::LocalUnmodulateableParameter> m_localUnmodulateables;
-
-      // todo: use
+      // data
+      SingularParameterArray<ParameterType::Local_Modulateable, controls::LocalModulateableParameter>
+          m_localModulateables;
+      SingularParameterArray<ParameterType::Local_Unmodulateable, controls::LocalUnmodulateableParameter>
+          m_localUnmodulateables;
       SingularParameterArray<ParameterType::Polyphonic_Modulateable, controls::PolyphonicModulateableParameter>
           m_polyphonicModulateables;
       SingularParameterArray<ParameterType::Polyphonic_Unmodulateable, controls::PolyphonicUnmodulateableParameter>
@@ -251,20 +111,20 @@ namespace nltools
         if(!SinglePresetMessage::validateCommon(_msg))
           return false;
         // temporary: local parameters
-          for(const auto& element : _msg.m_localUnmodulateables)
-            if(!element.validateParameterType())
-              return false;
-          for(const auto& element : _msg.m_localUnmodulateables)
-            if(!element.validateParameterType())
-              return false;
+        for(const auto& element : _msg.m_localUnmodulateables)
+          if(!element.validateParameterType())
+            return false;
+        for(const auto& element : _msg.m_localUnmodulateables)
+          if(!element.validateParameterType())
+            return false;
         // polyphonic parameters
-          for(const auto& element : _msg.m_polyphonicUnmodulateables)
-            if(!element.validateParameterType())
-              return false;
-          for(const auto& element : _msg.m_polyphonicUnmodulateables)
-            if(!element.validateParameterType())
-              return false;
-          return true;
+        for(const auto& element : _msg.m_polyphonicUnmodulateables)
+          if(!element.validateParameterType())
+            return false;
+        for(const auto& element : _msg.m_polyphonicUnmodulateables)
+          if(!element.validateParameterType())
+            return false;
+        return true;
       }
     };
 
@@ -287,20 +147,10 @@ namespace nltools
 
     struct SplitPresetMessage : public detail::PresetMessage<nltools::msg::MessageType::SplitPreset>
     {
-      // todo: refactor (into Polyphonic/Monophonic Modulateables/Unmodulateables)
-      std::array<std::array<Parameters::ModulateableParameter, 169>, 2> modulateables;
-      std::array<std::array<Parameters::UnmodulateableParameter, 29>, 2> unmodulateables;
-
-      // todo: refactor (into Polyphonic Modulateables/Unmodulateables, deprecating ParameterGroups)
-      std::array<ParameterGroups::UnisonGroup, 2> unison;
-      std::array<ParameterGroups::MonoGroup, 2> mono;
-      std::array<Parameters::SplitPoint, 2> splitpoint;
-
-      // temporary: local parameters
+      // data
       DualParameterArray<ParameterType::Local_Modulateable, controls::LocalModulateableParameter> m_localModulateables;
-      DualParameterArray<ParameterType::Local_Unmodulateable, controls::LocalUnmodulateableParameter> m_localUnmodulateables;
-
-      // todo: use
+      DualParameterArray<ParameterType::Local_Unmodulateable, controls::LocalUnmodulateableParameter>
+          m_localUnmodulateables;
       DualParameterArray<ParameterType::Polyphonic_Modulateable, controls::PolyphonicModulateableParameter>
           m_polyphonicModulateables;
       DualParameterArray<ParameterType::Polyphonic_Unmodulateable, controls::PolyphonicUnmodulateableParameter>
@@ -352,21 +202,10 @@ namespace nltools
 
     struct LayerPresetMessage : public detail::PresetMessage<nltools::msg::MessageType::LayerPreset>
     {
-      // todo: refactor (into Polyphonic/Monophonic Modulateables/Unmodulateables)
-      std::array<std::array<Parameters::ModulateableParameter, 169>, 2> modulateables;
-      std::array<std::array<Parameters::UnmodulateableParameter, 29>, 2> unmodulateables;
-
-      // todo: refactor (into Polyphonic Modulateables/Unmodulateables, deprecating ParameterGroups)
-      // note: yes, Unison and Mono will be present twice in a LayerPresetMsg (although only one VoiceGroup is relevant)
-      //       (for comparisons to work properly, Unison/Mono should be identical in both VoiceGroups)
-      ParameterGroups::UnisonGroup unison;
-      ParameterGroups::MonoGroup mono;
-
-      // temporary: local parameters
+      // data
       DualParameterArray<ParameterType::Local_Modulateable, controls::LocalModulateableParameter> m_localModulateables;
-      DualParameterArray<ParameterType::Local_Unmodulateable, controls::LocalUnmodulateableParameter> m_localUnmodulateables;
-
-      // todo: use
+      DualParameterArray<ParameterType::Local_Unmodulateable, controls::LocalUnmodulateableParameter>
+          m_localUnmodulateables;
       DualParameterArray<ParameterType::Polyphonic_Modulateable, controls::PolyphonicModulateableParameter>
           m_polyphonicModulateables;
       DualParameterArray<ParameterType::Polyphonic_Unmodulateable, controls::PolyphonicUnmodulateableParameter>
@@ -401,23 +240,24 @@ namespace nltools
       // use this function to ensure that smoothed parameters of the "Voices" supergroup are identical in both Parts
       inline void guaranteeEqualVoicesParameters()
       {
-          for(const auto id : s_voiceParams)
-          {
-              const auto index = (uint32_t)id;
-              // copy data from Part I to Part II (assuming already correct id)
-              auto &lhs = m_localModulateables[0][index];
-              const auto &rhs = m_localModulateables[1][index];
-              lhs.m_controlPosition = rhs.m_controlPosition;
-              lhs.m_macro = rhs.m_macro;
-              lhs.m_modulationAmount = rhs.m_modulationAmount;
-          }
+        for(const auto id : s_voiceParams)
+        {
+          const auto index = (uint32_t) id;
+          // copy data from Part I to Part II (assuming already correct id)
+          auto& lhs = m_localModulateables[0][index];
+          const auto& rhs = m_localModulateables[1][index];
+          lhs.m_controlPosition = rhs.m_controlPosition;
+          lhs.m_macro = rhs.m_macro;
+          lhs.m_modulationAmount = rhs.m_modulationAmount;
+        }
       }
-    private:
+
+     private:
       static constexpr C15::Parameters::Local_Modulateables s_voiceParams[] = {
-          C15::Parameters::Local_Modulateables::Unison_Detune,
-          C15::Parameters::Local_Modulateables::Unison_Phase,
-          C15::Parameters::Local_Modulateables::Unison_Pan,
-          C15::Parameters::Local_Modulateables::Mono_Grp_Glide,
+        C15::Parameters::Local_Modulateables::Unison_Detune,
+        C15::Parameters::Local_Modulateables::Unison_Phase,
+        C15::Parameters::Local_Modulateables::Unison_Pan,
+        C15::Parameters::Local_Modulateables::Mono_Grp_Glide,
       };
     };
 

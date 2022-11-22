@@ -18,8 +18,8 @@ namespace Engine
         float m_position = {}, m_initial = {};
         inline void init(const float &_initial)
         {
-            m_initial = _initial;
-            m_position = _initial;
+          m_initial = _initial;
+          m_position = _initial;
         }
         inline bool update_position(const float &_position)
         {
@@ -44,7 +44,7 @@ namespace Engine
         bool m_polarity = false;
         inline void init(const bool &_polarity)
         {
-            m_polarity = _polarity;
+          m_polarity = _polarity;
         }
         inline bool update_source(const C15::Parameters::Macro_Controls &_source)
         {
@@ -84,38 +84,41 @@ namespace Engine
 
       struct ScaleAspect
       {
-        struct Scaling {
-            C15::Properties::SmootherScale m_scaleId;
-            float m_scaleFactor = {}, m_scaleOffset = {};
+        struct Scaling
+        {
+          C15::Properties::SmootherScale m_scaleId;
+          float m_scaleFactor = {}, m_scaleOffset = {};
         } m_scaling = {};
         float m_scaled = {};
         inline void init(const C15::Descriptors::AudioEngineParamDescriptor &_desc)
         {
-            m_scaling.m_scaleId = _desc.m_scaleId;
-            m_scaling.m_scaleFactor = _desc.m_scaleFactor;
-            m_scaling.m_scaleOffset = _desc.m_scaleOffset;
+          m_scaling.m_scaleId = _desc.m_scaleId;
+          m_scaling.m_scaleFactor = _desc.m_scaleFactor;
+          m_scaling.m_scaleOffset = _desc.m_scaleOffset;
         }
       };
 
       struct TimeAspect
       {
-        struct Time {
-            float m_dxAudio = {}, m_dxFast = {}, m_dxSlow = {};
+        struct Time
+        {
+          float m_dxAudio = {}, m_dxFast = {}, m_dxSlow = {};
         } m_time = {};
       };
 
       struct RenderAspect
       {
-          struct Rendering {
-              C15::Descriptors::SmootherSection m_renderSection;
-              C15::Descriptors::SmootherClock m_renderClock;
-              uint32_t m_renderIndex = {};
-          } m_rendering = {};
+        struct Rendering
+        {
+          C15::Descriptors::SmootherSection m_renderSection;
+          C15::Descriptors::SmootherClock m_renderClock;
+          uint32_t m_renderIndex = {};
+        } m_rendering = {};
         inline void init(const C15::Descriptors::SmootherDescriptor &_desc)
         {
-            m_rendering.m_renderSection = _desc.m_section;
-            m_rendering.m_renderClock = _desc.m_clock;
-            m_rendering.m_renderIndex = _desc.m_index;
+          m_rendering.m_renderSection = _desc.m_section;
+          m_rendering.m_renderClock = _desc.m_clock;
+          m_rendering.m_renderIndex = _desc.m_index;
         }
       };
 
@@ -136,22 +139,22 @@ namespace Engine
         }
         return false;
       }
-      inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
+      inline void log(const char *const _msg, const C15::ParameterDescriptor &_descriptor)
       {
-          nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
-                  _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
-                  ", position:", m_position, ", behavior: ", (int) m_behavior, ")");
+        nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                           _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                           ", position:", m_position, ", behavior: ", (int) m_behavior, ")");
       }
     };
 
     struct HardwareAmount : public Aspects::ParameterAspect
     {
       uint32_t m_sourceId = {};
-      inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
+      inline void log(const char *const _msg, const C15::ParameterDescriptor &_descriptor)
       {
-          nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
-                  _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
-                  ", position:", m_position, ")");
+        nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                           _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                           ", position:", m_position, ")");
       }
     };
 
@@ -160,47 +163,46 @@ namespace Engine
       uint32_t m_index = {};
       inline void init(const C15::ParameterDescriptor &_desc)
       {
-          ParameterAspect::init(_desc.m_initial);
-          m_index = _desc.m_param.m_index;
+        ParameterAspect::init(_desc.m_initial);
+        m_index = _desc.m_param.m_index;
       }
-      inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
+      inline void log(const char *const _msg, const C15::ParameterDescriptor &_descriptor)
       {
-          nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
-                  _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
-                  ", position:", m_position, ")");
+        nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                           _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                           ", position:", m_position, ")");
       }
     };
 
-    struct TimeParameter : public Aspects::ParameterAspect, public Aspects::ScaleAspect, public Aspects::TimeAspect
+    struct ScaledParameter : public Aspects::ParameterAspect, public Aspects::ScaleAspect
     {
-        inline void init(const C15::Properties::SmootherScale &_id, const float &_factor, const float &_offset, const float &_value)
-        {
-            ParameterAspect::init(_value);
-            m_scaling.m_scaleId = _id;
-            m_scaling.m_scaleFactor = _factor;
-            m_scaling.m_scaleOffset = _offset;
-        }
-        inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
-        {
-            nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
-                    _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
-                    ", position:", m_position, ")");
-        }
+      inline void init(const C15::Properties::SmootherScale &_id, const float &_factor, const float &_offset,
+                       const float &_value)
+      {
+        ParameterAspect::init(_value);
+        m_scaling.m_scaleId = _id;
+        m_scaling.m_scaleFactor = _factor;
+        m_scaling.m_scaleOffset = _offset;
+      }
+    };
+
+    struct TimeParameter : public ScaledParameter, public Aspects::TimeAspect
+    {
     };
 
     struct MacroTime : public Aspects::ParameterAspect, public Aspects::ScaleAspect, public Aspects::TimeAspect
     {
-        inline void init(const C15::ParameterDescriptor &_desc)
-        {
-            ParameterAspect::init(_desc.m_initial);
-            ScaleAspect::init(_desc.m_ae);
-        }
-        inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
-        {
-            nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
-                    _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
-                    ", position:", m_position, ")");
-        }
+      inline void init(const C15::ParameterDescriptor &_desc)
+      {
+        ParameterAspect::init(_desc.m_initial);
+        ScaleAspect::init(_desc.m_ae);
+      }
+      inline void log(const char *const _msg, const C15::ParameterDescriptor &_descriptor)
+      {
+        nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                           _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                           ", position:", m_position, ")");
+      }
     };
 
     struct Modulateable : public Aspects::ParameterAspect,
@@ -211,11 +213,11 @@ namespace Engine
       bool m_splitpoint = false;
       inline void init(const C15::ParameterDescriptor &_desc)
       {
-          ParameterAspect::init(depolarize(_desc.m_initial));
-          ModulationAspect::init(_desc.m_ae.m_polarity);
-          ScaleAspect::init(_desc.m_ae);
-          RenderAspect::init(_desc.m_ae.m_smoother);
-          m_splitpoint = _desc.m_param_id == C15::PID::Split_Split_Point;
+        ParameterAspect::init(depolarize(_desc.m_initial));
+        ModulationAspect::init(_desc.m_ae.m_polarity);
+        ScaleAspect::init(_desc.m_ae);
+        RenderAspect::init(_desc.m_ae.m_smoother);
+        m_splitpoint = _desc.m_param_id == C15::PID::Split_Split_Point;
       }
       inline bool modulate(const float &_mod)
       {
@@ -227,29 +229,28 @@ namespace Engine
         m_base = m_position - (m_amount * _mod);
         m_ceil = m_base + m_amount;
       }
-      inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
+      inline void log(const char *const _msg, const C15::ParameterDescriptor &_descriptor)
       {
-          nltools::Log::info(_msg,
-                             "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
-                             _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
-                             ", position:", m_position, ", mc:", (int) m_source, ", amt:", m_amount, ")");
+        nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                           _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                           ", position:", m_position, ", mc:", (int) m_source, ", amt:", m_amount, ")");
       }
     };
 
     struct Unmodulateable : public Aspects::ParameterAspect, public Aspects::ScaleAspect, public Aspects::RenderAspect
     {
-        inline void init(const C15::ParameterDescriptor &_desc)
-        {
-            ParameterAspect::init(_desc.m_initial);
-            ScaleAspect::init(_desc.m_ae);
-            RenderAspect::init(_desc.m_ae.m_smoother);
-        }
-        inline void log(const char * const _msg, const C15::ParameterDescriptor &_descriptor)
-        {
-            nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
-                    _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
-                    ", position:", m_position, ")");
-        }
+      inline void init(const C15::ParameterDescriptor &_desc)
+      {
+        ParameterAspect::init(_desc.m_initial);
+        ScaleAspect::init(_desc.m_ae);
+        RenderAspect::init(_desc.m_ae.m_smoother);
+      }
+      inline void log(const char *const _msg, const C15::ParameterDescriptor &_descriptor)
+      {
+        nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                           _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                           ", position:", m_position, ")");
+      }
     };
 
   }  // namespace Engine::Parameters

@@ -411,55 +411,7 @@ namespace nltools
       };
     }
 
-    struct HWSourceChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::HWSourceParameter;
-      }
-
-      tID m_id;
-      tControlPosition m_controlPosition;
-      ReturnMode m_returnMode;
-      bool m_isLocalEnabled;
-    };
-
-    struct HWSourceSendChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::HWSourceSendParameter;
-      }
-
-      tID m_id;
-      tID m_siblingId;
-      tControlPosition m_controlPosition;
-      ReturnMode m_returnMode;
-      bool m_isLocalEnabled;
-    };
-
-    struct HWAmountChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::HWAmountParameter;
-      }
-
-      tID m_id;
-      tControlPosition m_controlPosition;
-    };
-
-    struct MacroControlChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::MacroControlParameter;
-      }
-
-      tID m_id;
-      tControlPosition m_controlPosition;
-    };
-
+    // still needed in testing/unit-tests/messaging/MessagingTests.cpp, todo: refactor and deprecate
     struct UnmodulateableParameterChangedMessage
     {
       constexpr static MessageType getType()
@@ -469,22 +421,6 @@ namespace nltools
 
       tID m_id;
       tControlPosition m_controlPosition;
-      VoiceGroup m_voiceGroup;
-    };
-
-    struct ModulateableParameterChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::ModulateableParameter;
-      }
-
-      tID m_id;
-      tControlPosition m_controlPosition;
-      MacroControls m_macro;
-      tControlPosition m_modulationAmount;
-      tControlPosition m_modulationUpper;
-      tControlPosition m_modulationLower;
       VoiceGroup m_voiceGroup;
     };
 

@@ -45,20 +45,20 @@ inline constexpr bool LOG_EDITS = false;
 inline constexpr bool LOG_TIMES = false;
 inline constexpr bool LOG_SETTINGS = false;
 inline constexpr bool LOG_RECALL = false;
-inline constexpr bool LOG_RECALL_DETAILS = true;
+inline constexpr bool LOG_RECALL_DETAILS = false;
 inline constexpr bool LOG_RECALL_LEVELS = false;
 inline constexpr bool LOG_KEYS = false;
 inline constexpr bool LOG_KEYS_POLY = false;
 inline constexpr bool LOG_TRANSITIONS = false;
 inline constexpr bool LOG_RESET = false;
 inline constexpr bool LOG_HW = false;
+inline constexpr bool LOG_MOD_CHAIN = false;
 // more detailed logging of specific parameters
 inline constexpr bool LOG_ENGINE_STATUS = false;
 inline constexpr bool LOG_ENGINE_EDITS = false;
 inline constexpr bool LOG_INPUT_EVENT_STAGE = false;
-inline constexpr uint32_t LOG_PARAMS_LENGTH = 3;
-// use tcd ids here (currently: Split Point, Unison Detune)
-static const uint32_t LOG_PARAMS[LOG_PARAMS_LENGTH] = { 356, 250, 367 };
+inline constexpr C15::PID::ParameterID LOG_PARAMETERS[]
+    = { C15::PID::Split_Split_Point, C15::PID::Unison_Detune, C15::PID::Mono_Grp_Glide };
 
 class MidiRuntimeOptions;
 
@@ -210,20 +210,7 @@ class dsp_host_dual : public DSPInterface
   void onParameterChangedMessage(const nltools::msg::MonophonicModulateableParameterChangedMessage& _msg);
   void onParameterChangedMessage(const nltools::msg::MonophonicUnmodulateableParameterChangedMessage& _msg);
 
-  // todo: remove when unused
-  void globalParChg(const uint32_t _id, const nltools::msg::HWAmountChangedMessage& _msg);
-  void globalParChg(const uint32_t _id, const nltools::msg::MacroControlChangedMessage& _msg);
-  void globalParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage& _msg);
-  void globalParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
-  void globalTimeChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
-  void localParChg(const uint32_t _id, const nltools::msg::ModulateableParameterChangedMessage& _msg);
-  void localParChg(const uint32_t _id, const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
-  OutputResetEventSource localUnisonVoicesChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
-  OutputResetEventSource localMonoEnableChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
-  void localMonoPriorityChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
-  void localMonoLegatoChg(const nltools::msg::UnmodulateableParameterChangedMessage& _msg);
-
-  bool updateBehaviour(C15::ParameterDescriptor& param, ReturnMode mode);  // todo: refactor
+  bool updateBehaviour(C15::ParameterDescriptor& param, ReturnMode mode);
   // evend bindings: Settings
   void onSettingEditTime(const float _position);
   void onSettingTransitionTime(const float _position);
@@ -278,12 +265,10 @@ class dsp_host_dual : public DSPInterface
     }
     return SoundType::Single;
   }
-  // parameters (todo: migrate)
+  // parameters and settings
   Engine::Handle::ParameterHandle m_parameters;
-  Engine::Param_Handle m_params;  // todo: remove
   Engine::Parameters::TimeParameter m_editTime, m_transitionTime;
-  Time_Param m_edit_time, m_transition_time;  // todo: remove
-  Setting_Param m_reference;
+  Engine::Parameters::ScaledParameter m_reference;
   const C15::ParameterDescriptor m_invalid_param = { C15::None };
   // essential tools
   exponentiator m_convert;
@@ -322,41 +307,20 @@ class dsp_host_dual : public DSPInterface
   void keyDownTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId);
   void keyUpTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId);
   float scale(const Engine::Parameters::Aspects::ScaleAspect::Scaling& _scl, float _value);
-  float scale(const Scale_Aspect _scl, float _value);  // todo: remove
   void updateTime(Engine::Parameters::Aspects::TimeAspect::Time& _time, const float& _ms);
-  void updateTime(Time_Aspect* _param, const float _ms);                      // todo: remove
-  void hwModChain(HW_Src_Param* _src, const uint32_t _id, const float _inc);  // todo: refactor
-  void globalModChain(Macro_Param* _mc);                                      // todo: remove
+  void hwModChain(const Engine::Parameters::HardwareSource& _src, const uint32_t& _id, const float& _inc);
   void globalModChain(const Engine::Parameters::MacroControl& _mc);
-  void localModChain(Macro_Param* _mc);                         // todo: remove
-  void localModChain(const uint32_t _layer, Macro_Param* _mc);  // todo: remove
   void localModChain(const Engine::Parameters::MacroControl& _mc);
   void localModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);
-  void globalTransition(const Target_Param* _param, const Time_Aspect _time);  // todo: remove
-  void globalTransition(const Direct_Param* _param, const Time_Aspect _time);  // todo: remove
-  template <typename T>
-  inline void globalTransition(const T& _param, const Engine::Parameters::Aspects::TimeAspect::Time& _time);
-  void localTransition(const uint32_t _layer, const Direct_Param* _param, const Time_Aspect _time);  // todo: remove
-  void localTransition(const uint32_t _layer, const Target_Param* _param, const Time_Aspect _time);  // todo: remove
-  template <typename T>
-  inline void localTransition(const uint32_t& _layer, const T& _param,
-                              const Engine::Parameters::Aspects::TimeAspect::Time& _time);
-
-  // todo: https://github.com/nonlinear-labs-dev/C15/issues/2995
-  template <typename T>
-  inline void polyphonicTransition(const uint32_t& _layer, const T& _param,
-                                   const Engine::Parameters::Aspects::TimeAspect::Time& _time);
-  template <typename T>
-  inline void monophonicTransition(const uint32_t& _layer, const T& _param,
-                                   const Engine::Parameters::Aspects::TimeAspect::Time& _time);
+  inline void globalTransition(const Engine::Parameters::Aspects::RenderAspect::Rendering& _rendering,
+                               const Engine::Parameters::Aspects::TimeAspect::Time& _time, const float& _dest);
+  inline void localTransition(const uint32_t& _layer,
+                              const Engine::Parameters::Aspects::RenderAspect::Rendering& _rendering,
+                              const Engine::Parameters::Aspects::TimeAspect::Time& _time, const float& _dest);
+  // todo: poly/mono transition (https://github.com/nonlinear-labs-dev/C15/issues/2995)
 
   inline OutputResetEventSource onUnisonVoicesChanged(const uint32_t& _layer, const float& _pos);
   inline OutputResetEventSource onMonoEnableChanged(const uint32_t& _layer, const float& _pos);
-
-  // todo: remove
-  bool evalPolyChg(const C15::Properties::LayerId _layerId,
-                   const nltools::msg::Parameters::UnmodulateableParameter& _unisonVoices,
-                   const nltools::msg::Parameters::UnmodulateableParameter& _monoEnable);
 
   bool determinePolyChg(const C15::Properties::LayerId _layerId,
                         const nltools::controls::LocalUnmodulateableParameter& _unisonVoices,
@@ -364,31 +328,13 @@ class dsp_host_dual : public DSPInterface
   void evalVoiceFadeChg(const uint32_t _layer);
   OutputResetEventSource determineOutputEventSource(const bool _detected, const LayerMode _type);
 
-  template<typename T>
-  inline void recallCommon(const T& _msg, const bool _resetVoiceFade);
-  template<typename T> inline void recallCommonTransition(const T& _msg);
+  template <typename T> inline void recallCommon(const T& _msg, const bool _resetVoiceFade);
+  template <typename T> inline void recallCommonTransition(const T& _msg);
 
-  // todo: refactor
   OutputResetEventSource recallSingle(const nltools::msg::SinglePresetMessage& _msg);
   OutputResetEventSource recallSplit(const nltools::msg::SplitPresetMessage& _msg);
   OutputResetEventSource recallLayer(const nltools::msg::LayerPresetMessage& _msg);
 
-  // todo: remove
-  void globalParRcl(const nltools::msg::Parameters::HardwareSourceParameter& _param);
-  void globalParRcl(const nltools::msg::Parameters::HardwareAmountParameter& _param);
-  void globalParRcl(const nltools::msg::Parameters::MacroParameter& _param);
-  void globalParRcl(const nltools::msg::Parameters::ModulateableParameter& _param);
-  void globalParRcl(const nltools::msg::Parameters::UnmodulateableParameter& _param);
-  void globalParRcl(const nltools::msg::Parameters::GlobalParameter& _param);
-  void globalTimeRcl(const nltools::msg::Parameters::UnmodulateableParameter& _param);
-  void localParRcl(const uint32_t _layerId, const nltools::msg::Parameters::ModulateableParameter& _param);
-  void localParRcl(const uint32_t _layerId, const nltools::msg::Parameters::SplitPoint& _param);
-  void localParRcl(const uint32_t _layerId, const nltools::msg::Parameters::UnmodulateableParameter& _param);
-  void localPolyRcl(const uint32_t _layerId, const bool _va_update,
-                    const nltools::msg::ParameterGroups::UnisonGroup& _unison,
-                    const nltools::msg::ParameterGroups::MonoGroup& _mono);
-
-  // new parameter recall protocol
   inline void onParameterRecall(const nltools::controls::HardwareSourceParameter& _param);
   inline void onParameterRecall(const nltools::controls::HardwareAmountParameter& _param);
   inline void onParameterRecall(const nltools::controls::MacroControlParameter& _param);
@@ -396,7 +342,8 @@ class dsp_host_dual : public DSPInterface
   inline void onParameterRecall(const nltools::controls::GlobalModulateableParameter& _param);
   inline void onParameterRecall(const nltools::controls::GlobalUnmodulateableParameter& _param);
   inline void onParameterRecall(const uint32_t& _layerId, const nltools::controls::LocalModulateableParameter& _param);
-  inline void onParameterRecall(const uint32_t& _layerId, const nltools::controls::LocalUnmodulateableParameter& _param, const bool _vaUpdate);
+  inline void onParameterRecall(const uint32_t& _layerId, const nltools::controls::LocalUnmodulateableParameter& _param,
+                                const bool _vaUpdate);
 
   // todo: https://github.com/nonlinear-labs-dev/C15/issues/2995
   void onParameterRecall(const uint32_t& _layerId, const nltools::controls::PolyphonicModulateableParameter& _param);

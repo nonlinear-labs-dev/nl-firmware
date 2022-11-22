@@ -34,9 +34,6 @@ class InputEventStage
   void onParameterChangedMessage(const nltools::msg::HardwareSourceParameterChangedMessage& message, bool didBehaviourChange);
   void onParameterChangedMessage(const nltools::msg::HardwareSourceSendParameterChangedMessage& message);
 
-  // todo: remove when unused
-  void onUIHWSourceMessage(const nltools::msg::HWSourceChangedMessage& message, bool didBehaviourChange);
-
   void setNoteShift(int i);
   [[nodiscard]] int getNoteShift() const;
 
@@ -52,9 +49,6 @@ class InputEventStage
 
   static HardwareSource parameterIDToHWID(int id);
   bool getAndResetKeyBedStatus();
-
-  // todo: remove when unused
-  void onSendParameterReceived(const nltools::msg::HWSourceSendChangedMessage& message);
 
  private:
   void setAndScheduleKeybedNotify();
