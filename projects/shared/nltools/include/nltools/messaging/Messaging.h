@@ -32,10 +32,6 @@ namespace nltools
 
          SinglePreset, LayerPreset, SplitPreset,
 
-         // todo: deprecate?
-         UnmodulateableParameter, ModulateableParameter, MacroControlParameter,
-         HWAmountParameter, HWSourceParameter, HWSourceSendParameter,
-
          UpdateLocalDisabledRibbon,
 
          NoteShiftSetting, PresetGlitchSetting, TransitionTimeSetting, EditSmoothingTimeSetting, TuneReference,

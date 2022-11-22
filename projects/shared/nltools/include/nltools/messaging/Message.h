@@ -411,19 +411,6 @@ namespace nltools
       };
     }
 
-    // still needed in testing/unit-tests/messaging/MessagingTests.cpp, todo: refactor and deprecate
-    struct UnmodulateableParameterChangedMessage
-    {
-      constexpr static MessageType getType()
-      {
-        return MessageType::UnmodulateableParameter;
-      }
-
-      tID m_id;
-      tControlPosition m_controlPosition;
-      VoiceGroup m_voiceGroup;
-    };
-
     struct RotaryChangedMessage
     {
       constexpr static MessageType getType()
