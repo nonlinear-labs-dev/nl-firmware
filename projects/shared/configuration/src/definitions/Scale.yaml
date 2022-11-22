@@ -26,7 +26,7 @@ static: [
   &OFFSET {
     <<: *MODULATEABLE,
     control_position: { coarse: 210, fine: 2100, scale: LINEAR_BIPOLAR_WEIGHTED_1200_CENT, initial: 0.0f },
-    modulation_aspects: { coarse: 420, fine: 4200, scale: LINEAR_BIPOLAR_200_PERCENT },
+    modulation_aspects: { coarse: 420, fine: 4200, scale: FINE_BIPOLAR_200_PERCENT },
     rendering_args: { scaling: Linear2Sections, factor: 12.0f, offset: 0.0f, section: Global, clock: Slow, signal: Global_Signal }
   }
 ]
