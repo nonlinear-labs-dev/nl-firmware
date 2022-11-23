@@ -210,8 +210,8 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void calculateSplitPointFromFadeParams(UNDO::Transaction *transaction);
   void copySinglePresetMasterToPartMaster(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup targetGroup);
   std::vector<Parameter *> getCrossFBParameters(const VoiceGroup &to) const;
-  void loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup loadInto);
-  void loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup loadTo);
+  void loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from, VoiceGroup loadInto);
+  void loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from, VoiceGroup loadTo);
   void undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
                                             VoiceGroup copyTo);
   void undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup copyFrom,
@@ -225,6 +225,8 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   bool isPartLabelChanged(VoiceGroup group) const;
   void setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *transaction);
   void setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *transaction);
+
+  std::vector<ParameterId> findAllParametersOfType(C15::Descriptors::ParameterType type);
 
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
   Signal<void, Parameter *> m_signalReselectParameter;
@@ -273,4 +275,6 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   friend class BankUseCases;
   friend class PresetManagerUseCases;
   friend class SoundUseCases;
+  void updateLoadFromPartOrigin(UNDO::Transaction *transaction, const Preset *preset, const VoiceGroup &from,
+                                const VoiceGroup &loadTo);
 };

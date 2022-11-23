@@ -226,9 +226,7 @@ void PresetManagerLayout::setupPresetSelect()
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 36, 58, 62)));
 
-  auto isDualEditBuffer = Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single;
-
-  if(vgManager->isInLoadToPart() && isDualEditBuffer)
+  if(vgManager->isInLoadToPart())
     m_presets
         = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, vgManager->getPresetPartSelection(VoiceGroup::I),
                                               vgManager->getPresetPartSelection(VoiceGroup::II)));

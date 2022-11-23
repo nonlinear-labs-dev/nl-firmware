@@ -72,7 +72,20 @@ bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const Edit
     return false;
 
   if(editBuffer->getType() == SoundType::Single)
+  {
+    //TODO remove this WIP code:
+    auto groups = std::vector<std::string>{"Flang", "Rev", "Echo", "Cab"}; //ETC
+    auto selectedGroup = selected->getParentGroup();
+    return std::find(groups.begin(), groups.end(), selectedGroup->getID().getName()) != groups.end();
+
+
+    const auto type = selected->getType();
+    if(type == C15::Descriptors::ParameterType::Monophonic_Modulateable || type == C15::Descriptors::ParameterType::Monophonic_Unmodulateable)
+    {
+      return true;
+    }
     return false;
+  }
 
   auto layerAndGroupAllowToggling
       = ((editBuffer->getType() == SoundType::Layer)

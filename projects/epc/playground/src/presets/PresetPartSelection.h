@@ -24,6 +24,6 @@ class PresetPartSelection
   const VoiceGroup m_focusedVoiceGroup;
 
  private:
-  void onPresetLoaded();
   sigc::connection m_presetLoadedConnection;
+  sigc::connection m_presetManagerLoaded;
 };

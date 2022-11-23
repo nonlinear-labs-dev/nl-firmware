@@ -74,7 +74,6 @@ void PresetTypeLabel::update(const Preset *newSelection)
 void PresetTypeLabel::drawBackground(FrameBuffer &fb)
 {
 
-  auto hwui = Application::get().getHWUI();
   auto vgManager = Application::get().getVGManager();
   if(selectedPreset
      && Application::get().getPresetManager()->getEditBuffer()->getUUIDOfLastLoadedPreset()
@@ -224,12 +223,33 @@ bool DualPresetTypeLabel::drawSplit(FrameBuffer &buffer)
 
 bool DualPresetTypeLabel::drawSingle(FrameBuffer &buffer)
 {
+  Rect polyRect = {getPosition().getX() + 2, getPosition().getY() + 3, 4, 10};
+  Rect monoI = {getPosition().getX() + 8, getPosition().getY() + 3, 4, 4};
+  Rect monoII = {getPosition().getX() + 8, getPosition().getY() + 9, 4, 4};
+
+  buffer.setColor(defaultColor);
+  buffer.fillRect(monoI);
+  buffer.fillRect(monoII);
+
+  buffer.setColor(m_inidicateII || m_inidicateI ? loadedColor : defaultColor);
+  buffer.fillRect(polyRect);
+
   buffer.setColor(m_inidicateI ? loadedColor : defaultColor);
-  buffer.fillRect(getPosition().getX() + 2, getPosition().getY() + 3, 10, 10);
+  buffer.fillRect(monoI);
+  buffer.setColor(m_inidicateII ? loadedColor : defaultColor);
+  buffer.fillRect(monoII);
+
   if(m_selectedI)
   {
     buffer.setColor(selectColor);
-    buffer.drawRect(getPosition().getX() + 2, getPosition().getY() + 3, 10, 10);
+    buffer.drawRect(monoI);
+    buffer.drawRect(polyRect);
+  }
+  else if(m_selectedII)
+  {
+    buffer.setColor(selectColor);
+    buffer.drawRect(monoII);
+    buffer.drawRect(polyRect);
   }
 
   return true;
@@ -241,7 +261,6 @@ void DualPresetTypeLabel::update(const Preset *selected)
 
   if(selected)
   {
-    auto hwui = Application::get().getHWUI();
     auto vgManager = Application::get().getVGManager();
     auto vg = vgManager->getCurrentVoiceGroup();
     const auto origin = Application::get().getPresetManager()->getEditBuffer()->getPartOrigin(vg);
