@@ -607,6 +607,28 @@ DSPInterface::OutputResetEventSource
   return OutputResetEventSource::None;
 }
 
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicModulateableParameterChangedMessage &_msg)
+{
+  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+}
+
+DSPInterface::OutputResetEventSource
+    dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicUnmodulateableParameterChangedMessage &_msg)
+{
+  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+  return OutputResetEventSource::None;
+}
+
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicModulateableParameterChangedMessage &_msg)
+{
+  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+}
+
+void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicUnmodulateableParameterChangedMessage &_msg)
+{
+  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+}
+
 inline DSPInterface::OutputResetEventSource dsp_host_dual::onUnisonVoicesChanged(const uint32_t &_layer,
                                                                                  const float &_pos)
 {
@@ -705,28 +727,6 @@ inline DSPInterface::OutputResetEventSource dsp_host_dual::onMonoEnableChanged(c
         return OutputResetEventSource::None;
     }
   }
-}
-
-void dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicModulateableParameterChangedMessage &_msg)
-{
-  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
-}
-
-DSPInterface::OutputResetEventSource
-    dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicUnmodulateableParameterChangedMessage &_msg)
-{
-  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
-  return OutputResetEventSource::None;
-}
-
-void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicModulateableParameterChangedMessage &_msg)
-{
-  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
-}
-
-void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicUnmodulateableParameterChangedMessage &_msg)
-{
-  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
 }
 
 void dsp_host_dual::onSettingEditTime(const float _position)
@@ -1202,6 +1202,10 @@ void dsp_host_dual::hwModChain(const Engine::Parameters::HardwareSource &_src, c
   }
 }
 
+void dsp_host_dual::mcModChain(const Engine::Parameters::MacroControl &_mc)
+{
+}
+
 void dsp_host_dual::globalModChain(const Engine::Parameters::MacroControl &_mc)
 {
   auto &assignment = m_parameters.m_global.m_parameters.m_assignment;
@@ -1271,6 +1275,14 @@ void dsp_host_dual::localModChain(const uint32_t &_layer, const Engine::Paramete
       }
     }
   }
+}
+
+void dsp_host_dual::polyphonicModChain(const Engine::Parameters::MacroControl &_mc)
+{
+}
+
+void dsp_host_dual::monophonicModChain(const Engine::Parameters::MacroControl &_mc)
+{
 }
 
 inline void dsp_host_dual::globalTransition(const Engine::Parameters::Aspects::RenderAspect::Rendering &_rendering,
@@ -1353,6 +1365,20 @@ inline void dsp_host_dual::localTransition(const uint32_t &_layer,
   else if constexpr(LOG_FAIL)
     nltools::Log::warning(__PRETTY_FUNCTION__, "(layer:", _layer, "section:", (int) _rendering.m_renderSection,
                           ", clock:", (int) _rendering.m_renderClock, ", index:", _rendering.m_renderIndex, ")");
+}
+
+inline void dsp_host_dual::polyphonicTransition(const uint32_t &_layer,
+                                                const Engine::Parameters::Aspects::RenderAspect::Rendering &_rendering,
+                                                const Engine::Parameters::Aspects::TimeAspect::Time &_time,
+                                                const float &_dest)
+{
+}
+
+inline void dsp_host_dual::monophonicTransition(const uint32_t &_layer,
+                                                const Engine::Parameters::Aspects::RenderAspect::Rendering &_rendering,
+                                                const Engine::Parameters::Aspects::TimeAspect::Time &_time,
+                                                const float &_dest)
+{
 }
 
 bool dsp_host_dual::determinePolyChg(const C15::Properties::LayerId _layerId,
