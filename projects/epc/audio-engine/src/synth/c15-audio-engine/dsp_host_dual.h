@@ -355,8 +355,8 @@ class dsp_host_dual : public DSPInterface
   inline OutputResetEventSource onUnisonVoicesChanged(const uint32_t& _layer, const float& _pos);
   inline OutputResetEventSource onMonoEnableChanged(const uint32_t& _layer, const float& _pos);
   bool determinePolyChg(const C15::Properties::LayerId _layerId,
-                        const nltools::controls::LocalUnmodulateableParameter& _unisonVoices,
-                        const nltools::controls::LocalUnmodulateableParameter& _monoEnable);
+                        const nltools::controls::PolyphonicUnmodulateableParameter& _unisonVoices,
+                        const nltools::controls::PolyphonicUnmodulateableParameter& _monoEnable);
   void evalVoiceFadeChg(const uint32_t _layer);
   OutputResetEventSource determineOutputEventSource(const bool _detected, const LayerMode _type);
 

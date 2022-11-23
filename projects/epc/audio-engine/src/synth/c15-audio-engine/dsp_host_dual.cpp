@@ -15,6 +15,12 @@ using namespace std::chrono_literals;
     @todo
 *******************************************************************************/
 
+static constexpr auto IndexOfUnisonVoices = C15::ParameterList[C15::PID::Unison_Voices].m_param.m_index;
+static constexpr auto IndexOfMonoEnable = C15::ParameterList[C15::PID::Mono_Grp_Enable].m_param.m_index;
+static constexpr auto IndexOfVoiceGrpFadeFrom = C15::ParameterList[C15::PID::Voice_Grp_Fade_From].m_param.m_index;
+static constexpr auto IndexOfVoiceGrpFadeRange = C15::ParameterList[C15::PID::Voice_Grp_Fade_Range].m_param.m_index;
+static constexpr auto IndexOfVoiceGrpVolume = C15::ParameterList[C15::PID::Voice_Grp_Volume].m_param.m_index;
+
 dsp_host_dual::dsp_host_dual()
 {
   m_mainOut_L = m_mainOut_R = 0.0f;
@@ -1620,15 +1626,13 @@ inline void dsp_host_dual::monophonicTransition(const uint32_t &_layer,
 }
 
 bool dsp_host_dual::determinePolyChg(const C15::Properties::LayerId _layerId,
-                                     const nltools::controls::LocalUnmodulateableParameter &_unisonVoices,
-                                     const nltools::controls::LocalUnmodulateableParameter &_monoEnable)
+                                     const nltools::controls::PolyphonicUnmodulateableParameter &_unisonVoices,
+                                     const nltools::controls::PolyphonicUnmodulateableParameter &_monoEnable)
 {
   const uint32_t layerId = (uint32_t) _layerId;
-  auto &unisonVoices = m_parameters.m_layer[layerId]
-                           .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices];
+  auto &unisonVoices = m_parameters.m_layer[layerId].m_polyphonic.m_unmodulateables[IndexOfUnisonVoices];
   const bool unisonChanged = unisonVoices.update_position((float) _unisonVoices.m_controlPosition);
-  auto &monoEnable = m_parameters.m_layer[layerId]
-                         .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable];
+  auto &monoEnable = m_parameters.m_layer[layerId].m_polyphonic.m_unmodulateables[IndexOfMonoEnable];
   const bool monoChanged = monoEnable.update_position((float) _monoEnable.m_controlPosition);
   return unisonChanged || monoChanged;
 }
@@ -1638,7 +1642,7 @@ void dsp_host_dual::evalVoiceFadeChg(const uint32_t _layer)
 
   /// final version (when fade from range fits 128 keys):
   //  const float from = m_parameters.m_layer[_layer]
-  //                         .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From]
+  //                         .m_unmodulateables[IndexOfVoiceGrpFadeFrom]
   //                         .m_scaled
   //      + C15::Config::physical_key_from;
 
@@ -1650,14 +1654,10 @@ void dsp_host_dual::evalVoiceFadeChg(const uint32_t _layer)
                  edgeCaseHackRemap[2] = { C15::Config::virtual_key_to, C15::Config::virtual_key_from };
 
   uint32_t from = static_cast<uint32_t>(
-                      m_parameters.m_layer[_layer]
-                          .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_From]
-                          .m_scaled)
+                      m_parameters.m_layer[_layer].m_polyphonic.m_unmodulateables[IndexOfVoiceGrpFadeFrom].m_scaled)
       + C15::Config::physical_key_from;
 
-  const float range = m_parameters.m_layer[_layer]
-                          .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Voice_Grp_Fade_Range]
-                          .m_scaled;
+  const float range = m_parameters.m_layer[_layer].m_polyphonic.m_unmodulateables[IndexOfVoiceGrpFadeRange].m_scaled;
 
   if((from == edgeCaseHackKey[_layer]) && (range == 0.0f))
   {
@@ -1776,9 +1776,6 @@ template <typename T> inline void dsp_host_dual::recallCommonTransition(const T 
   }
 }
 
-static constexpr auto IndexOfUnisonVoices = C15::ParameterList[C15::PID::Unison_Voices].m_param.m_index;
-static constexpr auto IndexOfMonoEnable = C15::ParameterList[C15::PID::Mono_Grp_Enable].m_param.m_index;
-
 DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::msg::SinglePresetMessage &_msg)
 {
   const auto oldLayerMode = std::exchange(m_layer_mode, LayerMode::Single);
@@ -1786,10 +1783,9 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
   if constexpr(LOG_RECALL)
     nltools::Log::info(__PRETTY_FUNCTION__, "(@", m_clock.m_index, ")");
   // determine poly change (updating unison voices, mono enable)
-  // todo: params will migrate to polyphonic unmodulateables
   const auto polyChanged
-      = determinePolyChg(C15::Properties::LayerId::I, _msg.m_localUnmodulateables[IndexOfUnisonVoices],
-                         _msg.m_localUnmodulateables[IndexOfMonoEnable]);
+      = determinePolyChg(C15::Properties::LayerId::I, _msg.m_polyphonicUnmodulateables[IndexOfUnisonVoices],
+                         _msg.m_polyphonicUnmodulateables[IndexOfMonoEnable]);
   // reset detection
   const bool internalReset = layerChanged || polyChanged;
   const bool externalReset = internalReset && areKeysPressed(fromType(oldLayerMode));
@@ -1799,10 +1795,10 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
     if constexpr(LOG_RESET)
       nltools::Log::info("recall single voice reset");
     m_alloc.m_internal_keys.init();  // reset all pressed keys
-    // todo: params will migrate to polyphonic unmodulateables
-    m_alloc.setUnison(0, m_parameters.m_layer[0].m_unmodulateables[IndexOfUnisonVoices].m_position, oldLayerMode,
-                      m_layer_mode);
-    m_alloc.setMonoEnable(0, m_parameters.m_layer[0].m_unmodulateables[IndexOfMonoEnable].m_position, m_layer_mode);
+    m_alloc.setUnison(0, m_parameters.m_layer[0].m_polyphonic.m_unmodulateables[IndexOfUnisonVoices].m_position,
+                      oldLayerMode, m_layer_mode);
+    m_alloc.setMonoEnable(0, m_parameters.m_layer[0].m_polyphonic.m_unmodulateables[IndexOfMonoEnable].m_position,
+                          m_layer_mode);
     const uint32_t uVoice = m_alloc.m_unison - 1;
     for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
     {
@@ -1876,9 +1872,8 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
     const auto layer = static_cast<C15::Properties::LayerId>(layerId);
 
     // determine poly change (updating unison voices, mono enable)
-    // todo: params will migrate to polyphonic unmodulateables
-    const auto polyChanged = determinePolyChg(layer, _msg.m_localUnmodulateables[layerId][IndexOfUnisonVoices],
-                                              _msg.m_localUnmodulateables[layerId][IndexOfMonoEnable]);
+    const auto polyChanged = determinePolyChg(layer, _msg.m_polyphonicUnmodulateables[layerId][IndexOfUnisonVoices],
+                                              _msg.m_polyphonicUnmodulateables[layerId][IndexOfMonoEnable]);
     internalReset[layerId] &= polyChanged;
     // reset detection
     if((layerChanged || polyChanged))
@@ -1887,11 +1882,10 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
         nltools::Log::info("recall split voice reset(layerId:", layerId, ")");
 
       m_alloc.m_internal_keys.m_local[layerId] = 0;  // reset all pressed keys in part
-      // todo: params will migrate to polyphonic unmodulateables
-      m_alloc.setUnison(0, m_parameters.m_layer[layerId].m_unmodulateables[IndexOfUnisonVoices].m_position,
+      m_alloc.setUnison(0, m_parameters.m_layer[layerId].m_polyphonic.m_unmodulateables[IndexOfUnisonVoices].m_position,
                         oldLayerMode, m_layer_mode);
-      m_alloc.setMonoEnable(0, m_parameters.m_layer[layerId].m_unmodulateables[IndexOfMonoEnable].m_position,
-                            m_layer_mode);
+      m_alloc.setMonoEnable(
+          0, m_parameters.m_layer[layerId].m_polyphonic.m_unmodulateables[IndexOfMonoEnable].m_position, m_layer_mode);
       const uint32_t uVoice = m_alloc.m_unison - 1;
       m_poly[layerId].resetEnvelopes();
       m_poly[layerId].m_uVoice = uVoice;
@@ -1958,10 +1952,9 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
   if constexpr(LOG_RECALL)
     nltools::Log::info(__PRETTY_FUNCTION__, "(@", m_clock.m_index, ")");
   // determine poly change (updating unison voices, mono enable)
-  // todo: params will migrate to polyphonic unmodulateables
   const auto polyChanged
-      = determinePolyChg(C15::Properties::LayerId::I, _msg.m_localUnmodulateables[0][IndexOfUnisonVoices],
-                         _msg.m_localUnmodulateables[0][IndexOfMonoEnable]);
+      = determinePolyChg(C15::Properties::LayerId::I, _msg.m_polyphonicUnmodulateables[0][IndexOfUnisonVoices],
+                         _msg.m_polyphonicUnmodulateables[0][IndexOfMonoEnable]);
   // reset detection
   const bool internalReset = layerChanged || polyChanged;
   const bool externalReset = internalReset && areKeysPressed(fromType(oldLayerMode));
@@ -1971,10 +1964,10 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
     if constexpr(LOG_RESET)
       nltools::Log::info("recall layer voice reset");
     m_alloc.m_internal_keys.init();  // reset all pressed keys
-    // todo: params will migrate to polyphonic unmodulateables
-    m_alloc.setUnison(0, m_parameters.m_layer[0].m_unmodulateables[IndexOfUnisonVoices].m_position, oldLayerMode,
-                      m_layer_mode);
-    m_alloc.setMonoEnable(0, m_parameters.m_layer[0].m_unmodulateables[IndexOfMonoEnable].m_position, m_layer_mode);
+    m_alloc.setUnison(0, m_parameters.m_layer[0].m_polyphonic.m_unmodulateables[IndexOfUnisonVoices].m_position,
+                      oldLayerMode, m_layer_mode);
+    m_alloc.setMonoEnable(0, m_parameters.m_layer[0].m_polyphonic.m_unmodulateables[IndexOfMonoEnable].m_position,
+                          m_layer_mode);
     const uint32_t uVoice = m_alloc.m_unison - 1;
     for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
     {
@@ -2212,10 +2205,9 @@ void dsp_host_dual::debugLevels()
   const float masterVolume = m_parameters.m_global.m_parameters
                                  .m_modulateables[(uint32_t) C15::Parameters::Global_Modulateables::Master_Volume]
                                  .m_scaled;
-  const float voiceGroupVolume[2] = {
-    m_parameters.m_layer[0].m_modulateables[(uint32_t) C15::Parameters::Local_Modulateables::Voice_Grp_Volume].m_scaled,
-    m_parameters.m_layer[1].m_modulateables[(uint32_t) C15::Parameters::Local_Modulateables::Voice_Grp_Volume].m_scaled
-  };
+  const float voiceGroupVolume[2]
+      = { m_parameters.m_layer[0].m_polyphonic.m_modulateables[IndexOfVoiceGrpVolume].m_scaled,
+          m_parameters.m_layer[1].m_polyphonic.m_modulateables[IndexOfVoiceGrpVolume].m_scaled };
   nltools::Log::info(__PRETTY_FUNCTION__, "Master:", masterVolume, "VoiceGroup[I]:", voiceGroupVolume[0],
                      "VoiceGroup[II]:", voiceGroupVolume[1]);
 }
