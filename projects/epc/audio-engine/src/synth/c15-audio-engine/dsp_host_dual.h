@@ -329,11 +329,12 @@ class dsp_host_dual : public DSPInterface
   // mod chain
   void hwModChain(const Engine::Parameters::HardwareSource& _src, const uint32_t& _id, const float& _inc);
   void mcModChain(const Engine::Parameters::MacroControl& _mc);
-  void globalModChain(const Engine::Parameters::MacroControl& _mc);
-  void localModChain(const Engine::Parameters::MacroControl& _mc);                          // todo: deprecate
-  void localModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);  // todo: deprecate
-  void polyphonicModChain(const Engine::Parameters::MacroControl& _mc);
-  void monophonicModChain(const Engine::Parameters::MacroControl& _mc);
+  inline void globalModChain(const Engine::Parameters::MacroControl& _mc);
+  inline void localModChain(const Engine::Parameters::MacroControl& _mc);                          // todo: refactor
+  inline void localModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);  // todo: refactor
+  inline void polyphonicModChain(const Engine::Parameters::MacroControl& _mc);
+  inline void polyphonicModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);
+  inline void monophonicModChain(const Engine::Parameters::MacroControl& _mc);
 
   // transitions
   inline void globalTransition(const Engine::Parameters::Aspects::RenderAspect::Rendering& _rendering,
@@ -381,7 +382,7 @@ class dsp_host_dual : public DSPInterface
   inline void onParameterRecall(const uint32_t& _layerId,
                                 const nltools::controls::PolyphonicModulateableParameter& _param);
   inline void onParameterRecall(const uint32_t& _layerId,
-                                const nltools::controls::PolyphonicUnmodulateableParameter& _param);
+                                const nltools::controls::PolyphonicUnmodulateableParameter& _param, const bool _vaUpdate);
   inline void onParameterRecall(const uint32_t& _layerId,
                                 const nltools::controls::MonophonicModulateableParameter& _param);
   inline void onParameterRecall(const uint32_t& _layerId,

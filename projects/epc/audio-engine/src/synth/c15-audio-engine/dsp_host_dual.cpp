@@ -138,6 +138,7 @@ inline void dsp_host_dual::initLocalParameter(const C15::ParameterDescriptor &_d
   {
     switch(_desc.m_param.m_type)
     {
+      // todo: deprecate
       case Type::Local_Modulateable:
       {
         auto &param = m_parameters.m_layer[layer].m_modulateables[index];
@@ -145,6 +146,7 @@ inline void dsp_host_dual::initLocalParameter(const C15::ParameterDescriptor &_d
         initSmoothing(layer, _desc);
         break;
       }
+      // todo: deprecate
       case Type::Local_Unmodulateable:
       {
         auto &param = m_parameters.m_layer[layer].m_unmodulateables[index];
@@ -297,8 +299,6 @@ void dsp_host_dual::logStatus()
       const auto &element = C15::ParameterList[(uint32_t) id];
       switch(element.m_param.m_type)
       {
-        case C15::Descriptors::ParameterType::None:
-          break;
         case C15::Descriptors::ParameterType::Hardware_Source:
           m_parameters.m_global.m_hardwareSources[element.m_param.m_index].log(__PRETTY_FUNCTION__, element);
           break;
@@ -318,15 +318,45 @@ void dsp_host_dual::logStatus()
           m_parameters.m_global.m_parameters.m_unmodulateables[element.m_param.m_index].log(__PRETTY_FUNCTION__,
                                                                                             element);
           break;
+        // todo: deprecate
         case C15::Descriptors::ParameterType::Local_Modulateable:
           m_parameters.m_layer[0].m_modulateables[element.m_param.m_index].log(__PRETTY_FUNCTION__, element);
           if(m_layer_mode != C15::Properties::LayerMode::Single)
             m_parameters.m_layer[1].m_modulateables[element.m_param.m_index].log(__PRETTY_FUNCTION__, element);
           break;
+        // todo: deprecate
         case C15::Descriptors::ParameterType::Local_Unmodulateable:
           m_parameters.m_layer[0].m_unmodulateables[element.m_param.m_index].log(__PRETTY_FUNCTION__, element);
           if(m_layer_mode != C15::Properties::LayerMode::Single)
             m_parameters.m_layer[1].m_unmodulateables[element.m_param.m_index].log(__PRETTY_FUNCTION__, element);
+          break;
+        case C15::Descriptors::ParameterType::Polyphonic_Modulateable:
+          m_parameters.m_layer[0].m_polyphonic.m_modulateables[element.m_param.m_index].log(__PRETTY_FUNCTION__,
+                                                                                            element);
+          if(m_layer_mode != C15::Properties::LayerMode::Single)
+            m_parameters.m_layer[1].m_polyphonic.m_modulateables[element.m_param.m_index].log(__PRETTY_FUNCTION__,
+                                                                                              element);
+          break;
+        case C15::Descriptors::ParameterType::Polyphonic_Unmodulateable:
+          m_parameters.m_layer[0].m_polyphonic.m_unmodulateables[element.m_param.m_index].log(__PRETTY_FUNCTION__,
+                                                                                              element);
+          if(m_layer_mode != C15::Properties::LayerMode::Single)
+            m_parameters.m_layer[1].m_polyphonic.m_unmodulateables[element.m_param.m_index].log(__PRETTY_FUNCTION__,
+                                                                                                element);
+          break;
+        case C15::Descriptors::ParameterType::Monophonic_Modulateable:
+          m_parameters.m_layer[0].m_monophonic.m_modulateables[element.m_param.m_index].log(__PRETTY_FUNCTION__,
+                                                                                            element);
+          if(m_layer_mode != C15::Properties::LayerMode::Single)
+            m_parameters.m_layer[1].m_monophonic.m_modulateables[element.m_param.m_index].log(__PRETTY_FUNCTION__,
+                                                                                              element);
+          break;
+        case C15::Descriptors::ParameterType::Monophonic_Unmodulateable:
+          m_parameters.m_layer[0].m_monophonic.m_unmodulateables[element.m_param.m_index].log(__PRETTY_FUNCTION__,
+                                                                                              element);
+          if(m_layer_mode != C15::Properties::LayerMode::Single)
+            m_parameters.m_layer[1].m_monophonic.m_unmodulateables[element.m_param.m_index].log(__PRETTY_FUNCTION__,
+                                                                                                element);
           break;
         default:
           break;
@@ -455,12 +485,7 @@ void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MacroControlPa
     if constexpr(LOG_EDITS)
       param.log(__PRETTY_FUNCTION__, descriptor);
     param.m_unclipped = param.m_position;  // fixing #2023: unclipped always up-to-date
-    globalModChain(param);
-    if(m_layer_mode == LayerMode::Single)
-      localModChain(param);
-    else
-      for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
-        localModChain(layerId, param);
+    mcModChain(param);
   }
 }
 
@@ -518,6 +543,7 @@ void dsp_host_dual::onParameterChangedMessage(const nltools::msg::GlobalUnmodula
   }
 }
 
+// todo: deprecate
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::LocalModulateableParameterChangedMessage &_msg)
 {
   const auto &descriptor = getParameter(_msg.m_id);
@@ -567,6 +593,7 @@ void dsp_host_dual::onParameterChangedMessage(const nltools::msg::LocalModulatea
   }
 }
 
+// todo: deprecate
 DSPInterface::OutputResetEventSource
     dsp_host_dual::onParameterChangedMessage(const nltools::msg::LocalUnmodulateableParameterChangedMessage &_msg)
 {
@@ -609,24 +636,133 @@ DSPInterface::OutputResetEventSource
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicModulateableParameterChangedMessage &_msg)
 {
-  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+  const auto &descriptor = getParameter(_msg.m_id);
+  const uint32_t index = descriptor.m_param.m_index, macroId = getMacroId(_msg.m_macro),
+                 layerId = getLayerId(_msg.m_voiceGroup);
+  auto &param = m_parameters.m_layer[layerId].m_polyphonic.m_modulateables[index];
+  bool aspect_update = param.update_source(getMacro(_msg.m_macro));
+  if(aspect_update)
+    m_parameters.m_layer[layerId].m_polyphonic.m_assignment.reassign(index, macroId);
+  aspect_update |= param.update_amount((float) _msg.m_modulationAmount);
+  if(param.update_position((float) param.depolarize(_msg.m_controlPosition)))
+  {
+    param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
+    param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
+    if constexpr(LOG_EDITS)
+      param.log(__PRETTY_FUNCTION__, descriptor);
+    switch(_msg.m_id)
+    {
+      case C15::PID::Unison_Detune:
+      case C15::PID::Unison_Phase:
+      case C15::PID::Unison_Pan:
+      case C15::PID::Mono_Grp_Glide:
+        if(m_layer_mode != LayerMode::Split)
+          for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+            polyphonicTransition(layer, param.m_rendering, m_editTime.m_time, param.m_scaled);
+        else
+          polyphonicTransition(layerId, param.m_rendering, m_editTime.m_time, param.m_scaled);
+        break;
+      case C15::PID::Split_Split_Point:
+        if(m_layer_mode == LayerMode::Split)
+          m_alloc.setSplitPoint(static_cast<uint32_t>(param.m_scaled) + C15::Config::physical_key_from, layerId);
+        break;
+      default:
+        if(m_layer_mode == LayerMode::Single)
+          for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+            polyphonicTransition(layer, param.m_rendering, m_editTime.m_time, param.m_scaled);
+        else
+          polyphonicTransition(layerId, param.m_rendering, m_editTime.m_time, param.m_scaled);
+        break;
+    }
+  }
+  else if(aspect_update)
+  {
+    param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
+    if constexpr(LOG_EDITS)
+      param.log(__PRETTY_FUNCTION__, descriptor);
+  }
 }
 
 DSPInterface::OutputResetEventSource
     dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicUnmodulateableParameterChangedMessage &_msg)
 {
-  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+  const auto &descriptor = getParameter(_msg.m_id);
+  const uint32_t index = descriptor.m_param.m_index, layerId = getLayerId(_msg.m_voiceGroup);
+  auto &param = m_parameters.m_layer[layerId].m_unmodulateables[index];
+  if(param.update_position((float) _msg.m_controlPosition))
+  {
+    param.m_scaled = scale(param.m_scaling, param.m_position);
+    if constexpr(LOG_EDITS)
+      param.log(__PRETTY_FUNCTION__, descriptor);
+    switch(_msg.m_id)
+    {
+      case C15::PID::Voice_Grp_Fade_From:
+      case C15::PID::Voice_Grp_Fade_Range:
+        if(m_layer_mode == LayerMode::Layer)
+          evalVoiceFadeChg(layerId);
+        break;
+      case C15::PID::Unison_Voices:
+        return onUnisonVoicesChanged(layerId, param.m_position);
+      case C15::PID::Mono_Grp_Enable:
+        return onMonoEnableChanged(layerId, param.m_scaled);
+      case C15::PID::Mono_Grp_Prio:
+        m_alloc.setMonoPriority(layerId, param.m_scaled, m_layer_mode);
+        break;
+      case C15::PID::Mono_Grp_Legato:
+        m_alloc.setMonoLegato(layerId, param.m_scaled, m_layer_mode);
+        break;
+      default:
+        if(m_layer_mode == LayerMode::Single)
+          for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+            polyphonicTransition(layer, param.m_rendering, m_editTime.m_time, param.m_scaled);
+        else
+          polyphonicTransition(layerId, param.m_rendering, m_editTime.m_time, param.m_scaled);
+        break;
+    }
+  }
   return OutputResetEventSource::None;
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicModulateableParameterChangedMessage &_msg)
 {
-  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+  const auto &descriptor = getParameter(_msg.m_id);
+  const uint32_t index = descriptor.m_param.m_index, macroId = getMacroId(_msg.m_macro),
+                 layerId = getLayerId(_msg.m_voiceGroup);
+  auto &param = m_parameters.m_layer[layerId].m_polyphonic.m_modulateables[index];
+  bool aspect_update = param.update_source(getMacro(_msg.m_macro));
+  if(aspect_update)
+    m_parameters.m_layer[layerId].m_polyphonic.m_assignment.reassign(index, macroId);
+  aspect_update |= param.update_amount((float) _msg.m_modulationAmount);
+  if(param.update_position((float) param.depolarize(_msg.m_controlPosition)))
+  {
+    param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
+    param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
+    if constexpr(LOG_EDITS)
+      param.log(__PRETTY_FUNCTION__, descriptor);
+    // no special cases, always part-bound
+    monophonicTransition(layerId, param.m_rendering, m_editTime.m_time, param.m_scaled);
+  }
+  else if(aspect_update)
+  {
+    param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
+    if constexpr(LOG_EDITS)
+      param.log(__PRETTY_FUNCTION__, descriptor);
+  }
 }
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicUnmodulateableParameterChangedMessage &_msg)
 {
-  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+  const auto &descriptor = getParameter(_msg.m_id);
+  const uint32_t index = descriptor.m_param.m_index, layerId = getLayerId(_msg.m_voiceGroup);
+  auto &param = m_parameters.m_layer[layerId].m_unmodulateables[index];
+  if(param.update_position((float) _msg.m_controlPosition))
+  {
+    param.m_scaled = scale(param.m_scaling, param.m_position);
+    if constexpr(LOG_EDITS)
+      param.log(__PRETTY_FUNCTION__, descriptor);
+    // no special cases, always part-bound
+    monophonicTransition(layerId, param.m_rendering, m_editTime.m_time, param.m_scaled);
+  }
 }
 
 inline DSPInterface::OutputResetEventSource dsp_host_dual::onUnisonVoicesChanged(const uint32_t &_layer,
@@ -819,6 +955,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::onSettingInitialSinglePreset
         msg.m_globalUnmodulateables[index].m_id = element.m_param_id;
         msg.m_globalUnmodulateables[index].m_controlPosition = (double) element.m_initial;
         break;
+      // todo: deprecate
       case C15::Descriptors::ParameterType::Local_Modulateable:
         msg.m_localModulateables[index].m_id = element.m_param_id;
         msg.m_localModulateables[index].m_controlPosition
@@ -826,9 +963,37 @@ DSPInterface::OutputResetEventSource dsp_host_dual::onSettingInitialSinglePreset
         msg.m_localModulateables[index].m_macro = MacroControls::NONE;
         msg.m_localModulateables[index].m_modulationAmount = 0.0;
         break;
+      // todo: deprecate
       case C15::Descriptors::ParameterType::Local_Unmodulateable:
         msg.m_localUnmodulateables[index].m_id = element.m_param_id;
         msg.m_localUnmodulateables[index].m_controlPosition = (double) element.m_initial;
+        break;
+      case C15::Descriptors::ParameterType::Polyphonic_Modulateable:
+        msg.m_polyphonicModulateables[index].m_id = element.m_param_id;
+        msg.m_polyphonicModulateables[index].m_controlPosition
+            = element.m_param_id == C15::PID::Out_Mix_A_Lvl ? 0.5 : (double) element.m_initial;
+        msg.m_polyphonicModulateables[index].m_macro = MacroControls::NONE;
+        msg.m_polyphonicModulateables[index].m_modulationAmount = 0.0;
+        break;
+      case C15::Descriptors::ParameterType::Polyphonic_Unmodulateable:
+        msg.m_polyphonicUnmodulateables[index].m_id = element.m_param_id;
+        msg.m_polyphonicUnmodulateables[index].m_controlPosition = (double) element.m_initial;
+        break;
+      case C15::Descriptors::ParameterType::Monophonic_Modulateable:
+        for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+        {
+          msg.m_monophonicModulateables[layer][index].m_id = element.m_param_id;
+          msg.m_monophonicModulateables[layer][index].m_controlPosition = (double) element.m_initial;
+          msg.m_monophonicModulateables[layer][index].m_macro = MacroControls::NONE;
+          msg.m_monophonicModulateables[layer][index].m_modulationAmount = 0.0;
+        }
+        break;
+      case C15::Descriptors::ParameterType::Monophonic_Unmodulateable:
+        for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+        {
+          msg.m_monophonicUnmodulateables[layer][index].m_id = element.m_param_id;
+          msg.m_monophonicUnmodulateables[layer][index].m_controlPosition = (double) element.m_initial;
+        }
         break;
       default:
         break;
@@ -1163,12 +1328,7 @@ void dsp_host_dual::hwModChain(const Engine::Parameters::HardwareSource &_src, c
       {
         auto &macro = m_parameters.m_global.m_macroControls[macroId];
         macro.m_unclipped = macro.m_position = _src.m_position;  // fixing #2023: unclipped always up-to-date
-        globalModChain(macro);
-        if(m_layer_mode == LayerMode::Single)
-          localModChain(macro);
-        else
-          for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
-            localModChain(layerId, macro);
+        mcModChain(macro);
       }
     }
   }
@@ -1190,12 +1350,7 @@ void dsp_host_dual::hwModChain(const Engine::Parameters::HardwareSource &_src, c
         if(macro.m_position != clipped)
         {
           macro.m_position = clipped;
-          globalModChain(macro);
-          if(m_layer_mode == LayerMode::Single)
-            localModChain(macro);
-          else
-            for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
-              localModChain(layerId, macro);
+          mcModChain(macro);
         }
       }
     }
@@ -1204,9 +1359,15 @@ void dsp_host_dual::hwModChain(const Engine::Parameters::HardwareSource &_src, c
 
 void dsp_host_dual::mcModChain(const Engine::Parameters::MacroControl &_mc)
 {
+  globalModChain(_mc);
+  if(m_layer_mode == LayerMode::Single)
+    localModChain(_mc);
+  else
+    for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
+      localModChain(layerId, _mc);
 }
 
-void dsp_host_dual::globalModChain(const Engine::Parameters::MacroControl &_mc)
+inline void dsp_host_dual::globalModChain(const Engine::Parameters::MacroControl &_mc)
 {
   auto &assignment = m_parameters.m_global.m_parameters.m_assignment;
   const auto &time = m_parameters.m_global.m_macroTimes[_mc.m_index].m_time;
@@ -1228,8 +1389,9 @@ void dsp_host_dual::globalModChain(const Engine::Parameters::MacroControl &_mc)
   }
 }
 
-void dsp_host_dual::localModChain(const Engine::Parameters::MacroControl &_mc)
+inline void dsp_host_dual::localModChain(const Engine::Parameters::MacroControl &_mc)
 {
+  // todo: deprecate
   auto &assignment = m_parameters.m_layer[0].m_assignment;
   const auto &time = m_parameters.m_global.m_macroTimes[_mc.m_index].m_time;
   for(auto index = assignment.first(_mc.m_index); assignment.running(); index = assignment.next())
@@ -1249,10 +1411,14 @@ void dsp_host_dual::localModChain(const Engine::Parameters::MacroControl &_mc)
       }
     }
   }
+  // new mod local chains
+  polyphonicModChain(_mc);
+  monophonicModChain(_mc);
 }
 
-void dsp_host_dual::localModChain(const uint32_t &_layer, const Engine::Parameters::MacroControl &_mc)
+inline void dsp_host_dual::localModChain(const uint32_t &_layer, const Engine::Parameters::MacroControl &_mc)
 {
+  // todo: deprecate
   auto &assignment = m_parameters.m_layer[_layer].m_assignment;
   const auto &time = m_parameters.m_global.m_macroTimes[_mc.m_index].m_time;
   for(auto index = assignment.first(_mc.m_index); assignment.running(); index = assignment.next())
@@ -1275,14 +1441,87 @@ void dsp_host_dual::localModChain(const uint32_t &_layer, const Engine::Paramete
       }
     }
   }
+  // new mod local chains
+  polyphonicModChain(_layer, _mc);
+  monophonicModChain(_mc);
 }
 
-void dsp_host_dual::polyphonicModChain(const Engine::Parameters::MacroControl &_mc)
+inline void dsp_host_dual::polyphonicModChain(const Engine::Parameters::MacroControl &_mc)
 {
+  auto &assignment = m_parameters.m_layer[0].m_polyphonic.m_assignment;
+  const auto &time = m_parameters.m_global.m_macroTimes[_mc.m_index].m_time;
+  for(auto index = assignment.first(_mc.m_index); assignment.running(); index = assignment.next())
+  {
+    auto &param = m_parameters.m_layer[0].m_polyphonic.m_modulateables[index];
+    if(param.modulate(_mc.m_position))
+    {
+      const float clipped = param.m_unclipped < 0.0f ? 0.0f : param.m_unclipped > 1.0f ? 1.0f : param.m_unclipped;
+      if(param.m_position != clipped)
+      {
+        param.m_position = clipped;
+        param.m_scaled = scale(param.m_scaling, param.polarize(clipped));
+        if constexpr(LOG_MOD_CHAIN)
+          nltools::Log::info(__PRETTY_FUNCTION__, "(index:", index, ", pos:", param.m_position, ")");
+        for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+          polyphonicTransition(layer, param.m_rendering, time, param.m_scaled);
+      }
+    }
+  }
 }
 
-void dsp_host_dual::monophonicModChain(const Engine::Parameters::MacroControl &_mc)
+inline void dsp_host_dual::polyphonicModChain(const uint32_t &_layer, const Engine::Parameters::MacroControl &_mc)
 {
+  auto &assignment = m_parameters.m_layer[_layer].m_polyphonic.m_assignment;
+  const auto &time = m_parameters.m_global.m_macroTimes[_mc.m_index].m_time;
+  for(auto index = assignment.first(_mc.m_index); assignment.running(); index = assignment.next())
+  {
+    auto &param = m_parameters.m_layer[_layer].m_polyphonic.m_modulateables[index];
+    if(param.modulate(_mc.m_position))
+    {
+      const float clipped = param.m_unclipped < 0.0f ? 0.0f : param.m_unclipped > 1.0f ? 1.0f : param.m_unclipped;
+      if(param.m_position != clipped)
+      {
+        param.m_position = clipped;
+        param.m_scaled = scale(param.m_scaling, param.polarize(clipped));
+        if constexpr(LOG_MOD_CHAIN)
+          nltools::Log::info(__PRETTY_FUNCTION__, "(layer:", _layer, ", index:", index, ", pos:", param.m_position,
+                             ")");
+        if(param.m_splitpoint)
+          m_alloc.setSplitPoint(static_cast<uint32_t>(param.m_scaled) + C15::Config::physical_key_from, _layer);
+        else
+          polyphonicTransition(_layer, param.m_rendering, time, param.m_scaled);
+      }
+    }
+  }
+}
+
+inline void dsp_host_dual::monophonicModChain(const Engine::Parameters::MacroControl &_mc)
+{
+  for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+  {
+    auto &assignment = m_parameters.m_layer[layer].m_monophonic.m_assignment;
+    const auto &time = m_parameters.m_global.m_macroTimes[_mc.m_index].m_time;
+    for(auto index = assignment.first(_mc.m_index); assignment.running(); index = assignment.next())
+    {
+      auto &param = m_parameters.m_layer[layer].m_monophonic.m_modulateables[index];
+      if(param.modulate(_mc.m_position))
+      {
+        const float clipped = param.m_unclipped < 0.0f ? 0.0f : param.m_unclipped > 1.0f ? 1.0f : param.m_unclipped;
+        if(param.m_position != clipped)
+        {
+          param.m_position = clipped;
+          param.m_scaled = scale(param.m_scaling, param.polarize(clipped));
+          if constexpr(LOG_MOD_CHAIN)
+            nltools::Log::info(__PRETTY_FUNCTION__, "(layer:", layer, ", index:", index, ", pos:", param.m_position,
+                               ")");
+          if(param.m_splitpoint)
+            m_alloc.setSplitPoint(static_cast<uint32_t>(param.m_scaled) + C15::Config::physical_key_from, layer);
+          else
+            monophonicTransition(layer, param.m_rendering, time, param.m_scaled);
+        }
+      }
+    }
+  }
 }
 
 inline void dsp_host_dual::globalTransition(const Engine::Parameters::Aspects::RenderAspect::Rendering &_rendering,
@@ -1315,53 +1554,16 @@ inline void dsp_host_dual::globalTransition(const Engine::Parameters::Aspects::R
                           ", clock:", (int) _rendering.m_renderClock, ", index:", _rendering.m_renderIndex, ")");
 }
 
+// todo: deprecate
 inline void dsp_host_dual::localTransition(const uint32_t &_layer,
                                            const Engine::Parameters::Aspects::RenderAspect::Rendering &_rendering,
                                            const Engine::Parameters::Aspects::TimeAspect::Time &_time,
                                            const float &_dest)
 {
   if(_rendering.m_renderSection == C15::Descriptors::SmootherSection::Poly)
-  {
-    switch(_rendering.m_renderClock)
-    {
-      case C15::Descriptors::SmootherClock::Sync:
-        m_poly[_layer].start_sync(_rendering.m_renderIndex, _dest);
-        break;
-      case C15::Descriptors::SmootherClock::Audio:
-        m_poly[_layer].start_audio(_rendering.m_renderIndex, _time.m_dxAudio, _dest);
-        break;
-      case C15::Descriptors::SmootherClock::Fast:
-        m_poly[_layer].start_fast(_rendering.m_renderIndex, _time.m_dxFast, _dest);
-        break;
-      case C15::Descriptors::SmootherClock::Slow:
-        m_poly[_layer].start_slow(_rendering.m_renderIndex, _time.m_dxSlow, _dest);
-        break;
-    }
-    if constexpr(LOG_TRANSITIONS)
-      nltools::Log::info(__PRETTY_FUNCTION__, "poly (layer:", _layer, "index:", _rendering.m_renderIndex,
-                         ", clock:", (int) _rendering.m_renderClock, ", scaled:", _dest, ")");
-  }
+    polyphonicTransition(_layer, _rendering, _time, _dest);
   else if(_rendering.m_renderSection == C15::Descriptors::SmootherSection::Mono)
-  {
-    switch(_rendering.m_renderClock)
-    {
-      case C15::Descriptors::SmootherClock::Sync:
-        m_mono[_layer].start_sync(_rendering.m_renderIndex, _dest);
-        break;
-      case C15::Descriptors::SmootherClock::Audio:
-        m_mono[_layer].start_audio(_rendering.m_renderIndex, _time.m_dxAudio, _dest);
-        break;
-      case C15::Descriptors::SmootherClock::Fast:
-        m_mono[_layer].start_fast(_rendering.m_renderIndex, _time.m_dxFast, _dest);
-        break;
-      case C15::Descriptors::SmootherClock::Slow:
-        m_mono[_layer].start_slow(_rendering.m_renderIndex, _time.m_dxSlow, _dest);
-        break;
-    }
-    if constexpr(LOG_TRANSITIONS)
-      nltools::Log::info(__PRETTY_FUNCTION__, "mono (layer:", _layer, "index:", _rendering.m_renderIndex,
-                         ", clock:", (int) _rendering.m_renderClock, ", scaled:", _dest, ")");
-  }
+    monophonicTransition(_layer, _rendering, _time, _dest);
   else if constexpr(LOG_FAIL)
     nltools::Log::warning(__PRETTY_FUNCTION__, "(layer:", _layer, "section:", (int) _rendering.m_renderSection,
                           ", clock:", (int) _rendering.m_renderClock, ", index:", _rendering.m_renderIndex, ")");
@@ -1372,6 +1574,24 @@ inline void dsp_host_dual::polyphonicTransition(const uint32_t &_layer,
                                                 const Engine::Parameters::Aspects::TimeAspect::Time &_time,
                                                 const float &_dest)
 {
+  switch(_rendering.m_renderClock)
+  {
+    case C15::Descriptors::SmootherClock::Sync:
+      m_poly[_layer].start_sync(_rendering.m_renderIndex, _dest);
+      break;
+    case C15::Descriptors::SmootherClock::Audio:
+      m_poly[_layer].start_audio(_rendering.m_renderIndex, _time.m_dxAudio, _dest);
+      break;
+    case C15::Descriptors::SmootherClock::Fast:
+      m_poly[_layer].start_fast(_rendering.m_renderIndex, _time.m_dxFast, _dest);
+      break;
+    case C15::Descriptors::SmootherClock::Slow:
+      m_poly[_layer].start_slow(_rendering.m_renderIndex, _time.m_dxSlow, _dest);
+      break;
+  }
+  if constexpr(LOG_TRANSITIONS)
+    nltools::Log::info(__PRETTY_FUNCTION__, "(layer:", _layer, "index:", _rendering.m_renderIndex,
+                       ", clock:", (int) _rendering.m_renderClock, ", scaled:", _dest, ")");
 }
 
 inline void dsp_host_dual::monophonicTransition(const uint32_t &_layer,
@@ -1379,6 +1599,24 @@ inline void dsp_host_dual::monophonicTransition(const uint32_t &_layer,
                                                 const Engine::Parameters::Aspects::TimeAspect::Time &_time,
                                                 const float &_dest)
 {
+  switch(_rendering.m_renderClock)
+  {
+    case C15::Descriptors::SmootherClock::Sync:
+      m_mono[_layer].start_sync(_rendering.m_renderIndex, _dest);
+      break;
+    case C15::Descriptors::SmootherClock::Audio:
+      m_mono[_layer].start_audio(_rendering.m_renderIndex, _time.m_dxAudio, _dest);
+      break;
+    case C15::Descriptors::SmootherClock::Fast:
+      m_mono[_layer].start_fast(_rendering.m_renderIndex, _time.m_dxFast, _dest);
+      break;
+    case C15::Descriptors::SmootherClock::Slow:
+      m_mono[_layer].start_slow(_rendering.m_renderIndex, _time.m_dxSlow, _dest);
+      break;
+  }
+  if constexpr(LOG_TRANSITIONS)
+    nltools::Log::info(__PRETTY_FUNCTION__, "(layer:", _layer, "index:", _rendering.m_renderIndex,
+                       ", clock:", (int) _rendering.m_renderClock, ", scaled:", _dest, ")");
 }
 
 bool dsp_host_dual::determinePolyChg(const C15::Properties::LayerId _layerId,
@@ -1467,6 +1705,8 @@ template <typename T> inline void dsp_host_dual::recallCommon(const T &_msg, con
   {
     // macro assignments
     m_parameters.m_layer[layerId].m_assignment.reset();
+    m_parameters.m_layer[layerId].m_polyphonic.m_assignment.reset();
+    m_parameters.m_layer[layerId].m_monophonic.m_assignment.reset();
     // voice fade
     if(_resetVoiceFade)
       m_poly[layerId].resetVoiceFade();
@@ -1495,6 +1735,16 @@ template <typename T> inline void dsp_host_dual::recallCommon(const T &_msg, con
     onParameterRecall(param);
   for(const auto &param : _msg.m_globalUnmodulateables)
     onParameterRecall(param);
+  // mono updates: parameters
+  if constexpr(LOG_RECALL)
+    nltools::Log::info("recall: mono params (modulateables/unmodulateables):");
+  for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+  {
+    for(const auto &param : _msg.m_monophonicModulateables[layer])
+      onParameterRecall(layer, param);
+    for(const auto &param : _msg.m_monophonicUnmodulateables[layer])
+      onParameterRecall(layer, param);
+  }
 }
 
 template <typename T> inline void dsp_host_dual::recallCommonTransition(const T &_msg)
@@ -1516,7 +1766,18 @@ template <typename T> inline void dsp_host_dual::recallCommonTransition(const T 
       const auto &param = m_parameters.m_global.m_parameters.m_unmodulateables[i];
       globalTransition(param.m_rendering, m_transitionTime.m_time, param.m_scaled);
     }
+  // start transitions: monophonic modulateables/unmodulateables
+  for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+  {
+    for(const auto &param : m_parameters.m_layer[layer].m_monophonic.m_modulateables)
+      monophonicTransition(layer, param.m_rendering, m_transitionTime.m_time, param.m_scaled);
+    for(const auto &param : m_parameters.m_layer[layer].m_monophonic.m_unmodulateables)
+      monophonicTransition(layer, param.m_rendering, m_transitionTime.m_time, param.m_scaled);
+  }
 }
+
+static constexpr auto IndexOfUnisonVoices = C15::ParameterList[C15::PID::Unison_Voices].m_param.m_index;
+static constexpr auto IndexOfMonoEnable = C15::ParameterList[C15::PID::Mono_Grp_Enable].m_param.m_index;
 
 DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::msg::SinglePresetMessage &_msg)
 {
@@ -1525,10 +1786,10 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
   if constexpr(LOG_RECALL)
     nltools::Log::info(__PRETTY_FUNCTION__, "(@", m_clock.m_index, ")");
   // determine poly change (updating unison voices, mono enable)
-  const auto polyChanged = determinePolyChg(
-      C15::Properties::LayerId::I,
-      _msg.m_localUnmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices],
-      _msg.m_localUnmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable]);
+  // todo: params will migrate to polyphonic unmodulateables
+  const auto polyChanged
+      = determinePolyChg(C15::Properties::LayerId::I, _msg.m_localUnmodulateables[IndexOfUnisonVoices],
+                         _msg.m_localUnmodulateables[IndexOfMonoEnable]);
   // reset detection
   const bool internalReset = layerChanged || polyChanged;
   const bool externalReset = internalReset && areKeysPressed(fromType(oldLayerMode));
@@ -1536,20 +1797,12 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
   if(internalReset)
   {
     if constexpr(LOG_RESET)
-    {
       nltools::Log::info("recall single voice reset");
-    }
     m_alloc.m_internal_keys.init();  // reset all pressed keys
-    m_alloc.setUnison(0,
-                      m_parameters.m_layer[0]
-                          .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices]
-                          .m_position,
-                      oldLayerMode, m_layer_mode);
-    m_alloc.setMonoEnable(0,
-                          m_parameters.m_layer[0]
-                              .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable]
-                              .m_position,
-                          m_layer_mode);
+    // todo: params will migrate to polyphonic unmodulateables
+    m_alloc.setUnison(0, m_parameters.m_layer[0].m_unmodulateables[IndexOfUnisonVoices].m_position, oldLayerMode,
+                      m_layer_mode);
+    m_alloc.setMonoEnable(0, m_parameters.m_layer[0].m_unmodulateables[IndexOfMonoEnable].m_position, m_layer_mode);
     const uint32_t uVoice = m_alloc.m_unison - 1;
     for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
     {
@@ -1560,16 +1813,23 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
   }
   // common updates: parameters, resetting voice fade buffer
   recallCommon(_msg, true);
-  // local updates: parameters
+  // local updates: parameters (todo: deprecate)
   if constexpr(LOG_RECALL)
     nltools::Log::info("recall: local modulateables/unmodulateables:");
   for(const auto &param : _msg.m_localModulateables)
     onParameterRecall(0, param);
   for(const auto &param : _msg.m_localUnmodulateables)
     onParameterRecall(0, param, true);
+  // polyphonic updates: parameters
+  if constexpr(LOG_RECALL)
+    nltools::Log::info("recall: polyphonic modulateables/unmodulateables:");
+  for(const auto &param : _msg.m_polyphonicModulateables)
+    onParameterRecall(0, param);
+  for(const auto &param : _msg.m_polyphonicUnmodulateables)
+    onParameterRecall(0, param, true);
   // start transitions: common
   recallCommonTransition(_msg);
-  // start transitions: local modulateables/unmodulateables
+  // start transitions: local modulateables/unmodulateables (todo: deprecate)
   for(uint32_t i = 0; i < C15::Parameters::num_of_Local_Modulateables; i++)
     for(uint32_t l = 0; l < C15::Properties::num_of_VoiceGroups; l++)
     {
@@ -1581,6 +1841,19 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
     {
       const auto &param = m_parameters.m_layer[0].m_unmodulateables[i];
       localTransition(l, param.m_rendering, m_transitionTime.m_time, param.m_scaled);
+    }
+  // start transitions: polyphonic modulateables/unmodulateables
+  for(uint32_t i = 0; i < C15::Parameters::num_of_Polyphonic_Modulateables; i++)
+    for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+    {
+      const auto &param = m_parameters.m_layer[0].m_polyphonic.m_modulateables[i];
+      polyphonicTransition(layer, param.m_rendering, m_transitionTime.m_time, param.m_scaled);
+    }
+  for(uint32_t i = 0; i < C15::Parameters::num_of_Polyphonic_Unmodulateables; i++)
+    for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+    {
+      const auto &param = m_parameters.m_layer[0].m_polyphonic.m_unmodulateables[i];
+      polyphonicTransition(layer, param.m_rendering, m_transitionTime.m_time, param.m_scaled);
     }
   // logging levels after recall for debugging switching dual modes
   if constexpr(LOG_RECALL_LEVELS)
@@ -1603,9 +1876,9 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
     const auto layer = static_cast<C15::Properties::LayerId>(layerId);
 
     // determine poly change (updating unison voices, mono enable)
-    const auto polyChanged = determinePolyChg(
-        layer, _msg.m_localUnmodulateables[layerId][(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices],
-        _msg.m_localUnmodulateables[layerId][(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable]);
+    // todo: params will migrate to polyphonic unmodulateables
+    const auto polyChanged = determinePolyChg(layer, _msg.m_localUnmodulateables[layerId][IndexOfUnisonVoices],
+                                              _msg.m_localUnmodulateables[layerId][IndexOfMonoEnable]);
     internalReset[layerId] &= polyChanged;
     // reset detection
     if((layerChanged || polyChanged))
@@ -1614,15 +1887,10 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
         nltools::Log::info("recall split voice reset(layerId:", layerId, ")");
 
       m_alloc.m_internal_keys.m_local[layerId] = 0;  // reset all pressed keys in part
-      m_alloc.setUnison(0,
-                        m_parameters.m_layer[layerId]
-                            .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices]
-                            .m_position,
+      // todo: params will migrate to polyphonic unmodulateables
+      m_alloc.setUnison(0, m_parameters.m_layer[layerId].m_unmodulateables[IndexOfUnisonVoices].m_position,
                         oldLayerMode, m_layer_mode);
-      m_alloc.setMonoEnable(0,
-                            m_parameters.m_layer[layerId]
-                                .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable]
-                                .m_position,
+      m_alloc.setMonoEnable(0, m_parameters.m_layer[layerId].m_unmodulateables[IndexOfMonoEnable].m_position,
                             m_layer_mode);
       const uint32_t uVoice = m_alloc.m_unison - 1;
       m_poly[layerId].resetEnvelopes();
@@ -1632,7 +1900,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
   }
   // common updates: parameters, resetting voice fade buffer
   recallCommon(_msg, true);
-  // local updates: parameters
+  // local updates: parameters (todo: deprecate)
   if constexpr(LOG_RECALL)
     nltools::Log::info("recall: local modulateables/unmodulateables:");
   for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
@@ -1643,14 +1911,30 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
     for(const auto &param : _msg.m_localUnmodulateables[layerId])
       onParameterRecall(layerId, param, true);
   }
+  // polyphonic updates: parameters
+  if constexpr(LOG_RECALL)
+    nltools::Log::info("recall: polyphonic modulateables/unmodulateables:");
+  for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
+  {
+    // polyphonic updates: modulateables/unmodulateables
+    for(const auto &param : _msg.m_polyphonicModulateables[layerId])
+      onParameterRecall(layerId, param);
+    for(const auto &param : _msg.m_polyphonicUnmodulateables[layerId])
+      onParameterRecall(layerId, param, true);
+  }
   // start transitions: common
   recallCommonTransition(_msg);
   for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
   {
-    // start transitions: local modulateables/unmodulateables
+    // start transitions: local modulateables/unmodulateables (todo: deprecate)
     for(const auto &param : m_parameters.m_layer[layerId].m_modulateables)
       localTransition(layerId, param.m_rendering, m_transitionTime.m_time, param.m_scaled);
     for(const auto &param : m_parameters.m_layer[layerId].m_unmodulateables)
+      localTransition(layerId, param.m_rendering, m_transitionTime.m_time, param.m_scaled);
+    // start transitions: polyphonic modulateables/unmodulateables
+    for(const auto &param : m_parameters.m_layer[layerId].m_monophonic.m_modulateables)
+      localTransition(layerId, param.m_rendering, m_transitionTime.m_time, param.m_scaled);
+    for(const auto &param : m_parameters.m_layer[layerId].m_monophonic.m_unmodulateables)
       localTransition(layerId, param.m_rendering, m_transitionTime.m_time, param.m_scaled);
   }
   // logging levels after recall for debugging switching dual modes
@@ -1674,10 +1958,10 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
   if constexpr(LOG_RECALL)
     nltools::Log::info(__PRETTY_FUNCTION__, "(@", m_clock.m_index, ")");
   // determine poly change (updating unison voices, mono enable)
-  const auto polyChanged = determinePolyChg(
-      C15::Properties::LayerId::I,
-      _msg.m_localUnmodulateables[0][(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices],
-      _msg.m_localUnmodulateables[0][(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable]);
+  // todo: params will migrate to polyphonic unmodulateables
+  const auto polyChanged
+      = determinePolyChg(C15::Properties::LayerId::I, _msg.m_localUnmodulateables[0][IndexOfUnisonVoices],
+                         _msg.m_localUnmodulateables[0][IndexOfMonoEnable]);
   // reset detection
   const bool internalReset = layerChanged || polyChanged;
   const bool externalReset = internalReset && areKeysPressed(fromType(oldLayerMode));
@@ -1687,16 +1971,10 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
     if constexpr(LOG_RESET)
       nltools::Log::info("recall layer voice reset");
     m_alloc.m_internal_keys.init();  // reset all pressed keys
-    m_alloc.setUnison(0,
-                      m_parameters.m_layer[0]
-                          .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Unison_Voices]
-                          .m_position,
-                      oldLayerMode, m_layer_mode);
-    m_alloc.setMonoEnable(0,
-                          m_parameters.m_layer[0]
-                              .m_unmodulateables[(uint32_t) C15::Parameters::Local_Unmodulateables::Mono_Grp_Enable]
-                              .m_position,
-                          m_layer_mode);
+    // todo: params will migrate to polyphonic unmodulateables
+    m_alloc.setUnison(0, m_parameters.m_layer[0].m_unmodulateables[IndexOfUnisonVoices].m_position, oldLayerMode,
+                      m_layer_mode);
+    m_alloc.setMonoEnable(0, m_parameters.m_layer[0].m_unmodulateables[IndexOfMonoEnable].m_position, m_layer_mode);
     const uint32_t uVoice = m_alloc.m_unison - 1;
     for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
     {
@@ -1707,7 +1985,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
   }
   // common updates: parameters, not resetting voice fade buffer
   recallCommon(_msg, false);
-  // local updates: parameters
+  // local updates: parameters (todo: deprecate)
   if constexpr(LOG_RECALL)
     nltools::Log::info("recall: local modulateables/unmodulateables:");
   for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
@@ -1724,7 +2002,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
   recallCommonTransition(_msg);
   for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
   {
-    // start transitions: local modulateables/unmodulateables
+    // start transitions: local modulateables/unmodulateables (todo: deprecate)
     for(const auto &param : m_parameters.m_layer[layerId].m_modulateables)
       localTransition(layerId, param.m_rendering, m_transitionTime.m_time, param.m_scaled);
     for(const auto &param : m_parameters.m_layer[layerId].m_unmodulateables)
@@ -1855,25 +2133,78 @@ inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
 inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
                                              const nltools::controls::PolyphonicModulateableParameter &_param)
 {
-  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+  const auto &descriptor = getParameter(_param.m_id);
+  const auto macroId = getMacroId(_param.m_macro);
+  auto &param = m_parameters.m_layer[_layerId].m_polyphonic.m_modulateables[descriptor.m_param.m_index];
+  param.update_source(getMacro(_param.m_macro));
+  param.update_amount((float) _param.m_modulationAmount);
+  param.update_position(param.depolarize((float) _param.m_controlPosition));
+  param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
+  m_parameters.m_layer[_layerId].m_polyphonic.m_assignment.reassign(descriptor.m_param.m_index, macroId);
+  param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
+  if(param.m_splitpoint)
+    m_alloc.setSplitPoint(static_cast<uint32_t>(param.m_scaled) + C15::Config::physical_key_from, _layerId);
+  if constexpr(LOG_RECALL_DETAILS)
+    param.log(__PRETTY_FUNCTION__, descriptor);
 }
 
 inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
-                                             const nltools::controls::PolyphonicUnmodulateableParameter &_param)
+                                             const nltools::controls::PolyphonicUnmodulateableParameter &_param,
+                                             const bool _vaUpdate)
 {
-  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+  const auto &descriptor = getParameter(_param.m_id);
+  auto &param = m_parameters.m_layer[_layerId].m_polyphonic.m_unmodulateables[descriptor.m_param.m_index];
+  switch(_param.m_id)
+  {
+    case C15::PID::Unison_Voices:
+    case C15::PID::Mono_Grp_Enable:
+      break;
+    default:
+      param.update_position((float) _param.m_controlPosition);
+      break;
+  }
+  param.m_scaled = scale(param.m_scaling, param.m_position);
+  if(_vaUpdate)
+    switch(_param.m_id)
+    {
+      case C15::PID::Mono_Grp_Prio:
+        m_alloc.setMonoPriority(_layerId, param.m_scaled, m_layer_mode);
+        break;
+      case C15::PID::Mono_Grp_Legato:
+        m_alloc.setMonoLegato(_layerId, param.m_scaled, m_layer_mode);
+        break;
+      default:
+        break;
+    }
+  if constexpr(LOG_RECALL_DETAILS)
+    param.log(__PRETTY_FUNCTION__, descriptor);
 }
 
 inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
                                              const nltools::controls::MonophonicModulateableParameter &_param)
 {
-  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+  const auto &descriptor = getParameter(_param.m_id);
+  const auto macroId = getMacroId(_param.m_macro);
+  auto &param = m_parameters.m_layer[_layerId].m_monophonic.m_modulateables[descriptor.m_param.m_index];
+  param.update_source(getMacro(_param.m_macro));
+  param.update_amount((float) _param.m_modulationAmount);
+  param.update_position(param.depolarize((float) _param.m_controlPosition));
+  param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
+  m_parameters.m_layer[_layerId].m_monophonic.m_assignment.reassign(descriptor.m_param.m_index, macroId);
+  param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
+  if constexpr(LOG_RECALL_DETAILS)
+    param.log(__PRETTY_FUNCTION__, descriptor);
 }
 
 inline void dsp_host_dual::onParameterRecall(const uint32_t &_layerId,
                                              const nltools::controls::MonophonicUnmodulateableParameter &_param)
 {
-  // todo https://github.com/nonlinear-labs-dev/C15/issues/2995
+  const auto &descriptor = getParameter(_param.m_id);
+  auto &param = m_parameters.m_layer[_layerId].m_monophonic.m_unmodulateables[descriptor.m_param.m_index];
+  param.update_position((float) _param.m_controlPosition);
+  param.m_scaled = scale(param.m_scaling, param.m_position);
+  if constexpr(LOG_RECALL_DETAILS)
+    param.log(__PRETTY_FUNCTION__, descriptor);
 }
 
 void dsp_host_dual::debugLevels()
