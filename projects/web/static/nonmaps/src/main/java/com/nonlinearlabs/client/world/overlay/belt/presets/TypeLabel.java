@@ -84,7 +84,7 @@ public class TypeLabel extends OverlayLayout {
 				switch (getTypeLabel().getParent().getMapsPreset().getType()) {
 					case Single:
 					default:
-						drawSingle(ctx, iLoaded, iSelected);
+						drawSingle(ctx, iLoaded, iiLoaded, iSelected, iiSelected);
 						break;
 					case Layer:
 						drawLayer(ctx, iLoaded, iiLoaded, iSelected, iiSelected);
@@ -136,16 +136,38 @@ public class TypeLabel extends OverlayLayout {
 			return RGB.lightGray();
 		}
 
-		private void drawSingle(Context2d ctx, boolean loaded, boolean selected) {
+		private void drawSingle(Context2d ctx, boolean loadedI, boolean loadedII, boolean selectedI, boolean selectedII) {
 			Rect pix = getParent().getPixRect().copy();
 
-			ctx.setFillStyle(loaded ? getLoadedPresetPartColor().toString() : getUnloadedPresetPartColor().toString());
-			ctx.fillRect(pix.getLeft(), pix.getTop(), pix.getWidth(), pix.getHeight());
+			String loadedColor = getLoadedPresetPartColor().toString();
+			String unloadedColor = getUnloadedPresetPartColor().toString();
+			String selectedColor = getSelectionIndicationColor().toString();
+		
+			
+			boolean anyLoaded = loadedI || loadedII;
 
-			if(selected) {
-				ctx.setStrokeStyle(getSelectionIndicationColor().toString());
-				ctx.setLineWidth(2);
-				ctx.strokeRect(pix.getLeft(), pix.getTop(), pix.getWidth(), pix.getHeight());
+			//Draw common part
+			double halfHeight = pix.getHeight() / 2;
+			double halfWidth = pix.getWidth() / 2;
+			double middleX = pix.getLeft() + halfWidth;
+			double middleY = pix.getTop() + halfHeight;
+
+			ctx.setFillStyle(anyLoaded ? loadedColor : unloadedColor);
+			ctx.fillRect(pix.getLeft(), pix.getTop(), middleX, pix.getHeight());
+
+
+			ctx.setFillStyle(loadedI ? loadedColor : unloadedColor);
+			ctx.fillRect(middleX, pix.getTop(), halfWidth, halfHeight);
+
+			ctx.setFillStyle(loadedII ? loadedColor : unloadedColor);
+			ctx.fillRect(middleX, middleY, halfWidth, halfWidth);
+
+			ctx.setStrokeStyle(selectedColor);
+			ctx.setLineWidth(2);
+			if(selectedI) {
+				ctx.strokeRect(middleX, pix.getTop(), halfWidth, halfHeight);
+			} else if(selectedII) {
+				ctx.strokeRect(middleX, middleY, halfWidth, halfWidth);
 			}
 		}
 

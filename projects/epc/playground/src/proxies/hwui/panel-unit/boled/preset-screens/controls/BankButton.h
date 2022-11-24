@@ -16,8 +16,8 @@ class BankButton : public ControlWithChildren
  private:
   void bruteForce();
 
-  void installSingle();
-  void installDual();
+  void installNonSelect();
+  void installSelect();
 
   std::unique_ptr<ShortVsLongPress> m_buttonAHandler;
   const bool m_bankFocus;
