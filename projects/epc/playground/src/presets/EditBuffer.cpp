@@ -35,6 +35,7 @@
 #include <device-settings/SyncSplitSettingUseCases.h>
 #include <libundo/undo/ContinuousTransaction.h>
 #include "LoadedPresetLog.h"
+#include "parameters/ScopedLockByParameterTypes.h"
 #include <sync/JsonAdlSerializers.h>
 #include <use-cases/EditBufferUseCases.h>
 #include <groups/MacroControlsGroup.h>
@@ -56,11 +57,11 @@ EditBuffer::EditBuffer(PresetManager *parent, Settings &settings, std::unique_pt
   m_hashOnStore = getHash();
 }
 
-template<typename T> std::vector<T> combine(const std::vector<T>& lhs, const std::vector<T>& rhs)
+template <typename T> std::vector<T> combine(const std::vector<T> &lhs, const std::vector<T> &rhs)
 {
   std::vector<T> ret;
-  for(const auto& v: {lhs, rhs})
-    for(auto& l: v)
+  for(const auto &v : { lhs, rhs })
+    for(auto &l : v)
       ret.emplace_back(l);
   return ret;
 }
@@ -697,9 +698,12 @@ void EditBuffer::setMacroControlValueFromMCView(const ParameterId &id, double va
   }
 }
 
-VoiceGroup invert(VoiceGroup vg)
+namespace
 {
-  return vg == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I;
+  VoiceGroup invert(VoiceGroup vg)
+  {
+    return vg == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I;
+  }
 }
 
 void EditBuffer::undoableConvertToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
@@ -1311,7 +1315,13 @@ void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction)
   setVoiceGroupName(transaction, getName(), VoiceGroup::I);
   setVoiceGroupName(transaction, getName(), VoiceGroup::II);
   initToFX(transaction);
-  copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
+
+  {
+    using namespace C15::Descriptors;
+    ScopedLockByParameterTypes lock(
+        transaction, { ParameterType::Monophonic_Modulateable, ParameterType::Monophonic_Unmodulateable }, *this);
+    copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
+  }
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
   initFadeFrom(transaction, VoiceGroup::I);
   initFadeFrom(transaction, VoiceGroup::II);
@@ -1324,7 +1334,13 @@ void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
   setVoiceGroupName(transaction, getName(), VoiceGroup::I);
   setVoiceGroupName(transaction, getName(), VoiceGroup::II);
   initToFX(transaction);
-  copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
+
+  {
+    using namespace C15::Descriptors;
+    ScopedLockByParameterTypes lock(transaction, {ParameterType::Monophonic_Unmodulateable, ParameterType::Monophonic_Modulateable}, *this);
+    copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
+  }
+
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
   initFadeFrom(transaction, VoiceGroup::I);
@@ -1366,8 +1382,8 @@ void EditBuffer::calculateSplitPointFromFadeParams(UNDO::Transaction *transactio
   findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II })->stepCPFromHwui(transaction, 1, {});
 }
 
-void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, const Preset *preset,
-                                               VoiceGroup from, VoiceGroup loadInto)
+void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
+                                               VoiceGroup loadInto)
 {
   {
     auto toFxParam = findParameterByID({ C15::PID::Out_Mix_To_FX, loadInto });
@@ -1376,15 +1392,15 @@ void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, c
     auto monophonicParameters = findAllParametersOfType(C15::Descriptors::ParameterType::Monophonic_Unmodulateable);
     auto monophonicModparams = findAllParametersOfType(C15::Descriptors::ParameterType::Monophonic_Modulateable);
     std::vector<ParameterId> all = combine(monophonicModparams, monophonicParameters);
-    all.erase(std::remove_if(all.begin(), all.end(), [loadInto](const auto& id) {
-                               return id.getVoiceGroup() == loadInto;
-                             }), all.end());
+    all.erase(
+        std::remove_if(all.begin(), all.end(), [loadInto](const auto &id) { return id.getVoiceGroup() == loadInto; }),
+        all.end());
 
     ScopedLock locks(transaction);
     locks.addLock(toFxParam);
     locks.addLock(splitPointI);
     locks.addLock(splitPointII);
-    for(const auto& pid: all)
+    for(const auto &pid : all)
       if(auto p = findParameterByID(pid))
         locks.addLock(p);
 
@@ -1398,7 +1414,8 @@ void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, c
   updateLoadFromPartOrigin(transaction, preset, from, loadInto);
 }
 
-void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from, VoiceGroup loadTo)
+void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
+                                               VoiceGroup loadTo)
 {
   auto toFxParam = findParameterByID({ C15::PID::Out_Mix_To_FX, loadTo });
   auto fadeFromParams = { findParameterByID({ C15::PID::Voice_Grp_Fade_From, loadTo }),
@@ -1408,9 +1425,8 @@ void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, c
     auto monophonicParameters = findAllParametersOfType(C15::Descriptors::ParameterType::Monophonic_Unmodulateable);
     auto monophonicModparams = findAllParametersOfType(C15::Descriptors::ParameterType::Monophonic_Modulateable);
     std::vector<ParameterId> all = combine(monophonicModparams, monophonicParameters);
-    all.erase(std::remove_if(all.begin(), all.end(), [loadTo](const auto& id) {
-       return id.getVoiceGroup() == loadTo;
-    }), all.end());
+    all.erase(std::remove_if(all.begin(), all.end(), [loadTo](const auto &id) { return id.getVoiceGroup() == loadTo; }),
+              all.end());
 
     ScopedLock locks(transaction);
     locks.addLock(toFxParam);
@@ -1418,7 +1434,7 @@ void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, c
     locks.addGroupLock({ "Unison", VoiceGroup::II });
     locks.addGroupLock({ "Mono", VoiceGroup::I });
     locks.addGroupLock({ "Mono", VoiceGroup::II });
-    for(const auto& pid: all)
+    for(const auto &pid : all)
       if(auto p = findParameterByID(pid))
         locks.addLock(p);
 
@@ -1508,7 +1524,6 @@ void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transac
                                                       VoiceGroup copyFrom, VoiceGroup copyTo)
 {
   SendEditBufferScopeGuard scopeGuard(transaction, true);
-
   setVoiceGroupName(transaction, preset->getName(), copyTo);
 
   {

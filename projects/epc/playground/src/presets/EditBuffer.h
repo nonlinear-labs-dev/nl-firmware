@@ -38,6 +38,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   Parameter *getSelected(VoiceGroup voiceGroup) const;
   int getSelectedParameterNumber() const;
   std::string getPresetOriginDescription() const;
+  std::vector<ParameterId> findAllParametersOfType(C15::Descriptors::ParameterType type);
 
   ParameterId getLastSelectedMacroId() const;
 
@@ -226,7 +227,6 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *transaction);
   void setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *transaction);
 
-  std::vector<ParameterId> findAllParametersOfType(C15::Descriptors::ParameterType type);
 
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
   Signal<void, Parameter *> m_signalReselectParameter;
