@@ -56,8 +56,17 @@ inline constexpr bool LOG_MOD_CHAIN = false;
 inline constexpr bool LOG_ENGINE_STATUS = false;
 inline constexpr bool LOG_ENGINE_EDITS = false;
 inline constexpr bool LOG_INPUT_EVENT_STAGE = false;
-inline constexpr C15::PID::ParameterID LOG_PARAMETERS[]
-    = { C15::PID::Split_Split_Point, C15::PID::Unison_Detune, C15::PID::Mono_Grp_Glide };
+inline constexpr C15::PID::ParameterID LOG_PARAMETERS[] = {
+    C15::PID::Out_Mix_Lvl,
+    C15::PID::Out_Mix_To_FX,
+    C15::PID::FB_Mix_FX_Src,
+    C15::PID::Voice_Grp_Mute,
+    C15::PID::Unison_Detune,
+    C15::PID::Mono_Grp_Enable,
+    C15::PID::Split_Split_Point,
+    C15::PID::Voice_Grp_Fade_From,
+    C15::PID::Voice_Grp_Fade_Range
+};
 
 class MidiRuntimeOptions;
 
