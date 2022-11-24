@@ -22,11 +22,6 @@ class LayerDisplay extends OverlayLayout {
     public LayerDisplay(OverlayLayout parent) {
         super(parent);
 
-        EditBufferModel.get().soundType.onChange(v -> {
-            setVisible(v != SoundType.Single);
-            return true;
-        });
-
         NonMaps.get().getNonLinearWorld().getPresetManager().onLoadToPartModeToggled((x) -> {
             invalidate(INVALIDATION_FLAG_UI_CHANGED);
             return true;
@@ -52,6 +47,8 @@ class LayerDisplay extends OverlayLayout {
             case Layer:
                 drawLayerIndication(ctx, c, stroke);
                 break;
+            case Single:
+                drawSingleIndication(ctx, c, stroke);
             default:
                 break;
         }
@@ -144,6 +141,47 @@ class LayerDisplay extends OverlayLayout {
                         new Position(pix.getRight() - 1, boxIIY + partHeight / 2), partHeight, partHeight);
             }
         }
+    }
+
+    private void drawSingleIndication(Context2d ctx, RGB fill, RGB stroke)
+    {
+        VoiceGroup selected = getSelectedVoiceGroup();
+        Rect pix = getPixRect().copy();
+
+        final double margin = Millimeter.toPixels(1);
+        final double partWidth = Millimeter.toPixels(2);
+        final double partHeight = Millimeter.toPixels(5);
+        final double yMargin = Millimeter.toPixels(2.5);
+
+        final RGB ogFill = fill;
+        final RGB lighterFill = ogFill.brighter(96);
+
+        if (selected == VoiceGroup.I)
+            fill = lighterFill;
+
+        Rect box = new Rect(0, pix.getTop() + yMargin, partWidth, partHeight);
+
+        box.setLeft(pix.getCenterPoint().getX() - margin / 2 - partWidth);
+        box.fillAndStroke(ctx, lighterFill, 2, stroke);
+
+        double bottom = box.getBottom();
+
+        fill = ogFill;
+
+        if (selected == VoiceGroup.I)
+            fill = lighterFill;
+
+        box.setLeft(pix.getCenterPoint().getX() + margin / 2);
+        box.setHeight(partWidth);
+        box.fillAndStroke(ctx, fill, 2, stroke);
+
+        if(selected == VoiceGroup.II)
+            fill = lighterFill;
+        else
+            fill = ogFill;
+
+        box.setTop(bottom - partWidth);
+        box.fillAndStroke(ctx, fill, 2, stroke);
     }
 
     private void drawTriangleSideways(Context2d ctx, RGB fill, RGB stroke, Position pos, double width, double height) {

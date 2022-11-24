@@ -160,14 +160,17 @@ public class TypeLabel extends OverlayLayout {
 			ctx.fillRect(middleX, pix.getTop(), halfWidth, halfHeight);
 
 			ctx.setFillStyle(loadedII ? loadedColor : unloadedColor);
-			ctx.fillRect(middleX, middleY, halfWidth, halfWidth);
+			ctx.fillRect(middleX, middleY, halfWidth, halfHeight);
 
 			ctx.setStrokeStyle(selectedColor);
 			ctx.setLineWidth(2);
+
 			if(selectedI) {
 				ctx.strokeRect(middleX, pix.getTop(), halfWidth, halfHeight);
+				ctx.strokeRect(pix.getLeft(), pix.getTop(), halfWidth, pix.getHeight());
 			} else if(selectedII) {
-				ctx.strokeRect(middleX, middleY, halfWidth, halfWidth);
+				ctx.strokeRect(middleX, middleY, halfWidth, halfHeight);
+				ctx.strokeRect(pix.getLeft(), pix.getTop(), halfWidth, pix.getHeight());
 			}
 		}
 
