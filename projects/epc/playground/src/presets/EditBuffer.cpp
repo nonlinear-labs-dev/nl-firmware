@@ -400,8 +400,16 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
 
 Parameter *EditBuffer::getSelected(VoiceGroup voiceGroup) const
 {
-  if(!isDual() && (voiceGroup == VoiceGroup::II))
-    voiceGroup = VoiceGroup::I;
+  if(getType() == SoundType::Single && (voiceGroup == VoiceGroup::II))
+  {
+    if(auto p = findParameterByID(m_lastSelectedParameter))
+    {
+      if(p->isPolyphonic() || p->isLocal())
+      {
+        voiceGroup = VoiceGroup::I;
+      }
+    }
+  }
 
   if(ParameterId::isGlobal(m_lastSelectedParameter.getNumber()))
     voiceGroup = VoiceGroup::Global;
