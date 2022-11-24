@@ -725,8 +725,8 @@ void EditBuffer::combineSplitPartGlobalMaster(UNDO::Transaction *transaction, Vo
       = masterGroup->findAndCastParameterByID<ModulateableParameter>({ C15::PID::Master_Tune, VoiceGroup::Global });
 
   // unmute both parts
-  findParameterByID({ 395, VoiceGroup::I })->setCPFromHwui(transaction, 0);
-  findParameterByID({ 395, VoiceGroup::II })->setCPFromHwui(transaction, 0);
+  findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I })->setCPFromHwui(transaction, 0);
+  findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->setCPFromHwui(transaction, 0);
 
   ParabolicGainDbScaleConverter dbGainConverter;
 
@@ -798,7 +798,11 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   initSplitPoint(transaction);
   initMasterPanAndSeperation(transaction);
 
-  forEachParameter(VoiceGroup::II, [&](Parameter *p) { p->loadDefault(transaction, Defaults::FactoryDefault); });
+  {
+    ScopedMonophonicParameterLock lock(transaction, *this);
+    forEachParameter(VoiceGroup::II, [&](Parameter *p) { p->loadDefault(transaction, Defaults::FactoryDefault); });
+  }
+
 
   auto vgVolume = findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
   auto vgTune = findParameterByID({ C15::PID::Voice_Grp_Tune, VoiceGroup::I });
@@ -830,8 +834,12 @@ void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, Vo
 void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom)
 {
   combineSplitPartGlobalMaster(transaction, copyFrom);
+
   if(copyFrom != VoiceGroup::I)
+  {
+    ScopedMonophonicParameterLock lock(transaction, *this);
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
+  }
 
   if(!StringTools::hasEnding(getVoiceGroupName(copyFrom), "conv."))
   {
@@ -1846,6 +1854,16 @@ std::vector<ParameterId> EditBuffer::findAllParametersOfType(C15::Descriptors::P
           ret.emplace_back(p->getID());
       }
     }
+  }
+  return ret;
+}
+
+std::vector<ParameterId> EditBuffer::findAllParametersOfType(const std::vector<C15::Descriptors::ParameterType>& types)
+{
+  std::vector<ParameterId> ret;
+  for(auto t: types)
+  {
+    ret = combine(ret, findAllParametersOfType(t));
   }
   return ret;
 }

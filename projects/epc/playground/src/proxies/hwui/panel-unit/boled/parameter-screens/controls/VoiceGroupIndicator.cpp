@@ -151,17 +151,20 @@ void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
   setDirty();
 }
 
-bool isLayerGlobal(SoundType type, int parameterNumber)
+namespace
 {
-  if(type == SoundType::Layer)
+  bool isLayerGlobal(SoundType type, int parameterNumber)
   {
-    static auto sGlobalGroupsInLayer
-        = { C15::PID::Mono_Grp_Enable, C15::PID::Mono_Grp_Glide, C15::PID::Mono_Grp_Legato, C15::PID::Mono_Grp_Prio,
-            C15::PID::Unison_Detune,   C15::PID::Unison_Voices,  C15::PID::Unison_Pan,      C15::PID::Unison_Phase };
-    auto it = std::find(sGlobalGroupsInLayer.begin(), sGlobalGroupsInLayer.end(), parameterNumber);
-    return it != sGlobalGroupsInLayer.end();
+    if(type == SoundType::Layer)
+    {
+      static auto sGlobalGroupsInLayer
+          = { C15::PID::Mono_Grp_Enable, C15::PID::Mono_Grp_Glide, C15::PID::Mono_Grp_Legato, C15::PID::Mono_Grp_Prio,
+              C15::PID::Unison_Detune,   C15::PID::Unison_Voices,  C15::PID::Unison_Pan,      C15::PID::Unison_Phase };
+      auto it = std::find(sGlobalGroupsInLayer.begin(), sGlobalGroupsInLayer.end(), parameterNumber);
+      return it != sGlobalGroupsInLayer.end();
+    }
+    return false;
   }
-  return false;
 }
 
 void VoiceGroupIndicator::onParameterSelectionChanged(const Parameter* old, const Parameter* newParam)

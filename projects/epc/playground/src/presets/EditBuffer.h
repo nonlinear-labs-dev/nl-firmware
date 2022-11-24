@@ -39,6 +39,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   int getSelectedParameterNumber() const;
   std::string getPresetOriginDescription() const;
   std::vector<ParameterId> findAllParametersOfType(C15::Descriptors::ParameterType type);
+  std::vector<ParameterId> findAllParametersOfType(const std::vector<C15::Descriptors::ParameterType>& types);
 
   ParameterId getLastSelectedMacroId() const;
 

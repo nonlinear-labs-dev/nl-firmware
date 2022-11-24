@@ -15,3 +15,11 @@ ScopedLockByParameterTypes::ScopedLockByParameterTypes(UNDO::Transaction* transa
     }
   }
 }
+
+ScopedMonophonicParameterLock::ScopedMonophonicParameterLock(UNDO::Transaction* transaction, EditBuffer& eb)
+    : ScopedLockByParameterTypes(transaction,
+                                 { C15::Descriptors::ParameterType::Monophonic_Unmodulateable,
+                                   C15::Descriptors::ParameterType::Monophonic_Modulateable },
+                                 eb)
+{
+}
