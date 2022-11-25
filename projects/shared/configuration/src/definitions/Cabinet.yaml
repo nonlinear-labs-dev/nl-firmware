@@ -10,14 +10,14 @@ signals:
 static: [
   &ALL_EXPOSED {
     availability: {
-      Single: { hidden: false, disabled: false, count: 1 },
-      Split: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Single: &AVAILABILITY_DUAL { hidden: false, disabled: false, count: 2 },
+      Split: *AVAILABILITY_DUAL,
       Layer: *AVAILABILITY_DUAL
     }
   },
   &VALUE_PERCENT { coarse: 100, fine: 1000 },
   &MODULATEABLE {
-    type: Local_Modulateable
+    type: Monophonic_Modulateable
   }
 ]
 
