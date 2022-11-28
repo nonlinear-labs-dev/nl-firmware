@@ -17,13 +17,13 @@ static: [
   },
   &VALUE_PERCENT { coarse: 100, fine: 1000 },
   &MODULATEABLE {
+    <<: *ALL_EXPOSED,
     type: Monophonic_Modulateable
   }
 ]
 
 parameters:
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 225
     token: Time
     label_long: Time
@@ -35,7 +35,6 @@ parameters:
       Mean delay time [in milliseconds].
       (As there can be an offset between the left and right channel, this control shows the mean time.)
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 227
     token: Stereo
     label_long: Stereo
@@ -47,7 +46,6 @@ parameters:
       Sets the ratio between the delay times of the left and of the right channel [the value shows the offset to 100.0 %].
       In the center position, the offset is zero and both delay times are equal.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 229
     token: Feedback
     label_long: Feedback
@@ -58,7 +56,6 @@ parameters:
     info: >
       Amount of internal feedback.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 231
     token: Cross_FB
     label_long: Cross FB
@@ -71,7 +68,6 @@ parameters:
       0.0 %: no cross feedback\n
       100.0 %: all feedback is cross feedback
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 232
     token: Hi_Cut
     label_long: Hi Cut
@@ -82,7 +78,6 @@ parameters:
     info: >
       Cutoff frequency [in semitones] of the filter that damps the higher frequencies of the delayed signal.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 233
     token: Mix
     label_long: Mix
@@ -93,7 +88,6 @@ parameters:
     info: >
       Crossfades between the dry signal and the delayed signal.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 342
     token: Send
     label_long: Send

@@ -17,13 +17,13 @@ static: [
   },
   &VALUE_PERCENT { coarse: 100, fine: 1000 },
   &MODULATEABLE {
+    <<: *ALL_EXPOSED,
     type: Monophonic_Modulateable
   }
 ]
 
 parameters:
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 235
     token: Size
     label_long: Size
@@ -34,7 +34,6 @@ parameters:
     info: >
       The room size and reverb time are set here.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 237
     token: Pre_Dly
     label_long: Pre Delay
@@ -45,7 +44,6 @@ parameters:
     info: >
       Pre delay time, shifting the late reflections. This has a profound effect on the perceived room size.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 238
     token: Color
     label_long: Color
@@ -56,7 +54,6 @@ parameters:
     info: >
       Pre delay time, shifting the late reflections. This has a profound effect on the perceived room size.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 240
     token: Chorus
     label_long: Chorus
@@ -69,7 +66,6 @@ parameters:
       At higher amounts, there is more movement and the diffusion is smoother.
       At lower amounts, the reverb becomes more static and metallic.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 241
     token: Mix
     label_long: Mix
@@ -80,7 +76,6 @@ parameters:
     info: >
       Crossfades between the dry signal and the reverberation signal.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 344
     token: Send
     label_long: Send

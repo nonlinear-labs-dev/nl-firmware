@@ -17,13 +17,13 @@ static: [
   },
   &VALUE_PERCENT { coarse: 100, fine: 1000 },
   &MODULATEABLE {
+    <<: *ALL_EXPOSED,
     type: Monophonic_Modulateable
   }
 ]
 
 parameters:
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 211
     token: Time_Mod
     label_long: Time Mod
@@ -34,7 +34,6 @@ parameters:
     info: >
       Relative amount of the modulation of the delay times by the LFO and/or the envelope.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 213
     token: Phase
     label_long: Phase
@@ -45,7 +44,6 @@ parameters:
     info: >
       Phase offset between the LFO signals modulating the delay times in the left and the right channel.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 214
     token: Rate
     label_long: Rate
@@ -57,7 +55,6 @@ parameters:
       Frequency of the LFO and rate of the envelope.
       Both can be modulation sources for the delay times and the allpass center frequencies.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 216
     token: Time
     label_long: Time
@@ -70,7 +67,6 @@ parameters:
       The \"Stereo\" parameter allows to create a time offset between the channels.\n
       When the time of the Flanger is set to zero, the overall effect is determined by the phase shifting of the allpass.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 218
     token: Stereo
     label_long: Stereo
@@ -82,7 +78,6 @@ parameters:
       Sets the ratio between the delay times of the left and of the right channel [the value shows the offset to 100.0 %].
       In the center position, the offset is zero and both delay times are equal.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 219
     token: Feedback
     label_long: Feedback
@@ -94,7 +89,6 @@ parameters:
       Amount of the internal feedback.
       At negative values, the feedback is inverted and will emphasize other frequencies than in the non-inverted mode.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 221
     token: Cross_FB
     label_long: Cross FB
@@ -108,7 +102,6 @@ parameters:
       0.0 %: no cross feedback\n
       +/- 100.0 %: all feedback is cross feedback
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 222
     token: Hi_Cut
     label_long: Hi Cut
@@ -119,7 +112,6 @@ parameters:
     info: >
       Cutoff frequency [in semitones] of the filter that damps the higher frequencies of the delayed signal.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 223
     token: Mix
     label_long: Mix
@@ -130,7 +122,6 @@ parameters:
     info: >
       Crossfades between the dry signal and the delayed signal. At negative values, the delayed signal is inverted.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 307
     token: Envelope
     label_long: Envelope
@@ -142,7 +133,6 @@ parameters:
       Crossfades between the signals of the LFO and the envelope as modulation sources
       for the delay times and the allpass center frequencies.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 308
     token: AP_Mod
     label_long: Allpass Mod
@@ -154,7 +144,6 @@ parameters:
       Relative amount of the modulation of the allpass center frequencies by the LFO and/or the envelope.
       The allpass creates the effect of a phaser.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 310
     token: AP_Tune
     label_long: Allpass Tune
@@ -168,7 +157,6 @@ parameters:
       The phase shift is minimized by setting this control to its maximum.\n
       When the time of the flanger is set to zero, the allpass becomes the dominant part.
   - <<: *MODULATEABLE
-    <<: *ALL_EXPOSED
     id: 389
     token: Tremolo
     label_long: Tremolo
