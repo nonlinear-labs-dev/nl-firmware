@@ -82,8 +82,8 @@ parameters:
 #  - <<: *MODULATEABLE_ONLY_SINGLE
 #    id: 428
 #    token: FX_Mix
-#    label_long: FX Mix
-#    label_short: FX Mix
+#    label_long: FX Mix @ST:Between
+#    label_short: FX Mix @ST:Between
 #    control_position: { coarse: 100, fine: 1000, scale: LINEAR_100_PERCENT, initial: 0.0f }
 #    modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT }
 #    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Global, clock: Fast, signal: None }
