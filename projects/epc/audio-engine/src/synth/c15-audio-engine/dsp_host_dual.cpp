@@ -15,7 +15,7 @@ using namespace std::chrono_literals;
     @todo
 *******************************************************************************/
 
-// shorthands for identifying parameters with special event logic (todo: IndexOfEffectsMix)
+// shorthands for identifying parameters with special event logic
 static constexpr auto IndexOfUnisonVoices = C15::ParameterList[C15::PID::Unison_Voices].m_param.m_index;
 static constexpr auto IndexOfUnisonDetune = C15::ParameterList[C15::PID::Unison_Detune].m_param.m_index;
 static constexpr auto IndexOfUnisonPhase = C15::ParameterList[C15::PID::Unison_Phase].m_param.m_index;
@@ -31,6 +31,7 @@ static constexpr auto IndexOfSplitPoint = C15::ParameterList[C15::PID::Split_Spl
 static constexpr auto IndexOfMixEffectsFrom = C15::ParameterList[C15::PID::FB_Mix_FX_Src].m_param.m_index;
 static constexpr auto IndexOfMixToEffects = C15::ParameterList[C15::PID::Out_Mix_To_FX].m_param.m_index;
 static constexpr auto IndexOfBaseKey = C15::ParameterList[C15::PID::Scale_Base_Key].m_param.m_index;
+static constexpr auto IndexOfEffectsMix = C15::ParameterList[C15::PID::Master_FX_Mix].m_param.m_index;
 
 dsp_host_dual::dsp_host_dual()
 {
@@ -665,7 +666,7 @@ void dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicModu
     param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
     param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
     if constexpr(LOG_EDITS)
-      param.log(__PRETTY_FUNCTION__, descriptor);
+      param.log(layerId, __PRETTY_FUNCTION__, descriptor);
     switch(_msg.m_id)
     {
       case C15::PID::Unison_Detune:
@@ -723,12 +724,12 @@ DSPInterface::OutputResetEventSource
 {
   const auto &descriptor = getParameter(_msg.m_id);
   const uint32_t index = descriptor.m_param.m_index, layerId = getLayerId(_msg.m_voiceGroup);
-  auto &param = m_parameters.m_layer[layerId].m_unmodulateables[index];
+  auto &param = m_parameters.m_layer[layerId].m_polyphonic.m_unmodulateables[index];
   if(param.update_position((float) _msg.m_controlPosition))
   {
     param.m_scaled = scale(param.m_scaling, param.m_position);
     if constexpr(LOG_EDITS)
-      param.log(__PRETTY_FUNCTION__, descriptor);
+      param.log(layerId, __PRETTY_FUNCTION__, descriptor);
     switch(_msg.m_id)
     {
       case C15::PID::Voice_Grp_Mute:
@@ -767,17 +768,17 @@ void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicModu
   const auto &descriptor = getParameter(_msg.m_id);
   const uint32_t index = descriptor.m_param.m_index, macroId = getMacroId(_msg.m_macro),
                  layerId = getLayerId(_msg.m_voiceGroup);
-  auto &param = m_parameters.m_layer[layerId].m_polyphonic.m_modulateables[index];
+  auto &param = m_parameters.m_layer[layerId].m_monophonic.m_modulateables[index];
   bool aspect_update = param.update_source(getMacro(_msg.m_macro));
   if(aspect_update)
-    m_parameters.m_layer[layerId].m_polyphonic.m_assignment.reassign(index, macroId);
+    m_parameters.m_layer[layerId].m_monophonic.m_assignment.reassign(index, macroId);
   aspect_update |= param.update_amount((float) _msg.m_modulationAmount);
   if(param.update_position((float) param.depolarize(_msg.m_controlPosition)))
   {
     param.update_modulation_aspects(m_parameters.m_global.m_macroControls[macroId].m_position);
     param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
     if constexpr(LOG_EDITS)
-      param.log(__PRETTY_FUNCTION__, descriptor);
+      param.log(layerId, __PRETTY_FUNCTION__, descriptor);
     // no special cases, always part-bound
     monophonicTransition(layerId, param.m_rendering, m_editTime.m_time, param.m_scaled);
   }
@@ -793,12 +794,12 @@ void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MonophonicUnmo
 {
   const auto &descriptor = getParameter(_msg.m_id);
   const uint32_t index = descriptor.m_param.m_index, layerId = getLayerId(_msg.m_voiceGroup);
-  auto &param = m_parameters.m_layer[layerId].m_unmodulateables[index];
+  auto &param = m_parameters.m_layer[layerId].m_monophonic.m_unmodulateables[index];
   if(param.update_position((float) _msg.m_controlPosition))
   {
     param.m_scaled = scale(param.m_scaling, param.m_position);
     if constexpr(LOG_EDITS)
-      param.log(__PRETTY_FUNCTION__, descriptor);
+      param.log(layerId, __PRETTY_FUNCTION__, descriptor);
     // no special cases, always part-bound
     monophonicTransition(layerId, param.m_rendering, m_editTime.m_time, param.m_scaled);
   }
@@ -1816,17 +1817,18 @@ inline void dsp_host_dual::recallCommonTransition()
     globalTransition(param.m_rendering, m_transitionTime.m_time, param.m_scaled);
   }
   for(uint32_t i = 0; i < C15::Parameters::num_of_Global_Unmodulateables; i++)
+  {
+    const auto &param = m_parameters.m_global.m_parameters.m_unmodulateables[i];
     switch(i)
     {
       case IndexOfBaseKey:
-        m_global.start_base_key(m_transitionTime.m_time.m_dxSlow,
-                                m_parameters.m_global.m_parameters.m_unmodulateables[i].m_scaled);
+        m_global.start_base_key(m_transitionTime.m_time.m_dxSlow, param.m_scaled);
         break;
       default:
-        const auto &param = m_parameters.m_global.m_parameters.m_unmodulateables[i];
         globalTransition(param.m_rendering, m_transitionTime.m_time, param.m_scaled);
         break;
     }
+  }
   // start transitions: monophonic modulateables/unmodulateables
   for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
   {
