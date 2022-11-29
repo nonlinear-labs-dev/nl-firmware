@@ -371,7 +371,7 @@ class dsp_host_dual : public DSPInterface
 
   // recall
   template <typename T> inline void recallCommon(const T& _msg, const bool _resetVoiceFade);
-  template <typename T> inline void recallCommonTransition(const T& _msg);
+  inline void recallCommonTransition();
 
   OutputResetEventSource recallSingle(const nltools::msg::SinglePresetMessage& _msg);
   OutputResetEventSource recallSplit(const nltools::msg::SplitPresetMessage& _msg);
