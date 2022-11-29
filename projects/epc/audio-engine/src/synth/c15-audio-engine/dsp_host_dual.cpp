@@ -529,7 +529,16 @@ void dsp_host_dual::onParameterChangedMessage(const nltools::msg::GlobalModulate
     param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
     if constexpr(LOG_EDITS)
       param.log(__PRETTY_FUNCTION__, descriptor);
-    globalTransition(param.m_rendering, m_editTime.m_time, param.m_scaled);
+    switch(index)
+    {
+      case C15::PID::Master_FX_Mix:
+        if(m_layer_mode == LayerMode::Single)
+          fxMixTransition(m_editTime.m_time, param.m_scaled);
+        break;
+      default:
+        globalTransition(param.m_rendering, m_editTime.m_time, param.m_scaled);
+        break;
+    }
   }
   else if(aspect_update)
   {
@@ -683,9 +692,6 @@ void dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicModu
         if(m_layer_mode == LayerMode::Split)
           m_alloc.setSplitPoint(static_cast<uint32_t>(param.m_scaled) + C15::Config::physical_key_from, layerId);
         break;
-        // TODO special cases:
-        //    case C15::PID::Master_FX_Mix:
-        // - (new) fx mix (single --> part volume I, II / ignore dual)
       case C15::PID::Voice_Grp_Volume:
       case C15::PID::Voice_Grp_Tune:
         // single: ignore, dual: pass
@@ -1423,7 +1429,16 @@ inline void dsp_host_dual::globalModChain(const Engine::Parameters::MacroControl
         param.m_scaled = scale(param.m_scaling, param.polarize(clipped));
         if constexpr(LOG_MOD_CHAIN)
           nltools::Log::info(__PRETTY_FUNCTION__, "(index:", index, ", pos:", param.m_position, ")");
-        globalTransition(param.m_rendering, time, param.m_scaled);
+        // todo: Fx Mix
+        switch(index)
+        {
+          case IndexOfEffectsMix:
+            fxMixTransition(time, param.m_scaled);
+            break;
+          default:
+            globalTransition(param.m_rendering, time, param.m_scaled);
+            break;
+        }
       }
     }
   }
@@ -1504,7 +1519,6 @@ inline void dsp_host_dual::polyphonicModChain(const Engine::Parameters::MacroCon
           nltools::Log::info(__PRETTY_FUNCTION__, "(index:", index, ", pos:", param.m_position, ")");
         switch(index)
         {
-          // todo: Fx Mix
           case IndexOfMixEffectsFrom:
           case IndexOfMixToEffects:
             polyphonicTransition(0, param.m_rendering, time, param.m_scaled);
@@ -1575,6 +1589,18 @@ inline void dsp_host_dual::monophonicModChain(const Engine::Parameters::MacroCon
       }
     }
   }
+}
+
+inline void dsp_host_dual::fxMixTransition(const Engine::Parameters::Aspects::TimeAspect::Time &_time,
+                                           const float &_mix)
+{
+  const float invertedMix = 1.0f - _mix;
+  const float partVolumes[C15::Properties::num_of_VoiceGroups]
+      = { 1.0f - (_mix * _mix), 1.0f - (invertedMix * invertedMix) };
+  for(uint32_t layer = 0; layer < C15::Properties::num_of_VoiceGroups; layer++)
+    polyphonicTransition(layer,
+                         m_parameters.m_layer[layer].m_polyphonic.m_modulateables[IndexOfVoiceGrpVolume].m_rendering,
+                         _time, partVolumes[layer]);
 }
 
 inline void dsp_host_dual::globalTransition(const Engine::Parameters::Aspects::RenderAspect::Rendering &_rendering,
@@ -1814,7 +1840,16 @@ inline void dsp_host_dual::recallCommonTransition()
   for(uint32_t i = 0; i < C15::Parameters::num_of_Global_Modulateables; i++)
   {
     const auto &param = m_parameters.m_global.m_parameters.m_modulateables[i];
-    globalTransition(param.m_rendering, m_transitionTime.m_time, param.m_scaled);
+    switch(i)
+    {
+      case IndexOfEffectsMix:
+        if(m_layer_mode == LayerMode::Single)
+          fxMixTransition(m_transitionTime.m_time, param.m_scaled);
+        break;
+      default:
+        globalTransition(param.m_rendering, m_transitionTime.m_time, param.m_scaled);
+        break;
+    }
   }
   for(uint32_t i = 0; i < C15::Parameters::num_of_Global_Unmodulateables; i++)
   {
@@ -1906,9 +1941,8 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
     const auto &param = m_parameters.m_layer[0].m_polyphonic.m_modulateables[i];
     switch(i)
     {
-        //      // todo: Fx Mix
-        //      case IndexOfVoiceGrpVolume:
-        //        break;
+      case IndexOfVoiceGrpVolume:  // ignore (single)
+        break;
       case IndexOfMixEffectsFrom:
       case IndexOfMixToEffects:
         polyphonicTransition(0, param.m_rendering, m_transitionTime.m_time, param.m_scaled);
@@ -2005,7 +2039,6 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
       const auto &param = m_parameters.m_layer[layerId].m_polyphonic.m_modulateables[i];
       switch(i)
       {
-        // todo: fx mix (ignore)
         default:
           localTransition(layerId, param.m_rendering, m_transitionTime.m_time, param.m_scaled);
           break;
@@ -2103,7 +2136,6 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
       const auto &param = m_parameters.m_layer[layerId].m_polyphonic.m_modulateables[i];
       switch(i)
       {
-        // todo: fx mix (ignore)
         default:
           localTransition(layerId, param.m_rendering, m_transitionTime.m_time, param.m_scaled);
           break;
