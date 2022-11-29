@@ -339,20 +339,21 @@ class dsp_host_dual : public DSPInterface
   void hwModChain(const Engine::Parameters::HardwareSource& _src, const uint32_t& _id, const float& _inc);
   void mcModChain(const Engine::Parameters::MacroControl& _mc);
   inline void globalModChain(const Engine::Parameters::MacroControl& _mc);
-  inline void localModChain(const Engine::Parameters::MacroControl& _mc);                          // todo: refactor
-  inline void localModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);  // todo: refactor
+  inline void localModChain(const Engine::Parameters::MacroControl& _mc);                          // todo: deprecate
+  inline void localModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);  // todo: deprecate
   inline void polyphonicModChain(const Engine::Parameters::MacroControl& _mc);
   inline void polyphonicModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);
   inline void monophonicModChain(const Engine::Parameters::MacroControl& _mc);
 
   // transitions
+  inline void fxMixTransition(const Engine::Parameters::Aspects::TimeAspect::Time& _time, const float &_mix);
   inline void globalTransition(const Engine::Parameters::Aspects::RenderAspect::Rendering& _rendering,
                                const Engine::Parameters::Aspects::TimeAspect::Time& _time, const float& _dest);
   inline void localTransition(const uint32_t& _layer,
                               const Engine::Parameters::Aspects::RenderAspect::Rendering& _rendering,
                               const Engine::Parameters::Aspects::TimeAspect::Time& _time,
                               const float& _dest);  // todo: deprecate
-  // todo: poly/mono transition (https://github.com/nonlinear-labs-dev/C15/issues/2995)
+  // poly/mono transition
   inline void polyphonicTransition(const uint32_t& _layer,
                                    const Engine::Parameters::Aspects::RenderAspect::Rendering& _rendering,
                                    const Engine::Parameters::Aspects::TimeAspect::Time& _time, const float& _dest);
@@ -387,7 +388,6 @@ class dsp_host_dual : public DSPInterface
                                 const nltools::controls::LocalModulateableParameter& _param);  // todo: deprecate
   inline void onParameterRecall(const uint32_t& _layerId, const nltools::controls::LocalUnmodulateableParameter& _param,
                                 const bool _vaUpdate);  // todo: deprecate
-  // todo: https://github.com/nonlinear-labs-dev/C15/issues/2995
   inline void onParameterRecall(const uint32_t& _layerId,
                                 const nltools::controls::PolyphonicModulateableParameter& _param);
   inline void onParameterRecall(const uint32_t& _layerId,
