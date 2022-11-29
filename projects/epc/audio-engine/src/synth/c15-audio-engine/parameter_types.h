@@ -201,7 +201,7 @@ namespace Engine
       {
         nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
                            _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
-                           ", position:", m_position, ")");
+                           ", position:", m_position, ", scaled:", m_scaled, ")");
       }
     };
 
@@ -233,7 +233,13 @@ namespace Engine
       {
         nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
                            _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
-                           ", position:", m_position, ", mc:", (int) m_source, ", amt:", m_amount, ")");
+                           ", position:", m_position, ", mc:", (int) m_source, ", amt:", m_amount, ", scaled:", m_scaled, ")");
+      }
+      inline void log(const uint32_t &_layer, const char *const _msg, const C15::ParameterDescriptor &_descriptor)
+      {
+        nltools::Log::info(_msg, "(layer: ", _layer, ", label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                           _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                           ", position:", m_position, ", mc:", (int) m_source, ", amt:", m_amount, ", scaled:", m_scaled, ")");
       }
     };
 
@@ -249,7 +255,13 @@ namespace Engine
       {
         nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
                            _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
-                           ", position:", m_position, ")");
+                           ", position:", m_position, ", scaled:", m_scaled, ")");
+      }
+      inline void log(const uint32_t &_layer, const char *const _msg, const C15::ParameterDescriptor &_descriptor)
+      {
+        nltools::Log::info(_msg, "(layer: ", _layer, ", label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                           _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                           ", position:", m_position, ", scaled:", m_scaled, ")");
       }
     };
 
