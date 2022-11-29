@@ -30,7 +30,7 @@ static: [
 
 parameters:
   - <<: *NO_SINGLE
-    type: Local_Modulateable
+    type: Polyphonic_Modulateable
     id: 358
     token: Volume
     label_long: Part Volume
@@ -42,7 +42,7 @@ parameters:
       Part volume [in dB], available when using Split or Layer mode.
       Applied at the end of the corresponding effect chain, before the Master Volume.
   - <<: *NO_SINGLE
-    type: Local_Modulateable
+    type: Polyphonic_Modulateable
     id: 360
     token: Tune
     label_long: Part Tune
@@ -54,7 +54,7 @@ parameters:
       Part pitch transposition [in semitones], available when using Split or Layer mode.
       Applied for the corresponding Part only.
   - <<: *ONLY_LAYER
-    type: Local_Unmodulateable
+    type: Polyphonic_Unmodulateable
     id: 395
     token: Mute
     label_long: Part Mute
@@ -64,7 +64,7 @@ parameters:
     info: >
       Part mute, available when usig Split or Layer mode. When enabled, the corresponding Part will be muted.
   - <<: *ONLY_LAYER_HIDDEN
-    type: Local_Unmodulateable
+    type: Polyphonic_Unmodulateable
     id: 396
     token: Fade_From
     label_long: Fade From
@@ -82,7 +82,7 @@ parameters:
       so that both Parts cover the whole key range without fading.\n
       Changing this parameter is only effective when a key is pressed.
   - <<: *ONLY_LAYER_HIDDEN
-    type: Local_Unmodulateable
+    type: Polyphonic_Unmodulateable
     id: 397
     token: Fade_Range
     label_long: Fade Range

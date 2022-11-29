@@ -17,11 +17,11 @@ static: [
   },
   &MODULATEABLE {
     <<: *ALL_EXPOSED,
-    type: Local_Modulateable
+    type: Polyphonic_Modulateable
   },
   &UNMODULATEABLE {
     <<: *ALL_EXPOSED,
-    type: Local_Unmodulateable
+    type: Polyphonic_Unmodulateable
   }
 ]
 

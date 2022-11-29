@@ -152,7 +152,8 @@ Glib::ustring ParameterDB::replaceInDynamicLabels(const Glib::ustring &name, con
 {
   auto paramType = C15::ParameterList[parameterID.getNumber()].m_param.m_type;
   using namespace C15::Descriptors;
-  auto isGlobal = paramType != ParameterType::Local_Modulateable && paramType != ParameterType::Local_Unmodulateable;
+  auto isGlobal = paramType != ParameterType::Local_Modulateable && paramType != ParameterType::Local_Unmodulateable
+      && paramType != ParameterType::Polyphonic_Unmodulateable && paramType != ParameterType::Polyphonic_Modulateable;
 
   if(isGlobal)
     return C15::Placeholder::replaceGlobal(name, type);

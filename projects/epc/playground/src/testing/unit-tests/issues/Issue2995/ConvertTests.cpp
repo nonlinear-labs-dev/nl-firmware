@@ -420,12 +420,40 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
           = collectParams(eb.findAllParametersOfType({ C15::Descriptors::ParameterType::Polyphonic_Unmodulateable,
                                                        C15::Descriptors::ParameterType::Polyphonic_Modulateable }),
                           eb);
+
+      polyParams = copyIf(polyParams,
+                          [](Parameter* p)
+                          {
+                            using namespace C15::PID;
+                            auto id = p->getID();
+                            auto pid = id.getNumber();
+                            return pid != Voice_Grp_Fade_From && pid != Voice_Grp_Fade_Range && pid != Unison_Voices
+                                && pid != Split_Split_Point && pid != Unison_Detune && pid != Unison_Phase
+                                && pid != Unison_Pan && pid != Mono_Grp_Glide;
+                          });
+
+      polyParams = copyIf(polyParams,
+                          [](Parameter* p)
+                          {
+                            using namespace C15::PID;
+                            auto id = p->getID();
+                            auto pid = id.getNumber();
+                            return pid != FB_Mix_Comb_Src && pid != FB_Mix_SVF_Src;
+                          });
+
       auto valueHashOfPolyParams = ELP::createValueHash(polyParams);
       auto monophonicParam
           = tParVec { flanger_other_I, flanger_other_II, reverb_other_I, reverb_other_II, gap_other_I, gap_other_II };
       auto otherPolyParams = tParVec { fb_mix_fx_from, fb_mix_other, out_mix_to_other };
       auto valueHashOfMonoPhonicParams = ELP::createValueHash(monophonicParam);
       auto valueHashOfOtherPolyParams = ELP::createValueHash(otherPolyParams);
+      auto hashMapOfValuesOfPolyParams = std::unordered_map<ParameterId, size_t>();
+
+      for(auto p : polyParams)
+      {
+        hashMapOfValuesOfPolyParams[p->getID()] = p->getHash();
+      }
+
       auto partVolumes
           = tParVec { part_vol_I, part_tune_I, getOtherPolyParam(part_vol_I, eb), getOtherPolyParam(part_tune_I, eb) };
       auto valueHashOfPartVolumes = ELP::createValueHash(partVolumes);
@@ -434,6 +462,12 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
 
       THEN("poly is kept as is")
       {
+        for(auto p : polyParams)
+        {
+          INFO(p->getParentGroup()->getLongName() << " - " << p->getLongName() << " not same hash as before!");
+          CHECK(hashMapOfValuesOfPolyParams[p->getID()] == p->getHash());
+        }
+
         auto afterConvert = ELP::createValueHash(polyParams);
         CHECK(valueHashOfPolyParams == afterConvert);
       }
@@ -484,6 +518,27 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
           = collectParams(eb.findAllParametersOfType({ C15::Descriptors::ParameterType::Polyphonic_Unmodulateable,
                                                        C15::Descriptors::ParameterType::Polyphonic_Modulateable }),
                           eb);
+      
+      polyParams = copyIf(polyParams,
+                          [](Parameter* p)
+                          {
+                            using namespace C15::PID;
+                            auto id = p->getID();
+                            auto pid = id.getNumber();
+                            return pid != Voice_Grp_Fade_From && pid != Voice_Grp_Fade_Range && pid != Unison_Voices
+                                && pid != Split_Split_Point && pid != Unison_Detune && pid != Unison_Phase
+                                && pid != Unison_Pan && pid != Mono_Grp_Glide;
+                          });
+
+      polyParams = copyIf(polyParams,
+                          [](Parameter* p)
+                          {
+                            using namespace C15::PID;
+                            auto id = p->getID();
+                            auto pid = id.getNumber();
+                            return pid != FB_Mix_Comb_Src && pid != FB_Mix_SVF_Src;
+                          });
+
       auto valueHashOfPolyParams = ELP::createValueHash(polyParams);
       auto monophonicParam
           = tParVec { flanger_other_I, flanger_other_II, reverb_other_I, reverb_other_II, gap_other_I, gap_other_II };
@@ -574,7 +629,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
 
       THEN("defaulted")
       {
-        for(auto p: shouldBeDefaulted)
+        for(auto p : shouldBeDefaulted)
         {
           INFO(p->getLongName() << " is not defaulted");
           CHECK(p->isDefaultLoaded());
@@ -583,7 +638,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
 
       THEN("fb_transfer")
       {
-          CHECK(ELP::createValueHash(fb_mix_other) == fb_mix_other_value);
+        CHECK(ELP::createValueHash(fb_mix_other) == fb_mix_other_value);
       }
     }
 
@@ -594,7 +649,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
       auto polyHashOfSource = ELP::createValueHash(polysOfSource);
 
       auto fb_mix_other_value = ELP::createValueHash(getOtherPolyParam(fb_mix_other, eb));
-      
+
       ebUseCases.convertToSingle(VoiceGroup::II);
 
       THEN("Polys were copied to I")
@@ -604,7 +659,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
 
       THEN("defaulted")
       {
-        for(auto p: shouldBeDefaulted)
+        for(auto p : shouldBeDefaulted)
         {
           INFO(p->getLongName() << " is not defaulted");
           CHECK(p->isDefaultLoaded());
@@ -617,7 +672,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
       }
 
       //TODO FX from -> to fx
-
     }
   }
 }

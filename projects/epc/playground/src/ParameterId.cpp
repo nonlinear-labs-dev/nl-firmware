@@ -84,6 +84,7 @@ bool ParameterId::isGlobal() const
   return isGlobal(getNumber());
 }
 
+//TODO implement this according to SoundType!!
 bool ParameterId::isGlobal(int number)
 {
   if(number >= C15::Config::tcd_elements || number < 0)

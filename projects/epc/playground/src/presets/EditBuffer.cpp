@@ -301,7 +301,8 @@ bool EditBuffer::findAnyParameterChanged() const
 {
   if(m_type == SoundType::Single)
   {
-    return findAnyParameterChanged(VoiceGroup::I) || findAnyParameterChanged(VoiceGroup::Global);
+    return findAnyParameterChanged(VoiceGroup::I) || findAnyParameterChanged(VoiceGroup::II)
+        || findAnyParameterChanged(VoiceGroup::Global);
   }
   else
   {
@@ -410,8 +411,16 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
 
 Parameter *EditBuffer::getSelected(VoiceGroup voiceGroup) const
 {
-  if(!isDual() && (voiceGroup == VoiceGroup::II))
-    voiceGroup = VoiceGroup::I;
+  if(getType() == SoundType::Single && (voiceGroup == VoiceGroup::II))
+  {
+    if(auto p = findParameterByID(m_lastSelectedParameter))
+    {
+      if(p->isPolyphonic() || p->isLocal())
+      {
+        voiceGroup = VoiceGroup::I;
+      }
+    }
+  }
 
   if(ParameterId::isGlobal(m_lastSelectedParameter.getNumber()))
     voiceGroup = VoiceGroup::Global;
@@ -802,7 +811,6 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
     ScopedMonophonicParameterLock lock(transaction, *this);
     forEachParameter(VoiceGroup::II, [&](Parameter *p) { p->loadDefault(transaction, Defaults::FactoryDefault); });
   }
-
 
   auto vgVolume = findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
   auto vgTune = findParameterByID({ C15::PID::Voice_Grp_Tune, VoiceGroup::I });
@@ -1345,7 +1353,8 @@ void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
 
   {
     using namespace C15::Descriptors;
-    ScopedLockByParameterTypes lock(transaction, {ParameterType::Monophonic_Unmodulateable, ParameterType::Monophonic_Modulateable}, *this);
+    ScopedLockByParameterTypes lock(
+        transaction, { ParameterType::Monophonic_Unmodulateable, ParameterType::Monophonic_Modulateable }, *this);
     copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   }
 
@@ -1858,10 +1867,10 @@ std::vector<ParameterId> EditBuffer::findAllParametersOfType(C15::Descriptors::P
   return ret;
 }
 
-std::vector<ParameterId> EditBuffer::findAllParametersOfType(const std::vector<C15::Descriptors::ParameterType>& types)
+std::vector<ParameterId> EditBuffer::findAllParametersOfType(const std::vector<C15::Descriptors::ParameterType> &types)
 {
   std::vector<ParameterId> ret;
-  for(auto t: types)
+  for(auto t : types)
   {
     ret = combine(ret, findAllParametersOfType(t));
   }

@@ -176,8 +176,6 @@ namespace C15
       { "@VG:Self", VgSelf },
       { "@VG:Other", VgOther },
       { "@ST:Between", VgBetween, VgOther }
-      /* parameters to come */
-      //    { "@ST:FX", { u8"\ue072 to \ue071", u8"\ue071 to \ue072" } }
     };
 
   }  // namespace C15::Placeholder
