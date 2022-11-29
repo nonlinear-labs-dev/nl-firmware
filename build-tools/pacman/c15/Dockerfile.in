@@ -1,10 +1,7 @@
 FROM archlinux:base-@ARCH_VERSION@
 
-RUN pacman-key --init
+RUN echo "Server=https://archive.archlinux.org/repos/@ARCH_VERSION_YEAR@/@ARCH_VERSION_MONTH@/@ARCH_VERSION_DAY@/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
 RUN pacman --noconfirm -Sy
-RUN pacman --noconfirm -S archlinux-keyring
-RUN pacman-key --populate
-RUN pacman --noconfirm -Syyuu
 RUN pacman --noconfirm -S @HOST_REQUIREMENTS@ @C15_REQUIREMENTS@
 
 RUN mkdir -p /packages
@@ -12,5 +9,11 @@ RUN mkdir -p /tmp/blankdb
 WORKDIR /packages
 RUN pacman --noconfirm -Syw --cachedir . --dbpath /tmp/blankdb @C15_REQUIREMENTS@
 
-RUN pacman --noconfirm -S npm nodejs rsync
+# downgrade wpa_supplicant
+RUN pacman --noconfirm -S wget
+RUN rm /packages/wpa_supplicant*
+RUN wget https://archive.archlinux.org/packages/w/wpa_supplicant/wpa_supplicant-2%3A2.9-8-x86_64.pkg.tar.zst
+RUN wget https://archive.archlinux.org/packages/w/wpa_supplicant/wpa_supplicant-2%3A2.9-8-x86_64.pkg.tar.zst.sig
+RUN pacman --noconfirm -Uw --cachedir . --dbpath /tmp/blankdb /packages/wpa_supplicant-2:2.9-8-x86_64.pkg.tar.zst
+
 RUN npm install -g typescript js-yaml @types/node @types/js-yaml
