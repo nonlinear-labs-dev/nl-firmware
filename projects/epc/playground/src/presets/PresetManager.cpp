@@ -51,6 +51,7 @@ PresetManager::PresetManager(UpdateDocumentContributor *parent, bool readOnly, c
 
 PresetManager::~PresetManager()
 {
+  m_savingBanksOnShutdown = true;
   if(!m_readOnly)
   {
     auto tasks = createListOfSaveSubTasks();
@@ -60,6 +61,7 @@ PresetManager::~PresetManager()
         ;
     }
   }
+  m_savingBanksOnShutdown = false;
 }
 
 void PresetManager::init(AudioEngineProxy *aeProxy, Settings &settings, Serializer::Progress progress)
@@ -933,13 +935,18 @@ sigc::connection PresetManager::onLoadHappened(const sigc::slot<void> &cb)
 
 PresetManagerMetadataSerializer::Progress PresetManager::getProgressDecorator()
 {
-  if(Application::exists())
+  if(!m_savingBanksOnShutdown)
   {
     return [](auto str) {
-      auto hwui = Application::get().getHWUI();
-      auto settings = Application::get().getSettings();
-      SplashScreenUseCases ssuc(*hwui, *settings);
-      ssuc.addSplashScreenMessage(str);
+      if(!Application::get().isQuit())
+      {
+        if(auto hwui = Application::get().getHWUI())
+        {
+          auto settings = Application::get().getSettings();
+          SplashScreenUseCases ssuc(*hwui, *settings);
+          ssuc.addSplashScreenMessage(str);
+        }
+      }
     };
   }
   return Serializer::MockProgress;

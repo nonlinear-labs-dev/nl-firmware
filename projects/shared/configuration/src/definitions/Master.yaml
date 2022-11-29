@@ -78,16 +78,15 @@ parameters:
       Negative values: the FX II output signals are routed to FX I (with absolute amount)\n
       0.0%: no routing of signals between the FX chains\n
       Positive values: the FX I output signals are routed to FX II (with absolute amount)
-# note: enabling the parameter will lead to AE_Proxy and PG/Acceptance Test fails/crashes
-#  - <<: *MODULATEABLE_ONLY_SINGLE
-#    id: 428
-#    token: FX_Mix
-#    label_long: FX Mix @ST:Between
-#    label_short: FX Mix @ST:Between
-#    control_position: { coarse: 100, fine: 1000, scale: LINEAR_100_PERCENT, initial: 0.0f }
-#    modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT }
-#    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Global, clock: Fast, signal: None }
-#    info: >
-#      Crossfades between both FX chains I and II (only available in Single sounds).\n
-#      0.0%: only the output signal of FX I remains in the mix\n
-#      100.0%: only the output signal of FX II remains in the mix
+  - <<: *MODULATEABLE_ONLY_SINGLE
+    id: 428
+    token: FX_Mix
+    label_long: FX Mix I-II
+    label_short: FX Mix I-II
+    control_position: { coarse: 100, fine: 1000, scale: LINEAR_100_PERCENT, initial: 0.0f }
+    modulation_aspects: { coarse: 100, fine: 1000, scale: LINEAR_BIPOLAR_100_PERCENT }
+    rendering_args: { scaling: Linear, factor: 1.0f, offset: 0.0f, section: Global, clock: Fast, signal: None }
+    info: >
+      Crossfades between both FX chains I and II (only available in Single sounds).\n
+      0.0%: only the output signal of FX I remains in the mix\n
+      100.0%: only the output signal of FX II remains in the mix

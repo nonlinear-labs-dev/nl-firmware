@@ -161,6 +161,7 @@ class PresetManager : public UpdateDocumentContributor, public SyncedItem
   tUpdateID m_lastSavedMetaDataUpdateID = 0;
 
   std::list<SaveSubTask> m_saveTasks;
+  bool m_savingBanksOnShutdown = false;
   bool m_saveRequestDuringSave = false;
   bool m_readOnly = false;
 

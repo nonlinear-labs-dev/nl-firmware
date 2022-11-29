@@ -291,7 +291,7 @@ bool EditBuffer::findAnyParameterChanged() const
 {
   if(m_type == SoundType::Single)
   {
-    return findAnyParameterChanged(VoiceGroup::I) || findAnyParameterChanged(VoiceGroup::Global);
+    return findAnyParameterChanged(VoiceGroup::I) || findAnyParameterChanged(VoiceGroup::II) || findAnyParameterChanged(VoiceGroup::Global);
   }
   else
   {
