@@ -134,10 +134,6 @@ select {
   min-width: 6em;
 }
 
-.gwt-Button:hover {
-  background: #becbff;
-}
-
 .gwt-Button:active {
   border: 0.25mm solid #080c1a;
   color: #080c1a;
@@ -1375,17 +1371,13 @@ canvas {
 }
 
 .dialog-header>button:active {
-  flex-grow: 0;
+  background-position: right 0px;
+}
 
-	border: none;
-	width: 26px;
-	height: 26px;
-	vertical-align: middle;
+.dialog-header>button:hover {
+  color: rgba(255, 255, 255, 0.25);
 	background: url(images/close.png);
 	cursor: pointer;
-	position: absolute;
-	top: 4px;
-	right: 4px;
 }
 
 .dialog-header>.headline {
