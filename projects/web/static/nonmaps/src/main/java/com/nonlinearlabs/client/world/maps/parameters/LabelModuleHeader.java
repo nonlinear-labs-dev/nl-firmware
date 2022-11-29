@@ -89,6 +89,7 @@ public class LabelModuleHeader extends LabelSmall {
 
 	@Override
 	protected String getDisplayText() {
+		//TODO change to final display form?
 		ParameterGroupModel model = EditBufferModel.get().getAnyGroup(getParent().getName());
 		if(currentVG == VoiceGroup.Global)
 		{
