@@ -213,10 +213,6 @@ class dsp_host_dual : public DSPInterface
   void onParameterChangedMessage(const nltools::msg::MacroTimeParameterChangedMessage& _msg);
   void onParameterChangedMessage(const nltools::msg::GlobalModulateableParameterChangedMessage& _msg);
   void onParameterChangedMessage(const nltools::msg::GlobalUnmodulateableParameterChangedMessage& _msg);
-  void
-      onParameterChangedMessage(const nltools::msg::LocalModulateableParameterChangedMessage& _msg);  // todo: deprecate
-  OutputResetEventSource onParameterChangedMessage(
-      const nltools::msg::LocalUnmodulateableParameterChangedMessage& _msg);  // todo: deprecate
   void onParameterChangedMessage(const nltools::msg::PolyphonicModulateableParameterChangedMessage& _msg);
   OutputResetEventSource
       onParameterChangedMessage(const nltools::msg::PolyphonicUnmodulateableParameterChangedMessage& _msg);
@@ -339,8 +335,8 @@ class dsp_host_dual : public DSPInterface
   void hwModChain(const Engine::Parameters::HardwareSource& _src, const uint32_t& _id, const float& _inc);
   void mcModChain(const Engine::Parameters::MacroControl& _mc);
   inline void globalModChain(const Engine::Parameters::MacroControl& _mc);
-  inline void localModChain(const Engine::Parameters::MacroControl& _mc);                          // todo: deprecate
-  inline void localModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);  // todo: deprecate
+  inline void localModChain(const Engine::Parameters::MacroControl& _mc);
+  inline void localModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);
   inline void polyphonicModChain(const Engine::Parameters::MacroControl& _mc);
   inline void polyphonicModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);
   inline void monophonicModChain(const Engine::Parameters::MacroControl& _mc);
@@ -352,7 +348,7 @@ class dsp_host_dual : public DSPInterface
   inline void localTransition(const uint32_t& _layer,
                               const Engine::Parameters::Aspects::RenderAspect::Rendering& _rendering,
                               const Engine::Parameters::Aspects::TimeAspect::Time& _time,
-                              const float& _dest);  // todo: deprecate
+                              const float& _dest);
   // poly/mono transition
   inline void polyphonicTransition(const uint32_t& _layer,
                                    const Engine::Parameters::Aspects::RenderAspect::Rendering& _rendering,
@@ -384,10 +380,10 @@ class dsp_host_dual : public DSPInterface
   inline void onParameterRecall(const nltools::controls::MacroTimeParameter& _param);
   inline void onParameterRecall(const nltools::controls::GlobalModulateableParameter& _param);
   inline void onParameterRecall(const nltools::controls::GlobalUnmodulateableParameter& _param);
-  inline void onParameterRecall(const uint32_t& _layerId,
-                                const nltools::controls::LocalModulateableParameter& _param);  // todo: deprecate
-  inline void onParameterRecall(const uint32_t& _layerId, const nltools::controls::LocalUnmodulateableParameter& _param,
-                                const bool _vaUpdate);  // todo: deprecate
+//  inline void onParameterRecall(const uint32_t& _layerId,
+//                                const nltools::controls::LocalModulateableParameter& _param);  // todo: deprecate
+//  inline void onParameterRecall(const uint32_t& _layerId, const nltools::controls::LocalUnmodulateableParameter& _param,
+//                                const bool _vaUpdate);  // todo: deprecate
   inline void onParameterRecall(const uint32_t& _layerId,
                                 const nltools::controls::PolyphonicModulateableParameter& _param);
   inline void onParameterRecall(const uint32_t& _layerId,

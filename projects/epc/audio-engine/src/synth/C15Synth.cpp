@@ -6,7 +6,7 @@
 #include <nltools/messaging/Message.h>
 
 constexpr static u_int8_t MIDI_PROGRAMCHANGE_PATTERN = 0b11000000;
- 
+
 C15Synth::C15Synth(AudioEngineOptions* options)
     : Synth(options)
     , m_dsp(std::make_unique<dsp_host_dual>())
@@ -49,12 +49,12 @@ C15Synth::C15Synth(AudioEngineOptions* options)
   receive<GlobalUnmodulateableParameterChangedMessage>(
       EndPoint::AudioEngine,
       sigc::mem_fun(this, &C15Synth::onParameterChangedMessage<GlobalUnmodulateableParameterChangedMessage>));
-  receive<LocalModulateableParameterChangedMessage>(
-      EndPoint::AudioEngine,
-      sigc::mem_fun(this, &C15Synth::onParameterChangedMessage<LocalModulateableParameterChangedMessage>));
-  receive<LocalUnmodulateableParameterChangedMessage>(
-      EndPoint::AudioEngine,
-      sigc::mem_fun(this, &C15Synth::onResettingParameterChangedMessage<LocalUnmodulateableParameterChangedMessage>));
+  //  receive<LocalModulateableParameterChangedMessage>(
+  //      EndPoint::AudioEngine,
+  //      sigc::mem_fun(this, &C15Synth::onParameterChangedMessage<LocalModulateableParameterChangedMessage>));
+  //  receive<LocalUnmodulateableParameterChangedMessage>(
+  //      EndPoint::AudioEngine,
+  //      sigc::mem_fun(this, &C15Synth::onResettingParameterChangedMessage<LocalUnmodulateableParameterChangedMessage>));
   receive<PolyphonicModulateableParameterChangedMessage>(
       EndPoint::AudioEngine,
       sigc::mem_fun(this, &C15Synth::onParameterChangedMessage<PolyphonicModulateableParameterChangedMessage>));
