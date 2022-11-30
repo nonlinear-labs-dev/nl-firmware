@@ -896,15 +896,14 @@ void EditBuffer::undoableUnmuteLayers(UNDO::Transaction *transaction)
   findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->setCPFromHwui(transaction, 0);
 }
 
-void EditBuffer::copyAndInitGlobalMasterGroupToPartMasterGroups(UNDO::Transaction *transaction)
+void EditBuffer::copyPartTuneFromMasterTuneAndDefaultMasterGroup(UNDO::Transaction *transaction)
 {
   auto global = getParameterGroupByID({ "Master", VoiceGroup::Global });
   auto partI = getParameterGroupByID({ "Part", VoiceGroup::I });
   auto partII = getParameterGroupByID({ "Part", VoiceGroup::II });
 
-  //Copy Volume and Tune
-  for(auto &ids : std::vector<std::pair<int, int>> { { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume },
-                                                     { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune } })
+  //Copy Tune
+  for(auto &ids : std::vector<std::pair<int, int>> { { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune } })
   {
     auto pI = partI->findParameterByID({ ids.first, VoiceGroup::I });
     auto pII = partII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -1338,7 +1337,9 @@ void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction)
         transaction, { ParameterType::Monophonic_Modulateable, ParameterType::Monophonic_Unmodulateable }, *this);
     copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   }
-  copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
+
+  copyGlobalMasterAndFXMixToPartVolumes(transaction);
+  copyPartTuneFromMasterTuneAndDefaultMasterGroup(transaction);
   initFadeFrom(transaction, VoiceGroup::I);
   initFadeFrom(transaction, VoiceGroup::II);
   initSplitPoint(transaction);
@@ -1359,7 +1360,10 @@ void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
   }
 
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
-  copyAndInitGlobalMasterGroupToPartMasterGroups(transaction);
+
+  copyGlobalMasterAndFXMixToPartVolumes(transaction);
+  copyPartTuneFromMasterTuneAndDefaultMasterGroup(transaction);
+
   initFadeFrom(transaction, VoiceGroup::I);
   initFadeFrom(transaction, VoiceGroup::II);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
@@ -1875,4 +1879,34 @@ std::vector<ParameterId> EditBuffer::findAllParametersOfType(const std::vector<C
     ret = combine(ret, findAllParametersOfType(t));
   }
   return ret;
+}
+
+namespace
+{
+  double parabolicFadeCpToAmplitude(const double cp)
+  {
+    return 1.0 - (cp * cp);
+  }
+
+  double amplitudeToParabolicGainCp(const double af)
+  {
+    return std::sqrt(af) * 0.5;
+  }
+}
+
+void EditBuffer::copyGlobalMasterAndFXMixToPartVolumes(UNDO::Transaction *transaction)
+{
+  auto master = findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
+  auto fx_mix = findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global });
+
+  auto partVolumeCpVgI = amplitudeToParabolicGainCp(master->getControlPositionValue()
+                                                    * parabolicFadeCpToAmplitude(fx_mix->getControlPositionValue()));
+  auto partVolumeCpVgII = amplitudeToParabolicGainCp(
+      master->getControlPositionValue() * parabolicFadeCpToAmplitude(1.0 - fx_mix->getControlPositionValue()));
+
+  auto partVolI = findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::I});
+  auto partVolII = findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::II});
+
+  partVolI->setCPFromHwui(transaction, partVolumeCpVgI);
+  partVolII->setCPFromHwui(transaction, partVolumeCpVgII);
 }

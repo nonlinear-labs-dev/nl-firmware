@@ -32,7 +32,7 @@ HWUIActions::HWUIActions(UpdateDocumentContributor* parent, HWUI& hwui, EditBuff
             [&](const std::shared_ptr<NetworkRequest>& request)
             {
               auto part = to<VoiceGroup>(request->get("part"));
-              if(vgManager.getCurrentVoiceGroup() != part && eb.isDual())
+              if(vgManager.getCurrentVoiceGroup() != part)
               {
                 auto str = toString(part);
                 auto scope = eb.getParent()->getUndoScope().startTransaction("Select Part " + str);

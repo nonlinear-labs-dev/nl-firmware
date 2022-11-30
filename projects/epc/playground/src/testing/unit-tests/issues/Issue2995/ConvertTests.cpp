@@ -2,6 +2,16 @@
 #include "testing/unit-tests/mock/MockPresetStorage.h"
 #include <testing/unit-tests/mock/EditBufferNamedLogicalParts.h>
 
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "all ids of monophonic")
+{
+  auto& eb = *TestHelper::getEditBuffer();
+  auto all = eb.findAllParametersOfType({C15::Descriptors::ParameterType::Monophonic_Unmodulateable, C15::Descriptors::ParameterType::Monophonic_Modulateable});
+  for(const auto& p: all)
+  {
+    nltools::Log::error(p.getNumber());
+  }
+}
+
 namespace
 {
   VoiceGroup invert(VoiceGroup vg)
@@ -46,9 +56,29 @@ namespace
     }
     return ret;
   }
+
+  std::unordered_map<ParameterId, size_t> getHashMap(const std::vector<Parameter*>& p)
+  {
+    std::unordered_map<ParameterId, size_t> ret;
+    for(auto par : p)
+    {
+      ret[par->getID()] = par->getHash();
+    }
+    return ret;
+  }
+
+  std::unordered_map<int, size_t> getHashMapWithoutVG(const std::vector<Parameter*>& p)
+  {
+    std::unordered_map<int, size_t> ret;
+    for(auto par : p)
+    {
+      ret[par->getID().getNumber()] = par->getHash();
+    }
+    return ret;
+  }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general parts")
 {
   using ELP = EditBufferLogicalParts;
   auto& eb = *TestHelper::getEditBuffer();
@@ -226,7 +256,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
         CHECK(voicesI->getDisplayString() == "12 voices");
       }
 
-      THEN("defaulted parameters are corrent")
+      THEN("defaulted parameters are correct")
       {
         for(auto& p : shouldBeDefaulted)
         {
@@ -429,7 +459,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
                             auto pid = id.getNumber();
                             return pid != Voice_Grp_Fade_From && pid != Voice_Grp_Fade_Range && pid != Unison_Voices
                                 && pid != Split_Split_Point && pid != Unison_Detune && pid != Unison_Phase
-                                && pid != Unison_Pan && pid != Mono_Grp_Glide && pid != Mono_Grp_Enable && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato;
+                                && pid != Unison_Pan && pid != Mono_Grp_Glide && pid != Mono_Grp_Enable
+                                && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato;
                           });
 
       polyParams = copyIf(polyParams,
@@ -447,12 +478,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
       auto otherPolyParams = tParVec { fb_mix_fx_from, fb_mix_other, out_mix_to_other };
       auto valueHashOfMonoPhonicParams = ELP::createValueHash(monophonicParam);
       auto valueHashOfOtherPolyParams = ELP::createValueHash(otherPolyParams);
-      auto hashMapOfValuesOfPolyParams = std::unordered_map<ParameterId, size_t>();
-
-      for(auto p : polyParams)
-      {
-        hashMapOfValuesOfPolyParams[p->getID()] = p->getHash();
-      }
+      auto hashMapOfValuesOfPolyParams = getHashMap(polyParams);
 
       auto partVolumes
           = tParVec { part_vol_I, part_tune_I, getOtherPolyParam(part_vol_I, eb), getOtherPolyParam(part_tune_I, eb) };
@@ -518,7 +544,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
           = collectParams(eb.findAllParametersOfType({ C15::Descriptors::ParameterType::Polyphonic_Unmodulateable,
                                                        C15::Descriptors::ParameterType::Polyphonic_Modulateable }),
                           eb);
-      
+
       polyParams = copyIf(polyParams,
                           [](Parameter* p)
                           {
@@ -527,7 +553,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
                             auto pid = id.getNumber();
                             return pid != Voice_Grp_Fade_From && pid != Voice_Grp_Fade_Range && pid != Unison_Voices
                                 && pid != Split_Split_Point && pid != Unison_Detune && pid != Unison_Phase
-                                && pid != Unison_Pan && pid != Mono_Grp_Glide && pid != Mono_Grp_Enable && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato;
+                                && pid != Unison_Pan && pid != Mono_Grp_Glide && pid != Mono_Grp_Enable
+                                && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato;
                           });
 
       polyParams = copyIf(polyParams,
@@ -539,12 +566,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
                             return pid != FB_Mix_Comb_Src && pid != FB_Mix_SVF_Src;
                           });
 
-      auto hashMapOfValuesOfPolyParams = std::unordered_map<ParameterId, size_t>();
-
-      for(auto p : polyParams)
-      {
-        hashMapOfValuesOfPolyParams[p->getID()] = p->getHash();
-      }
+      auto hashMapOfValuesOfPolyParams = getHashMap(polyParams);
 
       auto valueHashOfPolyParams = ELP::createValueHash(polyParams);
       auto monophonicParam
@@ -626,10 +648,27 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
     ebUseCases.load(layer);
     ebUseCases.randomize(0.1);
 
+    auto disallowedIDs = [](Parameter* p)
+    {
+      using namespace C15::PID;
+      auto id = p->getID();
+      auto pid = id.getNumber();
+      return pid != Voice_Grp_Fade_From && pid != Voice_Grp_Fade_Range && pid != Unison_Voices
+          && pid != Split_Split_Point && pid != Unison_Detune && pid != Unison_Phase && pid != Unison_Pan
+          && pid != Mono_Grp_Glide && pid != Mono_Grp_Enable && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato
+          && pid != FB_Mix_Comb_Src && pid != FB_Mix_SVF_Src && pid != FB_Mix_Osc_Src && pid != FB_Mix_FX_Src
+          && pid != FB_Mix_Osc && pid != Out_Mix_To_FX && pid != Voice_Grp_Volume && pid != Voice_Grp_Tune;
+    };
+
     WHEN("convert I to single")
     {
       auto polysOfSource = copyIf(allPolys, [](Parameter* p) { return p->getVoiceGroup() == VoiceGroup::I; });
+
+
+      polysOfSource = copyIf(polysOfSource, disallowedIDs);
+
       auto polyHashOfSource = ELP::createValueHash(polysOfSource);
+      auto polyHashes = getHashMap(polysOfSource);
 
       auto fb_mix_other_value = ELP::createValueHash(fb_mix_other);
 
@@ -637,6 +676,11 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
 
       THEN("Polys were copied to I")
       {
+        for(auto p : polysOfSource)
+        {
+          INFO(p->getParentGroup()->getLongName() << "-" << p->getLongName() << " was changed!");
+          CHECK(polyHashes[p->getID()] == p->getHash());
+        }
         CHECK(ELP::createValueHash(polysOfSource) == polyHashOfSource);
       }
 
@@ -648,17 +692,18 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
           CHECK(p->isDefaultLoaded());
         }
       }
-
-      THEN("fb_transfer")
-      {
-        CHECK(ELP::createValueHash(fb_mix_other) == fb_mix_other_value);
-      }
     }
 
     WHEN("convert II to single")
     {
       auto polysOfSource = copyIf(allPolys, [](Parameter* p) { return p->getVoiceGroup() == VoiceGroup::II; });
       auto polysTarget = copyIf(allPolys, [](Parameter* p) { return p->getVoiceGroup() == VoiceGroup::I; });
+
+      polysOfSource = copyIf(polysOfSource, disallowedIDs);
+      polysTarget = copyIf(polysTarget, disallowedIDs);
+
+      auto polyHashMap = getHashMapWithoutVG(polysOfSource);
+
       auto polyHashOfSource = ELP::createValueHash(polysOfSource);
 
       auto fb_mix_other_value = ELP::createValueHash(getOtherPolyParam(fb_mix_other, eb));
@@ -667,6 +712,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
 
       THEN("Polys were copied to I")
       {
+        for(auto p: polysTarget)
+        {
+          CHECK(polyHashMap[p->getID().getNumber()] == p->getHash());
+        }
         CHECK(ELP::createValueHash(polysTarget) == polyHashOfSource);
       }
 
@@ -678,13 +727,75 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> dual fx")
           CHECK(p->isDefaultLoaded());
         }
       }
+    }
+  }
+}
+//TODO continue with layer to split!
 
-      THEN("fb_transfer")
+//not very smart to use the same algorithm as in the editbuffer?
+namespace {
+  double parabolicFadeCpToAmplitude(const double cp) {
+    return 1.0 - (cp * cp);
+  }
+
+  double amplitudeToParabolicGainCp(const double af) {
+    return std::sqrt(af) * 0.5;
+  }
+}
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new parameters")
+{
+  auto& eb = *TestHelper::getEditBuffer();
+  auto masterParameter = eb.findParameterByID({C15::PID::Master_Volume, VoiceGroup::Global});
+  auto fx_mixParameter = eb.findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global});
+  auto partVolI = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::I});
+  auto partVolII = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::II});
+
+  MockPresetStorage presets;
+  EditBufferUseCases ebUseCases(eb);
+
+  WHEN("Single loaded to Split")
+  {
+    ebUseCases.load(presets.getSinglePreset());
+
+    WHEN("FX Mix and master volume is set")
+    {
+      auto fx_mix_pos = GENERATE(0.0, 0.25, 0.5, 0.75, 1.0);
+      auto mst_vol = GENERATE(0.0, 0.25, 0.5, 0.75, 1.0);
+
+      auto partVolumeCpVgI = amplitudeToParabolicGainCp(
+          mst_vol * parabolicFadeCpToAmplitude(fx_mix_pos)
+      );
+
+      auto partVolumeCpVgII = amplitudeToParabolicGainCp(
+          mst_vol * parabolicFadeCpToAmplitude(1.0 - fx_mix_pos)
+      );
+
+      ParameterUseCases masterVol(masterParameter);
+      masterVol.setControlPosition(mst_vol);
+      ParameterUseCases fxMix(fx_mixParameter);
+      fxMix.setControlPosition(fx_mix_pos);
+
+      THEN("converted to split")
       {
-        CHECK(ELP::createValueHash(fb_mix_other) == fb_mix_other_value);
+        auto vg = GENERATE(VoiceGroup::I, VoiceGroup::II);
+        ebUseCases.convertToSplit(vg);
+
+        INFO("with master_vol: " << mst_vol << " fx_mix_pos: " << fx_mix_pos);
+        CHECK(partVolI->getControlPositionValue() == Approx(partVolumeCpVgI).epsilon(0.01));
+        CHECK(partVolII->getControlPositionValue() == Approx(partVolumeCpVgII).epsilon(0.01));
       }
 
-      //TODO FX from -> to fx
+      THEN("converted to layer")
+      {
+        auto vg = GENERATE(VoiceGroup::I, VoiceGroup::II);
+        ebUseCases.convertToLayer(vg);
+
+        INFO("with master_vol: " << mst_vol << " fx_mix_pos: " << fx_mix_pos);
+        CHECK(partVolI->getControlPositionValue() == Approx(partVolumeCpVgI).epsilon(0.01));
+        CHECK(partVolII->getControlPositionValue() == Approx(partVolumeCpVgII).epsilon(0.01));
+      }
+
     }
   }
 }

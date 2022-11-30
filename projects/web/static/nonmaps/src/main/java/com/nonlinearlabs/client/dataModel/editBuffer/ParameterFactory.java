@@ -69,13 +69,19 @@ public class ParameterFactory {
 
 	static public int[] voicesParameters = { 249, 250, 252, 253, 364, 365, 366, 367 };
 
+	static public int[] monophonicParameters = {
+		211, 213, 214, 216, 218, 219, 221, 222, 223, 307, 308, 310, 389, 188, 190, 191,
+		192, 194, 196, 197, 199, 201, 203, 204, 206, 207, 209, 225, 227, 229, 231, 232, 
+		233, 342, 235, 237, 238, 240, 241, 344
+	};
+
 	static public HashMap<SoundType, int[]> hiddenParametersBySoundType = new HashMap<SoundType, int[]>();
 	static {
-		final int[] layerHidden = { 356 };
+		final int[] layerHidden = { 356, 428 };
 		hiddenParametersBySoundType.put(SoundType.Layer, layerHidden);
 		final int[] singleHidden = { 362, 348, 350, 352, 354, 396, 397, 406, 408 };
 		hiddenParametersBySoundType.put(SoundType.Single, singleHidden);
-		final int[] splitHidden = { 348, 350, 352, 396, 397 };
+		final int[] splitHidden = { 348, 350, 352, 396, 397, 428 };
 		hiddenParametersBySoundType.put(SoundType.Split, splitHidden);
 	}
 
@@ -121,6 +127,14 @@ public class ParameterFactory {
 			return new ModulationRouterParameterModel(id);
 
 		return new BasicParameterModel(id);
+	}
+
+	static public boolean containsElement(int e, int[] arr) {
+		for (int i : arr) {
+			if (e == i)
+				return true;
+		}
+		return false;
 	}
 
 	static public int getNumberOfHW() {
@@ -288,5 +302,6 @@ public class ParameterFactory {
 		assert (noDouble(modulationRouters));
 		assert (noDouble(scaleOffsetParameters));
 		assert (noDouble(voicesParameters));
+		assert (noDouble(monophonicParameters));
 	}
 }

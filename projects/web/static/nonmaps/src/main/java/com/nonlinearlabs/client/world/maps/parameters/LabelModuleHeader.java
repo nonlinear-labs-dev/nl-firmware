@@ -5,6 +5,7 @@ import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterGroupModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
@@ -68,7 +69,6 @@ public class LabelModuleHeader extends LabelSmall {
 	public LabelModuleHeader(ParameterGroup parent) {
 		super(parent);
 		
-		//TODO check for soundtype in this function
 		isGlobal = ParameterFactory.isGlobalParameterGroup(parent.getName());
 
 		if(!isGlobal)
@@ -89,11 +89,24 @@ public class LabelModuleHeader extends LabelSmall {
 
 	@Override
 	protected String getDisplayText() {
-		//TODO change to final display form?
+		boolean isAlwaysI = false;
+		if(EditBufferModel.get().soundType.getValue() == SoundType.Single)
+		{
+			Parameter p = getParent().getAnyChildParameter();
+			if(p != null && !ParameterFactory.containsElement(p.parameterNumber, ParameterFactory.monophonicParameters))
+			{
+				isAlwaysI = true;
+			}
+		}
+
 		ParameterGroupModel model = EditBufferModel.get().getAnyGroup(getParent().getName());
 		if(currentVG == VoiceGroup.Global)
 		{
 			return model.longName.getValue() + "- G.";
+		}
+		else if(isAlwaysI)
+		{
+			return model.longName.getValue() + "- I";
 		}
 		else
 		{

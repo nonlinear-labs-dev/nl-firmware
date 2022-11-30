@@ -596,20 +596,12 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part II of Layer into Spli
       CHECK(oldVoicesIHash == EBL::createHashOfVector(EBL::getVoices<VoiceGroup::I>()));
     }
 
-    THEN("Part Volume and Tune correct")
+    THEN("Part Tune correct")
     {
-      auto volumeScale = EBL::getMasterVolume()->getValue().getScaleConverter();
       auto tuneScale = EBL::getMasterTune()->getValue().getScaleConverter();
 
-      PresetParameter* vol = preset->findParameterByID({ 247, VoiceGroup::Global }, true);
       PresetParameter* tune = preset->findParameterByID({ 248, VoiceGroup::Global }, true);
       PresetParameter* ogPartTune = preset->findParameterByID({ 360, VoiceGroup::II }, true);
-      PresetParameter* ogPartVolume = preset->findParameterByID({ 358, VoiceGroup::II }, true);
-
-      const auto presetGlobalVolumeDisplay = volumeScale->controlPositionToDisplay(vol->getValue());
-      const auto presetPartVolumeDisplay = volumeScale->controlPositionToDisplay(ogPartVolume->getValue());
-      const auto newPartVolumeDisplay = (presetGlobalVolumeDisplay + presetPartVolumeDisplay) - oldVolumeDisplay;
-      CHECK(EBL::getPartVolume<VoiceGroup::II>()->getDisplayValue() == Approx(newPartVolumeDisplay).epsilon(0.005));
 
       const auto presetGlobalTuneDisplay = tuneScale->controlPositionToDisplay(tune->getValue());
       const auto presetPartTuneDisplay = tuneScale->controlPositionToDisplay(ogPartTune->getValue());

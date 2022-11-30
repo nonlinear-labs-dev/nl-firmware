@@ -47,7 +47,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single Sound to Split")
     const auto mcmHash = EBL::createHashOfVector(EBL::getModMatrix());
     const auto scaleHash = EBL::createHashOfVector(EBL::getScale());
 
-    const auto globalMasterHash = EBL::createValueHash(EBL::getMaster());
+    const auto globalMasterHash = EBL::createValueHash(std::vector<Parameter*>{EBL::getMasterTune()});
 
     auto eb = TestHelper::getEditBuffer();
     EditBufferUseCases useCase(*eb);
@@ -101,8 +101,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single Sound to Split")
 
     THEN("Part Master have Preset Global Master Values")
     {
-      CHECK(EBL::createValueHash(EBL::getPartMaster<VoiceGroup::I>()) == globalMasterHash);
-      CHECK(EBL::createValueHash(EBL::getPartMaster<VoiceGroup::II>()) == globalMasterHash);
+      using tVec = std::vector<Parameter*>;
+      CHECK(EBL::createValueHash(tVec{EBL::getPartTune<VoiceGroup::I>()}) == globalMasterHash);
+      CHECK(EBL::createValueHash(tVec{EBL::getPartTune<VoiceGroup::II>()}) == globalMasterHash);
     }
 
     THEN("Macro Mappings are same")
@@ -151,13 +152,13 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single Sound to Layer")
 
   WHEN("Converted")
   {
+    using tVec = std::vector<Parameter*>;
     const auto localIHash = EBL::createHashOfVector(EBL::getLocalNormal<VoiceGroup::I>());
 
     const auto mcmHash = EBL::createHashOfVector(EBL::getModMatrix());
     const auto scaleHash = EBL::createHashOfVector(EBL::getScale());
 
-    const auto oldMasterHash = EBL::createValueHash(EBL::getMaster());
-
+    const auto oldMasterTuneHash = EBL::createValueHash(tVec{EBL::getMasterTune()});
 
     auto eb = TestHelper::getEditBuffer();
     EditBufferUseCases useCase(*eb);
@@ -195,10 +196,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single Sound to Layer")
       CHECK(EBL::isFactoryDefaultLoaded(EBL::getUnison<VoiceGroup::II>()));
     }
 
-    THEN("Part Master I/II was Copied from Global Master")
+    THEN("Part Master Tune I/II was Copied from Global Master Tune")
     {
-      CHECK(EBL::createValueHash(EBL::getPartMaster<VoiceGroup::I>()) == oldMasterHash);
-      CHECK(EBL::createValueHash(EBL::getPartMaster<VoiceGroup::II>()) == oldMasterHash);
+      CHECK(EBL::createValueHash(tVec{EBL::getPartTune<VoiceGroup::I>()}) == oldMasterTuneHash);
+      CHECK(EBL::createValueHash(tVec{EBL::getPartTune<VoiceGroup::II>()}) == oldMasterTuneHash);
     }
 
     THEN("Split is default")
