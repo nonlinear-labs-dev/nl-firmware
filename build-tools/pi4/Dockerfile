@@ -14,7 +14,7 @@ RUN apt -y install libpng++-dev
 RUN apt -y install debhelper dh-make quilt fakeroot lintian 
 RUN apt -y install sudo
 RUN apt -y install npm nodejs
-RUN npm install -g typescript js-yaml @types/node @types/js-yaml
+RUN npm install -g typescript@4.7.4 js-yaml @types/node @types/js-yaml
 
 ARG BOB_ID
 RUN useradd -m -u $BOB_ID bob-the-builder
