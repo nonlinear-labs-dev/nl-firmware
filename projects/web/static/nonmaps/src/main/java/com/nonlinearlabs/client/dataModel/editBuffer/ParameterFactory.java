@@ -79,7 +79,7 @@ public class ParameterFactory {
 	static {
 		final int[] layerHidden = { 356, 428 };
 		hiddenParametersBySoundType.put(SoundType.Layer, layerHidden);
-		final int[] singleHidden = { 362, 348, 350, 352, 354, 396, 397, 406, 408 };
+		final int[] singleHidden = { 348, 350, 352, 354, 396, 397, 406, 408 };
 		hiddenParametersBySoundType.put(SoundType.Single, singleHidden);
 		final int[] splitHidden = { 348, 350, 352, 396, 397, 428 };
 		hiddenParametersBySoundType.put(SoundType.Split, splitHidden);

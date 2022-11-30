@@ -531,7 +531,7 @@ void dsp_host_dual::onParameterChangedMessage(const nltools::msg::GlobalModulate
       param.log(__PRETTY_FUNCTION__, descriptor);
     switch(index)
     {
-      case C15::PID::Master_FX_Mix:
+      case IndexOfEffectsMix:
         if(m_layer_mode == LayerMode::Single)
           fxMixTransition(m_editTime.m_time, param.m_scaled);
         break;
