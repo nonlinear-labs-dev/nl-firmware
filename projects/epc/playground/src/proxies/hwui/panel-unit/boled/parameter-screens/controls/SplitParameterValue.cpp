@@ -70,15 +70,18 @@ void SplitParameterValue::drawParts(FrameBuffer& fb, const std::vector<Glib::ust
   }
 }
 
-inline VoiceGroup invert(VoiceGroup vg)
+namespace
 {
-  if(vg == VoiceGroup::I)
+  inline VoiceGroup invert(VoiceGroup vg)
   {
-    return VoiceGroup::II;
-  }
-  else
-  {
-    return VoiceGroup::I;
+    if(vg == VoiceGroup::I)
+    {
+      return VoiceGroup::II;
+    }
+    else
+    {
+      return VoiceGroup::I;
+    }
   }
 }
 

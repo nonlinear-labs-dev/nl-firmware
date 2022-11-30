@@ -44,23 +44,13 @@ void BankButton::bruteForce()
 
   auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
   auto mode = famSetting.getState().mode;
-
-  switch(getSoundType())
-  {
-    case SoundType::Single:
-      installSingle();
-      break;
-    case SoundType::Layer:
-    case SoundType::Split:
-      if(mode == UIMode::Select)
-        installDual();
-      else
-        installSingle();
-      break;
-  }
+  if(mode == UIMode::Select)
+    installSelect();
+  else
+    installNonSelect();
 }
 
-void BankButton::installSingle()
+void BankButton::installNonSelect()
 {
   auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
   auto focusAndMode = famSetting.getState();
@@ -80,7 +70,7 @@ void BankButton::installSingle()
   m_buttonAHandler = std::make_unique<ShortVsLongPress>(toggleBankFocus, toggleBankFocus);
 }
 
-void BankButton::installDual()
+void BankButton::installSelect()
 {
   auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
   auto focusAndMode = famSetting.getState();

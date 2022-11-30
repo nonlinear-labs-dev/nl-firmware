@@ -36,7 +36,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Parameters do not Crash")
 }
 
 //TODO FIX this test!!! isGlobal now depends on SoundType!!
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Groups are conforming to GroupID rules", "[!mayfail]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Groups are conforming to GroupID rules")
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
@@ -45,7 +45,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Groups are conformin
       REQUIRE_FALSE(GroupId::isGlobal(group->getID().getName()));
       for(auto &p : group->getParameters())
       {
-        INFO("Parameter " << p->getLongName() << " was not expected to be global.." << p->getType());
+        INFO("ParameterGroup " << group->getID().toString() << " Parameter " << p->getLongName() << "-" << toString(p->getVoiceGroup()));
         REQUIRE_FALSE(ParameterId::isGlobal(p->getID().getNumber()));
       }
     }

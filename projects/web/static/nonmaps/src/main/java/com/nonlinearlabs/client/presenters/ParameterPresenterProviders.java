@@ -37,6 +37,21 @@ public class ParameterPresenterProviders {
 		}
 
 		public ParameterPresenter getValue() {
+			//TODO implement get real Parameter by type? and soundtype -> see (EditBuffer::getSelected())
+
+
+			if(EditBufferModel.get().soundType.getValue() == SoundType.Single)
+			{
+				if(containsElement(parameterNumber, ParameterFactory.monophonicParameters))
+				{
+					return findMap(EditBufferModel.get().voiceGroup.getValue()).get(parameterNumber).getValue();
+				}
+				else
+				{
+					return findMap(VoiceGroup.I).get(parameterNumber).getValue();
+				}
+			}
+
 			if(EditBufferModel.get().soundType.getValue() == SoundType.Layer && containsElement(parameterNumber, ParameterFactory.voicesParameters)) {
 				return findMap(VoiceGroup.I).get(parameterNumber).getValue();
 			}

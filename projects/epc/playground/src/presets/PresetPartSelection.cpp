@@ -12,7 +12,8 @@ PresetPartSelection::PresetPartSelection(VoiceGroup focus)
   auto eb = pm->getEditBuffer();
 
   resetToLoaded();
-  m_presetLoadedConnection = eb->onPresetLoaded(sigc::mem_fun(this, &PresetPartSelection::onPresetLoaded));
+  m_presetLoadedConnection = eb->onPresetLoaded(sigc::mem_fun(this, &PresetPartSelection::resetToLoaded));
+  m_presetManagerLoaded = eb->getParent()->onLoadHappened(sigc::mem_fun(this, &PresetPartSelection::resetToLoaded));
 }
 
 void PresetPartSelection::selectNextBank()
@@ -49,22 +50,11 @@ void PresetPartSelection::selectNextPresetPart()
   {
     if(m_preset)
     {
-      if(m_preset->isDual())
+      if(m_voiceGroup == VoiceGroup::I)
       {
-        if(m_voiceGroup == VoiceGroup::I)
-        {
-          m_voiceGroup = VoiceGroup::II;
-        }
-        else if(m_voiceGroup == VoiceGroup::II)
-        {
-          if(auto newPreset = m_bank->getPresetAt(m_bank->getPresetPosition(m_preset) + 1))
-          {
-            m_preset = newPreset;
-            m_voiceGroup = VoiceGroup::I;
-          }
-        }
+        m_voiceGroup = VoiceGroup::II;
       }
-      else
+      else if(m_voiceGroup == VoiceGroup::II)
       {
         if(auto newPreset = m_bank->getPresetAt(m_bank->getPresetPosition(m_preset) + 1))
         {
@@ -82,27 +72,16 @@ void PresetPartSelection::selectPreviousPresetPart()
   {
     if(m_preset)
     {
-      if(m_preset->isDual())
+      if(m_voiceGroup == VoiceGroup::II)
       {
-        if(m_voiceGroup == VoiceGroup::II)
-        {
-          m_voiceGroup = VoiceGroup::I;
-        }
-        else if(m_voiceGroup == VoiceGroup::I)
-        {
-          if(auto newPreset = m_bank->getPresetAt(m_bank->getPresetPosition(m_preset) - 1))
-          {
-            m_preset = newPreset;
-            m_voiceGroup = m_preset->isDual() ? VoiceGroup::II : VoiceGroup::I;
-          }
-        }
+        m_voiceGroup = VoiceGroup::I;
       }
-      else
+      else if(m_voiceGroup == VoiceGroup::I)
       {
         if(auto newPreset = m_bank->getPresetAt(m_bank->getPresetPosition(m_preset) - 1))
         {
           m_preset = newPreset;
-          m_voiceGroup = m_preset->isDual() ? VoiceGroup::II : VoiceGroup::I;
+          m_voiceGroup = VoiceGroup::II;
         }
       }
     }
@@ -120,18 +99,8 @@ void PresetPartSelection::resetToLoaded()
     if(auto preset = bank->getSelectedPreset())
     {
       m_preset = preset;
-      if(m_preset->isDual())
-      {
-        auto src = eb->getPartOrigin(m_focusedVoiceGroup).sourceGroup;
-        m_voiceGroup = src != VoiceGroup::Global ? src : VoiceGroup::I;
-      }
-      else
-        m_voiceGroup = VoiceGroup::I;
+      auto src = eb->getPartOrigin(m_focusedVoiceGroup).sourceGroup;
+      m_voiceGroup = src != VoiceGroup::Global ? src : VoiceGroup::I;
     }
   }
-}
-
-void PresetPartSelection::onPresetLoaded()
-{
-  resetToLoaded();
 }

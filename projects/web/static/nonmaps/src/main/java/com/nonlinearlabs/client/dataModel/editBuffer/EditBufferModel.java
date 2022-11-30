@@ -107,6 +107,18 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 		if (global != null)
 			return global;
 
+		boolean isSingle = soundType.getValue() == SoundType.Single;
+		boolean isMonophonic = ParameterFactory.containsElement(paramID, ParameterFactory.monophonicParameters);
+
+		if(isSingle && isMonophonic)
+		{
+			return byVoiceGroup[voiceGroup.getValue().ordinal()].parameters.get(paramID);
+		}
+		else if(isSingle && !isMonophonic)
+		{
+			return byVoiceGroup[VoiceGroup.I.ordinal()].parameters.get(paramID);
+		}
+
 		return byVoiceGroup[voiceGroup.getValue().ordinal()].parameters.get(paramID);
 	}
 

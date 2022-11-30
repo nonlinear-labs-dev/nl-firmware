@@ -136,8 +136,7 @@ public class Overlay extends OverlayLayout {
 		drawBackground(ctx);
 		buttons.drawActiveButton(ctx, invalidationMask);
 
-		if (EditBufferModel.get().soundType.getValue() != SoundType.Single)
-			drawDualSoundIndication(ctx);
+		drawDualSoundIndication(ctx);
 
 		super.draw(ctx, invalidationMask);
 	}

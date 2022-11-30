@@ -3,6 +3,10 @@ package com.nonlinearlabs.client.world.maps.parameters;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
+import com.nonlinearlabs.client.dataModel.editBuffer.ParameterGroupModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
@@ -59,8 +63,23 @@ public class LabelModuleHeader extends LabelSmall {
 		}
 	}
 
+	private boolean isGlobal = false;
+	private VoiceGroup currentVG = VoiceGroup.Global;
+
 	public LabelModuleHeader(ParameterGroup parent) {
 		super(parent);
+		
+		isGlobal = ParameterFactory.isGlobalParameterGroup(parent.getName());
+
+		if(!isGlobal)
+		{
+			EditBufferModel.get().voiceGroup.onChange(vg -> {
+				currentVG = vg;
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				return true;
+			});
+		}
+
 	}
 
 	@Override
@@ -70,7 +89,29 @@ public class LabelModuleHeader extends LabelSmall {
 
 	@Override
 	protected String getDisplayText() {
-		return EditBufferModel.get().getAnyGroup(getParent().getName()).longName.getValue();
+		boolean isAlwaysI = false;
+		if(EditBufferModel.get().soundType.getValue() == SoundType.Single)
+		{
+			Parameter p = getParent().getAnyChildParameter();
+			if(p != null && !ParameterFactory.containsElement(p.parameterNumber, ParameterFactory.monophonicParameters))
+			{
+				isAlwaysI = true;
+			}
+		}
+
+		ParameterGroupModel model = EditBufferModel.get().getAnyGroup(getParent().getName());
+		if(currentVG == VoiceGroup.Global)
+		{
+			return model.longName.getValue() + "- G.";
+		}
+		else if(isAlwaysI)
+		{
+			return model.longName.getValue() + "- I";
+		}
+		else
+		{
+			return model.longName.getValue() + "-" + currentVG.toString();
+		}
 	}
 
 	protected boolean isLocked() {

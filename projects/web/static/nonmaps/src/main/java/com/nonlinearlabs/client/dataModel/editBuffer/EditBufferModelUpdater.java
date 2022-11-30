@@ -34,9 +34,6 @@ public class EditBufferModelUpdater extends Updater {
 			String soundType = getAttributeValue(root, "editbuffer-type");
 			EditBufferModel.get().soundType.setValue(EditBufferModel.SoundType.valueOf(soundType));
 
-			if (EditBufferModel.SoundType.valueOf(soundType) == SoundType.Single)
-				EditBufferModel.get().voiceGroup.setValue(VoiceGroup.I);
-
 			String vgIName = getAttributeValue(root, "vg-I-name");
 			EditBufferModel.get().loadedPresetInVG1.setValue(vgIName);
 

@@ -199,7 +199,7 @@ bool Parameter::isDisabledForType(SoundType type) const
 
 void Parameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
-  if(mode == Defaults::FactoryDefault)
+  if(mode == Defaults::FactoryDefault && !isLocked())
   {
     loadFromPreset(transaction, getFactoryDefaultValue());
   }

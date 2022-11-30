@@ -2,6 +2,7 @@ package com.nonlinearlabs.client.useCases;
 
 import java.util.Arrays;
 
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.LoadToPartMode.LoadToPartModeData;
@@ -199,7 +200,9 @@ public class EditBufferUseCases {
 	}
 
 	public void selectParameter(int paramNumber) {
+		GWT.log("select Parameter: " + paramNumber);
 		ParameterId id = toParamId(paramNumber);
+		GWT.log("select Parameter-Id: " + id.toString());
 		if (EditBufferModel.get().selectedParameter.setValue(id.getNumber()))
 			NonMaps.get().getServerProxy().selectParameter(id);
 	}
@@ -447,6 +450,7 @@ public class EditBufferUseCases {
 	}
 
 	public void selectVoiceGroup(VoiceGroup group) {
+		GWT.log("selectVoiceGroup: " + group.toString());
 		boolean changed = EditBufferModel.get().voiceGroup.setValue(group);
 		if (SetupModel.get().systemSettings.syncVoiceGroups.getBool() && changed) {
 			NonMaps.theMaps.getServerProxy().syncVoiceGroup();
@@ -472,6 +476,12 @@ public class EditBufferUseCases {
 		if (EditBufferModel.get().soundType.getValue() == SoundType.Layer) {
 			if (containsElement(paramNumber, ParameterFactory.voicesParameters)) {
 				return VoiceGroup.I;
+			}
+		}
+
+		if (EditBufferModel.get().soundType.getValue() == SoundType.Single) {
+			if(containsElement(paramNumber, ParameterFactory.monophonicParameters)) {
+				return ParameterFactory.isGlobalParameter(paramNumber) ? VoiceGroup.Global : EditBufferModel.get().voiceGroup.getValue();
 			}
 		}
 

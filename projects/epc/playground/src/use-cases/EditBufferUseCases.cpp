@@ -415,3 +415,31 @@ void EditBufferUseCases::selectLastSelectedMacroControlParameter()
   auto id = m_editBuffer.getLastSelectedMacroId();
   selectParameter(id, true);
 }
+
+void EditBufferUseCases::lockParametersTemporarily(const std::vector<ParameterId>& params)
+{
+  auto scope = UNDO::Scope::startTrashTransaction();
+  auto transaction = scope->getTransaction();
+
+  for(auto& id: params)
+  {
+    if(auto param = m_editBuffer.findParameterByID(id))
+    {
+      param->undoableLock(transaction);
+    }
+  }
+}
+
+void EditBufferUseCases::unlockParametersTemporarily(const std::vector<ParameterId>& params)
+{
+  auto scope = UNDO::Scope::startTrashTransaction();
+  auto transaction = scope->getTransaction();
+
+  for(auto& id: params)
+  {
+    if(auto param = m_editBuffer.findParameterByID(id))
+    {
+      param->undoableUnlock(transaction);
+    }
+  }
+}
