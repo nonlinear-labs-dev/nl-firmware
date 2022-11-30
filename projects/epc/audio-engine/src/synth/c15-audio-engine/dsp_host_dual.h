@@ -56,23 +56,11 @@ inline constexpr bool LOG_MOD_CHAIN = false;
 inline constexpr bool LOG_ENGINE_STATUS = false;
 inline constexpr bool LOG_ENGINE_EDITS = false;
 inline constexpr bool LOG_INPUT_EVENT_STAGE = false;
-inline constexpr C15::PID::ParameterID LOG_PARAMETERS[] = {
-    C15::PID::Out_Mix_Lvl,
-    C15::PID::Out_Mix_To_FX,
-    C15::PID::FB_Mix_FX_Src,
-    C15::PID::Voice_Grp_Mute,
-    C15::PID::Unison_Detune,
-    C15::PID::Mono_Grp_Enable,
-    C15::PID::Split_Split_Point,
-    C15::PID::Voice_Grp_Fade_From,
-    C15::PID::Voice_Grp_Fade_Range
-};
+inline constexpr C15::PID::ParameterID LOG_PARAMETERS[] = {};
 
 class MidiRuntimeOptions;
 
 using KeyShift = ShifteableKeys<C15::Config::physical_key_from, C15::Config::physical_key_to>;
-
-constexpr static auto tNUM_HW = static_cast<int>(C15::Parameters::Hardware_Sources::_LENGTH_);
 
 class DSPInterface
 {
@@ -165,7 +153,7 @@ class DSPInterface
   }
 
  private:
-  std::array<HWChangeSource, tNUM_HW> m_hwSourceLastChangeSources;
+  std::array<HWChangeSource, C15::Parameters::num_of_Hardware_Sources> m_hwSourceLastChangeSources;
 };
 
 class dsp_host_dual : public DSPInterface
@@ -335,8 +323,6 @@ class dsp_host_dual : public DSPInterface
   void hwModChain(const Engine::Parameters::HardwareSource& _src, const uint32_t& _id, const float& _inc);
   void mcModChain(const Engine::Parameters::MacroControl& _mc);
   inline void globalModChain(const Engine::Parameters::MacroControl& _mc);
-  inline void localModChain(const Engine::Parameters::MacroControl& _mc);
-  inline void localModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);
   inline void polyphonicModChain(const Engine::Parameters::MacroControl& _mc);
   inline void polyphonicModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);
   inline void monophonicModChain(const Engine::Parameters::MacroControl& _mc);

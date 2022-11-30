@@ -26,15 +26,15 @@ namespace Engine
       template <typename TP> struct ModChain
       {
         MC_Assignment<C15::Parameters::Macro_Controls, TP> m_assignment = {};
-        Parameters::Modulateable m_modulateables[(size_t) TP::_LENGTH_] = {};
+        std::array<Parameters::Modulateable, (size_t) TP::_LENGTH_> m_modulateables = {};
       };
 
       struct ModMatrix
       {
-        Parameters::HardwareSource m_hardwareSources[C15::Parameters::num_of_Hardware_Sources] = {};
-        Parameters::HardwareAmount m_hardwareAmounts[C15::Parameters::num_of_Hardware_Amounts] = {};
-        Parameters::MacroControl m_macroControls[(uint32_t) C15::Parameters::Macro_Controls::_OPTIONS_] = {};
-        Parameters::MacroTime m_macroTimes[(uint32_t) C15::Parameters::Macro_Times::_OPTIONS_] = {};
+        std::array<Parameters::HardwareSource, C15::Parameters::num_of_Hardware_Sources> m_hardwareSources = {};
+        std::array<Parameters::HardwareAmount, C15::Parameters::num_of_Hardware_Amounts> m_hardwareAmounts = {};
+        std::array<Parameters::MacroControl, (size_t) C15::Parameters::Macro_Controls::_OPTIONS_> m_macroControls = {};
+        std::array<Parameters::MacroTime, (size_t) C15::Parameters::Macro_Times::_OPTIONS_> m_macroTimes = {};
         inline void init()
         {
           // manually setting up constant return behaviors for bender, aftertouch
@@ -54,7 +54,7 @@ namespace Engine
 
       template <typename TP, typename DP> struct ParamChain : public ModChain<TP>
       {
-        Parameters::Unmodulateable m_unmodulateables[(size_t) DP::_LENGTH_] = {};
+        std::array<Parameters::Unmodulateable, (size_t) DP::_LENGTH_> m_unmodulateables = {};
       };
 
     }  // namespace Engine::Storage::Detail
@@ -66,8 +66,6 @@ namespace Engine
     };
 
     struct LayerParameterStorage
-        // temporary
-        : public Detail::ParamChain<C15::Parameters::Local_Modulateables, C15::Parameters::Local_Unmodulateables>
     {
       Detail::ParamChain<C15::Parameters::Polyphonic_Modulateables, C15::Parameters::Polyphonic_Unmodulateables>
           m_polyphonic = {};

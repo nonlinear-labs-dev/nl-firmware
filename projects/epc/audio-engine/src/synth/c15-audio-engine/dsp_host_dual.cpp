@@ -503,9 +503,9 @@ void dsp_host_dual::onParameterChangedMessage(const nltools::msg::GlobalModulate
     param.m_scaled = scale(param.m_scaling, param.polarize(param.m_position));
     if constexpr(LOG_EDITS)
       param.log(__PRETTY_FUNCTION__, descriptor);
-    switch(index)
+    switch(_msg.m_id)
     {
-      case IndexOfEffectsMix:
+      case C15::PID::Master_FX_Mix:
         if(m_layer_mode == LayerMode::Single)
           fxMixTransition(m_editTime.m_time, param.m_scaled);
         break;
@@ -1021,7 +1021,7 @@ void dsp_host_dual::reset()
 dsp_host_dual::HWSourceValues dsp_host_dual::getHWSourceValues() const
 {
   dsp_host_dual::HWSourceValues ret;
-  std::transform(m_parameters.m_global.m_hardwareSources, m_parameters.m_global.m_hardwareSources + ret.size(),
+  std::transform(m_parameters.m_global.m_hardwareSources.begin(), m_parameters.m_global.m_hardwareSources.end(),
                  ret.begin(), [](const auto &a) { return a.m_position; });
   return ret;
 }
@@ -1277,10 +1277,11 @@ void dsp_host_dual::mcModChain(const Engine::Parameters::MacroControl &_mc)
 {
   globalModChain(_mc);
   if(m_layer_mode == LayerMode::Single)
-    localModChain(_mc);
+    polyphonicModChain(_mc);
   else
     for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
-      localModChain(layerId, _mc);
+      polyphonicModChain(layerId, _mc);
+  monophonicModChain(_mc);
 }
 
 inline void dsp_host_dual::globalModChain(const Engine::Parameters::MacroControl &_mc)
@@ -1312,18 +1313,6 @@ inline void dsp_host_dual::globalModChain(const Engine::Parameters::MacroControl
       }
     }
   }
-}
-
-inline void dsp_host_dual::localModChain(const Engine::Parameters::MacroControl &_mc)
-{
-  polyphonicModChain(_mc);
-  monophonicModChain(_mc);
-}
-
-inline void dsp_host_dual::localModChain(const uint32_t &_layer, const Engine::Parameters::MacroControl &_mc)
-{
-  polyphonicModChain(_layer, _mc);
-  monophonicModChain(_mc);
 }
 
 inline void dsp_host_dual::polyphonicModChain(const Engine::Parameters::MacroControl &_mc)
@@ -1607,7 +1596,6 @@ template <typename T> inline void dsp_host_dual::recallCommon(const T &_msg, con
   for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
   {
     // macro assignments
-    m_parameters.m_layer[layerId].m_assignment.reset();
     m_parameters.m_layer[layerId].m_polyphonic.m_assignment.reset();
     m_parameters.m_layer[layerId].m_monophonic.m_assignment.reset();
     // voice fade
