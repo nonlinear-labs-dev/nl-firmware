@@ -468,7 +468,7 @@ void PresetManager::sortBanks(UNDO::Transaction *transaction, const std::vector<
 const std::set<int> &getUnavailableParametersBySoundType(SoundType t)
 {
   static std::set<int> unavailableInSingleSound {
-    C15::PID::FB_Mix_Comb_Src,   C15::PID::FB_Mix_FX_Src,        C15::PID::FB_Mix_Osc_Src,   C15::PID::Out_Mix_To_FX,
+    C15::PID::FB_Mix_Comb_Src,   C15::PID::FB_Mix_FX_Src,        C15::PID::FB_Mix_Osc_Src,
     C15::PID::Split_Split_Point, C15::PID::Voice_Grp_Fade_From,  C15::PID::Voice_Grp_Tune,   C15::PID::FB_Mix_Osc,
     C15::PID::FB_Mix_SVF_Src,    C15::PID::Voice_Grp_Fade_Range, C15::PID::Voice_Grp_Volume,
   };

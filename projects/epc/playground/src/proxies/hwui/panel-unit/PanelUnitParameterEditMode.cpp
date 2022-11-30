@@ -227,7 +227,7 @@ OutContainer cleanParameterIDSForType(const InContainer &ids, SoundType type)
   {
     case SoundType::Single:
       std::copy_if(ids.begin(), ids.end(), std::back_inserter(ret),
-                   [](int id) { return id != C15::PID::FB_Mix_Comb_Src && id != C15::PID::FB_Mix_SVF_Src && id != C15::PID::FB_Mix_FX_Src && id != C15::PID::Out_Mix_To_FX; });
+                   [](int id) { return id != C15::PID::FB_Mix_Comb_Src && id != C15::PID::FB_Mix_SVF_Src && id != C15::PID::FB_Mix_FX_Src; });
       break;
     case SoundType::Split:
       std::copy_if(ids.begin(), ids.end(), std::back_inserter(ret),

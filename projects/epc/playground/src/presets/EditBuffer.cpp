@@ -1636,7 +1636,6 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
                                          { C15::PID::FB_Mix_Comb_Src, C15::PID::FB_Mix_Comb },
                                          { C15::PID::FB_Mix_SVF_Src, C15::PID::FB_Mix_SVF },
                                          { C15::PID::FB_Mix_FX_Src, C15::PID::FB_Mix_FX },
-                                         { C15::PID::Out_Mix_To_FX, C15::PID::Out_Mix_Lvl },
                                          { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume },
                                          { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune },
                                          { C15::PID::Voice_Grp_Fade_From, C15::PID::Master_Volume },
@@ -1649,7 +1648,6 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
                                        { { C15::PID::Split_Split_Point, C15::PID::Master_Volume },
                                          { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune },
                                          { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume },
-                                         { C15::PID::Out_Mix_To_FX, C15::PID::Out_Mix_Lvl },
                                          { C15::PID::FB_Mix_FX_Src, C15::PID::FB_Mix_FX },
                                          { C15::PID::Master_Pan, C15::PID::Master_Volume },
                                          { C15::PID::Master_Serial_FX, C15::PID::Master_Volume } } } };
