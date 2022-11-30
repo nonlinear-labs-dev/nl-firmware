@@ -770,10 +770,3 @@ bool Parameter::isPolyphonic() const
   return t == C15::Descriptors::ParameterType::Polyphonic_Modulateable
       || t == C15::Descriptors::ParameterType::Polyphonic_Unmodulateable;
 }
-
-bool Parameter::isLocal() const
-{
-  const auto t = getType();
-  return t == C15::Descriptors::ParameterType::Local_Modulateable
-      || t == C15::Descriptors::ParameterType::Local_Unmodulateable;
-}

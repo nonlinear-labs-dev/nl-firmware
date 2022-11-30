@@ -151,7 +151,6 @@ class Parameter : public UpdateDocumentContributor,
 
   [[nodiscard]] C15::Descriptors::ParameterType getType() const;
   bool isMonophonic() const;
-  bool isLocal() const;
   bool isPolyphonic() const;
   void sendParameterMessage() const;
 

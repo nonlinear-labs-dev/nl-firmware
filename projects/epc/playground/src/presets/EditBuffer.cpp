@@ -415,7 +415,7 @@ Parameter *EditBuffer::getSelected(VoiceGroup voiceGroup) const
   {
     if(auto p = findParameterByID(m_lastSelectedParameter))
     {
-      if(p->isPolyphonic() || p->isLocal())
+      if(p->isPolyphonic())
       {
         voiceGroup = VoiceGroup::I;
       }
@@ -1904,8 +1904,8 @@ void EditBuffer::copyGlobalMasterAndFXMixToPartVolumes(UNDO::Transaction *transa
   auto partVolumeCpVgII = amplitudeToParabolicGainCp(
       master->getControlPositionValue() * parabolicFadeCpToAmplitude(1.0 - fx_mix->getControlPositionValue()));
 
-  auto partVolI = findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::I});
-  auto partVolII = findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::II});
+  auto partVolI = findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
+  auto partVolII = findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
 
   partVolI->setCPFromHwui(transaction, partVolumeCpVgI);
   partVolII->setCPFromHwui(transaction, partVolumeCpVgII);

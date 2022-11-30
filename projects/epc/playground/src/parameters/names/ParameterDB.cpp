@@ -129,7 +129,7 @@ Glib::ustring ParameterDB::getDescription(const int num) const
   auto d = C15::ParameterList[num];
   if(!d.m_pg.m_param_info)
   {
-    nltools::Log::error("there is no short name entry in parameter list for parameter", num);
+    nltools::Log::error("there is no info entry in parameter list for parameter", num);
     return "";
   }
 
@@ -152,8 +152,9 @@ Glib::ustring ParameterDB::replaceInDynamicLabels(const Glib::ustring &name, con
 {
   auto paramType = C15::ParameterList[parameterID.getNumber()].m_param.m_type;
   using namespace C15::Descriptors;
-  auto isGlobal = paramType != ParameterType::Local_Modulateable && paramType != ParameterType::Local_Unmodulateable
-      && paramType != ParameterType::Polyphonic_Unmodulateable && paramType != ParameterType::Polyphonic_Modulateable;
+  auto isGlobal = paramType != ParameterType::Polyphonic_Unmodulateable
+      && paramType != ParameterType::Polyphonic_Modulateable && paramType != ParameterType::Monophonic_Unmodulateable
+      && paramType != ParameterType::Monophonic_Modulateable;
 
   if(isGlobal)
     return C15::Placeholder::replaceGlobal(name, type);
