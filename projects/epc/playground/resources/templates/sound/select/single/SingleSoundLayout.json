@@ -29,7 +29,10 @@
         },
         "ButtonB": {
           "Class": "Button",
-          "Position": "BUTTON_B"
+          "Position": "BUTTON_B",
+          "Init": {
+            "Text[Text]": "FX Mix.."
+          }
         },
         "ButtonC": {
           "Class": "Button",
@@ -66,6 +69,7 @@
       },
       "EventSinks": {
         "BUTTON_A": "SwitchToButtonADetail",
+        "BUTTON_B": "OpenFXMixParameter",
         "BUTTON_C": "SwitchToVoicesDetail",
         "BUTTON_D": "OpenMasterParameter"
       }
