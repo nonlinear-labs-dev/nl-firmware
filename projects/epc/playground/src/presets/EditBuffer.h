@@ -186,6 +186,8 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void initUnisonVoicesScaling(SoundType newType);
 
   void initToFX(UNDO::Transaction *transaction);
+  void updateOutMixerToFX(UNDO::Transaction* transaction);
+
   void copyPartTuneFromMasterTuneAndDefaultMasterGroup(UNDO::Transaction *transaction);
 
   void loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *transaction, const Preset *preset,

@@ -60,19 +60,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Split (II) to Single")
     TestHelper::randomizeFadeParams(transaction);
   }
 
-  WHEN("FB From FX Selected")
-  {
-    EditBufferUseCases ebUseCases(*TestHelper::getEditBuffer());
-    ebUseCases.selectParameter({C15::PID::FB_Mix_FX_Src, VoiceGroup::I}, true);
-    ebUseCases.convertToSingle(VoiceGroup::I);
-
-    THEN("FB Effects selected")
-    {
-      auto eb = TestHelper::getEditBuffer();
-      CHECK(eb->getSelectedParameterNumber() == C15::PID::FB_Mix_FX);
-    }
-  }
-
   WHEN("Converted")
   {
 
@@ -103,7 +90,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Split (II) to Single")
     {
       CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
       CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
       CHECK(EBL::isFactoryDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
     }
 
@@ -252,7 +238,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Layer (II) to Single")
     THEN("Special Local Params are default")
     {
       CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>(), EBL::getCrossFB<VoiceGroup::II>()));
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getToFX<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::II>()));
     }
 
     THEN("Local I has Local II and Local II is default")
@@ -383,7 +368,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Layer (I) to Single")
     THEN("Special Local Params are default")
     {
       CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>(), EBL::getCrossFB<VoiceGroup::II>()));
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getToFX<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::II>()));
     }
 
     THEN("Local I has Local II and Local II is default")
