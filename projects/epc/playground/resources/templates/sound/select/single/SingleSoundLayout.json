@@ -20,6 +20,11 @@
           "Position": "64, 0",
           "Events": "EditBufferNameWithSuffix => Text[Text]"
         },
+        "VoiceGroupI":
+        {
+          "Position": "25, 26",
+          "Class": "CurrentVoiceGroupSelectionIndicator"
+        },
         "ButtonA": {
           "Class": "Button",
           "Position": "BUTTON_A",
