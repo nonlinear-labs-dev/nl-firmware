@@ -47,3 +47,10 @@ void PitchbendParameter::onLocalEnableChanged(bool localEnableState)
     PhysicalControlParameter::setCPFromSetting(scope->getTransaction(), getDefValueAccordingToMode());
   }
 }
+
+void PitchbendParameter::loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value)
+{
+  auto val = getDefValueAccordingToMode();
+  PhysicalControlParameter::loadFromPreset(transaction, val);
+  setIndirect(transaction, val);
+}

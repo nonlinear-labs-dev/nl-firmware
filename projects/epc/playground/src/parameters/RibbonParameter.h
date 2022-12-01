@@ -29,6 +29,7 @@ class RibbonParameter : public PhysicalControlParameter
   void boundToMacroControl(tControlPositionValue v);
 
   void sendModeToPlaycontroller() const;
+  tControlPositionValue getDefValueAccordingToMode(RibbonReturnMode mode) const;
   tControlPositionValue getDefValueAccordingToMode() const override;
   bool isLocalEnabled() const override;
   void onLocalEnableChanged(bool localEnableState) override;

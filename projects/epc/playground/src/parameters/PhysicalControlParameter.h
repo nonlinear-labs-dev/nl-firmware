@@ -17,6 +17,7 @@ class PhysicalControlParameter : public Parameter
 
   void registerTarget(ModulationRoutingParameter *target);
   Glib::ustring generateName() const;
+  void doPreload();
   void loadFromPreset(UNDO::Transaction *transaction, const tControlPositionValue &value) override;
 
   void setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue) override;
@@ -60,13 +61,12 @@ class PhysicalControlParameter : public Parameter
  protected:
   void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
- private:
-  IntrusiveList<ModulationRoutingParameter *> m_targets;
-
-  tControlPositionValue m_valueBeforeLastLoad = 0;
   ReturnMode m_returnModeBeforeLastLoad = ReturnMode::None;
-
   bool m_changingFromHWUI = false;
   bool m_lastChangedFromHWUI = false;
+  tControlPositionValue m_valueBeforeLastLoad = 0;
+
+ private:
+  IntrusiveList<ModulationRoutingParameter *> m_targets;
   ReturnMode m_oldReturnMode;
 };
