@@ -802,9 +802,7 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   else if(oldType == SoundType::Layer)
     undoableConvertLayerToSingle(transaction, copyFrom);
 
-  if(copyFrom == VoiceGroup::II)
-    updateOutMixerToFX(transaction);
-
+  initToFX(transaction);
   initFadeFrom(transaction, VoiceGroup::I);
   initFadeFrom(transaction, VoiceGroup::II);
   initCrossFB(transaction);
@@ -1117,17 +1115,6 @@ void EditBuffer::initToFX(UNDO::Transaction *transaction)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
     findParameterByID({ C15::PID::Out_Mix_To_FX, vg })->loadDefault(transaction, Defaults::FactoryDefault);
-}
-
-void EditBuffer::updateOutMixerToFX(UNDO::Transaction* transaction)
-{
-  auto param = findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
-  auto cp = param->getControlPositionValue();
-  param->setCPFromHwui(transaction, 1 - cp);
-
-  auto param2 = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
-  auto cp2 = param2->getControlPositionValue();
-  param2->setCPFromHwui(transaction, 1 - cp2);
 }
 
 std::vector<Parameter *> EditBuffer::getCrossFBParameters(const VoiceGroup &to) const

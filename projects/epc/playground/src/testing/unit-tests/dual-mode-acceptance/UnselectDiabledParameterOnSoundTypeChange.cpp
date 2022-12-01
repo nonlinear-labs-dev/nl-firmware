@@ -135,6 +135,35 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"FROM Layer")
     }
   }
 
+  WHEN("FB: Effects - From x selected")
+  {
+    ebUseCases.selectParameter({ FB_Mix_FX_Src, VoiceGroup::II });
+
+    THEN("Single Preset Loaded")
+    {
+      ebUseCases.load(presets.getSinglePreset());
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { FB_Mix_FX, VoiceGroup::I });
+    }
+
+    THEN("Split Preset Loaded")
+    {
+      ebUseCases.load(presets.getSplitPreset());
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_FX_Src, VoiceGroup::II });
+    }
+
+    THEN("Split converted")
+    {
+      ebUseCases.convertToSplit(VoiceGroup::I);
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_FX_Src, VoiceGroup::II });
+    }
+
+    THEN("Single converted")
+    {
+      ebUseCases.convertToSingle(VoiceGroup::I);
+      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { FB_Mix_FX, VoiceGroup::I });
+    }
+  }
+
   WHEN("Part: Volume selected")
   {
     ebUseCases.selectParameter({ Voice_Grp_Volume, VoiceGroup::II });
