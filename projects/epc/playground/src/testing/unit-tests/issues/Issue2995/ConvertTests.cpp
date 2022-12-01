@@ -868,24 +868,29 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert split to single: in po
   EditBufferUseCases ebUseCases(eb);
   ebUseCases.randomize(0.2);
 
-  auto some_poly_param_I = eb.findParameterByID({C15::PID::Env_C_Loop, VoiceGroup::I});
-  auto some_poly_param_II = eb.findParameterByID({C15::PID::Env_C_Loop, VoiceGroup::II});
+  auto num = GENERATE(C15::PID::Env_C_Loop, C15::PID::Out_Mix_A_Lvl, C15::PID::FB_Mix_Comb);
 
-  ParameterUseCases pI(some_poly_param_I);
-  ParameterUseCases pII(some_poly_param_II);
-
-  pI.setControlPosition(0);
-  pII.setControlPosition(1);
-
-  WHEN("convert to single I")
+  WHEN("parameter " << num << " changed")
   {
-    ebUseCases.convertToSingle(VoiceGroup::I);
-    CHECK(some_poly_param_I->getControlPositionValue() == 0);
-  }
+    auto some_poly_param_I = eb.findParameterByID({num, VoiceGroup::I});
+    auto some_poly_param_II = eb.findParameterByID({num, VoiceGroup::II});
 
-  WHEN("convert to single II")
-  {
-    ebUseCases.convertToSingle(VoiceGroup::II);
-    CHECK(some_poly_param_I->getControlPositionValue() == 1);
+    ParameterUseCases pI(some_poly_param_I);
+    ParameterUseCases pII(some_poly_param_II);
+
+    pI.setControlPosition(0);
+    pII.setControlPosition(1);
+
+    WHEN("convert I to single")
+    {
+      ebUseCases.convertToSingle(VoiceGroup::I);
+      CHECK(some_poly_param_I->getControlPositionValue() == 0);
+    }
+
+    WHEN("convert II to single")
+    {
+      ebUseCases.convertToSingle(VoiceGroup::II);
+      CHECK(some_poly_param_I->getControlPositionValue() == 1);
+    }
   }
 }
