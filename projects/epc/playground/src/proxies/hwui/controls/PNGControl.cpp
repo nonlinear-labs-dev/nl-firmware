@@ -149,7 +149,7 @@ void PNGControl::recalculatePixels()
         }
         else
         {
-          outColoredPixel = m_color;
+          outColoredPixel = isHighlight() ? FrameBufferColors::C255 : m_color;
         }
       }
       else
@@ -167,4 +167,10 @@ void PNGControl::recalculatePixels()
   }
 
   setDirty();
+}
+
+void PNGControl::setHighlight(bool isHighlight)
+{
+  Control::setHighlight(isHighlight);
+  recalculatePixels();
 }

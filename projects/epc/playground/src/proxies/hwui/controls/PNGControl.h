@@ -16,6 +16,7 @@ class PNGControl : public Control
   void setOffset(const std::pair<int, int>& offset);
   void setTransparent(bool transparent);
   void drawBackground(FrameBuffer& fb) override;
+  void setHighlight(bool isHighlight) override;
 
  private:
   void recalculatePixels();

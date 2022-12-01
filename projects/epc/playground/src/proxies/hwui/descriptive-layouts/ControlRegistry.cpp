@@ -1,6 +1,7 @@
 #include "ControlRegistry.h"
 #include "GenericControl.h"
 
+#include <proxies/hwui/descriptive-layouts/concrete/sound/SingleSoundPolyToFXIndicator.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MacroControlEditButtonMenu.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationCarousel.h>
@@ -58,6 +59,9 @@ namespace DescriptiveLayouts
 
     m_discreteRegistry["FadeIndicatorII"]
         = [](const Point& pos) { return new FadeIndicator(Rect(pos.getX(), pos.getY(), 14, 7), VoiceGroup::II); };
+
+    m_discreteRegistry["SingleSoundPolyToFXIndicator"]
+        = [](const Point& pos) { return new SingleSoundPolyToFXIndicator(pos); };
   }
 
   void ControlRegistry::registerControl(ControlClass&& cp)

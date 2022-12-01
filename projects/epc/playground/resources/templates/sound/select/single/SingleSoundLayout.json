@@ -70,6 +70,10 @@
             "Label[Text]": "Tune"
           },
           "Events": "EditBufferMasterTune => Value[Text]"
+        },
+        "ArrowsPolyToFX": {
+          "Class": "SingleSoundPolyToFXIndicator",
+          "Position": "205, 19"
         }
       },
       "EventSinks": {
