@@ -50,9 +50,9 @@ void PlayOrEditModeLayout::onParameterSelectionChanged(const Parameter* old, Par
 inline Rect getPedalIndicationRect(bool isMapped)
 {
   if(isMapped)
-    return { 26, 17, 11, 14 };
+    return { 26, 17, 11, 13 };
   else
-    return { 26, 17, 0, 14 };
+    return { 26, 17, 0, 13 };
 }
 
 inline Rect getRibbonLabelRect(bool isMapped)

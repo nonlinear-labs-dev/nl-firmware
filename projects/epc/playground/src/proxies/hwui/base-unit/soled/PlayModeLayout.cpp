@@ -41,9 +41,9 @@ void PlayModeLayout::onRibbonSelectionChanged(const Setting* s)
 inline Rect getPedalIndicationRect(bool isMapped)
 {
   if(isMapped)
-    return { 26, 1, 11, 14 };
+    return { 26, 1, 11, 13 };
   else
-    return { 26, 1, 0, 14 };
+    return { 26, 1, 0, 13 };
 }
 
 inline Rect getRibbonLabelRect(bool isMapped)
