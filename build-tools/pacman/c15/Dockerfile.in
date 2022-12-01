@@ -16,4 +16,4 @@ RUN wget https://archive.archlinux.org/packages/w/wpa_supplicant/wpa_supplicant-
 RUN wget https://archive.archlinux.org/packages/w/wpa_supplicant/wpa_supplicant-2%3A2.9-8-x86_64.pkg.tar.zst.sig
 RUN pacman --noconfirm -Uw --cachedir . --dbpath /tmp/blankdb /packages/wpa_supplicant-2:2.9-8-x86_64.pkg.tar.zst
 
-RUN npm install -g typescript@4.74 js-yaml @types/node @types/js-yaml
+RUN npm install -g typescript@4.7.4 js-yaml @types/node @types/js-yaml
