@@ -18,6 +18,7 @@ class VoiceGroupIndicator : public Control
 
   bool drawSplit(FrameBuffer& fb);
   bool drawLayer(FrameBuffer& fb);
+  bool drawSingle(FrameBuffer& fb);
 
   bool isLayerPartMuted(VoiceGroup vg) const;
   bool shouldDraw();

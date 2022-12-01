@@ -278,5 +278,6 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   friend class SoundUseCases;
   void updateLoadFromPartOrigin(UNDO::Transaction *transaction, const Preset *preset, const VoiceGroup &from,
                                 const VoiceGroup &loadTo);
-  void copyGlobalMasterAndFXMixToPartVolumes(UNDO::Transaction *transaction);
+  void copyGlobalMasterAndFXMixToPartVolumesForConvertSingleToDual(UNDO::Transaction *transaction);
+  void copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 };

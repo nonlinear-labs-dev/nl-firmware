@@ -164,23 +164,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"FROM Layer")
     }
   }
 
-  WHEN("OUT: To FX x selected")
-  {
-    ebUseCases.selectParameter({ Out_Mix_To_FX, VoiceGroup::II });
-
-    THEN("Single Preset Loaded")
-    {
-      ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { Out_Mix_Lvl, VoiceGroup::I });
-    }
-
-    THEN("Single converted")
-    {
-      ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { Out_Mix_Lvl, VoiceGroup::I });
-    }
-  }
-
   WHEN("Part: Volume selected")
   {
     ebUseCases.selectParameter({ Voice_Grp_Volume, VoiceGroup::II });
@@ -274,7 +257,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"FROM Layer")
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Loaded")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Loaded")
 {
   using namespace C15::PID;
   MockPresetStorage presets;
@@ -290,23 +273,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Loaded")
   }
 
   CHECK(eb->getType() == SoundType::Split);
-
-  WHEN("OUT: To FX x selected")
-  {
-    ebUseCases.selectParameter({ Out_Mix_To_FX, VoiceGroup::II });
-
-    THEN("Single Preset Loaded")
-    {
-      ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { Out_Mix_Lvl, VoiceGroup::I });
-    }
-
-    THEN("Single Convert")
-    {
-      ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { Out_Mix_Lvl, VoiceGroup::I });
-    }
-  }
 
   WHEN("Part: Volume selected")
   {

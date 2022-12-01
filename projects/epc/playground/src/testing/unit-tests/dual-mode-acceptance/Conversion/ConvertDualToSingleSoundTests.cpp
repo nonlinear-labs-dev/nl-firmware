@@ -81,16 +81,11 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Split (II) to Single")
 
     const auto attackIICP = envAIIAttack->getControlPositionValue();
 
-    const auto masterVolumeDisplay = globalVolume->getDisplayValue();
     const auto masterTuneDisplay = globalTune->getDisplayValue();
 
     const auto partTuneIIDisplay = EBL::getPartTune<VoiceGroup::II>()->getDisplayValue();
     const auto oldTuneIIModAmt = EBL::getPartTune<VoiceGroup::II>()->getModulationAmount();
     const auto oldTuneIIModSrc = EBL::getPartTune<VoiceGroup::II>()->getModulationSource();
-
-    const auto partVolumeIIDisplay = EBL::getPartVolume<VoiceGroup::II>()->getDisplayValue();
-    const auto oldVolumeIIModAmt = EBL::getPartVolume<VoiceGroup::II>()->getModulationAmount();
-    const auto oldVolumeIIModSrc = EBL::getPartVolume<VoiceGroup::II>()->getModulationSource();
 
     const auto localNormalIIHash = EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::II>());
 
@@ -162,12 +157,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Split (II) to Single")
       CHECK(EBL::createHashOfVector(EBL::getModMatrix()) == mcmHash);
     }
 
-    THEN("Part and Global master have been combined")
+    THEN("Part and Global-Master Tune have been combined")
     {
-      CHECK(globalVolume->getDisplayValue() == Approx(masterVolumeDisplay + partVolumeIIDisplay));
-      CHECK(globalVolume->getModulationAmount() == oldVolumeIIModAmt);
-      CHECK(globalVolume->getModulationSource() == oldVolumeIIModSrc);
-
       CHECK(globalTune->getDisplayValue() == Approx(std::min(masterTuneDisplay + partTuneIIDisplay, 48.0)));
       CHECK(globalTune->getModulationAmount() == oldTuneIIModAmt);
       CHECK(globalTune->getModulationSource() == oldTuneIIModSrc);

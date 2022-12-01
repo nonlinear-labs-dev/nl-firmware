@@ -38,6 +38,8 @@ bool VoiceGroupIndicator::redraw(FrameBuffer& fb)
       return drawSplit(fb);
     else if(m_currentSoundType == SoundType::Layer)
       return drawLayer(fb);
+    else if(m_currentSoundType == SoundType::Single)
+      return drawSingle(fb);
   }
 
   return true;
@@ -87,6 +89,66 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
 
     auto centerX = absPos.getLeft() + 5;
     auto centerY = absPos.getTop() + 9;
+    fb.setPixel(centerX - 2, centerY - 2);
+    fb.setPixel(centerX - 2, centerY + 2);
+    fb.setPixel(centerX - 1, centerY - 1);
+    fb.setPixel(centerX - 1, centerY + 1);
+    fb.setPixel(centerX, centerY);
+    fb.setPixel(centerX + 1, centerY);
+    fb.setPixel(centerX + 3, centerY - 2);
+    fb.setPixel(centerX + 3, centerY + 2);
+    fb.setPixel(centerX + 2, centerY - 1);
+    fb.setPixel(centerX + 2, centerY + 1);
+  }
+
+  return true;
+}
+
+bool VoiceGroupIndicator::drawSingle(FrameBuffer& fb)
+{
+  Rect polyRect = {getPosition().getX() + 2, getPosition().getY() + 3, 4, 10};
+  Rect monoI = {getPosition().getX() + 8, getPosition().getY() + 3, 4, 4};
+  Rect monoII = {getPosition().getX() + 8, getPosition().getY() + 9, 4, 4};
+
+  fb.setColor(FrameBufferColors::C255);
+  fb.fillRect(polyRect);
+  fb.setColor(m_selectedVoiceGroup == VoiceGroup::I ? FrameBufferColors::C255 : FrameBufferColors::C128);
+  fb.fillRect(monoI);
+  fb.setColor(m_selectedVoiceGroup == VoiceGroup::II ? FrameBufferColors::C255 : FrameBufferColors::C128);
+  fb.fillRect(monoII);
+
+  if(m_inLoadToPart)
+  {
+    const auto startX = monoI.getRight();
+    auto startY = m_selectedVoiceGroup == VoiceGroup::I ? monoI.getTop() : monoII.getTop();
+    fb.setColor(FrameBufferColors::C255);
+    fb.drawHorizontalLine(startX + 2, startY - 2, 1);
+    fb.drawHorizontalLine(startX + 1, startY - 1, 2);
+    fb.drawHorizontalLine(startX, startY, 3);
+    fb.drawHorizontalLine(startX + 1, startY + 1, 2);
+    fb.drawHorizontalLine(startX + 2, startY + 2, 1);
+  }
+
+  if(isLayerPartMuted(VoiceGroup::I))
+  {
+    auto centerX = monoI.getRight() + 5;
+    auto centerY = monoI.getTop() + 2;
+    fb.setPixel(centerX - 2, centerY - 2);
+    fb.setPixel(centerX - 2, centerY + 2);
+    fb.setPixel(centerX - 1, centerY - 1);
+    fb.setPixel(centerX - 1, centerY + 1);
+    fb.setPixel(centerX, centerY);
+    fb.setPixel(centerX + 1, centerY);
+    fb.setPixel(centerX + 3, centerY - 2);
+    fb.setPixel(centerX + 3, centerY + 2);
+    fb.setPixel(centerX + 2, centerY - 1);
+    fb.setPixel(centerX + 2, centerY + 1);
+  }
+
+  if(isLayerPartMuted(VoiceGroup::II))
+  {
+    auto centerX = monoII.getRight() + 5;
+    auto centerY = monoII.getTop() + 2;
     fb.setPixel(centerX - 2, centerY - 2);
     fb.setPixel(centerX - 2, centerY + 2);
     fb.setPixel(centerX - 1, centerY - 1);
@@ -188,17 +250,6 @@ void VoiceGroupIndicator::onParameterSelectionChanged(const Parameter* old, cons
 
 bool VoiceGroupIndicator::shouldDraw()
 {
-  if(auto layout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getBaseLayout())
-  {
-    if(dynamic_cast<PresetManagerLayout*>(layout.get()))
-    {
-      return m_currentSoundType != SoundType::Single;
-    }
-  }
-
-  if(m_currentSoundType == SoundType::Single)
-    return false;
-
   if(m_param)
   {
     auto id = m_param->getID();

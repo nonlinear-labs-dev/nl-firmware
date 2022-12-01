@@ -795,6 +795,8 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   setName(transaction, getVoiceGroupName(copyFrom));
   undoableSetTypeFromConvert(transaction, SoundType::Single);
 
+  copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(transaction, copyFrom);
+
   if(oldType == SoundType::Split)
     undoableConvertSplitToSingle(transaction, copyFrom);
   else if(oldType == SoundType::Layer)
@@ -1338,7 +1340,7 @@ void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction)
     copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   }
 
-  copyGlobalMasterAndFXMixToPartVolumes(transaction);
+  copyGlobalMasterAndFXMixToPartVolumesForConvertSingleToDual(transaction);
   copyPartTuneFromMasterTuneAndDefaultMasterGroup(transaction);
   initFadeFrom(transaction, VoiceGroup::I);
   initFadeFrom(transaction, VoiceGroup::II);
@@ -1361,7 +1363,7 @@ void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
 
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
 
-  copyGlobalMasterAndFXMixToPartVolumes(transaction);
+  copyGlobalMasterAndFXMixToPartVolumesForConvertSingleToDual(transaction);
   copyPartTuneFromMasterTuneAndDefaultMasterGroup(transaction);
 
   initFadeFrom(transaction, VoiceGroup::I);
@@ -1890,21 +1892,121 @@ namespace
   {
     return std::sqrt(af) * 0.5;
   }
-}
 
-void EditBuffer::copyGlobalMasterAndFXMixToPartVolumes(UNDO::Transaction *transaction)
+  double parabolicGainCpToAmplitude(const double cp)
+  {
+    return 4.0 * cp * cp;
+  }
+
+  double getPartVolumeForPart_convert_single_to_dual(const double masterVolumeCP, const double fxMixCp, VoiceGroup vg)
+  {
+    const auto masterVolumeAmplitude = parabolicGainCpToAmplitude(masterVolumeCP);
+    if(vg == VoiceGroup::I)
+    {
+      return amplitudeToParabolicGainCp(masterVolumeAmplitude * parabolicFadeCpToAmplitude(fxMixCp));
+    }
+    else if(vg == VoiceGroup::II)
+    {
+      return amplitudeToParabolicGainCp(masterVolumeAmplitude * parabolicFadeCpToAmplitude(1.0 - fxMixCp));
+    }
+    return 0;
+  }
+}
+//
+//Dual convertSingleToDual(const Single& single) {
+//  const float masterVolumeAmplitude = parabolicGainCpToAmplitude(single.masterVolumeCp);
+//  Dual ret = {};
+//  // target.partVolAmplitude = source.masterVolAmplitude * mixAmplitude
+//  ret.partVolumeCp[VgI] = amplitudeToParabolicGainCp(
+//      masterVolumeAmplitude * parabolicFadeCpToAmplitude(single.fxMixCp)
+//  );
+//  ret.partVolumeCp[VgII] = amplitudeToParabolicGainCp(
+//      masterVolumeAmplitude * parabolicFadeCpToAmplitude(1.0f - single.fxMixCp)
+//  );
+//  return ret;
+//}
+//
+//void foo() {
+//  Single ret;
+//  // handle edge cases without ratio
+//  if(dual.partVolumeCp[VgII] == 0.0f) {
+//    ret.fxMixCp = 0.0f;
+//  } else if(dual.partVolumeCp[VgI] == dual.partVolumeCp[VgII]) {
+//    ret.fxMixCp = 0.5f;
+//  } else {
+//    // handle general case by ratio of amplitudes
+//    const float ratio = parabolicGainCpToAmplitude(dual.partVolumeCp[VgI]) / parabolicGainCpToAmplitude(dual.partVolumeCp[VgII]);
+//    ret.fxMixCp = (std::sqrt((ratio * ratio) - ratio + 1.0f) - ratio) / (1.0f - ratio);
+//  }
+//  const float masterVolumeAmplitude = parabolicGainCpToAmplitude(dual.masterVolumeCp);
+//  // determine master volume according to selected part
+//  if(vgSelf == VgI) {
+//    // handle edge case without amplitudes
+//    if(ret.fxMixCp == 1.0f) {
+//      ret.masterVolumeCp = 0.0f;
+//    } else {
+//      // handle general case by normalizing amplitudes
+//      ret.masterVolumeCp = std::min(amplitudeToParabolicGainCp(
+//                                        masterVolumeAmplitude * parabolicGainCpToAmplitude(dual.partVolumeCp[vgSelf]) / parabolicFadeCpToAmplitude(ret.fxMixCp)
+//                                            ), 1.0f);
+//    }
+//  } else {
+//    // handle edge case without amplitudes
+//    if(ret.fxMixCp == 0.0f) {
+//      ret.masterVolumeCp = 0.0f;
+//    } else {
+//      // handle general case by normalizing amplitudes
+//      ret.masterVolumeCp = std::min(amplitudeToParabolicGainCp(
+//                                        masterVolumeAmplitude * parabolicGainCpToAmplitude(dual.partVolumeCp[vgSelf]) / parabolicFadeCpToAmplitude(1.0f - ret.fxMixCp)
+//                                            ), 1.0f);
+//    }
+//  }
+//  return ret;
+//}
+
+void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertSingleToDual(UNDO::Transaction *transaction)
 {
   auto master = findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
   auto fx_mix = findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global });
 
-  auto partVolumeCpVgI = amplitudeToParabolicGainCp(master->getControlPositionValue()
-                                                    * parabolicFadeCpToAmplitude(fx_mix->getControlPositionValue()));
-  auto partVolumeCpVgII = amplitudeToParabolicGainCp(
-      master->getControlPositionValue() * parabolicFadeCpToAmplitude(1.0 - fx_mix->getControlPositionValue()));
+  auto partVolumeCpVgI = getPartVolumeForPart_convert_single_to_dual(master->getControlPositionValue(), fx_mix->getControlPositionValue(), VoiceGroup::I);
+  auto partVolumeCpVgII = getPartVolumeForPart_convert_single_to_dual(master->getControlPositionValue(), fx_mix->getControlPositionValue(), VoiceGroup::II);
 
-  auto partVolI = findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::I});
-  auto partVolII = findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::II});
+  auto partVolI = findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
+  auto partVolII = findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
 
   partVolI->setCPFromHwui(transaction, partVolumeCpVgI);
   partVolII->setCPFromHwui(transaction, partVolumeCpVgII);
+}
+
+void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(UNDO::Transaction *transaction,
+                                                                             VoiceGroup copyFrom)
+{
+  const auto masterVolume = findParameterByID({C15::PID::Master_Volume, VoiceGroup::Global});
+  const auto masterFX_MIX = findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global});
+  const auto partVolSelf = findParameterByID({C15::PID::Voice_Grp_Volume, copyFrom});
+  const auto partVolOther = findParameterByID({C15::PID::Voice_Grp_Volume, invert(copyFrom)});
+  // express fx mix as control pos difference (clamped to +/- 0.5, which is half a slider range [-inf ... 0 dB])
+  auto partVolCPDiff = std::clamp(partVolSelf->getControlPositionValue() - partVolOther->getControlPositionValue(), -0.5, 0.5);
+  auto partVolCPDiffAbs = std::abs(partVolCPDiff);
+  auto fadeGainDiff = 0.5 - partVolCPDiffAbs;
+  auto amplitude = 1.0 / parabolicFadeCpToAmplitude(fadeGainDiff);
+  // derive master vol as product of master amplitude, part amplitude and normalization
+  auto masterVolumeCp = amplitudeToParabolicGainCp(
+      parabolicGainCpToAmplitude(masterVolume->getControlPositionValue()) * parabolicGainCpToAmplitude(partVolSelf->getControlPositionValue()) * amplitude
+  );
+
+  masterVolume->setCPFromHwui(transaction, masterVolumeCp);
+
+  // determine fx mix
+  if(partVolCPDiff == 0.0) {
+    // 50% if part volumes are equal
+    masterFX_MIX->setCPFromHwui(transaction, 0.5);
+  } else {
+    // ??? (exceptionally close (max. err 2.6951%) but not quite...)
+    // (no real derivation for this...)
+    const auto fade = std::sqrt(0.5 * partVolCPDiffAbs);
+    const auto direction = (copyFrom == VoiceGroup::I ? 1.0 : -1.0);
+    masterFX_MIX->setCPFromHwui(transaction, 0.5 + (direction * (partVolCPDiff > 0.0 ? -fade : fade)));
+  }
 }

@@ -24,7 +24,7 @@
           "Class": "Button",
           "Position": "BUTTON_A",
           "Init": {
-            "Text[Text]": "Init"
+            "Text[Text]": "I / II"
           }
         },
         "ButtonB": {
@@ -68,7 +68,7 @@
         }
       },
       "EventSinks": {
-        "BUTTON_A": "SwitchToButtonADetail",
+        "BUTTON_A": "ToggleVoiceGroup",
         "BUTTON_B": "OpenFXMixParameter",
         "BUTTON_C": "SwitchToVoicesDetail",
         "BUTTON_D": "OpenMasterParameter"

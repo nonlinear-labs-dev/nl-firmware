@@ -1,6 +1,7 @@
 #include "SwitchVoiceGroupButton.h"
 #include "groups/MasterGroup.h"
 #include "groups/ScaleGroup.h"
+#include "groups/MacroControlsGroup.h"
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
@@ -29,6 +30,8 @@ SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
 
   Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
       sigc::mem_fun(this, &SwitchVoiceGroupButton::rebuild));
+
+  rebuild();
 }
 
 void SwitchVoiceGroupButton::rebuild()
@@ -69,16 +72,12 @@ bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const Edit
     return false;
 
   if(selected->getVoiceGroup() == VoiceGroup::Global)
-    return false;
+  {
+    return MacroControlsGroup::isMacroControl(selected->getID().getNumber());
+  }
 
   if(editBuffer->getType() == SoundType::Single)
   {
-    //TODO remove this WIP code:
-    auto groups = std::vector<std::string>{"Flang", "Rev", "Echo", "Cab"}; //ETC
-    auto selectedGroup = selected->getParentGroup();
-    return std::find(groups.begin(), groups.end(), selectedGroup->getID().getName()) != groups.end();
-
-
     const auto type = selected->getType();
     if(type == C15::Descriptors::ParameterType::Monophonic_Modulateable || type == C15::Descriptors::ParameterType::Monophonic_Unmodulateable)
     {

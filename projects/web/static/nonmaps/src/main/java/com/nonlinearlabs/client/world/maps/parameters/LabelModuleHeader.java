@@ -89,29 +89,21 @@ public class LabelModuleHeader extends LabelSmall {
 
 	@Override
 	protected String getDisplayText() {
-		boolean isAlwaysI = false;
+		ParameterGroupModel model = EditBufferModel.get().getAnyGroup(getParent().getName());
+			
 		if(EditBufferModel.get().soundType.getValue() == SoundType.Single)
 		{
 			Parameter p = getParent().getAnyChildParameter();
 			if(p != null && !ParameterFactory.containsElement(p.parameterNumber, ParameterFactory.monophonicParameters))
 			{
-				isAlwaysI = true;
+				if(currentVG != VoiceGroup.Global)
+				{
+					return model.longName.getValue() + "-" + currentVG.toString();
+				}	
 			}
 		}
 
-		ParameterGroupModel model = EditBufferModel.get().getAnyGroup(getParent().getName());
-		if(currentVG == VoiceGroup.Global)
-		{
-			return model.longName.getValue() + "- G.";
-		}
-		else if(isAlwaysI)
-		{
-			return model.longName.getValue() + "- I";
-		}
-		else
-		{
-			return model.longName.getValue() + "-" + currentVG.toString();
-		}
+		return model.longName.getValue();
 	}
 
 	protected boolean isLocked() {
