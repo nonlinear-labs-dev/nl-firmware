@@ -29,6 +29,6 @@ class PlayOrEditModeLayout : public Layout
   void onMacroMappingsChanged();
 
  protected:
-  bool isPedalMappedToCurrentLowerRibbon();
-  bool isPedalMappedToCurrentUpperRibbon();
+  static bool isPedalMappedToCurrentLowerRibbon();
+  static bool isPedalMappedToCurrentUpperRibbon();
 };

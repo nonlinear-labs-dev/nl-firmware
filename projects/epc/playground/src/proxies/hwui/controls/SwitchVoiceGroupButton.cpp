@@ -42,7 +42,7 @@ void SwitchVoiceGroupButton::rebuild()
 
   if(allowToggling(selected, eb))
     setText(StringAndSuffix { "I / II", 0 });
-  else if(MasterGroup::isMasterParameter(selected))
+  else if(MasterGroup::isMasterParameter(selected) && selected->getID().getNumber() != C15::PID::Master_FX_Mix)
   {
     setText(StringAndSuffix { "Scale...", 0 });
   }

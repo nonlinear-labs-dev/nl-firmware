@@ -229,7 +229,7 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
       case Buttons::BUTTON_A:
         if(m_mode == Mode::ParameterValue && !isCurrentParameterDisabled())
         {
-          if(MasterGroup::isMasterParameter(modParam))
+          if(MasterGroup::isMasterParameter(modParam) && modParam->getID().getNumber() != C15::PID::Master_FX_Mix)
           {
             EditBufferUseCases ebUseCases(*modParam->getParentEditBuffer());
             ebUseCases.selectParameter({ C15::PID::Scale_Base_Key, VoiceGroup::Global }, true);
@@ -239,9 +239,10 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
             EditBufferUseCases ebUseCases(*modParam->getParentEditBuffer());
             ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global }, true);
           }
-          else
+          else if(SwitchVoiceGroupButton::allowToggling(modParam, modParam->getParentEditBuffer()))
           {
-            VoiceGroupUseCases vgUseCases(Application::get().getVGManager(), getCurrentEditParameter()->getParentEditBuffer());
+            VoiceGroupUseCases vgUseCases(Application::get().getVGManager(),
+                                          getCurrentEditParameter()->getParentEditBuffer());
             vgUseCases.toggleVoiceGroupSelection();
           }
           return true;

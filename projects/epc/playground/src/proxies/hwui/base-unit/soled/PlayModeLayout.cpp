@@ -24,6 +24,8 @@ PlayModeLayout::PlayModeLayout()
 
 PlayModeLayout::~PlayModeLayout()
 {
+  remove(std::exchange(m_pedalSymbol, nullptr));
+  remove(std::exchange(m_ribbonLabel, nullptr));
 }
 
 void PlayModeLayout::onMacroControlMappingsChanged()
@@ -39,9 +41,9 @@ void PlayModeLayout::onRibbonSelectionChanged(const Setting* s)
 inline Rect getPedalIndicationRect(bool isMapped)
 {
   if(isMapped)
-    return { 25, 1, 11, 14 };
+    return { 26, 1, 11, 14 };
   else
-    return { 25, 1, 0, 14 };
+    return { 26, 1, 0, 14 };
 }
 
 inline Rect getRibbonLabelRect(bool isMapped)
