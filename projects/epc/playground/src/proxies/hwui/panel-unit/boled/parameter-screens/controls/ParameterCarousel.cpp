@@ -216,10 +216,7 @@ void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Param
 
   if(paramID == Master_Volume || paramID == Master_Tune || paramID == Master_Pan || paramID == Master_Serial_FX)
   {
-    if(isDualSound)
-      setupChildControls(selectedParameter, { Master_Volume, Master_Tune, Master_Pan, Master_Serial_FX });
-    else
-      setupChildControls(selectedParameter, { Master_Volume, Master_Tune });
+    setupChildControls(selectedParameter, { Master_Volume, Master_Tune, Master_Pan, Master_Serial_FX });
   }
   else if(paramID == Scale_Base_Key || ScaleGroup::isScaleParameter(selectedParameter))
   {

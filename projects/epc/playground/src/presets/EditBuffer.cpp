@@ -1637,22 +1637,16 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
                                          { C15::PID::FB_Mix_Osc_Src, C15::PID::FB_Mix_Osc },
                                          { C15::PID::FB_Mix_Comb_Src, C15::PID::FB_Mix_Comb },
                                          { C15::PID::FB_Mix_SVF_Src, C15::PID::FB_Mix_SVF },
-                                         { C15::PID::FB_Mix_FX_Src, C15::PID::FB_Mix_FX },
                                          { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume },
                                          { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune },
                                          { C15::PID::Voice_Grp_Fade_From, C15::PID::Master_Volume },
-                                         { C15::PID::Voice_Grp_Fade_Range, C15::PID::Master_Volume },
-                                         { C15::PID::Master_Pan, C15::PID::Master_Volume },
-                                         { C15::PID::Master_Serial_FX, C15::PID::Master_Volume } } },
+                                         { C15::PID::Voice_Grp_Fade_Range, C15::PID::Master_Volume } } },
                                      { { From::Split, To::Layer },
                                        { { C15::PID::Split_Split_Point, C15::PID::Voice_Grp_Volume } } },
                                      { { From::Split, To::Single },
                                        { { C15::PID::Split_Split_Point, C15::PID::Master_Volume },
                                          { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune },
-                                         { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume },
-                                         { C15::PID::FB_Mix_FX_Src, C15::PID::FB_Mix_FX },
-                                         { C15::PID::Master_Pan, C15::PID::Master_Volume },
-                                         { C15::PID::Master_Serial_FX, C15::PID::Master_Volume } } } };
+                                         { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume } } } };
 
   if(Application::exists())
   {
@@ -1969,8 +1963,10 @@ void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertSingleToDual(UND
   auto master = findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
   auto fx_mix = findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global });
 
-  auto partVolumeCpVgI = getPartVolumeForPart_convert_single_to_dual(master->getControlPositionValue(), fx_mix->getControlPositionValue(), VoiceGroup::I);
-  auto partVolumeCpVgII = getPartVolumeForPart_convert_single_to_dual(master->getControlPositionValue(), fx_mix->getControlPositionValue(), VoiceGroup::II);
+  auto partVolumeCpVgI = getPartVolumeForPart_convert_single_to_dual(master->getControlPositionValue(),
+                                                                     fx_mix->getControlPositionValue(), VoiceGroup::I);
+  auto partVolumeCpVgII = getPartVolumeForPart_convert_single_to_dual(
+      master->getControlPositionValue(), fx_mix->getControlPositionValue(), VoiceGroup::II);
 
   auto partVolI = findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
   auto partVolII = findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
@@ -1982,27 +1978,31 @@ void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertSingleToDual(UND
 void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(UNDO::Transaction *transaction,
                                                                              VoiceGroup copyFrom)
 {
-  const auto masterVolume = findParameterByID({C15::PID::Master_Volume, VoiceGroup::Global});
-  const auto masterFX_MIX = findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global});
-  const auto partVolSelf = findParameterByID({C15::PID::Voice_Grp_Volume, copyFrom});
-  const auto partVolOther = findParameterByID({C15::PID::Voice_Grp_Volume, invert(copyFrom)});
+  const auto masterVolume = findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
+  const auto masterFX_MIX = findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global });
+  const auto partVolSelf = findParameterByID({ C15::PID::Voice_Grp_Volume, copyFrom });
+  const auto partVolOther = findParameterByID({ C15::PID::Voice_Grp_Volume, invert(copyFrom) });
   // express fx mix as control pos difference (clamped to +/- 0.5, which is half a slider range [-inf ... 0 dB])
-  auto partVolCPDiff = std::clamp(partVolSelf->getControlPositionValue() - partVolOther->getControlPositionValue(), -0.5, 0.5);
+  auto partVolCPDiff
+      = std::clamp(partVolSelf->getControlPositionValue() - partVolOther->getControlPositionValue(), -0.5, 0.5);
   auto partVolCPDiffAbs = std::abs(partVolCPDiff);
   auto fadeGainDiff = 0.5 - partVolCPDiffAbs;
   auto amplitude = 1.0 / parabolicFadeCpToAmplitude(fadeGainDiff);
   // derive master vol as product of master amplitude, part amplitude and normalization
-  auto masterVolumeCp = amplitudeToParabolicGainCp(
-      parabolicGainCpToAmplitude(masterVolume->getControlPositionValue()) * parabolicGainCpToAmplitude(partVolSelf->getControlPositionValue()) * amplitude
-  );
+  auto masterVolumeCp
+      = amplitudeToParabolicGainCp(parabolicGainCpToAmplitude(masterVolume->getControlPositionValue())
+                                   * parabolicGainCpToAmplitude(partVolSelf->getControlPositionValue()) * amplitude);
 
   masterVolume->setCPFromHwui(transaction, masterVolumeCp);
 
   // determine fx mix
-  if(partVolCPDiff == 0.0) {
+  if(partVolCPDiff == 0.0)
+  {
     // 50% if part volumes are equal
     masterFX_MIX->setCPFromHwui(transaction, 0.5);
-  } else {
+  }
+  else
+  {
     // ??? (exceptionally close (max. err 2.6951%) but not quite...)
     // (no real derivation for this...)
     const auto fade = std::sqrt(0.5 * partVolCPDiffAbs);

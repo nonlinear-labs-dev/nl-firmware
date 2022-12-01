@@ -94,7 +94,7 @@ public class LabelModuleHeader extends LabelSmall {
 		if(EditBufferModel.get().soundType.getValue() == SoundType.Single)
 		{
 			Parameter p = getParent().getAnyChildParameter();
-			if(p != null && !ParameterFactory.containsElement(p.parameterNumber, ParameterFactory.monophonicParameters))
+			if(p != null && ParameterFactory.containsElement(p.parameterNumber, ParameterFactory.monophonicParameters))
 			{
 				if(currentVG != VoiceGroup.Global)
 				{
