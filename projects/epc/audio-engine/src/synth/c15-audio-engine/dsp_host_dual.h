@@ -366,10 +366,6 @@ class dsp_host_dual : public DSPInterface
   inline void onParameterRecall(const nltools::controls::MacroTimeParameter& _param);
   inline void onParameterRecall(const nltools::controls::GlobalModulateableParameter& _param);
   inline void onParameterRecall(const nltools::controls::GlobalUnmodulateableParameter& _param);
-//  inline void onParameterRecall(const uint32_t& _layerId,
-//                                const nltools::controls::LocalModulateableParameter& _param);  // todo: deprecate
-//  inline void onParameterRecall(const uint32_t& _layerId, const nltools::controls::LocalUnmodulateableParameter& _param,
-//                                const bool _vaUpdate);  // todo: deprecate
   inline void onParameterRecall(const uint32_t& _layerId,
                                 const nltools::controls::PolyphonicModulateableParameter& _param);
   inline void onParameterRecall(const uint32_t& _layerId,
