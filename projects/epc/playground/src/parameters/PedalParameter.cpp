@@ -32,10 +32,27 @@ void PedalParameter::writeDocProperties(Writer &writer, UpdateDocumentContributo
   writer.writeTextElement("pedal-mode", to_string(m_mode));
 }
 
+double getDefValueForMode(PedalModes mode)
+{
+  switch(mode)
+  {
+    default:
+    case PedalModes::STAY:
+      return 0.5;
+    case PedalModes::RETURN_TO_CENTER:
+    case PedalModes::RETURN_TO_ZERO:
+      return 0.0;
+  }
+  return 0.0;
+}
+
 void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalModes mode, Initiator initiator)
 {
   if(mode != PedalModes::STAY && mode != PedalModes::RETURN_TO_ZERO && mode != PedalModes::RETURN_TO_CENTER)
     mode = PedalModes::STAY;
+
+  if(initiator == Initiator::EXPLICIT_LOAD)
+    setIndirect(transaction, getDefValueForMode(mode));
 
   if(m_mode != mode)
   {
