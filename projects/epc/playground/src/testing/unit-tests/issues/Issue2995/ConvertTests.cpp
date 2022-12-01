@@ -858,3 +858,34 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new paramete
     }
   }
 }
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert split to single: in poly landet part I selbst bei selektion von II")
+{
+  MockPresetStorage presets;
+  presets.getSplitPreset();
+
+  auto& eb = *TestHelper::getEditBuffer();
+  EditBufferUseCases ebUseCases(eb);
+  ebUseCases.randomize(0.2);
+
+  auto some_poly_param_I = eb.findParameterByID({C15::PID::Env_C_Loop, VoiceGroup::I});
+  auto some_poly_param_II = eb.findParameterByID({C15::PID::Env_C_Loop, VoiceGroup::II});
+
+  ParameterUseCases pI(some_poly_param_I);
+  ParameterUseCases pII(some_poly_param_II);
+
+  pI.setControlPosition(0);
+  pII.setControlPosition(1);
+
+  WHEN("convert to single I")
+  {
+    ebUseCases.convertToSingle(VoiceGroup::I);
+    CHECK(some_poly_param_I->getControlPositionValue() == 0);
+  }
+
+  WHEN("convert to single II")
+  {
+    ebUseCases.convertToSingle(VoiceGroup::II);
+    CHECK(some_poly_param_I->getControlPositionValue() == 1);
+  }
+}

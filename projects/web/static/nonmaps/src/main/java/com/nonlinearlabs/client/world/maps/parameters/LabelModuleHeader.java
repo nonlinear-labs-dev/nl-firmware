@@ -98,7 +98,7 @@ public class LabelModuleHeader extends LabelSmall {
 			{
 				if(currentVG != VoiceGroup.Global)
 				{
-					return model.longName.getValue() + "-" + currentVG.toString();
+					return model.longName.getValue() + " " + currentVG.toString();
 				}	
 			}
 		}
