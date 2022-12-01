@@ -682,20 +682,6 @@ void Parameter::sendParameterMessage() const
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
-      case C15::Descriptors::ParameterType::Local_Modulateable:
-      {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<
-            C15::Descriptors::ParameterType::Local_Modulateable>(dynamic_cast<const ModulateableParameter *>(this));
-        eb->getAudioEngineProxy().sendParameterMessage(ret);
-        break;
-      }
-      case C15::Descriptors::ParameterType::Local_Unmodulateable:
-      {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<
-            C15::Descriptors::ParameterType::Local_Unmodulateable>(this);
-        eb->getAudioEngineProxy().sendParameterMessage(ret);
-        break;
-      }
       case C15::Descriptors::ParameterType::Polyphonic_Modulateable:
       {
         auto ret = ParameterMessageFactory::createParameterChangedMessage<
@@ -783,11 +769,4 @@ bool Parameter::isPolyphonic() const
   const auto t = getType();
   return t == C15::Descriptors::ParameterType::Polyphonic_Modulateable
       || t == C15::Descriptors::ParameterType::Polyphonic_Unmodulateable;
-}
-
-bool Parameter::isLocal() const
-{
-  const auto t = getType();
-  return t == C15::Descriptors::ParameterType::Local_Modulateable
-      || t == C15::Descriptors::ParameterType::Local_Unmodulateable;
 }

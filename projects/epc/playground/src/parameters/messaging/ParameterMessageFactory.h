@@ -110,39 +110,6 @@ inline auto ParameterMessageFactory::createParameterChangedMessage
     return ret;
 }
 
-// todo: deprecate
-template<>
-inline auto ParameterMessageFactory::createParameterChangedMessage
-<C15::Descriptors::ParameterType::Local_Modulateable>(const ModulateableParameter *param)
-{
-    const auto range = param->getModulationRange(false);
-    auto ret = nltools::msg::LocalModulateableParameterChangedMessage {};
-    ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
-    ret.m_controlPosition = param->getControlPositionValue();
-    ret.m_macro = param->getModulationSource();
-    ret.m_modulationAmount = param->getModulationAmount();
-    ret.m_modulationUpper = range.second;
-    ret.m_modulationLower= range.first;
-    ret.m_voiceGroup = param->getID().getVoiceGroup();
-    // safety proposal: id pointing to non local-modulateable descriptor will fail
-    nltools_assertAlways(ret.validateParameterType());
-    return ret;
-}
-
-// todo: deprecate
-template<>
-inline auto ParameterMessageFactory::createParameterChangedMessage
-<C15::Descriptors::ParameterType::Local_Unmodulateable>(const Parameter *param)
-{
-    auto ret = nltools::msg::LocalUnmodulateableParameterChangedMessage {};
-    ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
-    ret.m_controlPosition = param->getControlPositionValue();
-    ret.m_voiceGroup = param->getID().getVoiceGroup();
-    // safety proposal: id pointing to non local-unmodulateable descriptor will fail
-    nltools_assertAlways(ret.validateParameterType());
-    return ret;
-}
-
 template<>
 inline auto ParameterMessageFactory::createParameterChangedMessage
 <C15::Descriptors::ParameterType::Polyphonic_Modulateable>(const ModulateableParameter *param)

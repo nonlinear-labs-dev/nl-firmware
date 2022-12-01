@@ -57,7 +57,7 @@ unsigned int DspHostDualTester::getAssignableVoices()
 
 void DspHostDualTester::applyMonoMessage(const Polyphony _mono, const VoiceGroup _group)
 {
-  nltools::msg::LocalUnmodulateableParameterChangedMessage msg;
+  nltools::msg::PolyphonicUnmodulateableParameterChangedMessage msg;
   msg.m_id = C15::PID::Mono_Grp_Enable;
   msg.m_controlPosition = (double) _mono;
   // overwrite voiceGroup in non-single sounds
@@ -69,7 +69,7 @@ void DspHostDualTester::applyMonoMessage(const Polyphony _mono, const VoiceGroup
 void DspHostDualTester::applyUnisonMessage(const unsigned int _unison, const VoiceGroup _group)
 {
   // prepare default message
-  nltools::msg::LocalUnmodulateableParameterChangedMessage msg;
+  nltools::msg::PolyphonicUnmodulateableParameterChangedMessage msg;
   msg.m_id = C15::PID::Unison_Voices;
   // act according to sound type
   msg.m_controlPosition = m_host->getType() == SoundType::Single
@@ -263,7 +263,7 @@ double DspHostDualTester::encodeUnisonVoice(const unsigned int _unison, const un
 
 void DspHostDualTester::setSplit(VoiceGroup vg, float pos)
 {
-  nltools::msg::LocalModulateableParameterChangedMessage msg {};
+  nltools::msg::PolyphonicModulateableParameterChangedMessage msg {};
   msg.m_controlPosition = static_cast<double>(pos);
   msg.m_id = C15::PID::Split_Split_Point;
   msg.m_voiceGroup = vg;

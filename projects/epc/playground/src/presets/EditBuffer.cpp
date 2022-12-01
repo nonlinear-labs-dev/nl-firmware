@@ -415,7 +415,7 @@ Parameter *EditBuffer::getSelected(VoiceGroup voiceGroup) const
   {
     if(auto p = findParameterByID(m_lastSelectedParameter))
     {
-      if(p->isPolyphonic() || p->isLocal())
+      if(p->isPolyphonic())
       {
         voiceGroup = VoiceGroup::I;
       }

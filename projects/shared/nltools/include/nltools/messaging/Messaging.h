@@ -58,8 +58,6 @@ namespace nltools
          MacroTimeParameterChanged,
          GlobalModulateableParameterChanged,
          GlobalUnmodulateableParameterChanged,
-         LocalModulateableParameterChanged,         // temporary: deprecate with https://github.com/nonlinear-labs-dev/C15/issues/2995
-         LocalUnmodulateableParameterChanged,       // temporary: deprecate with https://github.com/nonlinear-labs-dev/C15/issues/2995
          PolyphonicModulateableParameterChanged,
          PolyphonicUnmodulateableParameterChanged,
          MonophonicModulateableParameterChanged,

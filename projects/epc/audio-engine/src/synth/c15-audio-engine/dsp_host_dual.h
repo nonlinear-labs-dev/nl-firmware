@@ -56,23 +56,11 @@ inline constexpr bool LOG_MOD_CHAIN = false;
 inline constexpr bool LOG_ENGINE_STATUS = false;
 inline constexpr bool LOG_ENGINE_EDITS = false;
 inline constexpr bool LOG_INPUT_EVENT_STAGE = false;
-inline constexpr C15::PID::ParameterID LOG_PARAMETERS[] = {
-    C15::PID::Out_Mix_Lvl,
-    C15::PID::Out_Mix_To_FX,
-    C15::PID::FB_Mix_FX_Src,
-    C15::PID::Voice_Grp_Mute,
-    C15::PID::Unison_Detune,
-    C15::PID::Mono_Grp_Enable,
-    C15::PID::Split_Split_Point,
-    C15::PID::Voice_Grp_Fade_From,
-    C15::PID::Voice_Grp_Fade_Range
-};
+inline constexpr C15::PID::ParameterID LOG_PARAMETERS[] = {};
 
 class MidiRuntimeOptions;
 
 using KeyShift = ShifteableKeys<C15::Config::physical_key_from, C15::Config::physical_key_to>;
-
-constexpr static auto tNUM_HW = static_cast<int>(C15::Parameters::Hardware_Sources::_LENGTH_);
 
 class DSPInterface
 {
@@ -165,7 +153,7 @@ class DSPInterface
   }
 
  private:
-  std::array<HWChangeSource, tNUM_HW> m_hwSourceLastChangeSources;
+  std::array<HWChangeSource, C15::Parameters::num_of_Hardware_Sources> m_hwSourceLastChangeSources;
 };
 
 class dsp_host_dual : public DSPInterface
@@ -213,10 +201,6 @@ class dsp_host_dual : public DSPInterface
   void onParameterChangedMessage(const nltools::msg::MacroTimeParameterChangedMessage& _msg);
   void onParameterChangedMessage(const nltools::msg::GlobalModulateableParameterChangedMessage& _msg);
   void onParameterChangedMessage(const nltools::msg::GlobalUnmodulateableParameterChangedMessage& _msg);
-  void
-      onParameterChangedMessage(const nltools::msg::LocalModulateableParameterChangedMessage& _msg);  // todo: deprecate
-  OutputResetEventSource onParameterChangedMessage(
-      const nltools::msg::LocalUnmodulateableParameterChangedMessage& _msg);  // todo: deprecate
   void onParameterChangedMessage(const nltools::msg::PolyphonicModulateableParameterChangedMessage& _msg);
   OutputResetEventSource
       onParameterChangedMessage(const nltools::msg::PolyphonicUnmodulateableParameterChangedMessage& _msg);
@@ -339,8 +323,6 @@ class dsp_host_dual : public DSPInterface
   void hwModChain(const Engine::Parameters::HardwareSource& _src, const uint32_t& _id, const float& _inc);
   void mcModChain(const Engine::Parameters::MacroControl& _mc);
   inline void globalModChain(const Engine::Parameters::MacroControl& _mc);
-  inline void localModChain(const Engine::Parameters::MacroControl& _mc);                          // todo: deprecate
-  inline void localModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);  // todo: deprecate
   inline void polyphonicModChain(const Engine::Parameters::MacroControl& _mc);
   inline void polyphonicModChain(const uint32_t& _layer, const Engine::Parameters::MacroControl& _mc);
   inline void monophonicModChain(const Engine::Parameters::MacroControl& _mc);
@@ -352,7 +334,7 @@ class dsp_host_dual : public DSPInterface
   inline void localTransition(const uint32_t& _layer,
                               const Engine::Parameters::Aspects::RenderAspect::Rendering& _rendering,
                               const Engine::Parameters::Aspects::TimeAspect::Time& _time,
-                              const float& _dest);  // todo: deprecate
+                              const float& _dest);
   // poly/mono transition
   inline void polyphonicTransition(const uint32_t& _layer,
                                    const Engine::Parameters::Aspects::RenderAspect::Rendering& _rendering,
@@ -384,10 +366,6 @@ class dsp_host_dual : public DSPInterface
   inline void onParameterRecall(const nltools::controls::MacroTimeParameter& _param);
   inline void onParameterRecall(const nltools::controls::GlobalModulateableParameter& _param);
   inline void onParameterRecall(const nltools::controls::GlobalUnmodulateableParameter& _param);
-  inline void onParameterRecall(const uint32_t& _layerId,
-                                const nltools::controls::LocalModulateableParameter& _param);  // todo: deprecate
-  inline void onParameterRecall(const uint32_t& _layerId, const nltools::controls::LocalUnmodulateableParameter& _param,
-                                const bool _vaUpdate);  // todo: deprecate
   inline void onParameterRecall(const uint32_t& _layerId,
                                 const nltools::controls::PolyphonicModulateableParameter& _param);
   inline void onParameterRecall(const uint32_t& _layerId,
