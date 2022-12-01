@@ -146,7 +146,9 @@ Application::Application(int numArgs, char **argv)
 
 Application::~Application()
 {
-  m_isQuit = true;
+  if(!m_isQuit)
+    quit();
+
   stopWatchDog();
   DebugLevel::warning(__PRETTY_FUNCTION__, __LINE__);
 
