@@ -203,8 +203,8 @@ namespace nltools
         {
           const auto index = (uint32_t) id;
           // copy data from Part I to Part II (assuming already correct id)
-          auto& lhs = m_polyphonicModulateables[0][index];
-          const auto& rhs = m_polyphonicModulateables[1][index];
+          const auto& rhs = m_polyphonicModulateables[0][index];
+          auto& lhs = m_polyphonicModulateables[1][index];
           lhs.m_controlPosition = rhs.m_controlPosition;
           lhs.m_macro = rhs.m_macro;
           lhs.m_modulationAmount = rhs.m_modulationAmount;
