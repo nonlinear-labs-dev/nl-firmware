@@ -1,5 +1,8 @@
 #!/bin/sh
 
+set -e
+set -x
+
 ### Installs c15 package and all its dependencies into a folder and packs the result into a tar.gz
 ### This results in a rootfs that can be booted and run the full NL software stack.
 
@@ -11,6 +14,7 @@ setup_package_database() { # Create a database containing c15 package and all it
   cp /out/c15-1.0.0-1-any.pkg.tar.zst /nl/
   echo "[nl]" > /etc/pacman.conf
   echo "Server = file:///nl/" >> /etc/pacman.conf
+  echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
   set +e
 }
 
