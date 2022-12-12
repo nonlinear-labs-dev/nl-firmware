@@ -138,7 +138,7 @@ void PresetManagerLayout::setupBankSelect()
   addControl(new BankAndPresetNumberLabel(Rect(0, 0, 64, 14)));
   addControl(new NumBanksLabel(Rect(208, 1, 32, 14)))->setHighlight(false);
 
-  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), true));
+  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), true, true));
   addControl(new UndoIndicator(Rect(22, 15, 10, 8)));
   addControl(new AnyParameterLockedIndicator(Rect(244, 2, 10, 11)));
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 36, 58, 62)));
@@ -233,7 +233,7 @@ void PresetManagerLayout::setupPresetSelect()
   else
     m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
 
-  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), true));
+  addControl(new VoiceGroupIndicator(Rect(2, 15, 16, 16), true, true));
   addControl(new UndoIndicator(Rect(22, 15, 10, 8)));
   m_changedIndicator = addControl(new ChangedParameterIndicator(Rect(0, 14, 64, 14)));
   m_changedIndicator->setVisible(hwui->isModifierSet(ButtonModifier::SHIFT));

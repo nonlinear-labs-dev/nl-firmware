@@ -10,9 +10,10 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
 
-VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r, bool allowLoadToPart)
+VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r, bool allowLoadToPart, bool alwaysDraw)
     : Control(r)
     , m_allowLoadToPart(allowLoadToPart)
+    , m_alwaysDraw(alwaysDraw)
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto vgManager = Application::get().getVGManager();
@@ -32,7 +33,7 @@ VoiceGroupIndicator::~VoiceGroupIndicator()
 
 bool VoiceGroupIndicator::redraw(FrameBuffer& fb)
 {
-  if(shouldDraw())
+  if(shouldDraw() || m_alwaysDraw)
   {
     if(m_currentSoundType == SoundType::Split)
       return drawSplit(fb);
