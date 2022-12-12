@@ -1448,9 +1448,12 @@ void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, c
     super::copyFrom(transaction, preset, from, loadInto);
   }
 
+  copySpecialToFXParamForLoadSingleIntoDualPart(transaction, from, loadInto, preset);
+  copySpecialFXFromParamForLoadSingleIntoDualPart(transaction, from, loadInto, preset);
+
   copySinglePresetMasterToPartMaster(transaction, preset, loadInto);
   setVoiceGroupName(transaction, preset->getName(), loadInto);
-  initCrossFB(transaction);
+  initCrossFBExceptFromFX(transaction);
   initFadeFrom(transaction, loadInto);
   updateLoadFromPartOrigin(transaction, preset, from, loadInto);
 }
@@ -1487,6 +1490,9 @@ void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, c
 
     super::copyFrom(transaction, preset, from, loadTo);
   }
+
+  copySpecialToFXParamForLoadSingleIntoDualPart(transaction, from, loadTo, preset);
+  copySpecialFXFromParamForLoadSingleIntoDualPart(transaction, from, loadTo, preset);
 
   copySinglePresetMasterToPartMaster(transaction, preset, loadTo);
 
@@ -2037,4 +2043,37 @@ void EditBuffer::initFBMixFXFrom(UNDO::Transaction *transaction)
   auto parameterI = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
   auto parameterII = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
   parameterII->setCPFromHwui(transaction, 1 - parameterI->getControlPositionValue());
+}
+
+void EditBuffer::copySpecialToFXParamForLoadSingleIntoDualPart(UNDO::Transaction *transaction, VoiceGroup from,
+                                                               VoiceGroup to, const Preset *preset)
+{
+  auto out_mix_to_fx_I = findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
+  auto out_mix_to_fx_II = findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+
+  auto target = to == VoiceGroup::I ? out_mix_to_fx_I : out_mix_to_fx_II;
+  auto sourceParameter = preset->findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I}, true);
+
+  target->copyFrom(transaction, sourceParameter);
+
+  if(from != VoiceGroup::I)
+  {
+    target->setCPFromHwui(transaction, 1.0 - sourceParameter->getValue());
+  }
+}
+
+void EditBuffer::copySpecialFXFromParamForLoadSingleIntoDualPart(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to, const Preset *preset)
+{
+  auto fx_src_I = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
+  auto fx_src_II = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+
+  auto target = to == VoiceGroup::I ? fx_src_I : fx_src_II;
+  auto sourceParameter = preset->findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I}, true);
+
+  target->copyFrom(transaction, sourceParameter);
+
+  if(from != VoiceGroup::I)
+  {
+    target->setCPFromHwui(transaction, 1.0 - sourceParameter->getValue());
+  }
 }

@@ -281,4 +281,8 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void copyGlobalMasterAndFXMixToPartVolumesForConvertSingleToDual(UNDO::Transaction *transaction);
   void copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void initFBMixFXFrom(UNDO::Transaction *pTransaction);
+  void copySpecialToFXParamForLoadSingleIntoDualPart(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to,
+                                                     const Preset *preset);
+  void copySpecialFXFromParamForLoadSingleIntoDualPart(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to,
+                                                       const Preset *preset);
 };
