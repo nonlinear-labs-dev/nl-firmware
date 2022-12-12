@@ -869,9 +869,9 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
   undoableSetTypeFromConvert(transaction, type);
 
   if(oldType == SoundType::Single && type == SoundType::Layer)
-    undoableConvertSingleToLayer(transaction);
+    undoableConvertSingleToLayer(transaction, currentVG);
   else if(oldType == SoundType::Single && type == SoundType::Split)
-    undoableConvertSingleToSplit(transaction);
+    undoableConvertSingleToSplit(transaction, currentVG);
   else if(oldType == SoundType::Layer && type == SoundType::Split)
     undoableConvertLayerToSplit(transaction);
   else if(oldType == SoundType::Split && type == SoundType::Layer)
@@ -1327,7 +1327,7 @@ void EditBuffer::initCrossFBExceptFromFX(UNDO::Transaction *transaction)
   }
 }
 
-void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction)
+void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction, VoiceGroup copyFrom)
 {
   setVoiceGroupName(transaction, getName(), VoiceGroup::I);
   setVoiceGroupName(transaction, getName(), VoiceGroup::II);
@@ -1345,10 +1345,11 @@ void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction)
   initFadeFrom(transaction, VoiceGroup::I);
   initFadeFrom(transaction, VoiceGroup::II);
   initSplitPoint(transaction);
-  initCrossFB(transaction);
+  initCrossFBExceptFromFX(transaction);
+  initFBMixFXFrom(transaction);
 }
 
-void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
+void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction, VoiceGroup copyFrom)
 {
   setVoiceGroupName(transaction, getName(), VoiceGroup::I);
   setVoiceGroupName(transaction, getName(), VoiceGroup::II);
@@ -1370,7 +1371,8 @@ void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction)
   initFadeFrom(transaction, VoiceGroup::II);
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   initSplitPoint(transaction);
-  initCrossFB(transaction);
+  initCrossFBExceptFromFX(transaction);
+  initFBMixFXFrom(transaction);
 }
 
 void EditBuffer::undoableConvertLayerToSplit(UNDO::Transaction *transaction)
@@ -2012,4 +2014,11 @@ void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(UND
     const auto direction = (copyFrom == VoiceGroup::I ? 1.0 : -1.0);
     masterFX_MIX->setCPFromHwui(transaction, 0.5 + (direction * (partVolCPDiff > 0.0 ? -fade : fade)));
   }
+}
+
+void EditBuffer::initFBMixFXFrom(UNDO::Transaction *transaction)
+{
+  auto parameterI = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
+  auto parameterII = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+  parameterII->setCPFromHwui(transaction, 1 - parameterI->getControlPositionValue());
 }

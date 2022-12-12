@@ -205,8 +205,8 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void initCrossFBExceptFromFX(UNDO::Transaction* transaction);
   void undoableUnmuteLayers(UNDO::Transaction *transaction);
   void undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg);
-  void undoableConvertSingleToLayer(UNDO::Transaction *transaction);
-  void undoableConvertSingleToSplit(UNDO::Transaction *transaction);
+  void undoableConvertSingleToLayer(UNDO::Transaction *transaction, VoiceGroup copyFrom);
+  void undoableConvertSingleToSplit(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void undoableConvertLayerToSplit(UNDO::Transaction *transaction);
   void undoableConvertSplitToLayer(UNDO::Transaction *transaction, VoiceGroup currentVG);
   void calculateSplitPointFromFadeParams(UNDO::Transaction *transaction);
@@ -280,4 +280,5 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
                                 const VoiceGroup &loadTo);
   void copyGlobalMasterAndFXMixToPartVolumesForConvertSingleToDual(UNDO::Transaction *transaction);
   void copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
+  void initFBMixFXFrom(UNDO::Transaction *pTransaction);
 };
