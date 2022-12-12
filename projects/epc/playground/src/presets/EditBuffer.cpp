@@ -1331,12 +1331,20 @@ void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction, Vo
 {
   setVoiceGroupName(transaction, getName(), VoiceGroup::I);
   setVoiceGroupName(transaction, getName(), VoiceGroup::II);
-  initToFX(transaction);
+
+  auto toFXI = findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
+  auto toFXII = findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+  toFXII->setCPFromHwui(transaction, 1 - toFXI->getControlPositionValue());
 
   {
     using namespace C15::Descriptors;
     ScopedLockByParameterTypes lock(
         transaction, { ParameterType::Monophonic_Modulateable, ParameterType::Monophonic_Unmodulateable }, *this);
+
+    ScopedLock lock2(transaction);
+    lock2.addLock(toFXI);
+    lock2.addLock(toFXII);
+
     copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   }
 
@@ -1353,12 +1361,20 @@ void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction, Vo
 {
   setVoiceGroupName(transaction, getName(), VoiceGroup::I);
   setVoiceGroupName(transaction, getName(), VoiceGroup::II);
-  initToFX(transaction);
+
+  auto toFXI = findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
+  auto toFXII = findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+  toFXII->setCPFromHwui(transaction, 1 - toFXI->getControlPositionValue());
 
   {
     using namespace C15::Descriptors;
     ScopedLockByParameterTypes lock(
         transaction, { ParameterType::Monophonic_Unmodulateable, ParameterType::Monophonic_Modulateable }, *this);
+
+    ScopedLock lock2(transaction);
+    lock2.addLock(toFXI);
+    lock2.addLock(toFXII);
+
     copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
   }
 
