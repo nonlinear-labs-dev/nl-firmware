@@ -37,7 +37,8 @@
           "Position": "BUTTON_B",
           "Init": {
             "Text[Text]": "FX Mix.."
-          }
+          },
+          "Events": "SoundFxMixMasterButtonText => Text[Text]"
         },
         "ButtonC": {
           "Class": "Button",

@@ -111,7 +111,13 @@ bool DescriptiveLayouts::SoundMasterButtonText::isChanged(const EditBuffer *eb)
 {
   auto masterGroup = eb->getParameterGroupByID({ "Master", VoiceGroup::Global });
   auto scale = eb->getParameterGroupByID({ "Scale", VoiceGroup::Global });
-  return (scale && scale->isAnyParameterChanged()) || (masterGroup && masterGroup->isAnyParameterChanged());
+
+  bool masterChanged = false;
+  for(auto masterParams :masterGroup->getParameters())
+    if(masterParams->getID().getNumber() != C15::PID::Master_FX_Mix)
+      masterChanged |= masterParams->isChangedFromLoaded();
+
+  return (scale && scale->isAnyParameterChanged()) || masterChanged;
 }
 
 void DescriptiveLayouts::MonoButtonText::onChange(const EditBuffer *eb)
@@ -401,4 +407,15 @@ void DescriptiveLayouts::VGIIsMuted::onChange(const EditBuffer *eb)
 void DescriptiveLayouts::VGIIIsMuted::onChange(const EditBuffer *eb)
 {
   setValue(eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->isValueDifferentFrom(0));
+}
+
+void DescriptiveLayouts::SoundFxMixMasterButtonText::onChange(const EditBuffer *eb)
+{
+  auto changed = isChanged(eb);
+  setValue({changed ? "FX Mix..*" : "FX Mix..", 0});
+}
+
+bool DescriptiveLayouts::SoundFxMixMasterButtonText::isChanged(const EditBuffer *eb)
+{
+  return eb->findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global})->isChangedFromLoaded();
 }

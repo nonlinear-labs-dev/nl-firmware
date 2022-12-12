@@ -116,6 +116,7 @@ namespace DescriptiveLayouts
     m_map[EventSources::SoundParamsButtonText] = std::make_unique<SoundParamsButtonText>();
     m_map[EventSources::SoundVoicesButtonText] = std::make_unique<SoundVoicesButtonText>();
     m_map[EventSources::SoundMasterButtonText] = std::make_unique<SoundMasterButtonText>();
+    m_map[EventSources::SoundFxMixMasterButtonText] = std::make_unique<SoundFxMixMasterButtonText>();
 
     m_map[EventSources::MonoButtonText] = std::make_unique<MonoButtonText>();
     m_map[EventSources::UnisonButtonText] = std::make_unique<UnisonButtonText>();
