@@ -111,6 +111,19 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
     if(!parameter)
       parameter = editBuffer->findParameterByID({ i, VoiceGroup::Global });
 
+
+    if(editBuffer->getType() == SoundType::Single)
+    {
+      if(parameter->isPolyphonic())
+      {
+        parameter = editBuffer->findParameterByID({i, VoiceGroup::I });
+        if(!parameter)
+        {
+          parameter = editBuffer->findParameterByID({i, VoiceGroup::Global});
+        }
+      }
+    }
+
     if(parameter != nullptr)
     {
       auto result = trySpecialCaseParameter(parameter);
