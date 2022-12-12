@@ -1778,10 +1778,12 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
         nltools::Log::info("recall split voice reset(layerId:", layerId, ")");
 
       m_alloc.m_internal_keys.m_local[layerId] = 0;  // reset all pressed keys in part
-      m_alloc.setUnison(0, m_parameters.m_layer[layerId].m_polyphonic.m_unmodulateables[IndexOfUnisonVoices].m_position,
+      m_alloc.setUnison(layerId,
+                        m_parameters.m_layer[layerId].m_polyphonic.m_unmodulateables[IndexOfUnisonVoices].m_position,
                         oldLayerMode, m_layer_mode);
-      m_alloc.setMonoEnable(
-          0, m_parameters.m_layer[layerId].m_polyphonic.m_unmodulateables[IndexOfMonoEnable].m_position, m_layer_mode);
+      m_alloc.setMonoEnable(layerId,
+                            m_parameters.m_layer[layerId].m_polyphonic.m_unmodulateables[IndexOfMonoEnable].m_position,
+                            m_layer_mode);
       const uint32_t uVoice = m_alloc.m_unison - 1;
       m_poly[layerId].resetEnvelopes();
       m_poly[layerId].m_uVoice = uVoice;
