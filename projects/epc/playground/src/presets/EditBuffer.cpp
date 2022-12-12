@@ -1625,28 +1625,31 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
   using Conversion = std::pair<From, To>;
   using ConversionMap = std::map<Conversion, ParameterNumberMap>;
 
-  static ConversionMap conversions { { { From::Layer, To::Split },
-                                       { { C15::PID::FB_Mix_Osc, C15::PID::FB_Mix_Osc },
-                                         { C15::PID::FB_Mix_Osc_Src, C15::PID::FB_Mix_Osc },
-                                         { C15::PID::FB_Mix_Comb_Src, C15::PID::FB_Mix_Comb },
-                                         { C15::PID::FB_Mix_SVF_Src, C15::PID::FB_Mix_SVF },
-                                         { C15::PID::Voice_Grp_Fade_From, C15::PID::Voice_Grp_Volume },
-                                         { C15::PID::Voice_Grp_Fade_Range, C15::PID::Voice_Grp_Volume } } },
-                                     { { From::Layer, To::Single },
-                                       { { C15::PID::FB_Mix_Osc, C15::PID::FB_Mix_Osc },
-                                         { C15::PID::FB_Mix_Osc_Src, C15::PID::FB_Mix_Osc },
-                                         { C15::PID::FB_Mix_Comb_Src, C15::PID::FB_Mix_Comb },
-                                         { C15::PID::FB_Mix_SVF_Src, C15::PID::FB_Mix_SVF },
-                                         { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume },
-                                         { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune },
-                                         { C15::PID::Voice_Grp_Fade_From, C15::PID::Master_Volume },
-                                         { C15::PID::Voice_Grp_Fade_Range, C15::PID::Master_Volume } } },
-                                     { { From::Split, To::Layer },
-                                       { { C15::PID::Split_Split_Point, C15::PID::Voice_Grp_Volume } } },
-                                     { { From::Split, To::Single },
-                                       { { C15::PID::Split_Split_Point, C15::PID::Master_Volume },
-                                         { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune },
-                                         { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume } } } };
+  static ConversionMap conversions {
+    { { From::Layer, To::Split },
+      { { C15::PID::FB_Mix_Osc, C15::PID::FB_Mix_Osc },
+        { C15::PID::FB_Mix_Osc_Src, C15::PID::FB_Mix_Osc },
+        { C15::PID::FB_Mix_Comb_Src, C15::PID::FB_Mix_Comb },
+        { C15::PID::FB_Mix_SVF_Src, C15::PID::FB_Mix_SVF },
+        { C15::PID::Voice_Grp_Fade_From, C15::PID::Voice_Grp_Volume },
+        { C15::PID::Voice_Grp_Fade_Range, C15::PID::Voice_Grp_Volume } } },
+    { { From::Layer, To::Single },
+      { { C15::PID::FB_Mix_Osc, C15::PID::FB_Mix_Osc },
+        { C15::PID::FB_Mix_Osc_Src, C15::PID::FB_Mix_Osc },
+        { C15::PID::FB_Mix_Comb_Src, C15::PID::FB_Mix_Comb },
+        { C15::PID::FB_Mix_SVF_Src, C15::PID::FB_Mix_SVF },
+        { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume },
+        { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune },
+        { C15::PID::Voice_Grp_Fade_From, C15::PID::Master_Volume },
+        { C15::PID::Voice_Grp_Fade_Range, C15::PID::Master_Volume } } },
+    { { From::Split, To::Layer }, { { C15::PID::Split_Split_Point, C15::PID::Voice_Grp_Volume } } },
+    { { From::Split, To::Single },
+      { { C15::PID::Split_Split_Point, C15::PID::Master_Volume },
+        { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune },
+        { C15::PID::Voice_Grp_Volume, C15::PID::Master_Volume } } },
+    { { From::Single, To::Layer }, { { C15::PID::Master_FX_Mix, C15::PID::Master_Volume } } },
+    { { From::Single, To::Split }, { { C15::PID::Master_FX_Mix, C15::PID::Master_Volume } } }
+  };
 
   if(Application::exists())
   {
