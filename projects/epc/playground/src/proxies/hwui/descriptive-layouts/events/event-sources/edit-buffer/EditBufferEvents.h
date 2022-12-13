@@ -117,6 +117,15 @@ namespace DescriptiveLayouts
     bool isChanged(const EditBuffer *eb);
   };
 
+  class SoundFxMixMasterButtonText : public EditBufferEvent<DisplayString>
+  {
+   public:
+    void onChange(const EditBuffer* eb) override;
+
+   private:
+    bool isChanged(const EditBuffer* eb);
+  };
+
   class MonoButtonText : public EditBufferEvent<DisplayString>
   {
    public:

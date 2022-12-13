@@ -63,8 +63,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single Sound to Split")
     {
       CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
       CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
     }
 
     THEN("Fade is default")
@@ -173,8 +171,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single Sound to Layer")
     {
       CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
       CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getToFX<VoiceGroup::I>()));
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getToFX<VoiceGroup::II>()));
     }
 
     THEN("Fade is default")

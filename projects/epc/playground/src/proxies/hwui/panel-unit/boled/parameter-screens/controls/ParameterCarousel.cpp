@@ -103,6 +103,14 @@ void ParameterCarousel::setupChildControlsThatFit(Parameter* selectedParameter, 
     auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
     auto eb = Application::get().getPresetManager()->getEditBuffer();
 
+    if(eb->getType() == SoundType::Single)
+    {
+      if(selectedParameter->isPolyphonic())
+      {
+        vg = VoiceGroup::I;
+      }
+    }
+
     auto param = eb->findParameterByID({ i, vg });
 
     if(!param)

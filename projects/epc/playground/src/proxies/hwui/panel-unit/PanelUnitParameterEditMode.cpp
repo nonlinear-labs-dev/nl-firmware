@@ -597,6 +597,22 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
   for(auto targetID : targets)
   {
     auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+
+    bool isPolyphonic = false;
+
+    if(editBuffer->getType() == SoundType::Single)
+    {
+      auto param = editBuffer->findParameterByID({targetID, vg});
+      if(!param)
+      {
+        param = editBuffer->findParameterByID({targetID, VoiceGroup::Global});
+      }
+      isPolyphonic = param->getType() == C15::Descriptors::ParameterType::Polyphonic_Modulateable || param->getType() == C15::Descriptors::ParameterType::Polyphonic_Unmodulateable;
+
+      if(isPolyphonic)
+        vg = VoiceGroup::I;
+    }
+
     const auto currentParam = editBuffer->findParameterByID({ targetID, vg });
 
     if(isSignalFlowingThrough(currentParam))

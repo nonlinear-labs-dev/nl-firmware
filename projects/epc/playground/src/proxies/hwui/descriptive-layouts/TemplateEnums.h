@@ -37,7 +37,7 @@ namespace DescriptiveLayouts
        CanRight, isFineActive, EditBufferMasterVolume, EditBufferMasterTune, VGIMasterTuneText, VGIIMasterTuneText,
        VGIMasterVolumeText, VGIIMasterVolumeText, SplitPointValue, MonoEnabledText, MonoPrioText, MonoLegatoText,
        MonoGlideText, UnisonVoicesText, UnisonDetuneText, UnisonPhaseText, UnisonPanText, MonoEnabled, UnisonEnabled,
-       CurrentVoiceGroupLabel, SoundParamsButtonText, SoundVoicesButtonText, SoundMasterButtonText, MonoButtonText,
+       CurrentVoiceGroupLabel, SoundParamsButtonText, SoundVoicesButtonText, SoundFxMixMasterButtonText, SoundMasterButtonText, MonoButtonText,
        UnisonButtonText, VGIMuted, VGIIMuted, VGIIsMuted, VGIIIsMuted, IsSingleSound, IsLayerSound, IsSplitSound,
        SplitPointIValue, SplitPointIIValue,
 

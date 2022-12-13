@@ -894,3 +894,103 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert split to single: in po
     }
   }
 }
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert Single to dual: FB Mix FX From")
+{
+  MockPresetStorage presets;
+  auto& eb = *TestHelper::getEditBuffer();
+
+  auto parameterI = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
+  auto parameterII = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+
+  TestHelper::initSingleEditBuffer();
+
+  EditBufferUseCases ebUseCases(eb);
+
+  auto CP = GENERATE(0.0, 0.4, 0.5, 0.7, 1.0);
+
+  WHEN("Single init with " << CP)
+  {
+    auto evII = 1 - CP;
+    ParameterUseCases pI(parameterI);
+    pI.setControlPosition(CP);
+
+    WHEN("converted I to split")
+    {
+      ebUseCases.convertToSplit(VoiceGroup::I);
+      CHECK(parameterI->getControlPositionValue() == Approx(CP));
+      CHECK(parameterII->getControlPositionValue() == Approx(evII));
+    }
+
+    WHEN("converted II to split")
+    {
+      ebUseCases.convertToSplit(VoiceGroup::II);
+      CHECK(parameterI->getControlPositionValue() == Approx(CP));
+      CHECK(parameterII->getControlPositionValue() == Approx(evII));
+    }
+
+    WHEN("converted I to layer")
+    {
+      ebUseCases.convertToLayer(VoiceGroup::I);
+      CHECK(parameterI->getControlPositionValue() == Approx(CP));
+      CHECK(parameterII->getControlPositionValue() == Approx(evII));
+    }
+
+    WHEN("converted II to Layer")
+    {
+      ebUseCases.convertToLayer(VoiceGroup::II);
+      CHECK(parameterI->getControlPositionValue() == Approx(CP));
+      CHECK(parameterII->getControlPositionValue() == Approx(evII));
+    }
+  }
+}
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert Single to dual: Out Mix To FX")
+{
+  MockPresetStorage presets;
+  auto& eb = *TestHelper::getEditBuffer();
+
+  auto parameterI = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
+  auto parameterII = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+
+  TestHelper::initSingleEditBuffer();
+
+  EditBufferUseCases ebUseCases(eb);
+
+  auto CP = GENERATE(0.0, 0.4, 0.5, 0.7, 1.0);
+
+  WHEN("Single init with " << CP)
+  {
+    auto evII = 1 - CP;
+    ParameterUseCases pI(parameterI);
+    pI.setControlPosition(CP);
+
+    WHEN("converted I to split")
+    {
+      ebUseCases.convertToSplit(VoiceGroup::I);
+      CHECK(parameterI->getControlPositionValue() == Approx(CP));
+      CHECK(parameterII->getControlPositionValue() == Approx(evII));
+    }
+
+    WHEN("converted II to split")
+    {
+      ebUseCases.convertToSplit(VoiceGroup::II);
+      CHECK(parameterI->getControlPositionValue() == Approx(CP));
+      CHECK(parameterII->getControlPositionValue() == Approx(evII));
+    }
+
+    WHEN("converted I to layer")
+    {
+      ebUseCases.convertToLayer(VoiceGroup::I);
+      CHECK(parameterI->getControlPositionValue() == Approx(CP));
+      CHECK(parameterII->getControlPositionValue() == Approx(evII));
+    }
+
+    WHEN("converted II to Layer")
+    {
+      ebUseCases.convertToLayer(VoiceGroup::II);
+      CHECK(parameterI->getControlPositionValue() == Approx(CP));
+      CHECK(parameterII->getControlPositionValue() == Approx(evII));
+    }
+  }
+}
