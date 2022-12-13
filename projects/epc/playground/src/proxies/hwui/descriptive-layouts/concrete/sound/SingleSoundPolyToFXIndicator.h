@@ -19,10 +19,12 @@ class SingleSoundPolyToFXIndicator : public ControlWithChildren
   Control* fxIToOut;
   Control* fxIIToOut;
   Control* arrowFromFX;
+  Control* arrowSerial;
 
   void onVoiceGroupChanged(VoiceGroup vg);
   void onToFXI(const Parameter* param);
   void onMasterFXMix(const Parameter* param);
+  void onSerialFX(const Parameter* param);
 
-  sigc::connection con1, con2, con3;
+  sigc::connection con1, con2, con3, con4;
 };
