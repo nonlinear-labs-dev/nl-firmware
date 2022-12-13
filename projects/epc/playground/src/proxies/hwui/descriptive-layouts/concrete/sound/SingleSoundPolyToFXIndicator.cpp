@@ -61,3 +61,49 @@ void SingleSoundPolyToFXIndicator::onSerialFX(const Parameter* param)
   else if(cp < 0)
     arrowSerial = addControl(new PNGControl({ 19, 10, 5, 4 }, "ArrowUp.png"));
 }
+
+SingleSoundFBFXIndicator::SingleSoundFBFXIndicator(const Point& p)
+    : ControlWithChildren({ p.getX(), p.getY(), 28, 28 })
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto param = eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+  param->onParameterChanged(sigc::mem_fun(this, &SingleSoundFBFXIndicator::onFromFXChanged));
+
+  FXI = addControl(new PNGControl({ 0, 0, 9, 9 }, "Single_FX_I.png"));
+  FXII = addControl(new PNGControl({ 0, 15, 9, 9 }, "Single_FX_II.png"));
+
+  auto& vgManager = *Application::get().getVGManager();
+  vgManager.onCurrentVoiceGroupChanged(sigc::mem_fun(this, &SingleSoundFBFXIndicator::onVoiceGroupChanged));
+}
+
+void SingleSoundFBFXIndicator::onFromFXChanged(const Parameter* p)
+{
+  remove(arrowFromI);
+  remove(arrowFromII);
+  remove(arrowHead);
+
+  auto cp = p->getControlPositionValue();
+
+  if(cp == 1)
+  {
+    arrowFromII = addControl(new PNGControl({ 11, 12, 11, 7 }, "Single_FX_II_out_no_arrow.png"));
+    arrowHead = addControl(new PNGControl({ 22, 10, 3, 5 }, "Single_FX_Arrow.png"));
+  }
+  else if(cp == 0)
+  {
+    arrowFromI = addControl(new PNGControl({ 11, 6, 11, 7 }, "Single_FX_I_Out_no_arrow.png"));
+    arrowHead = addControl(new PNGControl({ 22, 10, 3, 5 }, "Single_FX_Arrow.png"));
+  }
+  else
+  {
+    arrowFromI = addControl(new PNGControl({ 11, 6, 11, 7 }, "Single_FX_I_Out_no_arrow.png"));
+    arrowFromII = addControl(new PNGControl({ 11, 12, 11, 7 }, "Single_FX_II_out_no_arrow.png"));
+    arrowHead = addControl(new PNGControl({ 22, 10, 3, 5 }, "Single_FX_Arrow.png"));
+  }
+}
+
+void SingleSoundFBFXIndicator::onVoiceGroupChanged(VoiceGroup vg)
+{
+  FXI->setHighlight(vg == VoiceGroup::I);
+  FXII->setHighlight(vg == VoiceGroup::II);
+}

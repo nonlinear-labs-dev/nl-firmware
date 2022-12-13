@@ -28,3 +28,20 @@ class SingleSoundPolyToFXIndicator : public ControlWithChildren
 
   sigc::connection con1, con2, con3, con4;
 };
+
+class SingleSoundFBFXIndicator : public ControlWithChildren
+{
+ public:
+  explicit SingleSoundFBFXIndicator(const Point& p);
+
+ private:
+  void onFromFXChanged(const Parameter* p);
+
+  void onVoiceGroupChanged(VoiceGroup vg);
+
+  Control* arrowHead;
+  Control* arrowFromI;
+  Control* arrowFromII;
+  Control* FXI;
+  Control* FXII;
+};

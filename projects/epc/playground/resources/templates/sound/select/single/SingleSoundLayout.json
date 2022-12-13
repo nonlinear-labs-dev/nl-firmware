@@ -1,4 +1,12 @@
 {
+  "controls": {
+    "TestLabel": {
+      "label": {
+        "Class": "Text",
+        "Rect": "0, 0, 25, 8"
+      }
+    }
+  },
   "layouts": {
     "Single-Sound-Select-Layout": {
       "Selector": {
@@ -20,10 +28,21 @@
           "Position": "64, 0",
           "Events": "EditBufferNameWithSuffix => Text[Text]"
         },
-        "VoiceGroupI":
+        "FB_FX_Label":
         {
-          "Position": "25, 26",
-          "Class": "CurrentVoiceGroupSelectionIndicator"
+          "Class": "TestLabel",
+          "Position": "3, 28",
+          "Init": {
+            "label[Text]": "FX FB"
+          }
+        },
+        "FX_Label":
+        {
+          "Class": "TestLabel",
+          "Position": "215, 7",
+          "Init": {
+            "label[Text]": "FX"
+          }
         },
         "ButtonA": {
           "Class": "Button",
@@ -75,6 +94,10 @@
         "ArrowsPolyToFX": {
           "Class": "SingleSoundPolyToFXIndicator",
           "Position": "205, 19"
+        },
+        "FB_FX": {
+          "Class": "SingleSoundFBFXIndicator",
+          "Position": "30, 19"
         }
       },
       "EventSinks": {

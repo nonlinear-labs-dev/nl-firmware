@@ -22,13 +22,12 @@ namespace DescriptiveLayouts
   ControlRegistry::ControlRegistry()
   {
 
-    m_discreteRegistry["ParameterEditButtonMenu"] = [](const Point& position) {
-      return new ParameterEditButtonMenu(Rect(position.getX(), position.getY(), 58, 62));
-    };
-    m_discreteRegistry["MacroControlEditButtonMenu"] = [](const Point& position) {
-      return new MacroControlEditButtonMenu(Rect(position.getX(), position.getY(), 58, 62));
-    };
-    m_discreteRegistry["ModulationCarousel"] = [](const Point& position) {
+    m_discreteRegistry["ParameterEditButtonMenu"] = [](const Point& position)
+    { return new ParameterEditButtonMenu(Rect(position.getX(), position.getY(), 58, 62)); };
+    m_discreteRegistry["MacroControlEditButtonMenu"] = [](const Point& position)
+    { return new MacroControlEditButtonMenu(Rect(position.getX(), position.getY(), 58, 62)); };
+    m_discreteRegistry["ModulationCarousel"] = [](const Point& position)
+    {
       return new ModulationCarousel(ModulationCarousel::Mode::UpperBound,
                                     Rect(position.getX(), position.getY(), 58, 72));
     };
@@ -36,9 +35,8 @@ namespace DescriptiveLayouts
     m_discreteRegistry["ConvertSoundMenu"]
         = [](const Point& position) { return new ConvertSoundMenu(Rect(position.getX(), position.getY(), 58, 26)); };
 
-    m_discreteRegistry["SingleSoundEditMenu"] = [](const Point& position) {
-      return new SingleSoundEditMenu(Rect(position.getX(), position.getY(), 256, 52));
-    };
+    m_discreteRegistry["SingleSoundEditMenu"] = [](const Point& position)
+    { return new SingleSoundEditMenu(Rect(position.getX(), position.getY(), 256, 52)); };
     m_discreteRegistry["DualSoundEditMenu"]
         = [](const Point& position) { return new DualSoundEditMenu(Rect(position.getX(), position.getY(), 256, 52)); };
 
@@ -50,9 +48,8 @@ namespace DescriptiveLayouts
     m_discreteRegistry["MonoGroupControl"]
         = [](const Point& position) { return new MonoGroupControl(Rect(position.getX(), position.getY(), 125, 33)); };
 
-    m_discreteRegistry["CurrentVoiceGroupSelectionIndicator"] = [](const Point& position) {
-      return new CurrentVoiceGroupSelectionIndicator(Rect(position.getX(), position.getY(), 10, 8));
-    };
+    m_discreteRegistry["CurrentVoiceGroupSelectionIndicator"] = [](const Point& position)
+    { return new CurrentVoiceGroupSelectionIndicator(Rect(position.getX(), position.getY(), 10, 8)); };
 
     m_discreteRegistry["FadeIndicatorI"]
         = [](const Point& pos) { return new FadeIndicator(Rect(pos.getX(), pos.getY(), 14, 7), VoiceGroup::I); };
@@ -62,6 +59,8 @@ namespace DescriptiveLayouts
 
     m_discreteRegistry["SingleSoundPolyToFXIndicator"]
         = [](const Point& pos) { return new SingleSoundPolyToFXIndicator(pos); };
+
+    m_discreteRegistry["SingleSoundFBFXIndicator"] = [](const auto& p) { return new SingleSoundFBFXIndicator(p); };
   }
 
   void ControlRegistry::registerControl(ControlClass&& cp)
