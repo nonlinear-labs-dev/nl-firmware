@@ -41,6 +41,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load ribbons correctly")
     auto mcC = eb.findAndCastParameterByID<MacroControlParameter>({C15::PID::MC_C, VoiceGroup::Global});
     auto mcD = eb.findAndCastParameterByID<MacroControlParameter>({C15::PID::MC_D, VoiceGroup::Global});
 
+    auto ribbon1ToA = eb.findParameterByID({C15::PID::Ribbon_1_to_MC_A, VoiceGroup::Global});
+
     EditBufferUseCases ebUseCases(eb);
 
     auto presetNum = GENERATE(0, 1);
@@ -55,6 +57,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load ribbons correctly")
       CHECK(mcB->getControlPositionValue() == preset->findParameterByID({C15::PID::MC_B, VoiceGroup::Global}, true)->getValue());
       CHECK(mcC->getControlPositionValue() == preset->findParameterByID({C15::PID::MC_C, VoiceGroup::Global}, true)->getValue());
       CHECK(mcD->getControlPositionValue() == preset->findParameterByID({C15::PID::MC_D, VoiceGroup::Global}, true)->getValue());
+
+      CHECK(ribbon1ToA->getControlPositionValue() > 0);
 
       CHECK(ribbon1->getControlPositionValue() == preset->findParameterByID({C15::PID::MC_A, VoiceGroup::Global}, true)->getValue());
       CHECK(ribbon2->getControlPositionValue() == preset->findParameterByID({C15::PID::MC_B, VoiceGroup::Global}, true)->getValue());

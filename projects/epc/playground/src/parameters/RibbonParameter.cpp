@@ -131,7 +131,7 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
   if(mode != RibbonReturnMode::STAY && mode != RibbonReturnMode::RETURN)
     mode = RibbonReturnMode::STAY;
 
-  if(initiator == Initiator::EXPLICIT_LOAD)
+  if(initiator == Initiator::EXPLICIT_LOAD && mode != RibbonReturnMode::STAY)
   {
     auto val = getDefValueAccordingToMode(mode);
     nltools::Log::error(getLongName(), "setReturnMode:", toString(mode), val);
@@ -288,6 +288,7 @@ void RibbonParameter::copyTo(UNDO::Transaction *transaction, PresetParameter *ot
 
 void RibbonParameter::boundToMacroControl(tControlPositionValue v)
 {
+  nltools::Log::error(getLongName(), "bound to Macrocontrol with value", v);
   getValue().setRawValue(Initiator::INDIRECT, v);
   onChange();
   invalidate();
