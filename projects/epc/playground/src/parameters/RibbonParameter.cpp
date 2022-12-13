@@ -132,7 +132,11 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
     mode = RibbonReturnMode::STAY;
 
   if(initiator == Initiator::EXPLICIT_LOAD)
-    setIndirect(transaction, getDefValueAccordingToMode(mode));
+  {
+    auto val = getDefValueAccordingToMode(mode);
+    nltools::Log::error(getLongName(), "setReturnMode:", toString(mode), val);
+    setIndirect(transaction, val);
+  }
 
   if(m_returnMode != mode)
   {
