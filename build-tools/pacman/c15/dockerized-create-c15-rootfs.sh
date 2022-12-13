@@ -1,5 +1,8 @@
 #!/bin/sh
 
+set -e
+set -x
+
 ### Installs c15 package and all its dependencies into a folder and packs the result into a tar.gz
 ### This results in a rootfs that can be booted and run the full NL software stack.
 
@@ -11,6 +14,7 @@ setup_package_database() { # Create a database containing c15 package and all it
   cp /out/c15-1.0.0-1-any.pkg.tar.zst /nl/
   echo "[nl]" > /etc/pacman.conf
   echo "Server = file:///nl/" >> /etc/pacman.conf
+  echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
   set +e
 }
 
@@ -23,7 +27,7 @@ create_rootfs() { # Create clean folder and install c15 package and all its depe
 
 tweak_rootfs() { # Tweak the resulting rootfs
   sed -i "s/#governor=.*$/governor='performance'/" $DIR/etc/default/cpupower
-  echo "root@192.168.10.11:/mnt/usb-stick  /mnt/usb-stick  fuse.sshfs  sshfs_sync,direct_io,cache=no,reconnect,defaults,_netdev,ServerAliveInterval=2,ServerAliveCountMax=3,StrictHostKeyChecking=off  0  0" >> $DIR/etc/fstab
+  echo "root@192.168.10.11:/mnt/usb-stick  /mnt/usb-stick  fuse.sshfs  sshfs_sync,direct_io,cache=no,reconnect,defaults,_netdev,ServerAliveInterval=2,ServerAliveCountMax=3,StrictHostKeyChecking=off  0  0" > $DIR/etc/fstab
   echo "options snd_hda_intel power_save=0" >> $DIR/etc/modprobe.d/snd_hda_intel.conf
   arch-chroot $DIR ssh-keygen -A
   arch-chroot $DIR systemctl enable cpupower
@@ -32,7 +36,6 @@ tweak_rootfs() { # Tweak the resulting rootfs
   arch-chroot $DIR useradd -m sscl
   echo 'sscl:sscl' | arch-chroot $DIR chpasswd
   echo 'sscl ALL=(ALL) NOPASSWD:ALL' >> $DIR/etc/sudoers
-  genfstab -U $DIR >> $DIR/etc/fstab
   arch-chroot $DIR chown root:root /
   arch-chroot $DIR chmod 755 /
 }
