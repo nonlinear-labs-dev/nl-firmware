@@ -575,7 +575,9 @@ void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
   {
     for(auto t : mc->getTargets())
     {
-      if(t->getID().getVoiceGroup() == currentVG)
+      auto shouldHighlightDual = t->getID().getVoiceGroup() == currentVG;
+      auto shouldHighlightSingle = t->isPolyphonic() || (t->isMonophonic() && t->getID().getVoiceGroup() == currentVG);
+      if((editBuffer->isDual() && shouldHighlightDual) || (editBuffer->getType() == SoundType::Single && shouldHighlightSingle))
       {
         auto buttonID = m_mappings.findButton(t->getID().getNumber());
         if(buttonID != Buttons::INVALID)
