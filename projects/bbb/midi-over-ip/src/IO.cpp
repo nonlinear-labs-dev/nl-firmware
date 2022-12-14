@@ -32,7 +32,10 @@ Input::Input(const std::string &name)
   if(pipe(m_cancelPipe))
     nltools::Log::warning("Couldn't create pipe");
 
-  m_bg = std::async(std::launch::async, [=] { if(m_handle) readMidi(); });
+  m_bg = std::async(std::launch::async, [=] {
+    if(m_handle)
+      readMidi();
+  });
 }
 
 Input::~Input()
@@ -116,7 +119,7 @@ void Input::readMidi()
 
     bufferReserve = logReserve(pStatus, RAWMIDI_BUF_SIZE, bufferReserve);
 
-    if(auto result = fetchChunk(buffer, LOCAL_BUF_SIZE, numPollFDs, pollFileDescriptors))
+    if(auto result = fetchChunk(buffer, LOCAL_BUF_SIZE, numPollFDs + 1, pollFileDescriptors))
       processChunk(buffer, result, codecs.encoder, codecs.decoder);
   }
 }
@@ -138,7 +141,7 @@ size_t Input::fetchChunk(uint8_t *buffer, size_t length, int numPollFDs, pollfd 
   if(result == -EAGAIN)  // nothing remaining or no data
   {
     // now sleep until data is coming in ...
-    if(poll(pollFileDescriptors, numPollFDs + 1, -1) > 0)
+    if(poll(pollFileDescriptors, numPollFDs, -1) > 0)
       return 0;
 
     nltools::Log::throwException("Polling the midi input file descriptor failed.");
