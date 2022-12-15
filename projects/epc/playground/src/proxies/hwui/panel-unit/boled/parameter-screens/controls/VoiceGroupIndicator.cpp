@@ -107,11 +107,11 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
 
 bool VoiceGroupIndicator::drawSingle(FrameBuffer& fb)
 {
-  Rect polyRect = {getPosition().getX() + 2, getPosition().getY() + 3, 4, 10};
-  Rect monoI = {getPosition().getX() + 8, getPosition().getY() + 3, 4, 4};
-  Rect monoII = {getPosition().getX() + 8, getPosition().getY() + 9, 4, 4};
+  Rect polyRect = {getPosition().getX(), getPosition().getY() + 3, 6, 6};
+  Rect monoI = {getPosition().getX() + 6, getPosition().getY(), 6, 5};
+  Rect monoII = {getPosition().getX() + 6, getPosition().getY() + 7, 6, 5};
 
-  fb.setColor(FrameBufferColors::C255);
+  fb.setColor(FrameBufferColors::C179);
   fb.fillRect(polyRect);
   fb.setColor(m_selectedVoiceGroup == VoiceGroup::I ? FrameBufferColors::C255 : FrameBufferColors::C128);
   fb.fillRect(monoI);
