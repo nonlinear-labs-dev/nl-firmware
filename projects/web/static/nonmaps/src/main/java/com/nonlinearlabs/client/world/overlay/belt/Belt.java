@@ -211,8 +211,10 @@ public class Belt extends OverlayLayout {
 
 			VoiceGroup current = EditBufferModel.get().voiceGroup.getValue();
 
-			if(NonMaps.get().getNonLinearWorld().getPresetManager().isInLoadToPartMode()) {
-				EditBufferUseCases.get().toggleDirectLoad(NonMaps.get().getNonLinearWorld().getPresetManager().getLoadToPartMode().getCurrentData(), current);
+			if (NonMaps.get().getNonLinearWorld().getPresetManager().isInLoadToPartMode()) {
+				EditBufferUseCases.get().toggleDirectLoad(
+						NonMaps.get().getNonLinearWorld().getPresetManager().getLoadToPartMode().getCurrentData(),
+						current);
 			} else {
 				EditBufferUseCases.get().toggleDirectLoad(null, current);
 			}

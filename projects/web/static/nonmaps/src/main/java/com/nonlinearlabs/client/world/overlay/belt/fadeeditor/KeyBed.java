@@ -14,9 +14,9 @@ import com.nonlinearlabs.client.world.overlay.SVGImage;
 
 public abstract class KeyBed extends SVGImage {
 
-    static public double HANDLE_SIZE = 20 * NonMaps.devicePixelRatio;
-    static public double KEY_WIDTH = 13 * NonMaps.devicePixelRatio;
-    static public double KEY_PADDING = 1 * NonMaps.devicePixelRatio;
+    static public double HANDLE_SIZE = 20 * NonMaps.getDevicePixelRatio();
+    static public double KEY_WIDTH = 13 * NonMaps.getDevicePixelRatio();
+    static public double KEY_PADDING = 1 * NonMaps.getDevicePixelRatio();
 
     FadeEditorPresenter presenter;
 
@@ -48,7 +48,7 @@ public abstract class KeyBed extends SVGImage {
         for (int i = 0; i < 6; i++) {
             Rect r = getPixRect().copy();
             r.moveBy(i * KEY_WIDTH * 12.93, 0);
-            r.setWidth(KEY_WIDTH / NonMaps.devicePixelRatio);
+            r.setWidth(KEY_WIDTH / NonMaps.getDevicePixelRatio());
             r.setTop(getSelectedImage().getPixRect().getBottom());
             ctx.fillText("C" + (i + 1), r.getLeft() + 3, r.getTop() + Millimeter.toPixels(3));
         }

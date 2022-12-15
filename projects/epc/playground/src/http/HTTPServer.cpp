@@ -170,7 +170,11 @@ void HTTPServer::handleRequest(std::shared_ptr<NetworkRequest> request)
   {
     if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
     {
-      if(isIndexPageAlias(path))
+      if(path == "/nonmaps/index.html")
+      {
+        http->moved("/index.html?page=nonmaps");
+      }
+      else if(isIndexPageAlias(path))
       {
         redirectToIndexPage(http);
         return;

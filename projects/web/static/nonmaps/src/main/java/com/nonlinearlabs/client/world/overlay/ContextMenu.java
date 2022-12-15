@@ -1,24 +1,33 @@
 package com.nonlinearlabs.client.world.overlay;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.client.Animator;
-import com.nonlinearlabs.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.client.Millimeter;
-import com.nonlinearlabs.client.contextStates.AlphaContextState;
-import com.nonlinearlabs.client.contextStates.ContextState;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
+import com.nonlinearlabs.client.world.overlay.html.overlayControlDialog.OverlayControlDialog;
 
 public class ContextMenu extends OverlayLayout {
 
-	private double opacity = 1.0;
-	private Animator fadeOut = null;
+	private OverlayControlDialog dialog = new OverlayControlDialog(this, "overlay-control-dialog");
 
 	public ContextMenu(OverlayLayout parent) {
 		super(parent);
+		dialog.show();
+	}
+
+	@Override
+	public void setPixRect(Rect rect) {
+		super.setPixRect(rect);
+		dialog.sync(this);
+	}
+
+	@Override
+	public void movePixRect(double x, double y) {
+		super.movePixRect(x, y);
+		dialog.sync(this);
 	}
 
 	@Override
@@ -38,41 +47,35 @@ public class ContextMenu extends OverlayLayout {
 
 	@Override
 	public Control mouseDown(Position eventPoint) {
-		fadeOut();
+		hide();
 		return super.mouseDown(eventPoint);
 	}
 
 	@Override
-	public void draw(Context2d ctx, int invalidationMask) {
-		try (ContextState fade = new AlphaContextState(ctx, opacity)) {
-			Rect r = getPixRect();
-			r.drawRoundedArea(ctx, Millimeter.toPixels(1), Millimeter.toPixels(0.7), RGB.black(), RGB.black());
-			r.drawRoundedArea(ctx, Millimeter.toPixels(1), Millimeter.toPixels(0.25), new Gray(77), new Gray(128));
-			super.draw(ctx, invalidationMask);
-		}
+	public void onRemoved() {
+		super.onRemoved();
+		dialog.hide();
 	}
 
-	private void hide() {
+	@Override
+	public void draw(Context2d c, int invalidationMask) {
+		Context2d ctx = dialog.getContext();
+
+		Rect r = getPixRect();
+
+		ctx.save();
+		ctx.translate(-r.getLeft(), -r.getTop());
+
+		r.drawRoundedArea(ctx, Millimeter.toPixels(1), Millimeter.toPixels(0.7), RGB.black(), RGB.black());
+		r.drawRoundedArea(ctx, Millimeter.toPixels(1), Millimeter.toPixels(0.25), new Gray(77), new Gray(128));
+		super.draw(ctx, invalidationMask);
+		ctx.restore();
+	}
+
+	public void hide() {
 		getParent().removeChild(this);
 		getParent().requestLayout();
-	}
-
-	public void fadeOut() {
-		if (fadeOut == null) {
-			fadeOut = new Animator(500);
-			fadeOut.addSubAnimation(opacity, 0.0, new Client() {
-
-				@Override
-				public void animate(double v) {
-					opacity = v;
-
-					if (opacity <= 0)
-						hide();
-
-					invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
-				}
-			});
-		}
+		invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
 	}
 
 	public double getDesiredWidth() {

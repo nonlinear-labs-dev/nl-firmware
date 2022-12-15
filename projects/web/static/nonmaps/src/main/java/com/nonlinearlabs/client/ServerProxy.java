@@ -3,7 +3,6 @@ package com.nonlinearlabs.client;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
@@ -18,15 +17,13 @@ import com.google.gwt.xml.client.XMLParser;
 import com.nonlinearlabs.client.WebSocketConnection.ServerListener;
 import com.nonlinearlabs.client.contextStates.StopWatchState;
 import com.nonlinearlabs.client.dataModel.Notifier;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModelUpdater;
 import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
-import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel.TouchBehaviour;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerModel;
 import com.nonlinearlabs.client.dataModel.presetManager.PresetManagerUpdater;
-import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch.SearchQueryCombination;
 import com.nonlinearlabs.client.dataModel.setup.DeviceInfoUpdater;
 import com.nonlinearlabs.client.dataModel.setup.DeviceInformation;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
@@ -714,7 +711,8 @@ public class ServerProxy {
 
 	public void setRibbonBehaviour(int ribbonsParameterId, String behaviour) {
 		StaticURI.Path path = new StaticURI.Path("param-editor", "set-ribbon-behaviour");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", ribbonsParameterId), new StaticURI.KeyValue("mode", behaviour));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("id", ribbonsParameterId),
+				new StaticURI.KeyValue("mode", behaviour));
 		queueJob(uri, false);
 	}
 
@@ -781,11 +779,10 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-
 	public void setBankCollapsed(Bank theBank, String collapsed) {
 		StaticURI.Path path = new StaticURI.Path("banks", "set-bank-collapse");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", theBank.getUUID()), 
-		new StaticURI.KeyValue("value", collapsed));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", theBank.getUUID()),
+				new StaticURI.KeyValue("value", collapsed));
 		queueJob(uri, false);
 	}
 
@@ -812,12 +809,6 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("uuid", bank.getUUID()),
 				new StaticURI.KeyValue("asc", asc));
 		queueJob(uri, false);
-	}
-
-	public void searchPresets(String query, SearchQueryCombination combination, String fields,
-			DownloadHandler handler) {
-		downloadFile("/presets/search-preset?combine=" + combination.name() + "&query=" + URL.encodeQueryString(query)
-				+ "&fields=" + fields, handler);
 	}
 
 	public void syncAudioEngine() {
@@ -1235,25 +1226,30 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-    public void resetToHighResMidi() {
+	public void resetToHighResMidi() {
 		StaticURI.Path path = new StaticURI.Path("settings", "default-high-res");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
-    }
+	}
 
-    public void setRoutingAspect(int hw, int xx, boolean b) {
+	public void setRoutingAspect(int hw, int xx, boolean b) {
 		StaticURI.Path path = new StaticURI.Path("settings", "set-routing-aspect");
-		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("routing-entry", hw), new StaticURI.KeyValue("aspect", xx), new StaticURI.KeyValue("value", b));
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("routing-entry", hw),
+				new StaticURI.KeyValue("aspect", xx), new StaticURI.KeyValue("value", b));
 		queueJob(uri, false);
-    }
+	}
 
-	public void setDirectLoadWithLoadToPart(String value, Preset selectedPreset, VoiceGroup selectedVoiceGroup, VoiceGroup currentDisplayedVoiceGroup) {
+	public void setDirectLoadWithLoadToPart(String value, Preset selectedPreset, VoiceGroup selectedVoiceGroup,
+			VoiceGroup currentDisplayedVoiceGroup) {
 		StaticURI.Path path = new StaticURI.Path("settings", "set-direct-load-with-load-to-part");
 
 		StaticURI.KeyValue state = new StaticURI.KeyValue("state", value);
-		StaticURI.KeyValue preset = new StaticURI.KeyValue("preset", selectedPreset == null ? "" : selectedPreset.getUUID());
-		StaticURI.KeyValue from = new StaticURI.KeyValue("from", selectedVoiceGroup == null ? "" : selectedVoiceGroup.name());
-		StaticURI.KeyValue to = new StaticURI.KeyValue("to", currentDisplayedVoiceGroup == null ? "" : currentDisplayedVoiceGroup.name());
+		StaticURI.KeyValue preset = new StaticURI.KeyValue("preset",
+				selectedPreset == null ? "" : selectedPreset.getUUID());
+		StaticURI.KeyValue from = new StaticURI.KeyValue("from",
+				selectedVoiceGroup == null ? "" : selectedVoiceGroup.name());
+		StaticURI.KeyValue to = new StaticURI.KeyValue("to",
+				currentDisplayedVoiceGroup == null ? "" : currentDisplayedVoiceGroup.name());
 
 		StaticURI uri = new StaticURI(path, state, preset, from, to);
 		queueJob(uri, false);
@@ -1278,43 +1274,42 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-    public void resetRoutings(boolean b) {
+	public void resetRoutings(boolean b) {
 		StaticURI.Path path = new StaticURI.Path("settings", "set-all-routings-to-value");
 		StaticURI.KeyValue state = new StaticURI.KeyValue("state", b ? "1" : "0");
 		StaticURI uri = new StaticURI(path, state);
 		queueJob(uri, false);
 	}
 
-    public void startBBBWifiIfEPC2() {
+	public void startBBBWifiIfEPC2() {
 		StaticURI.Path path = new StaticURI.Path("settings", "enable-bbb-wifi-for-epc2");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, false);
-    }
+	}
 
-	public void dicePassphrase()
-	{
+	public void dicePassphrase() {
 		StaticURI.Path path = new StaticURI.Path("settings", "dice-passphrase");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, true);
 	}
 
-	public void defaultPassphrase()
-	{
+	public void defaultPassphrase() {
 		StaticURI.Path path = new StaticURI.Path("settings", "default-passphrase");
 		StaticURI uri = new StaticURI(path);
 		queueJob(uri, true);
 	}
 
 	public void isPassphraseValid(String newPassphrase, Consumer<Boolean> cb) {
-		downloadFile("/settings/is-valid-passphrase?text=" + URL.encodeQueryString(newPassphrase), new DownloadHandler() {
-			@Override
-			public void onFileDownloaded(String text) {
-				cb.accept(text == "1");
-			}
+		downloadFile("/settings/is-valid-passphrase?text=" + URL.encodeQueryString(newPassphrase),
+				new DownloadHandler() {
+					@Override
+					public void onFileDownloaded(String text) {
+						cb.accept(text == "1");
+					}
 
-			@Override
-			public void onError() {
-			}
-		});
+					@Override
+					public void onError() {
+					}
+				});
 	}
 }

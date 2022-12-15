@@ -228,3 +228,5 @@ function showOleds() {
     socket = null;
   }
 }
+
+Blaze.render(Template['nonmapsPresetSearch'], document.getElementById("html-search"));

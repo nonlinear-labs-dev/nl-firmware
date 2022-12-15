@@ -1,4 +1,5 @@
 set -e
+set -x
 
 useradd -m -u ${USER_ID} bob-the-builder
 cd /home/bob-the-builder
@@ -22,11 +23,12 @@ done
 
 meteor remove static-html
 
+cd /home/bob-the-builder
+mkdir -p /builddir/fetched/
+tar -czf /builddir/fetched/meteor-resources-@METEOR_RESOURCES_REVISION@.tar.gz .config .meteor .npm meteor-build
+
 END_HEREDOC
 )
 
 runuser -l bob-the-builder -c "$BOBS_SCRIPT"
 
-DIFFDIR=$(mount | grep overlay | grep -o "upperdir=.*" | sed 's/upperdir=\([^,]*\).*/\1/g')
-rm -f /builddir/diff
-ln -s ${DIFFDIR}/home/bob-the-builder /builddir/diff

@@ -3,8 +3,10 @@ package com.nonlinearlabs.client.world.pointer;
 import java.util.ArrayList;
 
 import com.nonlinearlabs.client.NonMaps;
+import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
+import com.nonlinearlabs.client.world.overlay.DragProxy;
 
 public class PointerState {
 	private static PointerState theState = new PointerState();
@@ -28,6 +30,14 @@ public class PointerState {
 	public void onMove(Position p, boolean fine) {
 		this.position = p;
 		setGesture(currentGesture.move(fine));
+	}
+
+	public void startDragFromOutside(Position p, DragProxy proxy) {
+		this.position = p;
+		Tracer.log("startDragFromOutside: " + p.getX() + " " + p.getY());
+		setGesture(new LeftDragStart(new LeftDown(false), p, p, false));
+		onMove(p, false);
+		setReceiver(proxy);
 	}
 
 	public void onWheel(Position p, int deltaY, boolean fine) {
@@ -184,4 +194,9 @@ public class PointerState {
 		if (sender == currentGesture)
 			setGesture(sender.onLongPress());
 	}
+
+	public void resetGesture() {
+		currentGesture = new Identity();
+	}
+
 }

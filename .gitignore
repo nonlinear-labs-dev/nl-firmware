@@ -8,7 +8,6 @@ CMakeLists.txt.user
 .project
 projects/web/c16/src/.meteor
 projects/web/c16/src/node_modules
-.meteor 
 node_modules
 projects/web/static/nonmaps/target
 projects/playground/src/libundo/undo/Makefile.am

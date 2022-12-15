@@ -1,6 +1,5 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.dataModel.Updater;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
@@ -101,9 +100,9 @@ public class EditBufferModelUpdater extends Updater {
 			if (!id.isEmpty()) {
 				BasicParameterModel bpm = EditBufferModel.get().getParameter(new ParameterId(id));
 
-				if(bpm == null)
+				if (bpm == null)
 					return;
-					
+
 				if (!val.isEmpty())
 					bpm.originalValue.setValue(Double.valueOf(val));
 

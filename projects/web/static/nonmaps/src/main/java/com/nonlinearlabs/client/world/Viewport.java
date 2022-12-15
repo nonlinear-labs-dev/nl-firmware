@@ -182,6 +182,7 @@ public class Viewport extends MapsLayout {
 		Rect r = getPixRect().copy();
 		Rect beltRect = getOverlay().getBelt().getPixRect();
 		r.setHeight(beltRect.getTop() - r.getTop());
+
 		return r;
 	}
 }

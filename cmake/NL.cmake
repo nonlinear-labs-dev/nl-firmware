@@ -30,7 +30,7 @@ endfunction()
 function(prepare_nltools_2)
     set(CMAKE_INSTALL_RPATH
             ${C15_INSTALL_PATH}/nltools
-            ${C15_INSTALL_PATH}/nltools-2
+            ${C15_INSTALL_PATH}/nltools2
             PARENT_SCOPE)
 endfunction()
 

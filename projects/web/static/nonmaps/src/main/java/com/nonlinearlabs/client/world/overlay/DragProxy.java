@@ -9,6 +9,7 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
+import com.google.gwt.dom.client.Element;
 import com.nonlinearlabs.client.Animator;
 import com.nonlinearlabs.client.Animator.DoubleClientData.Client;
 import com.nonlinearlabs.client.Millimeter;
@@ -22,6 +23,7 @@ import com.nonlinearlabs.client.world.Rect;
 public class DragProxy extends OverlayControl {
 
 	private Position lastMousePos;
+	private static boolean coveredByHtmlElement = false;
 
 	public Position getMousePosition() {
 		return lastMousePos;
@@ -72,6 +74,9 @@ public class DragProxy extends OverlayControl {
 
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
+		if (DragProxy.coveredByHtmlElement)
+			return;
+
 		try (ContextState state = new AlphaContextState(ctx, 0.5)) {
 			bmp.setCoordinateSpaceWidth((int) (origin.getPixRect().getWidth() + 1));
 			bmp.setCoordinateSpaceHeight((int) (origin.getPixRect().getHeight() + 1));
@@ -123,14 +128,38 @@ public class DragProxy extends OverlayControl {
 		return this;
 	}
 
+	static native Element elementAtPoint(double x, double y) /*-{
+		var el = $doc.elementFromPoint(x, y);
+		while (el && getComputedStyle(el).pointerEvents == 'none') 
+        	el = el.parentElement;
+    	return el;
+	}-*/;
+
 	@Override
 	public Control mouseDrag(Position oldPoint, final Position newPoint, boolean fine) {
+		Element r = elementAtPoint(newPoint.getX() / NonMaps.getDevicePixelRatio(),
+				newPoint.getY() / NonMaps.getDevicePixelRatio());
+		boolean coveredByHtmlElement = (r == null || r.getId() != "nonmaps-canvas");
+
+		if (coveredByHtmlElement != DragProxy.coveredByHtmlElement) {
+			DragProxy.coveredByHtmlElement = coveredByHtmlElement;
+			setReceiver(null, this);
+			invalidate(INVALIDATION_FLAG_ANIMATION_PROGRESS);
+			return this;
+		}
+
 		lastMousePos = newPoint;
-		doAutoScrolling(newPoint);
+
+		if (!coveredByHtmlElement)
+			doAutoScrolling(newPoint);
 
 		double xDiff = newPoint.getX() - oldPoint.getX();
 		double yDiff = newPoint.getY() - oldPoint.getY();
 		NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().moveDragProxies(xDiff, yDiff);
+
+		if (coveredByHtmlElement)
+			return this;
+
 		getOrigin().beingDragged(xDiff, yDiff);
 
 		if (tryHandlingByMousePosition(newPoint))
@@ -257,7 +286,6 @@ public class DragProxy extends OverlayControl {
 
 	private AutoScrollDirection getDesiredAutoScrollDirection(Position newPoint) {
 		Rect r = NonMaps.theMaps.getNonLinearWorld().getViewport().getPixRect();
-		Rect beltRect = NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().getBelt().getPixRect();
 
 		double borderSize = Millimeter.toPixels(10);
 
@@ -284,17 +312,25 @@ public class DragProxy extends OverlayControl {
 		return this;
 	}
 
+	@Override
+	public void onRemoved() {
+		super.onRemoved();
+		setReceiver(null, this);
+	}
+
 	public void drop(final Position newPoint) {
-		if (receiver != null) {
-			Control r = receiver.drop(newPoint, triggeredProxy);
+		if (!coveredByHtmlElement) {
+			if (receiver != null) {
+				Control r = receiver.drop(newPoint, triggeredProxy);
 
-			if (r != null) {
-				setReceiver(r, triggeredProxy);
+				if (r != null) {
+					setReceiver(r, triggeredProxy);
+				}
 			}
-		}
 
-		if (triggeredProxy != null) {
-			triggeredProxy.originBeingDropped();
+			if (triggeredProxy != null) {
+				triggeredProxy.originBeingDropped();
+			}
 		}
 	}
 

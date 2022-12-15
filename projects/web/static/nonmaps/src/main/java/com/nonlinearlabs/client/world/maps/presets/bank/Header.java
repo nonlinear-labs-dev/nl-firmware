@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.TextAlign;
 import com.google.gwt.canvas.dom.client.Context2d.TextBaseline;
-import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.contextStates.ClipContext;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
@@ -72,7 +70,7 @@ public class Header extends Label {
 			drawTooth(ctx);
 		}
 
-		if(getParent().isMidiBank())
+		if (getParent().isMidiBank())
 			drawMidiSymbol(ctx);
 	}
 
@@ -89,7 +87,7 @@ public class Header extends Label {
 
 		Position center = pixRect.getCenterPoint();
 		center.setX(pixRect.getRight());
-		
+
 		ctx.setTextBaseline(TextBaseline.MIDDLE);
 		ctx.fillText("\uE0C1", center.getX(), center.getY() + toYPixels(moveFontVerticallyBy()));
 	}
@@ -318,7 +316,9 @@ public class Header extends Label {
 		if (getParent().isDraggingControl())
 			return null;
 
-		if (dragProxy.getPixRect().contains(pos) && getPixRect().contains(pos)) {
+		boolean onHeader = getPixRect().contains(pos);
+
+		if (onHeader) {
 			if (dragProxy.getOrigin() instanceof Bank) {
 				Bank bBank = (Bank) dragProxy.getOrigin();
 				if (!bBank.hasSlaves()) {

@@ -131,7 +131,7 @@ void HTTPRequest::notFound()
 
 void HTTPRequest::moved(const Glib::ustring &url)
 {
-  soup_message_set_status(m_message, SOUP_STATUS_MOVED_PERMANENTLY);
+  soup_message_set_status(m_message, SOUP_STATUS_MOVED_TEMPORARILY);
   soup_message_headers_append(m_message->response_headers, "Location", url.c_str());
   soup_message_body_complete(m_message->response_body);
 }

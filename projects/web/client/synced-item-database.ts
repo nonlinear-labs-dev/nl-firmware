@@ -7,37 +7,43 @@ interface SyncedItem {
     state: any
 }
 
-enum DatabaseEvent {
-    Add,
-    Update,
-    Remove
-}
-
 type SyncedData = {};
-
-
 type Topic = string;
 
 export class SyncedItemDatabase {
     constructor() {
+        console.log("synced item db ctor");
         this.connect();
     }
 
-    public queryItem(topic: Topic): SyncedData {
+    public queryItem(topic: Topic): SyncedData | null {
         return this.queryVar(topic).get();
     }
 
-    public queryVar(topic: Topic): ReactiveVar<SyncedData> {
+    public queryVar(topic: Topic): ReactiveVar<SyncedData | null> {
         if (!this.database.has(topic)) {
             this.database.set(topic, new ReactiveVar<SyncedData>({}));
-            this.socket.send(JSON.stringify({ 'sub': topic }));
+
+            if (this.socket.readyState != WebSocket.OPEN)
+                this.pendingSubs.add(topic);
+            else
+                this.socket.send(JSON.stringify({ 'sub': topic }));
         }
-        return this.database.get(topic);
+        return this.database.get(topic)!;
+    }
+
+    public update(topic: Topic, item: string, value: string) {
+        var v = this.queryVar(topic);
+        var c = v.get()!;
+        c[item] = value;
+        v.set(c);
     }
 
     private connect() {
+        console.log("synced item db connect");
         const hostName = location.hostname.length == 0 ? "localhost" : location.hostname;
-        this.socket = new WebSocket("ws://" + hostName + syncPort);
+        const port = !syncPort || syncPort.length < 2 ? ":8893" : syncPort;
+        this.socket = new WebSocket("ws://" + hostName + port);
         this.socket.onopen = (event) => this.onOpen();
         this.socket.onerror = (event) => this.onError();
         this.socket.onclose = (event) => this.onClose();
@@ -45,19 +51,24 @@ export class SyncedItemDatabase {
     }
 
     private onOpen() {
+        this.pendingSubs.forEach((t) => this.socket.send(JSON.stringify({ 'sub': t })));
+        this.pendingSubs.clear();
         this.database.forEach((v, k) => v.set(null));
         this.database.clear();
     }
 
     private onError() {
+        console.log("socket error");
         this.reconnect();
     }
 
     private onClose() {
+        console.log("socket close");
         this.reconnect();
     }
 
     private reconnect() {
+        console.log("socket reconnect");
         this.disconnect();
 
         if (this.reconnectTimeout == -1) {
@@ -86,7 +97,9 @@ export class SyncedItemDatabase {
                     this.queryVar(c.topic).set(null);
                 }
                 else {
-                    this.queryVar(c.topic).set(c.state);
+                    var k = this.queryVar(c.topic);
+                    if (JSON.stringify(k.get()) != JSON.stringify(c.state))
+                        this.queryVar(c.topic).set(c.state);
                 }
             }
 
@@ -95,6 +108,7 @@ export class SyncedItemDatabase {
     }
 
     private socket!: WebSocket;
-    private database = new Map<Topic, ReactiveVar<SyncedData>>();
+    private database = new Map<Topic, ReactiveVar<SyncedData | null>>();
     private reconnectTimeout = -1;
+    private pendingSubs = new Set<Topic>();
 }

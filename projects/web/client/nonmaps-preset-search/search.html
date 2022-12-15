@@ -1,0 +1,156 @@
+<template name="nonmapsPresetSearch">
+    <div class="preset-search toggled-off">
+        <div class="header">
+            <div class="symbol">&#xe180;</div>
+        </div>
+    </div>
+
+    <div class="collapser">
+        <div class="preset-search" id="preset-search" tabindex="0">
+            <div class="header">
+                <div class="symbol">&#xe180;</div>
+                <div class="title ">Search</div>
+            </div>
+            <div class="search-string-container">
+                <input type="text" class="search-string" placeholder="Search Presets" tabindex="1">
+                {{ #if get "hasSearchQuery"}}
+                <button class="reset"></button>
+                {{ /if }}
+            </div>
+            {{ > presetSearchColors }}
+            {{ > bankSelect }}
+            <div class="sort-options">
+                <div {{ sortByNumberAttributes }}>
+                    <div {{ numberSortDirectionAttributes }}></div>
+                </div>
+                <div {{ sortByNameAttributes }}>
+                    <div {{ nameSortDirectionAttributes }}></div>
+                </div>
+                <div {{ sortByTimeAttributes }}>
+                    <div {{ timeSortDirectionAttributes }}></div>
+                    <div class="clock-symbol"></div>
+                </div>
+            </div>
+
+            <div {{ presetSearchResultsScrollerAttributes }}>
+                <div {{ presetSearchResultsScrollerPaneAttributes }}>
+                    <div {{ presetSearchResultsAttributes }}>
+                        {{ #each get "shownPresets"}}
+                        {{ > searchResultPreset }}
+                        {{ /each }}
+                    </div>
+                </div>
+            </div>
+            <div class="num-results">Results: {{ get "numResults" }}</div>
+        </div>
+    </div>
+    <div id="hysteresis"></div>
+</template>
+
+<template name="presetSearchColors">
+    <div class="colors">
+        {{ > presetSearchColor "green" }}
+        {{ > presetSearchColor "blue" }}
+        {{ > presetSearchColor "yellow" }}
+        {{ > presetSearchColor "orange" }}
+        {{ > presetSearchColor "purple" }}
+        {{ > presetSearchColor "red" }}
+        <button {{ searchSettingsAttributes }}>&#xe186;</button>
+    </div>
+    <div id="settings-pane-container" class="settings-pane-container">
+        <div class="settings-pane">
+            {{ > searchSettings }}
+        </div>
+    </div>
+</template>
+
+<template name="searchSettings">
+    <div class="group operator">
+        <div class="options">
+            <div class="option">
+                <input id="op-and" type="radio" name="operator" value="And" checked={{get "operatorAnd" }}>
+                <label for="op-and">And</label>
+            </div>
+
+            <div class="option">
+                <input id="op-or" type="radio" name="operator" value="Or" checked={{get "operatorOr" }}>
+                <label for="op-or">Or</label>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="group search-in">
+        <div class="options">
+            <div class="option">
+                <input id="search-in-name" type="checkbox" value="name" checked={{get "searchInName" }}>
+                <label for="search-in-name">Name</label>
+            </div>
+            <div class="option">
+                <input id="search-in-comment" type="checkbox" value="comment" checked={{get "searchInComment" }}>
+                <label for="search-in-comment">Comment</label>
+            </div>
+            <div class="option">
+                <input id="search-in-devicename" type="checkbox" value="devicename" checked={{get "searchInDeviceName"
+                    }}>
+                <label for="search-in-devicename">Device</label>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="presetSearchColor">
+    <button {{attributes}}>
+        <div class="square"></div>
+    </button>
+</template>
+
+<template name="bankSelect">
+    <div class="banks">
+        <button class="toggle">
+            <div {{ previousBankAttribute }}>
+                <div class="arrow left">&#xe303;</div>
+            </div>
+            <div {{ nextBankAttribute }}>
+                <div class="arrow right">&#xe301;</div>
+            </div>
+            <div class="title">{{ get "buttonName" }}</div>
+            <div class="symbol">
+                <div class="arrow down">&#xe302;</div>
+            </div>
+        </button>
+        <div class="select-pane-container">
+            <div {{ paneAttributes }}>
+                <div class="select-buttons">
+                    <button class="select-all">All</button>
+                    <button class="select-none">None</button>
+                </div>
+                <div class="banks">
+                    {{ #each get "banks" }}
+                    {{ > bankOption }}
+                    {{ /each }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>
+
+<template name="bankOption">
+    <div class="bank-select">
+        <button class="select">
+            <div class="name">{{ get "number" }} - {{ get "name" }}</div>
+            <div {{checkAttributes}}>&#xe0a4;</div>
+        </button>
+    </div>
+</template>
+
+<template name="searchResultPreset">
+    <div {{presetAttributes}}>
+        <div {{colorAttributes}}>▮</div>
+        <div class="number">{{ get "number" }}</div>
+        <div class="name">{{ get "name" }}</div>
+        <div class="type">{{ get "type" }}</div>
+    </div>
+</template>

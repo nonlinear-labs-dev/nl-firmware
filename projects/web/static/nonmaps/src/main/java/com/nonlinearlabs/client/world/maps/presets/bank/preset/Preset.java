@@ -3,7 +3,6 @@ package com.nonlinearlabs.client.world.maps.presets.bank.preset;
 import java.util.HashMap;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
@@ -16,7 +15,6 @@ import com.nonlinearlabs.client.StoreSelectMode;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
-import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
@@ -29,7 +27,10 @@ import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.RenameDialog;
+import com.nonlinearlabs.client.world.Viewport;
 import com.nonlinearlabs.client.world.maps.LayoutResizingHorizontal;
+import com.nonlinearlabs.client.world.maps.NonPosition;
+import com.nonlinearlabs.client.world.maps.NonRect;
 import com.nonlinearlabs.client.world.maps.presets.MultiplePresetSelection;
 import com.nonlinearlabs.client.world.maps.presets.PresetManager;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
@@ -39,7 +40,6 @@ import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.client.world.overlay.belt.presets.PresetContextMenu;
 import com.nonlinearlabs.client.world.overlay.belt.presets.PresetDeleter;
-import com.nonlinearlabs.client.world.overlay.html.presetSearch.PresetSearchDialog;
 
 public class Preset extends LayoutResizingHorizontal implements Renameable, IPreset {
 	private String uuid = null;
@@ -52,9 +52,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	private Number number = null;
 	private HashMap<String, String> attributes = new HashMap<String, String>();
 
-	private boolean filterActive = false;
-	private boolean isInFilterSet = false;
-	private boolean isCurrentFilterMatch = false;
 	private SoundType type = SoundType.Single;
 
 	private static final PresetColorPack loadedColor = new PresetColorPack(new Gray(0), RGB.blue(), new Gray(77));
@@ -63,13 +60,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	private static final PresetColorPack selectedColor = new PresetColorPack(new Gray(0), new Gray(77), new Gray(77));
 	private static final PresetColorPack multiSelectedColor = new PresetColorPack(new Gray(0), new Gray(90),
 			new Gray(77));
-	private static final PresetColorPack filterMatch = new PresetColorPack(new Gray(0), new RGB(50, 65, 110),
-			new Gray(77));
-	private static final PresetColorPack filterMatchLoaded = new PresetColorPack(new Gray(0), RGB.blue(), new Gray(77));
-	private static final PresetColorPack filterMatchHighlighted = new PresetColorPack(new Gray(0), new RGB(50, 65, 110),
-			new Gray(255));
-	private static final PresetColorPack filterMatchHighlightedLoaded = new PresetColorPack(new Gray(0), RGB.blue(),
-			new Gray(255));
 
 	public Preset(Bank parent) {
 		super(parent);
@@ -78,57 +68,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		number = addChild(new Number(this, ""));
 		name = addChild(new Name(this, ""));
 		typeLabel = addChild(new TypeLabel(this, ""));
-
-		PresetSearch.get().searchActive.onChange(b -> {
-			boolean a = b == BooleanValues.on;
-			if (a != filterActive) {
-				filterActive = a;
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			}
-			return true;
-		});
-
-		PresetSearch.get().results.onChange(r -> {
-			boolean a = r.contains(uuid);
-
-			if (a != isInFilterSet) {
-				isInFilterSet = a;
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			}
-			return true;
-		});
-
-		PresetSearch.get().loadPreset.onChange(r -> {
-			if (isCurrentFilterMatch && r.equals(BooleanValues.on)) {
-				onSearchHighlight(true);
-			}
-			return true;
-		});
-
-		PresetSearch.get().currentFilterMatch.onChange(r -> {
-			boolean isFilterMatch = r.equals(uuid);
-			if (isCurrentFilterMatch != isFilterMatch) {
-				isCurrentFilterMatch = isFilterMatch;
-
-				if (isCurrentFilterMatch) {
-					onSearchHighlight(PresetSearch.get().loadPreset.getBool());
-				}
-
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			}
-			return true;
-		});
 	}
 
 	@Override
 	public Bank getParent() {
 		return (Bank) super.getParent();
-	}
-
-	private void onSearchHighlight(boolean loadActive) {
-		if (loadActive) {
-			load();
-		}
 	}
 
 	public String getPartName(VoiceGroup vg) {
@@ -157,13 +101,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		if (isOriginPreset)
 			return new RGB(255, 255, 255);
-
-		if (filterActive) {
-			if (isInFilterSet)
-				return new RGB(230, 240, 255);
-			else if (!isInFilterSet)
-				return new RGB(179, 179, 179);
-		}
 
 		if (!selected && !loaded)
 			return new RGB(179, 179, 179);
@@ -236,18 +173,16 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		boolean selected = isSelected() || isContextMenuActiveOnMe();
 		boolean loaded = isLoaded() && !isInStoreSelectMode();
 		boolean isOriginPreset = isLoaded() && isInStoreSelectMode();
-		boolean isSearchOpen = PresetSearchDialog.isShown();
 
 		if (isInMultiplePresetSelectionMode()) {
 			selected = getParent().getParent().getMultiSelection().contains(this);
 			loaded = false;
 		}
 
-		return selectAppropriateColor(selected, loaded, isOriginPreset, isSearchOpen);
+		return selectAppropriateColor(selected, loaded, isOriginPreset);
 	}
 
-	private PresetColorPack selectAppropriateColor(boolean selected, boolean loaded, boolean isOriginPreset,
-			boolean isSearchOpen) {
+	private PresetColorPack selectAppropriateColor(boolean selected, boolean loaded, boolean isOriginPreset) {
 
 		PresetColorPack currentPack = standardColor;
 
@@ -265,14 +200,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			}
 		}
 
-		if (isSearchOpen) {
-			if (isCurrentFilterMatch)
-				currentPack = loaded ? filterMatchHighlightedLoaded : filterMatchHighlighted;
-			else if (isInFilterSet)
-				currentPack = loaded ? filterMatchLoaded : filterMatch;
-			else
-				currentPack = currentPack.applyNotMatched();
-		} else if (RenameDialog.isPresetBeingRenamed(this)) {
+		if (RenameDialog.isPresetBeingRenamed(this)) {
 			currentPack = renamedColor;
 		}
 
@@ -301,16 +229,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 
 		super.draw(ctx, invalidationMask);
 		r.fill(ctx, currentPresetColorPack.overlay);
-	}
-
-	@Override
-	public void drawPost(Context2d ctx, int invalidationMask) {
-		if (isCurrentFilterMatch) {
-			double cp = getConturPixels();
-			cp = Math.ceil(cp);
-			cp = Math.max(1, cp);
-			getPixRect().stroke(ctx, cp * 1.75, getActiveColorPack().highlight);
-		}
 	}
 
 	public boolean isSelected() {
@@ -383,7 +301,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		}
 
 		if (!isInMultiplePresetSelectionMode() && !isSelected()) {
-			if(isDraggedWhenPresetDragDropNotEnabled == false) {
+			if (isDraggedWhenPresetDragDropNotEnabled == false) {
 				selectPreset();
 				wasJustSelected = true;
 			}
@@ -406,7 +324,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return cps != null && cps instanceof LoadToPartMode;
 	}
 
-	private Control clickBehaviour() {		
+	private Control clickBehaviour() {
 		if (isDraggingControl())
 			return this;
 
@@ -479,7 +397,6 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 			return getNonMaps().getNonLinearWorld().getViewport().getOverlay().createDragProxy(this);
 		}
 
-
 		isDraggedWhenPresetDragDropNotEnabled = true;
 		return null;
 	}
@@ -515,8 +432,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	public Control mouseDrag(Position oldPoint, Position newPoint, boolean fine) {
 		if (SetupModel.get().localSettings.presetDragDrop.getValue() == BooleanValues.on) {
 			return this;
-		}
-		else {
+		} else {
 			return getNonMaps().getNonLinearWorld().mouseDrag(oldPoint, newPoint, fine);
 		}
 	}
@@ -612,8 +528,15 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		RenameDialog.open(this);
 	}
 
-	public boolean isInCurrentFilterSet() {
-		return filterActive && isInFilterSet;
+	public void scrollToCenter() {
+		NonLinearWorld world = NonMaps.get().getNonLinearWorld();
+		Viewport vp = world.getViewport();
+		NonRect vpRect = vp.getNonPosition();
+		NonPosition myCenter = getNonPositionRelativeToParent(world.getPresetManager()).getCenterPoint();
+		NonRect newVpRect = new NonRect(myCenter.getX() - vpRect.getWidth() / 2,
+				myCenter.getY() - vpRect.getHeight() / 2,
+				vpRect.getWidth(), vpRect.getHeight());
+		world.animateViewport(newVpRect, true);
 	}
 
 }

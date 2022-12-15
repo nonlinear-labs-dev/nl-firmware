@@ -324,12 +324,10 @@ void Bank::setUuid(UNDO::Transaction *transaction, const Uuid &uuid)
 {
   auto s = UNDO::createSwapData(uuid);
 
-  transaction->addSimpleCommand(
-      [this, s](auto)
-      {
-        s->swapWith(m_uuid);
-        SyncedItem::setTopic("/bank/" + m_uuid.raw());
-      });
+  transaction->addSimpleCommand([this, s](auto) {
+    s->swapWith(m_uuid);
+    SyncedItem::setTopic("/bank/" + m_uuid.raw());
+  });
 
   updateLastModifiedTimestamp(transaction);
 }
@@ -376,13 +374,11 @@ void Bank::setY(UNDO::Transaction *transaction, const std::string &y)
 
 void Bank::updateLastModifiedTimestamp(UNDO::Transaction *transaction)
 {
-  transaction->addSimpleCommand(
-      [&](auto)
-      {
-        auto &settings = getPresetManager()->getEditBuffer()->getSettings();
-        auto adj = settings.getSetting<DateTimeAdjustment>();
-        m_lastChangedTimestamp = TimeTools::getAdjustedTimestamp(adj);
-      });
+  transaction->addSimpleCommand([&](auto) {
+    auto &settings = getPresetManager()->getEditBuffer()->getSettings();
+    auto adj = settings.getSetting<DateTimeAdjustment>();
+    m_lastChangedTimestamp = TimeTools::getAdjustedTimestamp(adj);
+  });
 }
 
 Preset *Bank::appendPreset(UNDO::Transaction *transaction)
@@ -462,9 +458,7 @@ void Bank::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID kn
 
   writer.writeTag("preset-bank", Attribute("uuid", getUuid().raw()), Attribute("name", m_name), Attribute("x", getX()),
                   Attribute("y", getY()), Attribute("selected-preset", getSelectedPresetUuid().raw()),
-                  Attribute("order-number", pm->getBankPosition(getUuid()) + 1), Attribute("changed", changed),
-                  [&]()
-                  {
+                  Attribute("order-number", pm->getBankPosition(getUuid()) + 1), Attribute("changed", changed), [&]() {
                     if(changed)
                     {
                       AttributesOwner::writeDocument(writer, knownRevision);
@@ -536,34 +530,32 @@ int Bank::getHighestIncrementForBaseName(const Glib::ustring &baseName) const
   bool hadMatch = false;
   int h = 0;
 
-  m_presets.forEach(
-      [&](auto p)
-      {
-        Glib::ustring name = p->getName();
+  m_presets.forEach([&](auto p) {
+    Glib::ustring name = p->getName();
 
-        if(name == baseName)
+    if(name == baseName)
+    {
+      h = std::max(h, 1);
+      hadMatch = true;
+    }
+    else if(name.find(baseName) == 0)
+    {
+      Glib::MatchInfo matchInfo;
+
+      if(regex->match(name, matchInfo) && matchInfo.get_match_count() > 2)
+      {
+        auto presetsBaseName = matchInfo.fetch(1);
+
+        if(presetsBaseName == baseName)
         {
-          h = std::max(h, 1);
+          auto number = matchInfo.fetch(2);
+          int newNumber = std::stoi(number);
+          h = std::max(h, newNumber);
           hadMatch = true;
         }
-        else if(name.find(baseName) == 0)
-        {
-          Glib::MatchInfo matchInfo;
-
-          if(regex->match(name, matchInfo) && matchInfo.get_match_count() > 2)
-          {
-            auto presetsBaseName = matchInfo.fetch(1);
-
-            if(presetsBaseName == baseName)
-            {
-              auto number = matchInfo.fetch(2);
-              int newNumber = std::stoi(number);
-              h = std::max(h, newNumber);
-              hadMatch = true;
-            }
-          }
-        }
-      });
+      }
+    }
+  });
 
   if(hadMatch)
     return std::max(1, h);
@@ -577,15 +569,11 @@ void Bank::searchPresets(Writer &writer, const SearchQuery &query) const
   auto pos = pm->getBankPosition(getUuid());
 
   writer.writeTag("preset-bank", Attribute("uuid", m_uuid.raw()), Attribute("name", m_name),
-                  Attribute("order-number", pos),
-                  [&]()
-                  {
-                    m_presets.forEach(
-                        [&](auto p)
-                        {
-                          if(p->matchesQuery(query))
-                            p->writeDocument(writer, 0);
-                        });
+                  Attribute("order-number", pos), [&]() {
+                    m_presets.forEach([&](auto p) {
+                      if(p->matchesQuery(query))
+                        p->writeDocument(writer, 0);
+                    });
                   });
 }
 

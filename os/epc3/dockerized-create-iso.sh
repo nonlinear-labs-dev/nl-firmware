@@ -99,6 +99,7 @@ ENDOFHERE
   
   echo "[epc3-base]" > /etc/pacman.conf
   echo "Server = file:///packages/" >> /etc/pacman.conf
+  echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
   pacman -Sy
   
   rm -rf /var/cache/pacman/pkg

@@ -1,0 +1,13 @@
+[Unit]
+Description=Redirect javascript sync websocket
+After=syslog.target network.target
+
+[Service]
+ExecStart=/bin/socat TCP-LISTEN:@SYNCJS_WEBSOCKET_PORT@,fork TCP:192.168.10.10:@SYNCJS_WEBSOCKET_PORT@
+Restart=always
+RestartSec=1
+StartLimitInterval=200
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target 

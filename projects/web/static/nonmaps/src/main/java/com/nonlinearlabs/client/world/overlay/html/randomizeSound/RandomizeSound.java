@@ -54,9 +54,4 @@ public class RandomizeSound extends Composite {
 			return true;
 		});
 	}
-
-	protected boolean applyPresenter(com.nonlinearlabs.client.presenters.PresetSearch t) {
-		return isAttached();
-	}
-
 }

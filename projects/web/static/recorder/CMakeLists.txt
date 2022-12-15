@@ -15,7 +15,7 @@ add_custom_command(
             ${CMAKE_CURRENT_SOURCE_DIR}/build.sh 
             ${CMAKE_CURRENT_SOURCE_DIR}
             ${CMAKE_CURRENT_BINARY_DIR}
-              "--network none")
+              "--network none --rm")
 
 add_custom_target(recorder ALL DEPENDS bundle.tar.gz)
 add_dependencies(recorder nl-build-container-setup)

@@ -26,7 +26,6 @@ import com.nonlinearlabs.client.NonMaps.ScreenResizeListener;
 
 public abstract class GWTDialog extends DialogBox implements ScreenResizeListener {
 
-	static int maxZIndexSoFar = 1001;
 	private Label headLabel;
 	private Button close;
 
@@ -73,15 +72,16 @@ public abstract class GWTDialog extends DialogBox implements ScreenResizeListene
 		addDomHandler(touchHandler, TouchEndEvent.getType());
 
 		registerCloseHandler();
+
+		pushDialogToFront();
 	}
 
 	protected void pushDialogToFront() {
-		getElement().getStyle().setZIndex(maxZIndexSoFar + 1);
+		int z = NonMaps.nextZIndex();
+		getElement().getStyle().setZIndex(z);
 
 		if (close != null)
-			close.getElement().getStyle().setZIndex(maxZIndexSoFar + 2);
-
-		maxZIndexSoFar++;
+			close.getElement().getStyle().setZIndex(z + 1);
 	}
 
 	private void registerCloseHandler() {
@@ -145,9 +145,9 @@ public abstract class GWTDialog extends DialogBox implements ScreenResizeListene
 		int right = left + getOffsetWidth();
 		int bottom = top + getOffsetHeight();
 		int vpWidth = (int) (NonMaps.theMaps.getNonLinearWorld().getViewport().getPixRect().getWidth()
-				/ NonMaps.devicePixelRatio);
+				/ NonMaps.getDevicePixelRatio());
 		int vpHeight = (int) (NonMaps.theMaps.getNonLinearWorld().getViewport().getPixRect().getHeight()
-				/ NonMaps.devicePixelRatio);
+				/ NonMaps.getDevicePixelRatio());
 		boolean toMuchRight = (right >= vpWidth);
 		boolean toMuchDown = (bottom >= vpHeight);
 		boolean toMuchUp = (top <= 0);

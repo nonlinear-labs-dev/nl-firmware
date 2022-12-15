@@ -1,0 +1,24 @@
+{
+  "name": "nl",
+  "private": true,
+  "scripts": {
+    "start": "meteor run",
+    "test": "meteor test --once --driver-package meteortesting:mocha",
+    "test-app": "TEST_WATCH=1 meteor test --full-app --driver-package meteortesting:mocha",
+    "visualize": "meteor --production --extra-packages bundle-visualizer"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.20.1",
+    "@types/chai": "^4.3.3",
+    "@types/meteor": "^2.7.1",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "^18.7.15",
+    "meteor-node-stubs": "^1.2.1"
+  },
+  "meteor": {
+    "mainModule": {
+      "client": "client/main.js"
+    },
+    "testModule": "tests/main.js"
+  }
+}
