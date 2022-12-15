@@ -63,18 +63,8 @@ void AlsaMidiInput::doBackgroundWork()
 
   while(true)
   {
-    switch(poll(pollFileDescriptors, numPollFDs + 1, -1))
-    {
-      case POLLPRI:
-      case POLLRDHUP:
-      case POLLERR:
-      case POLLHUP:
-      case POLLNVAL:
-        throw std::runtime_error("Polling the midi input file descriptor failed. Terminating.");
-
-      default:
-        break;
-    }
+    if(poll(pollFileDescriptors, numPollFDs + 1, -1) <= 0)
+      throw std::runtime_error("Polling the midi input file descriptor failed. Terminating.");
 
     if(!m_run)
       break;
@@ -98,9 +88,13 @@ void AlsaMidiInput::doBackgroundWork()
           }
         }
       }
-      else if(readResult == -19)
+      else if(readResult == -ENODEV)
       {
         nltools::throwException("Could not read from midi input file descriptor =>", snd_strerror(readResult));
+      }
+      else if(readResult == -EAGAIN)
+      {
+        break;
       }
     }
   }
