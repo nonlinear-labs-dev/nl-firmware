@@ -4,8 +4,8 @@ An attempt to re-implement (and extend) the "parameter-db" sub-project on a [YAM
 
 ## Prerequisites
 
-- required programs: `node` _(currently using v16.15.1)_, `npm` _(8.10.0)_, `tsc` _(4.6.4)_, `g++` _(11.2.0)_, `podman` _(3.4)_
-- required node packages: `@types/node @types/js-yaml js-yaml`
+- required programs: `node` _(currently using v16.15.1, at least 14.14-2)_, `npm` _(8.10.0)_, `tsc` _(4.6.4)_, `g++` _(11.2.0)_, `podman` _(3.4)_
+- required node packages: `@types/node @types/js-yaml js-yaml` or better `@types/node@14.14-2 @types/js-yaml js-yaml`
 - on first run: `npm install` _(the provided package.json should suffice to install the dependencies into the git-ignored `node_modules` folder)_
 - `mkdir ./generated` _(the current output directory - which is git-ignored)_
 
