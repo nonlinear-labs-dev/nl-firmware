@@ -145,43 +145,35 @@ class LayerDisplay extends OverlayLayout {
 
     private void drawSingleIndication(Context2d ctx, RGB fill, RGB stroke)
     {
-        VoiceGroup selected = getSelectedVoiceGroup();
-        Rect pix = getPixRect().copy();
-
-        final double margin = Millimeter.toPixels(1);
-        final double partWidth = Millimeter.toPixels(2);
-        final double partHeight = Millimeter.toPixels(5);
-        final double yMargin = Millimeter.toPixels(2.5);
-
+        final double margin = Millimeter.toPixels(0.5);
+        final double partWidth = Millimeter.toPixels(2.5);
+        final Rect pix = getPixRect().copy();
+        final double centerY = pix.getCenterPoint().getY();
+        final double centerX = pix.getCenterPoint().getX();
+        final double halfPartWidth = partWidth / 2; 
+        final double offsetY = Millimeter.toPixels(1);
+        final Rect polyBox = new Rect(centerX - partWidth, centerY - offsetY, partWidth, partWidth);
+        final Rect monoIBox = new Rect(centerX, centerY - (halfPartWidth + margin) - offsetY, partWidth, partWidth);
+        final Rect monoIIBox = new Rect(centerX, centerY + (halfPartWidth + margin) - offsetY, partWidth, partWidth);
         final RGB ogFill = fill;
         final RGB lighterFill = ogFill.brighter(96);
+        final RGB polyFill = ogFill.brighter(64);
+
+        final VoiceGroup selected = getSelectedVoiceGroup();
+
+        polyBox.fillAndStroke(ctx, polyFill, 2, stroke);
 
         if (selected == VoiceGroup.I)
             fill = lighterFill;
 
-        Rect box = new Rect(0, pix.getTop() + yMargin, partWidth, partHeight);
-
-        box.setLeft(pix.getCenterPoint().getX() - margin / 2 - partWidth);
-        box.fillAndStroke(ctx, lighterFill, 2, stroke);
-
-        double bottom = box.getBottom();
-
-        fill = ogFill;
-
-        if (selected == VoiceGroup.I)
-            fill = lighterFill;
-
-        box.setLeft(pix.getCenterPoint().getX() + margin / 2);
-        box.setHeight(partWidth);
-        box.fillAndStroke(ctx, fill, 2, stroke);
+        monoIBox.fillAndStroke(ctx, fill, 2, stroke);
 
         if(selected == VoiceGroup.II)
             fill = lighterFill;
         else
             fill = ogFill;
 
-        box.setTop(bottom - partWidth);
-        box.fillAndStroke(ctx, fill, 2, stroke);
+        monoIIBox.fillAndStroke(ctx, fill, 2, stroke);
     }
 
     private void drawTriangleSideways(Context2d ctx, RGB fill, RGB stroke, Position pos, double width, double height) {
