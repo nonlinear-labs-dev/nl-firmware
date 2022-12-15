@@ -17,6 +17,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
   auto monophonicI = eb->findParameterByID({ C15::PID::Reverb_Chorus, VoiceGroup::I });
   auto monophonicII = eb->findParameterByID({ C15::PID::Reverb_Chorus, VoiceGroup::II });
 
+  auto poly_I_preset_CP = 0.75;
+  auto poly_II_preset_CP = 0.31;
+
   {
     ParameterUseCases puI(polyI);
     ParameterUseCases puII(polyII);
@@ -25,8 +28,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
 
     ebUseCases.load(single);
 
-    puI.setControlPosition(0.75);
-    puII.setControlPosition(0.31);
+    puI.setControlPosition(poly_I_preset_CP);
+    puII.setControlPosition(poly_II_preset_CP);
 
     muI.setControlPosition(0.75);
     muII.setControlPosition(0.31);
@@ -34,7 +37,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
     PresetUseCases puc(*single, eb->getSettings());
     puc.overwriteWithEditBuffer(*eb);
 
-    CHECK(single->findParameterByID({ C15::PID::Env_A_BP, VoiceGroup::I }, true)->getValue() == Approx(0.75));
+
+    CHECK(single->findParameterByID({ C15::PID::Env_A_BP, VoiceGroup::I }, true)->getValue() == Approx(poly_I_preset_CP));
     CHECK(single->findParameterByID({ C15::PID::Env_A_BP, VoiceGroup::II }, true)->getValue() == Approx(0.31));
     CHECK(single->findParameterByID({ C15::PID::Reverb_Chorus, VoiceGroup::I }, true)->getValue() == Approx(0.75));
     CHECK(single->findParameterByID({ C15::PID::Reverb_Chorus, VoiceGroup::II }, true)->getValue() == Approx(0.31));
@@ -50,8 +54,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
     CHECK(eb->getPartOrigin(VoiceGroup::II).presetUUID == layer->getUuid());
     CHECK(eb->getPartOrigin(VoiceGroup::II).sourceGroup == VoiceGroup::II);
 
-    CHECK(polyI->getControlPositionValue() != Approx(0.75));
-    CHECK(polyII->getControlPositionValue() != Approx(0.31));
+    CHECK(polyI->getControlPositionValue() != Approx(poly_I_preset_CP));
+    CHECK(polyII->getControlPositionValue() != Approx(poly_II_preset_CP));
     CHECK(monophonicI->getControlPositionValue() != Approx(0.75));
     CHECK(monophonicII->getControlPositionValue() != Approx(0.31));
 
@@ -65,7 +69,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
 
       CHECK(monophonicI->getControlPositionValue() == Approx(0.75));
       CHECK(monophonicII->getControlPositionValue() == monoBeforeLoad);
-      CHECK(polyI->getControlPositionValue() == Approx(0.75));
+
+      CHECK(polyI->getControlPositionValue() == Approx(poly_I_preset_CP));
       CHECK(polyII->getControlPositionValue() == polyBeforeLoad);
     }
 
@@ -80,7 +85,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
       CHECK(monophonicI->getControlPositionValue() == monoBeforeLoad);
       CHECK(monophonicII->getControlPositionValue() == Approx(0.75));
       CHECK(polyI->getControlPositionValue() == polyBeforeLoad);
-      CHECK(polyII->getControlPositionValue() == Approx(0.75));
+      CHECK(polyII->getControlPositionValue() == Approx(poly_I_preset_CP));
     }
 
     WHEN("II -> I")
@@ -93,7 +98,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
 
       CHECK(monophonicI->getControlPositionValue() == Approx(0.31));
       CHECK(monophonicII->getControlPositionValue() == monoBeforeLoad);
-      CHECK(polyI->getControlPositionValue() == Approx(0.31));
+
+      CHECK(polyI->getControlPositionValue() == Approx(poly_I_preset_CP));
       CHECK(polyII->getControlPositionValue() == polyBeforeLoad);
     }
 
@@ -107,8 +113,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
 
       CHECK(monophonicI->getControlPositionValue() == monoBeforeLoad);
       CHECK(monophonicII->getControlPositionValue() == Approx(0.31));
+
       CHECK(polyI->getControlPositionValue() == polyBeforeLoad);
-      CHECK(polyII->getControlPositionValue() == Approx(0.31));
+      CHECK(polyII->getControlPositionValue() == Approx(poly_I_preset_CP));
     }
   }
 
@@ -121,9 +128,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
     CHECK(eb->getPartOrigin(VoiceGroup::II).presetUUID == split->getUuid());
     CHECK(eb->getPartOrigin(VoiceGroup::II).sourceGroup == VoiceGroup::II);
 
-    CHECK(polyI->getControlPositionValue() != Approx(0.75));
+    CHECK(polyI->getControlPositionValue() != Approx(poly_I_preset_CP));
     CHECK(polyII->getControlPositionValue() != Approx(0.31));
-    CHECK(monophonicI->getControlPositionValue() != Approx(0.75));
+    CHECK(monophonicI->getControlPositionValue() != Approx(poly_I_preset_CP));
     CHECK(monophonicII->getControlPositionValue() != Approx(0.31));
 
     WHEN("I -> I")
@@ -136,7 +143,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
 
       CHECK(monophonicI->getControlPositionValue() == Approx(0.75));
       CHECK(monophonicII->getControlPositionValue() == monoBeforeLoad);
-      CHECK(polyI->getControlPositionValue() == Approx(0.75));
+
+      CHECK(polyI->getControlPositionValue() == Approx(poly_I_preset_CP));
       CHECK(polyII->getControlPositionValue() == polyBeforeLoad);
     }
 
@@ -150,8 +158,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
 
       CHECK(monophonicI->getControlPositionValue() == monoBeforeLoad);
       CHECK(monophonicII->getControlPositionValue() == Approx(0.75));
+
       CHECK(polyI->getControlPositionValue() == polyBeforeLoad);
-      CHECK(polyII->getControlPositionValue() == Approx(0.75));
+      CHECK(polyII->getControlPositionValue() == Approx(poly_I_preset_CP));
     }
 
     WHEN("II -> I")
@@ -164,7 +173,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
 
       CHECK(monophonicI->getControlPositionValue() == Approx(0.31));
       CHECK(monophonicII->getControlPositionValue() == monoBeforeLoad);
-      CHECK(polyI->getControlPositionValue() == Approx(0.31));
+
+      CHECK(polyI->getControlPositionValue() == Approx(poly_I_preset_CP));
       CHECK(polyII->getControlPositionValue() == polyBeforeLoad);
     }
 
@@ -178,8 +188,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
 
       CHECK(monophonicI->getControlPositionValue() == monoBeforeLoad);
       CHECK(monophonicII->getControlPositionValue() == Approx(0.31));
+
       CHECK(polyI->getControlPositionValue() == polyBeforeLoad);
-      CHECK(polyII->getControlPositionValue() == Approx(0.31));
+      CHECK(polyII->getControlPositionValue() == Approx(poly_I_preset_CP));
     }
   }
 }
@@ -279,6 +290,58 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load to Part Single into Dual,
         CHECK(fxFromII->getControlPositionValue() == Approx(1 - cp));
         CHECK(toFxII->getControlPositionValue() == Approx(1 - cp));
       }
+    }
+  }
+}
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load to Part Load Single-Part II into Dual-Part I")
+{
+  MockPresetStorage presets;
+  auto& eb = *TestHelper::getEditBuffer();
+  auto& pm = *TestHelper::getPresetManager();
+  auto& settings = *TestHelper::getSettings();
+
+  EditBufferUseCases ebUseCases(eb);
+  PresetManagerUseCases pmUseCases(pm, settings);
+
+  auto polyI = eb.findParameterByID({C15::PID::FB_Mix_Asym, VoiceGroup::I});
+  auto polyII = eb.findParameterByID({C15::PID::FB_Mix_Asym, VoiceGroup::II});
+
+  auto monoI = eb.findParameterByID({C15::PID::Reverb_Mix, VoiceGroup::I});
+  auto monoII = eb.findParameterByID({C15::PID::Reverb_Mix, VoiceGroup::II});
+
+  WHEN("Prepared Single Preset!")
+  {
+    ebUseCases.load(presets.getSinglePreset());
+
+    ParameterUseCases polyIUC(polyI);
+    polyIUC.setControlPosition(0.2);
+
+    ParameterUseCases polyIIUC(polyII);
+    polyIIUC.setControlPosition(0.7);
+
+    auto preparedSinglePresetBank = pmUseCases.createBankAndStoreEditBuffer();
+    auto preparedSinglePreset = preparedSinglePresetBank->getPresetAt(0);
+    REQUIRE(preparedSinglePresetBank);
+
+    THEN("load split")
+    {
+      ebUseCases.load(presets.getSplitPreset());
+      REQUIRE(polyI->getControlPositionValue() != Approx(0.2));
+      REQUIRE(polyII->getControlPositionValue() != Approx(0.7));
+
+      ebUseCases.loadToPart(preparedSinglePreset, VoiceGroup::II, VoiceGroup::I);
+      REQUIRE(polyI->getControlPositionValue() == Approx(0.2)); // has value from Poly I
+    }
+
+    THEN("load layer")
+    {
+      ebUseCases.load(presets.getLayerPreset());
+      REQUIRE(polyI->getControlPositionValue() != Approx(0.2));
+      REQUIRE(polyII->getControlPositionValue() != Approx(0.7));
+
+      ebUseCases.loadToPart(preparedSinglePreset, VoiceGroup::II, VoiceGroup::I);
+      REQUIRE(polyI->getControlPositionValue() == Approx(0.2)); // has value from Poly I
     }
   }
 }

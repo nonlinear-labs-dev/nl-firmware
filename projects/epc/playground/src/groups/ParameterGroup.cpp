@@ -266,3 +266,13 @@ void ParameterGroup::validateParameterTypes() const
     }
   }
 }
+
+C15::Descriptors::ParameterType ParameterGroup::getParameterType() const
+{
+  if(auto p = *getParameters().begin())
+  {
+    return p->getType();
+  }
+
+  nltools_assertNotReached();
+}
