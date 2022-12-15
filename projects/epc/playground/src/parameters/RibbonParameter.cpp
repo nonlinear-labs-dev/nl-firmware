@@ -288,7 +288,6 @@ void RibbonParameter::copyTo(UNDO::Transaction *transaction, PresetParameter *ot
 
 void RibbonParameter::boundToMacroControl(tControlPositionValue v)
 {
-  nltools::Log::error(getLongName(), "bound to Macrocontrol with value", v);
   getValue().setRawValue(Initiator::INDIRECT, v);
   onChange();
   invalidate();

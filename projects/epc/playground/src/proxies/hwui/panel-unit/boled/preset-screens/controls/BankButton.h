@@ -16,10 +16,11 @@ class BankButton : public ControlWithChildren
  private:
   void bruteForce();
 
-  void installNonSelect();
-  void installSelect();
+  void installDefault();
+  void installLoadToPart();
 
   std::unique_ptr<ShortVsLongPress> m_buttonAHandler;
   const bool m_bankFocus;
   sigc::connection m_soundTypeChanged;
+  sigc::connection m_loadToPartChanged;
 };

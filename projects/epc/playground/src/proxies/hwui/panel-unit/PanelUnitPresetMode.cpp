@@ -81,14 +81,24 @@ void PanelUnitPresetMode::letChangedButtonsBlink(Buttons buttonId, const std::li
   bool anyChanged = false;
   for(const auto paramID : currentParams)
   {
-    try
+    Parameter* parameter = editBuffer->findParameterByID({ paramID, vg });
+
+    if(!parameter)
+      parameter = editBuffer->findParameterByID({ paramID, VoiceGroup::Global });
+
+    if(editBuffer->getType() == SoundType::Single)
     {
-      anyChanged |= ebParameters.at(paramID)->isChangedFromLoaded();
+      if(parameter->isPolyphonic())
+      {
+        parameter = editBuffer->findParameterByID({paramID, VoiceGroup::I });
+        if(!parameter)
+        {
+          parameter = editBuffer->findParameterByID({paramID, VoiceGroup::Global});
+        }
+      }
     }
-    catch(...)
-    {
-      anyChanged |= globalParameters.at(paramID)->isChangedFromLoaded();
-    }
+
+    anyChanged |= parameter->isChangedFromLoaded();
   }
   states[(int) buttonId] = anyChanged ? TwoStateLED::BLINK : TwoStateLED::OFF;
 }
