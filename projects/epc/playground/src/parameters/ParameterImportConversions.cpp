@@ -78,7 +78,6 @@ ParameterImportConversions::ParameterImportConversions(bool registerDefaults)
     registerConverter(C15::PID::MC_Time_E, 5, [=](auto v, auto, auto) { return 0.442; });
     registerConverter(C15::PID::MC_Time_F, 5, [=](auto v, auto, auto) { return 0.442; });
 
-    registerConverter(C15::PID::Out_Mix_Key_Pan, 11, [=](auto v, auto, auto) { return v * 0.5; });
     registerConverter(C15::PID::Osc_A_Pitch_KT, 11, [=](auto v, auto, auto) { return pitchKTV11ToV12(v); });
     registerConverter(C15::PID::Osc_B_Pitch_KT, 11, [=](auto v, auto, auto) { return pitchKTV11ToV12(v); });
     registerConverter(C15::PID::Comb_Flt_Pitch_KT, 11, [=](auto v, auto, auto) { return pitchKTV11ToV12(v); });
@@ -88,38 +87,31 @@ ParameterImportConversions::ParameterImportConversions(bool registerDefaults)
     registerConverter(C15::PID::Unison_Detune, 11, [=](auto v, auto, auto) { return v * 0.5; });
     registerMCAmountConverter(C15::PID::Unison_Detune, 11, [=](auto v, auto, auto) { return v * 0.5; });
 
-    registerConverter(C15::PID::Env_A_Att_Vel, 11, [=](auto v, auto, auto) { return v * 0.5; });
-    registerConverter(C15::PID::Env_B_Att_Vel, 11, [=](auto v, auto, auto) { return v * 0.5; });
-    registerConverter(C15::PID::Env_C_Att_Vel, 11, [=](auto v, auto, auto) { return v * 0.5; });
-    registerConverter(C15::PID::Env_A_Time_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
-    registerConverter(C15::PID::Env_B_Time_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
-    registerConverter(C15::PID::Env_C_Time_KT, 11, [=](auto v, auto, auto) { return v * 0.5; });
-    registerConverter(C15::PID::Shp_A_FB_Env_C, 11, [=](auto v, auto, auto) { return v * 0.5; });
-    registerConverter(C15::PID::Shp_B_FB_Env_C, 11, [=](auto v, auto, auto) { return v * 0.5; });
-
     for(auto offset :
         { C15::PID::Scale_Offset_0, C15::PID::Scale_Offset_1, C15::PID::Scale_Offset_2, C15::PID::Scale_Offset_3,
           C15::PID::Scale_Offset_4, C15::PID::Scale_Offset_5, C15::PID::Scale_Offset_6, C15::PID::Scale_Offset_7,
           C15::PID::Scale_Offset_8, C15::PID::Scale_Offset_9, C15::PID::Scale_Offset_10, C15::PID::Scale_Offset_11 })
     {
       registerConverter(offset, 11, [=](auto v, auto, auto) { return (2. / 3.) * v; });
-      registerConverter(offset, 14, [=](auto v, auto, auto) {
-        const auto oldLim = 1./12.;
-        const auto newLim = 10./21.;
+      registerConverter(offset, 14,
+                        [=](auto v, auto, auto)
+                        {
+                          const auto oldLim = 1. / 12.;
+                          const auto newLim = 10. / 21.;
 
-        if ( (v > -oldLim) && (v < oldLim) )
-        {
-          return v * newLim / oldLim;
-        }
-        else if (v >= oldLim)
-        {
-          return newLim + (v - oldLim) * (1.0 - newLim) / (1.0 - oldLim);
-        }
-        else
-        {
-          return -newLim + (v + oldLim) * (1.0 - newLim) / (1.0 - oldLim);
-        }
-      });
+                          if((v > -oldLim) && (v < oldLim))
+                          {
+                            return v * newLim / oldLim;
+                          }
+                          else if(v >= oldLim)
+                          {
+                            return newLim + (v - oldLim) * (1.0 - newLim) / (1.0 - oldLim);
+                          }
+                          else
+                          {
+                            return -newLim + (v + oldLim) * (1.0 - newLim) / (1.0 - oldLim);
+                          }
+                        });
     }
 
     registerConverter(C15::PID::Env_A_Att_Vel, 12, [=](auto v, auto, auto) { return -v; });
