@@ -12,19 +12,13 @@ class SingleSoundPolyToFXIndicator : public ControlWithChildren
   explicit SingleSoundPolyToFXIndicator(const Point& p);
 
  private:
-  Control* polytoFXI;
-  Control* polytoFXII;
+  void bruteForce();
+
+  Control* polyToFx;
   Control* FXI;
   Control* FXII;
-  Control* fxIToOut;
-  Control* fxIIToOut;
-  Control* arrowFromFX;
-  Control* arrowSerial;
-
-  void onVoiceGroupChanged(VoiceGroup vg);
-  void onToFXI(const Parameter* param);
-  void onMasterFXMix(const Parameter* param);
-  void onSerialFX(const Parameter* param);
+  Control* fxToOut;
+  Control* serial;
 
   sigc::connection con1, con2, con3, con4;
 };

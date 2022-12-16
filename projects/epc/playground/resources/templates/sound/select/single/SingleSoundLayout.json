@@ -77,11 +77,11 @@
         },
         "ArrowsPolyToFX": {
           "Class": "SingleSoundPolyToFXIndicator",
-          "Position": "205, 19"
+          "Position": "181, 18"
         },
         "FB_FX": {
           "Class": "SingleSoundFBFXIndicator",
-          "Position": "30, 19"
+          "Position": "36, 18"
         }
       },
       "EventSinks": {
