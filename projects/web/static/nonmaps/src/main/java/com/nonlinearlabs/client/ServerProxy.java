@@ -95,7 +95,6 @@ public class ServerProxy {
 	}
 
 	private void updateSyncedPart(Node webuiHelp) {
-		GWT.log("updatingSyncedPart..." + webuiHelp.toString());
 		if (SetupModel.get().systemSettings.syncVoiceGroups.isTrue()) {
 			Node selected = getChild(webuiHelp, "selected-part");
 			String vg = getChildText(selected);
