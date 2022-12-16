@@ -3,6 +3,7 @@ package com.nonlinearlabs.client.world.overlay.menu;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.user.client.Window;
 import com.nonlinearlabs.client.Millimeter;
+import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.RGB;
@@ -14,7 +15,6 @@ import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.client.world.overlay.PresetInfoDialog;
-import com.nonlinearlabs.client.world.overlay.html.presetSearch.PresetSearchDialog;
 import com.nonlinearlabs.client.world.overlay.html.setup.SetupDialog;
 
 public class GlobalMenu extends OverlayLayout {
@@ -63,13 +63,12 @@ public class GlobalMenu extends OverlayLayout {
 
 			@Override
 			public String getCheckText() {
-				return (PresetSearchDialog.isShown() ? "\uE0A4 " : "\uE0A3 ");
+				return (NonMaps.isPresetSearchVisible() ? "\uE0A4 " : "\uE0A3 ");
 			}
 
 			@Override
 			public Control mouseDown(Position eventPoint) {
-				PresetSearchDialog.toggle();
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				NonMaps.togglePresetSearch();
 				getParent().toggle();
 				return this;
 			}
@@ -214,7 +213,6 @@ public class GlobalMenu extends OverlayLayout {
 
 		});
 
-
 		addChild(new MenuEntry(this, "Ctrl-R") {
 			@Override
 			public String getDrawText(Context2d ctx) {
@@ -276,6 +274,11 @@ public class GlobalMenu extends OverlayLayout {
 
 	private RGB getBackgroundFillColor() {
 		return new RGB(34, 34, 42);
+	}
+
+	@Override
+	public void setPixRect(Rect rect) {
+		super.setPixRect(rect);
 	}
 
 	@Override

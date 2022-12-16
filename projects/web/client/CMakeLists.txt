@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(web-client)
-
 add_subdirectory(c16-hwui)
 
 file(GLOB_RECURSE ALL_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/build-time-info.js.in ${CMAKE_CURRENT_SOURCE_DIR}/build-time-info.js @ONLY)
 
 add_custom_command(
     COMMENT "Web Client"

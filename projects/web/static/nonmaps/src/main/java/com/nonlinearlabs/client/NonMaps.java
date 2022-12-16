@@ -9,6 +9,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
@@ -17,11 +20,14 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.DisplayScaling;
 import com.nonlinearlabs.client.localStorage.WebStorage;
 import com.nonlinearlabs.client.useCases.LocalSettings;
+import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Dimension;
 import com.nonlinearlabs.client.world.Mouseing;
 import com.nonlinearlabs.client.world.NonLinearWorld;
+import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.maps.CachingMapsControl;
 import com.nonlinearlabs.client.world.maps.NonRect;
+import com.nonlinearlabs.client.world.overlay.PresetInfoDialog;
 
 public class NonMaps extends Mouseing implements EntryPoint {
 	public interface ScreenResizeListener {
@@ -39,7 +45,6 @@ public class NonMaps extends Mouseing implements EntryPoint {
 	private static Dimension pixPerCM = new Dimension();
 	private static Dimension pixPerViewport = new Dimension();
 	private static double pixelFactor = 1.0f;
-	public static double devicePixelRatio = getDevicePixelRatio();
 
 	private int viewportWidth = 0;
 	private int viewportHeight = 0;
@@ -62,6 +67,8 @@ public class NonMaps extends Mouseing implements EntryPoint {
 
 	@Override
 	public void onModuleLoad() {
+		exportGlobalMethods();
+
 		LocalSettings.get().setStorage(new WebStorage());
 		SetupModel.get().localSettings.displayScaling.onChange(s -> setScaling(s));
 
@@ -90,7 +97,7 @@ public class NonMaps extends Mouseing implements EntryPoint {
 		pixPerViewport.setHeight(p.getOffsetHeight());
 		p.setVisible(false);
 
-		mmToPixel = pixelFactor * devicePixelRatio * pixPerCM.getWidth() / 10;
+		mmToPixel = pixelFactor * getDevicePixelRatio() * pixPerCM.getWidth() / 10;
 
 		createWorld();
 
@@ -175,6 +182,7 @@ public class NonMaps extends Mouseing implements EntryPoint {
 
 	private void createCanvases() throws Exception {
 		canvas = Canvas.createIfSupported();
+		canvas.getElement().setId("nonmaps-canvas");
 		RootPanel.get("canvasholder").add(canvas);
 		context = canvas.getContext2d();
 	}
@@ -182,9 +190,13 @@ public class NonMaps extends Mouseing implements EntryPoint {
 	private void createWorld() {
 		nonlinearWorld = new NonLinearWorld(this);
 		nonlinearWorld.init();
+
+		DivElement presetSearchResults = (DivElement) Document.get().getElementById("preset-search-results");
+		observe(presetSearchResults);
 	}
 
 	private void doUpdate() {
+		double devicePixelRatio = getDevicePixelRatio();
 		int width = (int) Math.ceil(canvas.getCanvasElement().getClientWidth() * devicePixelRatio);
 		int height = (int) Math.ceil(canvas.getCanvasElement().getClientHeight() * devicePixelRatio);
 		mmToPixel = pixelFactor * devicePixelRatio * pixPerCM.getWidth() / 10;
@@ -232,6 +244,8 @@ public class NonMaps extends Mouseing implements EntryPoint {
 
 				for (ScreenResizeListener r : screenResizeListeners)
 					r.onScreenResize(width, height);
+
+				updatePresetSearchHeight();
 
 			} else {
 				zoomToFitParamed = true;
@@ -303,7 +317,7 @@ public class NonMaps extends Mouseing implements EntryPoint {
 		return screenRatio;
 	}
 
-	private static native double getDevicePixelRatio() /*-{
+	public static native double getDevicePixelRatio() /*-{
 														return $wnd.devicePixelRatio;
 														}-*/;
 
@@ -314,4 +328,98 @@ public class NonMaps extends Mouseing implements EntryPoint {
 	public void unregisterScreenResizeListener(ScreenResizeListener listener) {
 		screenResizeListeners.remove(listener);
 	}
+
+	public void updatePresetSearchHeight() {
+		double devicePixelRatio = getDevicePixelRatio();
+		DivElement presetSearch = (DivElement) Document.get().getElementById("preset-search");
+		double beltTop = getNonLinearWorld().getViewport().getOverlay().getUndoRedoButtons().getPixRect().getTop()
+				/ devicePixelRatio;
+		double margin = Millimeter.toPixels(5) / devicePixelRatio;
+		beltTop -= margin;
+
+		String oldVal = presetSearch.getAttribute("belt-position");
+		String newVal = String.valueOf(beltTop);
+		if (newVal != oldVal) {
+			presetSearch.setAttribute("belt-position", newVal + "px");
+			presetSearch.getStyle().setProperty("maxHeight", newVal + "px");
+		}
+	}
+
+	private native double observe(Element element)
+	/*-{
+		var self = this;
+		var observer = new MutationObserver(function(mutations) {
+			mutations.forEach(function(mutation) {
+	  			if (mutation.type === "attributes") {
+					self.@com.nonlinearlabs.client.NonMaps::updatePresetSearchHeight()();
+	  			}
+			});
+		});	
+	
+		observer.observe(element, {
+			attributes: true //configure it to listen to attribute changes
+		});
+	}-*/;
+
+	private static native double getElementTop(Element element)
+	/*-{
+	   var rectObject = element.getBoundingClientRect();
+	   return rectObject.top;
+	}-*/;
+
+	private static native double getElementBottom(Element element)
+	/*-{
+	   var rectObject = element.getBoundingClientRect();
+	   return rectObject.bottom;
+	}-*/;
+
+	@Override
+	public void startPresetDrag(Position p, String[] presets) {
+		getNonLinearWorld().startPresetDrag(p, presets);
+	}
+
+	@Override
+	public void cancelPresetDrag() {
+		getNonLinearWorld().cancelPresetDrag();
+	}
+
+	public static void scrollToPreset(String preset) {
+		get().getNonLinearWorld().getPresetManager().findPreset(preset).scrollToCenter();
+	}
+
+	public static boolean isPresetInfoVisible() {
+		return PresetInfoDialog.isShown();
+	}
+
+	public static void showPresetInfo(String preset) {
+		PresetInfoDialog.toggle();
+	}
+
+	public static void redrawNonWorld() {
+		NonMaps.get().nonlinearWorld.invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
+	}
+
+	public static native void togglePresetSearch() /*-{
+		$wnd.togglePresetSearch();
+	}-*/;
+
+	public static native boolean isPresetSearchVisible() /*-{
+		return $wnd.isPresetSearchVisible();
+	}-*/;
+
+	private static native void exportGlobalMethods() /*-{
+		$wnd.scrollToNonMapsPreset = @com.nonlinearlabs.client.NonMaps::scrollToPreset(Ljava/lang/String;);
+		$wnd.isPresetInfoVisible = @com.nonlinearlabs.client.NonMaps::isPresetInfoVisible();
+		$wnd.showPresetInfo = @com.nonlinearlabs.client.NonMaps::showPresetInfo(Ljava/lang/String;);
+		$wnd.nextZIndex = @com.nonlinearlabs.client.NonMaps::nextZIndex();
+		$wnd.redrawNonWorld = @com.nonlinearlabs.client.NonMaps::redrawNonWorld();
+	}-*/;
+
+	public static native int nextZIndex() /*-{
+		if(!$wnd.maxDialogZIndex)
+			$wnd.maxDialogZIndex = 1001;
+			
+		$wnd.maxDialogZIndex++;
+		return $wnd.maxDialogZIndex;
+	}-*/;
 }

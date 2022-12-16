@@ -1,10 +1,12 @@
 package com.nonlinearlabs.client.world.overlay;
 
+import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
+import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.overlay.belt.Belt;
 
-class UndoRedoButtons extends OverlayLayout {
+public class UndoRedoButtons extends OverlayLayout {
 
 	private UndoButton undo;
 	private RedoButton redo;
@@ -19,9 +21,14 @@ class UndoRedoButtons extends OverlayLayout {
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
 		super.doLayout(x, y, w, h);
-
 		undo.doLayout(0, 0);
 		redo.doLayout(undo.getRelativePosition().getRight(), 0);
+	}
+
+	@Override
+	public void setPixRect(Rect rect) {
+		super.setPixRect(rect);
+		NonMaps.get().updatePresetSearchHeight();
 	}
 
 	public double getWidth() {

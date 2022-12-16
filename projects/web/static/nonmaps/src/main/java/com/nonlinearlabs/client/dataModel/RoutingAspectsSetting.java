@@ -1,12 +1,9 @@
 package com.nonlinearlabs.client.dataModel;
 
-import com.google.gwt.core.client.GWT;
-import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
-import com.nonlinearlabs.client.world.maps.parameters.Parameter;
 
 public class RoutingAspectsSetting {
-    
+
     public static int numAspects = 5;
     public static int numRoutings = 12;
 
@@ -16,24 +13,17 @@ public class RoutingAspectsSetting {
 
     static RoutingAspectsSetting fromString(String s) {
         RoutingAspectsSetting r = new RoutingAspectsSetting();
-        
+
         String splitRoutingsCommaSeperatedList[] = s.split("\n");
 
-        for(int routing = 0; routing < numRoutings; routing++) { 
+        for (int routing = 0; routing < numRoutings; routing++) {
             String[] splitOnesAndZeros = splitRoutingsCommaSeperatedList[routing].split(",");
-            
+
             boolean[] row = new boolean[numAspects];
-            for(int aspect = 0; aspect < numAspects; aspect++) {
+            for (int aspect = 0; aspect < numAspects; aspect++) {
                 row[aspect] = splitOnesAndZeros[aspect] == "1";
             }
             r.m_data[routing] = row;
-        }
-
-        int sum = 0;
-        for(boolean[] row: r.m_data) {
-            for(boolean entry: row) {
-                sum += entry ? 1 : 0;
-            }
         }
 
         return r;
@@ -42,24 +32,20 @@ public class RoutingAspectsSetting {
     @Override
     public String toString() {
         String ret = new String();
-        for(boolean routing[] : m_data)
-        {
-          for(boolean value : routing)
-          {
-            ret += value ? "1," : "0,";
-          }
-          ret += "\n";
+        for (boolean routing[] : m_data) {
+            for (boolean value : routing) {
+                ret += value ? "1," : "0,";
+            }
+            ret += "\n";
         }
         return ret;
     }
 
-    private int idToIndex(int id)
-    {
-        switch(id)
-        {
+    private int idToIndex(int id) {
+        switch (id) {
             case 284:
             case 404:
-               return 6;
+                return 6;
             case 289:
             case 405:
                 return 7;
@@ -91,17 +77,15 @@ public class RoutingAspectsSetting {
         return 0;
     }
 
-    public boolean isLocalEnabled(PhysicalControlParameterModel param)
-    {
+    public boolean isLocalEnabled(PhysicalControlParameterModel param) {
         final int LOCAL_INDEX = 4;
         return m_data[idToIndex(param.id.getNumber())][LOCAL_INDEX];
     }
 
-    public boolean isLocalEnabled(int parameterId)
-    {
+    public boolean isLocalEnabled(int parameterId) {
         final int LOCAL_INDEX = 4;
         return m_data[idToIndex(parameterId)][LOCAL_INDEX];
     }
 
-    public boolean[][] m_data;    
+    public boolean[][] m_data;
 }

@@ -378,6 +378,7 @@ ParameterRecallLayout2::~ParameterRecallLayout2()
 
 void ParameterRecallLayout2::init()
 {
+  addControl(createParameterNameLabel());
   addControl(createModuleCaption());
 }
 

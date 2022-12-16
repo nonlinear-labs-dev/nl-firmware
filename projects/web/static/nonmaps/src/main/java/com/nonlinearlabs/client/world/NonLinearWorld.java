@@ -1,5 +1,7 @@
 package com.nonlinearlabs.client.world;
 
+import java.util.function.Function;
+
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.Context2d.Composite;
 import com.google.gwt.canvas.dom.client.Context2d.LineCap;
@@ -15,7 +17,6 @@ import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.contextStates.ContextState;
 import com.nonlinearlabs.client.contextStates.StopWatchState;
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
-import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.integrationTests.IntegrationTests;
@@ -34,7 +35,6 @@ import com.nonlinearlabs.client.world.overlay.DragProxy;
 import com.nonlinearlabs.client.world.overlay.Overlay;
 import com.nonlinearlabs.client.world.overlay.belt.presets.PresetManagerContextMenu;
 import com.nonlinearlabs.client.world.pointer.TouchPinch;
-import java.util.function.Function;
 
 public class NonLinearWorld extends MapsLayout {
 	private Animator theAnimation = null;
@@ -69,7 +69,7 @@ public class NonLinearWorld extends MapsLayout {
 	public NonLinearWorld(NonMaps root) {
 		super(null);
 		this.root = root;
-		
+
 		settings = addChild(new DeveloperSettings(this));
 		parameterEditor = new ParameterEditor(this);
 		presetManager = new PresetManager(this);
@@ -437,7 +437,7 @@ public class NonLinearWorld extends MapsLayout {
 
 	@Override
 	public double getCurrentLevelOfDetail() {
-		double zoom = getCurrentZoom() / NonMaps.devicePixelRatio;
+		double zoom = getCurrentZoom() / NonMaps.getDevicePixelRatio();
 
 		double minLOD = 1;
 		double maxLOD = maxLevelOfDetail;
@@ -459,7 +459,7 @@ public class NonLinearWorld extends MapsLayout {
 		double maxZoom = 1;
 
 		double zoom = (maxZoom - minZoom) + minZoom;
-		viewport.setCurrentZoom(zoom * NonMaps.devicePixelRatio);
+		viewport.setCurrentZoom(zoom * NonMaps.getDevicePixelRatio());
 	}
 
 	@Override
@@ -675,8 +675,15 @@ public class NonLinearWorld extends MapsLayout {
 		return false;
 	}
 
-	public void onShiftStateChanged(Function<BooleanValues, Boolean> cb)
-	{
+	public void onShiftStateChanged(Function<BooleanValues, Boolean> cb) {
 		shiftSignal.onChange(cb);
+	}
+
+	public void startPresetDrag(Position pos, String[] presets) {
+		getPresetManager().startPresetDrag(viewport, pos, presets);
+	}
+
+	public void cancelPresetDrag() {
+		getPresetManager().cancelPresetDrag(viewport);
 	}
 }

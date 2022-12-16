@@ -1,10 +1,10 @@
 import { SyncedItemDatabase } from "./synced-item-database";
 
 declare var playgroundPort: string;
-declare var sync: SyncedItemDatabase
+
 
 export class PlaygroundProxy {
-    constructor() {
+    constructor(private sync: SyncedItemDatabase) {
         this.connect();
     }
 
@@ -18,28 +18,33 @@ export class PlaygroundProxy {
 
     selectPreset(uuid: string) {
         // fake it
-        const preset = sync.queryItem("/preset/" + uuid);
-        var bankVar = sync.queryVar("/bank/" + preset["bank-uuid"]);
+        const preset = this.sync.queryItem("/preset/" + uuid);
+        const bankUuid = preset!["bank-uuid"];
 
-        var val = bankVar.get();
-        val['selected-preset'] = uuid;
-        bankVar.set(val);
+        this.sync.update("/bank/" + bankUuid, 'selected-preset', uuid);
+        this.sync.update("/preset-manager", 'selected-bank', bankUuid);
 
         // make it
-        this.send("/presets/banks/select-preset?uuid=" + uuid);
+        this.send("/banks/select-preset?uuid=" + uuid);
     }
 
     loadPreset(uuid: string) {
-        this.send("/presets/banks/load-preset?uuid=" + uuid);
+        this.send("/banks/load-preset?uuid=" + uuid);
     }
 
     selectBank(uuid: any) {
         this.send("/presets/select-bank?uuid=" + uuid);
     }
 
+    log(message: string) {
+        this.send("/logger/log?message=" + message);
+    }
+
     private connect() {
         const hostName = location.hostname.length == 0 ? "localhost" : location.hostname;
-        this.socket = new WebSocket("ws://" + hostName + playgroundPort + "/ws/" + this.clientId);
+        const port = !playgroundPort || playgroundPort.length < 2 ? ":8080" : playgroundPort;
+
+        this.socket = new WebSocket("ws://" + hostName + port + "/ws/" + this.clientId);
         this.socket.onopen = (event) => this.onOpen();
         this.socket.onerror = (event) => this.onError();
         this.socket.onclose = (event) => this.onClose();

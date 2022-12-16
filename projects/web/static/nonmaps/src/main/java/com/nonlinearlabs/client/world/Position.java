@@ -20,7 +20,7 @@ public class Position {
 	}
 
 	public <H extends EventHandler> Position(MouseEvent<H> event) {
-		final double r = NonMaps.devicePixelRatio;
+		final double r = NonMaps.getDevicePixelRatio();
 		this.x = event.getClientX() * r;
 		this.y = event.getClientY() * r;
 	}
@@ -31,7 +31,7 @@ public class Position {
 	}
 
 	public Position(NativeEvent e) {
-		this(e.getClientX() * NonMaps.devicePixelRatio, e.getClientY() * NonMaps.devicePixelRatio);
+		this(e.getClientX() * NonMaps.getDevicePixelRatio(), e.getClientY() * NonMaps.getDevicePixelRatio());
 	}
 
 	public void moveBy(double x, double y) {

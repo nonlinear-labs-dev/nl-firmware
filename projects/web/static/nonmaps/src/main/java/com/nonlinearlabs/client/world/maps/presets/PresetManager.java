@@ -1,12 +1,9 @@
 package com.nonlinearlabs.client.world.maps.presets;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.xml.client.Node;
@@ -21,9 +18,7 @@ import com.nonlinearlabs.client.StoreSelectMode;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
-import com.nonlinearlabs.client.dataModel.presetManager.PresetSearch;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.presenters.LocalSettingsProvider;
 import com.nonlinearlabs.client.presenters.PresetManagerPresenterProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
@@ -33,6 +28,7 @@ import com.nonlinearlabs.client.world.NonLinearWorld;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.RenameDialog;
+import com.nonlinearlabs.client.world.Viewport;
 import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.MapsLayout;
 import com.nonlinearlabs.client.world.maps.NonDimension;
@@ -48,7 +44,6 @@ import com.nonlinearlabs.client.world.overlay.ParameterInfoDialog;
 import com.nonlinearlabs.client.world.overlay.PresetInfoDialog;
 import com.nonlinearlabs.client.world.overlay.belt.EditBufferDraggingButton;
 import com.nonlinearlabs.client.world.overlay.belt.presets.PresetContextMenu;
-import com.nonlinearlabs.client.world.overlay.html.presetSearch.PresetSearchDialog;
 import com.nonlinearlabs.client.world.pointer.PointerState;
 
 public class PresetManager extends MapsLayout {
@@ -103,39 +98,6 @@ public class PresetManager extends MapsLayout {
 
 	public PresetManager(NonLinearWorld parent) {
 		super(parent);
-
-		PresetSearch.get().searchActive.onChange(b -> {
-			if (b == BooleanValues.on) {
-				saveView();
-			} else {
-				resetView();
-			}
-			return true;
-		});
-
-		PresetSearch.get().currentFilterMatch.onChange(b -> {
-			if (PresetSearch.get().results.getValue().isEmpty()) {
-				resetView();
-			} else {
-				zoomToAllFilterMatches();
-			}
-			return true;
-		});
-
-		PresetSearch.get().zoomToMatches.onChange(b -> {
-			if (b == BooleanValues.on) {
-				saveView();
-				zoomToAllFilterMatches();
-			} else {
-				resetView();
-			}
-			return true;
-		});
-
-		PresetSearch.get().results.onChange(b -> {
-			zoomToAllFilterMatches();
-			return true;
-		});
 
 		EditBufferModel.get().soundType.onChange(type -> {
 			if (type == SoundType.Single) {
@@ -691,7 +653,7 @@ public class PresetManager extends MapsLayout {
 				&& NonMaps.get().getNonLinearWorld().isCtrlDown()) {
 			NonMaps.get().getServerProxy().redo();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_F) {
-			PresetSearchDialog.toggle();
+			NonMaps.togglePresetSearch();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_U) {
 			getNonMaps().getNonLinearWorld().getViewport().getOverlay().getUndoTree().toggle();
 		} else if (keyCode == com.google.gwt.event.dom.client.KeyCodes.KEY_B) {
@@ -859,60 +821,6 @@ public class PresetManager extends MapsLayout {
 			return b.getPresetList().findPreset(b.getPresetList().getSelectedPreset());
 
 		return null;
-	}
-
-	public LinkedList<Preset> collectMatchingPresets() {
-		Set<String> matches = PresetSearch.get().results.getValue();
-		LinkedList<Preset> ret = new LinkedList<Preset>();
-
-		for (Control c : getChildren()) {
-			if (c instanceof Bank) {
-				Bank b = (Bank) c;
-
-				for (Control f : b.getPresetList().getChildren()) {
-					if (f instanceof Preset) {
-						Preset p = (Preset) f;
-						if (matches.contains(p.getUUID()))
-							ret.add(p);
-					}
-				}
-			}
-		}
-		return ret;
-	}
-
-	public void zoomToAllFilterMatches() {
-		if (PresetSearch.get().zoomToMatches.isTrue() && PresetSearch.get().searchActive.isTrue()) {
-
-			double minX = Double.MAX_VALUE;
-			double minY = Double.MAX_VALUE;
-			double maxX = -Double.MAX_VALUE;
-			double maxY = -Double.MAX_VALUE;
-			double presetsHeight = 0;
-
-			for (Preset p : collectMatchingPresets()) {
-				minX = Math.min(minX, p.getPixRect().getLeft());
-				maxX = Math.max(maxX, p.getPixRect().getRight());
-				minY = Math.min(minY, p.getPixRect().getTop());
-				maxY = Math.max(maxY, p.getPixRect().getBottom());
-				presetsHeight = p.getNonPosition().getHeight();
-			}
-
-			if (minX != Double.MAX_VALUE && minY != Double.MAX_VALUE && maxX != Double.MAX_VALUE
-					&& maxY != Double.MAX_VALUE) {
-				NonPosition leftTop = toNonPosition(new Position(minX, minY));
-				NonPosition rightBottom = toNonPosition(new Position(maxX, maxY));
-				NonDimension dim = new NonDimension(rightBottom.getX() - leftTop.getX(),
-						rightBottom.getY() - leftTop.getY());
-				NonRect r = new NonRect(leftTop, dim);
-
-				double minHeight = 7 * presetsHeight;
-
-				if (dim.getHeight() < minHeight)
-					r.enlargeToHeight(minHeight);
-				NonMaps.theMaps.getNonLinearWorld().zoomTo(r, true);
-			}
-		}
 	}
 
 	public boolean isEmpty() {
@@ -1088,5 +996,45 @@ public class PresetManager extends MapsLayout {
 
 	public void setMidiBank(Bank bank) {
 		midiSelectedBank = bank;
+	}
+
+	public void startPresetDrag(Viewport viewport, Position pos, String[] presets) {
+		double yMargin = 0;
+		double xMargin = 0;
+
+		DragProxy firstProxy = null;
+
+		startMultiSelectionEmpty();
+
+		int numDragProxies = 0;
+
+		for (String uuid : presets) {
+			Preset p = findPreset(uuid);
+			if (p != null) {
+				multiSelection.add(p);
+
+				if (numDragProxies < 10) {
+					DragProxy a = viewport.getOverlay().addDragProxy(p);
+					double xDiff = pos.getX() - p.getPixRect().getLeft();
+					double yDiff = pos.getY() - p.getPixRect().getTop();
+					a.getRelativePosition().moveBy(xDiff + xMargin, yDiff + yMargin);
+
+					yMargin += p.getPixRect().getHeight();
+
+					if (firstProxy == null)
+						firstProxy = a;
+
+					numDragProxies++;
+				}
+			}
+		}
+
+		requestLayout();
+		PointerState.get().startDragFromOutside(pos, firstProxy);
+	}
+
+	public void cancelPresetDrag(Viewport viewport) {
+		closeMultiSelection();
+		viewport.getOverlay().cancelDragging();
 	}
 };

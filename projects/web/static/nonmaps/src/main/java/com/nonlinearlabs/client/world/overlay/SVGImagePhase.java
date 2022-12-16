@@ -82,7 +82,7 @@ public class SVGImagePhase extends OverlayControl {
 	}
 
 	static public double calcSVGDimensionToPixels(double svgDim) {
-		double mmPerPix = NonMaps.devicePixelRatio / Millimeter.toPixels(1);
+		double mmPerPix = NonMaps.getDevicePixelRatio() / Millimeter.toPixels(1);
 		return mmPerPix * svgDim;
 	}
 

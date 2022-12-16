@@ -6,6 +6,9 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
+import com.google.gwt.event.dom.client.DragLeaveEvent;
+import com.google.gwt.event.dom.client.DragOverEvent;
+import com.google.gwt.event.dom.client.DropEvent;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -28,6 +31,7 @@ public abstract class Mouseing {
 	ArrayList<Touch> touches = new ArrayList<Touch>();
 
 	public Mouseing() {
+		Window.addResizeHandler(new NonMapsResizeHandler(this));
 	}
 
 	public abstract void invalidate(int flags);
@@ -42,8 +46,15 @@ public abstract class Mouseing {
 																	return e.pointerType;
 																	}-*/;
 
+	private static native String getDragDropData(JavaScriptObject event) /*-{
+		var data = JSON.parse(event.dataTransfer.types[0]);
+		if(data.format == "preset/csv")
+			return data.data;
+
+		return "";
+	}-*/;
+
 	public void initHandlers(Canvas canvas) {
-		Window.addResizeHandler(new NonMapsResizeHandler(this));
 		canvas.addMouseWheelHandler(new NonMapsWheelHandler());
 		canvas.addDoubleClickHandler(new NonMapsMousDoubleClickHandler());
 
@@ -124,7 +135,35 @@ public abstract class Mouseing {
 		canvas.addKeyDownHandler(keypress);
 		canvas.addKeyUpHandler(keyUpHandler);
 		canvas.setFocus(true);
+
+		canvas.addDragOverHandler((DragOverEvent event) -> {
+			event.preventDefault();
+			String csv = getDragDropData(event.getNativeEvent());
+			Position p = new Position(event.getNativeEvent());
+
+			if (csv == currentDropPresetCSV) {
+				PointerState.get().onMove(p, false);
+			} else {
+				currentDropPresetCSV = csv;
+				startPresetDrag(p, csv.split(","));
+			}
+		});
+
+		canvas.addDropHandler((DropEvent event) -> {
+			event.preventDefault();
+			PointerState.get().onLeftUp(new Position(event.getNativeEvent()));
+			currentDropPresetCSV = "";
+		});
+
+		canvas.addDragLeaveHandler((DragLeaveEvent event) -> {
+			currentDropPresetCSV = "";
+			cancelPresetDrag();
+			PointerState.get().removeReceiver();
+			PointerState.get().onLeftUp(new Position(event.getNativeEvent()));
+		});
 	}
+
+	private String currentDropPresetCSV = "";
 
 	private void onTouchEnd(GwtPointerEvent event) {
 		Position p = new Position(event.getNativeEvent());
@@ -144,5 +183,9 @@ public abstract class Mouseing {
 	}
 
 	protected abstract boolean handleKeyPress(KeyDownEvent event);
+
+	protected abstract void startPresetDrag(Position p, String[] presets);
+
+	protected abstract void cancelPresetDrag();
 
 }

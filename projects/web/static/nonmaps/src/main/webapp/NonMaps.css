@@ -1,10 +1,10 @@
-
 @font-face {
   font-family: 'SSP-LW25';
   src: url('images/SSP-LW25-Regular.otf');
 }
 
-html,body {
+html,
+body {
   background-color: #000000;
   font-family: "SSP-LW25";
   font-size: 16px;
@@ -24,7 +24,7 @@ html,body {
 }
 
 html * {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 h1 {
@@ -55,8 +55,11 @@ h1 {
   display: flex;
 }
 
-body,table td,select,button {
-/*
+body,
+table td,
+select,
+button {
+  /*
   font-family: SSP-LW25, Arial Unicode MS, Arial, sans-serif;
   font-size: 14px;
 */
@@ -68,11 +71,11 @@ pre {
 }
 
 body {
-/*   color: black; */
+  /*   color: black; */
   margin: 0px;
   border: 0px;
   padding: 0px;
-/*   background: #fff; */
+  /*   background: #fff; */
   direction: ltr;
 }
 
@@ -134,10 +137,14 @@ select {
   min-width: 6em;
 }
 
+.gwt-Button:hover {
+  background: #becbff;
+}
+
 .gwt-Button:active {
   border: 0.25mm solid #080c1a;
   color: #080c1a;
-  background:  #3f4a77;
+  background: #3f4a77;
 }
 
 .gwt-Button[disabled] {
@@ -223,7 +230,7 @@ select {
 }
 
 .gwt-DialogBox .dialogContent {
-	 background-color: #1d233b;
+  background-color: #1d233b;
 }
 
 .dialog-box-container {
@@ -240,6 +247,26 @@ select {
   border-radius: 2mm;
   padding: 4px;
   box-shadow: black 0 0 0 0.5mm;
+}
+
+.gwt-DialogBox.overlay-dialog {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+.gwt-DialogBox.overlay-dialog .dialogTop,
+.gwt-DialogBox.overlay-dialog .dialogBottom {
+  display: none;
+}
+
+.gwt-DialogBox.overlay-dialog .dialogMiddleCenterInner {
+  background-color: transparent;
+}
+
+.overlay-dialog-wrapper {
+  display: block;
 }
 
 .gwt-DialogBox .dialogTopLeftInner {
@@ -304,7 +331,7 @@ select {
 
 .gwt-Label {
   padding: 7px 5px;
-/*   color: #bbb; */
+  /*   color: #bbb; */
 }
 
 .gwt-MenuBar {
@@ -1313,7 +1340,7 @@ input[type="radio"]+label {
   display: inline-block;
   vertical-align: middle;
   cursor: pointer;
-/*   color: #bbb; */
+  /*   color: #bbb; */
 }
 
 .serverResponseLabelError {
@@ -1325,14 +1352,23 @@ input[type="radio"]+label {
 }
 
 #canvasholder,
-canvas {
+#canvasholder canvas {
   position: fixed;
+  z-index: 1;
   width: 100%;
   left: 0%;
   height: 100%;
   top: 0%;
   margin: 0px;
   padding: 0px;
+}
+
+#html-search {
+  position: relative;
+  left: 3px;
+  top: 5px;
+  z-index: 1000;
+  max-width: 20em;
 }
 
 #cm {
@@ -1356,33 +1392,43 @@ canvas {
 
 
 .dialog-header>button {
-	flex-grow: 0;
+  flex-grow: 0;
 
-	border: none;
-	width: 26px;
-	height: 26px;
-	vertical-align: middle;
-	background: url(images/close.png);
-	background-position: right 26px;
-	cursor: pointer;
-	position: absolute;
-	top: 4px;
-	right: 4px;
+  border: none;
+  width: 26px;
+  height: 26px;
+  vertical-align: middle;
+  background: url(images/close.png);
+  background-position: right 26px;
+  cursor: pointer;
+  position: absolute;
+  top: 4px;
+  right: 4px;
 }
 
 .dialog-header>button:active {
   background-position: right 0px;
+
+  border: none;
+  width: 26px;
+  height: 26px;
+  vertical-align: middle;
+  background: url(images/close.png);
+  cursor: pointer;
+  position: absolute;
+  top: 4px;
+  right: 4px;
 }
 
 .dialog-header>button:hover {
   color: rgba(255, 255, 255, 0.25);
-	background: url(images/close.png);
-	cursor: pointer;
+  background: url(images/close.png);
+  cursor: pointer;
 }
 
 .dialog-header>.headline {
-	padding: 5px 5px;
-	width: 24em;
+  padding: 5px 5px;
+  width: 24em;
 }
 
 .dialog-caption>button:active {
@@ -1462,7 +1508,7 @@ textarea {
 
 .flex-div {
   display: flex;
-  align-items:center;
+  align-items: center;
 }
 
 .centered-text {
@@ -1557,22 +1603,22 @@ select[disabled='disabled'] {
 }
 
 .dialogContent textarea.editable {
-    min-height: 4em;
-    max-height: 10em;
+  min-height: 4em;
+  max-height: 10em;
 }
 
 .dialogContent textarea.editable.txt-oneline {
-    min-height: initial;
-    max-height: initial;
+  min-height: initial;
+  max-height: initial;
 }
 
 .modal-button-button {
-	display: inline-block;
+  display: inline-block;
   width: 5em;
 }
 
 .modal-button-div {
-	text-align: center;
+  text-align: center;
 }
 
 .model-button-center-div {
@@ -1585,7 +1631,7 @@ select[disabled='disabled'] {
 input.param-name-edit {
   align-self: right;
   margin: 3px;
-  flex-grow:1;
+  flex-grow: 1;
 }
 
 .flex-4-col .td {
@@ -1613,7 +1659,7 @@ input.param-name-edit {
 .gwt-DialogBox .dialogContent {
   max-height: 80vh;
   overflow-y: auto;
-/*   border: solid 1px rgb(99, 99, 99); */
+  /*   border: solid 1px rgb(99, 99, 99); */
   border-radius: 6px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
@@ -1658,18 +1704,18 @@ input.param-name-edit {
 }
 
 .colortaggingfield-none {
-/*
+  /*
   background-color: #414141;
   line-height: 15px;
   color: #838383;
 */
   background: url(images/close.png);
-    background-size: cover;
+  background-size: cover;
 
 }
 
 .colortag-current {
-/*
+  /*
   vertical-align: middle;
   outline-color: #bbb;
   outline-offset: 3px;
@@ -1711,10 +1757,10 @@ input.param-name-edit {
 }
 
 .prev-next-button-div {
-	margin: auto;
-    margin-bottom: 5px;
-    display: inline-block;
-    width:100%;
+  margin: auto;
+  margin-bottom: 5px;
+  display: inline-block;
+  width: 100%;
 }
 
 .gwt-Button.next-button {
@@ -1777,7 +1823,7 @@ button {
   border-bottom: 1px solid rgb(99, 99, 99);
 }
 
-.preset-info-dialog .dialogContent tr:nth-child(4) td:nth-child(2){
+.preset-info-dialog .dialogContent tr:nth-child(4) td:nth-child(2) {
   display: table-cell;
   padding-left: 0.5em;
   padding-right: 0.5em;
@@ -1794,7 +1840,7 @@ button {
 }
 
 .prev-next-wrapper {
-	text-align: center;
+  text-align: center;
 }
 
 .preset-info-dialog .tab.selected {
@@ -1844,27 +1890,27 @@ button {
 }
 
 .rename-dialog {
-	width: auto;
+  width: auto;
 }
 
 .setup-dialog {
-	width: auto;
+  width: auto;
 }
 
 .selectable-text {
-	user-select: text;
-	-moz-user-select: text;
-	-khtml-user-select: text;
-	-webkit-user-select: text;
-	-o-user-select: text;
+  user-select: text;
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -o-user-select: text;
 }
 
 .search-dialog {
-	width: auto;
+  width: auto;
 }
 
 .rename-dialog .dialogContent {
-	padding: 0.25em;
+  padding: 0.25em;
 }
 
 .dialogcontainer button.randomize-button {
@@ -1890,9 +1936,13 @@ button {
 }
 
 #soled {
-  position: relative; 
+  position: relative;
   visibility: hidden;
   width: 128px;
   height: 32px;
   margin: 0.5em;
+}
+
+.nonmaps-context-menu-overlay {
+  position: absolute;
 }

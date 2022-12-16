@@ -29,7 +29,8 @@ add_custom_command(
   COMMENT "Unpack gwt"
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gwt-${GWT_VERSION}/gwt-dev.jar 
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/gwt-${GWT_VERSION}.zip 
-  COMMAND unzip -uq ${CMAKE_CURRENT_BINARY_DIR}/gwt-${GWT_VERSION}.zip)
+  COMMAND unzip -uq ${CMAKE_CURRENT_BINARY_DIR}/gwt-${GWT_VERSION}.zip
+  COMMAND touch ${CMAKE_CURRENT_BINARY_DIR}/gwt-${GWT_VERSION}/gwt-dev.jar)
 
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps/compilation-mappings.txt

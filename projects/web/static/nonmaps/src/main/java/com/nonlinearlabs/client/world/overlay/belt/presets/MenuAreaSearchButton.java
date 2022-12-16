@@ -4,7 +4,6 @@ import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
-import com.nonlinearlabs.client.world.overlay.html.presetSearch.PresetSearchDialog;
 
 public class MenuAreaSearchButton extends SVGImage {
 
@@ -19,7 +18,7 @@ public class MenuAreaSearchButton extends SVGImage {
 	}
 
 	private void toggleSearch() {
-		PresetSearchDialog.toggle();
+		NonMaps.togglePresetSearch();
 	}
 
 	@Override
@@ -27,6 +26,6 @@ public class MenuAreaSearchButton extends SVGImage {
 		if (NonMaps.get().getNonLinearWorld().getPresetManager().isEmpty())
 			return drawStates.disabled.ordinal();
 
-		return PresetSearchDialog.isShown() ? drawStates.active.ordinal() : drawStates.normal.ordinal();
+		return NonMaps.isPresetSearchVisible() ? drawStates.active.ordinal() : drawStates.normal.ordinal();
 	}
 }

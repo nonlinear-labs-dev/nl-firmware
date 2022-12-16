@@ -32,7 +32,6 @@ public class Overlay extends OverlayLayout {
 
 	private class PartMuteDisplay extends SVGImage {
 
-
 		private boolean isMuted = false;
 		private boolean inLayer = false;
 
@@ -55,7 +54,8 @@ public class Overlay extends OverlayLayout {
 				return true;
 			});
 
-			setVisible(mute.value.value.getValue() > 0 && EditBufferModel.get().soundType.getValue() == SoundType.Layer);
+			setVisible(
+					mute.value.value.getValue() > 0 && EditBufferModel.get().soundType.getValue() == SoundType.Layer);
 		}
 
 		@Override
@@ -92,7 +92,31 @@ public class Overlay extends OverlayLayout {
 		addChild(globalMenu = new GlobalMenu(this));
 
 		compareDialogs = new ArrayList<CompareDialog>();
+
+		closeContextMenusOnMouseDown();
 	}
+
+	private native void closeContextMenusOnMouseDown() /*-{ 
+		var self = this;
+
+		$doc.addEventListener("pointerdown", function(event) {
+			var foundMatch = false;
+
+			var items = $doc.getElementsByClassName("overlay-control-dialog-wrapper");
+			
+			for(i = 0; i < items.length; i++)
+			{			
+				var e = items[i];
+				var rect = e.getBoundingClientRect();
+				var matchX = rect.left < event.pageX && rect.right > event.pageX;
+				var matchY = rect.top < event.pageY && rect.bottom > event.pageY;
+				foundMatch |= matchX && matchY;
+			}
+
+			if(items.length > 0 && !foundMatch)
+				self.@com.nonlinearlabs.client.world.overlay.Overlay::removeExistingContextMenus()();
+		}, true);
+	}-*/;
 
 	public void refreshGlobalMenu() {
 		globalMenu.refresh();
@@ -143,11 +167,11 @@ public class Overlay extends OverlayLayout {
 
 	private void drawDualSoundIndication(Context2d ctx) {
 		Rect r = getPixRect().copy();
-		if(belt.isHidden())
+		if (belt.isHidden())
 			r.setBottom(belt.getPixRect().getTop() - 1);
 		else
 			r.setBottom(belt.getPixRect().getTop());
-		
+
 		Rect gbr = buttons.getPixRect();
 		Rect soundTypeDisplayRect = layerDisplay.getPixRect().copy();
 		soundTypeDisplayRect.setTop(soundTypeDisplayRect.getTop() + 1);
@@ -160,13 +184,17 @@ public class Overlay extends OverlayLayout {
 		ctx.beginPath();
 		ctx.moveTo(r.getLeft() + corner, r.getTop());
 		ctx.lineTo(soundTypeDisplayRect.getLeft() - corner, r.getTop());
-		ctx.arcTo(soundTypeDisplayRect.getLeft(), r.getTop(), soundTypeDisplayRect.getLeft(), r.getTop() + corner, corner);
+		ctx.arcTo(soundTypeDisplayRect.getLeft(), r.getTop(), soundTypeDisplayRect.getLeft(), r.getTop() + corner,
+				corner);
 		ctx.lineTo(soundTypeDisplayRect.getLeft(), soundTypeDisplayRect.getBottom() - corner);
-		ctx.arcTo(soundTypeDisplayRect.getLeft(), soundTypeDisplayRect.getBottom(), soundTypeDisplayRect.getLeft() + corner, soundTypeDisplayRect.getBottom(), corner);
+		ctx.arcTo(soundTypeDisplayRect.getLeft(), soundTypeDisplayRect.getBottom(),
+				soundTypeDisplayRect.getLeft() + corner, soundTypeDisplayRect.getBottom(), corner);
 		ctx.lineTo(soundTypeDisplayRect.getRight() - corner, soundTypeDisplayRect.getBottom());
-		ctx.arcTo(soundTypeDisplayRect.getRight(), soundTypeDisplayRect.getBottom(), soundTypeDisplayRect.getRight(), soundTypeDisplayRect.getBottom() - corner, corner);
+		ctx.arcTo(soundTypeDisplayRect.getRight(), soundTypeDisplayRect.getBottom(), soundTypeDisplayRect.getRight(),
+				soundTypeDisplayRect.getBottom() - corner, corner);
 		ctx.lineTo(soundTypeDisplayRect.getRight(), r.getTop() + corner);
-		ctx.arcTo(soundTypeDisplayRect.getRight(), r.getTop(), soundTypeDisplayRect.getRight() + corner, r.getTop(), corner);
+		ctx.arcTo(soundTypeDisplayRect.getRight(), r.getTop(), soundTypeDisplayRect.getRight() + corner, r.getTop(),
+				corner);
 
 		ctx.lineTo(r.getRight() - corner, r.getTop());
 		ctx.arcTo(r.getRight(), r.getTop(), r.getRight(), r.getTop() + corner, corner);
@@ -194,7 +222,6 @@ public class Overlay extends OverlayLayout {
 
 	private void drawBackground(Context2d ctx) {
 
-
 		Rect r = belt.getPixRect();
 
 		double corner = Millimeter.toPixels(1);
@@ -202,7 +229,7 @@ public class Overlay extends OverlayLayout {
 		double activeButtonRight = buttons.getRightOfActiveButton();
 		double activeButtonTop = buttons.getPixRect().getTop();
 
-		if(!buttons.isAnyActive()) {
+		if (!buttons.isAnyActive()) {
 			activeButtonTop = buttons.getPixRect().getBottom();
 		}
 
@@ -261,12 +288,14 @@ public class Overlay extends OverlayLayout {
 		layerDisplay.doLayout((w - layerDisplayWidth) / 2, 0, layerDisplayWidth, layerDisplayHeight);
 
 		Rect layerDisplayPos = layerDisplay.getRelativePosition();
-		
+
 		double muteHeight = layerDisplayPos.getHeight() / 3;
 		double muteYMargin = muteHeight / 2;
 
-		partMuteDisplayI.doLayout(layerDisplayPos.getLeft() - Millimeter.toPixels(0.2), layerDisplayPos.getTop() + muteYMargin, layerDisplayPos.getWidth(), muteHeight);
-		partMuteDisplayII.doLayout(layerDisplayPos.getLeft() - Millimeter.toPixels(0.2), layerDisplayPos.getTop() + muteHeight + (muteYMargin), layerDisplayPos.getWidth(), muteHeight);
+		partMuteDisplayI.doLayout(layerDisplayPos.getLeft() - Millimeter.toPixels(0.2),
+				layerDisplayPos.getTop() + muteYMargin, layerDisplayPos.getWidth(), muteHeight);
+		partMuteDisplayII.doLayout(layerDisplayPos.getLeft() - Millimeter.toPixels(0.2),
+				layerDisplayPos.getTop() + muteHeight + (muteYMargin), layerDisplayPos.getWidth(), muteHeight);
 
 		double beltHeight = Millimeter.toPixels(40);
 		belt.doLayout(0, h - beltHeight, w, beltHeight);
@@ -409,6 +438,7 @@ public class Overlay extends OverlayLayout {
 		addChild(ctx);
 		ctx.getRelativePosition().moveTo(pt.getX() - getPixRect().getLeft(), pt.getY() - getPixRect().getTop());
 		requestLayout();
+		NonMaps.get().releaseMouse();
 		return ctx;
 	}
 
@@ -438,9 +468,12 @@ public class Overlay extends OverlayLayout {
 		for (OverlayControl c : getChildren()) {
 			if (c instanceof ContextMenu) {
 				ContextMenu m = (ContextMenu) c;
-				m.fadeOut();
-				any = true;
+				m.hide();
 			}
+		}
+
+		if (any) {
+			NonMaps.get().captureFocus();
 		}
 		return any;
 	}
@@ -458,25 +491,12 @@ public class Overlay extends OverlayLayout {
 	@Override
 	public Control handleGesture(Gesture g) {
 		if (g instanceof Down) {
-			if (!hitsContextMenu(((Down) g).getPosition())) {
-				removeExistingContextMenus();
-			}
 			if (!hitsGlobalMenu(((Down) g).getPosition())) {
 				collapseGlobalMenu();
 			}
 		}
 
 		return super.handleGesture(g);
-	}
-
-	private boolean hitsContextMenu(Position position) {
-		for (OverlayControl c : getChildren()) {
-			if (c instanceof ContextMenu) {
-				if (c.getPixRect().contains(position))
-					return true;
-			}
-		}
-		return false;
 	}
 
 	private boolean hitsGlobalMenu(Position position) {
@@ -561,5 +581,9 @@ public class Overlay extends OverlayLayout {
 	public void removeModal(ModalDialog modal) {
 		if (modal == modalDialog)
 			modalDialog = null;
+	}
+
+	public UndoRedoButtons getUndoRedoButtons() {
+		return undoRedo;
 	}
 }

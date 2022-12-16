@@ -1,7 +1,3 @@
-import './build-time-info.js';
-import './routes.js';
-import { PlaygroundProxy } from './playground-proxy';
-import { SyncedItemDatabase } from './synced-item-database';
+import './build-time-info';
+import './routes';
 
-sync = new SyncedItemDatabase();
-proxy = new PlaygroundProxy();

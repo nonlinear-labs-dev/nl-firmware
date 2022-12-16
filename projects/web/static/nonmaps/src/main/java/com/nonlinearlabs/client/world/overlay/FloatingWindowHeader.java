@@ -168,4 +168,9 @@ public class FloatingWindowHeader extends OverlayLayout {
 		return this;
 	}
 
+	@Override
+	public Control onContextMenu(Position pos) {
+		return this;
+	}
+
 }
