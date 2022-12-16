@@ -35,13 +35,12 @@ class SingleSoundFBFXIndicator : public ControlWithChildren
   explicit SingleSoundFBFXIndicator(const Point& p);
 
  private:
-  void onFromFXChanged(const Parameter* p);
+  void bruteForce();
+  bool isControl1Visible() const;
 
-  void onVoiceGroupChanged(VoiceGroup vg);
-
-  Control* arrowHead;
-  Control* arrowFromI;
-  Control* arrowFromII;
+  Control* label1;
   Control* FXI;
   Control* FXII;
+  Control* serial;
+  Control* fbToPoly;
 };
