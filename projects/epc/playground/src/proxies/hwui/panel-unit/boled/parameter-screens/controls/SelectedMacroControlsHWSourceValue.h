@@ -31,3 +31,25 @@ class SelectedMacroControlsHWSourceValue : public Label
   sigc::connection m_mcChanged;
   sigc::connection m_hwChanged;
 };
+
+class SelectedModRouterMacroControlValue : public Label
+{
+ private:
+  typedef Label super;
+
+ public:
+  explicit SelectedModRouterMacroControlValue(const Rect &rect);
+  ~SelectedModRouterMacroControlValue() override;
+
+  SelectedModRouterMacroControlValue(const SelectedModRouterMacroControlValue &other) = delete;
+  SelectedModRouterMacroControlValue &operator=(const SelectedModRouterMacroControlValue &) = delete;
+
+ private:
+  void onModifiersChanged();
+  void onParameterSelected(Parameter *newOne);
+  void updateText(const Parameter *param);
+  void setSuffixFontColor(FrameBuffer &fb) const override;
+
+  sigc::connection m_mcChanged;
+  ParameterId m_mcId;
+};

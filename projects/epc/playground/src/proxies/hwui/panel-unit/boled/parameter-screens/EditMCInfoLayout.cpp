@@ -1,6 +1,7 @@
 #include "EditMCInfoLayout.h"
 #include "Application.h"
 #include "use-cases/MacroControlParameterUseCases.h"
+#include "parameters/ModulationRoutingParameter.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>
@@ -33,6 +34,11 @@ Glib::ustring EditMCInfoLayout::getInitialText() const
 MacroControlParameter *EditMCInfoLayout::getMacroControl() const
 {
   auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
-  return dynamic_cast<MacroControlParameter *>(
-      Application::get().getPresetManager()->getEditBuffer()->getSelected(currentVG));
+  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(currentVG);
+  if(auto modRouter = dynamic_cast<ModulationRoutingParameter*>(selected))
+  {
+    return modRouter->getTargetParameter();
+  }
+
+  return dynamic_cast<MacroControlParameter *>(selected);
 }

@@ -34,4 +34,11 @@ class ModulationRouterParameterEditLayout2 : public virtual ParameterEditLayout2
   ModulationRouterParameterEditLayout2();
 
   ButtonMenu *createMenu(const Rect &rect) override;
+
+  ModuleCaption *createModuleCaption() const;
+
+  Carousel *createCarousel(const Rect &rect);
+
+ protected:
+  Control *createParameterNameLabel() const override;
 };

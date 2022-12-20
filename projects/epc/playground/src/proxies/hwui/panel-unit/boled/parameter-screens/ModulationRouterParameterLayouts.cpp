@@ -22,6 +22,7 @@
 #include "proxies/hwui/controls/DottedLine.h"
 #include "groups/MacroControlMappingGroup.h"
 #include "MacroControlParameterLayouts.h"
+#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MacroControlEditButtonMenu.h"
 
 ModulationRouterParameterSelectLayout2::ModulationRouterParameterSelectLayout2()
     : super()
@@ -96,7 +97,6 @@ void ModulationRouterParameterSelectLayout2::copyFrom(Layout *src)
 
 void ModulationRouterParameterSelectLayout2::setMode(ModRouterLayoutMode mode)
 {
-  nltools::Log::error("installing mode in Mod-Router Layout:", toString(mode));
   m_mode = mode;
   noHighlight();
 
@@ -254,15 +254,31 @@ ModulationRouterParameterEditLayout2::ModulationRouterParameterEditLayout2()
   addControl(new Button("HW Sel", Buttons::BUTTON_B));
   addControl(new Button("HW Amt", Buttons::BUTTON_C));
 
-  addControl(new SelectedParameterBarSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
-  addControl(createParameterValueControl());
+  addControl(new MacroControlSliderForCurrentModulationRouter(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
+  addControl(new SelectedModRouterMacroControlValue(Rect(90, 33, 76, 12)));
 
   highlight<ParameterNameLabel>();
   highlight<SelectedParameterBarSlider>();
-  highlight<SelectedParameterValue>();
+  highlight<ParameterNameLabelForMCOfModulationRouter>();
+  highlight<SelectedModRouterMacroControlValue>();
 }
 
 ButtonMenu *ModulationRouterParameterEditLayout2::createMenu(const Rect &rect)
 {
-  return new ParameterEditButtonMenu(rect);
+  return new ModulationRouterMacroControlEditButtonMenu(rect);
+}
+
+ModuleCaption *ModulationRouterParameterEditLayout2::createModuleCaption() const
+{
+  return new FixedTextModuleCaption(Rect(0, 0, 64, 13), "Macro Control");
+}
+
+Carousel *ModulationRouterParameterEditLayout2::createCarousel(const Rect &rect)
+{
+  return new HWSourceAmountCarousel(Rect(195, 0, 58, 64));
+}
+
+Control *ModulationRouterParameterEditLayout2::createParameterNameLabel() const
+{
+  return new ParameterNameLabelForMCOfModulationRouter(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11));
 }
