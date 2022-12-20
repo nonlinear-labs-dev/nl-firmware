@@ -87,6 +87,32 @@
             "Image[ImagePath]": ""
           },
           "Events": "LayerFXState => Image[ImagePath], LayerFXOffset => Image[ImageOffset]"
+        },
+        "newFX": {
+          "Class": "LayerFBImagePolyToFX",
+          "Position": "200, 21",
+          "Init": {
+            "Image[ImagePath]": "Layer_To_FX_M.png"
+          },
+          "Events": "LayerToFXPath => Image[ImagePath]"
+        },
+        "constant-FX-I":
+        {
+          "Class": "FXImage",
+          "Position": "225, 21",
+          "Init": {
+            "Image[ImagePath]": "FX_I_select.png"
+          },
+          "Events": "FX_I_Imagestate => Image[ImagePath]"
+        },
+        "constant-FX-II":
+        {
+          "Class": "FXImage",
+          "Position": "225, 37",
+          "Init": {
+            "Image[ImagePath]": "FX_II_non_select.png"
+          },
+          "Events": "FX_II_Imagestate => Image[ImagePath]"
         }
       },
       "EventSinks": {

@@ -212,6 +212,24 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer *eb) override;
   };
 
+  class FX_I_ImageState : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class FX_II_ImageState : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer *eb) override;
+  };
+
+  class LayerToFXPath : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer* eb) override;
+  };
+
   class LayerFXOffset : public EditBufferEvent<std::pair<int, int>>
   {
    public:

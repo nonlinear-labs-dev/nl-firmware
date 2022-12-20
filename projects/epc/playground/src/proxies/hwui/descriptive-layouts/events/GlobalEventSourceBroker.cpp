@@ -135,6 +135,10 @@ namespace DescriptiveLayouts
     m_map[EventSources::LayerFXState] = std::make_unique<LayerFXState>();
     m_map[EventSources::LayerFXOffset] = std::make_unique<LayerFXOffset>();
 
+    m_map[EventSources::FX_I_Imagestate] = std::make_unique<FX_I_ImageState>();
+    m_map[EventSources::FX_II_Imagestate] = std::make_unique<FX_II_ImageState>();
+    m_map[EventSources::LayerToFXPath] = std::make_unique<LayerToFXPath>();
+
     m_map[EventSources::SplitPointDefaultBehaviourWithoutSync]
         = std::make_unique<SplitPointBehaviourIsDefaultWithoutSync>();
   }

@@ -113,7 +113,7 @@ bool DescriptiveLayouts::SoundMasterButtonText::isChanged(const EditBuffer *eb)
   auto scale = eb->getParameterGroupByID({ "Scale", VoiceGroup::Global });
 
   bool masterChanged = false;
-  for(auto masterParams :masterGroup->getParameters())
+  for(auto masterParams : masterGroup->getParameters())
     if(masterParams->getID().getNumber() != C15::PID::Master_FX_Mix)
       masterChanged |= masterParams->isChangedFromLoaded();
 
@@ -412,10 +412,123 @@ void DescriptiveLayouts::VGIIIsMuted::onChange(const EditBuffer *eb)
 void DescriptiveLayouts::SoundFxMixMasterButtonText::onChange(const EditBuffer *eb)
 {
   auto changed = isChanged(eb);
-  setValue({changed ? "FX Mix..*" : "FX Mix..", 0});
+  setValue({ changed ? "FX Mix..*" : "FX Mix..", 0 });
 }
 
 bool DescriptiveLayouts::SoundFxMixMasterButtonText::isChanged(const EditBuffer *eb)
 {
-  return eb->findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global})->isChangedFromLoaded();
+  return eb->findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global })->isChangedFromLoaded();
+}
+
+void DescriptiveLayouts::FX_I_ImageState::onChange(const EditBuffer *eb)
+{
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
+  setValue(currentVG == VoiceGroup::I ? "FX_I_select.png" : "FX_I_non_select.png");
+}
+
+void DescriptiveLayouts::FX_II_ImageState::onChange(const EditBuffer *eb)
+{
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
+  setValue(currentVG == VoiceGroup::II ? "FX_II_select.png" : "FX_II_non_select.png");
+}
+
+void DescriptiveLayouts::LayerToFXPath::onChange(const EditBuffer *eb)
+{
+  const auto toFX_I = eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+  const auto toFX_II = eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
+  const auto outmixer_lvl_I = eb->findParameterByID({ C15::PID::Out_Mix_Lvl, VoiceGroup::I });
+  const auto outmixer_lvl_II = eb->findParameterByID({ C15::PID::Out_Mix_Lvl, VoiceGroup::II });
+
+  nltools_assertAlways(outmixer_lvl_I->isBiPolar() == false);
+  nltools_assertAlways(outmixer_lvl_II->isBiPolar() == false);
+
+  const auto I_To_FX_II = toFX_I->getControlPositionValue();
+  const auto II_To_FX_I = toFX_II->getControlPositionValue();
+  const auto I_OutMixer_Level = outmixer_lvl_I->getControlPositionValue();
+  const auto II_OutMixer_Level = outmixer_lvl_II->getControlPositionValue();
+
+  const auto cond_I = I_To_FX_II == 0;
+  const auto cond_II = II_To_FX_I == 0;
+  const auto cond_III = I_To_FX_II == 1;
+  const auto cond_IIII = II_To_FX_I == 1;
+
+  const auto out_I_cond_I = I_OutMixer_Level > 0;
+  const auto out_II_cond_I = II_OutMixer_Level > 0;
+
+  const auto out_I_cond_II = I_OutMixer_Level == 0;
+  const auto out_II_cond_II = II_OutMixer_Level == 0;
+
+  const auto cond_2_I = I_To_FX_II > 0;
+  const auto cond_2_II = I_To_FX_II < 1;
+
+  const auto cond_3_I = II_To_FX_I > 0;
+  const auto cond_3_II = II_To_FX_I < 1;
+
+  {
+    // cond_I = I_To_FX_II == 0 %;
+    // cond_II = II_To_FX_I == 0 %
+    // cond_III = I_To_FX_II == 100 %;
+    // cond_IIII = II_To_FX_I == 100 %;
+    // out_I_cond_I = I_OutMixer_Level > -inf
+    // out_II_cond_I = II_OutMixer_Level > -inf
+    // out_II_cond_II = II_OutMixer_Level == -inf
+    // out_I_cond_II = I_OutMixer_Level == -inf
+
+    // cond_2_I = I_To_FX_II > 0 %
+    // cond_2_II = I_To_FX_II < 100 %
+
+    // cond_3_I = II_To_FX_I < 100 %;
+    // cond_3_II = II_To_FX_I > 0 %;
+
+    //    A: (cond_I) AND (out_I_cond_I) AND (out_II_cond_II)
+    //    B: (cond_II) AND (out_I_cond_II) AND (out_II_cond_I)
+    //    C: (cond_III) AND (out_I_cond_I) AND (out_II_cond_II)
+    //    D: (cond_IIII) AND (out_I_cond_II) AND (out_II_cond_I)
+    //    E: (cond_2_I) AND (cond_2_II) AND (out_I_cond_I) AND (out_II_cond_II)
+    //    F: (cond_3_II) AND (cond_3_I) AND (out_I_cond_II) AND (out_II_cond_I)
+    //    G: (cond_I) AND (cond_II) AND (out_I_cond_I) AND (out_II_cond_I)
+    //    H: (cond_III) AND (cond_IIII) AND (out_I_cond_I) AND (out_II_cond_I)
+    //    I: (cond_2_I) AND (cond_2_II) AND (cond_II) AND (out_I_cond_I) AND (out_II_cond_I)
+    //    J: (cond_I) AND (cond_3_II) AND (cond_3_I) AND (out_I_cond_I) AND (out_II_cond_I)
+    //    K: (cond_2_I) AND (cond_2_II) AND (cond_IIII) AND (out_I_cond_I) AND (out_II_cond_I)
+    //    L: (cond_III) AND (cond_3_II) AND (cond_3_I) AND (out_I_cond_I) AND (out_II_cond_I)
+    //    M: (cond_2_I) AND (cond_2_II) AND (cond_3_II) AND (cond_3_I) AND (out_I_cond_I) AND (out_II_cond_I)
+    //    empty: (out_I_cond_II) AND (out_II_cond_II)
+  }
+
+  auto setResult = [this](const std::string &c)
+  {
+    const std::string base_string = "Layer_To_FX_";
+    const std::string base_suffix = ".png";
+    setValue(base_string + c + base_suffix);
+  };
+
+  if(cond_I && out_I_cond_I && out_II_cond_II)
+    setResult("A");
+  else if(cond_II && out_I_cond_II && out_II_cond_I)
+    setResult("B");
+  else if(cond_III && out_I_cond_I && out_II_cond_II)
+    setResult("C");
+  else if(cond_IIII && out_I_cond_II && out_II_cond_I)
+    setResult("D");
+  else if(cond_2_I && cond_2_II && out_I_cond_I && out_II_cond_II)
+    setResult("E");
+  else if(cond_3_II && cond_3_I && out_I_cond_II && out_II_cond_I)
+    setResult("F");
+  else if(cond_I && cond_II && out_I_cond_I && out_II_cond_I)
+    setResult("G");
+  else if(cond_III && cond_IIII && out_I_cond_I && out_II_cond_I)
+    setResult("H");
+  else if(cond_2_I && cond_2_II && cond_II && out_I_cond_I && out_II_cond_I)
+    setResult("I");
+  else if(cond_I && cond_3_II && cond_3_I && out_I_cond_I && out_II_cond_I)
+    setResult("J");
+  else if(cond_2_I && cond_2_II && cond_IIII && out_I_cond_I && out_II_cond_I)
+    setResult("K");
+  else if(cond_III && cond_3_II && cond_3_I && out_I_cond_I && out_II_cond_I)
+    setResult("L");
+  else if(cond_2_I && cond_2_II && cond_3_II && cond_3_I && out_I_cond_I && out_II_cond_I)
+    setResult("M");
+  else if(out_I_cond_II && out_II_cond_II)
+    setResult("empty");
 }

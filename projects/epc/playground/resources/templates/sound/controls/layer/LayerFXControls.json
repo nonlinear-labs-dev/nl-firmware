@@ -18,6 +18,18 @@
         "Rect": "0,0,26,23"
       }
     },
+    "LayerFBImagePolyToFX": {
+      "Image": {
+        "Class": "Image",
+        "Rect": "0,0,24,23"
+      }
+    },
+    "FXImage": {
+      "Image": {
+        "Class": "Image",
+        "Rect": "0,0,16,7"
+      }
+    },
     "SplitFBImage": {
       "Image": {
         "Class": "Image",
