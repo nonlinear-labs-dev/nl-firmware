@@ -5,11 +5,15 @@
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/PresetNameHeadlineLabel.h>
 #include <proxies/hwui/FrameBuffer.h>
+#include <presets/Preset.h>
+#include <presets/Bank.h>
 
 PresetNameHeadlineLabel::PresetNameHeadlineLabel(const Rect &pos)
     : super(pos)
 {
   setText("Preset");
+
+  Application::get().getPresetManager()->onBankSelection(mem_fun(this, &PresetNameHeadlineLabel::onBankChanged));
 }
 
 std::shared_ptr<Font> PresetNameHeadlineLabel::getFont() const
@@ -36,4 +40,38 @@ bool PresetNameHeadlineLabel::redraw(FrameBuffer &fb)
 
   super::redraw(fb);
   return true;
+}
+
+void PresetNameHeadlineLabel::onBankChanged(const Uuid &newBankUuid)
+{
+  auto bank = Application::get().getPresetManager()->findBank(newBankUuid);
+  m_currentBank = bank;
+  if(m_currentBank)
+    bank->onBankChanged(sigc::mem_fun(this, &PresetNameHeadlineLabel::onPresetSelectionChanged));
+}
+
+void PresetNameHeadlineLabel::onPresetSelectionChanged()
+{
+  if(m_currentBank == nullptr || m_currentBank->getSelectedPreset() == nullptr)
+  {
+    setText("");
+    return;
+  }
+
+  auto selectedPreset = m_currentBank->getSelectedPreset();
+  switch(selectedPreset->getType())
+  {
+    case SoundType::Single:
+      setText("Preset (Single)");
+      break;
+    case SoundType::Layer:
+      setText("Preset (Layer)");
+      break;
+    case SoundType::Split:
+      setText("Preset (Split)");
+      break;
+    default:
+      setText("");
+      break;
+  }
 }
