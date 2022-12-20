@@ -154,6 +154,8 @@ class Parameter : public UpdateDocumentContributor,
   bool isPolyphonic() const;
   void sendParameterMessage() const;
 
+  bool isScale() const;
+
  protected:
   virtual void sendToAudioEngine() const;
   virtual void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,

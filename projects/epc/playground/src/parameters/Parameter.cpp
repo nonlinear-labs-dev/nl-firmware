@@ -771,3 +771,13 @@ bool Parameter::isPolyphonic() const
   return t == C15::Descriptors::ParameterType::Polyphonic_Modulateable
       || t == C15::Descriptors::ParameterType::Polyphonic_Unmodulateable;
 }
+
+bool Parameter::isScale() const
+{
+  using namespace C15::PID;
+  const auto id = getID().getNumber();
+  const static auto ids = std::vector<int>(
+      { Scale_Base_Key, Scale_Offset_0, Scale_Offset_1, Scale_Offset_2, Scale_Offset_3, Scale_Offset_4, Scale_Offset_5,
+        Scale_Offset_6, Scale_Offset_7, Scale_Offset_8, Scale_Offset_9, Scale_Offset_10, Scale_Offset_11 });
+  return std::any_of(ids.begin(), ids.end(), [id](int i) { return i == id; });
+}

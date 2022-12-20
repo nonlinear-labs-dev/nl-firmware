@@ -11,6 +11,18 @@ bool MiniParameterBarSlider::hasBorder() const
   return false;
 }
 
+void MiniParameterBarSlider::setSliderColor(FrameBuffer &fb)
+{
+  if(getParameter()->isScale())
+  {
+    fb.setColor(FrameBufferColors::C255);
+  }
+  else
+  {
+    Slider::setSliderColor(fb);
+  }
+}
+
 bool MiniParameterBarSlider::redraw(FrameBuffer &fb)
 {
   Rect r = getPosition();
