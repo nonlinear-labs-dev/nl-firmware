@@ -34,6 +34,16 @@ SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
   rebuild();
 }
 
+namespace
+{
+  bool isAnyScaleParameterChanged()
+  {
+    auto& eb = *Application::get().getPresetManager()->getEditBuffer();
+    auto group = eb.getParameterGroupByID({ "Scale", VoiceGroup::Global });
+    return group->isAnyParameterChanged();
+  }
+}
+
 void SwitchVoiceGroupButton::rebuild()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
@@ -44,7 +54,10 @@ void SwitchVoiceGroupButton::rebuild()
     setText(StringAndSuffix { "I / II", 0 });
   else if(MasterGroup::isMasterParameter(selected) && selected->getID().getNumber() != C15::PID::Master_FX_Mix)
   {
-    setText(StringAndSuffix { "Scale...", 0 });
+    if(isAnyScaleParameterChanged())
+      setText(StringAndSuffix { "Scale..*", 0 });
+    else
+      setText(StringAndSuffix { "Scale..", 0 });
   }
   else if(ScaleGroup::isScaleParameter(selected))
   {
@@ -79,7 +92,8 @@ bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const Edit
   if(editBuffer->getType() == SoundType::Single)
   {
     const auto type = selected->getType();
-    if(type == C15::Descriptors::ParameterType::Monophonic_Modulateable || type == C15::Descriptors::ParameterType::Monophonic_Unmodulateable)
+    if(type == C15::Descriptors::ParameterType::Monophonic_Modulateable
+       || type == C15::Descriptors::ParameterType::Monophonic_Unmodulateable)
     {
       return true;
     }
