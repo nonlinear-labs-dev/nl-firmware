@@ -25,7 +25,7 @@ class MasterCol1 extends ParameterColumn {
 		super(parent);
 		addChild(new MasterVolume(this, 247));
 		addChild(new SmallModulateableParameter(this, 248));
-        addChild(new SmallModulateableParameter(this, 406));
         addChild(new SmallModulateableParameter(this, 408));
+        addChild(new SmallModulateableParameter(this, 406));
 	}
 }
