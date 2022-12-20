@@ -16,9 +16,14 @@ public class MasterCol0 extends ParameterColumn {
     private class FB_Mix extends InvertedYModulatableParameter {
 
 		private FB_Mix(MapsLayout parent) {
-			super(parent, "FB Mix I-II", 428);
+			super(parent, "FX Mix I-II", 428);
 			addChild(new ModulationSourceLabel(this, getParameterNumber()));
-			addChild(new ABSlider(this, getParameterNumber()));
+			addChild(new ABSlider(this, getParameterNumber()) {
+                @Override
+                public String[] getLabelPair() {
+                    return new String[] { "I", "II" };
+                }
+            });
 			addChild(new ValueDisplayLarge(this, getParameterNumber()));
 		}
 	}
