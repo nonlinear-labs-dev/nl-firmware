@@ -90,10 +90,16 @@ void SingleSoundPolyToFXIndicator::bruteForce()
   {
     fxToOut = addControl(new PNGControl({36, 2, 20, 19}, "Single_Lower_Arrow_Right_To_Left.png"));
   }
+
+  for(const auto& c: getControls<PNGControl>())
+  {
+    c->useImageColors(false);
+    c->setColor(FrameBufferColors::C255);
+  }
 }
 
 SingleSoundFBFXIndicator::SingleSoundFBFXIndicator(const Point& p)
-    : ControlWithChildren({ p.getX(), p.getY(), 44, 28 })
+    : ControlWithChildren({ p.getX(), p.getY(), 46, 28 })
 {
   Application::get().getVGManager()->onCurrentVoiceGroupChanged(
       sigc::hide(sigc::mem_fun(this, &SingleSoundFBFXIndicator::bruteForce)));
@@ -136,38 +142,44 @@ void SingleSoundFBFXIndicator::bruteForce()
     label1 = addControl(new PNGControl({ 0, (getHeight() / 2) - 5, 8, 5 }, "FB_Label.png"));
     if(currentVG == VoiceGroup::I)
     {
-      FXI = addControl(new PNGControl({ 8, 0, 16, 7 }, "FX_I_select.png"));
-      FXII = addControl(new PNGControl({ 8, 16, 16, 7 }, "FX_II_non_select.png"));
+      FXI = addControl(new PNGControl({ 10, 0, 16, 7 }, "FX_I_select.png"));
+      FXII = addControl(new PNGControl({ 10, 16, 16, 7 }, "FX_II_non_select.png"));
     }
     else
     {
-      FXI = addControl(new PNGControl({ 8, 0, 16, 7 }, "FX_I_non_select.png"));
-      FXII = addControl(new PNGControl({ 8, 16, 16, 7 }, "FX_II_select.png"));
+      FXI = addControl(new PNGControl({ 10, 0, 16, 7 }, "FX_I_non_select.png"));
+      FXII = addControl(new PNGControl({ 10, 16, 16, 7 }, "FX_II_select.png"));
     }
 
     if(masterSerialFXCP > 0)
     {
-      serial = addControl(new PNGControl({ 12, 7, 7, 9 }, "ArrowDown.png"));
+      serial = addControl(new PNGControl({ 14, 7, 7, 9 }, "ArrowDown.png"));
     }
     else if(masterSerialFXCP < 0)
     {
-      serial = addControl(new PNGControl({ 12, 7, 7, 9 }, "ArrowUp.png"));
+      serial = addControl(new PNGControl({ 14, 7, 7, 9 }, "ArrowUp.png"));
     }
 
     auto fb_mixer_fx_src = eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I })->getControlPositionValue();
 
     if(fb_mixer_fx_src > 0 && fb_mixer_fx_src < 1)
     {
-      fbToPoly = addControl(new PNGControl({ 24, 2, 16, 16 }, "Single_2_Arrows_Right_To_Left.png"));
+      fbToPoly = addControl(new PNGControl({ 26, 2, 16, 16 }, "Single_2_Arrows_Right_To_Left.png"));
     }
     else if(fb_mixer_fx_src == 0)
     {
-      fbToPoly = addControl(new PNGControl({ 24, 2, 16, 16 }, "Single_Upper_Arrow_Right_To_Left.png"));
+      fbToPoly = addControl(new PNGControl({ 26, 2, 16, 16 }, "Single_Upper_Arrow_Right_To_Left.png"));
     }
     else if(fb_mixer_fx_src == 1)
     {
-      fbToPoly = addControl(new PNGControl({ 24, 2, 16, 16 }, "Single_Lower_Arrow_Right_To_Left.png"));
+      fbToPoly = addControl(new PNGControl({ 26, 2, 16, 16 }, "Single_Lower_Arrow_Right_To_Left.png"));
     }
+  }
+
+  for(const auto& c: getControls<PNGControl>())
+  {
+    c->useImageColors(false);
+    c->setColor(FrameBufferColors::C255);
   }
 }
 

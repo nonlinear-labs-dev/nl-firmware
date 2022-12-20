@@ -81,7 +81,7 @@
         },
         "FB_FX": {
           "Class": "SingleSoundFBFXIndicator",
-          "Position": "36, 18"
+          "Position": "34, 18"
         }
       },
       "EventSinks": {
