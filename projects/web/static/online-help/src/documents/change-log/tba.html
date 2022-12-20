@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- standard meta -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- page title -->
+    <title>Change Log - [tba] Synth Engine Update 2022</title>
+    <!-- noscript fallback -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=../../_noscript.html">
+    </noscript>
+    <!-- url base -->
+    <base href="../../" target="_top">
+    <!-- document styling -->
+    <link rel="shortcut icon" href="./favicon/nl_logo_blue.ico" type="image/x-icon">
+    <link rel="stylesheet" href="./css/shared.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <!-- document scripts -->
+    <script src="./js/shared.js"></script>
+    <script src="./js/main.js" defer></script>
+</head>
+<body class="main-grid" data-path="root/change-log/tba">
+<!-- menu: location -->
+<div class="main-grid" id="menu-wrapper">
+    <label id="menu-location" class="label reverse">
+        <a href="./index.html">C15 Documentation</a>
+        <span>/</span>
+        <a href="./documents/change-log/index.html">Change Log</a>
+        <span>/</span>
+        <a href="./documents/change-log/tba.html">Synth Engine Update 2022</a>
+    </label>
+</div>
+<!-- document content -->
+<div id="content-wrapper">
+<main>
+    <section>
+        <h2 class="heading secondary"><span class="sw-version">tba</span> Synth Engine Update 2022</h2>
+        <div data-highlight="note">
+            <p>The C15 gets a major update that provides lots of enhancements and new features.</p>
+            <p>Currently, this update is still a release candidate and not officially released.</p>
+        </div>
+    </section>
+    <section>
+        <h3>Parameter Enhancements</h3>
+        <div class="section" style="page-break-after: always;">
+            <h4>Modulateable Parameters</h4>
+            <p>The number of modulateable Parameters has been increased - most Parameters are now modulateable:</p>
+            <ul>
+                <li><span data-keyword="Envelope">Amounts</span> (for Oscillator Phase Modulation, Filter Pitches and Cutoff)</li>
+                <li><span data-keyword="Envelope">A/B/C</span> - Attack Curve (effective when a Key is pressed)</li>
+                <li><span data-keyword="Pitch"></span> (3x) and <span data-keyword="Filter"></span> (5x) <span data-keyword="">Key Trackings</span></li>
+                <li><span data-keyword="Shaper">Mixes</span> (for Phase Modulation) and <span data-keyword="">Fold, Asym</span> (including Shaper A/B, Feedback/Output Mixer, Cabinet)</li>
+                <li><span data-keyword="Outpux Mixer">Pan</span></li>
+                <li><span data-keyword="Effects">(Flanger, Cabinet, Gap Filter, Echo, Reverb)</span> - all Parameters</li>
+                <li><span data-keyword="Scale">Offsets</span> (blending between two scalings via modulation)</li>
+                <li><span data-keyword="Part">Split Point</span> - when unlinked, the parameter can now be modulated individually per Part</li>
+            </ul>
+        </div>
+        <page-break/>
+        <div class="section">
+            <h4>Parameter Ranges</h4>
+            <p>Several Parameter ranges have been extended, providing more flexibility:</p>
+            <ul>
+                <li><span data-keyword="Envelope">A/B/C</span> - Attack/Release Velocity (now bipolar, similar to Decay 1/2 Velocity, times can be reduced or increased)</li>
+                <li><span data-keyword="Pitch"></span> (3x) and <span data-keyword="Filter"></span> (3x) <span data-keyword="">Key Trackings</span> - new maximum at 200%</li>
+                <li><span data-keyword="Envelope">A/B/C</span> - Time Key Tracking (now bipolar, times can be reduced or increased)</li>
+                <li><span data-keyword="Shaper A/B">FB - Gate - EnvC</span> (now bipolar, allowing for permanent feedback)</li>
+                <li><span data-keyword="Outpux Mixer">Key Pan</span> (now bipolar)</li>
+                <li><span data-keyword="Unison">Detune</span> - new maximum at 24 st</li>
+            </ul>
+        </div>
+        <div class="section">
+            <h4>Parameter Scaling and Rounding</h4>
+            <p>Scaling and Rounding behavior has been reworked:</p>
+            <ul>
+                <li><span data-keyword="Scale">Offsets</span> - modified Parameter scaling (high precision for typcial +/- 100.0 ct range, spanning approximately half of the slider - lower precision for atypical +/- 1200.0 ct range)</li>
+                <li>all Parameters - consistent display of values (Control Positions and Modulation Amounts) according to Parameter resolution (every Fine value has a distinct representation)</li>
+            </ul>
+        </div>
+        <div class="section">
+            <h4>Envelope C</h4>
+            <ul>
+                <li>Decay 1/2 Velocity - more flexible velocity influence on times (similar to <span data-keyword="Envelope">A/B</span>)</li>
+            </ul>
+            <h5>new: Loop Mode</h5>
+            <p>With the new Loop Parameter, <span data-keyword="Envelope">C</span> can run in Loop mode (Loop > 0.0%), allowing for simple polyphonic repeating sequences:</p>
+            <ul>
+                <li>The loop consists of the Decay 1 and 2 segments (Decay 2 has a linear curve in Loop mode) and can apply only for the Sustain phase (Loop &lt;= 100.0%, stopping when a key is released) or for the Sustain and Release phase (Loop &gt; 100.0%). At Loop = 200.0%, the loop will continue endlessly.</li>
+                <li>The loop is bound to Key events. When pressing a key, Envelope C will start normally if the Loop parameter is at zero, otherwise it will start in Loop mode. Similarly, when releasing a key, Envelope C will stop normally if the Loop parameter is below or equal to 100.0%, otherwise it will stop in Loop mode.</li>
+                <li>The Decay 1/2 times control the rate of the loop.</li>
+                <li>The Breakpoint/Sustain levels control the amplitude of the loop. For each repetition, the loop amplitude will approach zero, according to the Loop parameter (smaller values: faster decay).</li>
+            </ul>
+        </div>
+        <div class="section">
+            <h4>new: Single Sounds with Dual Effects</h4>
+            <p><span data-keyword="Single">Sounds</span> now provide two Effect chains, allowing for more complex setups similar to <span data-keyword="Split/Layer">Sounds</span>. The mix of the two chains can be controlled by a new parameter:</p>
+            <ul>
+                <li><span data-keyword="Master">FX Mix</span> - crossfading between Effects <span data-utf="ind-part-1"></span> and <span data-utf="ind-part-2"></span> - similar to <span data-keyword="Part">Volumes</span> in <span data-keyword="Split/Layer">Sounds</span>).</li>
+            </ul>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Single Sound Screen - indicators">
+                    <picture class="content" data-src="./images/hardware-ui/boled/sound/boled-snd-single-new-indicators.png"></picture>
+                </figure>
+                <div>
+                    <p>The <span data-keyword="Feedback Mixer">Effects - From I-II</span> and <span data-keyword="Output Mixer">To FX I-II</span> parameters are also available for defining the Effects and Feedback routing for both Effect chains. The routings are indicated in the Single <span data-keyword="Sound">Screen</span>.</p>
+                </div>
+            </div>
+            
+        </div>
+        <div class="section" style="page-break-after: always;">
+            <h4>new: Dual Effects/Part Mixing</h4>
+            <p>Two new parameters have been added for more versatile mixing of Parts (or Effects in <span data-keyword="Single">Sounds</span>):</p>
+            <ul>
+                <li><span data-keyword="Master">Serial FX</span> - usually both Effect chains run in parallel. With this new parameter, the output of one chain can be fed into the input of the other chain, allowing for flexibility in the order of effects and their complexity.</li>
+                <li><span data-keyword="Master">Part/FX Pan</span> - both Effect chains can be panned against each other, more flexibly distributing their output signals in the resulting stereo mix.</li>
+            </ul>
+        </div>
+        <div class="section">
+            <h4>new: two new virtual Ribbons</h4>
+            <p><span data-keyword="Ribbon">3, 4</span> have been added to the <span data-keyword="Hardware">Sources</span> allowing for more flexible modulation and hopefully better integrating <span data-keyword="Macro">Controls</span> <span data-utf="mc-e"></span> and <span data-utf="mc-f"></span>.</p>
+            <p>The two sets of <span data-keyword="Ribbons"></span> (<span data-keyword="">1, 2</span> and <span data-keyword="">3, 4</span>) are quickly accessible on the <span data-keyword="Base">Unit</span> (see below).</p>
+        </div>
+    </section>
+    <section>
+        <h3>User Interface Enhancements</h3>
+        <div class="section">
+            <h4 data-detail="Graphical UI">Preset Search</h4>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Preset Search">
+                    <picture class="content" data-src="./images/web-ui/preset/web-ui-preset-search.png"></picture>
+                </figure>
+                <div>
+                    <p>The Preset Search has been reworked from scratch and is now quickly accessible via the top-left <span data-keyword="Search">Icon</span>. The search results are now shown in a separate list and can be sorted and filtered to match specific <span data-keyword="Banks"></span> or <span data-keyword="Color">Tags</span>.</p>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h4 data-detail="Graphical UI">Fine Mode</h4>
+            <p>In the <span data-keyword="Parameter">Tab</span>, a new icon shows if the <span data-keyword="Fine">Mode</span> is active (when pressing the <kbd>Shift</kbd> key). The Fine Mode can also be enabled permanently be clicking the icon (and will stay enabled as long as the selected Parameter has a Fine Resolution).</p>
+        </div>
+        <div class="section">
+            <h4 data-detail="Graphical UI">Recorder</h4>
+            <p>When closing the Recorder tab in the browser, the playback will stop automatically.</p>
+        </div>
+        <div class="section" style="page-break-after: always;">
+            <h4 data-detail="Panel Unit">Scale Parameter Screen</h4>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Scale Screen">
+                    <picture class="content" data-src="./images/hardware-ui/boled/parameter/boled-parameter-scale-screen.png"></picture>
+                </figure>
+                <div>
+                    <p>A new Screen has been added to better show Scale parameters. It can be accessed from the Master Parameter Screen.</p>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h4 data-detail="Panel Unit">Hardware Source and Macro Control Screens</h4>
+            <p>Routing <span data-keyword="Hardware">Sources</span> to <span data-keyword="Macro">Controls</span> has been more complex than it needed to be, possibly causing some confusion when trying to modify the <span data-keyword="Modulation">Matrix</span>. Therefore, setting <span data-keyword="Hardware">Amounts</span> has been simplified, deprecating the <span data-keyword="Hardware Amount">Screen</span> and bundling all functionality exclusively within the <span data-keyword="Macro Control">Screen</span>.</p>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Macro Control Screen">
+                    <picture class="content" data-src="./images/hardware-ui/boled/parameter/boled-mc-22-51.png"></picture>
+                </figure>
+                <div>
+                    <p>By using <span data-keyword="Soft Buttons">2</span> and <span data-keyword="">4</span>, <span data-keyword="Hardware">Amounts</span> can be set for the <span data-keyword="Macro">Control</span> in focus.</p>
+                </div>
+                <figure class="border maximize" data-label="Hardware Source Screen">
+                    <picture class="content" data-src="./images/hardware-ui/boled/parameter/boled-hw-22-51.png"></picture>
+                </figure>
+                <div>
+                    <p>In the <span data-keyword="Hardware Source">Screen</span>, all related parameter aspects can be changed.</p>
+                </div>
+            </div>
+            <div data-highlight="note">
+                <p><span data-keyword="MIDI">Assignments</span> are shown on the left (and can be changed via Setup MIDI settings). For <span data-keyword="Ribbons"></span>, their <span data-keyword="Touch">Behavior</span> can be modified via <span data-keyword="Soft Button">4</span> (previously only available via the <span data-keyword="Funct">Button</span> on the <span data-keyword="Base">Unit</span>).</p>
+            </div>
+        </div>
+        <div class="section">
+            <h4 data-detail="Base Unit">Changed Functionality</h4>
+            <p>When in <span data-keyword="Play">Mode</span>, the <span data-keyword="Funct">Button</span> will now switch between the two sets of <span data-keyword="Ribbons"></span> (<span data-keyword="">1/2</span> or <span data-keyword="">3/4</span>) - the selected set is then operable on the two touch strips.</p>
+            <div data-highlight="note">
+                <p>Ribbon <span data-keyword="Touch">Behavior</span> can now be changed in the corresponding <span data-keyword="Parameter">Screen</span> on the <span data-keyword="Panel">Unit</span>.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h3>Additional Fixes</h3>
+        <ul>
+            <li>Importing older Banks converted some parameters wrongfully (<span data-keyword="Envelope A/B/C">Attack Velocity</span> and <span data-keyword="">Time Key Tracking</span>, <span data-keyword="Shaper A/B">Feedback - Env C</span> and <span data-keyword="Output Mixer">Key Pan</span>).</li>
+            <li style="page-break-after: always;">Selecting a <span data-keyword="Part"></span> (or <span data-keyword="FX">Group</span> in <span data-keyword="Single">Sounds</span>) is now undoable.</li>
+            <li><span data-keyword="Envelope A/B/C">Attack Curvature</span> parameters are now applied for each voice. When the parameter changes within the Attack segment of a played node, the change will not apply for the active voice.</li>
+            <li>In earlier versions, <span data-keyword="Envelope C">Decay 1/2</span> times were wrongfully influenced by <span data-keyword="Envelope B">Decay 1/2 Velocity</span> parameters.</li>
+            <li>Voice Mixing in <span data-keyword="Single">Sounds</span> is now consistent, as all 24 voices are now mixed and unambiguously routed to a specific <span data-keyword="FX">Group</span>.</li>
+        </ul>
+    </section>
+</main>
+</div>
+</body>
+</html>
