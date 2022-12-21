@@ -146,8 +146,8 @@ namespace DescriptiveLayouts
     m_map[EventSources::Split_Arrows_To_FX_R_TO_L_I] = std::make_unique<Split_Arrows_To_FX_R_TO_L_I>();
     m_map[EventSources::Split_Arrows_To_FX_R_TO_L_II] = std::make_unique<Split_Arrows_To_FX_R_TO_L_II>();
 
-    m_map[EventSources::Split_Arrows_FX_To_I] = std::make_unique<Split_Arrows_FX_To_I>();
-    m_map[EventSources::Split_Arrows_FX_To_II] = std::make_unique<Split_Arrows_FX_To_II>();
+    m_map[EventSources::Split_Arrows_FX_To_I] = std::make_unique<Split_Arrows_FX_To_VG<VoiceGroup::I>>();
+    m_map[EventSources::Split_Arrows_FX_To_II] = std::make_unique<Split_Arrows_FX_To_VG<VoiceGroup::II>>();
 
     m_map[EventSources::Serial_FX_Imagestate] = std::make_unique<Serial_FX_Imagestate>();
 

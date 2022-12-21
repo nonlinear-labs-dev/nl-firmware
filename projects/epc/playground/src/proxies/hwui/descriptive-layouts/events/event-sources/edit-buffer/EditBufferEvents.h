@@ -285,16 +285,35 @@ m_map[EventSources::Split_Arrows_To_FX_R_TO_L_II] = std::make_unique<Split_Arrow
     void onChange(const EditBuffer* eb) override;
   };
 
-  class Split_Arrows_FX_To_I : public EditBufferEvent<std::string>
+  template<VoiceGroup vg>
+  class Split_Arrows_FX_To_VG : public EditBufferEvent<std::string>
   {
    public:
-    void onChange(const EditBuffer* eb) override;
-  };
+    void onChange(const EditBuffer* eb) override
+    {
+      auto setResult = [this](const std::string &s)
+      {
+        const auto base_image = "Split_TO_FX_";
+        const auto base_suffix = vg == VoiceGroup::II ? "_flipped.png" : ".png";
 
-  class Split_Arrows_FX_To_II : public EditBufferEvent<std::string>
-  {
-   public:
-    void onChange(const EditBuffer* eb) override;
+        if(s == "empty")
+          setValue("Split_FX_FB_Empty.png");
+        else
+          setValue(base_image + s + base_suffix);
+      };
+
+      auto to_FX = eb->findParameterByID({C15::PID::Out_Mix_To_FX, vg});
+      auto OutMixer_Level = eb->findParameterByID({C15::PID::Out_Mix_Lvl, vg});
+
+      if(to_FX->getControlPositionValue() == 0 && OutMixer_Level->getControlPositionValue() > 0)
+        setResult("A");
+      else if(to_FX->getControlPositionValue() == 1 && OutMixer_Level->getControlPositionValue() > 0)
+        setResult("B");
+      else if(to_FX->getControlPositionValue() > 0 && to_FX->getControlPositionValue() < 1 && OutMixer_Level->getControlPositionValue() > 0)
+        setResult("C");
+      else if(OutMixer_Level->getControlPositionValue() == 0)
+        setResult("empty");
+    }
   };
 
   class LayerFXOffset : public EditBufferEvent<std::pair<int, int>>

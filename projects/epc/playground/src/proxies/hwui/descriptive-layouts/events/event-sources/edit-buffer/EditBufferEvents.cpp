@@ -464,38 +464,6 @@ void DescriptiveLayouts::LayerToFXPath::onChange(const EditBuffer *eb)
   const auto cond_3_I = II_To_FX_I > 0;
   const auto cond_3_II = II_To_FX_I < 1;
 
-  {
-    // cond_I = I_To_FX_II == 0 %;
-    // cond_II = II_To_FX_I == 0 %
-    // cond_III = I_To_FX_II == 100 %;
-    // cond_IIII = II_To_FX_I == 100 %;
-    // out_I_cond_I = I_OutMixer_Level > -inf
-    // out_II_cond_I = II_OutMixer_Level > -inf
-    // out_II_cond_II = II_OutMixer_Level == -inf
-    // out_I_cond_II = I_OutMixer_Level == -inf
-
-    // cond_2_I = I_To_FX_II > 0 %
-    // cond_2_II = I_To_FX_II < 100 %
-
-    // cond_3_I = II_To_FX_I < 100 %;
-    // cond_3_II = II_To_FX_I > 0 %;
-
-    //    A: (cond_I) AND (out_I_cond_I) AND (out_II_cond_II)
-    //    B: (cond_II) AND (out_I_cond_II) AND (out_II_cond_I)
-    //    C: (cond_III) AND (out_I_cond_I) AND (out_II_cond_II)
-    //    D: (cond_IIII) AND (out_I_cond_II) AND (out_II_cond_I)
-    //    E: (cond_2_I) AND (cond_2_II) AND (out_I_cond_I) AND (out_II_cond_II)
-    //    F: (cond_3_II) AND (cond_3_I) AND (out_I_cond_II) AND (out_II_cond_I)
-    //    G: (cond_I) AND (cond_II) AND (out_I_cond_I) AND (out_II_cond_I)
-    //    H: (cond_III) AND (cond_IIII) AND (out_I_cond_I) AND (out_II_cond_I)
-    //    I: (cond_2_I) AND (cond_2_II) AND (cond_II) AND (out_I_cond_I) AND (out_II_cond_I)
-    //    J: (cond_I) AND (cond_3_II) AND (cond_3_I) AND (out_I_cond_I) AND (out_II_cond_I)
-    //    K: (cond_2_I) AND (cond_2_II) AND (cond_IIII) AND (out_I_cond_I) AND (out_II_cond_I)
-    //    L: (cond_III) AND (cond_3_II) AND (cond_3_I) AND (out_I_cond_I) AND (out_II_cond_I)
-    //    M: (cond_2_I) AND (cond_2_II) AND (cond_3_II) AND (cond_3_I) AND (out_I_cond_I) AND (out_II_cond_I)
-    //    empty: (out_I_cond_II) AND (out_II_cond_II)
-  }
-
   auto setResult = [this](const std::string &c)
   {
     const std::string base_string = "Layer_To_FX_";
@@ -635,13 +603,6 @@ void DescriptiveLayouts::Split_FX_TO_OUT_Imagestate_flipped::onChange(const Edit
     setResult("empty");
 }
 
-/*
- * 6 (oberer FB-Pfeil, von FX I):
-(I_FB_Mixer_Effects_From_II < 100 %) AND
-(I_FB_Mixer_Effects != 0 %) AND (I_FB_Mixer_Level > -inf) AND
-( (I_OSC_A_PM_FB != 0 %) OR (I_OSC_B_PM_FB != 0 %) OR (I_SHAPER_A_FB_Mix > 0 %) OR (I_SHAPER_B_FB_Mix > 0 %) )
- */
-
 void DescriptiveLayouts::Split_Arrows_To_FX_L_TO_R_I::onChange(const EditBuffer *eb)
 {
   auto setResult = [this](const std::string &s)
@@ -680,12 +641,6 @@ void DescriptiveLayouts::Split_Arrows_To_FX_L_TO_R_I::onChange(const EditBuffer 
     setResult("empty");
   }
 }
-
-/*
- * (I_FB_Mixer_Effects_From_II > 0 %) AND
-(I_FB_Mixer_Effects != 0 %) AND (I_FB_Mixer_Level > -inf) AND
-( (I_OSC_A_PM_FB != 0 %) OR (I_OSC_B_PM_FB != 0 %) OR (I_SHAPER_A_FB_Mix > 0 %) OR (I_SHAPER_B_FB_Mix > 0 %) )
- */
 
 void DescriptiveLayouts::Split_Arrows_To_FX_L_TO_R_II::onChange(const EditBuffer *eb)
 {
@@ -802,67 +757,4 @@ void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_II::onChange(const EditBuffer
   {
     setResult("empty");
   }
-}
-
-//5_A (Pfeil nur zu FX I): (I_To_FX_II == 0 %) AND (I_OutMixer_Level > -inf)
-//5_B (Pfeil nur zu FX II): (I_To_FX_II == 100 %) AND (I_OutMixer_Level > -inf)
-//5_C (Pfeile zu beiden FX): (I_To_FX_II > 0 %) AND (I_To_FX_II < 100 %) AND (I_OutMixer_Level > -inf)
-//5 leer: (I_OutMixer_Level == -inf)
-
-void DescriptiveLayouts::Split_Arrows_FX_To_I::onChange(const EditBuffer *eb)
-{
-  auto setResult = [this](const std::string &s)
-  {
-    const auto base_image = "Split_TO_FX_";
-    const auto base_suffix = ".png";
-
-    if(s == "empty")
-      setValue("Split_FX_FB_Empty.png");
-    else
-      setValue(base_image + s + base_suffix);
-  };
-
-  auto I_to_FX_II = eb->findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
-  auto I_OutMixer_Level = eb->findParameterByID({C15::PID::Out_Mix_Lvl, VoiceGroup::I});
-
-  if(I_to_FX_II->getControlPositionValue() == 0 && I_OutMixer_Level->getControlPositionValue() > 0)
-    setResult("A");
-  else if(I_to_FX_II->getControlPositionValue() == 1 && I_OutMixer_Level->getControlPositionValue() > 0)
-    setResult("B");
-  else if(I_to_FX_II->getControlPositionValue() > 0 && I_to_FX_II->getControlPositionValue() < 1 && I_OutMixer_Level->getControlPositionValue() > 0)
-    setResult("C");
-  else if(I_OutMixer_Level->getControlPositionValue() == 0)
-    setResult("empty");
-}
-
-//5_A (Pfeil nur zu FX I): (II_To_FX_II == 0 %) AND (II_OutMixer_Level > -inf)
-//5_B (Pfeil nur zu FX II): (II_To_FX_II == 100 %) AND (II_OutMixer_Level > -inf)
-//5_C (Pfeile zu beiden FX): (II_To_FX_II > 0 %) AND (II_To_FX_II < 100 %) AND (II_OutMixer_Level > -inf)
-//5 leer: (II_OutMixer_Level == -inf)
-
-void DescriptiveLayouts::Split_Arrows_FX_To_II::onChange(const EditBuffer *eb)
-{
-
-  auto setResult = [this](const std::string &s)
-  {
-    const auto base_image = "Split_TO_FX_";
-    const auto base_suffix = "_flipped.png";
-
-    if(s == "empty")
-      setValue("Split_FX_FB_Empty.png");
-    else
-      setValue(base_image + s + base_suffix);
-  };
-
-  auto II_to_FX_I = eb->findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
-  auto II_OutMixer_Level = eb->findParameterByID({C15::PID::Out_Mix_Lvl, VoiceGroup::II});
-
-  if(II_to_FX_I->getControlPositionValue() == 0 && II_OutMixer_Level->getControlPositionValue() > 0)
-    setResult("A");
-  else if(II_to_FX_I->getControlPositionValue() == 1 && II_OutMixer_Level->getControlPositionValue() > 0)
-    setResult("B");
-  else if(II_to_FX_I->getControlPositionValue() > 0 && II_to_FX_I->getControlPositionValue() < 1 && II_OutMixer_Level->getControlPositionValue() > 0)
-    setResult("C");
-  else if(II_OutMixer_Level->getControlPositionValue() == 0)
-    setResult("empty");
 }
