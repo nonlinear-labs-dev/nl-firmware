@@ -13,6 +13,7 @@ class Application;
 class Setting;
 class SettingsActions;
 class HardwareFeatures;
+class EditBuffer;
 
 class Settings : public UpdateDocumentContributor
 {
@@ -23,7 +24,7 @@ class Settings : public UpdateDocumentContributor
   explicit Settings(const Glib::ustring &file, UpdateDocumentMaster *master, HardwareFeatures& hwFeatures);
   ~Settings() override;
 
-  void init();
+  void init(EditBuffer* eb);
   void reload();
 
   Setting *getSetting(const Glib::ustring &key);

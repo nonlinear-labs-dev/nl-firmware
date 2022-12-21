@@ -167,7 +167,7 @@ Settings::tUpdateID Settings::onChange(uint64_t flags)
   return UpdateDocumentContributor::onChange(flags);
 }
 
-void Settings::init()
+void Settings::init(EditBuffer* eb)
 {
   load();
 
@@ -177,6 +177,7 @@ void Settings::init()
   }
 
   getSetting<FocusAndModeSetting>()->setFocusAndModeFreeze(true);
+  getSetting<SelectedRibbonsSetting>()->connectToEditBuffer(eb);
 }
 
 void Settings::reload()

@@ -25,15 +25,12 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 2900")
   std::filesystem::remove(file);
   HardwareFeatures hw;
   auto settings = std::make_unique<MockSettingsObject>(file, &SyncMasterMockRoot::get(), hw);
-  settings->init();
+  settings->init(app->getPresetManager()->getEditBuffer());
 
   WHEN("settings are created initial state is 'virgin'")
   {
     CHECK(settings->getSetting<FlacRecorderVirgin>()->get());
   }
-
-  auto testSettings = Application::get().getSettings();
-  auto testSetting = settings->getSetting<GlobalLocalEnableSetting>();
 
   CHECK(nltools::msg::waitForConnection(nltools::msg::EndPoint::Playground));
 
@@ -52,7 +49,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 2900")
       {
         settings.reset();
         settings = std::make_unique<MockSettingsObject>(file, &SyncMasterMockRoot::get(), hw);
-        settings->init();
+        settings->init(app->getPresetManager()->getEditBuffer());
         CHECK_FALSE(settings->getSetting<FlacRecorderVirgin>()->get());
       }
     }
