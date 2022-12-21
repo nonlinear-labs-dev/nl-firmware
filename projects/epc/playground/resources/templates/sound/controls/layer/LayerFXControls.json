@@ -21,7 +21,13 @@
     "LayerFBImagePolyToFX": {
       "Image": {
         "Class": "Image",
-        "Rect": "0,0,24,23"
+        "Rect": "0,0,20,23"
+      }
+    },
+    "SerialFXArrow": {
+      "Image":{
+        "Class": "Image",
+        "Rect": "0, 0, 7, 9"
       }
     },
     "FXImage": {

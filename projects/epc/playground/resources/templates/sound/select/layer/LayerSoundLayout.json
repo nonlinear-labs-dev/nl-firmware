@@ -80,17 +80,9 @@
           },
           "Events": "LayerFBState => Image[ImagePath]"
         },
-        "FX": {
-          "Class": "LayerFBImageLarge",
-          "Position": "201, 21",
-          "Init": {
-            "Image[ImagePath]": ""
-          },
-          "Events": "LayerFXState => Image[ImagePath], LayerFXOffset => Image[ImageOffset]"
-        },
         "newFX": {
           "Class": "LayerFBImagePolyToFX",
-          "Position": "200, 21",
+          "Position": "199, 21",
           "Init": {
             "Image[ImagePath]": "Layer_To_FX_M.png"
           },
@@ -99,7 +91,7 @@
         "constant-FX-I":
         {
           "Class": "FXImage",
-          "Position": "225, 21",
+          "Position": "219, 21",
           "Init": {
             "Image[ImagePath]": "FX_I_select.png"
           },
@@ -108,11 +100,16 @@
         "constant-FX-II":
         {
           "Class": "FXImage",
-          "Position": "225, 37",
+          "Position": "219, 37",
           "Init": {
             "Image[ImagePath]": "FX_II_non_select.png"
           },
           "Events": "FX_II_Imagestate => Image[ImagePath]"
+        },
+        "serial-fx": {
+          "Class": "SerialFXArrow",
+          "Position": "223, 28",
+          "Events": "Serial_FX_Imagestate => Image[ImagePath]"
         }
       },
       "EventSinks": {

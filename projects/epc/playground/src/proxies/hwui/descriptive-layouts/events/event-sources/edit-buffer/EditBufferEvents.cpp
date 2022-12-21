@@ -532,3 +532,15 @@ void DescriptiveLayouts::LayerToFXPath::onChange(const EditBuffer *eb)
   else if(out_I_cond_II && out_II_cond_II)
     setResult("empty");
 }
+
+void DescriptiveLayouts::Serial_FX_Imagestate::onChange(const EditBuffer *eb)
+{
+  auto serialFX = eb->findParameterByID({ C15::PID::Master_Serial_FX, VoiceGroup::Global });
+  const auto cp = serialFX->getControlPositionValue();
+  if(cp < 0)
+    setValue("ArrowUp.png");
+  else if(cp > 0)
+    setValue("ArrowDown.png");
+  else
+    setValue("Layer_To_FX_Empty.png");
+}

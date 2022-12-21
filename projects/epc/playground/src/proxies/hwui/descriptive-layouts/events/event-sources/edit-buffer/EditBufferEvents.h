@@ -230,6 +230,12 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer* eb) override;
   };
 
+  class Serial_FX_Imagestate : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer* eb) override;
+  };
+
   class LayerFXOffset : public EditBufferEvent<std::pair<int, int>>
   {
    public:

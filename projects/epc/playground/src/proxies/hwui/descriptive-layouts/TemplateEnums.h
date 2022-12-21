@@ -54,7 +54,7 @@ namespace DescriptiveLayouts
        EditBufferNameWithSuffix, SyncSplitEnabled, SyncSplitDisabled, SplitPointDefaultBehaviourWithoutSync,
 
        AnyLayerCrossFB, AnyLayerCrossFBToI, AnyLayerCrossFBToII, ToFXIIUnder100, ToFXIUnder100, ToFXIIOver0, ToFXIOver0,
-       LayerFBState, LayerFXState, LayerFXOffset, FX_I_Imagestate, FX_II_Imagestate, LayerToFXPath);
+       LayerFBState, LayerFXState, LayerFXOffset, FX_I_Imagestate, FX_II_Imagestate, LayerToFXPath, Serial_FX_Imagestate);
 
   ENUM(EventSinks, uint8_t, Swallow, SwitchToInitDetail, SwitchToEditMode, SwitchToSelectMode, SwitchToSetupFocus,
        SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus, SwitchToSoundFocus, SwitchToMCSelectDetail,
