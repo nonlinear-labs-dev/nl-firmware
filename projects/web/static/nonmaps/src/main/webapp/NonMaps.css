@@ -546,6 +546,11 @@ select {
   background-color: #000;
   opacity: 0.3;
   filter: alpha(opacity=30);
+  z-index: 100000;
+}
+
+.gwt-PopupPanelGlass+.gwt-PopupPanel {
+  z-index: 100001;
 }
 
 .gwt-PushButton-up,
