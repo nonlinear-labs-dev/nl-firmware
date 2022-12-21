@@ -47,6 +47,24 @@
         "Class": "Image",
         "Rect": "0,0,32,19"
       }
+    },
+    "SplitArrowsToOut": {
+      "Image": {
+        "Class": "Image",
+        "Rect": "0, 0, 15, 19"
+      }
+    },
+    "SplitArrowsToFX": {
+      "Image": {
+        "Class": "Image",
+        "Rect": "0, 0, 12, 5"
+      }
+    },
+    "SplitFXTOVG": {
+      "Image": {
+        "Class": "Image",
+        "Rect": "0, 0, 12, 17"
+      }
     }
   }
 }

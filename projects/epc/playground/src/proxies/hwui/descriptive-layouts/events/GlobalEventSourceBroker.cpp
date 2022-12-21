@@ -139,6 +139,15 @@ namespace DescriptiveLayouts
     m_map[EventSources::FX_II_Imagestate] = std::make_unique<FX_II_ImageState>();
     m_map[EventSources::LayerToFXPath] = std::make_unique<LayerToFXPath>();
     m_map[EventSources::Layer_FX_TO_OUT_Imagestate] = std::make_unique<Layer_FX_TO_OUT_Imagestate>();
+    m_map[EventSources::Split_FX_TO_OUT_Imagestate] = std::make_unique<Split_FX_TO_OUT_Imagestate>();
+    m_map[EventSources::Split_FX_TO_OUT_Imagestate_flipped] = std::make_unique<Split_FX_TO_OUT_Imagestate_flipped>();
+    m_map[EventSources::Split_Arrows_To_FX_L_TO_R_I] = std::make_unique<Split_Arrows_To_FX_L_TO_R_I>();
+    m_map[EventSources::Split_Arrows_To_FX_L_TO_R_II] = std::make_unique<Split_Arrows_To_FX_L_TO_R_II>();
+    m_map[EventSources::Split_Arrows_To_FX_R_TO_L_I] = std::make_unique<Split_Arrows_To_FX_R_TO_L_I>();
+    m_map[EventSources::Split_Arrows_To_FX_R_TO_L_II] = std::make_unique<Split_Arrows_To_FX_R_TO_L_II>();
+
+    m_map[EventSources::Split_Arrows_FX_To_I] = std::make_unique<Split_Arrows_FX_To_I>();
+    m_map[EventSources::Split_Arrows_FX_To_II] = std::make_unique<Split_Arrows_FX_To_II>();
 
     m_map[EventSources::Serial_FX_Imagestate] = std::make_unique<Serial_FX_Imagestate>();
 

@@ -242,6 +242,61 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer* eb) override;
   };
 
+  class Split_FX_TO_OUT_Imagestate : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer* eb) override;
+  };
+
+  class Split_FX_TO_OUT_Imagestate_flipped : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer* eb) override;
+  };
+
+  /*
+   * m_map[EventSources::Split_Arrows_To_FX_L_TO_R_I] = std::make_unique<Split_Arrows_To_FX_L_TO_R_I>();
+m_map[EventSources::Split_Arrows_To_FX_L_TO_R_II] = std::make_unique<Split_Arrows_To_FX_L_TO_R_II>();
+m_map[EventSources::Split_Arrows_To_FX_R_TO_L_I] = std::make_unique<Split_Arrows_To_FX_R_TO_L_I>();
+m_map[EventSources::Split_Arrows_To_FX_R_TO_L_II] = std::make_unique<Split_Arrows_To_FX_R_TO_L_II>();
+   */
+
+  class Split_Arrows_To_FX_L_TO_R_I : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer* eb) override;
+  };
+
+  class Split_Arrows_To_FX_L_TO_R_II : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer* eb) override;
+  };
+
+  class Split_Arrows_To_FX_R_TO_L_I : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer* eb) override;
+  };
+
+  class Split_Arrows_To_FX_R_TO_L_II : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer* eb) override;
+  };
+
+  class Split_Arrows_FX_To_I : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer* eb) override;
+  };
+
+  class Split_Arrows_FX_To_II : public EditBufferEvent<std::string>
+  {
+   public:
+    void onChange(const EditBuffer* eb) override;
+  };
+
   class LayerFXOffset : public EditBufferEvent<std::pair<int, int>>
   {
    public:
