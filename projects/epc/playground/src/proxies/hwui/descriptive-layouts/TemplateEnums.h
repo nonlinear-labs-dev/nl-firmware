@@ -37,9 +37,9 @@ namespace DescriptiveLayouts
        CanRight, isFineActive, EditBufferMasterVolume, EditBufferMasterTune, VGIMasterTuneText, VGIIMasterTuneText,
        VGIMasterVolumeText, VGIIMasterVolumeText, SplitPointValue, MonoEnabledText, MonoPrioText, MonoLegatoText,
        MonoGlideText, UnisonVoicesText, UnisonDetuneText, UnisonPhaseText, UnisonPanText, MonoEnabled, UnisonEnabled,
-       CurrentVoiceGroupLabel, SoundParamsButtonText, SoundVoicesButtonText, SoundFxMixMasterButtonText, SoundMasterButtonText, MonoButtonText,
-       UnisonButtonText, VGIMuted, VGIIMuted, VGIIsMuted, VGIIIsMuted, IsSingleSound, IsLayerSound, IsSplitSound,
-       SplitPointIValue, SplitPointIIValue,
+       CurrentVoiceGroupLabel, SoundParamsButtonText, SoundVoicesButtonText, SoundFxMixMasterButtonText,
+       SoundMasterButtonText, MonoButtonText, UnisonButtonText, VGIMuted, VGIIMuted, VGIIsMuted, VGIIIsMuted,
+       IsSingleSound, IsLayerSound, IsSplitSound, SplitPointIValue, SplitPointIIValue,
 
        // try to use more generic names, the specific meaning is implemented in the EventProvider
        Edit, Fine, Locked, Position, NumItems,
@@ -54,7 +54,8 @@ namespace DescriptiveLayouts
        EditBufferNameWithSuffix, SyncSplitEnabled, SyncSplitDisabled, SplitPointDefaultBehaviourWithoutSync,
 
        AnyLayerCrossFB, AnyLayerCrossFBToI, AnyLayerCrossFBToII, ToFXIIUnder100, ToFXIUnder100, ToFXIIOver0, ToFXIOver0,
-       LayerFBState, LayerFXState, LayerFXOffset, FX_I_Imagestate, FX_II_Imagestate, LayerToFXPath, Serial_FX_Imagestate);
+       LayerFBState, LayerFXState, LayerFXOffset, FX_I_Imagestate, FX_II_Imagestate, LayerToFXPath,
+       Serial_FX_Imagestate, Layer_FX_TO_OUT_Imagestate);
 
   ENUM(EventSinks, uint8_t, Swallow, SwitchToInitDetail, SwitchToEditMode, SwitchToSelectMode, SwitchToSetupFocus,
        SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus, SwitchToSoundFocus, SwitchToMCSelectDetail,

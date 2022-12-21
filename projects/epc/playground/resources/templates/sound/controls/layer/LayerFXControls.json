@@ -36,6 +36,12 @@
         "Rect": "0,0,16,7"
       }
     },
+    "FX_TO_OUT": {
+      "Image": {
+        "Class": "Image",
+        "Rect": "0, 0, 15, 19"
+      }
+    },
     "SplitFBImage": {
       "Image": {
         "Class": "Image",

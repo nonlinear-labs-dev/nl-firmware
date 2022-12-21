@@ -544,3 +544,37 @@ void DescriptiveLayouts::Serial_FX_Imagestate::onChange(const EditBuffer *eb)
   else
     setValue("Layer_To_FX_Empty.png");
 }
+
+void DescriptiveLayouts::Layer_FX_TO_OUT_Imagestate::onChange(const EditBuffer *eb)
+{
+  auto setResult = [this](const std::string &s)
+  {
+    const std::string base_string = "Layer_FX_To_Out_";
+    const std::string base_suffix = ".png";
+    if(s == "empty")
+      setValue("Layer_To_FX_empty.png");
+    else
+      setValue(base_string + s + base_suffix);
+  };
+
+  auto partVolumeI = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
+  auto partVolumeII = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
+  auto partMuteI = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I });
+  auto partMuteII = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II });
+
+  nltools_assertAlways(partVolumeI->isBiPolar() == false);
+  nltools_assertAlways(partVolumeII->isBiPolar() == false);
+  nltools_assertAlways(partMuteI->isBiPolar() == false);
+  nltools_assertAlways(partMuteII->isBiPolar() == false);
+
+  if(partVolumeI->getControlPositionValue() > 0
+     && (partVolumeII->getControlPositionValue() == 0 || partMuteII->getControlPositionValue() == 1))
+    setResult("A");
+  else if(partVolumeII->getControlPositionValue() > 0
+          && (partVolumeI->getControlPositionValue() == 0 || partMuteI->getControlPositionValue() == 1))
+    setResult("B");
+  else if(partVolumeI->getControlPositionValue() > 0 && partVolumeII->getControlPositionValue() > 0)
+    setResult("C");
+  else if(partVolumeI->getControlPositionValue() == 0 && partVolumeII->getControlPositionValue() == 0)
+    setResult("empty");
+}

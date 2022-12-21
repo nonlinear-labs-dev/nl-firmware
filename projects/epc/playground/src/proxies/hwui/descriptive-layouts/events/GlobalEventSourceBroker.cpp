@@ -138,6 +138,7 @@ namespace DescriptiveLayouts
     m_map[EventSources::FX_I_Imagestate] = std::make_unique<FX_I_ImageState>();
     m_map[EventSources::FX_II_Imagestate] = std::make_unique<FX_II_ImageState>();
     m_map[EventSources::LayerToFXPath] = std::make_unique<LayerToFXPath>();
+    m_map[EventSources::Layer_FX_TO_OUT_Imagestate] = std::make_unique<Layer_FX_TO_OUT_Imagestate>();
 
     m_map[EventSources::Serial_FX_Imagestate] = std::make_unique<Serial_FX_Imagestate>();
 
