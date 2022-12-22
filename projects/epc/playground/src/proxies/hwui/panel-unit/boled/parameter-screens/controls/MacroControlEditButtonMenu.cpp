@@ -13,6 +13,7 @@
 #include <groups/MacroControlsGroup.h>
 #include <groups/ParameterGroup.h>
 #include "use-cases/EditBufferUseCases.h"
+#include "parameters/ModulationRoutingParameter.h"
 
 int MacroControlEditButtonMenu::s_lastAction = 0;
 
@@ -33,11 +34,12 @@ void MacroControlEditButtonMenu::setup()
 
   clear();
 
+  auto param = getSelectedParameter();
+
   addButton("Rename", std::bind(&MacroControlEditButtonMenu::rename, this));
   addButton("Edit Info", std::bind(&MacroControlEditButtonMenu::editInfo, this));
 
-  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
-  if(eb->getSelected(vg)->getParentGroup()->areAllParametersLocked())
+  if(param->getParentGroup()->areAllParametersLocked())
     addButton("Unlock Group", std::bind(&MacroControlEditButtonMenu::unlockGroup, this));
   else
     addButton("Lock Group", std::bind(&MacroControlEditButtonMenu::lockGroup, this));
@@ -81,16 +83,16 @@ void MacroControlEditButtonMenu::unlockGroup()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
-  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
-  ebUseCases.unlockGroup(eb->getSelected(vg)->getParentGroup());
+  auto param = getSelectedParameter();
+  ebUseCases.unlockGroup(param->getParentGroup());
 }
 
 void MacroControlEditButtonMenu::lockGroup()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
-  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
-  ebUseCases.lockGroup(eb->getSelected(vg)->getParentGroup());
+  auto param = getSelectedParameter();
+  ebUseCases.lockGroup(param->getParentGroup());
 }
 
 void MacroControlEditButtonMenu::unlockAll()
@@ -105,4 +107,24 @@ void MacroControlEditButtonMenu::lockAll()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
   ebUseCases.lockAllGroups();
+}
+
+Parameter* MacroControlEditButtonMenu::getSelectedParameter()
+{
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto& eb = *Application::get().getPresetManager()->getEditBuffer();
+  return eb.getSelected(vg);
+}
+
+Parameter* ModulationRouterMacroControlEditButtonMenu::getSelectedParameter()
+{
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto& eb = *Application::get().getPresetManager()->getEditBuffer();
+  auto selected = eb.getSelected(vg);
+  if(auto modRouter = dynamic_cast<ModulationRoutingParameter*>(selected))
+  {
+    return modRouter->getTargetParameter();
+  }
+
+  return dynamic_cast<MacroControlParameter*>(selected);
 }
