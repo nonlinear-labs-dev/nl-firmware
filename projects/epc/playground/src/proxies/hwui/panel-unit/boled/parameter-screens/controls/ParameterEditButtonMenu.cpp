@@ -46,45 +46,47 @@ void ParameterEditButtonMenu::addActions()
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
 
-  auto parameter = getSelectedParameter();
-
-  if(parameter->lockingEnabled())
+  if(auto parameter = getSelectedParameter())
   {
-    if(parameter->getParentGroup()->areAllParametersLocked())
-      addButton("Unlock Group", std::bind(&ParameterEditButtonMenu::toggleGroupLock, this));
-    else
-      addButton("Lock Group", std::bind(&ParameterEditButtonMenu::toggleGroupLock, this));
-  }
+    if(parameter->lockingEnabled())
+    {
+      if(parameter->getParentGroup()->areAllParametersLocked())
+        addButton("Unlock Group", std::bind(&ParameterEditButtonMenu::toggleGroupLock, this));
+      else
+        addButton("Lock Group", std::bind(&ParameterEditButtonMenu::toggleGroupLock, this));
+    }
 
-  if(!parameter->getParentGroup()->areAllParametersLocked())
-    addButton("Lock all", [this] { lockAll(); });
+    if(!parameter->getParentGroup()->areAllParametersLocked())
+      addButton("Lock all", [this] { lockAll(); });
 
-  if(eb->hasLocks(vg))
-    addButton("Unlock all", [this] { unlockAll(); });
+    if(eb->hasLocks(vg))
+      addButton("Unlock all", [this] { unlockAll(); });
 
-  if(parameter)
-  {
-    if(auto sendParameter = dynamic_cast<const HardwareSourceSendParameter*>(parameter))
-      addButton("Select >", [this, capture0 = sendParameter->getSiblingParameter()->getID()] { selectParameter(capture0); });
+    if(auto sendParameter = dynamic_cast<const HardwareSourceSendParameter *>(parameter))
+      addButton("Select >",
+                [this, capture0 = sendParameter->getSiblingParameter()->getID()] { selectParameter(capture0); });
 
-    if(auto hardwareParameter = dynamic_cast<const PhysicalControlParameter*>(parameter))
+    if(auto hardwareParameter = dynamic_cast<const PhysicalControlParameter *>(parameter))
       if(!hardwareParameter->isLocalEnabled())
-        addButton("< Select", [this, capture0 = hardwareParameter->getSendParameter()->getID()] { selectParameter(capture0); });
+        addButton("< Select",
+                  [this, capture0 = hardwareParameter->getSendParameter()->getID()] { selectParameter(capture0); });
 
     if(ScaleGroup::isScaleParameter(parameter))
     {
-      auto scaleGroup = dynamic_cast<ScaleGroup*>(eb->getParameterGroupByID({ "Scale", VoiceGroup::Global }));
+      auto scaleGroup = dynamic_cast<ScaleGroup *>(eb->getParameterGroupByID({ "Scale", VoiceGroup::Global }));
       if(scaleGroup->isAnyOffsetChanged())
       {
-        addButton("Reset Scale", [](){
-          EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
-          ebUseCases.resetCustomScale();
-        });
+        addButton("Reset Scale",
+                  []()
+                  {
+                    EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
+                    ebUseCases.resetCustomScale();
+                  });
       }
     }
-  }
 
-  eb->onSelectionChanged(sigc::mem_fun(this, &ParameterEditButtonMenu::onParameterSelectionChanged), vg);
+    eb->onSelectionChanged(sigc::mem_fun(this, &ParameterEditButtonMenu::onParameterSelectionChanged), vg);
+  }
 }
 
 void ParameterEditButtonMenu::selectParameter(ParameterId id)
@@ -163,7 +165,7 @@ void ParameterEditButtonMenu::lockAll()
 
 Parameter *ParameterEditButtonMenu::getSelectedParameter()
 {
-  auto& eb = *Application::get().getPresetManager()->getEditBuffer();
+  auto &eb = *Application::get().getPresetManager()->getEditBuffer();
   auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   return eb.getSelected(vg);
 }
