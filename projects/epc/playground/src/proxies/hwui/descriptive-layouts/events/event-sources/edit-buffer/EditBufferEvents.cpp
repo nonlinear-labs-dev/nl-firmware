@@ -447,23 +447,6 @@ void DescriptiveLayouts::LayerToFXPath::onChange(const EditBuffer *eb)
   const auto I_OutMixer_Level = outmixer_lvl_I->getControlPositionValue();
   const auto II_OutMixer_Level = outmixer_lvl_II->getControlPositionValue();
 
-  const auto cond_I = I_To_FX_II == 0;
-  const auto cond_II = II_To_FX_I == 0;
-  const auto cond_III = I_To_FX_II == 1;
-  const auto cond_IIII = II_To_FX_I == 1;
-
-  const auto out_I_cond_I = I_OutMixer_Level > 0;
-  const auto out_II_cond_I = II_OutMixer_Level > 0;
-
-  const auto out_I_cond_II = I_OutMixer_Level == 0;
-  const auto out_II_cond_II = II_OutMixer_Level == 0;
-
-  const auto cond_2_I = I_To_FX_II > 0;
-  const auto cond_2_II = I_To_FX_II < 1;
-
-  const auto cond_3_I = II_To_FX_I > 0;
-  const auto cond_3_II = II_To_FX_I < 1;
-
   auto setResult = [this](const std::string &c)
   {
     const std::string base_string = "Layer_To_FX_";
@@ -471,34 +454,45 @@ void DescriptiveLayouts::LayerToFXPath::onChange(const EditBuffer *eb)
     setValue(base_string + c + base_suffix);
   };
 
-  if(cond_I && out_I_cond_I && out_II_cond_II)
-    setResult("A");
-  else if(cond_II && out_I_cond_II && out_II_cond_I)
-    setResult("B");
-  else if(cond_III && out_I_cond_I && out_II_cond_II)
-    setResult("C");
-  else if(cond_IIII && out_I_cond_II && out_II_cond_I)
-    setResult("D");
-  else if(cond_2_I && cond_2_II && out_I_cond_I && out_II_cond_II)
-    setResult("E");
-  else if(cond_3_II && cond_3_I && out_I_cond_II && out_II_cond_I)
-    setResult("F");
-  else if(cond_I && cond_II && out_I_cond_I && out_II_cond_I)
-    setResult("G");
-  else if(cond_III && cond_IIII && out_I_cond_I && out_II_cond_I)
-    setResult("H");
-  else if(cond_2_I && cond_2_II && cond_II && out_I_cond_I && out_II_cond_I)
-    setResult("I");
-  else if(cond_I && cond_3_II && cond_3_I && out_I_cond_I && out_II_cond_I)
-    setResult("J");
-  else if(cond_2_I && cond_2_II && cond_IIII && out_I_cond_I && out_II_cond_I)
-    setResult("K");
-  else if(cond_III && cond_3_II && cond_3_I && out_I_cond_I && out_II_cond_I)
-    setResult("L");
-  else if(cond_2_I && cond_2_II && cond_3_II && cond_3_I && out_I_cond_I && out_II_cond_I)
-    setResult("M");
-  else if(out_I_cond_II && out_II_cond_II)
+  const auto outmix_I_infinite = I_OutMixer_Level == 0;
+  const auto outmix_II_infinite = II_OutMixer_Level == 0;
+  const auto outmix_I_open = I_OutMixer_Level > 0;
+  const auto outmix_II_open = II_OutMixer_Level > 0;
+  const auto FX_I_TO_I_ONLY = I_To_FX_II == 0;
+  const auto FX_II_TO_II_ONLY = II_To_FX_I == 0;
+  const auto FX_I_TO_II_ONLY = I_To_FX_II == 1;
+  const auto FX_II_TO_I_ONLY = II_To_FX_I == 1;
+  const auto FX_I_TO_BOTH = !FX_I_TO_I_ONLY && !FX_I_TO_II_ONLY;
+  const auto FX_II_TO_BOTH = !FX_II_TO_II_ONLY && !FX_II_TO_I_ONLY;
+
+  if(outmix_I_infinite && outmix_II_infinite)
     setResult("empty");
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_BOTH)
+    setResult("M");
+  else if(FX_I_TO_II_ONLY && FX_II_TO_BOTH && outmix_I_open && outmix_II_open)
+    setResult("L");
+  else if(FX_I_TO_BOTH && FX_II_TO_I_ONLY && outmix_I_open && outmix_II_open)
+    setResult("K");
+  else if(FX_I_TO_I_ONLY && FX_II_TO_BOTH && outmix_I_open && outmix_II_open)
+    setResult("J");
+  else if(FX_I_TO_BOTH && FX_II_TO_II_ONLY && outmix_I_open && outmix_II_open)
+    setResult("I");
+  else if(FX_I_TO_II_ONLY && FX_II_TO_I_ONLY && outmix_I_open && outmix_II_open)
+    setResult("H");
+  else if(FX_I_TO_I_ONLY && FX_II_TO_II_ONLY && outmix_I_open && outmix_II_open)
+    setResult("G");
+  else if(FX_II_TO_BOTH && outmix_I_infinite && outmix_II_open)
+    setResult("F");
+  else if(FX_I_TO_BOTH && outmix_I_open && outmix_II_infinite)
+    setResult("E");
+  else if(FX_II_TO_I_ONLY && outmix_I_infinite && outmix_II_open)
+    setResult("D");
+  else if(FX_I_TO_II_ONLY && outmix_I_open && outmix_II_infinite)
+    setResult("C");
+  else if(FX_II_TO_II_ONLY && outmix_I_infinite && outmix_II_open)
+    setResult("B");
+  else if(FX_I_TO_I_ONLY && outmix_I_open && outmix_II_infinite)
+    setResult("A");
 }
 
 void DescriptiveLayouts::Serial_FX_Imagestate::onChange(const EditBuffer *eb)
