@@ -15,6 +15,9 @@ class MacroControlEditButtonMenu : public ButtonMenu
 
   void selectButton(size_t i) override;
 
+ protected:
+  virtual Parameter* getSelectedParameter();
+
  private:
   void setup();
   void onGroupChanged();
@@ -28,4 +31,14 @@ class MacroControlEditButtonMenu : public ButtonMenu
   void lockAll();
 
   static int s_lastAction;
+};
+
+
+class ModulationRouterMacroControlEditButtonMenu : public MacroControlEditButtonMenu
+{
+ public:
+  using MacroControlEditButtonMenu::MacroControlEditButtonMenu;
+
+ protected:
+  Parameter* getSelectedParameter() override;
 };

@@ -1,6 +1,7 @@
 #include "RenameMCLayout.h"
 #include "Application.h"
 #include "use-cases/MacroControlParameterUseCases.h"
+#include "parameters/ModulationRoutingParameter.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>
@@ -33,5 +34,11 @@ Glib::ustring RenameMCLayout::getInitialText() const
 MacroControlParameter *RenameMCLayout::getMacroControl() const
 {
   auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
-  return dynamic_cast<MacroControlParameter *>(Application::get().getPresetManager()->getEditBuffer()->getSelected(vg));
+  auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
+  if(auto modRouter = dynamic_cast<ModulationRoutingParameter*>(selected))
+  {
+    return modRouter->getTargetParameter();
+  }
+
+  return dynamic_cast<MacroControlParameter *>(selected);
 }
