@@ -36,6 +36,7 @@
 #include <libundo/undo/ContinuousTransaction.h>
 #include "LoadedPresetLog.h"
 #include "parameters/ScopedLockByParameterTypes.h"
+#include "use-cases/SettingsUseCases.h"
 #include <sync/JsonAdlSerializers.h>
 #include <use-cases/EditBufferUseCases.h>
 #include <groups/MacroControlsGroup.h>
@@ -536,7 +537,7 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
-  setHWSourcesToLoadRulePostionsAndModulate(transaction);
+  setHWSourcesToLoadRulePositionsAndModulate(transaction);
   initRecallValues(transaction);
   resetModifiedIndicator(transaction, getHash());
 }
@@ -583,7 +584,7 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, con
       {
         swap->swapWith<0>(m_lastLoadedPreset);
         swap->swapWith<1>(m_presetOriginDescription);
-        m_signalPresetLoaded.send();
+        sendPresetLoadSignal();
         onChange();
       });
 
@@ -627,7 +628,7 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction, Defaults mode
       [=](UNDO::Command::State) mutable
       {
         swap->swapWith(m_lastLoadedPreset);
-        m_signalPresetLoaded.send();
+        sendPresetLoadSignal();
         onChange();
       });
 
@@ -1842,7 +1843,7 @@ void EditBuffer::setHWSourcesToOldPositions(UNDO::Transaction *transaction, cons
   }
 }
 
-void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *transaction)
+void EditBuffer::setHWSourcesToLoadRulePositionsAndModulate(UNDO::Transaction *transaction)
 {
   for(auto &p : getParameterGroupByID({ "CS", VoiceGroup::Global })->getParameters())
   {
@@ -1936,57 +1937,6 @@ namespace
     return 0;
   }
 }
-//
-//Dual convertSingleToDual(const Single& single) {
-//  const float masterVolumeAmplitude = parabolicGainCpToAmplitude(single.masterVolumeCp);
-//  Dual ret = {};
-//  // target.partVolAmplitude = source.masterVolAmplitude * mixAmplitude
-//  ret.partVolumeCp[VgI] = amplitudeToParabolicGainCp(
-//      masterVolumeAmplitude * parabolicFadeCpToAmplitude(single.fxMixCp)
-//  );
-//  ret.partVolumeCp[VgII] = amplitudeToParabolicGainCp(
-//      masterVolumeAmplitude * parabolicFadeCpToAmplitude(1.0f - single.fxMixCp)
-//  );
-//  return ret;
-//}
-//
-//void foo() {
-//  Single ret;
-//  // handle edge cases without ratio
-//  if(dual.partVolumeCp[VgII] == 0.0f) {
-//    ret.fxMixCp = 0.0f;
-//  } else if(dual.partVolumeCp[VgI] == dual.partVolumeCp[VgII]) {
-//    ret.fxMixCp = 0.5f;
-//  } else {
-//    // handle general case by ratio of amplitudes
-//    const float ratio = parabolicGainCpToAmplitude(dual.partVolumeCp[VgI]) / parabolicGainCpToAmplitude(dual.partVolumeCp[VgII]);
-//    ret.fxMixCp = (std::sqrt((ratio * ratio) - ratio + 1.0f) - ratio) / (1.0f - ratio);
-//  }
-//  const float masterVolumeAmplitude = parabolicGainCpToAmplitude(dual.masterVolumeCp);
-//  // determine master volume according to selected part
-//  if(vgSelf == VgI) {
-//    // handle edge case without amplitudes
-//    if(ret.fxMixCp == 1.0f) {
-//      ret.masterVolumeCp = 0.0f;
-//    } else {
-//      // handle general case by normalizing amplitudes
-//      ret.masterVolumeCp = std::min(amplitudeToParabolicGainCp(
-//                                        masterVolumeAmplitude * parabolicGainCpToAmplitude(dual.partVolumeCp[vgSelf]) / parabolicFadeCpToAmplitude(ret.fxMixCp)
-//                                            ), 1.0f);
-//    }
-//  } else {
-//    // handle edge case without amplitudes
-//    if(ret.fxMixCp == 0.0f) {
-//      ret.masterVolumeCp = 0.0f;
-//    } else {
-//      // handle general case by normalizing amplitudes
-//      ret.masterVolumeCp = std::min(amplitudeToParabolicGainCp(
-//                                        masterVolumeAmplitude * parabolicGainCpToAmplitude(dual.partVolumeCp[vgSelf]) / parabolicFadeCpToAmplitude(1.0f - ret.fxMixCp)
-//                                            ), 1.0f);
-//    }
-//  }
-//  return ret;
-//}
 
 void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertSingleToDual(UNDO::Transaction *transaction)
 {
@@ -2113,4 +2063,11 @@ void EditBuffer::copyPolyParametersFromI(UNDO::Transaction *transaction, const P
       targetGroup->copyFrom(transaction, preset->findParameterGroup({ targetGroup->getID().getName(), VoiceGroup::I }));
     }
   }
+}
+
+void EditBuffer::sendPresetLoadSignal()
+{
+  SettingsUseCases useCases(getSettings());
+  useCases.setRibbonSelection(SelectedRibbons::Ribbon1_2);
+  m_signalPresetLoaded.send();
 }
