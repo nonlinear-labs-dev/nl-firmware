@@ -35,6 +35,7 @@
 #include <device-settings/SyncSplitSettingUseCases.h>
 #include <libundo/undo/ContinuousTransaction.h>
 #include "LoadedPresetLog.h"
+#include "use-cases/SettingsUseCases.h"
 #include <sync/JsonAdlSerializers.h>
 #include <use-cases/EditBufferUseCases.h>
 #include <groups/MacroControlsGroup.h>
@@ -517,7 +518,7 @@ void EditBuffer::copyFrom(UNDO::Transaction *transaction, const Preset *preset)
   EditBufferSnapshotMaker::get().addSnapshotIfRequired(transaction, this);
   undoableSetType(transaction, preset->getType());
   super::copyFrom(transaction, preset);
-  setHWSourcesToLoadRulePostionsAndModulate(transaction);
+  setHWSourcesToLoadRulePositionsAndModulate(transaction);
   initRecallValues(transaction);
   resetModifiedIndicator(transaction, getHash());
 }
@@ -564,7 +565,7 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, con
       {
         swap->swapWith<0>(m_lastLoadedPreset);
         swap->swapWith<1>(m_presetOriginDescription);
-        m_signalPresetLoaded.send();
+        sendPresetLoadSignal();
         onChange();
       });
 
@@ -608,7 +609,7 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction, Defaults mode
       [=](UNDO::Command::State) mutable
       {
         swap->swapWith(m_lastLoadedPreset);
-        m_signalPresetLoaded.send();
+        sendPresetLoadSignal();
         onChange();
       });
 
@@ -1745,7 +1746,7 @@ void EditBuffer::setHWSourcesToOldPositions(UNDO::Transaction *transaction, cons
   }
 }
 
-void EditBuffer::setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *transaction)
+void EditBuffer::setHWSourcesToLoadRulePositionsAndModulate(UNDO::Transaction *transaction)
 {
   for(auto &p : getParameterGroupByID({ "CS", VoiceGroup::Global })->getParameters())
   {
@@ -1779,4 +1780,11 @@ ParameterDB &EditBuffer::getParameterDB()
 ParameterId EditBuffer::getLastSelectedMacroId() const
 {
   return m_lastSelectedMacroControl;
+}
+
+void EditBuffer::sendPresetLoadSignal()
+{
+  SettingsUseCases useCases(getSettings());
+  useCases.setRibbonSelection(SelectedRibbons::Ribbon1_2);
+  m_signalPresetLoaded.send();
 }

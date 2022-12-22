@@ -32,9 +32,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 2900")
     CHECK(settings->getSetting<FlacRecorderVirgin>()->get());
   }
 
-  auto testSettings = Application::get().getSettings();
-  auto testSetting = settings->getSetting<GlobalLocalEnableSetting>();
-
   CHECK(nltools::msg::waitForConnection(nltools::msg::EndPoint::Playground));
 
   WHEN("audioengine notifies state")

@@ -13,6 +13,7 @@ class Application;
 class Setting;
 class SettingsActions;
 class HardwareFeatures;
+class EditBuffer;
 
 class Settings : public UpdateDocumentContributor
 {
