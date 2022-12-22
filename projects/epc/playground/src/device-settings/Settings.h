@@ -24,7 +24,7 @@ class Settings : public UpdateDocumentContributor
   explicit Settings(const Glib::ustring &file, UpdateDocumentMaster *master, HardwareFeatures& hwFeatures);
   ~Settings() override;
 
-  void init(EditBuffer* eb);
+  void init();
   void reload();
 
   Setting *getSetting(const Glib::ustring &key);

@@ -113,7 +113,7 @@ Application::Application(int numArgs, char **argv)
   Profiler::get().enable(true);
 #endif
 
-  m_settings->init(m_presetManager->getEditBuffer());
+  m_settings->init();
   m_hwui->init();
   m_http->init();
   m_presetManager->init(m_audioEngineProxy.get(), *m_settings,

@@ -25,7 +25,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 2900")
   std::filesystem::remove(file);
   HardwareFeatures hw;
   auto settings = std::make_unique<MockSettingsObject>(file, &SyncMasterMockRoot::get(), hw);
-  settings->init(app->getPresetManager()->getEditBuffer());
+  settings->init();
 
   WHEN("settings are created initial state is 'virgin'")
   {
@@ -49,7 +49,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 2900")
       {
         settings.reset();
         settings = std::make_unique<MockSettingsObject>(file, &SyncMasterMockRoot::get(), hw);
-        settings->init(app->getPresetManager()->getEditBuffer());
+        settings->init();
         CHECK_FALSE(settings->getSetting<FlacRecorderVirgin>()->get());
       }
     }
