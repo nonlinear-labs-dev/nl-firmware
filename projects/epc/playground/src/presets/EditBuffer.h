@@ -226,7 +226,9 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
 
   bool isPartLabelChanged(VoiceGroup group) const;
   void setSyncSplitSettingAccordingToLoadedPreset(UNDO::Transaction *transaction);
-  void setHWSourcesToLoadRulePostionsAndModulate(UNDO::Transaction *transaction);
+  void setHWSourcesToLoadRulePositionsAndModulate(UNDO::Transaction *transaction);
+
+  void sendPresetLoadSignal();
 
 
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;

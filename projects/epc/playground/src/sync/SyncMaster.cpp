@@ -78,7 +78,8 @@ void SyncMaster::add(SyncedItem *item)
 
 void SyncMaster::remove(SyncedItem *i)
 {
-  m_items.erase(std::find(m_items.begin(), m_items.end(), i));
+  m_items.erase(std::remove(m_items.begin(), m_items.end(), i), m_items.end());
+
   i->resetDirty();
   nlohmann::json r;
   auto topic = i->getTopic();
@@ -102,7 +103,7 @@ void SyncMaster::addDirty(SyncedItem *item)
 
 void SyncMaster::removeDirty(SyncedItem *item)
 {
-  m_dirty.erase(std::find(m_dirty.begin(), m_dirty.end(), item));
+  m_dirty.erase(std::remove(m_dirty.begin(), m_dirty.end(), item), m_dirty.end());
 }
 
 void SyncMaster::handleDirty()
@@ -119,16 +120,16 @@ void SyncMaster::handleDirty()
     {
       auto &clients = it->second;
 
-      auto newEnd = std::remove_if(clients.begin(), clients.end(), [&](auto &client) {
-        if(auto p = client.lock())
-        {
-          m_api->send(p.get(), dirtyItem);
-          return false;
-        }
-        return true;
-      });
-
-      clients.erase(newEnd, clients.end());
+      clients.erase(std::remove_if(clients.begin(), clients.end(),
+                                   [&](auto &client) {
+                                     if(auto p = client.lock())
+                                     {
+                                       m_api->send(p.get(), dirtyItem);
+                                       return false;
+                                     }
+                                     return true;
+                                   }),
+                    clients.end());
     }
   }
 }
