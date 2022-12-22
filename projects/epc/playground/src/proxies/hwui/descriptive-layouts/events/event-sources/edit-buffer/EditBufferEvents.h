@@ -306,9 +306,9 @@ m_map[EventSources::Split_Arrows_To_FX_R_TO_L_II] = std::make_unique<Split_Arrow
       auto OutMixer_Level = eb->findParameterByID({C15::PID::Out_Mix_Lvl, vg});
 
       if(to_FX->getControlPositionValue() == 0 && OutMixer_Level->getControlPositionValue() > 0)
-        setResult("A");
+        setResult(vg == VoiceGroup::I ? "A" : "B");
       else if(to_FX->getControlPositionValue() == 1 && OutMixer_Level->getControlPositionValue() > 0)
-        setResult("B");
+        setResult(vg == VoiceGroup::I ? "B" : "A");
       else if(to_FX->getControlPositionValue() > 0 && to_FX->getControlPositionValue() < 1 && OutMixer_Level->getControlPositionValue() > 0)
         setResult("C");
       else if(OutMixer_Level->getControlPositionValue() == 0)
