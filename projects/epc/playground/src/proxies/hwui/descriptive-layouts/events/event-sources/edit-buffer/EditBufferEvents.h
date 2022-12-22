@@ -228,6 +228,7 @@ namespace DescriptiveLayouts
   {
    public:
     void onChange(const EditBuffer* eb) override;
+    std::string getValue();
   };
 
   class Serial_FX_Imagestate : public EditBufferEvent<std::string>

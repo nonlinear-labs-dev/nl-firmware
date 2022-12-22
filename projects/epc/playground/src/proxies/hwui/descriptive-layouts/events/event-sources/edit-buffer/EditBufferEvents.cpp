@@ -449,6 +449,16 @@ void DescriptiveLayouts::LayerToFXPath::onChange(const EditBuffer *eb)
 
   auto setResult = [this](const std::string &c)
   {
+    if(c == "ERROR")
+    {
+      setValue(c);
+      return;
+    }
+    if(c == "empty")
+    {
+      setValue("Layer_To_FX_Empty");
+      return;
+    }
     const std::string base_string = "Layer_To_FX_";
     const std::string base_suffix = ".png";
     setValue(base_string + c + base_suffix);
@@ -462,37 +472,48 @@ void DescriptiveLayouts::LayerToFXPath::onChange(const EditBuffer *eb)
   const auto FX_II_TO_II_ONLY = II_To_FX_I == 0;
   const auto FX_I_TO_II_ONLY = I_To_FX_II == 1;
   const auto FX_II_TO_I_ONLY = II_To_FX_I == 1;
-  const auto FX_I_TO_BOTH = !FX_I_TO_I_ONLY && !FX_I_TO_II_ONLY;
-  const auto FX_II_TO_BOTH = !FX_II_TO_II_ONLY && !FX_II_TO_I_ONLY;
+  const auto FX_I_TO_BOTH = I_To_FX_II > 0 && I_To_FX_II < 1;
+  const auto FX_II_TO_BOTH = II_To_FX_I > 0 && II_To_FX_I < 1;
 
-  if(outmix_I_infinite && outmix_II_infinite)
-    setResult("empty");
-  else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_BOTH)
+  if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_BOTH)
     setResult("M");
-  else if(FX_I_TO_II_ONLY && FX_II_TO_BOTH && outmix_I_open && outmix_II_open)
-    setResult("L");
-  else if(FX_I_TO_BOTH && FX_II_TO_I_ONLY && outmix_I_open && outmix_II_open)
-    setResult("K");
-  else if(FX_I_TO_I_ONLY && FX_II_TO_BOTH && outmix_I_open && outmix_II_open)
-    setResult("J");
-  else if(FX_I_TO_BOTH && FX_II_TO_II_ONLY && outmix_I_open && outmix_II_open)
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_II_ONLY)
     setResult("I");
-  else if(FX_I_TO_II_ONLY && FX_II_TO_I_ONLY && outmix_I_open && outmix_II_open)
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_I_ONLY)
+    setResult("K");
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_BOTH)
+    setResult("L");
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_I_ONLY)
     setResult("H");
-  else if(FX_I_TO_I_ONLY && FX_II_TO_II_ONLY && outmix_I_open && outmix_II_open)
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_BOTH)
+    setResult("J");
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_II_ONLY)
     setResult("G");
-  else if(FX_II_TO_BOTH && outmix_I_infinite && outmix_II_open)
-    setResult("F");
-  else if(FX_I_TO_BOTH && outmix_I_open && outmix_II_infinite)
+  else if(outmix_I_open && outmix_II_infinite && FX_I_TO_BOTH)
     setResult("E");
-  else if(FX_II_TO_I_ONLY && outmix_I_infinite && outmix_II_open)
-    setResult("D");
-  else if(FX_I_TO_II_ONLY && outmix_I_open && outmix_II_infinite)
+  else if(outmix_I_open && outmix_II_infinite && FX_I_TO_II_ONLY)
     setResult("C");
-  else if(FX_II_TO_II_ONLY && outmix_I_infinite && outmix_II_open)
-    setResult("B");
-  else if(FX_I_TO_I_ONLY && outmix_I_open && outmix_II_infinite)
+  else if(outmix_I_open && outmix_II_infinite && FX_I_TO_I_ONLY)
     setResult("A");
+  else if(outmix_II_open && outmix_I_infinite && FX_II_TO_BOTH)
+    setResult("F");
+  else if(outmix_II_open && outmix_I_infinite && FX_II_TO_I_ONLY)
+    setResult("D");
+  else if(outmix_II_open && outmix_I_infinite && FX_II_TO_II_ONLY)
+    setResult("B");
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_I_ONLY)
+    setResult("N");
+  else if(outmix_I_open && outmix_II_open && FX_II_TO_II_ONLY && FX_I_TO_II_ONLY)
+    setResult("O");
+  else if(outmix_I_infinite && outmix_II_infinite)
+    setResult("empty");
+  else
+    setResult("ERROR");
+}
+
+std::string DescriptiveLayouts::LayerToFXPath::getValue()
+{
+  return std::experimental::any_cast<std::string>(getLastValue());
 }
 
 void DescriptiveLayouts::Serial_FX_Imagestate::onChange(const EditBuffer *eb)

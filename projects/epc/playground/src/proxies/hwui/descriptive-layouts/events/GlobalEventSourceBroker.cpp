@@ -165,4 +165,9 @@ namespace DescriptiveLayouts
 
     return m_map.at(source)->connect(cb);
   }
+
+  EventSourceBase* GlobalEventSourceBroker::getEventSource(EventSources e)
+  {
+    return m_map.at(e).get();
+  }
 }
