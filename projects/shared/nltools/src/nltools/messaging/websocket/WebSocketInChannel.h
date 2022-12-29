@@ -46,8 +46,6 @@ namespace nltools
 
         std::unique_ptr<threading::ContextBoundMessageQueue> m_mainContextQueue;
         std::list<tWebSocketPtr> m_connections;
-
-        bool m_bgLoopRunning = false;
       };
     }
   }
