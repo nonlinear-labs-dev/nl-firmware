@@ -2,7 +2,12 @@
 
 Glib::ustring SplitPointDimension::stringize(const tDisplayValue &displayValue) const
 {
-  return KeyDimension::stringizeNote((int) displayValue);
+  return KeyDimension::stringizeNote(round(displayValue));
+}
+
+Glib::ustring SplitPointDimension::getStingizerJS() const
+{
+  return "formatNote(Math.round(cpValue))";
 }
 
 const SplitPointDimension &SplitPointDimension::get()

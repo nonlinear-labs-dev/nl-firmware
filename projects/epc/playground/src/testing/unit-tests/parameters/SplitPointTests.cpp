@@ -269,3 +269,172 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "modulate split")
     CHECK(oldRange.second == Approx(sI->getModulationRange(false).second));
   }
 }
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "special handling for modulating split")
+{
+  auto eb = TestHelper::getEditBuffer();
+
+  auto sI = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
+  auto sII = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::II });
+
+  auto mcA = eb->findAndCastParameterByID<MacroControlParameter>({ C15::PID::MC_A, VoiceGroup::Global });
+
+  ModParameterUseCases sIUseCases(sI);
+  MacroControlParameterUseCases mcUseCases(mcA);
+
+  mcUseCases.setControlPosition(0.5);
+
+  TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
+
+  sIUseCases.selectModSource(MacroControls::MC1);
+  sIUseCases.setControlPosition(0.5);
+
+  CHECK(sI->getDisplayString() == "F#3");
+  CHECK(sII->getDisplayString() == "G3");
+
+  sIUseCases.setModulationAmount(0);
+
+  WHEN("mod amount is set to 0st")
+  {
+    CHECK(sI->getModRangeAsDisplayValues().first == "F#3");
+    CHECK(sI->getModRangeAsDisplayValues().second == "F#3");
+    CHECK(sII->getModRangeAsDisplayValues().first == "G3");
+    CHECK(sII->getModRangeAsDisplayValues().second == "G3");
+
+    THEN("moving the mc has no effect")
+    {
+      mcUseCases.setControlPosition(0);
+      CHECK(sI->getDisplayString() == "F#3");
+      CHECK(sII->getDisplayString() == "G3");
+
+      mcUseCases.setControlPosition(1.0);
+      CHECK(sI->getDisplayString() == "F#3");
+      CHECK(sII->getDisplayString() == "G3");
+    }
+  }
+
+  WHEN("mod amount is set to 1st")
+  {
+    sIUseCases.incModAmount(1, false);
+
+    CHECK(sI->getModRangeAsDisplayValues().first == "F3");
+    CHECK(sI->getModRangeAsDisplayValues().second == "F#3");
+
+    CHECK(sII->getModRangeAsDisplayValues().first == "F#3");
+    CHECK(sII->getModRangeAsDisplayValues().second == "G3");
+
+    CHECK(sI->getDisplayString() == "F#3");
+    CHECK(sII->getDisplayString() == "G3");
+
+    THEN("moving the mc has effect as described in issue-2394")
+    {
+      mcUseCases.setControlPosition(0);
+      CHECK(sI->getDisplayString() == "F3");
+      CHECK(sII->getDisplayString() == "F#3");
+
+      mcUseCases.setControlPosition(0.49);
+      CHECK(sI->getDisplayString() == "F3");
+      CHECK(sII->getDisplayString() == "F#3");
+
+      mcUseCases.setControlPosition(0.5);
+      CHECK(sI->getDisplayString() == "F#3");
+      CHECK(sII->getDisplayString() == "G3");
+
+      mcUseCases.setControlPosition(1.0);
+      CHECK(sI->getDisplayString() == "F#3");
+      CHECK(sII->getDisplayString() == "G3");
+    }
+  }
+
+  WHEN("mod amount is set to 2st")
+  {
+    CHECK(sI->getControlPositionValue() == 0.5);
+    CHECK(sI->getModulationBase() == 0.5);
+
+    sIUseCases.incModAmount(2, false);
+
+    CHECK(sI->getControlPositionValue() == 0.5);
+
+    CHECK(sI->getModRangeAsDisplayValues().first == "F3");
+    CHECK(sI->getModRangeAsDisplayValues().second == "G3");
+    CHECK(sII->getModRangeAsDisplayValues().first == "F#3");
+    CHECK(sII->getModRangeAsDisplayValues().second == "G#3");
+
+    THEN("moving the mc has effect as described in issue-2394")
+    {
+      mcUseCases.setControlPosition(0);
+      CHECK(sI->getDisplayString() == "F3");
+      CHECK(sII->getDisplayString() == "F#3");
+
+      mcUseCases.setControlPosition(0.33);
+      CHECK(sI->getDisplayString() == "F3");
+      CHECK(sII->getDisplayString() == "F#3");
+
+      mcUseCases.setControlPosition(0.34);
+      CHECK(sI->getDisplayString() == "F#3");
+      CHECK(sII->getDisplayString() == "G3");
+
+      mcUseCases.setControlPosition(0.66);
+      CHECK(sI->getDisplayString() == "F#3");
+      CHECK(sII->getDisplayString() == "G3");
+
+      mcUseCases.setControlPosition(0.67);
+      CHECK(sI->getDisplayString() == "G3");
+      CHECK(sII->getDisplayString() == "G#3");
+
+      mcUseCases.setControlPosition(1.0);
+      CHECK(sI->getDisplayString() == "G3");
+      CHECK(sII->getDisplayString() == "G#3");
+    }
+  }
+
+  WHEN("mod amount is set to 3st")
+  {
+    CHECK(sI->getControlPositionValue() == 0.5);
+    CHECK(sI->getModulationBase() == 0.5);
+
+    sIUseCases.incModAmount(3, false);
+
+    CHECK(sI->getControlPositionValue() == 0.5);
+
+    CHECK(sI->getModRangeAsDisplayValues().first == "E3");
+    CHECK(sI->getModRangeAsDisplayValues().second == "G3");
+    CHECK(sII->getModRangeAsDisplayValues().first == "F3");
+    CHECK(sII->getModRangeAsDisplayValues().second == "G#3");
+
+    THEN("moving the mc has effect as described in issue-2394")
+    {
+      mcUseCases.setControlPosition(0);
+      CHECK(sI->getDisplayString() == "E3");
+      CHECK(sII->getDisplayString() == "F3");
+
+      mcUseCases.setControlPosition(0.24);
+      CHECK(sI->getDisplayString() == "E3");
+      CHECK(sII->getDisplayString() == "F3");
+
+      mcUseCases.setControlPosition(0.25);
+      CHECK(sI->getDisplayString() == "F3");
+      CHECK(sII->getDisplayString() == "F#3");
+
+      mcUseCases.setControlPosition(0.49);
+      CHECK(sI->getDisplayString() == "F3");
+      CHECK(sII->getDisplayString() == "F#3");
+
+      mcUseCases.setControlPosition(0.50);
+      CHECK(sI->getDisplayString() == "F#3");
+      CHECK(sII->getDisplayString() == "G3");
+
+      mcUseCases.setControlPosition(0.74);
+      CHECK(sI->getDisplayString() == "F#3");
+      CHECK(sII->getDisplayString() == "G3");
+
+      mcUseCases.setControlPosition(0.75);
+      CHECK(sI->getDisplayString() == "G3");
+      CHECK(sII->getDisplayString() == "G#3");
+
+      mcUseCases.setControlPosition(1.0);
+      CHECK(sI->getDisplayString() == "G3");
+      CHECK(sII->getDisplayString() == "G#3");
+    }
+  }
+}

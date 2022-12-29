@@ -185,3 +185,44 @@ bool SplitPointParameter::isSynced() const
   }
   return false;
 }
+
+// copy of the algorithm used in audio-engine
+auto ae_round(const float _value)
+{
+  return (signed) std::ceil(_value * (signed) 60);
+}
+
+auto ae_quantize(const float _value, const unsigned _steps)
+{
+  if(_steps == 0)
+    return _value;
+
+  return std::clamp(std::floor(_value * (1 + _steps)) / _steps, 0.0f, 1.0f);
+}
+
+auto ae_getModulation(const float _mod, const float modAmount)
+{
+  return (float) modAmount * ae_quantize(_mod, ae_round(std::abs(modAmount)));
+};
+
+void SplitPointParameter::applyMacroControl(tDisplayValue mcValue, Initiator initiator)
+{
+  auto newValue = getModulationBase() + (double) ae_getModulation(mcValue, getModulationAmount());
+  getValue().setRawValue(initiator, newValue);
+}
+
+void SplitPointParameter::updateModulationBase()
+{
+  auto calcModulationBase = [this] {
+    if(auto macroParam = getMacroControl())
+    {
+      auto _mod = (float) macroParam->getControlPositionValue();
+      auto modAmount = getModulationAmount();
+      auto curValue = getValue().getQuantizedClipped();
+      return curValue - (double) ae_getModulation(_mod, getModulationAmount());
+    }
+    return 0.0;
+  };
+
+  setModulationBase(calcModulationBase());
+}

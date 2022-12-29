@@ -9,13 +9,16 @@ class ModulateableParameter : public Parameter
   typedef Parameter super;
 
  public:
-  ModulateableParameter(ParameterGroup *group, const ParameterId& id);
+  ModulateableParameter(ParameterGroup *group, const ParameterId &id);
   ~ModulateableParameter() override;
 
   size_t getHash() const override;
 
+  tDisplayValue getModulationBase() const;
+  void setModulationBase(tDisplayValue v);
+
   tDisplayValue getModulationAmount() const;
-  virtual void setModulationAmount(UNDO::Transaction *transaction, const tDisplayValue &amount);
+  virtual void setModulationAmount(UNDO::Transaction *transaction, const tControlPositionValue &amount);
 
   MacroControls getModulationSource() const;
   virtual void setModulationSource(UNDO::Transaction *transaction, MacroControls src);
@@ -27,8 +30,7 @@ class ModulateableParameter : public Parameter
 
   void loadDefault(UNDO::Transaction *transaction, Defaults mode) override;
 
-  uint16_t getModulationSourceAndAmountPacked() const;
-  void applyPlaycontrollerMacroControl(tDisplayValue diff);
+  virtual void applyMacroControl(tDisplayValue mcValue, Initiator initiator);
 
   void copyFrom(UNDO::Transaction *transaction, const Parameter *other) override;
 
@@ -41,6 +43,8 @@ class ModulateableParameter : public Parameter
   virtual double getModulationAmountFineDenominator() const;
   virtual double getModulationAmountCoarseDenominator() const;
   virtual std::pair<Glib::ustring, Glib::ustring> getModRangeAsDisplayValues() const;
+
+  void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue) override;
 
   Layout *createLayout(FocusAndMode focusAndMode) const override;
   void *getAmountCookie();
@@ -63,8 +67,10 @@ class ModulateableParameter : public Parameter
 
  private:
   int getModAmountDenominator(const ButtonModifiers &modifiers) const;
+  virtual void updateModulationBase();
 
-  tDisplayValue m_modulationAmount;
+  tControlPositionValue m_modulationAmount;
+  tControlPositionValue m_modulationBase;  // lower bound of modulation range
   MacroControls m_modSource;
-  const ScaleConverter* m_modulationAmountScaleConverter = nullptr;
+  const ScaleConverter *m_modulationAmountScaleConverter = nullptr;
 };

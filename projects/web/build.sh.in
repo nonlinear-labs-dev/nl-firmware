@@ -18,6 +18,10 @@ ln -s /src/client ~/meteor-build/client
 ln -s /src/public ~/meteor-build/public
 ln -s /src/tests ~/meteor-build/tests
 
+if rm ./tests && mkdir ./tests && touch tests/main.js; then
+    echo "had to create test file because package.json expects it"
+fi
+
 node ./node_modules/meteor-build-client/main.js /builddir/out
 END_HEREDOC
 )

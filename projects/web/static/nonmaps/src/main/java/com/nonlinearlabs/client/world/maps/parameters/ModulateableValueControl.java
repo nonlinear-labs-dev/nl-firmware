@@ -23,8 +23,8 @@ abstract class ModulateableValueControl extends ValueControl {
 
 		if (shouldDrawCorona()) {
 			if (presenter.modulation.isModulated) {
-				drawCorona(ctx, adaptValue(presenter.modulation.modulationRange.left),
-						adaptValue(presenter.modulation.modulationRange.right));
+				drawCorona(ctx, adaptValue(presenter.modulation.modRange.left.clippedQuantized),
+						adaptValue(presenter.modulation.modRange.right.clippedQuantized));
 			}
 		}
 

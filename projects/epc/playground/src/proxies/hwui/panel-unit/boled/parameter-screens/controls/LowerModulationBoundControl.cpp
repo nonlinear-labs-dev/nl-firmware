@@ -44,39 +44,12 @@ bool LowerModulationBoundControl::onRotary(int inc, ButtonModifiers modifiers)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+
   if(auto modulatedParam = dynamic_cast<ModulateableParameter *>(editBuffer->getSelected(vg)))
   {
-    auto mc = modulatedParam->getModulationSource();
-    auto mcID = MacroControlsGroup::modSrcToParamId(mc);
-
-    if(auto mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID(mcID)))
-    {
-      auto range = modulatedParam->getModulationRange(true);
-
-      if(modulatedParam->isBiPolar())
-      {
-        range.first = 2 * range.first - 1;
-        range.second = 2 * range.second - 1;
-      }
-
-      auto srcValue = mcParam->getControlPositionValue();
-      double denominator = modifiers[FINE] ? modulatedParam->getValue().getFineDenominator()
-                                           : modulatedParam->getValue().getCoarseDenominator();
-
-      auto newLeft = (round(range.first * denominator) + inc) / denominator;
-      newLeft = modulatedParam->getValue().getScaleConverter()->getControlPositionRange().clip(newLeft);
-      auto newModAmount = range.second - newLeft;
-
-      auto newValue = newLeft + newModAmount * srcValue;
-
-      if(modulatedParam->isBiPolar())
-        newModAmount /= 2;
-
-      ModParameterUseCases useCase(modulatedParam);
-      useCase.setModulationLimit(newModAmount, newValue);
-
-      return true;
-    }
+    ModParameterUseCases useCase(modulatedParam);
+    useCase.incLowerModulationBound(inc, modifiers[FINE]);
+    return true;
   }
   return false;
 }

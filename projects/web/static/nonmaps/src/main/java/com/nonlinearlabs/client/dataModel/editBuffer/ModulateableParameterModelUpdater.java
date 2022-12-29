@@ -17,6 +17,7 @@ public class ModulateableParameterModelUpdater extends BasicParameterModelUpdate
 		super.doUpdate();
 		String modSource = getChildText(root, "modSrc");
 		String modAmount = getChildText(root, "modAmount");
+		String modBase = getChildText(root, "modBase");
 
 		String modAmountCoarse = getChildText(root, "mod-amount-coarse");
 		String modAmountFine = getChildText(root, "mod-amount-fine");
@@ -34,13 +35,20 @@ public class ModulateableParameterModelUpdater extends BasicParameterModelUpdate
 			notify = true;
 		}
 
+		if (!modBase.isEmpty()) {
+			target.modBase.value.setValue(Double.valueOf(modBase));
+			notify = true;
+		}
+
+		int modResolutionRange = target.value.metaData.bipolar.getBool() ? 2 : 1;
+
 		if (!modAmountCoarse.isEmpty()) {
-			target.modAmount.metaData.coarseDenominator.setValue(Integer.valueOf(modAmountCoarse));
+			target.modAmount.metaData.coarseDenominator.setValue(modResolutionRange * Integer.valueOf(modAmountCoarse));
 			notify = true;
 		}
 
 		if (!modAmountFine.isEmpty()) {
-			target.modAmount.metaData.fineDenominator.setValue(Integer.valueOf(modAmountFine));
+			target.modAmount.metaData.fineDenominator.setValue(modResolutionRange * Integer.valueOf(modAmountFine));
 			notify = true;
 		}
 

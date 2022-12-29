@@ -35,8 +35,8 @@ public class ModulationAmountSlider extends OverlayControl {
 	protected void drawSlider(Context2d ctx, ParameterPresenter p) {
 		boolean isBiPolar = p.bipolar;
 		double targetValue = p.controlPosition;
-		double modLeft = p.modulation.modulationRange.left;
-		double modRight = p.modulation.modulationRange.right;
+		double modLeft = p.modulation.modRange.left.clippedQuantized;
+		double modRight = p.modulation.modRange.right.clippedQuantized;
 
 		Rect r = getPixRect().copy();
 		boolean isMCHighlight = isHighlit();

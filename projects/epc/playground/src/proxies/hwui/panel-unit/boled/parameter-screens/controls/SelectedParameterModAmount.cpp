@@ -79,6 +79,12 @@ void SelectedParameterModAmount::onParamValueChanged(const Parameter *param)
   if(const auto *p = dynamic_cast<const ModulateableParameter *>(param))
   {
     auto range = p->getModulationRange(true);
+
+    if(p->isBiPolar())
+    {
+      range.first = 0.5 * (range.first + 1);
+      range.second = 0.5 * (range.second + 1);
+    }
     setRange(range.first, range.second);
   }
   else
