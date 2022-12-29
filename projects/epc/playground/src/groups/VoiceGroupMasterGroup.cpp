@@ -1,4 +1,3 @@
-#include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
 #include <parameters/voice-group-master-group/VoiceGroupMasterModulateableParameter.h>
 #include "VoiceGroupMasterGroup.h"
 #include "parameter_declarations.h"

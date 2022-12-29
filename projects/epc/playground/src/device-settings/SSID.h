@@ -9,7 +9,7 @@ class Settings;
 class SSID : public Setting
 {
  public:
-  explicit SSID(Settings& parent, std::shared_ptr<EpcWifi> localWifi, HardwareFeatures& hwFeatures);
+  explicit SSID(Settings& parent, std::shared_ptr<EpcWifi> localWifi, const HardwareFeatures& hwFeatures);
   ~SSID() override;
 
   Glib::ustring getDisplayString() const override;

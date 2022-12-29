@@ -1,4 +1,5 @@
 #include "TestGroup.h"
+#include <parameters/Parameter.h>
 
 TestGroup::TestGroup(TestGroupSet *root, VoiceGroup vg)
     : ParameterGroup(root, { "test", vg }, "test", "test", "test")

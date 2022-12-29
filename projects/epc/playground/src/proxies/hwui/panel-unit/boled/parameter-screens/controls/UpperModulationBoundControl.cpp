@@ -2,7 +2,6 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/UpperModulationBoundLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/UpperModulationBoundSlider.h>
 #include <Application.h>
-#include <groups/MacroControlsGroup.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>

@@ -38,7 +38,7 @@ class PresetDualParameterGroups : public AttributesOwner
   void forEachParameter(const std::function<void(const PresetParameter*)>& cb) const;
   void forEachParameter(const std::function<void(PresetParameter*)>& cb);
 
-  template <VoiceGroup VG> void forEachParameter(const std::function<void(PresetParameter*)>& cb)
+  template <VoiceGroup VG> inline void forEachParameter(const std::function<void(PresetParameter*)>& cb)
   {
     for(auto& g : m_parameterGroups[static_cast<int>(VG)])
       for(auto& p : g.second->getParameters())

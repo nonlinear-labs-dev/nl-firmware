@@ -1,7 +1,6 @@
 package com.nonlinearlabs.client.world.maps.parameters.SVFilter;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.world.Gray;
 import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.Rect;
@@ -10,11 +9,8 @@ import com.nonlinearlabs.client.world.maps.parameters.SliderHorizontal;
 
 public class LittleKnobSlider extends SliderHorizontal {
 
-	private int paramID;
-
 	public LittleKnobSlider(MapsLayout parent, int parameterID) {
 		super(parent, parameterID);
-		this.paramID = parameterID;
 	}
 
 	@Override
@@ -35,10 +31,7 @@ public class LittleKnobSlider extends SliderHorizontal {
 		ctx.fillRect(indicatorStartX + getValue() * width - toXPixels(1) + handleWidth / 2,
 				pixRect.getTop() + toYPixels(0.5), toXPixels(1), pixRect.getHeight() - toYPixels(1));
 
-	
-		
-		if(presenter.modulation.isModulateable)
-		{
+		if (presenter.modulation.isModulateable) {
 			drawModIndication(ctx);
 		}
 	}

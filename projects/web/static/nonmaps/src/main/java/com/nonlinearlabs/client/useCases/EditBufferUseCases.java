@@ -2,9 +2,9 @@ package com.nonlinearlabs.client.useCases;
 
 import java.util.Arrays;
 
+import com.nonlinearlabs.client.LoadToPartMode.LoadToPartModeData;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.LoadToPartMode.LoadToPartModeData;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
@@ -20,10 +20,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.SendParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
-import com.nonlinearlabs.client.presenters.ParameterPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
-import com.nonlinearlabs.client.tools.NLMath;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.PhysicalControlSendParameter;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 
 public class EditBufferUseCases {
@@ -123,10 +120,10 @@ public class EditBufferUseCases {
 
 			if (r.value.getQuantized(true) > 0.0) {
 				ParameterId physicalControlID = r.getAssociatedPhysicalControlID();
-				if(Arrays.binarySearch(ParameterFactory.ribbons, physicalControlID.getNumber()) >= 0) {
+				if (Arrays.binarySearch(ParameterFactory.ribbons, physicalControlID.getNumber()) >= 0) {
 					RibbonParameterModel ribbon = this.<RibbonParameterModel>findParameter(physicalControlID);
 					if (!ribbon.isReturning()) {
-							ribbon.value.value.setValue(m.value.getQuantizedAndClipped(true));
+						ribbon.value.value.setValue(m.value.getQuantizedAndClipped(true));
 					}
 				}
 			}
@@ -227,8 +224,9 @@ public class EditBufferUseCases {
 
 	public void incDecParameter(ParameterId id, boolean fine, int inc) {
 		BasicParameterModel p = EditBufferModel.get().getParameter(id);
-		ParameterPresenter pp = ParameterPresenterProviders.get().getParameterPresenter(id.getVoiceGroup(), id.getNumber());
-		if(pp.isFine == false)
+		ParameterPresenter pp = ParameterPresenterProviders.get().getParameterPresenter(id.getVoiceGroup(),
+				id.getNumber());
+		if (pp.isFine == false)
 			fine = false;
 		double v = p.getIncDecValue(fine, inc);
 		setParameterValue(id, v, true);
@@ -385,9 +383,9 @@ public class EditBufferUseCases {
 					startReturningAnimation(m);
 			}
 
-			if(p instanceof SendParameterModel) {
-				SendParameterModel m = (SendParameterModel)p;
-				if(m.isReturning())
+			if (p instanceof SendParameterModel) {
+				SendParameterModel m = (SendParameterModel) p;
+				if (m.isReturning())
 					startReturningAnimation(m);
 			}
 		});
@@ -490,8 +488,9 @@ public class EditBufferUseCases {
 			NonMaps.theMaps.getServerProxy().setDirectLoadNoLoadToPart("off");
 		} else {
 			SetupModel.get().systemSettings.directLoad.setValue(true);
-			if(data != null && currentDisplayedVoiceGroup != null) {
-				NonMaps.theMaps.getServerProxy().setDirectLoadWithLoadToPart("on", data.m_selectedPreset, data.m_selectedVoiceGroup, currentDisplayedVoiceGroup);
+			if (data != null && currentDisplayedVoiceGroup != null) {
+				NonMaps.theMaps.getServerProxy().setDirectLoadWithLoadToPart("on", data.m_selectedPreset,
+						data.m_selectedVoiceGroup, currentDisplayedVoiceGroup);
 			} else {
 				NonMaps.theMaps.getServerProxy().setDirectLoadNoLoadToPart("on");
 			}
@@ -507,7 +506,7 @@ public class EditBufferUseCases {
 			NonMaps.theMaps.getServerProxy().setSetting("SyncSplit", "on");
 		}
 	}
-	
+
 	public void loadPreset(String uuid) {
 		NonMaps.theMaps.getServerProxy().loadPreset(uuid);
 	}
@@ -544,7 +543,6 @@ public class EditBufferUseCases {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
 		double rounded = p.value.getQuantizedAndClipped(false);
 		setParameterValue(id, rounded, true);
-
 	}
 
 	public void unmutePart(VoiceGroup group) {

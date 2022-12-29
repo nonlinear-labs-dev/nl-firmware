@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.AftertouchParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
@@ -240,7 +239,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.changed = false;
 		presenter.valueChanged = false;
 
-        PhysicalControlParameterModel sibling = p.getSibling();
+		PhysicalControlParameterModel sibling = p.getSibling();
 
 		if (sibling instanceof RibbonParameterModel) {
 			RibbonParameterModel r = (RibbonParameterModel) sibling;
@@ -442,7 +441,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			RibbonParameterModel r = (RibbonParameterModel) p;
 			presenter.drawCenterReturnIndicator = r.mode.getValue() == ReturnModes.return_to_center;
 			presenter.drawZeroReturnIndicator = false;
-			presenter.isReturning = r.mode.getValue() != ReturnModes.non_return;		
+			presenter.isReturning = r.mode.getValue() != ReturnModes.non_return;
 			presenter.relative = r.isRelative();
 		}
 

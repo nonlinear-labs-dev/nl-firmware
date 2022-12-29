@@ -64,8 +64,10 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 	public StringDataModelEntity sourceUUIDI = new StringDataModelEntity("");
 	public StringDataModelEntity sourceUUIDII = new StringDataModelEntity("");
 
-	public EnumDataModelEntity<VoiceGroup> sourceVGI = new EnumDataModelEntity<EditBufferModel.VoiceGroup>(EditBufferModel.VoiceGroup.class, VoiceGroup.I);
-	public EnumDataModelEntity<VoiceGroup> sourceVGII = new EnumDataModelEntity<EditBufferModel.VoiceGroup>(EditBufferModel.VoiceGroup.class, VoiceGroup.I);
+	public EnumDataModelEntity<VoiceGroup> sourceVGI = new EnumDataModelEntity<EditBufferModel.VoiceGroup>(
+			EditBufferModel.VoiceGroup.class, VoiceGroup.I);
+	public EnumDataModelEntity<VoiceGroup> sourceVGII = new EnumDataModelEntity<EditBufferModel.VoiceGroup>(
+			EditBufferModel.VoiceGroup.class, VoiceGroup.I);
 
 	private EditBufferModel() {
 		ParameterFactory.assertSorted();
@@ -124,34 +126,34 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 
 	public String getPresetNameOfVoiceGroup(VoiceGroup group) {
 		switch (group) {
-		case I:
-		case Global:
-			return loadedPresetInVG1.getValue();
+			case I:
+			case Global:
+				return loadedPresetInVG1.getValue();
 
-		case II:
-			return loadedPresetInVG2.getValue();
+			case II:
+				return loadedPresetInVG2.getValue();
 		}
 		return "";
 	}
 
 	public String getPresetNameOfVoiceGroupWithSuffix(VoiceGroup group) {
-		switch(group) {
+		switch (group) {
 			case I:
 			case Global:
-			return loadedPresetInVG1WithSuffix.getValue();
+				return loadedPresetInVG1WithSuffix.getValue();
 			case II:
-			return loadedPresetInVG2WithSuffix.getValue();
+				return loadedPresetInVG2WithSuffix.getValue();
 		}
 		return "";
 	}
 
-	public MacroControlParameterModel getParameter(ModSource value, VoiceGroup vg) {
+	public MacroControlParameterModel getParameter(ModSource value) {
 		return (MacroControlParameterModel) getParameter(value.toParameterId());
 	}
 
 	public List<ModulateableParameterModel> getAllModulateableParameters() {
 		List<ModulateableParameterModel> ret = new ArrayList<ModulateableParameterModel>();
-		for(VoiceGroup vg: new VoiceGroup[]{VoiceGroup.I, VoiceGroup.II, VoiceGroup.Global}) {
+		for (VoiceGroup vg : new VoiceGroup[] { VoiceGroup.I, VoiceGroup.II, VoiceGroup.Global }) {
 			ret.addAll(byVoiceGroup[vg.ordinal()].modulateableParametersCache);
 		}
 		return ret;

@@ -1,4 +1,5 @@
 #include <Application.h>
+#include <parameters/Parameter.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>

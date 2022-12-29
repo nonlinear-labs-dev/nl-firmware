@@ -11,4 +11,5 @@ public class NonMapsSuite extends GWTTestSuite {
     suite.addTestSuite(NonMapsTest.class);
     return suite;
   }
+
 }

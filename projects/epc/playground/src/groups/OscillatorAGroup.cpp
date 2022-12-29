@@ -1,14 +1,9 @@
 #include "OscillatorAGroup.h"
-#include "parameters/Parameter.h"
 #include "parameters/ModulateableParameter.h"
 #include "parameter_declarations.h"
 
 OscillatorAGroup::OscillatorAGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Osc A", vg }, "Oscillator A", "Oscillator A", "Oscillator A")
-{
-}
-
-OscillatorAGroup::~OscillatorAGroup()
 {
 }
 

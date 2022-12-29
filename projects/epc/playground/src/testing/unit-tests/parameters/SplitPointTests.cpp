@@ -10,7 +10,7 @@
 #include <device-settings/SyncSplitSettingUseCases.h>
 #include <sync/SyncMasterMockRoot.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Point Display Value")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Point Display Value")
 {
   auto eb = TestHelper::getEditBuffer();
 
@@ -48,7 +48,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Point Display Value")
   CHECK(splitII->getDisplayString() == "C6");
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Point Helper Functions")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Point Helper Functions")
 {
   auto eb = TestHelper::getEditBuffer();
   auto settings = TestHelper::getSettings();
@@ -84,7 +84,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Point Helper Functions")
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Sync Setting gets updated on store and load")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Sync Setting gets updated on store and load")
 {
   auto pm = TestHelper::getPresetManager();
   auto eb = TestHelper::getEditBuffer();
@@ -192,7 +192,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Sync Setting gets updated on st
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Note to Display")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Note to Display")
 {
   SplitPointDimension dim;
   CHECK(dim.stringizeNote(0) == "C1");
@@ -203,14 +203,14 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Note to Display")
   CHECK(dim.stringizeNote(29) == "F3");
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "modulate split", "[!mayfail]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "modulate split")
 {
   auto eb = TestHelper::getEditBuffer();
 
-  auto sI = eb->findAndCastParameterByID<SplitPointParameter>({C15::PID::Split_Split_Point, VoiceGroup::I});
-  auto sII = eb->findAndCastParameterByID<SplitPointParameter>({C15::PID::Split_Split_Point, VoiceGroup::II});
+  auto sI = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I });
+  auto sII = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::II });
 
-  auto mcA = eb->findAndCastParameterByID<MacroControlParameter>({C15::PID::MC_A, VoiceGroup::Global});
+  auto mcA = eb->findAndCastParameterByID<MacroControlParameter>({ C15::PID::MC_A, VoiceGroup::Global });
 
   ModParameterUseCases sIUseCases(sI);
 

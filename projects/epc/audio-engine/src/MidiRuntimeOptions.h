@@ -51,7 +51,7 @@ class MidiRuntimeOptions
   [[nodiscard]] bool shouldSendMidiOnSplit(tMidiSettingMessage::RoutingIndex routingIndex) const;
   [[nodiscard]] bool shouldAllowLocal(tMidiSettingMessage::RoutingIndex routingIndex) const;
 
-  const nltools::msg::Setting::MidiSettingsMessage& getLastReceivedMessage() const;
+  [[nodiscard]] const nltools::msg::Setting::MidiSettingsMessage& getLastReceivedMessage() const;
   void update(const nltools::msg::Setting::MidiSettingsMessage& msg);
 
   static int channelEnumToInt(MidiSendChannel channel);
@@ -153,30 +153,30 @@ class MidiRuntimeOptions
   static std::optional<int> decodeEnumLSB(BenderCC cc);
 
  private:
-  MidiReceiveChannel m_midiPrimaryReceiveChannel;
-  MidiReceiveChannelSplit m_midiSplitReceiveChannel;
-  MidiSendChannel m_midiPrimarySendChannel;
-  MidiSendChannelSplit m_midiSplitSendChannel;
+  MidiReceiveChannel m_midiPrimaryReceiveChannel = MidiReceiveChannel::None;
+  MidiReceiveChannelSplit m_midiSplitReceiveChannel = MidiReceiveChannelSplit::None;
+  MidiSendChannel m_midiPrimarySendChannel = MidiSendChannel::None;
+  MidiSendChannelSplit m_midiSplitSendChannel = MidiSendChannelSplit::None;
 
   bool m_localEnable = true;
 
   bool m_enableHighVelCC = false;
   bool m_enable14BitCC = false;
 
-  PedalCC pedal1CC;
-  PedalCC pedal2CC;
-  PedalCC pedal3CC;
-  PedalCC pedal4CC;
-  RibbonCC ribbon1CC;
-  RibbonCC ribbon2CC;
-  RibbonCC ribbon3CC;
-  RibbonCC ribbon4CC;
-  AftertouchCC aftertouchCC;
-  BenderCC benderCC;
+  PedalCC pedal1CC = PedalCC::None;
+  PedalCC pedal2CC = PedalCC::None;
+  PedalCC pedal3CC = PedalCC::None;
+  PedalCC pedal4CC = PedalCC::None;
+  RibbonCC ribbon1CC = RibbonCC::None;
+  RibbonCC ribbon2CC = RibbonCC::None;
+  RibbonCC ribbon3CC = RibbonCC::None;
+  RibbonCC ribbon4CC = RibbonCC::None;
+  AftertouchCC aftertouchCC = AftertouchCC::None;
+  BenderCC benderCC = BenderCC::None;
 
-  nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings m_routingMappings;
+  nltools::msg::Setting::MidiSettingsMessage::tRoutingMappings m_routingMappings = {};
 
-  nltools::msg::Setting::MidiSettingsMessage m_lastMessage;
+  nltools::msg::Setting::MidiSettingsMessage m_lastMessage = {};
 
   bool m_isSecondSetOfRibbonsEnabled = false;
 

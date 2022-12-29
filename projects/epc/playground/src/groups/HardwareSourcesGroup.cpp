@@ -1,6 +1,4 @@
 #include "HardwareSourcesGroup.h"
-#include <parameters/scale-converters/Linear100PercentScaleConverter.h>
-#include <parameters/scale-converters/LinearBipolar100PercentScaleConverter.h>
 #include <parameters/RibbonParameter.h>
 #include <parameters/PedalParameter.h>
 #include <parameters/PitchbendParameter.h>

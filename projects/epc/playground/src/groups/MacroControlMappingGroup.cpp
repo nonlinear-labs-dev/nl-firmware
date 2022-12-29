@@ -14,8 +14,6 @@ MacroControlMappingGroup::MacroControlMappingGroup(ParameterGroupSet *parent, Pa
 {
 }
 
-MacroControlMappingGroup::~MacroControlMappingGroup() = default;
-
 void MacroControlMappingGroup::init()
 {
   auto mc_a = m_mc->findAndCastParameterByID<MacroControlParameter>({ C15::PID::MC_A, VoiceGroup::Global });
@@ -131,12 +129,12 @@ MacroControlMappingGroup::tModRoutingParams
   return ret;
 }
 
-const ModulationRoutingParameter *
+ModulationRoutingParameter *
     MacroControlMappingGroup::getModulationRoutingParameterFor(const PhysicalControlParameter *src,
                                                                const MacroControlParameter *mc)
 {
   for(auto param : getParameters())
-    if(auto routingParam = dynamic_cast<const ModulationRoutingParameter *>(param))
+    if(auto routingParam = dynamic_cast<ModulationRoutingParameter *>(param))
       if(src == routingParam->getSourceParameter() && mc == routingParam->getTargetParameter())
         return routingParam;
 

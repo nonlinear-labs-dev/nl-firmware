@@ -8,10 +8,12 @@
 #include <Application.h>
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <presets/PresetManager.h>
+#include <groups/MacroControlsGroup.h>
+
 #include <cmath>
 
 ModParameterUseCases::ModParameterUseCases(ModulateableParameter* parameter)
-    : ParameterUseCases{parameter}
+    : ParameterUseCases { parameter }
     , m_modParam { parameter }
 {
   nltools_assertAlways(m_modParam != nullptr);

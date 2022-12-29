@@ -12,10 +12,10 @@ add_custom_command(
   DEPENDS ${CMAKE_SOURCE_DIR}/.git/index
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMAND ${CMAKE_COMMAND}
-    -D INPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/nonmaps-version.txt
-    -D OUTPUT_FILE=${CMAKE_CURRENT_BINARY_DIR}/nonmaps-version.txt
-    -P ${CMAKE_SOURCE_DIR}/cmake/generate-version.cmake
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nonmaps-version.txt     
+  -D INPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/nonmaps-version.txt
+  -D OUTPUT_FILE=${CMAKE_CURRENT_BINARY_DIR}/nonmaps-version.txt
+  -P ${CMAKE_SOURCE_DIR}/cmake/generate-version.cmake
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nonmaps-version.txt
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/main/webapp/NonMaps.js.in ${CMAKE_CURRENT_BINARY_DIR}/NonMaps.js @ONLY)

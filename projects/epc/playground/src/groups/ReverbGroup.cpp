@@ -1,16 +1,9 @@
 #include "ReverbGroup.h"
-#include "parameters/Parameter.h"
 #include "parameters/ModulateableParameter.h"
-
-#include "parameters/scale-converters/Linear100PercentScaleConverter.h"
 #include "parameter_declarations.h"
 
 ReverbGroup::ReverbGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Reverb", vg }, "Reverb", "Reverb", "Reverb")
-{
-}
-
-ReverbGroup::~ReverbGroup()
 {
 }
 

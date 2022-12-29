@@ -11,6 +11,9 @@ list(FILTER ALL_FILES EXCLUDE REGEX /web/public/)
 list(FILTER ALL_FILES EXCLUDE REGEX /web/.meteor/local/)
 list(FILTER ALL_FILES EXCLUDE REGEX /nonmaps/target/)
 
+file(GLOB_RECURSE NONMAPS_TARGET ${CMAKE_SOURCE_DIR}/projects/web/static//nonmaps/target/*)
+list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${NONMAPS_TARGET})
+
 ADD_CUSTOM_COMMAND(
     COMMENT "Prepare building for web"
     OUTPUT .prepare-web-build

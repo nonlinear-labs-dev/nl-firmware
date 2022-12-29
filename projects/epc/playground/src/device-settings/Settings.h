@@ -21,7 +21,7 @@ class Settings : public UpdateDocumentContributor
   typedef std::unique_ptr<Setting> tSettingPtr;
   typedef std::map<Glib::ustring, tSettingPtr> tMap;
 
-  explicit Settings(const Glib::ustring &file, UpdateDocumentMaster *master, HardwareFeatures& hwFeatures);
+  explicit Settings(const Glib::ustring &file, UpdateDocumentMaster *master, const HardwareFeatures &hwFeatures);
   ~Settings() override;
 
   void init();
