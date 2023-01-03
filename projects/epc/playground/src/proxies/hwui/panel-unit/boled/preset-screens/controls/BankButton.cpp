@@ -19,11 +19,31 @@ BankButton::BankButton(const Rect& pos, bool bankFocus)
     : ControlWithChildren(pos)
     , m_bankFocus(bankFocus)
 {
-  m_soundTypeChanged = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
-      sigc::hide(sigc::mem_fun(this, &BankButton::bruteForce)));
+  auto& app = Application::get();
+  auto& eb = *app.getPresetManager()->getEditBuffer();
+  auto& vg = *app.getVGManager();
+  auto& settings = eb.getSettings();
+  m_soundTypeChanged = eb.onSoundTypeChanged(sigc::hide(sigc::mem_fun(this, &BankButton::bruteForce)));
 
-  m_loadToPartChanged = Application::get().getVGManager()->onLoadToPartModeChanged(
-      sigc::hide(sigc::mem_fun(this, &BankButton::bruteForce)));
+  m_loadToPartChanged = vg.onLoadToPartModeChanged(sigc::hide(sigc::mem_fun(this, &BankButton::bruteForce)));
+
+  m_settingChanged
+      = settings.getSetting<FocusAndModeSetting>()->onChange(sigc::mem_fun(this, &BankButton::onFocusAndModeChanged));
+}
+
+void BankButton::onFocusAndModeChanged(const Setting* s)
+{
+  if(auto fam = dynamic_cast<const FocusAndModeSetting*>(s))
+  {
+    auto currState = fam->getState();
+    auto oldState = fam->getOldState();
+
+    auto anyStore = currState.mode == UIMode::Store || oldState.mode == UIMode::Store;
+    if(anyStore && currState != oldState)
+    {
+      bruteForce();
+    }
+  }
 }
 
 BankButton::~BankButton()
@@ -45,7 +65,8 @@ void BankButton::bruteForce()
 {
   clear();
 
-  if(Application::get().getVGManager()->isInLoadToPart())
+  if(Application::get().getVGManager()->isInLoadToPart()
+     && Application::get().getSettings()->getSetting<FocusAndModeSetting>()->getState().mode != UIMode::Store)
     installLoadToPart();
   else
     installDefault();

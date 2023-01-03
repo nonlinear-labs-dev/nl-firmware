@@ -128,7 +128,6 @@ void PresetManagerLayout::setupBankEdit()
 
 void PresetManagerLayout::setupBankSelect()
 {
-  auto hwui = Application::get().getHWUI();
   auto vgManager = Application::get().getVGManager();
 
   if(getStoreModeData() != nullptr)
