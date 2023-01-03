@@ -28,7 +28,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "a new split-preset will have d
   CHECK(message.m_polyphonicModulateables[1][arrIndex].m_controlPosition == Approx(0.420));
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "an older split-preset will have different values in preset-msg for part-volume")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "an older split-preset will have different values in preset-msg for part-volume (bank version 8)")
 {
   auto pm = app->getPresetManager();
   auto settings = app->getSettings();
@@ -53,4 +53,63 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "an older split-preset will hav
   auto message = AudioEngineProxy::createSplitEditBufferMessage(*eb);
   CHECK(message.m_polyphonicModulateables[0][arrIndex].m_controlPosition == Approx(0.374));
   CHECK(message.m_polyphonicModulateables[1][arrIndex].m_controlPosition == Approx(0.48999999999999999));
+}
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "an older single-preset will have different values in preset-msg for part-volume after convert (bank version 5)")
+{
+  auto pm = app->getPresetManager();
+  auto settings = app->getSettings();
+  PresetManagerUseCases uc(*pm, *settings);
+  FileInStream stream(getSourceDir() + "/projects/epc/playground/test-resources/Fuxi_Swarms.xml", false);
+  auto bank = uc.importBankFromStream(stream, 0, 0, "fuxis-swarms", Serializer::MockProgress);
+  auto preset = bank->getPresetAt(0);
+
+  auto eb = TestHelper::getEditBuffer();
+
+  EditBufferUseCases ebUseCases(*eb);
+  ebUseCases.load(preset);
+
+  ebUseCases.convertToSplit(VoiceGroup::I);
+
+  auto partVol_I = eb->findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::I});
+  auto partVol_II = eb->findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::II});
+
+  CHECK(partVol_I->getControlPositionValue() == Approx(0.5));
+  CHECK(partVol_II->getControlPositionValue() == Approx(0.0));
+
+  auto desc = C15::ParameterList[C15::PID::Voice_Grp_Volume];
+  const auto arrIndex = desc.m_param.m_index;
+  auto message = AudioEngineProxy::createSplitEditBufferMessage(*eb);
+  CHECK(message.m_polyphonicModulateables[0][arrIndex].m_controlPosition == Approx(0.5));
+  CHECK(message.m_polyphonicModulateables[1][arrIndex].m_controlPosition == Approx(0.0));
+}
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "an older single-preset will have different values in preset-msg for part-volume after convert (bank version 15)")
+{
+  auto pm = app->getPresetManager();
+  auto settings = app->getSettings();
+  PresetManagerUseCases uc(*pm, *settings);
+  FileInStream stream(getSourceDir() + "/projects/epc/playground/test-resources/Fuxi_C.xml", false);
+  auto bank = uc.importBankFromStream(stream, 0, 0, "ts_pp", Serializer::MockProgress);
+  auto preset = bank->getPresetAt(5);
+  CHECK(preset->getName() == "Juno15");
+
+  auto eb = TestHelper::getEditBuffer();
+
+  EditBufferUseCases ebUseCases(*eb);
+  ebUseCases.load(preset);
+
+  ebUseCases.convertToSplit(VoiceGroup::I);
+
+  auto partVol_I = eb->findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::I});
+  auto partVol_II = eb->findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::II});
+
+  CHECK(partVol_I->getControlPositionValue() == Approx(0.5));
+  CHECK(partVol_II->getControlPositionValue() == Approx(0.0));
+
+  auto desc = C15::ParameterList[C15::PID::Voice_Grp_Volume];
+  const auto arrIndex = desc.m_param.m_index;
+  auto message = AudioEngineProxy::createSplitEditBufferMessage(*eb);
+  CHECK(message.m_polyphonicModulateables[0][arrIndex].m_controlPosition == Approx(0.5));
+  CHECK(message.m_polyphonicModulateables[1][arrIndex].m_controlPosition == Approx(0.0));
 }
