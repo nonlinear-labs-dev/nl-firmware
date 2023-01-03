@@ -6,6 +6,7 @@
 #include <xml/Writer.h>
 #include <xml/Attribute.h>
 #include <glib.h>
+#include "parameters/RibbonParameter.h"
 
 RecallParameter::RecallParameter(RecallParameterGroups *parent, ParameterId id)
     : UpdateDocumentContributor(parent)
@@ -32,6 +33,11 @@ void RecallParameter::copyFrom(UNDO::Transaction *transaction, const Parameter *
       transaction->addUndoSwap(this, m_givenName, std::string(mc->getGivenName()));
       transaction->addUndoSwap(this, m_info, std::string(mc->getInfo()));
     }
+
+    if(auto ribbon = dynamic_cast<const RibbonParameter *>(other))
+    {
+      transaction->addUndoSwap(this, m_ribbonTouchBehaviour, ribbon->getRibbonTouchBehaviour());
+    }
   }
 }
 
@@ -47,7 +53,8 @@ void RecallParameter::writeDocument(Writer &writer, UpdateDocumentContributor::t
     writer.writeTag("param",
                     { Attribute { "id", m_id.toString() }, Attribute { "value", to_string(m_recallValue) },
                       Attribute { "mod-src", to_string(static_cast<int>(m_recallModSource)) },
-                      Attribute { "mod-amt", to_string(m_recallModAmount) } },
+                      Attribute { "mod-amt", to_string(m_recallModAmount) },
+                      Attribute { "ribbon-touch-behaviour", to_string(static_cast<int>(m_ribbonTouchBehaviour)) } },
                     []() {});
   }
 }
@@ -75,4 +82,9 @@ const std::string &RecallParameter::getGivenName() const
 const std::string &RecallParameter::getInfo() const
 {
   return m_info;
+}
+
+RibbonTouchBehaviour RecallParameter::getTouchBehaviour() const
+{
+  return m_ribbonTouchBehaviour;
 }

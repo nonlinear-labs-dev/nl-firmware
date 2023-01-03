@@ -10,6 +10,9 @@ class RibbonParameter : public PhysicalControlParameter
   typedef PhysicalControlParameter super;
 
  public:
+  bool isChangedFromLoaded() const override;
+
+ public:
   using super::super;
 
   void undoableSetRibbonTouchBehaviour(UNDO::Transaction *transaction, RibbonTouchBehaviour mode);

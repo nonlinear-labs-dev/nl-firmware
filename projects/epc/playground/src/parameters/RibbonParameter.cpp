@@ -21,6 +21,7 @@
 #include <device-settings/Settings.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
+#include <presets/recall/RecallParameter.h>
 #include <libundo/undo/Scope.h>
 
 void RibbonParameter::writeDocProperties(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
@@ -470,4 +471,11 @@ tControlPositionValue RibbonParameter::getDefValueAccordingToMode(RibbonReturnMo
       return 0.0;
   }
   return 0.0;
+}
+
+bool RibbonParameter::isChangedFromLoaded() const
+{
+  auto recallParameter = getOriginalParameter();
+  auto oldBehaviour = recallParameter->getTouchBehaviour();
+  return oldBehaviour != getRibbonTouchBehaviour();
 }
