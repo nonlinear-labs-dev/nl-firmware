@@ -916,9 +916,15 @@ void EditBuffer::copyPartTuneFromMasterTuneAndDefaultMasterGroup(UNDO::Transacti
     pII->copyFrom(transaction, pGlobal);
   }
 
-  for(auto &parameter : global->getParameters())
   {
-    parameter->loadDefault(transaction, Defaults::FactoryDefault);
+    ScopedLock lock(transaction);
+    lock.addLock({C15::PID::Master_Pan, VoiceGroup::Global});
+    lock.addLock({C15::PID::Master_Serial_FX, VoiceGroup::Global});
+
+    for(auto &parameter : global->getParameters())
+    {
+      parameter->loadDefault(transaction, Defaults::FactoryDefault);
+    }
   }
 }
 

@@ -994,3 +994,55 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert Single to dual: Out Mi
     }
   }
 }
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to Split/Layer should not reset Master Serial FX and FX Pan")
+{
+  auto eb = TestHelper::getEditBuffer();
+
+  EditBufferUseCases ebUseCases(*eb);
+  ebUseCases.convertToSingle(VoiceGroup::I);
+  ebUseCases.initSound(Defaults::FactoryDefault);
+
+  WHEN("master serial fx is set to non default")
+  {
+    auto id = C15::PID::Master_Serial_FX;
+    auto p = eb->findParameterByID({id, VoiceGroup::Global});
+    ParameterUseCases pUseCases(p);
+    pUseCases.setControlPosition(0.187);
+    REQUIRE_FALSE(p->isDefaultLoaded());
+
+    THEN("converted to split")
+    {
+      ebUseCases.convertToSplit(VoiceGroup::I);
+      REQUIRE(p->getControlPositionValue() == Approx(0.187));
+    }
+
+    THEN("converted to layer")
+    {
+      ebUseCases.convertToLayer(VoiceGroup::I);
+      REQUIRE(p->getControlPositionValue() == Approx(0.187));
+    }
+  }
+
+  WHEN("master fx pan is set to non default")
+  {
+    auto id = C15::PID::Master_Pan;
+    auto p = eb->findParameterByID({id, VoiceGroup::Global});
+    ParameterUseCases pUseCases(p);
+    pUseCases.setControlPosition(0.187);
+    REQUIRE_FALSE(p->isDefaultLoaded());
+
+    THEN("converted to split")
+    {
+      ebUseCases.convertToSplit(VoiceGroup::I);
+      REQUIRE(p->getControlPositionValue() == Approx(0.187));
+    }
+
+    THEN("converted to layer")
+    {
+      ebUseCases.convertToLayer(VoiceGroup::I);
+      REQUIRE(p->getControlPositionValue() == Approx(0.187));
+    }
+  }
+
+}
