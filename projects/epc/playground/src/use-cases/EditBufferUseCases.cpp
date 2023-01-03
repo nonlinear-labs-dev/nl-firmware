@@ -443,3 +443,16 @@ void EditBufferUseCases::unlockParametersTemporarily(const std::vector<Parameter
     }
   }
 }
+
+void EditBufferUseCases::copyFX(VoiceGroup from, VoiceGroup to)
+{
+  auto scope = m_editBuffer.getUndoScope().startTransaction("Copy FX %s into %s", toString(from), toString(to));
+  auto trans = scope->getTransaction();
+
+  for(auto groupName: {"Flang", "Cab", "Gap Filt", "Echo", "Reverb"})
+  {
+    auto src = m_editBuffer.getParameterGroupByID({groupName, from});
+    auto dst = m_editBuffer.getParameterGroupByID({groupName, to});
+    dst->copyFrom(trans, src);
+  }
+}

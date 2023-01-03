@@ -77,10 +77,11 @@ class EditBufferUseCases
 
   void selectLastSelectedMacroControlParameter();
 
+  void copyFX(VoiceGroup from, VoiceGroup to);
+
  private:
   VoiceGroup invert(VoiceGroup vg);
   [[nodiscard]] PresetManager* getPresetManager() const;
 
   EditBuffer& m_editBuffer;
-
 };
