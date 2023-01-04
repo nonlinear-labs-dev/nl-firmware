@@ -84,7 +84,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   void undoableLoadDefault(UNDO::Transaction *transaction, Defaults mode);
   void validateParameterTypes() const;
 
-  C15::Descriptors::ParameterType getParameterType() const;
+  bool isPolyphonic() const;
 
  protected:
   template<typename T>

@@ -233,10 +233,6 @@ void ParameterGroup::validateParameterTypes() const
   bool isMono = false;
   bool isGlobal = false;
 
-  int polyCount = 0;
-  int monoCount = 0;
-  int globalCount = 0;
-
   for(const auto &p : getParameters())
   {
     auto foundType = p->getType();
@@ -246,10 +242,6 @@ void ParameterGroup::validateParameterTypes() const
         || foundType == C15::Descriptors::ParameterType::Monophonic_Modulateable;
     auto isGlobalParam = foundType == C15::Descriptors::ParameterType::Global_Modulateable
         || foundType == C15::Descriptors::ParameterType::Global_Unmodulateable;
-
-    polyCount += isPolyParam;
-    monoCount += isMonoParam;
-    globalCount += isGlobalParam;
 
     if(!hasAny)
     {
@@ -267,12 +259,7 @@ void ParameterGroup::validateParameterTypes() const
   }
 }
 
-C15::Descriptors::ParameterType ParameterGroup::getParameterType() const
+bool ParameterGroup::isPolyphonic() const
 {
-  if(auto p = *getParameters().begin())
-  {
-    return p->getType();
-  }
-
-  nltools_assertNotReached();
+  return m_parameters.begin()->isPolyphonic();
 }

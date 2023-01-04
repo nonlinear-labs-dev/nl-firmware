@@ -2063,8 +2063,7 @@ void EditBuffer::copyPolyParametersFromI(UNDO::Transaction *transaction, const P
   for(auto targetGroup : getParameterGroups(group))
   {
     using namespace C15::Descriptors;
-    if(targetGroup->getParameterType() == ParameterType::Polyphonic_Unmodulateable
-       || targetGroup->getParameterType() == ParameterType::Polyphonic_Modulateable)
+    if(targetGroup->isPolyphonic())
     {
       targetGroup->copyFrom(transaction, preset->findParameterGroup({ targetGroup->getID().getName(), VoiceGroup::I }));
     }
