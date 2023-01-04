@@ -1301,7 +1301,6 @@ inline void dsp_host_dual::globalModChain(const Engine::Parameters::MacroControl
         param.m_scaled = scale(param.m_scaling, param.polarize(clipped));
         if constexpr(LOG_MOD_CHAIN)
           nltools::Log::info(__PRETTY_FUNCTION__, "(index:", index, ", pos:", param.m_position, ")");
-        // todo: Fx Mix
         switch(index)
         {
           case IndexOfEffectsMix:
