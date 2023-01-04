@@ -71,14 +71,6 @@ void EditBuffer::init(Settings *settings)
 {
   ParameterGroupSet::init(settings);
   m_recallSet.init();
-
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II, VoiceGroup::Global })
-  {
-    for(auto &g : getParameterGroups(vg))
-    {
-      g->validateParameterTypes();
-    }
-  }
 }
 
 EditBuffer::~EditBuffer()
