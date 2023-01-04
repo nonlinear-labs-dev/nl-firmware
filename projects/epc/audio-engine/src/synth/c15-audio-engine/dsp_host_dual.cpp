@@ -580,6 +580,7 @@ void dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicModu
         // single: ignore, dual: pass
         if(m_layer_mode != LayerMode::Single)
           localTransition(layerId, param.m_rendering, m_editTime.m_time, param.m_scaled);
+        break;
       case C15::PID::FB_Mix_FX_Src:
       case C15::PID::Out_Mix_To_FX:
         if(m_layer_mode == LayerMode::Single)
