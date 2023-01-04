@@ -13,6 +13,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <presets/PresetPartSelection.h>
 #include <Application.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 EditBufferUseCases::EditBufferUseCases(EditBuffer& eb)
     : m_editBuffer { eb }
@@ -446,7 +447,8 @@ void EditBufferUseCases::unlockParametersTemporarily(const std::vector<Parameter
 
 void EditBufferUseCases::copyFX(VoiceGroup from, VoiceGroup to)
 {
-  auto scope = m_editBuffer.getUndoScope().startTransaction("Copy FX %s into %s", toString(from), toString(to));
+  auto name = nltools::string::concat("Copy FX ", toString(from), " into ", toString(to));
+  auto scope = m_editBuffer.getUndoScope().startTransaction(name);
   auto trans = scope->getTransaction();
 
   for(auto groupName: {"Flang", "Cab", "Gap Filt", "Echo", "Reverb"})
@@ -455,4 +457,6 @@ void EditBufferUseCases::copyFX(VoiceGroup from, VoiceGroup to)
     auto dst = m_editBuffer.getParameterGroupByID({groupName, to});
     dst->copyFrom(trans, src);
   }
+
+  Application::get().getAudioEngineProxy()->sendEditBuffer();
 }
