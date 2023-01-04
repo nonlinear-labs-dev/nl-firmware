@@ -436,8 +436,7 @@ namespace ModulationTest
     int count = 0;
     for(const auto& t : std::get<0>(te))
       std::visit(
-          [&](auto&& t)
-          {
+          [&](auto&& t) {
             if(count++)
               str << ", ";
             writeJava(str, t);
@@ -449,8 +448,7 @@ namespace ModulationTest
     count = 0;
     for(const auto& t : std::get<1>(te))
       std::visit(
-          [&](auto&& t)
-          {
+          [&](auto&& t) {
             if(count++)
               str << ", ";
             writeJava(str, t);
@@ -1146,7 +1144,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation")
     }
   }
 
-  WHEN("using bender, routed to MC A, modulationg osc A, phase modulation feedback (to have many bipolar params)")
+  WHEN("using bender, routed to MC A, modulating osc A, phase modulation feedback (to have many bipolar params)")
   {
     auto bender = eb->findAndCastParameterByID<PitchbendParameter>({ C15::PID::Bender, VoiceGroup::Global });
     auto router = eb->findAndCastParameterByID<Router>({ C15::PID::Bender_to_MC_A, VoiceGroup::Global });

@@ -10,6 +10,7 @@ file(GLOB_RECURSE ALL_FILES *.ts *.css *.html *.sh.in *.js)
 list(FILTER ALL_FILES EXCLUDE REGEX /web/public/)
 list(FILTER ALL_FILES EXCLUDE REGEX /web/.meteor/local/)
 list(FILTER ALL_FILES EXCLUDE REGEX /nonmaps/target/)
+list(FILTER ALL_FILES EXCLUDE REGEX /nonmaps/war/com.nonlinearlabs)
 
 file(GLOB_RECURSE NONMAPS_TARGET ${CMAKE_SOURCE_DIR}/projects/web/static//nonmaps/target/*)
 list(REMOVE_ITEM ALL_FILES_IN_PROJECT EXCLUDE REGEX ${NONMAPS_TARGET})

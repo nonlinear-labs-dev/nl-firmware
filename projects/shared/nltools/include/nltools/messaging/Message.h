@@ -85,6 +85,8 @@ namespace nltools
         {
           return MessageType::NoteAction;
         }
+
+        uint8_t dummy;  // empty structures are difficult to handle for valgrind
       };
     }
 

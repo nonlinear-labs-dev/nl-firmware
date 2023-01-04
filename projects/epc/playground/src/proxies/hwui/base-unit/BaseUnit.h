@@ -9,7 +9,7 @@
 class Application;
 class Settings;
 
-class BaseUnit : public HardwareUserInterfaceUnit, public sigc::trackable
+class BaseUnit : public HardwareUserInterfaceUnit
 {
  private:
   typedef HardwareUserInterfaceUnit super;
@@ -23,13 +23,13 @@ class BaseUnit : public HardwareUserInterfaceUnit, public sigc::trackable
 
   void init();
 
-  PlayPanel &getPlayPanel();
+  PlayPanel& getPlayPanel();
 
  protected:
   void setupFocusAndMode(FocusAndMode focusAndMode) override;
 
  private:
-  void respectUsageMode(const Setting *s);
+  void respectUsageMode(const Setting* s);
   void onBBBBConnected();
 
   PlayPanel m_playPanel;
