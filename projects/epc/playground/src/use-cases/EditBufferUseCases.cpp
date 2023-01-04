@@ -422,7 +422,7 @@ void EditBufferUseCases::lockParametersTemporarily(const std::vector<ParameterId
   auto scope = UNDO::Scope::startTrashTransaction();
   auto transaction = scope->getTransaction();
 
-  for(auto& id: params)
+  for(auto& id : params)
   {
     if(auto param = m_editBuffer.findParameterByID(id))
     {
@@ -436,7 +436,7 @@ void EditBufferUseCases::unlockParametersTemporarily(const std::vector<Parameter
   auto scope = UNDO::Scope::startTrashTransaction();
   auto transaction = scope->getTransaction();
 
-  for(auto& id: params)
+  for(auto& id : params)
   {
     if(auto param = m_editBuffer.findParameterByID(id))
     {
@@ -451,12 +451,12 @@ void EditBufferUseCases::copyFX(VoiceGroup from, VoiceGroup to)
   auto scope = m_editBuffer.getUndoScope().startTransaction(name);
   auto trans = scope->getTransaction();
 
-  for(auto groupName: {"Flang", "Cab", "Gap Filt", "Echo", "Reverb"})
+  for(auto groupName : { "Flang", "Cab", "Gap Filt", "Echo", "Reverb" })
   {
-    auto src = m_editBuffer.getParameterGroupByID({groupName, from});
-    auto dst = m_editBuffer.getParameterGroupByID({groupName, to});
+    auto src = m_editBuffer.getParameterGroupByID({ groupName, from });
+    auto dst = m_editBuffer.getParameterGroupByID({ groupName, to });
     dst->copyFrom(trans, src);
   }
 
-  Application::get().getAudioEngineProxy()->sendEditBuffer();
+  trans->addPostfixCommand([](auto) { Application::get().getAudioEngineProxy()->sendEditBuffer(); });
 }
