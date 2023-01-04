@@ -458,7 +458,7 @@ namespace ModulationTest
     str << "))";
   }
 
-  template <typename... TasksAndExpectations>
+  template <bool writeJava, typename... TasksAndExpectations>
   static void testModulation(int line, const char* desc, const Setup& setup, const TasksAndExpectations&... t)
   {
     using Router = ModulationRoutingParameter;
@@ -487,17 +487,20 @@ namespace ModulationTest
 
     (doTasksAndCheckExpectations(block++, t, eb, phys, router, mc, target), ...);
 
-    std::stringstream str;
-    str << "\n\njavaTestModulation("
-        << "\"" << desc << "\"," << std::endl
-        << '\t' << "new Setup(" << setup.hwParameterNumber << "," << setup.initialHwPosition << ","
-        << setup.initialHWAmount << "," << setup.initialMacroControlPosition << "," << setup.targetParameterNumber
-        << "," << setup.initialTargetControlPosition << "," << setup.initialModAmount << ")";
+    if constexpr(writeJava)
+    {
+      std::stringstream str;
+      str << "\n\njavaTestModulation("
+          << "\"" << desc << "\"," << std::endl
+          << '\t' << "new Setup(" << setup.hwParameterNumber << "," << setup.initialHwPosition << ","
+          << setup.initialHWAmount << "," << setup.initialMacroControlPosition << "," << setup.targetParameterNumber
+          << "," << setup.initialTargetControlPosition << "," << setup.initialModAmount << ")";
 
-    (writeJavaTasksAndExceptions(str, t), ...);
-    str << ");" << std::endl;
+      (writeJavaTasksAndExceptions(str, t), ...);
+      str << ");" << std::endl;
 
-    std::cout << str.str();
+      std::cout << str.str();
+    }
   }
 };
 
@@ -505,43 +508,61 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
 {
   using namespace ModulationTest;
 
+  constexpr bool writeJava = true;
+
   SECTION("Unipolar")
   {
-    testModulation(__LINE__, "nothing special",
-                   Setup { .hwParameterNumber = C15::PID::Bender,
-                           .initialHwPosition = 0,
-                           .initialHWAmount = 1.0,
-                           .initialMacroControlPosition = 0,
-                           .targetParameterNumber = C15::PID::Osc_A_Fluct,
-                           .initialTargetControlPosition = 0,
-                           .initialModAmount = 1.0 },
+    testModulation<writeJava>(
+        __LINE__, "step mod amount - unipolar",
+        Setup { .hwParameterNumber = C15::PID::Bender,
+                .initialHwPosition = 0,
+                .initialHWAmount = 1.0,
+                .initialMacroControlPosition = 0,
+                .targetParameterNumber = C15::PID::Osc_A_Fluct,
+                .initialTargetControlPosition = 0,
+                .initialModAmount = 0.5 },
 
-                   TasksAndExpectations { { StepHWPosition { 1, Direction::Inc, Resolution::Coarse } },
-                                          { ExpectHWPosition { 0.01 }, ExpectControlPosition { 0.01 },
-                                            ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 1.0 } } },
+        TasksAndExpectations { { StepModAmount { 1, Direction::Inc, Resolution::Coarse } },
+                               { ExpectModAmount { 0.51 }, ExpectModAmountString { "51.0 %" } } },
+        TasksAndExpectations { { StepModAmount { 1, Direction::Inc, Resolution::Fine } },
+                               { ExpectModAmount { 0.511 }, ExpectModAmountString { "51.1 %" } } });
 
-                   TasksAndExpectations { { StepHWPosition { 1, Direction::Dec, Resolution::Coarse } },
-                                          { ExpectHWPosition { 0.00 }, ExpectControlPosition { 0.00 },
-                                            ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 1.0 } } });
+    testModulation<writeJava>(__LINE__, "nothing special",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0,
+                                      .targetParameterNumber = C15::PID::Osc_A_Fluct,
+                                      .initialTargetControlPosition = 0,
+                                      .initialModAmount = 1.0 },
 
-    testModulation(__LINE__, "nothing special",
-                   Setup { .hwParameterNumber = C15::PID::Bender,
-                           .initialHwPosition = 0,
-                           .initialHWAmount = 1.0,
-                           .initialMacroControlPosition = 0,
-                           .targetParameterNumber = C15::PID::Osc_A_Fluct,
-                           .initialTargetControlPosition = 0,
-                           .initialModAmount = 1.0 },
+                              TasksAndExpectations { { StepHWPosition { 1, Direction::Inc, Resolution::Coarse } },
+                                                     { ExpectHWPosition { 0.01 }, ExpectControlPosition { 0.01 },
+                                                       ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 1.0 } } },
 
-                   TasksAndExpectations { Tasks { StepHWPosition { 1, Direction::Inc, Resolution::Coarse } },
-                                          Expectations { ExpectHWPosition { 0.01 }, ExpectControlPosition { 0.01 },
-                                                         ExpectModRangeLow { 0 }, ExpectModRangeHi { 1.0 } } },
+                              TasksAndExpectations { { StepHWPosition { 1, Direction::Dec, Resolution::Coarse } },
+                                                     { ExpectHWPosition { 0.00 }, ExpectControlPosition { 0.00 },
+                                                       ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 1.0 } } });
 
-                   TasksAndExpectations { Tasks { StepHWPosition { 1, Direction::Dec, Resolution::Coarse } },
-                                          Expectations { ExpectHWPosition { 0.00 }, ExpectControlPosition { 0.00 },
-                                                         ExpectModRangeLow { 0 }, ExpectModRangeHi { 1.0 } } });
+    testModulation<writeJava>(
+        __LINE__, "nothing special",
+        Setup { .hwParameterNumber = C15::PID::Bender,
+                .initialHwPosition = 0,
+                .initialHWAmount = 1.0,
+                .initialMacroControlPosition = 0,
+                .targetParameterNumber = C15::PID::Osc_A_Fluct,
+                .initialTargetControlPosition = 0,
+                .initialModAmount = 1.0 },
 
-    testModulation(
+        TasksAndExpectations { Tasks { StepHWPosition { 1, Direction::Inc, Resolution::Coarse } },
+                               Expectations { ExpectHWPosition { 0.01 }, ExpectControlPosition { 0.01 },
+                                              ExpectModRangeLow { 0 }, ExpectModRangeHi { 1.0 } } },
+
+        TasksAndExpectations { Tasks { StepHWPosition { 1, Direction::Dec, Resolution::Coarse } },
+                               Expectations { ExpectHWPosition { 0.00 }, ExpectControlPosition { 0.00 },
+                                              ExpectModRangeLow { 0 }, ExpectModRangeHi { 1.0 } } });
+
+    testModulation<writeJava>(
         __LINE__, "happy path with minimal effective positive coarse modulation",
         Setup { .hwParameterNumber = C15::PID::Bender,
                 .initialHwPosition = 0,
@@ -569,7 +590,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
                                               ExpectMacroPositionString { "100.0 %" },
                                               ExpectControlPositionString { "50.5 %" } } });
 
-    testModulation(
+    testModulation<writeJava>(
         __LINE__, "happy path with minimal effective negative coarse modulation",
         Setup { .hwParameterNumber = C15::PID::Bender,
                 .initialHwPosition = 0,
@@ -597,7 +618,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
                                               ExpectMacroPositionString { "100.0 %" },
                                               ExpectControlPositionString { "49.5 %" } } });
 
-    testModulation(
+    testModulation<writeJava>(
         __LINE__, "happy path with minimal effective positive fine modulation",
         Setup { .hwParameterNumber = C15::PID::Bender,
                 .initialHwPosition = 0,
@@ -620,7 +641,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
             Tasks { SetHWPosition { 1 } },
             Expectations { ExpectMacroPositionString { "100.0 %" }, ExpectControlPositionString { "50.0 %" } } });
 
-    testModulation(
+    testModulation<writeJava>(
         __LINE__, "happy path with minimal effective positive fine modulation",
         Setup { .hwParameterNumber = C15::PID::Bender,
                 .initialHwPosition = 0,
@@ -643,7 +664,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
             Tasks { SetHWPosition { 1 } },
             Expectations { ExpectMacroPositionString { "100.0 %" }, ExpectControlPositionString { "50.1 %" } } });
 
-    testModulation(
+    testModulation<writeJava>(
         __LINE__, "happy path with minimal effective negative fine modulation",
         Setup { .hwParameterNumber = C15::PID::Bender,
                 .initialHwPosition = 0,
@@ -671,7 +692,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
                                               ExpectMacroPositionString { "100.0 %" },
                                               ExpectControlPositionString { "49.9 %" } } });
 
-    testModulation(
+    testModulation<writeJava>(
         __LINE__, "happy path with all amounts set to minimal possible",
         Setup { .hwParameterNumber = C15::PID::Bender,
                 .initialHwPosition = 0,
@@ -697,22 +718,22 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
             Tasks { StepHWPosition { .numSteps = 1, .direction = Direction::Dec, .resolution = Resolution::Fine } },
             Expectations { ExpectMacroPositionString { "50.0 %" }, ExpectControlPositionString { "50.0 %" } } });
 
-    testModulation(__LINE__, "happy path with 1 to 1 mapping",
-                   Setup { .hwParameterNumber = C15::PID::Bender,
-                           .initialHwPosition = 0,
-                           .initialHWAmount = 1,
-                           .initialMacroControlPosition = 0.5,
-                           .targetParameterNumber = C15::PID::Osc_A_Fluct,
-                           .initialTargetControlPosition = 0.0,
-                           .initialModAmount = 1 },
+    testModulation<writeJava>(__LINE__, "happy path with 1 to 1 mapping",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1,
+                                      .initialMacroControlPosition = 0.5,
+                                      .targetParameterNumber = C15::PID::Osc_A_Fluct,
+                                      .initialTargetControlPosition = 0.0,
+                                      .initialModAmount = 1 },
 
-                   TasksAndExpectations { Tasks { SetHWPosition { .v = 1 } },
-                                          Expectations { ExpectControlPositionString { "50.0 %" } } },
+                              TasksAndExpectations { Tasks { SetHWPosition { .v = 1 } },
+                                                     Expectations { ExpectControlPositionString { "50.0 %" } } },
 
-                   TasksAndExpectations { Tasks { SetHWPosition { .v = -1 } },
-                                          Expectations { ExpectControlPositionString { "0.0 %" } } });
+                              TasksAndExpectations { Tasks { SetHWPosition { .v = -1 } },
+                                                     Expectations { ExpectControlPositionString { "0.0 %" } } });
 
-    testModulation(
+    testModulation<writeJava>(
         __LINE__, "step lower mod bound",
         Setup { .hwParameterNumber = C15::PID::Bender,
                 .initialHwPosition = 0,
@@ -759,7 +780,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
             Tasks { StepModRangeLow { .numSteps = 60, .direction = Direction::Inc, .resolution = Resolution::Coarse } },
             Expectations { ExpectModRangeLow { 0.85 }, ExpectControlPosition { 0.8 }, ExpectModRangeHi { 0.75 } } });
 
-    testModulation(
+    testModulation<writeJava>(
         __LINE__, "step upper mod bound",
         Setup { .hwParameterNumber = C15::PID::Bender,
                 .initialHwPosition = 0,
@@ -802,69 +823,88 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
             Expectations { ExpectModRangeLow { 0.25 }, ExpectControlPosition { 0.5 }, ExpectModRangeHi { 0.75 } } },
 
         TasksAndExpectations {
-            // pass lower boarder
+            // pass lower border
             Tasks { StepModRangeHi { .numSteps = 60, .direction = Direction::Dec, .resolution = Resolution::Coarse } },
             Expectations { ExpectModRangeLow { 0.25 }, ExpectControlPosition { 0.2 }, ExpectModRangeHi { 0.15 } } });
   }
 
   SECTION("Bipolar")
   {
-    testModulation(__LINE__, "nothing special",
-                   Setup { .hwParameterNumber = C15::PID::Bender,
-                           .initialHwPosition = 0,
-                           .initialHWAmount = 1.0,
-                           .initialMacroControlPosition = 0,
-                           .targetParameterNumber = C15::PID::FB_Mix_Comb,
-                           .initialTargetControlPosition = 0,
-                           .initialModAmount = 1.0 },
+    testModulation<writeJava>(
+        __LINE__, "step mod amount - bipolar",
+        Setup { .hwParameterNumber = C15::PID::Bender,
+                .initialHwPosition = 0,
+                .initialHWAmount = 1.0,
+                .initialMacroControlPosition = 0,
+                .targetParameterNumber = C15::PID::FB_Mix_Comb,
+                .initialTargetControlPosition = 0,
+                .initialModAmount = 0.5 },
 
-                   TasksAndExpectations { { StepHWPosition { 1, Direction::Inc, Resolution::Coarse } },
-                                          { ExpectHWPosition { 0.01 }, ExpectMacroPosition { 0.01 },
-                                            ExpectControlPosition { 0.02 }, ExpectModRangeLow { 0.0 },
-                                            ExpectModRangeHi { 1.0 } } },
+        TasksAndExpectations { {}, { ExpectModAmount { 0.5 }, ExpectModAmountString { "100.0 %" } } },
 
-                   TasksAndExpectations { { StepHWPosition { 1, Direction::Dec, Resolution::Coarse } },
-                                          { ExpectHWPosition { 0.00 }, ExpectMacroPosition { 0.00 },
-                                            ExpectControlPosition { 0.00 }, ExpectModRangeLow { 0.0 },
-                                            ExpectModRangeHi { 1.0 } } });
+        TasksAndExpectations { { StepModAmount { 1, Direction::Inc, Resolution::Coarse } },
+                               { ExpectModAmount { 0.505 }, ExpectModAmountString { "101.0 %" } } },
 
-    testModulation(__LINE__, "nothing special",
-                   Setup { .hwParameterNumber = C15::PID::Bender,
-                           .initialHwPosition = 0,
-                           .initialHWAmount = 1.0,
-                           .initialMacroControlPosition = 0,
-                           .targetParameterNumber = C15::PID::FB_Mix_Comb,
-                           .initialTargetControlPosition = 0,
-                           .initialModAmount = 1.0 },
+        TasksAndExpectations { { StepModAmount { 1, Direction::Inc, Resolution::Fine } },
+                               { ExpectModAmount { 0.5055 }, ExpectModAmountString { "101.1 %" } } });
 
-                   TasksAndExpectations { Tasks { StepHWPosition { 1, Direction::Inc, Resolution::Coarse } },
-                                          Expectations { ExpectHWPosition { 0.01 }, ExpectControlPosition { 0.02 },
-                                                         ExpectModRangeLow { 0 }, ExpectModRangeHi { 1.0 } } },
+    testModulation<writeJava>(__LINE__, "nothing special",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0,
+                                      .targetParameterNumber = C15::PID::FB_Mix_Comb,
+                                      .initialTargetControlPosition = 0,
+                                      .initialModAmount = 1.0 },
 
-                   TasksAndExpectations { Tasks { StepHWPosition { 1, Direction::Dec, Resolution::Coarse } },
-                                          Expectations { ExpectHWPosition { 0.00 }, ExpectControlPosition { 0.00 },
-                                                         ExpectModRangeLow { 0 }, ExpectModRangeHi { 1.0 } } });
+                              TasksAndExpectations { { StepHWPosition { 1, Direction::Inc, Resolution::Coarse } },
+                                                     { ExpectHWPosition { 0.01 }, ExpectMacroPosition { 0.01 },
+                                                       ExpectControlPosition { 0.02 }, ExpectModRangeLow { 0.0 },
+                                                       ExpectModRangeHi { 1.0 } } },
 
-    testModulation(__LINE__, "nothing special",
-                   Setup { .hwParameterNumber = C15::PID::Bender,
-                           .initialHwPosition = 0,
-                           .initialHWAmount = 1.0,
-                           .initialMacroControlPosition = 0,
-                           .targetParameterNumber = C15::PID::FB_Mix_Comb,
-                           .initialTargetControlPosition = 0,
-                           .initialModAmount = 0.5 },
+                              TasksAndExpectations { { StepHWPosition { 1, Direction::Dec, Resolution::Coarse } },
+                                                     { ExpectHWPosition { 0.00 }, ExpectMacroPosition { 0.00 },
+                                                       ExpectControlPosition { 0.00 }, ExpectModRangeLow { 0.0 },
+                                                       ExpectModRangeHi { 1.0 } } });
 
-                   TasksAndExpectations { { StepHWPosition { 1, Direction::Inc, Resolution::Coarse } },
-                                          { ExpectHWPosition { 0.01 }, ExpectMacroPosition { 0.01 },
-                                            ExpectControlPosition { 0.01 }, ExpectModRangeLow { 0.0 },
-                                            ExpectModRangeHi { 1.0 } } },
+    testModulation<writeJava>(
+        __LINE__, "nothing special",
+        Setup { .hwParameterNumber = C15::PID::Bender,
+                .initialHwPosition = 0,
+                .initialHWAmount = 1.0,
+                .initialMacroControlPosition = 0,
+                .targetParameterNumber = C15::PID::FB_Mix_Comb,
+                .initialTargetControlPosition = 0,
+                .initialModAmount = 1.0 },
 
-                   TasksAndExpectations { { StepHWPosition { 1, Direction::Dec, Resolution::Coarse } },
-                                          { ExpectHWPosition { 0.00 }, ExpectMacroPosition { 0.00 },
-                                            ExpectControlPosition { 0.00 }, ExpectModRangeLow { 0.0 },
-                                            ExpectModRangeHi { 1.0 } } });
+        TasksAndExpectations { Tasks { StepHWPosition { 1, Direction::Inc, Resolution::Coarse } },
+                               Expectations { ExpectHWPosition { 0.01 }, ExpectControlPosition { 0.02 },
+                                              ExpectModRangeLow { 0 }, ExpectModRangeHi { 1.0 } } },
 
-    testModulation(
+        TasksAndExpectations { Tasks { StepHWPosition { 1, Direction::Dec, Resolution::Coarse } },
+                               Expectations { ExpectHWPosition { 0.00 }, ExpectControlPosition { 0.00 },
+                                              ExpectModRangeLow { 0 }, ExpectModRangeHi { 1.0 } } });
+
+    testModulation<writeJava>(__LINE__, "nothing special",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0,
+                                      .targetParameterNumber = C15::PID::FB_Mix_Comb,
+                                      .initialTargetControlPosition = 0,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { { StepHWPosition { 1, Direction::Inc, Resolution::Coarse } },
+                                                     { ExpectHWPosition { 0.01 }, ExpectMacroPosition { 0.01 },
+                                                       ExpectControlPosition { 0.01 }, ExpectModRangeLow { 0.0 },
+                                                       ExpectModRangeHi { 1.0 } } },
+
+                              TasksAndExpectations { { StepHWPosition { 1, Direction::Dec, Resolution::Coarse } },
+                                                     { ExpectHWPosition { 0.00 }, ExpectMacroPosition { 0.00 },
+                                                       ExpectControlPosition { 0.00 }, ExpectModRangeLow { 0.0 },
+                                                       ExpectModRangeHi { 1.0 } } });
+
+    testModulation<writeJava>(
         __LINE__, "happy path with minimal effective positive coarse modulation",
         Setup { .hwParameterNumber = C15::PID::Bender,
                 .initialHwPosition = 0,
@@ -892,7 +932,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
                                               ExpectMacroPositionString { "100.0 %" },
                                               ExpectControlPositionString { "51.0 %" } } });
 
-    testModulation(
+    testModulation<writeJava>(
         __LINE__, "happy path with minimal effective negative coarse modulation",
         Setup { .hwParameterNumber = C15::PID::Bender,
                 .initialHwPosition = 0,
@@ -920,7 +960,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
                                               ExpectMacroPositionString { "100.0 %" },
                                               ExpectControlPositionString { "49.0 %" } } });
 
-    testModulation(
+    testModulation<writeJava>(
         __LINE__, "happy path with minimal effective positive fine modulation",
         Setup { .hwParameterNumber = C15::PID::Bender,
                 .initialHwPosition = 0,
@@ -948,7 +988,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
                                               ExpectMacroPositionString { "100.0 %" },
                                               ExpectControlPositionString { "50.1 %" } } });
 
-    testModulation(
+    testModulation<writeJava>(
         __LINE__, "happy path with minimal effective negative fine modulation",
         Setup { .hwParameterNumber = C15::PID::Bender,
                 .initialHwPosition = 0,
@@ -976,7 +1016,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
                                               ExpectMacroPositionString { "100.0 %" },
                                               ExpectControlPositionString { "49.9 %" } } });
 
-    testModulation(
+    testModulation<writeJava>(
         __LINE__, "happy path with all amounts set to minimal possible",
         Setup { .hwParameterNumber = C15::PID::Bender,
                 .initialHwPosition = 0,
@@ -1002,20 +1042,116 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
             Tasks { StepHWPosition { .numSteps = 1, .direction = Direction::Dec, .resolution = Resolution::Fine } },
             Expectations { ExpectMacroPositionString { "50.0 %" }, ExpectControlPositionString { "50.0 %" } } });
 
-    testModulation(__LINE__, "happy path with 1 to 1 mapping",
-                   Setup { .hwParameterNumber = C15::PID::Bender,
-                           .initialHwPosition = 0,
-                           .initialHWAmount = 1,
-                           .initialMacroControlPosition = 0.5,
-                           .targetParameterNumber = C15::PID::FB_Mix_Comb,
-                           .initialTargetControlPosition = 0.0,
-                           .initialModAmount = 1 },
+    testModulation<writeJava>(__LINE__, "happy path with 1 to 1 mapping",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1,
+                                      .initialMacroControlPosition = 0.5,
+                                      .targetParameterNumber = C15::PID::FB_Mix_Comb,
+                                      .initialTargetControlPosition = 0.0,
+                                      .initialModAmount = 1 },
 
-                   TasksAndExpectations { Tasks { SetHWPosition { .v = 1 } },
-                                          Expectations { ExpectControlPositionString { "100.0 %" } } },
+                              TasksAndExpectations { Tasks { SetHWPosition { .v = 1 } },
+                                                     Expectations { ExpectControlPositionString { "100.0 %" } } },
 
-                   TasksAndExpectations { Tasks { SetHWPosition { .v = -1 } },
-                                          Expectations { ExpectControlPositionString { "-100.0 %" } } });
+                              TasksAndExpectations { Tasks { SetHWPosition { .v = -1 } },
+                                                     Expectations { ExpectControlPositionString { "-100.0 %" } } });
+
+    testModulation<writeJava>(
+        __LINE__, "step lower mod bound on bipolar parameter",
+        Setup { .hwParameterNumber = C15::PID::Bender,
+                .initialHwPosition = 0,
+                .initialHWAmount = 1,
+                .initialMacroControlPosition = 0.5,
+                .targetParameterNumber = C15::PID::FB_Mix_Comb,
+                .initialTargetControlPosition = 0.0,
+                .initialModAmount = 0.25 },
+
+        TasksAndExpectations {
+            Tasks {},
+            Expectations { ExpectModRangeLow { -0.25 }, ExpectControlPosition { 0 }, ExpectModRangeHi { 0.25 } } },
+
+        TasksAndExpectations {
+            Tasks { StepModRangeLow { .numSteps = 1, .direction = Direction::Dec, .resolution = Resolution::Fine } },
+            Expectations { ExpectModRangeLow { -0.251 }, ExpectControlPosition { -0.001 },
+                           ExpectModRangeHi { 0.25 } } },
+
+        TasksAndExpectations {
+            // step down to next coarse step
+            Tasks { StepModRangeLow { .numSteps = 1, .direction = Direction::Dec, .resolution = Resolution::Coarse } },
+            Expectations { ExpectModRangeLow { -0.26 }, ExpectControlPosition { -0.005 }, ExpectModRangeHi { 0.25 } } },
+
+        TasksAndExpectations {
+            Tasks { StepModRangeLow { .numSteps = 1, .direction = Direction::Dec, .resolution = Resolution::Coarse } },
+            Expectations { ExpectModRangeLow { -0.27 }, ExpectControlPosition { -0.01 }, ExpectModRangeHi { 0.25 } } },
+
+        TasksAndExpectations {
+            // step to 0
+            Tasks { StepModRangeLow { .numSteps = 73, .direction = Direction::Dec, .resolution = Resolution::Coarse } },
+            Expectations { ExpectModRangeLow { -1.0 }, ExpectControlPosition { -0.375 }, ExpectModRangeHi { 0.25 } } },
+
+        TasksAndExpectations {
+            // step into saturation
+            Tasks { StepModRangeLow { .numSteps = 1, .direction = Direction::Dec, .resolution = Resolution::Coarse } },
+            Expectations { ExpectModRangeLow { -1.0 }, ExpectControlPosition { -0.375 }, ExpectModRangeHi { 0.25 } } },
+
+        TasksAndExpectations {
+            // step out of saturation
+            Tasks { StepModRangeLow { .numSteps = 75, .direction = Direction::Inc, .resolution = Resolution::Coarse } },
+            Expectations { ExpectModRangeLow { -0.25 }, ExpectControlPosition { 0 }, ExpectModRangeHi { 0.25 } } },
+
+        TasksAndExpectations {
+            // pass upper boarder
+            Tasks {
+                StepModRangeLow { .numSteps = 110, .direction = Direction::Inc, .resolution = Resolution::Coarse } },
+            Expectations { ExpectModRangeLow { 0.85 }, ExpectControlPosition { 0.55 }, ExpectModRangeHi { 0.25 } } });
+
+    testModulation<writeJava>(
+        __LINE__, "step upper mod bound on bipolar parameter",
+        Setup { .hwParameterNumber = C15::PID::Bender,
+                .initialHwPosition = 0,
+                .initialHWAmount = 1,
+                .initialMacroControlPosition = 0.5,
+                .targetParameterNumber = C15::PID::FB_Mix_Comb,
+                .initialTargetControlPosition = 0.0,
+                .initialModAmount = 0.25 },
+
+        TasksAndExpectations {
+            Tasks {},
+            Expectations { ExpectModRangeLow { -0.25 }, ExpectControlPosition { 0.0 }, ExpectModRangeHi { 0.25 } } },
+
+        TasksAndExpectations {
+            Tasks { StepModRangeHi { .numSteps = 1, .direction = Direction::Inc, .resolution = Resolution::Fine } },
+            Expectations { ExpectModRangeLow { -0.25 }, ExpectControlPosition { 0.001 }, ExpectModRangeHi { 0.251 } } },
+
+        TasksAndExpectations {
+            // step up to next coarse step
+            Tasks { StepModRangeHi { .numSteps = 1, .direction = Direction::Inc, .resolution = Resolution::Coarse } },
+            Expectations { ExpectModRangeLow { -0.25 }, ExpectControlPosition { 0.005 }, ExpectModRangeHi { 0.26 } } },
+
+        TasksAndExpectations {
+            Tasks { StepModRangeHi { .numSteps = 1, .direction = Direction::Inc, .resolution = Resolution::Coarse } },
+            Expectations { ExpectModRangeLow { -0.25 }, ExpectControlPosition { 0.01 }, ExpectModRangeHi { 0.27 } } },
+
+        TasksAndExpectations {
+            // step to max
+            Tasks { StepModRangeHi { .numSteps = 73, .direction = Direction::Inc, .resolution = Resolution::Coarse } },
+            Expectations { ExpectModRangeLow { -0.25 }, ExpectControlPosition { 0.375 }, ExpectModRangeHi { 1 } } },
+
+        TasksAndExpectations {
+            // step into saturation
+            Tasks { StepModRangeHi { .numSteps = 1, .direction = Direction::Inc, .resolution = Resolution::Coarse } },
+            Expectations { ExpectModRangeLow { -0.25 }, ExpectControlPosition { 0.375 }, ExpectModRangeHi { 1 } } },
+
+        TasksAndExpectations {
+            // step out of saturation
+            Tasks { StepModRangeHi { .numSteps = 25, .direction = Direction::Dec, .resolution = Resolution::Coarse } },
+            Expectations { ExpectModRangeLow { -0.25 }, ExpectControlPosition { 0.25 }, ExpectModRangeHi { 0.75 } } },
+
+        TasksAndExpectations {
+            // pass lower border
+            Tasks { StepModRangeHi { .numSteps = 110, .direction = Direction::Dec, .resolution = Resolution::Coarse } },
+            Expectations { ExpectModRangeLow { -0.25 }, ExpectControlPosition { -0.3 }, ExpectModRangeHi { -0.35 } } });
   }
 }
 

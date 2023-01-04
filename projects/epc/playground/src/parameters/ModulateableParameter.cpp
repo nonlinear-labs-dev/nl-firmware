@@ -263,14 +263,20 @@ Layout *ModulateableParameter::createLayout(FocusAndMode focusAndMode) const
 
 std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::getModulationRange(bool clipped) const
 {
-  auto range = getValue().getScaleConverter()->getControlPositionRange().getRangeWidth();
+  const auto converter = getValue().getScaleConverter();
+  auto range = converter->getControlPositionRange().getRangeWidth();
   double modLeft = m_modulationBase;
   double modRight = m_modulationBase + m_modulationAmount * range;
 
   if(clipped)
   {
-    modLeft = getValue().getScaleConverter()->getControlPositionRange().clip(modLeft);
-    modRight = getValue().getScaleConverter()->getControlPositionRange().clip(modRight);
+    modLeft = getValue().getFineQuantizedClippedValue(modLeft);
+    modRight = getValue().getFineQuantizedClippedValue(modRight);
+  }
+  else
+  {
+    modLeft = getValue().getQuantizedValue(modLeft, true);
+    modRight = getValue().getQuantizedValue(modRight, true);
   }
   return std::make_pair(modLeft, modRight);
 }

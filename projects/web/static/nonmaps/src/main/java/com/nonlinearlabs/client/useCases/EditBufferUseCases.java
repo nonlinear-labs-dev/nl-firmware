@@ -41,8 +41,10 @@ public class EditBufferUseCases {
 
 	private void setParameterValue(ParameterId id, double newValue, boolean oracle, boolean setAnimationTimeout) {
 		BasicParameterModel p = EditBufferModel.get().getParameter(id);
-		double oldValue = p.value.value.getValue();
+		double oldValue = p.value.getQuantizedAndClipped(p.value.value.getValue(), true);
 		p.value.value.setValue(newValue);
+
+		newValue = p.value.getQuantizedAndClipped(newValue, true);
 		double diff = newValue - oldValue;
 
 		if (p instanceof PhysicalControlParameterModel) {
@@ -355,7 +357,7 @@ public class EditBufferUseCases {
 		newValue = p.modAmount.getQuantizedAndClipped(fine);
 		double diff = newValue - oldValue;
 
-		if (diff != 0)
+		if (!getTestingFlag() && diff != 0)
 			NonMaps.get().getServerProxy().setModulationAmount(newValue, id);
 	}
 

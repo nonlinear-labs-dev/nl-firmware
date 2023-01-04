@@ -40,15 +40,13 @@ public class ModulateableParameterModelUpdater extends BasicParameterModelUpdate
 			notify = true;
 		}
 
-		int modResolutionRange = target.value.metaData.bipolar.getBool() ? 2 : 1;
-
 		if (!modAmountCoarse.isEmpty()) {
-			target.modAmount.metaData.coarseDenominator.setValue(modResolutionRange * Integer.valueOf(modAmountCoarse));
+			target.modAmount.metaData.coarseDenominator.setValue(Integer.valueOf(modAmountCoarse));
 			notify = true;
 		}
 
 		if (!modAmountFine.isEmpty()) {
-			target.modAmount.metaData.fineDenominator.setValue(modResolutionRange * Integer.valueOf(modAmountFine));
+			target.modAmount.metaData.fineDenominator.setValue(Integer.valueOf(modAmountFine));
 			notify = true;
 		}
 

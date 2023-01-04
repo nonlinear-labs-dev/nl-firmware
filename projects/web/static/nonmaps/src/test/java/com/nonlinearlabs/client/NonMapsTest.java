@@ -22,6 +22,16 @@ import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 
 /**
  * GWT JUnit tests must extend GWTTestCase.
+ * 
+ * howto:
+ * in nonmaps dir, run
+ * mvn test -Dgwt.args="-runStyle Manual:1 -port 1234 -sourceLevel 11 -style
+ * PRETTY"
+ * 
+ * also, run playground (needed for providing parameter setup and NonMaps.js)
+ * navigate to:
+ * http://localhost:1234/com.nonlinearlabs.NonMapsJUnit.JUnit/junit.html in
+ * chrome
  */
 public class NonMapsTest extends GWTTestCase {
 
@@ -231,6 +241,23 @@ public class NonMapsTest extends GWTTestCase {
             }
       }
 
+      class StepModAmount extends StepTask {
+            public StepModAmount(int steps, Direction dir, Resolution res) {
+                  super(steps, dir, res);
+            }
+
+            @Override
+            public void run(PhysicalControlParameterModel phys, ModulationRouterParameterModel router,
+                        MacroControlParameterModel mc, ModulateableParameterModel target) {
+                  for (int i = 0; i < this.steps; i++) {
+                        if (this.dir == Direction.Inc)
+                              EditBufferUseCases.get().incModulationAmount(target.id, this.res == Resolution.Fine);
+                        else if (this.dir == Direction.Dec)
+                              EditBufferUseCases.get().decModulationAmount(target.id, this.res == Resolution.Fine);
+                  }
+            }
+      }
+
       class StepModRangeLow extends StepTask {
             public StepModRangeLow(int steps, Direction dir, Resolution res) {
                   super(steps, dir, res);
@@ -310,6 +337,21 @@ public class NonMapsTest extends GWTTestCase {
                   assertEquals(this.v,
                               ParameterPresenterProviders.get().getParameterPresenter(target.id.getVoiceGroup(),
                                           target.id.getNumber()).controlPosition);
+            }
+      }
+
+      class ExpectModAmount extends ExpectValue {
+            ExpectModAmount(double v) {
+                  super(v);
+            }
+
+            @Override
+            public void check(PhysicalControlParameterModel phys, ModulationRouterParameterModel router,
+                        MacroControlParameterModel mc, ModulateableParameterModel target) {
+
+                  assertEquals(this.v,
+                              ParameterPresenterProviders.get().getParameterPresenter(target.id.getVoiceGroup(),
+                                          target.id.getNumber()).modulation.modulationAmount);
             }
       }
 
@@ -526,6 +568,21 @@ public class NonMapsTest extends GWTTestCase {
       private void doTheTests() {
             setupParameters();
             ParameterPresenterProviders.get();
+
+            javaTestModulation("step mod amount - unipolar",
+                        new Setup(274, 0, 1, 0, 57, 0, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModAmount(1, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModAmount(0.51),
+                                                new ExpectModAmountString("51.0 %"))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModAmount(1, Direction.Inc, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModAmount(0.511),
+                                                new ExpectModAmountString("51.1 %"))));
 
             javaTestModulation("nothing special",
                         new Setup(274, 0, 1, 0, 57, 0, 1),
@@ -836,6 +893,26 @@ public class NonMapsTest extends GWTTestCase {
                                                 new ExpectControlPosition(0.2),
                                                 new ExpectModRangeHi(0.15))));
 
+            javaTestModulation("step mod amount - bipolar",
+                        new Setup(274, 0, 1, 0, 156, 0, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModAmount(0.5),
+                                                new ExpectModAmountString("100.0 %"))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModAmount(1, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModAmount(0.505),
+                                                new ExpectModAmountString("101.0 %"))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModAmount(1, Direction.Inc, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModAmount(0.5055),
+                                                new ExpectModAmountString("101.1 %"))));
+
             javaTestModulation("nothing special",
                         new Setup(274, 0, 1, 0, 156, 0, 1),
                         new TasksAndExpectations(
@@ -1031,6 +1108,122 @@ public class NonMapsTest extends GWTTestCase {
                                                 new SetHWPosition(-1)),
                                     new Expectations(
                                                 new ExpectControlPositionString("-100.0 %"))));
+
+            javaTestModulation("step lower mod bound on bipolar parameter",
+                        new Setup(274, 0, 1, 0.5, 156, 0, 0.25),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.25),
+                                                new ExpectControlPosition(0),
+                                                new ExpectModRangeHi(0.25))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Dec, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.251),
+                                                new ExpectControlPosition(-0.001),
+                                                new ExpectModRangeHi(0.25))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Dec, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.26),
+                                                new ExpectControlPosition(-0.005),
+                                                new ExpectModRangeHi(0.25))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Dec, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.27),
+                                                new ExpectControlPosition(-0.01),
+                                                new ExpectModRangeHi(0.25))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(73, Direction.Dec, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-1),
+                                                new ExpectControlPosition(-0.375),
+                                                new ExpectModRangeHi(0.25))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Dec, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-1),
+                                                new ExpectControlPosition(-0.375),
+                                                new ExpectModRangeHi(0.25))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(75, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.25),
+                                                new ExpectControlPosition(0),
+                                                new ExpectModRangeHi(0.25))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(110, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0.85),
+                                                new ExpectControlPosition(0.55),
+                                                new ExpectModRangeHi(0.25))));
+
+            javaTestModulation("step upper mod bound on bipolar parameter",
+                        new Setup(274, 0, 1, 0.5, 156, 0, 0.25),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.25),
+                                                new ExpectControlPosition(0),
+                                                new ExpectModRangeHi(0.25))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Inc, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.25),
+                                                new ExpectControlPosition(0.001),
+                                                new ExpectModRangeHi(0.251))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.25),
+                                                new ExpectControlPosition(0.005),
+                                                new ExpectModRangeHi(0.26))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.25),
+                                                new ExpectControlPosition(0.01),
+                                                new ExpectModRangeHi(0.27))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(73, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.25),
+                                                new ExpectControlPosition(0.375),
+                                                new ExpectModRangeHi(1))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.25),
+                                                new ExpectControlPosition(0.375),
+                                                new ExpectModRangeHi(1))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(25, Direction.Dec, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.25),
+                                                new ExpectControlPosition(0.25),
+                                                new ExpectModRangeHi(0.75))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(110, Direction.Dec, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.25),
+                                                new ExpectControlPosition(-0.3),
+                                                new ExpectModRangeHi(-0.35))));
 
       }
 }

@@ -183,7 +183,7 @@ void ModParameterUseCases::incUpperModulationBound(int inc, bool fine)
     const auto cpRange = value.getScaleConverter()->getControlPositionRange().getRangeWidth();
     const auto fineDenom = m_modParam->getModulationAmountFineDenominator();
     const auto coarseDenom = m_modParam->getModulationAmountCoarseDenominator();
-    auto denominator = cpRange * (fine ? fineDenom : coarseDenom);
+    auto denominator = fine ? fineDenom : coarseDenom;
 
     auto oldAmount = m_modParam->getModulationAmount();
     auto newAmount = (round(oldAmount * denominator) + inc) / denominator;
@@ -207,7 +207,7 @@ void ModParameterUseCases::incLowerModulationBound(int inc, bool fine)
     const auto cpRange = value.getScaleConverter()->getControlPositionRange().getRangeWidth();
     const auto fineDenom = m_modParam->getModulationAmountFineDenominator();
     const auto coarseDenom = m_modParam->getModulationAmountCoarseDenominator();
-    auto denominator = cpRange * (fine ? fineDenom : coarseDenom);
+    auto denominator = fine ? fineDenom : coarseDenom;
 
     auto oldAmount = m_modParam->getModulationAmount();
     auto newAmount = (round(oldAmount * denominator) - inc) / denominator;
