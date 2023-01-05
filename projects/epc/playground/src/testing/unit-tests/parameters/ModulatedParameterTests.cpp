@@ -508,7 +508,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
 {
   using namespace ModulationTest;
 
-  constexpr bool writeJava = true;
+  constexpr bool writeJava = false;
 
   SECTION("Unipolar")
   {
