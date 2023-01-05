@@ -65,7 +65,7 @@ void RecallEditBufferSerializer::readTagContent(Reader &reader) const
           try {
             split->m_ribbonTouchBehaviour = static_cast<RibbonTouchBehaviour>(std::stoi(attr.get("ribbon-touch-behaviour")));
           } catch(...) {
-            split->m_ribbonTouchBehaviour = RibbonTouchBehaviour::NUM_TOUCH_BEHAVIOURS;
+            split->m_ribbonTouchBehaviour = RibbonTouchBehaviour::ABSOLUTE;
           }
         }
       }

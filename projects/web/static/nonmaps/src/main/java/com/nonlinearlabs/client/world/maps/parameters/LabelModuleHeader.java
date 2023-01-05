@@ -1,5 +1,7 @@
 package com.nonlinearlabs.client.world.maps.parameters;
 
+import java.util.Arrays;
+
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
@@ -94,7 +96,7 @@ public class LabelModuleHeader extends LabelSmall {
 		if(EditBufferModel.get().soundType.getValue() == SoundType.Single)
 		{
 			Parameter p = getParent().getAnyChildParameter();
-			if(p != null && ParameterFactory.containsElement(p.parameterNumber, ParameterFactory.monophonicParameters))
+			if(p != null && Arrays.binarySearch(ParameterFactory.monophonicParameters, p.parameterNumber) >= 0)
 			{
 				if(currentVG != VoiceGroup.Global)
 				{

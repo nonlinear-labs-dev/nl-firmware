@@ -129,14 +129,6 @@ public class ParameterFactory {
 		return new BasicParameterModel(id);
 	}
 
-	static public boolean containsElement(int e, int[] arr) {
-		for (int i : arr) {
-			if (e == i)
-				return true;
-		}
-		return false;
-	}
-
 	static public int getNumberOfHW() {
 		return physicalControls.length;
 	}
