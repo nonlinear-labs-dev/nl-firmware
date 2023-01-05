@@ -36,6 +36,7 @@ namespace DescriptiveLayouts
     auto eb = Application::get().getPresetManager()->getEditBuffer();
     auto hwui = Application::get().getHWUI();
     auto vgManager = Application::get().getVGManager();
+    auto settings = &eb->getSettings();
 
     registerEvent(EventSinks::Swallow, []() { return; });
 
@@ -414,8 +415,8 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::OpenFXMixParameter,
                   [eb]
                   {
-                    EditBufferUseCases ebUseCases{*eb};
-                    ebUseCases.selectParameter({C15::PID::Master_FX_Mix, VoiceGroup::Global}, true);
+                    EditBufferUseCases ebUseCases { *eb };
+                    ebUseCases.selectParameter({ C15::PID::Master_FX_Mix, VoiceGroup::Global }, true);
                   });
 
     registerEvent(EventSinks::InitSound,
@@ -460,8 +461,8 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::LayerMuteInc,
                   [eb]()
                   {
-                    auto muteI = eb->findParameterByID({ 395, VoiceGroup::I });
-                    auto muteII = eb->findParameterByID({ 395, VoiceGroup::II });
+                    auto muteI = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I });
+                    auto muteII = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II });
                     const auto vgIMuted = muteI->getControlPositionValue() > 0.5;
                     const auto vgIIMuted = muteII->getControlPositionValue() > 0.5;
                     EditBufferUseCases useCases(*eb);
@@ -479,8 +480,8 @@ namespace DescriptiveLayouts
     registerEvent(EventSinks::LayerMuteDec,
                   [eb]()
                   {
-                    auto muteI = eb->findParameterByID({ 395, VoiceGroup::I });
-                    auto muteII = eb->findParameterByID({ 395, VoiceGroup::II });
+                    auto muteI = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I });
+                    auto muteII = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II });
                     const auto vgIMuted = muteI->getControlPositionValue() > 0.5;
                     const auto vgIIMuted = muteII->getControlPositionValue() > 0.5;
                     EditBufferUseCases useCases(*eb);
@@ -493,6 +494,50 @@ namespace DescriptiveLayouts
                     {
                       useCases.unmuteBothPartsWithTransactionNameForPart(VoiceGroup::I);
                     }
+                  });
+
+    registerEvent(EventSinks::InitAsSingle,
+                  [eb, settings]()
+                  {
+                    EditBufferUseCases ebUseCases(*eb);
+                    SettingsUseCases uc(*settings);
+
+                    ebUseCases.initSoundAs(SoundType::Single, Defaults::UserDefault);
+                    auto famSetting = settings->getSetting<FocusAndModeSetting>();
+                    uc.setFocusAndMode(famSetting->getOldState());
+                  });
+
+    registerEvent(EventSinks::InitAsSplit,
+                  [eb, settings]()
+                  {
+                    EditBufferUseCases ebUseCases(*eb);
+                    SettingsUseCases uc(*settings);
+
+                    ebUseCases.initSoundAs(SoundType::Split, Defaults::UserDefault);
+                    auto famSetting = settings->getSetting<FocusAndModeSetting>();
+                    uc.setFocusAndMode(famSetting->getOldState());
+                  });
+
+    registerEvent(EventSinks::InitAsLayer,
+                  [eb, settings]()
+                  {
+                    EditBufferUseCases ebUseCases(*eb);
+                    SettingsUseCases uc(*settings);
+
+                    ebUseCases.initSoundAs(SoundType::Layer, Defaults::UserDefault);
+                    auto famSetting = settings->getSetting<FocusAndModeSetting>();
+                    uc.setFocusAndMode(famSetting->getOldState());
+                  });
+
+    registerEvent(EventSinks::InitPart,
+                  [eb, vgManager, settings]()
+                  {
+                    EditBufferUseCases ebUseCases(*eb);
+                    ebUseCases.initPart(vgManager->getCurrentVoiceGroup(), Defaults::UserDefault);
+
+                    SettingsUseCases uc(*settings);
+                    auto famSetting = settings->getSetting<FocusAndModeSetting>();
+                    uc.setFocusAndMode(famSetting->getOldState());
                   });
   }
 

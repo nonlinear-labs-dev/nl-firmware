@@ -773,3 +773,9 @@ void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_II::onChange(const EditBuffer
     setResult("empty");
   }
 }
+
+void DescriptiveLayouts::InitCurrentVoiceText::onChange(VoiceGroup newSelection)
+{
+  auto str = nltools::string::concat("Part ", toString(newSelection));
+  setValue({str, 0});
+}

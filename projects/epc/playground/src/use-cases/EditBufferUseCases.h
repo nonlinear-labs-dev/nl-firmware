@@ -35,6 +35,8 @@ class EditBufferUseCases
   void convertToSplit(VoiceGroup currentSelectedVoiceGroup);
   void convertToDual(SoundType type, VoiceGroup group);
 
+  void initSoundAs(SoundType type, Defaults defaults);
+
   void initSound(Defaults defaults);
   void initPart(VoiceGroup part, Defaults defaults);
 
