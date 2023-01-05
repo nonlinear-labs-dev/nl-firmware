@@ -21,6 +21,7 @@ class VoiceGroupIndicator : public Control
   bool drawSingle(FrameBuffer& fb);
 
   bool isLayerPartMuted(VoiceGroup vg) const;
+  bool isSingleFXNotActive(VoiceGroup vg) const;
   bool shouldDraw();
 
   VoiceGroup m_selectedVoiceGroup {};
@@ -31,4 +32,6 @@ class VoiceGroupIndicator : public Control
   const Parameter* m_param = nullptr;
   const bool m_allowLoadToPart;
   const bool m_alwaysDraw;
+  void drawCrossForLayer(FrameBuffer& fb, int centerX, int centerY) const;
+  void drawCrossForSingle(FrameBuffer& fb, int centerX, int centerY) const;
 };
