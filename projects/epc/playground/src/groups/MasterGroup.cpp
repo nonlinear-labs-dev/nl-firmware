@@ -1,15 +1,10 @@
 #include <parameters/ModulateableParameter.h>
 #include "MasterGroup.h"
-#include "parameters/Parameter.h"
 #include "parameter_declarations.h"
 #include <parameter_list.h>
 
 MasterGroup::MasterGroup(ParameterGroupSet *parent)
     : ParameterGroup(parent, { "Master", VoiceGroup::Global }, "Master", "Master", "Master")
-{
-}
-
-MasterGroup::~MasterGroup()
 {
 }
 

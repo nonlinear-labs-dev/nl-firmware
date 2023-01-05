@@ -22,7 +22,10 @@ public class BasicParameterModel extends Notifier<BasicParameterModel> {
 
 	public BasicParameterModel(ParameterId id) {
 		this.id = id;
-		value.onChange(e -> notifyChanges());
+		value.onChange(e -> {
+			notifyChanges();
+			return true;
+		});
 		shortName.onChange(e -> notifyChanges());
 		longName.onChange(e -> notifyChanges());
 		originalValue.onChange(e -> notifyChanges());

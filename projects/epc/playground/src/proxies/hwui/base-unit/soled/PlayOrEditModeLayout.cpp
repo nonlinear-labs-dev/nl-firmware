@@ -1,5 +1,6 @@
 #include <Application.h>
 #include <groups/HardwareSourcesGroup.h>
+#include <parameters/Parameter.h>
 #include <proxies/hwui/base-unit/BaseUnit.h>
 #include <proxies/hwui/base-unit/PlayPanel.h>
 #include <proxies/hwui/base-unit/soled/NoteShiftDisplay.h>

@@ -29,12 +29,6 @@ namespace UNDO
   class Transaction;
 }
 
-enum class Defaults
-{
-  FactoryDefault,
-  UserDefault
-};
-
 class Parameter : public UpdateDocumentContributor,
                   public IntrusiveListItem<Parameter *>,
                   public FlagOwner<ParameterFlags, uint8_t>,
@@ -54,14 +48,14 @@ class Parameter : public UpdateDocumentContributor,
     Dot
   };
 
-  Parameter(ParameterGroup *group, const ParameterId& id);
+  Parameter(ParameterGroup *group, const ParameterId &id);
   ~Parameter() override;
 
   tControlPositionValue expropriateSnapshotValue();
 
   const ParameterGroup *getParentGroup() const;
   ParameterGroup *getParentGroup();
-  EditBuffer* getParentEditBuffer() const;
+  EditBuffer *getParentEditBuffer() const;
   ParameterId getID() const;
 
   bool isBiPolar() const;
@@ -159,7 +153,7 @@ class Parameter : public UpdateDocumentContributor,
  protected:
   virtual void sendToAudioEngine() const;
   virtual void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
-                          bool dosendToPlaycontroller);
+                          bool notifyAudioEngine);
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const;
   virtual void onValueChanged(Initiator initiator, tControlPositionValue oldValue, tControlPositionValue newValue);
   virtual void onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,

@@ -27,8 +27,8 @@ public class ModulateableSliderHorizontal extends SliderHorizontal {
 	private void drawModIndication(Context2d ctx) {
 		boolean isBiPolar = presenter.bipolar;
 		double targetValue = presenter.controlPosition;
-		double modLeft = presenter.modulation.modulationRange.left;
-		double modRight = presenter.modulation.modulationRange.right;
+		double modLeft = presenter.modulation.modRange.left.clippedQuantized;
+		double modRight = presenter.modulation.modRange.right.clippedQuantized;
 
 		Rect r = getPixRect().copy();
 

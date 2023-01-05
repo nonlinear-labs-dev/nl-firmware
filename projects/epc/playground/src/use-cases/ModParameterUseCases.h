@@ -27,8 +27,12 @@ class ModParameterUseCases : public ParameterUseCases
   void removeModSource();
   void selectModSourceAndSelectTargetParameter(MacroControls mc);
   void setModulationAmount(tControlPositionValue amt);
-  void setModulationLimit(tControlPositionValue amt, tControlPositionValue cp);
+
+  void incUpperModulationBound(int inc, bool fine);
+  void incLowerModulationBound(int inc, bool fine);
 
  private:
+  void setModulationLimit(tControlPositionValue amt, tControlPositionValue cp);
+
   ModulateableParameter* m_modParam = nullptr;
 };

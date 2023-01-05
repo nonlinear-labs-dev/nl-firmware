@@ -31,11 +31,10 @@ namespace nltools
       {
         using namespace std::chrono_literals;
 
-        while(!m_bgLoopRunning)
-          std::this_thread::sleep_for(10ms);
-
         m_backgroundLoop->quit();
-        m_backgroundTask.get();
+        while(m_backgroundTask.wait_for(10ms) == std::future_status::timeout)
+          m_backgroundLoop->quit();
+
         m_server.reset();
       }
 
@@ -75,7 +74,6 @@ namespace nltools
         }
 
         m_conditionEstablishedThreadWaiter.notify();
-        m_backgroundCtx->signal_idle().connect_once([&] { m_bgLoopRunning = true; });
         m_backgroundLoop->run();
         g_main_context_pop_thread_default(m_backgroundCtx->gobj());
       }

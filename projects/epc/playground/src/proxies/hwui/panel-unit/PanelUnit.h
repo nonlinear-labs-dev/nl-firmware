@@ -9,7 +9,7 @@ class Parameter;
 class TwoStateLED;
 class LayoutFolderMonitor;
 
-class PanelUnit : public HardwareUserInterfaceUnit, public sigc::trackable
+class PanelUnit : public HardwareUserInterfaceUnit
 {
  private:
   typedef HardwareUserInterfaceUnit super;

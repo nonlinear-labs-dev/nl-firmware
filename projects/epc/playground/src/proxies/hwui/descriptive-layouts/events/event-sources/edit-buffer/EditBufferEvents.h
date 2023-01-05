@@ -1,5 +1,6 @@
 #pragma once
 #include <presets/EditBuffer.h>
+#include <parameters/Parameter.h>
 #include <parameter_declarations.h>
 #include <device-settings/Setting.h>
 #include "EditBufferEvent.h"

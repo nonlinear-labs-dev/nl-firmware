@@ -1,20 +1,12 @@
-#include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
-#include <presets/PresetManager.h>
-#include <presets/EditBuffer.h>
-#include <Application.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/MacroControlSmoothingParameterLayout.h>
 #include <parameters/MacroControlSmoothingParameter.h>
 #include <parameter_declarations.h>
 #include "MacroControlsGroup.h"
 #include "parameters/MacroControlParameter.h"
-#include "parameters/scale-converters/EnvelopeAttackDecayTimeMSScaleConverter.h"
 
 MacroControlsGroup::MacroControlsGroup(ParameterGroupSet *parent)
     : ParameterGroup(parent, { "MCs", VoiceGroup::Global }, "Macro Control", "Macro Control", "Macro Control")
 {
 }
-
-MacroControlsGroup::~MacroControlsGroup() = default;
 
 void MacroControlsGroup::init()
 {

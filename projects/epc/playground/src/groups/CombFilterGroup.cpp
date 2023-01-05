@@ -1,15 +1,9 @@
 #include "CombFilterGroup.h"
-
 #include "parameters/ModulateableParameter.h"
-#include "parameters/Parameter.h"
 #include "parameter_declarations.h"
 
 CombFilterGroup::CombFilterGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Comb", vg }, "Comb Filter", "Comb Filter", "Comb Filter")
-{
-}
-
-CombFilterGroup::~CombFilterGroup()
 {
 }
 

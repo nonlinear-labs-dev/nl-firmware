@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.Notifier;
 import com.nonlinearlabs.client.dataModel.editBuffer.AftertouchParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
@@ -22,10 +21,11 @@ import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.PedalParameterModel.Modes;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.SendParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel.ReturnModes;
+import com.nonlinearlabs.client.dataModel.editBuffer.SendParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
+import com.nonlinearlabs.client.presenters.ParameterPresenter.Modulation.ModRange;
 import com.nonlinearlabs.client.tools.NLMath;
 import com.nonlinearlabs.client.world.Range;
 import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter.ReturnMode;
@@ -45,6 +45,24 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			updatePresenter(e);
 			return true;
 		});
+
+		if (p instanceof ModulateableParameterModel) {
+			var m = (ModulateableParameterModel) p;
+			m.modSource.onChange(e -> {
+				if (e != ModSource.None) {
+					BasicParameterModel mcBPM = EditBufferModel.get().getParameter(new ParameterId(e));
+
+					mcBPM.onChange(mc -> {
+						if (mc != mcBPM)
+							return false;
+
+						updatePresenter(p);
+						return true;
+					});
+				}
+				return true;
+			});
+		}
 
 		EditBufferModel.get().selectedParameter.onChange(id -> {
 			boolean isSelected = presenter.id.getNumber() == id;
@@ -240,7 +258,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.changed = false;
 		presenter.valueChanged = false;
 
-        PhysicalControlParameterModel sibling = p.getSibling();
+		PhysicalControlParameterModel sibling = p.getSibling();
 
 		if (sibling instanceof RibbonParameterModel) {
 			RibbonParameterModel r = (RibbonParameterModel) sibling;
@@ -296,41 +314,29 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 		presenter.modulation.isModulated = p.modSource.getValue() != ModSource.None;
 
 		if (presenter.modulation.isModulated) {
-			presenter.modulation.modulationSource = p.modSource.getValue();
-			presenter.modulation.modulationSourceLabel = p.modSource.getValue().toString();
+			var isBipolar = p.value.metaData.bipolar.getBool();
 
-			double modAmount = p.modAmount.getQuantizedAndClipped(true);
-			double value = p.value.getQuantized(true);
-			boolean isBiPolar = p.value.metaData.bipolar.getBool();
-			double bipolarFactor = isBiPolar ? 2 : 1;
-
-			double modLeft = 0;
-			double modRight = 0;
-
-			modAmount *= bipolarFactor;
-
+			Range bounds = new Range(isBipolar ? -1.0 : 0, 1.0);
 			MacroControlParameterModel mc = (MacroControlParameterModel) EditBufferModel.get()
 					.getParameter(new ParameterId(p.modSource.getValue()));
 
-			modLeft = value - modAmount * mc.value.getQuantizedAndClipped(true);
-			modRight = modLeft + modAmount;
+			presenter.modulation.modulationSource = p.modSource.getValue();
+			presenter.modulation.modulationSourceLabel = p.modSource.getValue().toString();
 
-			if (modRight < modLeft) {
-				double tmp = modLeft;
-				modLeft = modRight;
-				modRight = tmp;
-			}
+			var modRangeWidth = isBipolar ? 2 : 1;
 
-			if (isBiPolar) {
-				modLeft = NLMath.clamp(modLeft, -1.0, 1.0);
-				modRight = NLMath.clamp(modRight, -1.0, 1.0);
-			} else {
-				modLeft = NLMath.clamp(modLeft, 0.0, 1.0);
-				modRight = NLMath.clamp(modRight, 0.0, 1.0);
-			}
+			presenter.modulation.modRange.lower.raw = p.modBase.getValue().value.getValue();
+			presenter.modulation.modRange.lower.clipped = bounds.clip(presenter.modulation.modRange.lower.raw);
+			presenter.modulation.modRange.lower.clippedQuantized = p.value
+					.getQuantizedAndClipped(presenter.modulation.modRange.lower.clipped, true);
+			presenter.modulation.modRange.lower.outOfRange = bounds.outOfRange(presenter.modulation.modRange.lower.raw);
 
-			presenter.modulation.modulationRange.left = modLeft;
-			presenter.modulation.modulationRange.right = modRight;
+			presenter.modulation.modRange.upper.raw = presenter.modulation.modRange.lower.raw
+					+ p.modAmount.getValue().value.getValue() * modRangeWidth;
+			presenter.modulation.modRange.upper.clipped = bounds.clip(presenter.modulation.modRange.upper.raw);
+			presenter.modulation.modRange.upper.clippedQuantized = p.value
+					.getQuantizedAndClipped(presenter.modulation.modRange.upper.clipped, true);
+			presenter.modulation.modRange.upper.outOfRange = bounds.outOfRange(presenter.modulation.modRange.lower.raw);
 
 			presenter.modulation.modulationAmount = p.modAmount.getQuantizedAndClipped(true);
 
@@ -340,34 +346,23 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 					"MC Amount: " + modAmountWithoutUnit, "MC Amt: " + modAmountWithoutUnit,
 					"Amt: " + modAmountWithoutUnit, modAmountWithoutUnit };
 
-			double srcValue = mc.value.getClippedValue();
-
-			Range bounds = new Range(p.value.metaData.bipolar.getBool() ? -1.0 : 0, 1.0);
-			double left = (value - modAmount * srcValue);
-			double right = left + modAmount;
-			Range mod = new Range(left, right);
-			Range modNormalized = new Range(mod.getLeft(), mod.getRight());
-			modNormalized.normalize();
-
-			double r = NLMath.quantize(modNormalized.getRight(), 1000);
-			double l = NLMath.quantize(modNormalized.getLeft(), 1000);
-
 			{
-
-				String clip = bounds.outOfRange(modAmount >= 0 ? l : r) ? "! " : "";
-				mod.clipTo(bounds);
-				String with = p.value.getDecoratedValue(true, mod.getLeft(), true);
-				String without = p.value.getDecoratedValue(false, mod.getLeft(), true);
+				String clip = presenter.modulation.modRange.lower.outOfRange ? "! " : "";
+				String with = p.value.getDecoratedValue(true, presenter.modulation.modRange.lower.clippedQuantized,
+						true);
+				String without = p.value.getDecoratedValue(false, presenter.modulation.modRange.lower.clippedQuantized,
+						true);
 				presenter.modulation.amountLowerBoundDisplayValues = new String[] { clip + "Lower Limit: " + with,
 						clip + "Lower Limit: " + without, clip + "Lower: " + without, clip + "Lo: " + without,
 						clip + without };
 			}
 
 			{
-				String clip = bounds.outOfRange(modAmount >= 0 ? r : l) ? "! " : "";
-				mod.clipTo(bounds);
-				String with = p.value.getDecoratedValue(true, mod.getRight(), true);
-				String without = p.value.getDecoratedValue(false, mod.getRight(), true);
+				String clip = presenter.modulation.modRange.upper.outOfRange ? "! " : "";
+				String with = p.value.getDecoratedValue(true, presenter.modulation.modRange.upper.clippedQuantized,
+						true);
+				String without = p.value.getDecoratedValue(false, presenter.modulation.modRange.upper.clippedQuantized,
+						true);
 				presenter.modulation.amountUpperBoundDisplayValues = new String[] { clip + "Upper Limit: " + with,
 						clip + "Upper Limit: " + without, clip + "Upper: " + without, clip + "Up: " + without,
 						clip + without };
@@ -401,8 +396,16 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			presenter.modulation.macroControlDisplayValues = new String[] { "" };
 			presenter.modulation.originalModulationAmountDecoratedString = "---";
 			presenter.modulation.originalModulationPositionDecoratedString = "---";
-			presenter.modulation.modulationRange.left = presenter.modulation.modulationRange.right = presenter.controlPosition;
+			presenter.modulation.modRange = new ModRange(presenter.controlPosition);
 		}
+
+		presenter.modulation.modRange.left = presenter.modulation.modRange.lower.raw <= presenter.modulation.modRange.upper.raw
+				? presenter.modulation.modRange.lower
+				: presenter.modulation.modRange.upper;
+
+		presenter.modulation.modRange.right = presenter.modulation.modRange.lower.raw <= presenter.modulation.modRange.upper.raw
+				? presenter.modulation.modRange.upper
+				: presenter.modulation.modRange.lower;
 	}
 
 	private void updateClipping(ModulateableParameterModel m) {
@@ -442,7 +445,7 @@ public class ParameterPresenterProvider extends Notifier<ParameterPresenter> {
 			RibbonParameterModel r = (RibbonParameterModel) p;
 			presenter.drawCenterReturnIndicator = r.mode.getValue() == ReturnModes.return_to_center;
 			presenter.drawZeroReturnIndicator = false;
-			presenter.isReturning = r.mode.getValue() != ReturnModes.non_return;		
+			presenter.isReturning = r.mode.getValue() != ReturnModes.non_return;
 			presenter.relative = r.isRelative();
 		}
 

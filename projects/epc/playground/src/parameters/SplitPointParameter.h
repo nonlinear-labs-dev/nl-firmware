@@ -50,13 +50,16 @@ class SplitPointParameter : public ModulateableParameter
   void loadDefault(UNDO::Transaction* transaction, Defaults mode) override;
   bool isSynced() const;
 
+  void applyMacroControl(tDisplayValue mcValue, Initiator initiator) override;
+
  protected:
   void setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
-                  bool dosendToPlaycontroller) override;
+                  bool notifyAudioEngine) override;
 
   bool inModAmountSet = false;
   bool inModSrcSet = false;
   bool isAtExtremes(tControlPositionValue value);
 
   void clampToExtremes(UNDO::Transaction* transaction, bool dosendToPlaycontroller);
+  void updateModulationBase() override;
 };

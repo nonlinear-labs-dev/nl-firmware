@@ -1,18 +1,9 @@
 #include "EchoGroup.h"
-
-#include "../parameters/scale-converters/IdentityScaleConverter.h"
-#include "parameters/Parameter.h"
 #include "parameters/ModulateableParameter.h"
-
-#include "parameters/ValueScaling.h"
 #include "parameter_declarations.h"
 
 EchoGroup::EchoGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Echo", vg }, "Echo", "Echo", "Echo")
-{
-}
-
-EchoGroup::~EchoGroup()
 {
 }
 

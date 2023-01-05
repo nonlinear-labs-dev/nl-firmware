@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
+#include "parameters/Parameter.h"
 
 SingleSoundPolyToFXIndicator::SingleSoundPolyToFXIndicator(const Point& p)
     : ControlWithChildren({ p.getX(), p.getY(), 60, 50 })

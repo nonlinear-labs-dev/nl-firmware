@@ -8,10 +8,12 @@
 #include <Application.h>
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <presets/PresetManager.h>
+#include <groups/MacroControlsGroup.h>
+
 #include <cmath>
 
 ModParameterUseCases::ModParameterUseCases(ModulateableParameter* parameter)
-    : ParameterUseCases{parameter}
+    : ParameterUseCases { parameter }
     , m_modParam { parameter }
 {
   nltools_assertAlways(m_modParam != nullptr);
@@ -164,6 +166,63 @@ void ModParameterUseCases::setModulationLimit(tControlPositionValue amt, tContro
   const auto name = m_modParam->getGroupAndParameterName();
   auto scope = undoScope.startContinuousTransaction(m_modParam, "Set Modulation Limit for '%0'", name);
   auto transaction = scope->getTransaction();
+
+  auto denominator = m_modParam->getModulationAmountFineDenominator();
+  amt = ScaleConverter::getControlPositionRangeBipolar().clip(
+      (static_cast<int>(std::round(amt * denominator)) / denominator));
+
   m_modParam->undoableSetModAmount(transaction, amt);
   m_modParam->setCPFromHwui(transaction, cp);
+}
+
+void ModParameterUseCases::incUpperModulationBound(int inc, bool fine)
+{
+  if(auto mcParam = dynamic_cast<MacroControlParameter*>(m_modParam->getMacroControl()))
+  {
+    auto& value = m_modParam->getValue();
+    const auto cpRange = value.getScaleConverter()->getControlPositionRange().getRangeWidth();
+    const auto fineDenom = m_modParam->getModulationAmountFineDenominator();
+    const auto coarseDenom = m_modParam->getModulationAmountCoarseDenominator();
+    auto denominator = fine ? fineDenom : coarseDenom;
+
+    auto oldAmount = m_modParam->getModulationAmount();
+    auto newAmount = (round(oldAmount * denominator) + inc) / denominator;
+    auto range = m_modParam->getModulationRange(true);
+    auto mcVal = mcParam->getValue().getQuantizedClippedValue(true);
+    auto upperBound = range.first + newAmount * cpRange;
+
+    if(upperBound > 1.0)
+      newAmount = (1.0 - range.first) / cpRange;
+
+    auto newValue = range.first + newAmount * cpRange * mcVal;
+    setModulationLimit(newAmount, newValue);
+  }
+}
+
+void ModParameterUseCases::incLowerModulationBound(int inc, bool fine)
+{
+  if(auto mcParam = dynamic_cast<MacroControlParameter*>(m_modParam->getMacroControl()))
+  {
+    auto& value = m_modParam->getValue();
+    const auto cpRange = value.getScaleConverter()->getControlPositionRange().getRangeWidth();
+    const auto fineDenom = m_modParam->getModulationAmountFineDenominator();
+    const auto coarseDenom = m_modParam->getModulationAmountCoarseDenominator();
+    auto denominator = fine ? fineDenom : coarseDenom;
+
+    auto oldAmount = m_modParam->getModulationAmount();
+    auto newAmount = (round(oldAmount * denominator) - inc) / denominator;
+    auto range = m_modParam->getModulationRange(true);
+    auto mcVal = mcParam->getValue().getQuantizedClippedValue(true);
+    auto lowerBound = range.second - newAmount * cpRange;
+    auto minLowerBound = m_modParam->isBiPolar() ? -1.0 : 0.0;
+
+    if(lowerBound < minLowerBound)
+    {
+      newAmount = (minLowerBound - range.second) / -cpRange;
+      lowerBound = minLowerBound;
+    }
+
+    auto newValue = lowerBound + newAmount * cpRange * mcVal;
+    setModulationLimit(newAmount, newValue);
+  }
 }

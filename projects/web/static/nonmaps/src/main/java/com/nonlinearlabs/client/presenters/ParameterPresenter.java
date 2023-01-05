@@ -8,6 +8,11 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 
 public class ParameterPresenter {
 	public static class Range {
+		public Range(double l, double r) {
+			left = l;
+			right = r;
+		}
+
 		public double left = 0;
 		public double right = 0;
 	}
@@ -34,7 +39,33 @@ public class ParameterPresenter {
 	public long hash = 0;
 
 	public static class Modulation {
-		public Range modulationRange = new Range();
+		public static class ModRange {
+			public ModRange(double cp) {
+				lower = new Bound(cp);
+				upper = new Bound(cp);
+			}
+
+			public static class Bound {
+				public Bound(double cp) {
+					raw = clipped = clippedQuantized = cp;
+					outOfRange = false;
+				}
+
+				public double raw;
+				public double clipped;
+				public double clippedQuantized;
+				public boolean outOfRange;
+			}
+
+			public Bound lower;
+			public Bound upper;
+
+			public Bound left;
+			public Bound right;
+		};
+
+		public ModRange modRange = new ModRange(0);
+
 		public String modulationSourceLabel = "";
 		public ModSource modulationSource = ModSource.None;
 		public boolean isModulated = false;
@@ -93,8 +124,8 @@ public class ParameterPresenter {
 		c.eat(fillFromRightEnabled);
 		c.eat(disabled);
 		c.eat(hidden);
-		c.eat(modulation.modulationRange.left);
-		c.eat(modulation.modulationRange.right);
+		c.eat(modulation.modRange.lower.raw);
+		c.eat(modulation.modRange.upper.raw);
 		c.eat(modulation.modulationSourceLabel);
 		c.eat(modulation.modulationSource.ordinal());
 		c.eat(modulation.isModulated);

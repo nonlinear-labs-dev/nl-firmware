@@ -19,6 +19,6 @@ class PlayModeLayout : public PlayOrEditModeLayout
   void onMacroControlMappingsChanged();
   void onRibbonSelectionChanged(const Setting* s);
 
-  Control* m_pedalSymbol;
-  Control* m_ribbonLabel;
+  Control* m_pedalSymbol = nullptr;
+  Control* m_ribbonLabel = nullptr;
 };

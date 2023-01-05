@@ -3,10 +3,6 @@
 #include "parameters/Parameter.h"
 #include "presets/ParameterGroupSet.h"
 #include "presets/PresetParameterGroup.h"
-#include <fstream>
-#include <parameters/ModulateableParameter.h>
-#include <parameters/MacroControlParameter.h>
-#include <nltools/logging/Log.h>
 #include <libundo/undo/Scope.h>
 #include <xml/Attribute.h>
 #include <nltools/logging/Log.h>
@@ -69,6 +65,22 @@ ParameterGroup::tParameterPtr ParameterGroup::findParameterByID(const ParameterI
   return getParameterByID(id);
 }
 
+void ParameterGroup::forEachParameter(const std::function<void(Parameter *)> &cb)
+{
+  for(auto p : m_parameters)
+    cb(p);
+}
+
+const IntrusiveList<ParameterGroup::tParameterPtr> &ParameterGroup::getParameters() const
+{
+  return m_parameters;
+}
+
+IntrusiveList<ParameterGroup::tParameterPtr> &ParameterGroup::getParameters()
+{
+  return m_parameters;
+}
+
 sigc::connection ParameterGroup::onGroupChanged(const sigc::slot<void> &slot)
 {
   return m_signalGroupChanged.connectAndInit(slot);
@@ -116,9 +128,7 @@ void ParameterGroup::writeDocument(Writer &writer, tUpdateID knownRevision) cons
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("parameter-group", Attribute("id", getID()), Attribute("short-name", getShortName()),
-                  Attribute("long-name", m_webUIName), Attribute("changed", changed),
-                  [&]()
-                  {
+                  Attribute("long-name", m_webUIName), Attribute("changed", changed), [&]() {
                     if(changed)
                       for(const auto p : m_parameters)
                         p->writeDocument(writer, knownRevision);

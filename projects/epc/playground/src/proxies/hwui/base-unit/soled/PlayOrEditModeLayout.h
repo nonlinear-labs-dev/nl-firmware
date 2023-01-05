@@ -22,8 +22,8 @@ class PlayOrEditModeLayout : public Layout
   PlayOrEditModeLayout(const PlayOrEditModeLayout& other);
   PlayOrEditModeLayout& operator=(const PlayOrEditModeLayout&);
 
-  Control* m_pedalIndicationLower;
-  Control* m_ribbonLabelLower;
+  Control* m_pedalIndicationLower = nullptr;
+  Control* m_ribbonLabelLower = nullptr;
   void createLowerLabels();
   void onRibbonSelectionChanged(const Setting* s);
   void onMacroMappingsChanged();
