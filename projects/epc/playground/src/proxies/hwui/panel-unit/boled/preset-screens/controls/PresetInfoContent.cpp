@@ -15,6 +15,7 @@ PresetInfoContent::PresetInfoContent()
 {
   addInfoField("name", "Name", new MultiLineInfoContent());
   addInfoField("comment", "Comment", new MultiLineInfoContent());
+  addInfoField("color", "Color Tag");
   addInfoField("lastchange", "Last Change");
   addInfoField("devicename", "Device Name");
   addInfoField("uiversion", "Version");
@@ -71,10 +72,23 @@ void PresetInfoContent::fillContents()
   fillFromPreset(getCurrentPreset());
 }
 
+namespace {
+  auto prettyPrintPresetColor(const Preset* preset)
+  {
+    std::string presetColor = preset->getAttribute("color", "---");
+    if(presetColor == "none")
+      presetColor = "---";
+    else if(presetColor != "---" && std::isalpha(presetColor[0]))
+      presetColor[0] = static_cast<char>(std::toupper(presetColor[0]));
+    return presetColor;
+  }
+}
+
 void PresetInfoContent::fillFromPreset(const Preset *preset)
 {
   infoFields["name"]->setInfo(preset->getDisplayNameWithSuffixes(false), FrameBufferColors::C128);
   infoFields["comment"]->setInfo(preset->getAttribute("Comment", "---"), FrameBufferColors::C128);
+  infoFields["color"]->setInfo(prettyPrintPresetColor(preset));
   infoFields["lastchange"]->setInfo(TimeTools::getDisplayStringFromIso(preset->getAttribute("StoreTime", "---")));
   infoFields["devicename"]->setInfo(preset->getAttribute("DeviceName", "---"));
   infoFields["uiversion"]->setInfo(preset->getAttribute("SoftwareVersion", "---"));
@@ -84,6 +98,7 @@ bool PresetInfoContent::fillDefaults()
 {
   infoFields["name"]->setInfo("---", FrameBufferColors::C128);
   infoFields["comment"]->setInfo("---", FrameBufferColors::C128);
+  infoFields["color"]->setInfo("---");
   infoFields["lastchange"]->setInfo("---");
   infoFields["devicename"]->setInfo("---");
   infoFields["uiversion"]->setInfo("---");
