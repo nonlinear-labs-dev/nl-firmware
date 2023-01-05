@@ -35,7 +35,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Parameters do not Crash")
   }
 }
 
-//TODO FIX this test!!! isGlobal now depends on SoundType!!
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Groups are conforming to GroupID rules")
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })

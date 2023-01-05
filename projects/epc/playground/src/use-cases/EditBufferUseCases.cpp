@@ -1,4 +1,5 @@
 #include "EditBufferUseCases.h"
+#include "presets/SendEditBufferScopeGuard.h"
 #include <presets/EditBuffer.h>
 #include <presets/Preset.h>
 #include <presets/PresetManager.h>
@@ -449,14 +450,14 @@ void EditBufferUseCases::copyFX(VoiceGroup from, VoiceGroup to)
 {
   auto name = nltools::string::concat("Copy FX ", toString(from), " into ", toString(to));
   auto scope = m_editBuffer.getUndoScope().startTransaction(name);
-  auto trans = scope->getTransaction();
+  auto transaction = scope->getTransaction();
+
+  SendEditBufferScopeGuard scopeGuard(transaction, true);
 
   for(auto groupName : { "Flang", "Cab", "Gap Filt", "Echo", "Reverb" })
   {
     auto src = m_editBuffer.getParameterGroupByID({ groupName, from });
     auto dst = m_editBuffer.getParameterGroupByID({ groupName, to });
-    dst->copyFrom(trans, src);
+    dst->copyFrom(transaction, src);
   }
-
-  trans->addPostfixCommand([](auto) { Application::get().getAudioEngineProxy()->sendEditBuffer(); });
 }

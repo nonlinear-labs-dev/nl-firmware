@@ -255,13 +255,6 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer* eb) override;
   };
 
-  /*
-   * m_map[EventSources::Split_Arrows_To_FX_L_TO_R_I] = std::make_unique<Split_Arrows_To_FX_L_TO_R_I>();
-m_map[EventSources::Split_Arrows_To_FX_L_TO_R_II] = std::make_unique<Split_Arrows_To_FX_L_TO_R_II>();
-m_map[EventSources::Split_Arrows_To_FX_R_TO_L_I] = std::make_unique<Split_Arrows_To_FX_R_TO_L_I>();
-m_map[EventSources::Split_Arrows_To_FX_R_TO_L_II] = std::make_unique<Split_Arrows_To_FX_R_TO_L_II>();
-   */
-
   class Split_Arrows_To_FX_L_TO_R_I : public EditBufferEvent<std::string>
   {
    public:

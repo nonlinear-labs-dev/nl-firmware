@@ -47,7 +47,7 @@ void RecallEditBufferSerializer::readTagContent(Reader &reader) const
       try {
         param->m_ribbonTouchBehaviour = static_cast<RibbonTouchBehaviour>(std::stoi(attr.get("ribbon-touch-behaviour")));
       } catch (...) {
-        param->m_ribbonTouchBehaviour = RibbonTouchBehaviour::NUM_TOUCH_BEHAVIOURS;
+        param->m_ribbonTouchBehaviour = RibbonTouchBehaviour::ABSOLUTE;
       }
     }
     else if(id.getNumber() == C15::PID::Split_Split_Point)

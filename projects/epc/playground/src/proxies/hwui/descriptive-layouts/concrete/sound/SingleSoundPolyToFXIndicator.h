@@ -14,11 +14,11 @@ class SingleSoundPolyToFXIndicator : public ControlWithChildren
  private:
   void bruteForce();
 
-  Control* polyToFx;
-  Control* FXI;
-  Control* FXII;
-  Control* fxToOut;
-  Control* serial;
+  Control* polyToFx = nullptr;
+  Control* FXI = nullptr;
+  Control* FXII = nullptr;
+  Control* fxToOut = nullptr;
+  Control* serial = nullptr;
 
   sigc::connection con1, con2, con3, con4;
 };
@@ -32,9 +32,9 @@ class SingleSoundFBFXIndicator : public ControlWithChildren
   void bruteForce();
   bool isControl1Visible() const;
 
-  Control* label1;
-  Control* FXI;
-  Control* FXII;
-  Control* serial;
-  Control* fbToPoly;
+  Control* label1 = nullptr;
+  Control* FXI = nullptr;
+  Control* FXII = nullptr;
+  Control* serial = nullptr;
+  Control* fbToPoly = nullptr;
 };
