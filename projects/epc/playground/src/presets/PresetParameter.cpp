@@ -107,8 +107,10 @@ void PresetParameter::writeDiff(Writer &writer, ParameterId parameterID, const P
         if(aFound && bFound)
         {
           auto sc = ebParam->getValue().getScaleConverter();
-          auto myString = sc->getDimension().stringize(sc->controlPositionToDisplay(m_value));
-          auto otherString = sc->getDimension().stringize(sc->controlPositionToDisplay(other->m_value));
+          auto myQuantized = ebParam->getValue().getQuantizedValue(m_value, true);
+          auto otherQuantized = ebParam->getValue().getQuantizedValue(other->m_value, true);
+          auto myString = sc->getDimension().stringize(sc->controlPositionToDisplay(myQuantized));
+          auto otherString = sc->getDimension().stringize(sc->controlPositionToDisplay(otherQuantized));
 
           if(ebParam->getID().getNumber() == C15::PID::Unison_Voices)
           {
