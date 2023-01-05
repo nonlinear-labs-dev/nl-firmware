@@ -72,16 +72,7 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
 
     auto centerX = absPos.getLeft() + 5;
     auto centerY = absPos.getTop() + 2;
-    fb.setPixel(centerX - 2, centerY - 2);
-    fb.setPixel(centerX - 2, centerY + 2);
-    fb.setPixel(centerX - 1, centerY - 1);
-    fb.setPixel(centerX - 1, centerY + 1);
-    fb.setPixel(centerX, centerY);
-    fb.setPixel(centerX + 1, centerY);
-    fb.setPixel(centerX + 3, centerY - 2);
-    fb.setPixel(centerX + 3, centerY + 2);
-    fb.setPixel(centerX + 2, centerY - 1);
-    fb.setPixel(centerX + 2, centerY + 1);
+    drawCrossForLayer(fb, centerX, centerY);
   }
 
   if(isLayerPartMuted(VoiceGroup::II))
@@ -90,19 +81,34 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
 
     auto centerX = absPos.getLeft() + 5;
     auto centerY = absPos.getTop() + 9;
-    fb.setPixel(centerX - 2, centerY - 2);
-    fb.setPixel(centerX - 2, centerY + 2);
-    fb.setPixel(centerX - 1, centerY - 1);
-    fb.setPixel(centerX - 1, centerY + 1);
-    fb.setPixel(centerX, centerY);
-    fb.setPixel(centerX + 1, centerY);
-    fb.setPixel(centerX + 3, centerY - 2);
-    fb.setPixel(centerX + 3, centerY + 2);
-    fb.setPixel(centerX + 2, centerY - 1);
-    fb.setPixel(centerX + 2, centerY + 1);
+    drawCrossForLayer(fb, centerX, centerY);
   }
 
   return true;
+}
+
+void VoiceGroupIndicator::drawCrossForLayer(FrameBuffer& fb, int centerX, int centerY) const
+{
+  fb.setPixel(centerX - 2, centerY - 2);
+  fb.setPixel(centerX - 2, centerY + 2);
+  fb.setPixel(centerX - 1, centerY - 1);
+  fb.setPixel(centerX - 1, centerY + 1);
+  fb.setPixel(centerX, centerY);
+  fb.setPixel(centerX + 1, centerY);
+  fb.setPixel(centerX + 3, centerY - 2);
+  fb.setPixel(centerX + 3, centerY + 2);
+  fb.setPixel(centerX + 2, centerY - 1);
+  fb.setPixel(centerX + 2, centerY + 1);
+}
+
+void VoiceGroupIndicator::drawCrossForSingle(FrameBuffer& fb, int centerX, int centerY) const
+{
+  fb.setPixel(centerX - 1, centerY - 1);
+  fb.setPixel(centerX - 1, centerY + 1);
+  fb.setPixel(centerX, centerY);
+  fb.setPixel(centerX + 1, centerY);
+  fb.setPixel(centerX + 2, centerY - 1);
+  fb.setPixel(centerX + 2, centerY + 1);
 }
 
 bool VoiceGroupIndicator::drawSingle(FrameBuffer& fb)
@@ -130,36 +136,20 @@ bool VoiceGroupIndicator::drawSingle(FrameBuffer& fb)
     fb.drawHorizontalLine(startX + 2, startY + 2, 1);
   }
 
-  if(isLayerPartMuted(VoiceGroup::I))
+  if(isSingleFXNotActive(VoiceGroup::I))
   {
-    auto centerX = monoI.getRight() + 5;
+    fb.setColor(FrameBufferColors::C43);
+    auto centerX = monoI.getCenter().getX() - 1;
     auto centerY = monoI.getTop() + 2;
-    fb.setPixel(centerX - 2, centerY - 2);
-    fb.setPixel(centerX - 2, centerY + 2);
-    fb.setPixel(centerX - 1, centerY - 1);
-    fb.setPixel(centerX - 1, centerY + 1);
-    fb.setPixel(centerX, centerY);
-    fb.setPixel(centerX + 1, centerY);
-    fb.setPixel(centerX + 3, centerY - 2);
-    fb.setPixel(centerX + 3, centerY + 2);
-    fb.setPixel(centerX + 2, centerY - 1);
-    fb.setPixel(centerX + 2, centerY + 1);
+    drawCrossForSingle(fb, centerX, centerY);
   }
 
-  if(isLayerPartMuted(VoiceGroup::II))
+  if(isSingleFXNotActive(VoiceGroup::II))
   {
-    auto centerX = monoII.getRight() + 5;
+    fb.setColor(FrameBufferColors::C43);
+    auto centerX = monoII.getCenter().getX() - 1;
     auto centerY = monoII.getTop() + 2;
-    fb.setPixel(centerX - 2, centerY - 2);
-    fb.setPixel(centerX - 2, centerY + 2);
-    fb.setPixel(centerX - 1, centerY - 1);
-    fb.setPixel(centerX - 1, centerY + 1);
-    fb.setPixel(centerX, centerY);
-    fb.setPixel(centerX + 1, centerY);
-    fb.setPixel(centerX + 3, centerY - 2);
-    fb.setPixel(centerX + 3, centerY + 2);
-    fb.setPixel(centerX + 2, centerY - 1);
-    fb.setPixel(centerX + 2, centerY + 1);
+    drawCrossForSingle(fb, centerX, centerY);
   }
 
   return true;
@@ -280,4 +270,26 @@ void VoiceGroupIndicator::onLoadModeChanged(bool loadModeActive)
 VoiceGroup VoiceGroupIndicator::getCurrentDisplayedVoiceGroup() const
 {
   return m_selectedVoiceGroup;
+}
+
+bool VoiceGroupIndicator::isSingleFXNotActive(VoiceGroup vg) const
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+
+  auto fx_mix = eb->findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global})->getControlPositionValue();
+  auto serial_fx = eb->findParameterByID({C15::PID::Master_Serial_FX, VoiceGroup::Global})->getControlPositionValue();
+  auto to_fx = eb->findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I})->getControlPositionValue();
+
+
+  auto fb_fx = eb->findParameterByID({C15::PID::FB_Mix_FX, VoiceGroup::I})->getControlPositionValue();
+  auto from_fx = eb->findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I})->getControlPositionValue();
+
+  auto fx_mix_cond = vg == VoiceGroup::I ? fx_mix == 1 : fx_mix == 0;
+  auto serial_fx_cond = vg == VoiceGroup::I ? serial_fx > 0 : serial_fx < 0;
+  auto to_fx_cond = vg == VoiceGroup::I ? to_fx < 1 : to_fx > 0;
+
+  auto fb_fx_cond = fb_fx != 0;
+  auto from_fx_cond = vg == VoiceGroup::I ? from_fx < 1 : from_fx > 0;
+
+  return fx_mix_cond && !((serial_fx_cond || (from_fx_cond && fb_fx_cond)) && to_fx_cond);
 }
