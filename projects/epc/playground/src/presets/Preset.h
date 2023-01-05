@@ -50,6 +50,7 @@ class Preset : public PresetDualParameterGroups, public SyncedItem
 
   // accessors
   Glib::ustring getName() const;
+  Glib::ustring getHashtags() const;
   const Uuid &getUuid() const;
   bool isDual() const;
   Glib::ustring getDisplayNameWithSuffixes(bool addSpace) const;
@@ -64,7 +65,9 @@ class Preset : public PresetDualParameterGroups, public SyncedItem
   // algorithms
   Glib::ustring buildUndoTransactionTitle(const Glib::ustring &prefix) const;
   Glib::ustring getTypeUnicode() const;
+  Glib::ustring createHashtags() const;
   bool matchesQuery(const SearchQuery &query) const;
+
 
   void writeDiff(Writer &writer, const Preset *other, VoiceGroup vgOfThis, VoiceGroup vgOfOther) const;
 
@@ -91,6 +94,7 @@ class Preset : public PresetDualParameterGroups, public SyncedItem
   bool isUnisonActive() const;
 
   Glib::ustring m_name;
+  Glib::ustring m_hashtags;
   std::array<Glib::ustring, 2> m_voiceGroupLabels;
 
   tUpdateID m_lastSavedUpdateID = 0;
@@ -113,4 +117,5 @@ class Preset : public PresetDualParameterGroups, public SyncedItem
   friend class PresetUseCases;
 
   friend class RecallParameterGroups;
+  void updatePresetHashtags(UNDO::Transaction *transaction);
 };

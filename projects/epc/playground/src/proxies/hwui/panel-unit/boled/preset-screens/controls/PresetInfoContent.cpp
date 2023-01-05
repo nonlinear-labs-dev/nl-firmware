@@ -13,8 +13,8 @@
 
 PresetInfoContent::PresetInfoContent()
 {
-  addInfoField("name", "Name", new MultiLineInfoContent());
   addInfoField("comment", "Comment", new MultiLineInfoContent());
+  addInfoField("type", "Hashtags");
   addInfoField("lastchange", "Last Change");
   addInfoField("devicename", "Device Name");
   addInfoField("uiversion", "Version");
@@ -73,7 +73,7 @@ void PresetInfoContent::fillContents()
 
 void PresetInfoContent::fillFromPreset(const Preset *preset)
 {
-  infoFields["name"]->setInfo(preset->getDisplayNameWithSuffixes(false), FrameBufferColors::C128);
+  infoFields["type"]->setInfo(preset->getHashtags(), FrameBufferColors::C128);
   infoFields["comment"]->setInfo(preset->getAttribute("Comment", "---"), FrameBufferColors::C128);
   infoFields["lastchange"]->setInfo(TimeTools::getDisplayStringFromIso(preset->getAttribute("StoreTime", "---")));
   infoFields["devicename"]->setInfo(preset->getAttribute("DeviceName", "---"));
@@ -82,7 +82,7 @@ void PresetInfoContent::fillFromPreset(const Preset *preset)
 
 bool PresetInfoContent::fillDefaults()
 {
-  infoFields["name"]->setInfo("---", FrameBufferColors::C128);
+  infoFields["type"]->setInfo("---", FrameBufferColors::C128);
   infoFields["comment"]->setInfo("---", FrameBufferColors::C128);
   infoFields["lastchange"]->setInfo("---");
   infoFields["devicename"]->setInfo("---");
