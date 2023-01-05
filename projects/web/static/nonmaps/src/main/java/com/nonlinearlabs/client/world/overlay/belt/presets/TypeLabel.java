@@ -152,9 +152,11 @@ public class TypeLabel extends OverlayLayout {
 			double middleX = pix.getLeft() + halfWidth;
 			double middleY = pix.getTop() + halfHeight;
 
-			ctx.setFillStyle(anyLoaded ? loadedColor : unloadedColor);
-			ctx.fillRect(pix.getLeft(), pix.getTop(), middleX, pix.getHeight());
+			double polyHeight = pix.getHeight() / 2;
+			double polyStartY = pix.getCenterPoint().getY() - (polyHeight / 2);
 
+			ctx.setFillStyle(anyLoaded ? loadedColor : unloadedColor);
+			ctx.fillRect(pix.getLeft(), polyStartY, middleX, polyHeight);
 
 			ctx.setFillStyle(loadedI ? loadedColor : unloadedColor);
 			ctx.fillRect(middleX, pix.getTop(), halfWidth, halfHeight);
@@ -167,10 +169,10 @@ public class TypeLabel extends OverlayLayout {
 
 			if(selectedI) {
 				ctx.strokeRect(middleX, pix.getTop(), halfWidth, halfHeight);
-				ctx.strokeRect(pix.getLeft(), pix.getTop(), halfWidth, pix.getHeight());
+				ctx.strokeRect(pix.getLeft(), polyStartY, halfWidth, polyHeight);
 			} else if(selectedII) {
 				ctx.strokeRect(middleX, middleY, halfWidth, halfHeight);
-				ctx.strokeRect(pix.getLeft(), pix.getTop(), halfWidth, pix.getHeight());
+				ctx.strokeRect(pix.getLeft(), polyStartY, halfWidth, polyHeight);
 			}
 		}
 
