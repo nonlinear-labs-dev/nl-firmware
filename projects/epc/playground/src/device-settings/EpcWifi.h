@@ -8,7 +8,7 @@
 class EpcWifi : public sigc::trackable
 {
  public:
-  EpcWifi(HardwareFeatures& hw);
+  EpcWifi(const HardwareFeatures& hw);
   ~EpcWifi();
 
   void setNewPassphrase(const Glib::ustring& _newPassphrase);

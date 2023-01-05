@@ -1,4 +1,5 @@
 #include "VoiceGroupAndLoadToPartManager.h"
+#include <parameters/Parameter.h>
 #include <presets/EditBuffer.h>
 #include <presets/PresetManager.h>
 

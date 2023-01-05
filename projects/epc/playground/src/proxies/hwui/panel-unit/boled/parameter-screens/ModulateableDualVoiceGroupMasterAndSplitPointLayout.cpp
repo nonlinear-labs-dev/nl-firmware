@@ -1,3 +1,4 @@
+#include <parameters/ModulateableParameter.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupMasterParameterCarousel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/DualSpecialParameterModuleCaption.h>
 #include <proxies/hwui/buttons.h>
@@ -29,14 +30,14 @@ ModuleCaption *ModulateableDualVoiceGroupMasterAndSplitPointLayout::createModule
 
 bool ModulateableDualVoiceGroupMasterAndSplitPointLayout::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
-  if(auto modP = dynamic_cast<ModulateableParameter*>(getCurrentParameter()))
+  if(auto modP = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
   {
     if(modP->getModulationSource() == MacroControls::NONE)
     {
       if(i == Buttons::BUTTON_C && down)
       {
         SettingsUseCases sus(*Application::get().getSettings());
-        sus.setFocusAndMode({UIFocus::Sound, UIMode::Select, UIDetail::Init});
+        sus.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
         return true;
       }
     }
@@ -60,7 +61,7 @@ bool UnmodulateableDualVoiceGroupMasterAndSplitPointLayout::onButton(Buttons i, 
   if(i == Buttons::BUTTON_C && down)
   {
     SettingsUseCases sus(*Application::get().getSettings());
-    sus.setFocusAndMode({UIFocus::Sound, UIMode::Select, UIDetail::Init});
+    sus.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
     return true;
   }
   return UnmodulateableParameterSelectLayout2::onButton(i, down, modifiers);
@@ -70,7 +71,7 @@ void UnmodulateableDualVoiceGroupMasterAndSplitPointLayout::init()
 {
   UnmodulateableParameterSelectLayout2::init();
 
-  for(auto b: getControls<Button>())
+  for(auto b : getControls<Button>())
   {
     if(b->getPosition() == b->getButtonPos(Buttons::BUTTON_C))
     {

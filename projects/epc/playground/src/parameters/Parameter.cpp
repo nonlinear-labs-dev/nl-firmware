@@ -171,13 +171,11 @@ void Parameter::setIndirect(UNDO::Transaction *transaction, const tControlPositi
   {
     auto swapData = UNDO::createSwapData(value);
 
-    transaction->addSimpleCommand(
-        [=](UNDO::Command::State) mutable
-        {
-          tDisplayValue newVal = m_value.getRawValue();
-          swapData->swapWith(newVal);
-          m_value.setRawValue(Initiator::INDIRECT, newVal);
-        });
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      tDisplayValue newVal = m_value.getRawValue();
+      swapData->swapWith(newVal);
+      m_value.setRawValue(Initiator::INDIRECT, newVal);
+    });
   }
 }
 
@@ -225,7 +223,7 @@ void Parameter::reset(UNDO::Transaction *transaction, Initiator initiator)
 }
 
 void Parameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
-                           bool dosendToPlaycontroller)
+                           bool notifyAudioEngine)
 {
   if(m_value.differs(value))
   {
@@ -237,17 +235,15 @@ void Parameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, 
     {
       auto swapData = UNDO::createSwapData(value);
 
-      transaction->addSimpleCommand(
-          [=](UNDO::Command::State) mutable
-          {
-            tDisplayValue newVal = m_value.getRawValue();
-            swapData->swapWith(newVal);
+      transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+        tDisplayValue newVal = m_value.getRawValue();
+        swapData->swapWith(newVal);
 
-            m_value.setRawValue(initiator, newVal);
+        m_value.setRawValue(initiator, newVal);
 
-            if(dosendToPlaycontroller)
-              sendToAudioEngine();
-          });
+        if(notifyAudioEngine)
+          sendToAudioEngine();
+      });
     }
   }
 }
@@ -280,14 +276,12 @@ void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, tControl
   {
     auto swapData = UNDO::createSwapData(value);
 
-    transaction->addSimpleCommand(
-        [=](UNDO::Command::State) mutable
-        {
-          tDisplayValue newVal = m_value.getDefaultValue();
-          swapData->swapWith(newVal);
-          m_value.setDefaultValue(newVal);
-          invalidate();
-        });
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      tDisplayValue newVal = m_value.getDefaultValue();
+      swapData->swapWith(newVal);
+      m_value.setDefaultValue(newVal);
+      invalidate();
+    });
   }
 }
 
@@ -451,8 +445,7 @@ void Parameter::writeDocument(Writer &writer, tUpdateID knownRevision) const
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("parameter", Attribute("id", getID()), Attribute("changed", changed), Attribute("locked", isLocked()),
-                  [&]()
-                  {
+                  [&]() {
                     if(changed)
                     {
                       writeDocProperties(writer, knownRevision);
@@ -580,12 +573,10 @@ void Parameter::undoableLock(UNDO::Transaction *transaction)
   {
     auto swapData = UNDO::createSwapData(true);
 
-    transaction->addSimpleCommand(
-        [=](auto) mutable
-        {
-          swapData->swapWith(m_isLocked);
-          onChange(ChangeFlags::LockState);
-        });
+    transaction->addSimpleCommand([=](auto) mutable {
+      swapData->swapWith(m_isLocked);
+      onChange(ChangeFlags::LockState);
+    });
   }
 }
 
@@ -595,12 +586,10 @@ void Parameter::undoableUnlock(UNDO::Transaction *transaction)
   {
     auto swapData = UNDO::createSwapData(false);
 
-    transaction->addSimpleCommand(
-        [=](auto) mutable
-        {
-          swapData->swapWith(m_isLocked);
-          onChange(ChangeFlags::LockState);
-        });
+    transaction->addSimpleCommand([=](auto) mutable {
+      swapData->swapWith(m_isLocked);
+      onChange(ChangeFlags::LockState);
+    });
   }
 }
 

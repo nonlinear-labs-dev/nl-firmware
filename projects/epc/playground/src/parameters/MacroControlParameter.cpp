@@ -117,7 +117,7 @@ void MacroControlParameter::onValueFineQuantizedChanged(Initiator initiator, tCo
 {
   if(initiator != Initiator::INDIRECT)
     for(ModulateableParameter *target : m_targets)
-      target->applyPlaycontrollerMacroControl(newValue - oldValue);
+      target->applyMacroControl(newValue, Initiator::MODULATION);
 
   super::onValueFineQuantizedChanged(initiator, oldValue, newValue);
 }

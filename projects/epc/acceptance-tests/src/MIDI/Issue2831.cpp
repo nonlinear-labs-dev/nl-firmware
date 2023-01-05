@@ -9,7 +9,7 @@
 #include <mock/XMLPresetLoader.h>
 #include <mock/TCDHelpers.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Reset on convert")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
 {
   // prepare Configuration
   auto config = nltools::msg::getConfig();
@@ -31,7 +31,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Reset on convert")
 
   // prepare Midi Settings
   using tMSG = nltools::msg::Setting::MidiSettingsMessage;
-  tMSG msg;
+  tMSG msg {};
   TestHelper::updateMappingForHW(msg.routings, tMSG::RoutingIndex::Notes, tMSG::RoutingAspect::LOCAL, true);
   msg.localEnable = true;
   synth->onMidiSettingsMessage(msg);

@@ -1,5 +1,6 @@
 #include "VoiceGroupsLockSerializer.h"
 #include <groups/ParameterGroup.h>
+#include <parameters/Parameter.h>
 #include <presets/EditBuffer.h>
 
 namespace Detail

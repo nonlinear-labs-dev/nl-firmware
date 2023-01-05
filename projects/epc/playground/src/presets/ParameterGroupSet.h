@@ -23,27 +23,27 @@ class ParameterGroupSet : public AttributesOwner
   explicit ParameterGroupSet(UpdateDocumentContributor *parent);
   ~ParameterGroupSet() override;
 
-  virtual void init(Settings* settings);
+  virtual void init(Settings *settings);
   typedef ParameterGroup *tParameterGroupPtr;
   typedef IntrusiveList<tParameterGroupPtr> tParamGroups;
   typedef std::map<int, Parameter *> tParamMap;
   typedef std::array<tParamGroups, static_cast<size_t>(VoiceGroup::NumGroups)> tParamArray;
   typedef std::array<tParamMap, static_cast<size_t>(VoiceGroup::NumGroups)> tParamMapArray;
 
-  [[nodiscard]] const tParamArray& getParameters() const;
+  [[nodiscard]] const tParamArray &getParameters() const;
   [[nodiscard]] virtual tParameterGroupPtr getParameterGroupByID(const GroupId &id) const;
   [[nodiscard]] virtual const IntrusiveList<tParameterGroupPtr> &getParameterGroups(VoiceGroup vg) const;
 
   [[nodiscard]] virtual std::map<int, Parameter *> getParametersSortedByNumber(VoiceGroup vg) const;
 
-  template <typename tP> tP *findAndCastParameterByID(const ParameterId &id) const
+  template <typename tP> inline tP *findAndCastParameterByID(const ParameterId &id) const
   {
     return dynamic_cast<tP *>(findParameterByID(id));
   }
 
   [[nodiscard]] virtual Parameter *findParameterByID(const ParameterId &id) const;
 
-  template <VoiceGroup VG> void forEachParameter(const std::function<void(Parameter *)> &cb)
+  template <VoiceGroup VG> inline void forEachParameter(const std::function<void(Parameter *)> &cb)
   {
     for(auto g : getParameterGroups(VG))
       for(auto p : g->getParameters())

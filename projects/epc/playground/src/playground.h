@@ -81,8 +81,15 @@ enum class Initiator
   EXPLICIT_USECASE,
   INDIRECT_SPLIT_SYNC,
   INDIRECT,
+  MODULATION,
   EXPLICIT_TCD,
   EXPLICIT_MIDI
+};
+
+enum class Defaults
+{
+  FactoryDefault,
+  UserDefault
 };
 
 inline std::string toString(Initiator initiator)

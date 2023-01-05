@@ -1,3 +1,4 @@
+#include <parameters/Parameter.h>
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/FrameBuffer.h>
 #include <any>

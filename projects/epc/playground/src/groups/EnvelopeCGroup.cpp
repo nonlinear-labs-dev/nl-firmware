@@ -1,23 +1,9 @@
 #include <groups/EnvelopeCGroup.h>
-#include <parameters/scale-converters/EnvelopeAttackDecayTimeMSScaleConverter.h>
-#include <parameters/scale-converters/EnvelopeReleaseTimeMSScaleConverter.h>
-#include <parameters/scale-converters/EnvelopeTimeMSScaleConverter.h>
-#include <parameters/scale-converters/Linear100PercentScaleConverter.h>
-#include <parameters/scale-converters/Linear60DbScaleConverter.h>
-#include <parameters/scale-converters/LinearBipolar100PercentScaleConverter.h>
-#include <parameters/scale-converters/LinearBipolar1DbstScaleConverter.h>
-#include <parameters/scale-converters/LinearBipolar200PercentScaleConverter.h>
-#include <parameters/scale-converters/ScaleConverter.h>
-#include <parameters/scale-converters/LinearBipolar60DbScaleConverter.h>
+#include <parameters/ModulateableParameter.h>
 #include <parameter_declarations.h>
-#include "parameters/scale-converters/LinearBipolarInverted60DBTScaleConverter.h"
 
 EnvelopeCGroup::EnvelopeCGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Env C", vg }, "Envelope C", "Envelope C", "Envelope C")
-{
-}
-
-EnvelopeCGroup::~EnvelopeCGroup()
 {
 }
 

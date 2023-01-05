@@ -9,7 +9,6 @@ class ScaleGroup : public ParameterGroup
 {
  public:
   explicit ScaleGroup(ParameterGroupSet* parent);
-  ~ScaleGroup() override;
 
   void init() override;
   bool isAnyOffsetChanged() const;

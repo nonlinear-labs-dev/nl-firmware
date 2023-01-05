@@ -1,6 +1,5 @@
 package com.nonlinearlabs.client.world.maps.settings;
 
-import com.google.gwt.user.client.Window;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Position;
@@ -15,8 +14,8 @@ public class StartBBBWiFiForEPC2 extends Setting {
 
 	@Override
 	public Control onValueButtonMouseDown(Position eventPoint) {
-        NonMaps.get().getServerProxy().startBBBWifiIfEPC2();
-        return this;
+		NonMaps.get().getServerProxy().startBBBWifiIfEPC2();
+		return this;
 	}
 
 	@Override
@@ -27,5 +26,5 @@ public class StartBBBWiFiForEPC2 extends Setting {
 	@Override
 	public void setDefault() {
 	}
-    
+
 }

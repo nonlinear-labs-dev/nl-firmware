@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.xml.client.Node;
 import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.client.ServerProxy;
-import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.world.maps.MapsControl;
 import com.nonlinearlabs.client.world.maps.NonPosition;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
@@ -24,7 +22,7 @@ public class Updater {
 	public void update(Node bank, boolean force) {
 		if (force || ServerProxy.didChange(bank)) {
 			String selectedPreset = bank.getAttributes().getNamedItem("selected-preset").getNodeValue();
-			
+
 			updateBankName(bank);
 			updateBankPosition(bank);
 			updateOrderNumber(bank);
@@ -40,7 +38,7 @@ public class Updater {
 
 	private void updateCollapsing(Node bank) {
 		String state = ServerProxy.getChildText(bank, "collapsed");
-		if(state != "") {
+		if (state != "") {
 			Boolean stateB = Boolean.parseBoolean(state);
 			this.bank.setCollapsed(stateB);
 		}

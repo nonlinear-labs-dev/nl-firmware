@@ -11,6 +11,10 @@ public abstract class Notifier<T> {
 
 	static boolean debug = false;
 
+	static native boolean getTestingFlag() /*-{
+		return window['isCurrentlyTesting'] == 1;
+	}-*/;
+
 	private LinkedList<Function<T, Boolean>> consumers = new LinkedList<Function<T, Boolean>>();
 	private boolean scheduled = false;
 
@@ -20,7 +24,7 @@ public abstract class Notifier<T> {
 	}
 
 	public boolean notifyChanges() {
-		if (debug) {
+		if (debug || getTestingFlag()) {
 			notifyNow();
 			return true;
 		}

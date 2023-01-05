@@ -25,7 +25,7 @@
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt</artifactId>
-        <version>2.9.0</version>
+        <version>2.10.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -74,9 +74,7 @@
           <moduleName>com.nonlinearlabs.NonMaps</moduleName>
           <moduleShortName>NonMaps</moduleShortName>
           <failOnError>true</failOnError>
-          <!-- GWT compiler 2.8 requires 1.8, hence define sourceLevel here if you use
-               a different source language for java compilation -->
-          <sourceLevel>1.8</sourceLevel>
+          <sourceLevel>11</sourceLevel>
           <!-- Compiler configuration -->
           <compilerArgs>
             <!-- Ask GWT to create the Story of Your Compile (SOYC) (gwt:compile) -->

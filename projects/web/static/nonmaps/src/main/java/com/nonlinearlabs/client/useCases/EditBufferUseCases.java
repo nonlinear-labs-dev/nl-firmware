@@ -2,9 +2,9 @@ package com.nonlinearlabs.client.useCases;
 
 import java.util.Arrays;
 
+import com.nonlinearlabs.client.LoadToPartMode.LoadToPartModeData;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.LoadToPartMode.LoadToPartModeData;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
@@ -20,10 +20,7 @@ import com.nonlinearlabs.client.dataModel.editBuffer.RibbonParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.SendParameterModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
-import com.nonlinearlabs.client.presenters.ParameterPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenterProviders;
-import com.nonlinearlabs.client.tools.NLMath;
-import com.nonlinearlabs.client.world.maps.parameters.PlayControls.SourcesAndAmounts.Sources.PhysicalControlSendParameter;
 import com.nonlinearlabs.client.world.maps.presets.bank.Bank;
 
 public class EditBufferUseCases {
@@ -44,10 +41,11 @@ public class EditBufferUseCases {
 
 	private void setParameterValue(ParameterId id, double newValue, boolean oracle, boolean setAnimationTimeout) {
 		BasicParameterModel p = EditBufferModel.get().getParameter(id);
-		double oldQ = p.value.getQuantizedAndClipped(true);
+		double oldValue = p.value.getQuantizedAndClipped(p.value.value.getValue(), true);
 		p.value.value.setValue(newValue);
-		double newQ = p.value.getQuantizedAndClipped(true);
-		double diff = newQ - oldQ;
+
+		newValue = p.value.getQuantizedAndClipped(newValue, true);
+		double diff = newValue - oldValue;
 
 		if (p instanceof PhysicalControlParameterModel) {
 			PhysicalControlParameterModel m = (PhysicalControlParameterModel) p;
@@ -62,14 +60,72 @@ public class EditBufferUseCases {
 		}
 
 		if (p instanceof MacroControlParameterModel)
-			applyModulationToModulateableParameters(id, diff);
+			applyModulationToModulateableParameters(id, newValue);
+
+		if (p instanceof ModulateableParameterModel) {
+			updateModulationBase((ModulateableParameterModel) p);
+		}
 
 		if (p.id.getNumber() == 356) {
 			handleSplitExceptionalParameterChange(p, newValue, oracle);
 			return;
 		}
 
-		NonMaps.get().getServerProxy().setParameter(id, newValue, oracle);
+		if (!getTestingFlag())
+			NonMaps.get().getServerProxy().setParameter(id, newValue, oracle);
+	}
+
+	static native boolean getTestingFlag() /*-{
+		return window['isCurrentlyTesting'] == 1;
+	}-*/;
+
+	public void updateModulationBase(ModulateableParameterModel p) {
+		ModulateableParameterModel.ModSource src = p.modSource.getValue();
+
+		if (src != ModulateableParameterModel.ModSource.None) {
+			MacroControlParameterModel mc = (MacroControlParameterModel) EditBufferModel.get()
+					.getParameter(new ParameterId(p.modSource.getValue()));
+
+			if (p.id.getNumber() == 356)
+				updateModulationBaseForSplitpoint(p, mc);
+			else
+				updateModulationBaseForGenericParam(p, mc);
+
+		} else {
+			p.modBase.value.setValue(0.0);
+		}
+	}
+
+	private void updateModulationBaseForGenericParam(ModulateableParameterModel p, MacroControlParameterModel mc) {
+		var range = p.value.metaData.bipolar.getBool() ? 2 : 1;
+		var modAmount = p.modAmount.value.getValue() * range;
+		var curValue = p.value.value.getValue();
+		var m = curValue - modAmount * mc.value.getQuantizedAndClipped(true);
+		p.modBase.value.setValue(m);
+	}
+
+	// copy of the algorithm used in audio-engine
+	private int ae_round(double _value) {
+		return (int) Math.ceil(_value * 60);
+	}
+
+	private double ae_quantize(double _value, int _steps) {
+		if (_steps == 0)
+			return _value;
+
+		return Math.max(0, Math.min(1, Math.floor(_value * (1 + _steps)) / _steps));
+	}
+
+	double ae_getModulation(double _mod, double modAmount) {
+		return modAmount * ae_quantize(_mod, ae_round(Math.abs(modAmount)));
+	}
+
+	private void updateModulationBaseForSplitpoint(ModulateableParameterModel p, MacroControlParameterModel mc) {
+		var _mod = (float) mc.value.getQuantizedAndClipped(true);
+		var modAmount = p.modAmount.value.getValue();
+		var curValue = p.value.getQuantizedAndClipped(true);
+		var newBase = curValue - (double) ae_getModulation(_mod, modAmount);
+		p.modBase.value.setValue(newBase);
 	}
 
 	private void handleSplitSync(BasicParameterModel p, double newValue) {
@@ -123,10 +179,10 @@ public class EditBufferUseCases {
 
 			if (r.value.getQuantized(true) > 0.0) {
 				ParameterId physicalControlID = r.getAssociatedPhysicalControlID();
-				if(Arrays.binarySearch(ParameterFactory.ribbons, physicalControlID.getNumber()) >= 0) {
+				if (Arrays.binarySearch(ParameterFactory.ribbons, physicalControlID.getNumber()) >= 0) {
 					RibbonParameterModel ribbon = this.<RibbonParameterModel>findParameter(physicalControlID);
 					if (!ribbon.isReturning()) {
-							ribbon.value.value.setValue(m.value.getQuantizedAndClipped(true));
+						ribbon.value.value.setValue(m.value.getQuantizedAndClipped(true));
 					}
 				}
 			}
@@ -138,17 +194,14 @@ public class EditBufferUseCases {
 	}
 
 	private void applyPhysicalControlModulation(PhysicalControlParameterModel p, double diff) {
-		if (Math.abs(diff) > 0.0) {
+		for (ParameterId router : p.getAssociatedModulationRouters()) {
+			ModulationRouterParameterModel routerParameter = (ModulationRouterParameterModel) EditBufferModel.get()
+					.getParameter(router);
 
-			for (ParameterId router : p.getAssociatedModulationRouters()) {
-				ModulationRouterParameterModel routerParameter = (ModulationRouterParameterModel) EditBufferModel.get()
-						.getParameter(router);
-
-				if (p.isReturning())
-					applyReturningModulation(routerParameter, diff);
-				else if (routerParameter.value.value.getValue() != 0) {
-					applyDirectModulation(routerParameter, p.value.getQuantizedAndClipped(true));
-				}
+			if (p.isReturning())
+				applyReturningModulation(routerParameter, diff);
+			else if (routerParameter.value.value.getValue() != 0) {
+				applyDirectModulation(routerParameter, p.value.getQuantizedAndClipped(true));
 			}
 		}
 	}
@@ -164,38 +217,38 @@ public class EditBufferUseCases {
 
 	private void applyModulation(ParameterId macroControlID, double delta) {
 		BasicParameterModel macroControl = EditBufferModel.get().getParameter(macroControlID);
-
-		double oldQ = macroControl.value.getQuantizedAndClipped(true);
 		double v = macroControl.value.value.getValue();
-		macroControl.value.value.setValue(v + delta);
-		double newQ = macroControl.value.getQuantizedAndClipped(true);
-		applyModulationToModulateableParameters(macroControlID, newQ - oldQ);
+		double newValue = v + delta;
+		macroControl.value.value.setValue(newValue);
+		applyModulationToModulateableParameters(macroControlID,
+				macroControl.getValue().value.getQuantizedAndClipped(true));
 	}
 
-	private void applyModulationToModulateableParameters(ParameterId macroControlID, double d) {
-		if (d != 0) {
-			ModSource m = ModSource.fromParameterId(macroControlID);
-			for (ModulateableParameterModel t : EditBufferModel.get().getAllModulateableParameters()) {
-				if (t.modSource.getValue() == m) {
-					double amount = t.modAmount.getQuantizedAndClipped(true);
-					if (t.value.metaData.bipolar.getBool())
-						amount *= 2;
-					t.value.value.setValue(t.value.value.getValue() + d * amount);
+	private void applyModulationToModulateableParameters(ParameterId macroControlID, double newVal) {
+		ModSource m = ModSource.fromParameterId(macroControlID);
+		for (ModulateableParameterModel t : EditBufferModel.get().getAllModulateableParameters()) {
+			if (t.modSource.getValue() == m) {
+				if (t.id.getNumber() == 356) {
+					var newValue = t.modBase.value.getValue() + ae_getModulation(newVal, t.modAmount.value.getValue());
+					t.value.value.setValue(newValue);
+				} else {
+					var range = t.value.metaData.bipolar.getBool() ? 2 : 1;
+					var newValue = t.modBase.value.getValue() + t.modAmount.value.getValue() * newVal * range;
+					t.value.value.setValue(newValue);
 				}
 			}
-
-			MacroControlParameterModel mc = this.<MacroControlParameterModel>findParameter(macroControlID);
-			handleBidirectionalRibbonBinding(mc);
 		}
+
+		MacroControlParameterModel mc = this.<MacroControlParameterModel>findParameter(macroControlID);
+		handleBidirectionalRibbonBinding(mc);
 	}
 
 	private void applyDirectModulation(ModulationRouterParameterModel routerParameter, double newValue) {
 		MacroControlParameterModel m = (MacroControlParameterModel) EditBufferModel.get()
 				.getParameter(routerParameter.getAssociatedMacroControlID());
-		double oldQ = m.value.getQuantizedAndClipped(true);
 		m.value.value.setValue(newValue);
 		double newQ = m.value.getQuantizedAndClipped(true);
-		applyModulationToModulateableParameters(m.id, newQ - oldQ);
+		applyModulationToModulateableParameters(m.id, newQ);
 	}
 
 	public void selectParameter(int paramNumber) {
@@ -227,8 +280,9 @@ public class EditBufferUseCases {
 
 	public void incDecParameter(ParameterId id, boolean fine, int inc) {
 		BasicParameterModel p = EditBufferModel.get().getParameter(id);
-		ParameterPresenter pp = ParameterPresenterProviders.get().getParameterPresenter(id.getVoiceGroup(), id.getNumber());
-		if(pp.isFine == false)
+		ParameterPresenter pp = ParameterPresenterProviders.get().getParameterPresenter(id.getVoiceGroup(),
+				id.getNumber());
+		if (pp.isFine == false)
 			fine = false;
 		double v = p.getIncDecValue(fine, inc);
 		setParameterValue(id, v, true);
@@ -299,75 +353,71 @@ public class EditBufferUseCases {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
 		double oldValue = p.modAmount.getQuantizedAndClipped(fine);
 		p.modAmount.value.setValue(newValue);
+		updateModulationBase(p);
 		newValue = p.modAmount.getQuantizedAndClipped(fine);
 		double diff = newValue - oldValue;
 
-		if (diff != 0)
+		if (!getTestingFlag() && diff != 0)
 			NonMaps.get().getServerProxy().setModulationAmount(newValue, id);
 	}
 
-	private void setModulationUpperBound(ParameterId id, double newAmount, boolean fine) {
-		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
-		ParameterId mcId = new ParameterId(p.modSource.getValue());
-		MacroControlParameterModel mc = (MacroControlParameterModel) EditBufferModel.get().getParameter(mcId);
+	private void setModulationLowerBound(ParameterId id, double newAmount, boolean fine) {
+		var p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
+		var mc = EditBufferModel.get().getParameter(p.modSource.getValue());
+		var mcVal = mc.value.getQuantizedAndClipped(true);
+		var presenter = ParameterPresenterProviders.get().getParameterPresenter(id.getVoiceGroup(), id.getNumber());
+		var isBiPolar = presenter.bipolar;
+		var cpRange = isBiPolar ? 2 : 1;
+		var rangeUpper = presenter.modulation.modRange.upper.clipped;
 
-		double factor = p.value.metaData.bipolar.getBool() ? 2 : 1;
-		double oldAmount = p.modAmount.getClippedValue();
-		double oldValue = p.value.getClippedValue();
-		double mcValue = mc.value.getClippedValue();
-		double oldLowerBound = oldValue - (factor * oldAmount) * mcValue;
+		var lowerBound = rangeUpper - newAmount * cpRange;
+		var minLowerBound = isBiPolar ? -1.0 : 0.0;
 
-		if (p.value.metaData.bipolar.getBool()) {
-			double oldLowerCP = NLMath.clamp((oldLowerBound + 1) / 2, 0, 1.0);
-			newAmount = NLMath.clamp(newAmount, -oldLowerCP, 1.0 - oldLowerCP);
-		} else {
-			double oldLowerCP = NLMath.clamp(oldLowerBound, 0, 1.0);
-			newAmount = NLMath.clamp(newAmount, -oldLowerCP, 1.0 - oldLowerCP);
+		if (lowerBound < minLowerBound) {
+			newAmount = (minLowerBound - rangeUpper) / -cpRange;
+			lowerBound = minLowerBound;
 		}
-		double newLowerBound = oldValue - (factor * newAmount) * mcValue;
-		double lowerBoundDiff = newLowerBound - oldLowerBound;
-		double newParameterValue = oldValue - lowerBoundDiff;
 
-		setModulationBounds(id, newAmount, newParameterValue);
+		var newValue = lowerBound + newAmount * cpRange * mcVal;
+		setModulationBounds(id, newAmount, newValue);
+
+	}
+
+	private void setModulationUpperBound(ParameterId id, double newAmount, boolean fine) {
+		var p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
+		var mc = EditBufferModel.get().getParameter(p.modSource.getValue());
+		var mcVal = mc.value.getQuantizedAndClipped(true);
+		var presenter = ParameterPresenterProviders.get().getParameterPresenter(id.getVoiceGroup(), id.getNumber());
+		var isBiPolar = presenter.bipolar;
+		var cpRange = isBiPolar ? 2 : 1;
+		var rangeLower = presenter.modulation.modRange.lower.clipped;
+
+		var upperBound = rangeLower + newAmount * cpRange;
+		var maxUpperBound = 1.0;
+
+		if (upperBound > maxUpperBound)
+			newAmount = (maxUpperBound - rangeLower) / cpRange;
+
+		var newValue = rangeLower + newAmount * cpRange * mcVal;
+		setModulationBounds(id, newAmount, newValue);
 	}
 
 	private void setModulationBounds(ParameterId id, double newAmount, double newParameterValue) {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
 		p.modAmount.value.setValue(newAmount);
 		p.value.value.setValue(newParameterValue);
-		NonMaps.get().getServerProxy().setModulationBounds(id, newAmount, newParameterValue);
-	}
+		updateModulationBase(p);
 
-	private void setModulationLowerBound(ParameterId id, double newAmount, boolean fine) {
-
-		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
-		ParameterId mcId = new ParameterId(p.modSource.getValue());
-		MacroControlParameterModel mc = (MacroControlParameterModel) EditBufferModel.get().getParameter(mcId);
-
-		double factor = p.value.metaData.bipolar.getBool() ? 2 : 1;
-		double oldAmount = p.modAmount.getClippedValue();
-		double oldValue = p.value.getClippedValue();
-		double mcValue = mc.value.getClippedValue();
-		double oldUpperBound = oldValue + (factor * oldAmount) * (1.0 - mcValue);
-
-		if (p.value.metaData.bipolar.getBool()) {
-			double oldUpperCP = NLMath.clamp((oldUpperBound + 1) / 2, 0, 1.0);
-			newAmount = NLMath.clamp(newAmount, oldUpperCP - 1, oldUpperCP);
-		} else {
-			double oldUpperCP = NLMath.clamp(oldUpperBound, 0, 1.0);
-			newAmount = NLMath.clamp(newAmount, oldUpperCP - 1, oldUpperCP);
-		}
-		double newUpperBound = oldValue + (factor * newAmount) * (1.0 - mcValue);
-		double upperBoundDiff = newUpperBound - oldUpperBound;
-		double newParameterValue = oldValue - upperBoundDiff;
-
-		setModulationBounds(id, newAmount, newParameterValue);
+		if (!getTestingFlag())
+			NonMaps.get().getServerProxy().setModulationBounds(id, newAmount, newParameterValue);
 	}
 
 	public void setModulationSource(ParameterId id, ModSource src) {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
-		if (p.modSource.setValue(src))
+		if (p.modSource.setValue(src)) {
+			updateModulationBase(p);
 			NonMaps.get().getServerProxy().setModulationSource(src, id);
+		}
 	}
 
 	public IncrementalChanger startEditParameterValue(ParameterId id, double pixelsPerRange) {
@@ -385,9 +435,9 @@ public class EditBufferUseCases {
 					startReturningAnimation(m);
 			}
 
-			if(p instanceof SendParameterModel) {
-				SendParameterModel m = (SendParameterModel)p;
-				if(m.isReturning())
+			if (p instanceof SendParameterModel) {
+				SendParameterModel m = (SendParameterModel) p;
+				if (m.isReturning())
 					startReturningAnimation(m);
 			}
 		});
@@ -490,8 +540,9 @@ public class EditBufferUseCases {
 			NonMaps.theMaps.getServerProxy().setDirectLoadNoLoadToPart("off");
 		} else {
 			SetupModel.get().systemSettings.directLoad.setValue(true);
-			if(data != null && currentDisplayedVoiceGroup != null) {
-				NonMaps.theMaps.getServerProxy().setDirectLoadWithLoadToPart("on", data.m_selectedPreset, data.m_selectedVoiceGroup, currentDisplayedVoiceGroup);
+			if (data != null && currentDisplayedVoiceGroup != null) {
+				NonMaps.theMaps.getServerProxy().setDirectLoadWithLoadToPart("on", data.m_selectedPreset,
+						data.m_selectedVoiceGroup, currentDisplayedVoiceGroup);
 			} else {
 				NonMaps.theMaps.getServerProxy().setDirectLoadNoLoadToPart("on");
 			}
@@ -507,7 +558,7 @@ public class EditBufferUseCases {
 			NonMaps.theMaps.getServerProxy().setSetting("SyncSplit", "on");
 		}
 	}
-	
+
 	public void loadPreset(String uuid) {
 		NonMaps.theMaps.getServerProxy().loadPreset(uuid);
 	}
@@ -544,7 +595,6 @@ public class EditBufferUseCases {
 		ModulateableParameterModel p = (ModulateableParameterModel) EditBufferModel.get().getParameter(id);
 		double rounded = p.value.getQuantizedAndClipped(false);
 		setParameterValue(id, rounded, true);
-
 	}
 
 	public void unmutePart(VoiceGroup group) {

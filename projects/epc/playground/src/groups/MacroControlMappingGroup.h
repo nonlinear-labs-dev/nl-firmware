@@ -11,14 +11,13 @@ class MacroControlMappingGroup : public ParameterGroup
 {
  public:
   MacroControlMappingGroup(ParameterGroupSet *parent, ParameterGroup *hw, ParameterGroup *mc);
-  ~MacroControlMappingGroup() override;
 
   typedef ModulationRoutingParameter *tModRoutingParam;
   typedef std::list<tModRoutingParam> tModRoutingParams;
   tModRoutingParams getModulationRoutingParametersFor(const MacroControlParameter *mc);
   tModRoutingParams getModulationRoutingParametersFor(const PhysicalControlParameter *src);
-  const ModulationRoutingParameter *getModulationRoutingParameterFor(const PhysicalControlParameter *src,
-                                                                     const MacroControlParameter *mc);
+  ModulationRoutingParameter *getModulationRoutingParameterFor(const PhysicalControlParameter *src,
+                                                               const MacroControlParameter *mc);
 
   typedef PhysicalControlParameter *tPhysicalControlParameter;
   typedef std::list<tPhysicalControlParameter> tPhysicalControlParameters;

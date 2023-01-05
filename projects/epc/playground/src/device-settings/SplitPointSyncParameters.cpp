@@ -1,6 +1,7 @@
 #include "SplitPointSyncParameters.h"
 #include <device-settings/Settings.h>
 #include <Application.h>
+#include <parameters/Parameter.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 

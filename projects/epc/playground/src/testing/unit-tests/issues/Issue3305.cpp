@@ -9,6 +9,8 @@
 //I have not yet figured out why the condition registry reports that neither isLayer, isSplit not isSingle are true!
 //running this test in isolation will lead to a PASS, checking the behaviour in a live-playground of this commit, the functionality works flawlessly
 
+//debugging this Test-Case will pass, just running it w/o gdb will crash...
+
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "toggle VG from non Parameter-Layout does not lead to Parameter-Layout", "[!mayfail]")
 {
   using namespace std::chrono_literals;

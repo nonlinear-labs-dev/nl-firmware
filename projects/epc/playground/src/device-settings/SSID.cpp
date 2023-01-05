@@ -4,7 +4,7 @@
 #include <proxies/hwui/HardwareFeatures.h>
 #include <utility>
 
-SSID::SSID(Settings &parent, std::shared_ptr<EpcWifi> localWifi, HardwareFeatures &hwFeatures)
+SSID::SSID(Settings &parent, std::shared_ptr<EpcWifi> localWifi, const HardwareFeatures &hwFeatures)
     : Setting(parent)
     , m_hasEPCWifi(hwFeatures.hasEPCWiFi())
     , m_localWifi(std::move(localWifi))

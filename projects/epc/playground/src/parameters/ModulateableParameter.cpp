@@ -26,6 +26,7 @@
 ModulateableParameter::ModulateableParameter(ParameterGroup *group, const ParameterId &id)
     : Parameter(group, id)
     , m_modulationAmount(0)
+    , m_modulationBase(0)
     , m_modSource(MacroControls::NONE)
     , m_modulationAmountScaleConverter { ScaleConverter::getByEnum(
           ParameterDB::getModulationAmountDisplayScalingType(id)) }
@@ -38,8 +39,19 @@ size_t ModulateableParameter::getHash() const
 {
   size_t hash = super::getHash();
   hash_combine(hash, m_modulationAmount);
+  hash_combine(hash, m_modulationBase);
   hash_combine(hash, (int) m_modSource);
   return hash;
+}
+
+tDisplayValue ModulateableParameter::getModulationBase() const
+{
+  return m_modulationBase;
+}
+
+void ModulateableParameter::setModulationBase(tDisplayValue v)
+{
+  m_modulationBase = v;
 }
 
 tDisplayValue ModulateableParameter::getModulationAmount() const
@@ -47,46 +59,27 @@ tDisplayValue ModulateableParameter::getModulationAmount() const
   return m_modulationAmount;
 }
 
-uint16_t ModulateableParameter::getModulationSourceAndAmountPacked() const
-{
-  if(getModulationSource() == MacroControls::NONE)
-    return 0;
-
-  auto scaled = static_cast<gint16>(round(m_modulationAmount * getModulationAmountFineDenominator()));
-  auto abs = (scaled < 0) ? -scaled : scaled;
-  auto src = static_cast<gint16>(getModulationSource());
-
-  g_assert(src > 0);
-  src--;
-
-  auto sign = static_cast<gint16>((scaled < 0) ? 1 : 0);
-  auto toSend = static_cast<uint16_t>((src << 14) | (sign << 13) | (abs));
-
-  return toSend;
-}
-
 template <typename T> T clamp(T v, T min, T max)
 {
   return std::max<T>(min, std::min<T>(v, max));
 }
 
-void ModulateableParameter::setModulationAmount(UNDO::Transaction *transaction, const tDisplayValue &amount)
+void ModulateableParameter::setModulationAmount(UNDO::Transaction *transaction, const tControlPositionValue &amount)
 {
-  auto clampedAmount = clamp<tDisplayValue>(amount, -1.0, 1.0);
+  auto clampedAmount = clamp<tControlPositionValue>(amount, -1.0, 1.0);
 
-  if(m_modulationAmount != clampedAmount)
+  if(differs(m_modulationAmount, clampedAmount))
   {
     auto swapData = UNDO::createSwapData(clampedAmount);
 
-    transaction->addSimpleCommand(
-        [=](UNDO::Command::State) mutable
-        {
-          swapData->swapWith(m_modulationAmount);
-          getValue().resetSaturation();
-          DebugLevel::gassy("mod amount set to", m_modulationAmount);
-          invalidate();
-          sendToAudioEngine();
-        });
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      swapData->swapWith(m_modulationAmount);
+      updateModulationBase();
+      getValue().resetSaturation();
+      DebugLevel::gassy("mod amount set to", m_modulationAmount);
+      invalidate();
+      sendToAudioEngine();
+    });
   }
 }
 
@@ -118,47 +111,44 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
   {
     auto swapData = UNDO::createSwapData(src);
 
-    transaction->addSimpleCommand(
-        [=](UNDO::Command::State) mutable
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
+      {
+        if(m_modSource != MacroControls::NONE)
         {
-          if(auto groups = dynamic_cast<ParameterGroupSet *>(getParentGroup()->getParent()))
-          {
-            if(m_modSource != MacroControls::NONE)
-            {
-              auto modSrc = dynamic_cast<MacroControlParameter *>(
-                  groups->findParameterByID(MacroControlsGroup::modSrcToParamId(m_modSource)));
-              modSrc->unregisterTarget(this);
-            }
+          auto modSrc = dynamic_cast<MacroControlParameter *>(
+              groups->findParameterByID(MacroControlsGroup::modSrcToParamId(m_modSource)));
+          modSrc->unregisterTarget(this);
+        }
 
-            swapData->swapWith(m_modSource);
+        swapData->swapWith(m_modSource);
 
-            if(m_modSource != MacroControls::NONE)
-            {
-              auto modSrc = dynamic_cast<MacroControlParameter *>(
-                  groups->findParameterByID(MacroControlsGroup::modSrcToParamId(m_modSource)));
-              modSrc->registerTarget(this);
-            }
+        if(m_modSource != MacroControls::NONE)
+        {
+          auto modSrc = dynamic_cast<MacroControlParameter *>(
+              groups->findParameterByID(MacroControlsGroup::modSrcToParamId(m_modSource)));
+          modSrc->registerTarget(this);
+        }
 
-            getValue().resetSaturation();
-            sendToAudioEngine();
-          }
-          else
-          {
-            swapData->swapWith(m_modSource);
-            getValue().resetSaturation();
-          }
-
-          invalidate();
-        });
+        getValue().resetSaturation();
+        sendToAudioEngine();
+      }
+      else
+      {
+        swapData->swapWith(m_modSource);
+        getValue().resetSaturation();
+      }
+      updateModulationBase();
+      invalidate();
+    });
   }
 }
 
-void ModulateableParameter::applyPlaycontrollerMacroControl(tDisplayValue diff)
+void ModulateableParameter::applyMacroControl(tDisplayValue mcValue, Initiator initiator)
 {
-  if(isBiPolar())
-    diff *= 2;
-
-  getValue().changeRawValue(Initiator::EXPLICIT_PLAYCONTROLLER, diff * m_modulationAmount);
+  auto range = getValue().getScaleConverter()->getControlPositionRange().getRangeWidth();
+  auto newValue = m_modulationBase + m_modulationAmount * mcValue * range;
+  getValue().setRawValue(initiator, newValue);
 }
 
 void ModulateableParameter::undoableSelectModSource(UNDO::Transaction *transaction, MacroControls src)
@@ -180,7 +170,7 @@ void ModulateableParameter::undoableSetMCAmountToDefault()
 {
   tDisplayValue def = 0.0;
 
-  if(m_modulationAmount != def)
+  if(differs(m_modulationAmount, def))
   {
     ModParameterUseCases useCase(this);
     useCase.setModulationAmount(def);
@@ -193,11 +183,28 @@ int ModulateableParameter::getModAmountDenominator(const ButtonModifiers &modifi
   return static_cast<int>(denom);
 }
 
+void ModulateableParameter::updateModulationBase()
+{
+  auto calcModulationBase = [this] {
+    if(auto macroParam = getMacroControl())
+    {
+      auto range = getValue().getScaleConverter()->getControlPositionRange().getRangeWidth();
+      auto modAmount = getModulationAmount() * range;
+      auto curValue = getValue().getRawValue();
+      return curValue - modAmount * macroParam->getValue().getQuantizedClipped();
+    }
+    return 0.0;
+  };
+
+  setModulationBase(calcModulationBase());
+}
+
 void ModulateableParameter::writeDocProperties(Writer &writer, tUpdateID knownRevision) const
 {
   Parameter::writeDocProperties(writer, knownRevision);
 
   writer.writeTextElement("modAmount", to_string(m_modulationAmount));
+  writer.writeTextElement("modBase", to_string(m_modulationBase));
   writer.writeTextElement("modSrc", to_string(static_cast<int>(m_modSource)));
 
   if(shouldWriteDocProperties(knownRevision))
@@ -256,38 +263,20 @@ Layout *ModulateableParameter::createLayout(FocusAndMode focusAndMode) const
 
 std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::getModulationRange(bool clipped) const
 {
-  double modLeft = 0;
-  double modRight = 0;
-
-  auto src = getModulationSource();
-  if(src != MacroControls::NONE)
-  {
-    auto srcParamID = MacroControlsGroup::modSrcToParamId(src);
-    auto editBuffer = dynamic_cast<const EditBuffer *>(getParentGroup()->getParent());
-
-    if(editBuffer)
-    {
-      if(auto srcParam = editBuffer->findParameterByID(srcParamID))
-      {
-        auto modAmount = getModulationAmount();
-        auto srcValue = srcParam->getValue().getClippedValue();
-
-        auto value = getValue().getRawValue();
-
-        if(isBiPolar())
-          modLeft = 0.5 * (value + 1.0) - modAmount * srcValue;
-        else
-          modLeft = value - modAmount * srcValue;
-
-        modRight = modLeft + modAmount;
-      }
-    }
-  }
+  const auto converter = getValue().getScaleConverter();
+  auto range = converter->getControlPositionRange().getRangeWidth();
+  double modLeft = m_modulationBase;
+  double modRight = m_modulationBase + m_modulationAmount * range;
 
   if(clipped)
   {
-    modLeft = getValue().getScaleConverter()->getControlPositionRange().clip(modLeft);
-    modRight = getValue().getScaleConverter()->getControlPositionRange().clip(modRight);
+    modLeft = getValue().getFineQuantizedClippedValue(modLeft);
+    modRight = getValue().getFineQuantizedClippedValue(modRight);
+  }
+  else
+  {
+    modLeft = getValue().getQuantizedValue(modLeft, true);
+    modRight = getValue().getQuantizedValue(modRight, true);
   }
   return std::make_pair(modLeft, modRight);
 }
@@ -295,19 +284,22 @@ std::pair<tControlPositionValue, tControlPositionValue> ModulateableParameter::g
 std::pair<Glib::ustring, Glib::ustring> ModulateableParameter::getModRangeAsDisplayValues() const
 {
   auto range = getModulationRange(false);
-
   auto first = modulationValueToDisplayString(range.first);
   auto second = modulationValueToDisplayString(range.second);
   return std::make_pair(first, second);
 }
 
+void ModulateableParameter::onValueChanged(Initiator initiator, tControlPositionValue oldValue,
+                                           tControlPositionValue newValue)
+{
+  if(initiator != Initiator::MODULATION)
+    updateModulationBase();
+
+  super::onValueChanged(initiator, oldValue, newValue);
+}
+
 Glib::ustring ModulateableParameter::modulationValueToDisplayString(tControlPositionValue v) const
 {
-  if(isBiPolar())
-  {
-    v = v * 2 - 1;
-  }
-
   auto scaleConverter = getValue().getScaleConverter();
   auto clipped = scaleConverter->getControlPositionRange().clip(v);
   auto displayValue = scaleConverter->controlPositionToDisplay(clipped);

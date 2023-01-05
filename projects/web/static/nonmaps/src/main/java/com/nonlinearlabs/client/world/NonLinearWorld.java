@@ -350,7 +350,7 @@ public class NonLinearWorld extends MapsLayout {
 
 		scroll(xDiff, yDiff);
 		scrollAnimation.activate(xDiff, yDiff);
-		presetManager.resetStoredViewportPosition();
+		PresetManager.resetStoredViewportPosition();
 		return this;
 	}
 
@@ -554,10 +554,10 @@ public class NonLinearWorld extends MapsLayout {
 	@Override
 	public Control doubleClick(Position pos) {
 		if (presetManager.hasStoredViewportPosition()) {
-			presetManager.resetView();
+			PresetManager.resetView();
 		} else {
 			zoomTo(parameterEditor);
-			presetManager.saveView();
+			PresetManager.saveView();
 		}
 		return this;
 	}
