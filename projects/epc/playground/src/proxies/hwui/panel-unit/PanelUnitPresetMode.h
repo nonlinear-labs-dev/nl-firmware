@@ -15,6 +15,7 @@ class PanelUnitPresetMode : public PanelUnitParameterEditMode
   PanelUnitPresetMode();
   ~PanelUnitPresetMode() override;
   void bruteForceUpdateLeds() override;
+  void setup() override;
 
  private:
   Throttler m_bruteForceLedThrottler;

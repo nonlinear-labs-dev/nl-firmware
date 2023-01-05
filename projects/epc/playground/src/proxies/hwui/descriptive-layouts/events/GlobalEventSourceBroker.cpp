@@ -72,6 +72,7 @@ namespace DescriptiveLayouts
     m_map[EventSources::VGIIsMuted] = std::make_unique<VGIIIsMuted>();
 
     m_map[EventSources::CurrentVoiceGroupText] = std::make_unique<CurrentVoiceGroupText>();
+    m_map[EventSources::InitCurrentVoiceText] = std::make_unique<InitCurrentVoiceText>();
 
     m_map[EventSources::SplitPointValue] = std::make_unique<SplitPointValueText>();
     m_map[EventSources::SplitPointIValue] = std::make_unique<SplitPointPartValueText<VoiceGroup::I>>();

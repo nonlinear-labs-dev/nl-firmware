@@ -57,7 +57,8 @@ namespace DescriptiveLayouts
        LayerFBState, LayerFXState, LayerFXOffset, FX_I_Imagestate, FX_II_Imagestate, LayerToFXPath,
        Serial_FX_Imagestate, Layer_FX_TO_OUT_Imagestate, Split_FX_TO_OUT_Imagestate, Split_FX_TO_OUT_Imagestate_flipped,
        Split_Arrows_To_FX_L_TO_R_I, Split_Arrows_To_FX_L_TO_R_II, Split_Arrows_To_FX_R_TO_L_I,
-       Split_Arrows_To_FX_R_TO_L_II, Split_Arrows_FX_To_I, Split_Arrows_FX_To_II);
+       Split_Arrows_To_FX_R_TO_L_II, Split_Arrows_FX_To_I, Split_Arrows_FX_To_II,
+       InitCurrentVoiceText);
 
   ENUM(EventSinks, uint8_t, Swallow, SwitchToInitDetail, SwitchToEditMode, SwitchToSelectMode, SwitchToSetupFocus,
        SwitchToParameterFocus, SwitchToBankFocus, SwitchToPresetFocus, SwitchToSoundFocus, SwitchToMCSelectDetail,
@@ -68,7 +69,7 @@ namespace DescriptiveLayouts
        IncPresetSelectionPresetList, DecPresetSelectionPresetList, IncBankSelectionPresetList,
        DecBankSelectionPresetList, DoPresetListAction, OpenUnisonParameter, OpenMasterParameter, SwitchToVoicesDetail,
        OpenMonoParameterScreen, OpenPartScreen, InitSound, IncSplitPoint, DecSplitPoint, LayerMuteInc, LayerMuteDec,
-       OpenFXMixParameter,
+       OpenFXMixParameter, InitAsSingle, InitAsSplit, InitAsLayer, InitPart,
        // try to use more generic names, the specific meaning is implemented in the EventProvider
        Left, Right, Up, Down, IncParam, DecParam, Commit);
 

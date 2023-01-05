@@ -461,3 +461,15 @@ void EditBufferUseCases::copyFX(VoiceGroup from, VoiceGroup to)
     dst->copyFrom(transaction, src);
   }
 }
+
+void EditBufferUseCases::initSoundAs(SoundType type, Defaults defaults)
+{
+  auto name = nltools::string::concat("Init Sound as ", toString(type));
+  auto scope = m_editBuffer.getUndoScope().startTransaction(name);
+  if(type != SoundType::Single)
+    m_editBuffer.undoableConvertToDual(scope->getTransaction(), type, VoiceGroup::I);
+  else
+    m_editBuffer.undoableConvertToSingle(scope->getTransaction(), VoiceGroup::I);
+
+  m_editBuffer.undoableInitSound(scope->getTransaction(), defaults);
+}
