@@ -265,14 +265,12 @@ void MacroControlParameterLayout2::setMode(Mode desiredMode)
     voiceGroupIndication->setVisible(desiredMode == Mode::MacroControlValue);
   }
 
-  const auto isDual = Application::get().getPresetManager()->getEditBuffer()->isDual();
-
   switch(m_mode)
   {
     case Mode::MacroControlValue:
       m_modeOverlay->addControl(createParameterValueControl());
       m_modeOverlay->addControl(createMCAssignmentIndicator());
-      setButtonAText(isDual ? "I / II" : "");
+      setButtonAText("I / II");
       setButtonText(Buttons::BUTTON_B, "HW Sel");
       setButtonText(Buttons::BUTTON_C, "more..");
 
@@ -364,17 +362,13 @@ MacroControlParameterSelectLayout2::MacroControlParameterSelectLayout2()
     , super2()
 {
   setButtonA(addControl(new Button("", Buttons::BUTTON_A)));
-
-  if(Application::get().getPresetManager()->getEditBuffer()->isDual())
+  if(getMode() == Mode::MacroControlValue)
   {
-    if(getMode() == Mode::MacroControlValue)
-    {
-      setButtonAText("I / II");
-    }
-    else
-    {
-      setButtonAText("");
-    }
+    setButtonAText("I / II");
+  }
+  else
+  {
+    setButtonAText("");
   }
 
   addControl(new Button("HW Sel", Buttons::BUTTON_B));

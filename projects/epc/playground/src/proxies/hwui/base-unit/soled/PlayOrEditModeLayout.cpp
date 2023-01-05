@@ -30,7 +30,6 @@ PlayOrEditModeLayout::PlayOrEditModeLayout()
   addControl(new VerticalLine(Rect(24, 0, 1, 32)));
   addControl(new DottedLine(Rect(25, 16, 86, 1)));
   addControl(new SelectedRibbonsIndication(Rect(115, 10, 15, 20)));
-  createLowerLabels();
 
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto& settings = eb->getSettings();
@@ -49,20 +48,23 @@ void PlayOrEditModeLayout::onParameterSelectionChanged(const Parameter* old, Par
 {
 }
 
-inline Rect getPedalIndicationRect(bool isMapped)
+namespace
 {
-  if(isMapped)
-    return { 25, 17, 11, 14 };
-  else
-    return { 25, 17, 0, 14 };
-}
+  Rect getPedalIndicationRect(bool isMapped)
+  {
+    if(isMapped)
+      return { 26, 17, 11, 13 };
+    else
+      return { 26, 17, 0, 13 };
+  }
 
-inline Rect getRibbonLabelRect(bool isMapped)
-{
-  if(isMapped)
-    return { 36, 17, 77, 14 };
-  else
-    return { 25, 17, 88, 14 };
+  Rect getRibbonLabelRect(bool isMapped)
+  {
+    if(isMapped)
+      return { 36, 17, 77, 14 };
+    else
+      return { 25, 17, 88, 14 };
+  }
 }
 
 void PlayOrEditModeLayout::createLowerLabels()
@@ -89,7 +91,7 @@ bool is1_2Selected()
 bool PlayOrEditModeLayout::isPedalMappedToCurrentLowerRibbon()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  RibbonParameter* param = eb->findAndCastParameterByID<RibbonParameter>(
+  auto* param = eb->findAndCastParameterByID<RibbonParameter>(
       { is1_2Selected() ? C15::PID::Ribbon_2 : C15::PID::Ribbon_4, VoiceGroup::Global });
   return param->isMCAssignedToThisAlsoAssignedToAnyPedal();
 }
@@ -97,7 +99,7 @@ bool PlayOrEditModeLayout::isPedalMappedToCurrentLowerRibbon()
 bool PlayOrEditModeLayout::isPedalMappedToCurrentUpperRibbon()
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
-  RibbonParameter* param = eb->findAndCastParameterByID<RibbonParameter>(
+  auto* param = eb->findAndCastParameterByID<RibbonParameter>(
       { is1_2Selected() ? C15::PID::Ribbon_1 : C15::PID::Ribbon_3, VoiceGroup::Global });
   return param->isMCAssignedToThisAlsoAssignedToAnyPedal();
 }

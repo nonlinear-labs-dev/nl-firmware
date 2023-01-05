@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -108,6 +109,18 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 		BasicParameterModel global = byVoiceGroup[VoiceGroup.Global.ordinal()].parameters.get(paramID);
 		if (global != null)
 			return global;
+
+		boolean isSingle = soundType.getValue() == SoundType.Single;
+		boolean isMonophonic = Arrays.binarySearch(ParameterFactory.monophonicParameters, paramID) >= 0;
+
+		if(isSingle && isMonophonic)
+		{
+			return byVoiceGroup[voiceGroup.getValue().ordinal()].parameters.get(paramID);
+		}
+		else if(isSingle && !isMonophonic)
+		{
+			return byVoiceGroup[VoiceGroup.I.ordinal()].parameters.get(paramID);
+		}
 
 		return byVoiceGroup[voiceGroup.getValue().ordinal()].parameters.get(paramID);
 	}

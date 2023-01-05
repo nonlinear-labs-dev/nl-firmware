@@ -152,40 +152,13 @@ void dualToSingleTestsPolyToGlobalParameterCopy(LoadPresetFunction loadPresetCB,
     useCase.convertToSingle(tVoiceGroup);
     editBuffer->TEST_doDeferredJobs();
 
+    INFO("global Parameter: " << globalParameter->getLongName());
+    INFO("vgParameter: " << vgParameter->getLongName() << " " << toString(tVoiceGroup));
     REQUIRE(editBuffer->getType() == SoundType::Single);
     REQUIRE(editBuffer->isModified());
     REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
     REQUIRE(vgParameter->getControlPositionValue() == vgParameter->getFactoryDefaultValue());
     REQUIRE(globalParameter->getDisplayValue() == globalParameterPreConversion + vGroupParameterPreConversion);
-  }
-}
-
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Sound Conversion - Master Volume Parameter")
-{
-  MockPresetStorage presets;
-
-  SECTION("I Split to Single copy Part Master Volume to Global Master Volume")
-  {
-    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 358, 247>(
-        &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
-  }
-
-  SECTION("II Split to Single copy Part Master Volume to Global Master Volume")
-  {
-    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 358, 247>(
-        &loadPreset<SoundType::Split>, presets.getSinglePreset(), presets.getSplitPreset());
-  }
-
-  SECTION("I Layer to Single copy Part Master Volume to Global Master Volume")
-  {
-    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::I, 358, 247>(
-        &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
-  }
-
-  SECTION("II Layer to Single copy Part Master Volume to Global Master Volume")
-  {
-    dualToSingleTestsPolyToGlobalParameterCopy<VoiceGroup::II, 358, 247>(
-        &loadPreset<SoundType::Layer>, presets.getSinglePreset(), presets.getLayerPreset());
   }
 }
 

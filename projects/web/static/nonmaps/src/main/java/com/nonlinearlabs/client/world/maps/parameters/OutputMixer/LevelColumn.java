@@ -15,16 +15,7 @@ class LevelColumn extends ParameterColumn {
 	LevelColumn(MapsLayout parent) {
 		super(parent);
 		addChild(new ModulatableSlider(this, 185));
-		addChild(new ModulationSourceSlider(this, 187) {
-			@Override
-			protected int getBackgroundRoundings() {
-				EditBufferPresenter p = EditBufferPresenterProvider.getPresenter();
-				if (p.soundType == SoundType.Single)
-					return Rect.ROUNDING_BOTTOM;
-
-				return Rect.ROUNDING_NONE;
-			}
-		});
+		addChild(new ModulationSourceSlider(this, 187));
 		addChild(new ModulatableHorizontalSlider(this, 362));
 	}
 

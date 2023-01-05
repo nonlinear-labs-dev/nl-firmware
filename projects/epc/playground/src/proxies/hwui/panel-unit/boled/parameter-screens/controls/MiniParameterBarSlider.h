@@ -11,6 +11,7 @@ class MiniParameterBarSlider : public BarSlider
   MiniParameterBarSlider(Parameter* param, const Rect& rect);
 
   bool redraw(FrameBuffer& fb) override;
+  void setSliderColor(FrameBuffer& fb) override;
 
  private:
   bool hasBorder() const override;

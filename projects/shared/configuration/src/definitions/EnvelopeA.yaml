@@ -18,11 +18,11 @@ static: [
   &VALUE_PERCENT { coarse: 100, fine: 1000 },
   &MODULATEABLE {
     <<: *ALL_EXPOSED,
-    type: Local_Modulateable
+    type: Polyphonic_Modulateable
   },
   &UNMODULATEABLE {
     <<: *ALL_EXPOSED,
-    type: Local_Unmodulateable
+    type: Polyphonic_Unmodulateable
   },
   &ENV_CP_LEVEL { <<: *VALUE_PERCENT },
   &ENV_MA_LEVEL { <<: *VALUE_PERCENT },

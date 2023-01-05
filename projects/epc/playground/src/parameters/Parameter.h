@@ -144,8 +144,11 @@ class Parameter : public UpdateDocumentContributor,
   bool isDisabled() const;
 
   [[nodiscard]] C15::Descriptors::ParameterType getType() const;
-
+  bool isMonophonic() const;
+  bool isPolyphonic() const;
   void sendParameterMessage() const;
+
+  bool isScale() const;
 
  protected:
   virtual void sendToAudioEngine() const;

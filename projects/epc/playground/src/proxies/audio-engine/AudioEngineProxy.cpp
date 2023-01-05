@@ -256,16 +256,18 @@ void fillMessageWithMonophonicParameters(nltools::msg::detail::PresetMessage<tMs
               e.m_macro = modP->getModulationSource();
               mono_modulateable++;
             }
+            break;
           }
-          break;
           case C15::Descriptors::ParameterType::Monophonic_Unmodulateable:
           {
             auto &e = mono_unmodulateables[index];
             e.m_id = static_cast<C15::PID::ParameterID>(id);
             e.m_controlPosition = p->getControlPositionValue();
             mono_unmodulateable++;
+            break;
           }
-          break;
+          default:
+            break;
         }
       }
     }
@@ -309,65 +311,24 @@ void fillSingleMessageWithPolyParameters(nltools::msg::SinglePresetMessage &msg,
             e.m_macro = modP->getModulationSource();
             modulateables++;
           }
+          break;
         }
-        break;
         case C15::Descriptors::ParameterType::Polyphonic_Unmodulateable:
         {
           auto &e = msg.m_polyphonicUnmodulateables[index];
           e.m_id = static_cast<C15::PID::ParameterID>(id);
           e.m_controlPosition = p->getControlPositionValue();
           unmodulateables++;
+          break;
         }
-        break;
+        default:
+          break;
       }
     }
   }
 
   nltools_assertAlways(unmodulateables == msg.m_polyphonicUnmodulateables.size());
   nltools_assertAlways(modulateables == msg.m_polyphonicModulateables.size());
-}
-
-// temporary
-void fillSingleMessageWithLocalParameters(nltools::msg::SinglePresetMessage &msg, const EditBuffer &eb)
-{
-  size_t modulateables = 0;
-  size_t unmodulateables = 0;
-
-  for(auto &g : eb.getParameterGroups(VoiceGroup::I))
-  {
-    for(auto &p : g->getParameters())
-    {
-      const auto id = p->getID().getNumber();
-      const auto index = C15::ParameterList[id].m_param.m_index;
-      switch(p->getType())
-      {
-        case C15::Descriptors::ParameterType::Local_Modulateable:
-        {
-          if(auto modP = dynamic_cast<ModulateableParameter *>(p))
-          {
-            auto &e = msg.m_localModulateables[index];
-            e.m_id = static_cast<C15::PID::ParameterID>(id);
-            e.m_controlPosition = modP->getControlPositionValue();
-            e.m_modulationAmount = modP->getModulationAmount();
-            e.m_macro = modP->getModulationSource();
-            modulateables++;
-          }
-        }
-        break;
-        case C15::Descriptors::ParameterType::Local_Unmodulateable:
-        {
-          auto &e = msg.m_localUnmodulateables[index];
-          e.m_id = static_cast<C15::PID::ParameterID>(id);
-          e.m_controlPosition = p->getControlPositionValue();
-          unmodulateables++;
-        }
-        break;
-      }
-    }
-  }
-
-  nltools_assertAlways(unmodulateables == msg.m_localUnmodulateables.size());
-  nltools_assertAlways(modulateables == msg.m_localModulateables.size());
 }
 
 template <typename tMSG> void fillDualMessageWithPolyParameters(tMSG &msg, const EditBuffer &editBuffer)
@@ -399,65 +360,18 @@ template <typename tMSG> void fillDualMessageWithPolyParameters(tMSG &msg, const
               e.m_macro = modP->getModulationSource();
               modulateables++;
             }
+            break;
           }
-          break;
           case C15::Descriptors::ParameterType::Polyphonic_Unmodulateable:
           {
             auto &e = unmodParams[index];
             e.m_id = static_cast<C15::PID::ParameterID>(id);
             e.m_controlPosition = p->getControlPositionValue();
             unmodulateables++;
+            break;
           }
-          break;
-        }
-      }
-    }
-
-    nltools_assertAlways(unmodulateables == unmodParams.size());
-    nltools_assertAlways(modulateables == modParams.size());
-  }
-}
-
-// temporary
-template <typename tMSG> void fillDualMessageWithLocalParameters(tMSG &msg, const EditBuffer &editBuffer)
-{
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-  {
-    auto &modParams = msg.m_localModulateables[static_cast<int>(vg)];
-    auto &unmodParams = msg.m_localUnmodulateables[static_cast<int>(vg)];
-
-    size_t modulateables = 0;
-    size_t unmodulateables = 0;
-
-    for(auto &g : editBuffer.getParameterGroups(vg))
-    {
-      for(auto &p : g->getParameters())
-      {
-        const auto id = p->getID().getNumber();
-        const auto index = C15::ParameterList[id].m_param.m_index;
-        switch(p->getType())
-        {
-          case C15::Descriptors::ParameterType::Local_Modulateable:
-          {
-            if(auto modP = dynamic_cast<ModulateableParameter *>(p))
-            {
-              auto &e = modParams[index];
-              e.m_id = static_cast<C15::PID::ParameterID>(id);
-              e.m_controlPosition = modP->getControlPositionValue();
-              e.m_modulationAmount = modP->getModulationAmount();
-              e.m_macro = modP->getModulationSource();
-              modulateables++;
-            }
-          }
-          break;
-          case C15::Descriptors::ParameterType::Local_Unmodulateable:
-          {
-            auto &e = unmodParams[index];
-            e.m_id = static_cast<C15::PID::ParameterID>(id);
-            e.m_controlPosition = p->getControlPositionValue();
-            unmodulateables++;
-          }
-          break;
+          default:
+            break;
         }
       }
     }
@@ -471,7 +385,6 @@ nltools::msg::SinglePresetMessage AudioEngineProxy::createSingleEditBufferMessag
 {
   nltools::msg::SinglePresetMessage msg {};
   fillMessageWithSharedParameters(msg, eb);
-  fillSingleMessageWithLocalParameters(msg, eb);
   fillSingleMessageWithPolyParameters(msg, eb);
   nltools_assertAlways(nltools::msg::SinglePresetMessage::validate(msg));
   return msg;
@@ -481,7 +394,6 @@ nltools::msg::SplitPresetMessage AudioEngineProxy::createSplitEditBufferMessage(
 {
   nltools::msg::SplitPresetMessage msg {};
   fillMessageWithSharedParameters(msg, eb);
-  fillDualMessageWithLocalParameters(msg, eb);
   fillDualMessageWithPolyParameters(msg, eb);
   nltools_assertAlways(nltools::msg::SplitPresetMessage::validate(msg));
   return msg;
@@ -491,7 +403,6 @@ nltools::msg::LayerPresetMessage AudioEngineProxy::createLayerEditBufferMessage(
 {
   nltools::msg::LayerPresetMessage msg {};
   fillMessageWithSharedParameters(msg, eb);
-  fillDualMessageWithLocalParameters(msg, eb);
   fillDualMessageWithPolyParameters(msg, eb);
   // identical Unison Detune/Phase/Pan and Mono Glide are required (not sure if EditBuffer already facilitates this)
   msg.guaranteeEqualVoicesParameters();

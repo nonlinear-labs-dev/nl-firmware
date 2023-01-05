@@ -1,4 +1,5 @@
 #include "EditBufferUseCases.h"
+#include "presets/SendEditBufferScopeGuard.h"
 #include <presets/EditBuffer.h>
 #include <presets/Preset.h>
 #include <presets/PresetManager.h>
@@ -13,6 +14,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <presets/PresetPartSelection.h>
 #include <Application.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 EditBufferUseCases::EditBufferUseCases(EditBuffer& eb)
     : m_editBuffer { eb }
@@ -414,4 +416,48 @@ void EditBufferUseCases::selectLastSelectedMacroControlParameter()
 {
   auto id = m_editBuffer.getLastSelectedMacroId();
   selectParameter(id, true);
+}
+
+void EditBufferUseCases::lockParametersTemporarily(const std::vector<ParameterId>& params)
+{
+  auto scope = UNDO::Scope::startTrashTransaction();
+  auto transaction = scope->getTransaction();
+
+  for(auto& id : params)
+  {
+    if(auto param = m_editBuffer.findParameterByID(id))
+    {
+      param->undoableLock(transaction);
+    }
+  }
+}
+
+void EditBufferUseCases::unlockParametersTemporarily(const std::vector<ParameterId>& params)
+{
+  auto scope = UNDO::Scope::startTrashTransaction();
+  auto transaction = scope->getTransaction();
+
+  for(auto& id : params)
+  {
+    if(auto param = m_editBuffer.findParameterByID(id))
+    {
+      param->undoableUnlock(transaction);
+    }
+  }
+}
+
+void EditBufferUseCases::copyFX(VoiceGroup from, VoiceGroup to)
+{
+  auto name = nltools::string::concat("Copy FX ", toString(from), " into ", toString(to));
+  auto scope = m_editBuffer.getUndoScope().startTransaction(name);
+  auto transaction = scope->getTransaction();
+
+  SendEditBufferScopeGuard scopeGuard(transaction, true);
+
+  for(auto groupName : { "Flang", "Cab", "Gap Filt", "Echo", "Reverb" })
+  {
+    auto src = m_editBuffer.getParameterGroupByID({ groupName, from });
+    auto dst = m_editBuffer.getParameterGroupByID({ groupName, to });
+    dst->copyFrom(transaction, src);
+  }
 }

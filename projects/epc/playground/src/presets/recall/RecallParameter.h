@@ -22,6 +22,7 @@ class RecallParameter : public UpdateDocumentContributor
 
   [[nodiscard]] const std::string& getGivenName() const;
   [[nodiscard]] const std::string& getInfo() const;
+  [[nodiscard]] RibbonTouchBehaviour getTouchBehaviour() const;
 
  private:
   ParameterId m_id;
@@ -30,6 +31,7 @@ class RecallParameter : public UpdateDocumentContributor
   MacroControls m_recallModSource = MacroControls::NONE;
   std::string m_givenName = {};
   std::string m_info = {};
+  RibbonTouchBehaviour m_ribbonTouchBehaviour = {};
 
   friend class RecallEditBufferSerializer;
 };

@@ -116,6 +116,7 @@ namespace DescriptiveLayouts
     m_map[EventSources::SoundParamsButtonText] = std::make_unique<SoundParamsButtonText>();
     m_map[EventSources::SoundVoicesButtonText] = std::make_unique<SoundVoicesButtonText>();
     m_map[EventSources::SoundMasterButtonText] = std::make_unique<SoundMasterButtonText>();
+    m_map[EventSources::SoundFxMixMasterButtonText] = std::make_unique<SoundFxMixMasterButtonText>();
 
     m_map[EventSources::MonoButtonText] = std::make_unique<MonoButtonText>();
     m_map[EventSources::UnisonButtonText] = std::make_unique<UnisonButtonText>();
@@ -134,6 +135,22 @@ namespace DescriptiveLayouts
     m_map[EventSources::LayerFXState] = std::make_unique<LayerFXState>();
     m_map[EventSources::LayerFXOffset] = std::make_unique<LayerFXOffset>();
 
+    m_map[EventSources::FX_I_Imagestate] = std::make_unique<FX_I_ImageState>();
+    m_map[EventSources::FX_II_Imagestate] = std::make_unique<FX_II_ImageState>();
+    m_map[EventSources::LayerToFXPath] = std::make_unique<LayerToFXPath>();
+    m_map[EventSources::Layer_FX_TO_OUT_Imagestate] = std::make_unique<Layer_FX_TO_OUT_Imagestate>();
+    m_map[EventSources::Split_FX_TO_OUT_Imagestate] = std::make_unique<Split_FX_TO_OUT_Imagestate>();
+    m_map[EventSources::Split_FX_TO_OUT_Imagestate_flipped] = std::make_unique<Split_FX_TO_OUT_Imagestate_flipped>();
+    m_map[EventSources::Split_Arrows_To_FX_L_TO_R_I] = std::make_unique<Split_Arrows_To_FX_L_TO_R_I>();
+    m_map[EventSources::Split_Arrows_To_FX_L_TO_R_II] = std::make_unique<Split_Arrows_To_FX_L_TO_R_II>();
+    m_map[EventSources::Split_Arrows_To_FX_R_TO_L_I] = std::make_unique<Split_Arrows_To_FX_R_TO_L_I>();
+    m_map[EventSources::Split_Arrows_To_FX_R_TO_L_II] = std::make_unique<Split_Arrows_To_FX_R_TO_L_II>();
+
+    m_map[EventSources::Split_Arrows_FX_To_I] = std::make_unique<Split_Arrows_FX_To_VG<VoiceGroup::I>>();
+    m_map[EventSources::Split_Arrows_FX_To_II] = std::make_unique<Split_Arrows_FX_To_VG<VoiceGroup::II>>();
+
+    m_map[EventSources::Serial_FX_Imagestate] = std::make_unique<Serial_FX_Imagestate>();
+
     m_map[EventSources::SplitPointDefaultBehaviourWithoutSync]
         = std::make_unique<SplitPointBehaviourIsDefaultWithoutSync>();
   }
@@ -147,5 +164,10 @@ namespace DescriptiveLayouts
       return {};
 
     return m_map.at(source)->connect(cb);
+  }
+
+  EventSourceBase* GlobalEventSourceBroker::getEventSource(EventSources e)
+  {
+    return m_map.at(e).get();
   }
 }

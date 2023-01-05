@@ -38,6 +38,21 @@ public abstract class ParameterGroup extends LayoutResizingVertical {
 		return p.isLocked();
 	}
 
+	public Parameter getAnyChildParameter() {
+		Control c = recurseChildren(new ControlFinder() {
+			@Override
+			public boolean onWayDownFound(Control ctrl) {
+				return (ctrl instanceof Parameter);
+			}
+		});
+
+		if(c != null)
+		{
+			return (Parameter) c;
+		}
+		return null;
+	}
+
 	@Override
 	public <T extends MapsControl> T addChild(T child) {
 		if (child instanceof ParameterGroupControls) {

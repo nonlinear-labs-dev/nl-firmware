@@ -84,6 +84,7 @@ bool ParameterId::isGlobal() const
   return isGlobal(getNumber());
 }
 
+//TODO implement this according to SoundType!!
 bool ParameterId::isGlobal(int number)
 {
   if(number >= C15::Config::tcd_elements || number < 0)
@@ -91,8 +92,10 @@ bool ParameterId::isGlobal(int number)
 
   auto &paramDescript = C15::ParameterList[number];
   auto type = paramDescript.m_param.m_type;
-  return type != C15::Descriptors::ParameterType::Local_Modulateable
-      && type != C15::Descriptors::ParameterType::Local_Unmodulateable;
+  return type != C15::Descriptors::ParameterType::Polyphonic_Modulateable
+      && type != C15::Descriptors::ParameterType::Polyphonic_Unmodulateable
+      && type != C15::Descriptors::ParameterType::Monophonic_Modulateable
+      && type != C15::Descriptors::ParameterType::Monophonic_Unmodulateable;
 }
 
 ParameterId ParameterId::invalid()

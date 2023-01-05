@@ -221,6 +221,16 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Layer I to Split")
         CHECK(eb->getSelectedParameterNumber() == C15::PID::FB_Mix_FX_Src);
       }
     }
+
+    WHEN("Layer converted to Split")
+    {
+      ebUseCases.convertToSingle(VoiceGroup::I);
+
+      THEN("selection is kept")
+      {
+        CHECK(eb->getSelectedParameterNumber() == C15::PID::FB_Mix_FX_Src);
+      }
+    }
   }
 
   WHEN("Layer to Split Cross FX is not reset")

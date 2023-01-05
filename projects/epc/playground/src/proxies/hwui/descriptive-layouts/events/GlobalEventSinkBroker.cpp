@@ -411,6 +411,13 @@ namespace DescriptiveLayouts
                     ebUseCases.selectParameter({ 247, VoiceGroup::Global }, true);
                   });
 
+    registerEvent(EventSinks::OpenFXMixParameter,
+                  [eb]
+                  {
+                    EditBufferUseCases ebUseCases{*eb};
+                    ebUseCases.selectParameter({C15::PID::Master_FX_Mix, VoiceGroup::Global}, true);
+                  });
+
     registerEvent(EventSinks::InitSound,
                   [eb]
                   {

@@ -14,7 +14,6 @@
 PresetInfoContent::PresetInfoContent()
 {
   addInfoField("name", "Name", new MultiLineInfoContent());
-  addInfoField("type", "Type");
   addInfoField("comment", "Comment", new MultiLineInfoContent());
   addInfoField("lastchange", "Last Change");
   addInfoField("devicename", "Device Name");
@@ -74,8 +73,7 @@ void PresetInfoContent::fillContents()
 
 void PresetInfoContent::fillFromPreset(const Preset *preset)
 {
-  infoFields["name"]->setInfo(preset->getName(), FrameBufferColors::C128);
-  infoFields["type"]->setInfo(createPresetTypeString(preset), FrameBufferColors::C128);
+  infoFields["name"]->setInfo(preset->getDisplayNameWithSuffixes(false), FrameBufferColors::C128);
   infoFields["comment"]->setInfo(preset->getAttribute("Comment", "---"), FrameBufferColors::C128);
   infoFields["lastchange"]->setInfo(TimeTools::getDisplayStringFromIso(preset->getAttribute("StoreTime", "---")));
   infoFields["devicename"]->setInfo(preset->getAttribute("DeviceName", "---"));
@@ -85,7 +83,6 @@ void PresetInfoContent::fillFromPreset(const Preset *preset)
 bool PresetInfoContent::fillDefaults()
 {
   infoFields["name"]->setInfo("---", FrameBufferColors::C128);
-  infoFields["type"]->setInfo("---", FrameBufferColors::C128);
   infoFields["comment"]->setInfo("---", FrameBufferColors::C128);
   infoFields["lastchange"]->setInfo("---");
   infoFields["devicename"]->setInfo("---");
@@ -103,11 +100,11 @@ Glib::ustring PresetInfoContent::createPresetTypeString(const Preset *preset)
   auto unisonI = preset->findParameterByID({ Unison_Voices, VoiceGroup::I }, false);
   auto unisonII = preset->findParameterByID({ Unison_Voices, VoiceGroup::II }, false);
 
-  const auto monoIEnabled = monoI ? differs(monoI->getValue(), 0.0) : false;
-  const auto monoIIEnabled = monoII ? differs(monoII->getValue(), 0.0) : false;
+  const auto monoIEnabled = monoI != nullptr && differs(monoI->getValue(), 0.0);
+  const auto monoIIEnabled = monoII != nullptr && differs(monoII->getValue(), 0.0);
 
-  const auto unisonIEnabled = unisonI ? differs(unisonI->getValue(), 0.0) : false;
-  const auto unisonIIEnabled = unisonII ? differs(unisonII->getValue(), 0.0) : false;
+  const auto unisonIEnabled = unisonI != nullptr && differs(unisonI->getValue(), 0.0);
+  const auto unisonIIEnabled = unisonII != nullptr && differs(unisonII->getValue(), 0.0);
 
   auto createSuffixedString = [&](const std::string &prefix, auto I, auto II) -> std::string {
     if(I && II)

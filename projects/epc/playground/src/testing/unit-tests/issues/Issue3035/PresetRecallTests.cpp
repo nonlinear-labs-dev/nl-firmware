@@ -289,6 +289,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Preset with differing Retu
 
   WHEN("Ribbon Load Stay after Return to Center")
   {
+    auto ribToA = TestHelper::getEditBuffer()->findParameterByID({C15::PID::Ribbon_1_to_MC_A, VoiceGroup::Global});
     ribbonUseCase.changeFromAudioEngine(0, HWChangeSource::TCD);
 
     ebUseCases.load(rib1_retcenter);
@@ -297,6 +298,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Preset with differing Retu
     CHECK(Approx(ribbon1->getControlPositionValue()) == 0);
     ebUseCases.load(rib1_stay);
     TestHelper::doMainLoopIteration();
+    CHECK(ribToA->getControlPositionValue() > 0); //as the router is not set the mc pos is not bound to ribbon ! this failure is expected!!
     CHECK(Approx(mc1->getControlPositionValue()) == rib1_stay->findParameterByID(MC_ID, true)->getValue());
     CHECK(Approx(ribbon1->getControlPositionValue()) == rib1_stay->findParameterByID(MC_ID, true)->getValue());
   }

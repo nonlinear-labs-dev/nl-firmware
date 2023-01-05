@@ -197,7 +197,7 @@ bool Parameter::isDisabledForType(SoundType type) const
 
 void Parameter::loadDefault(UNDO::Transaction *transaction, Defaults mode)
 {
-  if(mode == Defaults::FactoryDefault)
+  if(mode == Defaults::FactoryDefault && !isLocked())
   {
     loadFromPreset(transaction, getFactoryDefaultValue());
   }
@@ -554,6 +554,7 @@ Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
     case C15::PID::FB_Mix_SVF_Src:
     case C15::PID::FB_Mix_FX_Src:
     case C15::PID::Out_Mix_To_FX:
+    case C15::PID::Master_FX_Mix:
       return VisualizationStyle::Dot;
     case C15::PID::Voice_Grp_Fade_From:
     case C15::PID::Split_Split_Point:
@@ -620,79 +621,84 @@ void Parameter::sendParameterMessage() const
     {
       case C15::Descriptors::ParameterType::Hardware_Source:
       {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Hardware_Source>(dynamic_cast<const PhysicalControlParameter*>(this));
+        auto ret
+            = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Hardware_Source>(
+                dynamic_cast<const PhysicalControlParameter *>(this));
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Display_Parameter:
       {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Display_Parameter>(dynamic_cast<const HardwareSourceSendParameter*>(this));
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<
+            C15::Descriptors::ParameterType::Display_Parameter>(
+            dynamic_cast<const HardwareSourceSendParameter *>(this));
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Hardware_Amount:
       {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Hardware_Amount>(dynamic_cast<const ModulationRoutingParameter*>(this));
+        auto ret
+            = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Hardware_Amount>(
+                dynamic_cast<const ModulationRoutingParameter *>(this));
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Macro_Control:
       {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Macro_Control>(dynamic_cast<const MacroControlParameter*>(this));
+        auto ret
+            = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Macro_Control>(
+                dynamic_cast<const MacroControlParameter *>(this));
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Macro_Time:
       {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Macro_Time>(this);
+        auto ret
+            = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Macro_Time>(this);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Global_Modulateable:
       {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Global_Modulateable>(dynamic_cast<const ModulateableParameter*>(this));
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<
+            C15::Descriptors::ParameterType::Global_Modulateable>(dynamic_cast<const ModulateableParameter *>(this));
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Global_Unmodulateable:
       {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Global_Unmodulateable>(this);
-        eb->getAudioEngineProxy().sendParameterMessage(ret);
-        break;
-      }
-      case C15::Descriptors::ParameterType::Local_Modulateable:
-      {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Local_Modulateable>(dynamic_cast<const ModulateableParameter*>(this));
-        eb->getAudioEngineProxy().sendParameterMessage(ret);
-        break;
-      }
-      case C15::Descriptors::ParameterType::Local_Unmodulateable:
-      {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Local_Unmodulateable>(this);
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<
+            C15::Descriptors::ParameterType::Global_Unmodulateable>(this);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Polyphonic_Modulateable:
       {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Polyphonic_Modulateable>(dynamic_cast<const ModulateableParameter*>(this));
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<
+            C15::Descriptors::ParameterType::Polyphonic_Modulateable>(
+            dynamic_cast<const ModulateableParameter *>(this));
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Polyphonic_Unmodulateable:
       {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Polyphonic_Unmodulateable>(this);
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<
+            C15::Descriptors::ParameterType::Polyphonic_Unmodulateable>(this);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Monophonic_Modulateable:
       {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Monophonic_Modulateable>(dynamic_cast<const ModulateableParameter*>(this));
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<
+            C15::Descriptors::ParameterType::Monophonic_Modulateable>(
+            dynamic_cast<const ModulateableParameter *>(this));
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Monophonic_Unmodulateable:
       {
-        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Monophonic_Unmodulateable>(this);
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<
+            C15::Descriptors::ParameterType::Monophonic_Unmodulateable>(this);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
@@ -737,6 +743,30 @@ void Parameter::onSoundTypeChanged(SoundType t)
 
 C15::Descriptors::ParameterType Parameter::getType() const
 {
-  auto& desc = C15::ParameterList[getID().getNumber()];
+  auto &desc = C15::ParameterList[getID().getNumber()];
   return desc.m_param.m_type;
+}
+
+bool Parameter::isMonophonic() const
+{
+  const auto t = getType();
+  return t == C15::Descriptors::ParameterType::Monophonic_Modulateable
+      || t == C15::Descriptors::ParameterType::Monophonic_Unmodulateable;
+}
+
+bool Parameter::isPolyphonic() const
+{
+  const auto t = getType();
+  return t == C15::Descriptors::ParameterType::Polyphonic_Modulateable
+      || t == C15::Descriptors::ParameterType::Polyphonic_Unmodulateable;
+}
+
+bool Parameter::isScale() const
+{
+  using namespace C15::PID;
+  const auto id = getID().getNumber();
+  const static auto ids = std::vector<int>(
+      { Scale_Base_Key, Scale_Offset_0, Scale_Offset_1, Scale_Offset_2, Scale_Offset_3, Scale_Offset_4, Scale_Offset_5,
+        Scale_Offset_6, Scale_Offset_7, Scale_Offset_8, Scale_Offset_9, Scale_Offset_10, Scale_Offset_11 });
+  return std::any_of(ids.begin(), ids.end(), [id](int i) { return i == id; });
 }

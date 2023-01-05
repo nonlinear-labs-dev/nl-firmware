@@ -41,10 +41,10 @@ static: [
   },
   &VALUE_PERCENT { coarse: 100, fine: 1000 },
   &MODULATEABLE {
-    type: Local_Modulateable
+    type: Polyphonic_Modulateable
   },
   &UNMODULATEABLE {
-    type: Local_Unmodulateable
+    type: Polyphonic_Unmodulateable
   }
 ]
 
@@ -129,16 +129,16 @@ parameters:
       The reverb amount in the feedback can be set by the \"Reverb Amount\" fader independantly.
       Since the signal is monophonic, such feedback will cause intermodulation between the voices.
   - <<: *MODULATEABLE
-    <<: *LAYER_EXPOSED
+    <<: *ALL_EXPOSED
     <<: *RENDER_TYPICAL
     id: 354
     token: FX_Src
-    label_long: Effects - From @VG:Other
-    label_short: From @VG:Other
+    label_long: Effects - From @ST:Between
+    label_short: From @ST:Between
     control_position: { <<: *VALUE_PERCENT, scale: LINEAR_100_PERCENT, initial: 0.0f }
     modulation_aspects: { <<: *VALUE_PERCENT, scale: LINEAR_BIPOLAR_100_PERCENT }
     info: >
-      Crossfades to the Effects signal of the other Part. (Only available when using Split or Layer mode.)
+      Crossfades to the Effects signal of the other Part.
   - <<: *MODULATEABLE
     <<: *ALL_EXPOSED
     <<: *RENDER_TYPICAL

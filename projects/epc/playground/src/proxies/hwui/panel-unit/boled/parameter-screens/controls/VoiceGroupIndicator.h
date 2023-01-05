@@ -4,7 +4,7 @@
 class VoiceGroupIndicator : public Control
 {
  public:
-  explicit VoiceGroupIndicator(const Rect& r, bool allowLoadToPart);
+  explicit VoiceGroupIndicator(const Rect& r, bool allowLoadToPart, bool alwaysDraw = false);
   ~VoiceGroupIndicator() override;
   bool redraw(FrameBuffer& fb) override;
   VoiceGroup getCurrentDisplayedVoiceGroup() const;
@@ -18,6 +18,7 @@ class VoiceGroupIndicator : public Control
 
   bool drawSplit(FrameBuffer& fb);
   bool drawLayer(FrameBuffer& fb);
+  bool drawSingle(FrameBuffer& fb);
 
   bool isLayerPartMuted(VoiceGroup vg) const;
   bool shouldDraw();
@@ -29,4 +30,5 @@ class VoiceGroupIndicator : public Control
   sigc::connection m_parameterChanged;
   const Parameter* m_param = nullptr;
   const bool m_allowLoadToPart;
+  const bool m_alwaysDraw;
 };

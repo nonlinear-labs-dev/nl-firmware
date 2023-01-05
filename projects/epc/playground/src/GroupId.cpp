@@ -73,10 +73,5 @@ VoiceGroup GroupId::getVoiceGroup() const
 bool GroupId::isGlobal(const std::string &name)
 {
   static std::vector<std::string> globals = { "CS", "Scale", "Master", "MCs", "MCM" };
-
-  for(auto &a : globals)
-    if(a == name)
-      return true;
-
-  return false;
+  return std::any_of(globals.begin(), globals.end(), [name](auto a) { return a == name; });
 }

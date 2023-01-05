@@ -19,8 +19,31 @@ BankButton::BankButton(const Rect& pos, bool bankFocus)
     : ControlWithChildren(pos)
     , m_bankFocus(bankFocus)
 {
-  m_soundTypeChanged = Application::get().getPresetManager()->getEditBuffer()->onSoundTypeChanged(
-      sigc::hide(sigc::mem_fun(this, &BankButton::bruteForce)));
+  auto& app = Application::get();
+  auto& eb = *app.getPresetManager()->getEditBuffer();
+  auto& vg = *app.getVGManager();
+  auto& settings = eb.getSettings();
+  m_soundTypeChanged = eb.onSoundTypeChanged(sigc::hide(sigc::mem_fun(this, &BankButton::bruteForce)));
+
+  m_loadToPartChanged = vg.onLoadToPartModeChanged(sigc::hide(sigc::mem_fun(this, &BankButton::bruteForce)));
+
+  m_settingChanged
+      = settings.getSetting<FocusAndModeSetting>()->onChange(sigc::mem_fun(this, &BankButton::onFocusAndModeChanged));
+}
+
+void BankButton::onFocusAndModeChanged(const Setting* s)
+{
+  if(auto fam = dynamic_cast<const FocusAndModeSetting*>(s))
+  {
+    auto currState = fam->getState();
+    auto oldState = fam->getOldState();
+
+    auto anyStore = currState.mode == UIMode::Store || oldState.mode == UIMode::Store;
+    if(anyStore && currState != oldState)
+    {
+      bruteForce();
+    }
+  }
 }
 
 BankButton::~BankButton()
@@ -42,25 +65,14 @@ void BankButton::bruteForce()
 {
   clear();
 
-  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
-  auto mode = famSetting.getState().mode;
-
-  switch(getSoundType())
-  {
-    case SoundType::Single:
-      installSingle();
-      break;
-    case SoundType::Layer:
-    case SoundType::Split:
-      if(mode == UIMode::Select)
-        installDual();
-      else
-        installSingle();
-      break;
-  }
+  if(Application::get().getVGManager()->isInLoadToPart()
+     && Application::get().getSettings()->getSetting<FocusAndModeSetting>()->getState().mode != UIMode::Store)
+    installLoadToPart();
+  else
+    installDefault();
 }
 
-void BankButton::installSingle()
+void BankButton::installDefault()
 {
   auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
   auto focusAndMode = famSetting.getState();
@@ -80,7 +92,7 @@ void BankButton::installSingle()
   m_buttonAHandler = std::make_unique<ShortVsLongPress>(toggleBankFocus, toggleBankFocus);
 }
 
-void BankButton::installDual()
+void BankButton::installLoadToPart()
 {
   auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
   auto focusAndMode = famSetting.getState();
