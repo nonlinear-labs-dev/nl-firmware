@@ -12,6 +12,7 @@ MSG_UPDATING_EPC="1/3 Updating..."
 MSG_UPDATING_BBB="2/3 Updating..."
 MSG_UPDATING_RT_FIRMWARE="3/3 Updating..."
 MSG_DONE="DONE!"
+MSG_CLEANUP="Cleaning up..."
 MSG_OK="OK!"
 MSG_FAILED="FAILED!"
 MSG_FAILED_WITH_ERROR_CODE="FAILED! Error code:"
@@ -283,6 +284,11 @@ main() {
         reboot
     fi
 
+    if does_update_exist_on_epc_tmp -ne 0; then
+      pretty "" "$MSG_UPDATING_C15 $MSG_CLEANUP" "$MSG_DO_NOT_SWITCH_OFF" "$MSG_UPDATING_C15" "$MSG_DO_NOT_SWITCH_OFF"
+      mv /mnt/usb-stick/nonlinear-c15-update.tar /mnt/usb-stick/nonlinear-c15-update.tar-copied
+      sync
+    fi
     pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_MAN" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_MAN"
     return 0
 }

@@ -54,7 +54,7 @@ check_preconditions() {
 
 run_update() {
     chmod +x /update/run.sh
-    /bin/sh /update/run.sh && mv /mnt/usb-stick/nonlinear-c15-update.tar /mnt/usb-stick/nonlinear-c15-update.tar-copied
+    /bin/sh /update/run.sh
     freeze
 }
 
