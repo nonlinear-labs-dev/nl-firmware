@@ -113,9 +113,9 @@ void VoiceGroupIndicator::drawCrossForSingle(FrameBuffer& fb, int centerX, int c
 
 bool VoiceGroupIndicator::drawSingle(FrameBuffer& fb)
 {
-  Rect polyRect = {getPosition().getX(), getPosition().getY() + 3, 6, 6};
-  Rect monoI = {getPosition().getX() + 6, getPosition().getY(), 6, 5};
-  Rect monoII = {getPosition().getX() + 6, getPosition().getY() + 7, 6, 5};
+  Rect polyRect = { getPosition().getX(), getPosition().getY() + 3, 6, 6 };
+  Rect monoI = { getPosition().getX() + 6, getPosition().getY(), 6, 5 };
+  Rect monoII = { getPosition().getX() + 6, getPosition().getY() + 7, 6, 5 };
 
   fb.setColor(FrameBufferColors::C179);
   fb.fillRect(polyRect);
@@ -276,13 +276,12 @@ bool VoiceGroupIndicator::isSingleFXNotActive(VoiceGroup vg) const
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();
 
-  auto fx_mix = eb->findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global})->getControlPositionValue();
-  auto serial_fx = eb->findParameterByID({C15::PID::Master_Serial_FX, VoiceGroup::Global})->getControlPositionValue();
-  auto to_fx = eb->findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I})->getControlPositionValue();
+  auto fx_mix = eb->findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global })->getControlPositionValue();
+  auto serial_fx = eb->findParameterByID({ C15::PID::Master_Serial_FX, VoiceGroup::Global })->getControlPositionValue();
+  auto to_fx = eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I })->getControlPositionValue();
 
-
-  auto fb_fx = eb->findParameterByID({C15::PID::FB_Mix_FX, VoiceGroup::I})->getControlPositionValue();
-  auto from_fx = eb->findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I})->getControlPositionValue();
+  auto fb_fx = eb->findParameterByID({ C15::PID::FB_Mix_FX, VoiceGroup::I })->getControlPositionValue();
+  auto from_fx = eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I })->getControlPositionValue();
 
   auto fx_mix_cond = vg == VoiceGroup::I ? fx_mix == 1 : fx_mix == 0;
   auto serial_fx_cond = vg == VoiceGroup::I ? serial_fx > 0 : serial_fx < 0;
@@ -291,5 +290,12 @@ bool VoiceGroupIndicator::isSingleFXNotActive(VoiceGroup vg) const
   auto fb_fx_cond = fb_fx != 0;
   auto from_fx_cond = vg == VoiceGroup::I ? from_fx < 1 : from_fx > 0;
 
-  return fx_mix_cond && !((serial_fx_cond || (from_fx_cond && fb_fx_cond)) && to_fx_cond);
+  auto fb_is_used = eb->findParameterByID({ C15::PID::FB_Mix_FX, VoiceGroup::I })->getControlPositionValue() != 0
+      && eb->findParameterByID({ C15::PID::FB_Mix_Lvl, VoiceGroup::I })->getControlPositionValue() > 0
+      && (eb->findParameterByID({ C15::PID::Osc_A_PM_FB, VoiceGroup::I })->getControlPositionValue() != 0
+          || eb->findParameterByID({ C15::PID::Osc_B_PM_FB, VoiceGroup::I })->getControlPositionValue() != 0
+          || eb->findParameterByID({ C15::PID::Shp_A_FB_Mix, VoiceGroup::I })->getControlPositionValue() > 0
+          || eb->findParameterByID({ C15::PID::Shp_B_FB_Mix, VoiceGroup::I })->getControlPositionValue() > 0);
+
+  return fx_mix_cond && !((serial_fx_cond || (from_fx_cond && fb_fx_cond)) && (to_fx_cond || fb_is_used));
 }
