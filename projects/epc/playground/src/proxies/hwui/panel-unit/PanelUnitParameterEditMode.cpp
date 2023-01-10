@@ -36,6 +36,9 @@ PanelUnitParameterEditMode::PanelUnitParameterEditMode()
 
   Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
       sigc::mem_fun(this, &PanelUnitParameterEditMode::bruteForceUpdateLeds));
+
+  Application::get().getPresetManager()->getEditBuffer()->onChange(
+      sigc::mem_fun(this, &PanelUnitParameterEditMode::bruteForceUpdateLeds));
 }
 
 PanelUnitParameterEditMode::~PanelUnitParameterEditMode()
