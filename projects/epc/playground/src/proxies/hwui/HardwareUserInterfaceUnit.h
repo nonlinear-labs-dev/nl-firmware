@@ -8,7 +8,7 @@
 class UsageMode;
 class Settings;
 
-class HardwareUserInterfaceUnit
+class HardwareUserInterfaceUnit : public sigc::trackable
 {
  private:
  public:

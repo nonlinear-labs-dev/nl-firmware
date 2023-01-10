@@ -18,7 +18,6 @@ namespace nltools {
                     M == MessageType::HardwareAmountParameterChanged ||
                     M == MessageType::MacroControlParameterChanged || M == MessageType::MacroTimeParameterChanged ||
                     M == MessageType::GlobalModulateableParameterChanged || M == MessageType::GlobalUnmodulateableParameterChanged ||
-                    M == MessageType::LocalModulateableParameterChanged || M == MessageType::LocalUnmodulateableParameterChanged ||
                     M == MessageType::PolyphonicModulateableParameterChanged || M == MessageType::PolyphonicUnmodulateableParameterChanged ||
                     M == MessageType::MonophonicModulateableParameterChanged || M == MessageType::MonophonicUnmodulateableParameterChanged,
                     "MessageType must fit category ParameterChanged"
@@ -87,21 +86,6 @@ namespace nltools {
         {
             static constexpr VoiceGroup m_voiceGroup = VoiceGroup::Global; // necessary?
         };
-
-        // todo: deprecate
-        struct LocalModulateableParameterChangedMessage
-            : public detail::ParameterChangedMessage<MessageType::LocalModulateableParameterChanged>
-            , public controls::LocalModulateableParameter
-            , public detail::ModulateableChangedMessage
-            , public detail::LocalChangedMessage
-        {};
-
-        // todo: deprecate
-        struct LocalUnmodulateableParameterChangedMessage
-            : public detail::ParameterChangedMessage<MessageType::LocalUnmodulateableParameterChanged>
-            , public controls::LocalUnmodulateableParameter
-            , public detail::LocalChangedMessage
-        {};
 
         struct PolyphonicModulateableParameterChangedMessage
             : public detail::ParameterChangedMessage<MessageType::PolyphonicModulateableParameterChanged>

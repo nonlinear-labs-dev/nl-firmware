@@ -26,8 +26,5 @@ CurrentVoiceGroupSelectionIndicator::CurrentVoiceGroupSelectionIndicator(const R
 
 void CurrentVoiceGroupSelectionIndicator::focusChanged()
 {
-  if(Application::get().getPresetManager()->getEditBuffer()->getType() != SoundType::Single)
-    setText({ currentVoiceGroupToString(), 0 });
-  else
-    setText({ "", 0 });
+  setText({ currentVoiceGroupToString(), 0 });
 }

@@ -72,7 +72,7 @@
 #include <device-settings/AlsaFramesPerPeriod.h>
 #include <proxies/hwui/HardwareFeatures.h>
 
-Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, HardwareFeatures& hwFeatures)
+Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, const HardwareFeatures &hwFeatures)
     : UpdateDocumentContributor(master)
     , m_file(file)
     , m_saveJob(5000, [this] { save(); })

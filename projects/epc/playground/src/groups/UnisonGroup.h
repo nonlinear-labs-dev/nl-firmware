@@ -6,7 +6,6 @@ class UnisonGroup : public ParameterGroup
 {
  public:
   UnisonGroup(ParameterGroupSet *parent, VoiceGroup voicegroup);
-  ~UnisonGroup() override;
 
   void init() override;
 

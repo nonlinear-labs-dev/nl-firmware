@@ -11,6 +11,9 @@ class ScaleGroupMiniParameterBarSlider : public MiniParameterBarSlider
   ~ScaleGroupMiniParameterBarSlider() override;
 
   tDisplayValue getDrawValue() const override;
+  void setSliderColor(FrameBuffer &fb) override;
+  void drawBackground(FrameBuffer &fb) override;
+  bool redraw(FrameBuffer &fb) override;
 
  private:
   sigc::connection m_connection;

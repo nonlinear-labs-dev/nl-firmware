@@ -1,4 +1,5 @@
 #include <nltools/logging/Log.h>
+#include <parameters/Parameter.h>
 #include <presets/recall/RecallParameterGroups.h>
 #include <presets/Preset.h>
 #include <presets/EditBuffer.h>

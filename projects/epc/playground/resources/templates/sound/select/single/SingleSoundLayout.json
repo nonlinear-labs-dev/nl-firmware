@@ -1,4 +1,12 @@
 {
+  "controls": {
+    "TestLabel": {
+      "label": {
+        "Class": "Text",
+        "Rect": "0, 0, 25, 8"
+      }
+    }
+  },
   "layouts": {
     "Single-Sound-Select-Layout": {
       "Selector": {
@@ -24,12 +32,16 @@
           "Class": "Button",
           "Position": "BUTTON_A",
           "Init": {
-            "Text[Text]": "Init"
+            "Text[Text]": "I / II"
           }
         },
         "ButtonB": {
           "Class": "Button",
-          "Position": "BUTTON_B"
+          "Position": "BUTTON_B",
+          "Init": {
+            "Text[Text]": "FX Mix.."
+          },
+          "Events": "SoundFxMixMasterButtonText => Text[Text]"
         },
         "ButtonC": {
           "Class": "Button",
@@ -62,10 +74,19 @@
             "Label[Text]": "Tune"
           },
           "Events": "EditBufferMasterTune => Value[Text]"
+        },
+        "ArrowsPolyToFX": {
+          "Class": "SingleSoundPolyToFXIndicator",
+          "Position": "181, 18"
+        },
+        "FB_FX": {
+          "Class": "SingleSoundFBFXIndicator",
+          "Position": "34, 18"
         }
       },
       "EventSinks": {
-        "BUTTON_A": "SwitchToButtonADetail",
+        "BUTTON_A": "ToggleVoiceGroup",
+        "BUTTON_B": "OpenFXMixParameter",
         "BUTTON_C": "SwitchToVoicesDetail",
         "BUTTON_D": "OpenMasterParameter"
       }

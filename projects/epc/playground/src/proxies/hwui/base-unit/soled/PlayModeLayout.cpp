@@ -36,20 +36,23 @@ void PlayModeLayout::onRibbonSelectionChanged(const Setting* s)
   createUpperLabels();
 }
 
-inline Rect getPedalIndicationRect(bool isMapped)
+namespace
 {
-  if(isMapped)
-    return { 25, 1, 11, 14 };
-  else
-    return { 25, 1, 0, 14 };
-}
+  Rect getPedalIndicationRect(bool isMapped)
+  {
+    if(isMapped)
+      return { 26, 1, 11, 13 };
+    else
+      return { 26, 1, 0, 13 };
+  }
 
-inline Rect getRibbonLabelRect(bool isMapped)
-{
-  if(isMapped)
-    return { 36, 1, 77, 14 };
-  else
-    return { 25, 1, 88, 14 };
+  Rect getRibbonLabelRect(bool isMapped)
+  {
+    if(isMapped)
+      return { 36, 1, 77, 14 };
+    else
+      return { 25, 1, 88, 14 };
+  }
 }
 
 void PlayModeLayout::createUpperLabels()

@@ -32,7 +32,7 @@ ContentManager::WebsocketConnection::~WebsocketConnection()
   g_object_unref(ws);
 }
 
-void ContentManager::WebsocketConnection::onWebsocketRequestDone(const std::shared_ptr<WebSocketRequest>& request,
+void ContentManager::WebsocketConnection::onWebsocketRequestDone(const std::shared_ptr<WebSocketRequest> &request,
                                                                  tUpdateID oldID, tUpdateID newId)
 {
   if(oldID == lastSelfIssuedUpdateId)
@@ -91,7 +91,7 @@ void ContentManager::addContentSections()
   addContentSection(static_cast<ContentSection *>(Application::get().getClipboard()));
 
   auto managers = Application::get().getActionManagers();
-  for(auto& m: managers->getManagers())
+  for(auto &m : managers->getManagers())
   {
     addContentSection(static_cast<ContentSection *>(m.get()));
   }
@@ -102,7 +102,7 @@ void ContentManager::addContentSection(tContentSectionPtr section)
   m_sections.insert(section);
 }
 
-void ContentManager::handleRequest(const std::shared_ptr<NetworkRequest>& request)
+void ContentManager::handleRequest(const std::shared_ptr<NetworkRequest> &request)
 {
   auto oldUpdateID = getUpdateIDOfLastChange();
 
@@ -160,8 +160,8 @@ void ContentManager::handleRequest(const std::shared_ptr<NetworkRequest>& reques
   }
 }
 
-void ContentManager::onUpdateIdChangedByNetworkRequest(const std::shared_ptr<NetworkRequest>& request, tUpdateID oldUpdateID,
-                                                       tUpdateID newUpdateID)
+void ContentManager::onUpdateIdChangedByNetworkRequest(const std::shared_ptr<NetworkRequest> &request,
+                                                       tUpdateID oldUpdateID, tUpdateID newUpdateID)
 {
   if(auto causer = std::dynamic_pointer_cast<WebSocketRequest>(request))
   {
@@ -247,7 +247,7 @@ bool ContentManager::feedWebSocket(const tWebsocketConnection &c, bool trustOrac
 }
 
 bool ContentManager::tryHandlingContentSectionRequest(tContentSectionPtr section,
-                                                      const std::shared_ptr<NetworkRequest>& request)
+                                                      const std::shared_ptr<NetworkRequest> &request)
 {
   Glib::ustring path = request->getPath();
 
@@ -260,13 +260,13 @@ bool ContentManager::tryHandlingContentSectionRequest(tContentSectionPtr section
   return false;
 }
 
-void ContentManager::delayResponseUntilChanged(const std::shared_ptr<HTTPRequest>& request)
+void ContentManager::delayResponseUntilChanged(const std::shared_ptr<HTTPRequest> &request)
 {
   addPendingMessage(request);
   request->pause();
 }
 
-void ContentManager::deliverResponse(const std::shared_ptr<HTTPRequest>& request,
+void ContentManager::deliverResponse(const std::shared_ptr<HTTPRequest> &request,
                                      UpdateDocumentContributor::tUpdateID clientsUpdateID)
 {
   request->setHeader("updateID", to_string(getUpdateIDOfLastChange()));
@@ -291,7 +291,8 @@ void ContentManager::writeDocument(Writer &writer, tUpdateID knownRevision, bool
                   });
 }
 
-void ContentManager::deliverContentSectionResponse(tContentSectionPtr section, const std::shared_ptr<NetworkRequest>& request)
+void ContentManager::deliverContentSectionResponse(tContentSectionPtr section,
+                                                   const std::shared_ptr<NetworkRequest> &request)
 {
   section->handleHTTPRequest(request, request->getPath());
 }

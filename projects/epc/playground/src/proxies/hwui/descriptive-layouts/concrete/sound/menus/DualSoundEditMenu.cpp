@@ -10,6 +10,7 @@
 #include <Application.h>
 #include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/RandomizeItem.h>
 #include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/SplitSyncItem.h>
+#include <proxies/hwui/descriptive-layouts/concrete/sound/menus/items/CopyFX.h>
 
 DualSoundEditMenu::DualSoundEditMenu(const Rect &r)
     : ScrollMenu(r)
@@ -40,9 +41,11 @@ int DualSoundEditMenu::getDefaultItemHeight() const
 void DualSoundEditMenu::initSplit()
 {
   auto fullWidth = Rect { 0, 0, 256, 12 };
-  addItem<PartLabelItem>(fullWidth);
   addItem<ConvertToSoundTypeItem>(fullWidth, SoundType::Single);
   addItem<ConvertToSoundTypeItem>(fullWidth, SoundType::Layer);
+  addItem<CopyFX<VoiceGroup::I, VoiceGroup::II>>(fullWidth);
+  addItem<CopyFX<VoiceGroup::II, VoiceGroup::I>>(fullWidth);
+  addItem<PartLabelItem>(fullWidth);
   addItem<SplitSyncItem>(fullWidth);
   addItem<InitPart>(fullWidth);
   addItem<InitSound>(fullWidth);
@@ -52,9 +55,11 @@ void DualSoundEditMenu::initSplit()
 void DualSoundEditMenu::initLayer()
 {
   auto fullWidth = Rect { 0, 0, 256, 12 };
-  addItem<PartLabelItem>(fullWidth);
   addItem<ConvertToSoundTypeItem>(fullWidth, SoundType::Single);
   addItem<ConvertToSoundTypeItem>(fullWidth, SoundType::Split);
+  addItem<CopyFX<VoiceGroup::I, VoiceGroup::II>>(fullWidth);
+  addItem<CopyFX<VoiceGroup::II, VoiceGroup::I>>(fullWidth);
+  addItem<PartLabelItem>(fullWidth);
   addItem<InitPart>(fullWidth);
   addItem<InitSound>(fullWidth);
   addItem<RandomizePart>(fullWidth);

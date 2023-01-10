@@ -72,10 +72,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Split Part I")
 
   WHEN("Load")
   {
-    const auto toFXIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
-    const auto toFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
-    const auto oldSplitCP
-        = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I })->getControlPositionValue();
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
     const auto oldTuneDisplay = EBL::getMasterTune()->getDisplayValue();
     const auto oldMasterHash = EBL::createHashOfVector(EBL::getMaster());
@@ -94,12 +90,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Split Part I")
     THEN("Voice Group Label was loaded")
     {
       CHECK(eb->getVoiceGroupName(VoiceGroup::I) == "Hi");
-    }
-
-    THEN("toFX unchanged")
-    {
-      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::I>()) == toFXIHash);
-      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::II>()) == toFXIIHash);
     }
 
     THEN("Cross FB is Default")
@@ -196,8 +186,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Split Part II"
 
   WHEN("Load")
   {
-    const auto toFXIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::I>());
-    const auto toFXIIHash = EBL::createValueHash(EBL::getToFX<VoiceGroup::II>());
     const auto oldSplitCP
         = eb->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I })->getControlPositionValue();
     const auto oldVolumeDisplay = EBL::getMasterVolume()->getDisplayValue();
@@ -218,12 +206,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Split Part II"
     THEN("Voice Group Label was loaded")
     {
       CHECK(eb->getVoiceGroupName(VoiceGroup::II) == "Ho");
-    }
-
-    THEN("Local Special unchanged")
-    {
-      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::I>()) == toFXIHash);
-      CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::II>()) == toFXIIHash);
     }
 
     THEN("Cross FB is Default")

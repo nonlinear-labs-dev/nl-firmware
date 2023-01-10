@@ -92,14 +92,10 @@ public class LoadToPartMode implements CustomPresetSelector {
 			boolean isLastPreset = m_currentData.m_selectedPreset.getNumber() < m_currentData.m_selectedPreset
 					.getParent().getPresetList().getPresetCount();
 
-			if (m_currentData.m_selectedPreset.isDual()) {
-				if (m_currentData.m_selectedVoiceGroup == VoiceGroup.I)
-					return true;
-				else
-					return isLastPreset;
-			} else {
+			if (m_currentData.m_selectedVoiceGroup == VoiceGroup.I)
+				return true;
+			else
 				return isLastPreset;
-			}
 		}
 
 		return false;
@@ -110,13 +106,9 @@ public class LoadToPartMode implements CustomPresetSelector {
 		if (m_currentData.m_selectedPreset != null) {
 			boolean isFirstPreset = m_currentData.m_selectedPreset.getNumber() > 1;
 
-			if (m_currentData.m_selectedPreset.isDual()) {
-				if (m_currentData.m_selectedVoiceGroup == VoiceGroup.II)
-					return true;
-				return isFirstPreset;
-			} else {
-				return isFirstPreset;
-			}
+			if (m_currentData.m_selectedVoiceGroup == VoiceGroup.II)
+				return true;
+			return isFirstPreset;
 		}
 
 		return false;
@@ -126,7 +118,7 @@ public class LoadToPartMode implements CustomPresetSelector {
 		if (canNext()) {
 			boolean selectionChanged = false;
 
-			if (m_currentData.m_selectedPreset.isDual() && m_currentData.m_selectedVoiceGroup == VoiceGroup.I) {
+			if (m_currentData.m_selectedVoiceGroup == VoiceGroup.I) {
 				m_currentData.m_selectedVoiceGroup = VoiceGroup.II;
 				selectionChanged = true;
 			}
@@ -148,7 +140,7 @@ public class LoadToPartMode implements CustomPresetSelector {
 		if (canPrev()) {
 			boolean selectionChanged = false;
 
-			if (m_currentData.m_selectedPreset.isDual() && m_currentData.m_selectedVoiceGroup == VoiceGroup.II) {
+			if (m_currentData.m_selectedVoiceGroup == VoiceGroup.II) {
 				m_currentData.m_selectedVoiceGroup = VoiceGroup.I;
 				selectionChanged = true;
 			}
@@ -159,12 +151,7 @@ public class LoadToPartMode implements CustomPresetSelector {
 				Bank b = m_currentData.m_selectedPreset.getParent();
 				int idx = m_currentData.m_selectedPreset.getNumber() - 1;
 				next = b.getPreset(idx - 1);
-
-				if (next.isDual()) {
-					m_currentData.m_selectedVoiceGroup = VoiceGroup.II;
-				} else {
-					m_currentData.m_selectedVoiceGroup = VoiceGroup.I;
-				}
+				m_currentData.m_selectedVoiceGroup = VoiceGroup.II;
 			}
 
 			setSelectedPreset(next);

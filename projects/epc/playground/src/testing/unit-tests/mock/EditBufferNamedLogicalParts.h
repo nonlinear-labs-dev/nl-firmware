@@ -74,7 +74,6 @@ class EditBufferLogicalParts
     auto eb = TestHelper::getEditBuffer();
     std::vector<Parameter*> ret;
     ret.emplace_back(eb->findParameterByID({ C15::PID::FB_Mix_Comb_Src, vg }));
-    ret.emplace_back(eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, vg }));
     ret.emplace_back(eb->findParameterByID({ C15::PID::FB_Mix_Osc, vg }));
     ret.emplace_back(eb->findParameterByID({ C15::PID::FB_Mix_Osc_Src, vg }));
     ret.emplace_back(eb->findParameterByID({ C15::PID::FB_Mix_SVF_Src, vg }));

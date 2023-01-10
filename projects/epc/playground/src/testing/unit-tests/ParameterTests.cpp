@@ -43,7 +43,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Groups are conformin
     {
       REQUIRE_FALSE(GroupId::isGlobal(group->getID().getName()));
       for(auto &p : group->getParameters())
+      {
+        INFO("ParameterGroup " << group->getID().toString() << " Parameter " << p->getLongName() << "-" << toString(p->getVoiceGroup()));
         REQUIRE_FALSE(ParameterId::isGlobal(p->getID().getNumber()));
+      }
     }
   }
 

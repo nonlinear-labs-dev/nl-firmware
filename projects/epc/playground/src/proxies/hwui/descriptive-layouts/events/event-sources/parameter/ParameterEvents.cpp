@@ -1,4 +1,5 @@
 #include "ParameterEvents.h"
+#include <parameters/Parameter.h>
 #include <groups/ParameterGroup.h>
 #include <Application.h>
 #include <presets/PresetManager.h>

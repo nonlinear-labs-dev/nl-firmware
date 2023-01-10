@@ -88,23 +88,97 @@
           "Position": "114, 17",
           "Events": "SplitPointValue => Text[Text], SyncSplitEnabled => ANY[Visibility]"
         },
-        "I_TO_II": {
-          "Class": "SplitFBImage",
-          "Position": "11, 23",
-          "Init": {
-            "Image[ImagePath]": "Split_FX_B.png",
-            "Image[Visibility]": "false"
-          },
-          "Events": "ToFXIIOver0 => ANY[Visibility]"
+        "Left_To_Out": {
+          "Class": "SplitArrowsToOut",
+          "Position": "0, 22",
+          "Events": "Split_FX_TO_OUT_Imagestate_flipped => Image[ImagePath]"
         },
-        "II_TO_I": {
-          "Class": "SplitFBImage",
-          "Position": "213, 21",
+        "Right_To_Out": {
+          "Class": "SplitArrowsToOut",
+          "Position": "241, 22",
+          "Events": "Split_FX_TO_OUT_Imagestate => Image[ImagePath]"
+        },
+        "constant-FX-I":
+        {
+          "Class": "FXImage",
+          "Position": "225, 21",
           "Init": {
-            "Image[ImagePath]": "Split_FX_A.png",
-            "Image[Visibility]": "false"
+            "Image[ImagePath]": "FX_I_select.png"
           },
-          "Events": "ToFXIOver0 => ANY[Visibility]"
+          "Events": "FX_I_Imagestate => Image[ImagePath]"
+        },
+        "constant-FX-II":
+        {
+          "Class": "FXImage",
+          "Position": "225, 37",
+          "Init": {
+            "Image[ImagePath]": "FX_II_non_select.png"
+          },
+          "Events": "FX_II_Imagestate => Image[ImagePath]"
+        },
+        "constant-FX-I-1":
+        {
+          "Class": "FXImage",
+          "Position": "15, 21",
+          "Init": {
+            "Image[ImagePath]": "FX_I_select.png"
+          },
+          "Events": "FX_I_Imagestate => Image[ImagePath]"
+        },
+        "constant-FX-II-1":
+        {
+          "Class": "FXImage",
+          "Position": "15, 37",
+          "Init": {
+            "Image[ImagePath]": "FX_II_non_select.png"
+          },
+          "Events": "FX_II_Imagestate => Image[ImagePath]"
+        },
+        "serial-fx-II": {
+          "Class": "SerialFXArrow",
+          "Position": "229, 28",
+          "Events": "Serial_FX_Imagestate => Image[ImagePath]"
+        },
+        "serial-fx-I": {
+          "Class": "SerialFXArrow",
+          "Position": "19, 28",
+          "Events": "Serial_FX_Imagestate => Image[ImagePath]"
+        },
+        "split_left_arrows_to_fx_I_I":
+        {
+          "Class": "SplitArrowsToFX",
+          "Position": "31, 19",
+          "Events": "Split_Arrows_To_FX_L_TO_R_I => Image[ImagePath]"
+        },
+        "split_right_arrows_to_fx_I_II":
+        {
+          "Class": "SplitArrowsToFX",
+          "Position": "31, 41",
+          "Events": "Split_Arrows_To_FX_L_TO_R_II => Image[ImagePath]"
+        },
+        "split_left_arrows_to_fx_II_I":
+        {
+          "Class": "SplitArrowsToFX",
+          "Position": "213, 19",
+          "Events": "Split_Arrows_To_FX_R_TO_L_I => Image[ImagePath]"
+        },
+        "split_right_arrows_to_fx_II_II":
+        {
+          "Class": "SplitArrowsToFX",
+          "Position": "213, 41",
+          "Events": "Split_Arrows_To_FX_R_TO_L_II => Image[ImagePath]"
+        },
+        "split_FX_TO_I":
+        {
+          "Class": "SplitFXTOVG",
+          "Position": "31, 24",
+          "Events": "Split_Arrows_FX_To_I => Image[ImagePath]"
+        },
+        "split_FX_TO_II":
+        {
+          "Class": "SplitFXTOVG",
+          "Position": "213, 24",
+          "Events": "Split_Arrows_FX_To_II => Image[ImagePath]"
         }
       },
       "EventSinks": {

@@ -16,7 +16,7 @@ void VoiceGroupUseCases::setVoiceGroup(VoiceGroup vg)
   m_manager->setCurrentVoiceGroupAndUpdateParameterSelection(scope->getTransaction(), vg);
 }
 
-namespace detail
+namespace
 {
   VoiceGroup invert(VoiceGroup vg)
   {
@@ -29,12 +29,12 @@ namespace detail
 
 void VoiceGroupUseCases::toggleVoiceGroupSelection()
 {
-  setVoiceGroup(detail::invert(m_manager->getCurrentVoiceGroup()));
+  setVoiceGroup(invert(m_manager->getCurrentVoiceGroup()));
 }
 
 void VoiceGroupUseCases::toggleVoiceGroupSelectionSilent()
 {
-  setVoiceGroupSilent(detail::invert(m_manager->getCurrentVoiceGroup()));
+  setVoiceGroupSilent(invert(m_manager->getCurrentVoiceGroup()));
 }
 
 void VoiceGroupUseCases::setVoiceGroupSilent(VoiceGroup vg)

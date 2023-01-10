@@ -1,5 +1,6 @@
 #include "PresetParameterGroup.h"
 #include <presets/Preset.h>
+#include <parameters/Parameter.h>
 #include <parameters/names/ParameterDB.h>
 #include "PresetParameter.h"
 #include <groups/ParameterGroup.h>
@@ -106,7 +107,7 @@ void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, con
 
   if(!m_parameters.empty())
   {
-    auto& db = Application::get().getPresetManager()->getEditBuffer()->getParameterDB();
+    auto &db = Application::get().getPresetManager()->getEditBuffer()->getParameterDB();
     name = db.getLongGroupName(m_parameters.front()->getID()).value_or(name);
   }
 
@@ -125,7 +126,7 @@ void PresetParameterGroup::writeDiff(Writer &writer, const GroupId &groupId, con
       if(std::find(writtenParameters.begin(), writtenParameters.end(), parameter->getID().getNumber())
          == writtenParameters.end())
       {
-        auto& db = Application::get().getPresetManager()->getEditBuffer()->getParameterDB();
+        auto &db = Application::get().getPresetManager()->getEditBuffer()->getParameterDB();
         auto paramName = db.getLongName(parameter->getID());
         writer.writeTag("parameter", Attribute("name", paramName), Attribute("afound", "false"),
                         Attribute("bfound", "true"), [] {});

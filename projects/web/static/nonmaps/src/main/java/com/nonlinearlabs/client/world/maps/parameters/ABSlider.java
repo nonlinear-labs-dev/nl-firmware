@@ -20,6 +20,10 @@ public class ABSlider extends SliderVertical {
 		labelsVisible = levelOfDetail >= 2;
 	}
 
+	public String[] getLabelPair() {
+		return new String[] { "A", "B" };
+	}
+
 	@Override
 	public void draw(Context2d ctx, int invalidationMask) {
 		super.draw(ctx, invalidationMask);
@@ -44,12 +48,14 @@ public class ABSlider extends SliderVertical {
 			ctx.setFillStyle(getColorFont().toString());
 			ctx.setFont(fontHeightInPixels + "px " + getFontName());
 
+			String[] labels = getLabelPair();
+
 			double x = sliderRect.getLeft() - fontHeightInPixels;
 			ctx.setTextBaseline(TextBaseline.TOP);
-			ctx.fillText("A", x, pixRect.getTop());
+			ctx.fillText(labels[0], x, pixRect.getTop());
 
 			ctx.setTextBaseline(TextBaseline.BOTTOM);
-			ctx.fillText("B", x, pixRect.getBottom());
+			ctx.fillText(labels[1], x, pixRect.getBottom());
 		}
 	}
 

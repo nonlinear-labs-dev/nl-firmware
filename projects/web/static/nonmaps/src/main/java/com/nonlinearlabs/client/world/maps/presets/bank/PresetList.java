@@ -1,7 +1,6 @@
 package com.nonlinearlabs.client.world.maps.presets.bank;
 
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.maps.LayoutResizingVertical;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
@@ -130,7 +129,7 @@ public class PresetList extends LayoutResizingVertical {
 					.getPresetList().scheduleAutoScroll(ScrollRequest.Jump);
 		}
 
-		if(!oldSelection.contentEquals(selectedPreset))
+		if (!oldSelection.contentEquals(selectedPreset))
 			getParent().getParent().onPresetSelectionChanged(findPreset(selectedPreset));
 	}
 

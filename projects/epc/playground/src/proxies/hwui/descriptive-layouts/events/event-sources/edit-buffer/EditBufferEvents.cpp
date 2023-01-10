@@ -111,7 +111,13 @@ bool DescriptiveLayouts::SoundMasterButtonText::isChanged(const EditBuffer *eb)
 {
   auto masterGroup = eb->getParameterGroupByID({ "Master", VoiceGroup::Global });
   auto scale = eb->getParameterGroupByID({ "Scale", VoiceGroup::Global });
-  return (scale && scale->isAnyParameterChanged()) || (masterGroup && masterGroup->isAnyParameterChanged());
+
+  bool masterChanged = false;
+  for(auto masterParams : masterGroup->getParameters())
+    if(masterParams->getID().getNumber() != C15::PID::Master_FX_Mix)
+      masterChanged |= masterParams->isChangedFromLoaded();
+
+  return (scale && scale->isAnyParameterChanged()) || masterChanged;
 }
 
 void DescriptiveLayouts::MonoButtonText::onChange(const EditBuffer *eb)
@@ -401,4 +407,375 @@ void DescriptiveLayouts::VGIIsMuted::onChange(const EditBuffer *eb)
 void DescriptiveLayouts::VGIIIsMuted::onChange(const EditBuffer *eb)
 {
   setValue(eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->isValueDifferentFrom(0));
+}
+
+void DescriptiveLayouts::SoundFxMixMasterButtonText::onChange(const EditBuffer *eb)
+{
+  auto changed = isChanged(eb);
+  setValue({ changed ? "FX Mix..*" : "FX Mix..", 0 });
+}
+
+bool DescriptiveLayouts::SoundFxMixMasterButtonText::isChanged(const EditBuffer *eb)
+{
+  return eb->findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global })->isChangedFromLoaded();
+}
+
+void DescriptiveLayouts::FX_I_ImageState::onChange(const EditBuffer *eb)
+{
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
+  setValue(currentVG == VoiceGroup::I ? "FX_I_select.png" : "FX_I_non_select.png");
+}
+
+void DescriptiveLayouts::FX_II_ImageState::onChange(const EditBuffer *eb)
+{
+  auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
+  setValue(currentVG == VoiceGroup::II ? "FX_II_select.png" : "FX_II_non_select.png");
+}
+
+void DescriptiveLayouts::LayerToFXPath::onChange(const EditBuffer *eb)
+{
+  const auto toFX_I = eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+  const auto toFX_II = eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
+  const auto outmixer_lvl_I = eb->findParameterByID({ C15::PID::Out_Mix_Lvl, VoiceGroup::I });
+  const auto outmixer_lvl_II = eb->findParameterByID({ C15::PID::Out_Mix_Lvl, VoiceGroup::II });
+
+  nltools_assertAlways(outmixer_lvl_I->isBiPolar() == false);
+  nltools_assertAlways(outmixer_lvl_II->isBiPolar() == false);
+
+  const auto I_To_FX_II = toFX_I->getControlPositionValue();
+  const auto II_To_FX_I = toFX_II->getControlPositionValue();
+  const auto I_OutMixer_Level = outmixer_lvl_I->getControlPositionValue();
+  const auto II_OutMixer_Level = outmixer_lvl_II->getControlPositionValue();
+
+  auto setResult = [this](const std::string &c)
+  {
+    if(c == "ERROR")
+    {
+      setValue(c);
+      return;
+    }
+    if(c == "empty")
+    {
+      setValue("Layer_To_FX_Empty");
+      return;
+    }
+    const std::string base_string = "Layer_To_FX_";
+    const std::string base_suffix = ".png";
+    setValue(base_string + c + base_suffix);
+  };
+
+  const auto outmix_I_infinite = I_OutMixer_Level == 0;
+  const auto outmix_II_infinite = II_OutMixer_Level == 0;
+  const auto outmix_I_open = I_OutMixer_Level > 0;
+  const auto outmix_II_open = II_OutMixer_Level > 0;
+  const auto FX_I_TO_I_ONLY = I_To_FX_II == 0;
+  const auto FX_II_TO_II_ONLY = II_To_FX_I == 0;
+  const auto FX_I_TO_II_ONLY = I_To_FX_II == 1;
+  const auto FX_II_TO_I_ONLY = II_To_FX_I == 1;
+  const auto FX_I_TO_BOTH = I_To_FX_II > 0 && I_To_FX_II < 1;
+  const auto FX_II_TO_BOTH = II_To_FX_I > 0 && II_To_FX_I < 1;
+
+  if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_BOTH)
+    setResult("M");
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_II_ONLY)
+    setResult("I");
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_I_ONLY)
+    setResult("K");
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_BOTH)
+    setResult("L");
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_I_ONLY)
+    setResult("H");
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_BOTH)
+    setResult("J");
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_II_ONLY)
+    setResult("G");
+  else if(outmix_I_open && outmix_II_infinite && FX_I_TO_BOTH)
+    setResult("E");
+  else if(outmix_I_open && outmix_II_infinite && FX_I_TO_II_ONLY)
+    setResult("C");
+  else if(outmix_I_open && outmix_II_infinite && FX_I_TO_I_ONLY)
+    setResult("A");
+  else if(outmix_II_open && outmix_I_infinite && FX_II_TO_BOTH)
+    setResult("F");
+  else if(outmix_II_open && outmix_I_infinite && FX_II_TO_I_ONLY)
+    setResult("D");
+  else if(outmix_II_open && outmix_I_infinite && FX_II_TO_II_ONLY)
+    setResult("B");
+  else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_I_ONLY)
+    setResult("N");
+  else if(outmix_I_open && outmix_II_open && FX_II_TO_II_ONLY && FX_I_TO_II_ONLY)
+    setResult("O");
+  else if(outmix_I_infinite && outmix_II_infinite)
+    setResult("empty");
+  else
+    setResult("ERROR");
+}
+
+std::string DescriptiveLayouts::LayerToFXPath::getValue()
+{
+  return std::experimental::any_cast<std::string>(getLastValue());
+}
+
+void DescriptiveLayouts::Serial_FX_Imagestate::onChange(const EditBuffer *eb)
+{
+  auto serialFX = eb->findParameterByID({ C15::PID::Master_Serial_FX, VoiceGroup::Global });
+  const auto cp = serialFX->getControlPositionValue();
+  if(cp < 0)
+    setValue("ArrowUp.png");
+  else if(cp > 0)
+    setValue("ArrowDown.png");
+  else
+    setValue("Layer_To_FX_Empty.png");
+}
+
+void DescriptiveLayouts::Layer_FX_TO_OUT_Imagestate::onChange(const EditBuffer *eb)
+{
+  auto setResult = [this](const std::string &s)
+  {
+    const std::string base_string = "Layer_FX_To_Out_";
+    const std::string base_suffix = ".png";
+    if(s == "empty")
+      setValue("Layer_To_FX_empty.png");
+    else
+      setValue(base_string + s + base_suffix);
+  };
+
+  auto partVolumeI = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
+  auto partVolumeII = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
+  auto partMuteI = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I });
+  auto partMuteII = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II });
+
+  nltools_assertAlways(partVolumeI->isBiPolar() == false);
+  nltools_assertAlways(partVolumeII->isBiPolar() == false);
+  nltools_assertAlways(partMuteI->isBiPolar() == false);
+  nltools_assertAlways(partMuteII->isBiPolar() == false);
+
+  if(partVolumeI->getControlPositionValue() > 0
+     && (partVolumeII->getControlPositionValue() == 0 || partMuteII->getControlPositionValue() == 1))
+    setResult("A");
+  else if(partVolumeII->getControlPositionValue() > 0
+          && (partVolumeI->getControlPositionValue() == 0 || partMuteI->getControlPositionValue() == 1))
+    setResult("B");
+  else if(partVolumeI->getControlPositionValue() > 0 && partVolumeII->getControlPositionValue() > 0)
+    setResult("C");
+  else if(partVolumeI->getControlPositionValue() == 0 && partVolumeII->getControlPositionValue() == 0)
+    setResult("empty");
+}
+
+void DescriptiveLayouts::Split_FX_TO_OUT_Imagestate::onChange(const EditBuffer *eb)
+{
+  auto setResult = [this](const std::string &s)
+  {
+    const std::string base_string = "Layer_FX_To_Out_";
+    const std::string base_suffix = ".png";
+    if(s == "empty")
+      setValue("Layer_FX_To_Out_empty.png");
+    else
+      setValue(base_string + s + base_suffix);
+  };
+
+  auto partVolumeI = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
+  auto partVolumeII = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
+
+  nltools_assertAlways(partVolumeI->isBiPolar() == false);
+  nltools_assertAlways(partVolumeII->isBiPolar() == false);
+
+  if(partVolumeI->getControlPositionValue() > 0 && partVolumeII->getControlPositionValue() == 0)
+    setResult("A");
+  else if(partVolumeII->getControlPositionValue() > 0 && partVolumeI->getControlPositionValue() == 0)
+    setResult("B");
+  else if(partVolumeI->getControlPositionValue() > 0 && partVolumeII->getControlPositionValue() > 0)
+    setResult("C");
+  else if(partVolumeI->getControlPositionValue() == 0 && partVolumeII->getControlPositionValue() == 0)
+    setResult("empty");
+}
+
+void DescriptiveLayouts::Split_FX_TO_OUT_Imagestate_flipped::onChange(const EditBuffer *eb)
+{
+  auto setResult = [this](const std::string &s)
+  {
+    const std::string base_string = "Layer_FX_To_Out_";
+    const std::string base_suffix = "_flipped.png";
+    if(s == "empty")
+      setValue("Layer_FX_To_Out_empty.png");
+    else
+      setValue(base_string + s + base_suffix);
+  };
+
+  auto partVolumeI = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
+  auto partVolumeII = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
+
+  nltools_assertAlways(partVolumeI->isBiPolar() == false);
+  nltools_assertAlways(partVolumeII->isBiPolar() == false);
+
+  if(partVolumeI->getControlPositionValue() > 0 && partVolumeII->getControlPositionValue() == 0)
+    setResult("A");
+  else if(partVolumeII->getControlPositionValue() > 0 && partVolumeI->getControlPositionValue() == 0)
+    setResult("B");
+  else if(partVolumeI->getControlPositionValue() > 0 && partVolumeII->getControlPositionValue() > 0)
+    setResult("C");
+  else if(partVolumeI->getControlPositionValue() == 0 && partVolumeII->getControlPositionValue() == 0)
+    setResult("empty");
+}
+
+void DescriptiveLayouts::Split_Arrows_To_FX_L_TO_R_I::onChange(const EditBuffer *eb)
+{
+  auto setResult = [this](const std::string &s)
+  {
+    const std::string texture = "Split_FX_FB_L_TO_R.png";
+    if(s == "empty")
+      setValue("Split_FX_FB_Empty.png");
+    else
+      setValue(texture);
+  };
+
+  auto I_FB_Mixer_Effects_From_II = eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+  auto I_FB_Mixer_Effects = eb->findParameterByID({ C15::PID::FB_Mix_FX, VoiceGroup::I });
+  auto I_FB_Mixer_Level = eb->findParameterByID({ C15::PID::FB_Mix_Lvl, VoiceGroup::I });
+  auto I_OSC_A_PM_FB = eb->findParameterByID({ C15::PID::Osc_A_PM_FB, VoiceGroup::I });
+  auto I_OSC_B_PM_FB = eb->findParameterByID({ C15::PID::Osc_B_PM_FB, VoiceGroup::I });
+  auto I_SHAPER_A_FB_Mix = eb->findParameterByID({ C15::PID::Shp_A_FB_Mix, VoiceGroup::I });
+  auto I_SHAPER_B_FB_Mix = eb->findParameterByID({ C15::PID::Shp_B_FB_Mix, VoiceGroup::I });
+
+  nltools_assertAlways(I_FB_Mixer_Effects_From_II->isBiPolar() == false);
+  nltools_assertAlways(I_FB_Mixer_Effects->isBiPolar() == true);
+  nltools_assertAlways(I_OSC_A_PM_FB->isBiPolar() == true);
+  nltools_assertAlways(I_OSC_B_PM_FB->isBiPolar() == true);
+  nltools_assertAlways(I_SHAPER_A_FB_Mix->isBiPolar() == false);
+  nltools_assertAlways(I_SHAPER_B_FB_Mix->isBiPolar() == false);
+
+  if(I_FB_Mixer_Effects_From_II->getControlPositionValue() < 1 && I_FB_Mixer_Effects->getControlPositionValue() != 0
+     && I_FB_Mixer_Level->getControlPositionValue() > 0
+     && (I_OSC_A_PM_FB->getControlPositionValue() != 0 || I_OSC_B_PM_FB->getControlPositionValue() != 0
+         || I_SHAPER_A_FB_Mix->getControlPositionValue() > 0 || I_SHAPER_B_FB_Mix->getControlPositionValue() > 0))
+  {
+    setResult("ok");
+  }
+  else
+  {
+    setResult("empty");
+  }
+}
+
+void DescriptiveLayouts::Split_Arrows_To_FX_L_TO_R_II::onChange(const EditBuffer *eb)
+{
+  auto setResult = [this](const std::string &s)
+  {
+    const std::string texture = "Split_FX_FB_L_TO_R.png";
+    if(s == "empty")
+      setValue("Split_FX_FB_Empty.png");
+    else
+      setValue(texture);
+  };
+
+  auto I_FB_Mixer_Effects_From_II = eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+  auto I_FB_Mixer_Effects = eb->findParameterByID({ C15::PID::FB_Mix_FX, VoiceGroup::I });
+  auto I_FB_Mixer_Level = eb->findParameterByID({ C15::PID::FB_Mix_Lvl, VoiceGroup::I });
+  auto I_OSC_A_PM_FB = eb->findParameterByID({ C15::PID::Osc_A_PM_FB, VoiceGroup::I });
+  auto I_OSC_B_PM_FB = eb->findParameterByID({ C15::PID::Osc_B_PM_FB, VoiceGroup::I });
+  auto I_SHAPER_A_FB_Mix = eb->findParameterByID({ C15::PID::Shp_A_FB_Mix, VoiceGroup::I });
+  auto I_SHAPER_B_FB_Mix = eb->findParameterByID({ C15::PID::Shp_B_FB_Mix, VoiceGroup::I });
+
+  nltools_assertAlways(I_FB_Mixer_Effects_From_II->isBiPolar() == false);
+  nltools_assertAlways(I_FB_Mixer_Effects->isBiPolar() == true);
+  nltools_assertAlways(I_OSC_A_PM_FB->isBiPolar() == true);
+  nltools_assertAlways(I_OSC_B_PM_FB->isBiPolar() == true);
+  nltools_assertAlways(I_SHAPER_A_FB_Mix->isBiPolar() == false);
+  nltools_assertAlways(I_SHAPER_B_FB_Mix->isBiPolar() == false);
+
+  if(I_FB_Mixer_Effects_From_II->getControlPositionValue() > 0 && I_FB_Mixer_Effects->getControlPositionValue() != 0
+     && I_FB_Mixer_Level->getControlPositionValue() > 0
+     && (I_OSC_A_PM_FB->getControlPositionValue() != 0 || I_OSC_B_PM_FB->getControlPositionValue() != 0
+         || I_SHAPER_A_FB_Mix->getControlPositionValue() > 0 || I_SHAPER_B_FB_Mix->getControlPositionValue() > 0))
+  {
+    setResult("ok");
+  }
+  else
+  {
+    setResult("empty");
+  }
+}
+
+void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_I::onChange(const EditBuffer *eb)
+{
+  auto setResult = [this](const std::string &s)
+  {
+    const std::string texture = "Split_FX_FB_R_TO_L.png";
+    if(s == "empty")
+      setValue("Split_FX_FB_Empty.png");
+    else
+      setValue(texture);
+  };
+
+  auto II_FB_Mixer_Effects_From_II = eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
+  auto II_FB_Mixer_Effects = eb->findParameterByID({ C15::PID::FB_Mix_FX, VoiceGroup::II });
+  auto II_FB_Mixer_Level = eb->findParameterByID({ C15::PID::FB_Mix_Lvl, VoiceGroup::II });
+  auto II_OSC_A_PM_FB = eb->findParameterByID({ C15::PID::Osc_A_PM_FB, VoiceGroup::II });
+  auto II_OSC_B_PM_FB = eb->findParameterByID({ C15::PID::Osc_B_PM_FB, VoiceGroup::II });
+  auto II_SHAPER_A_FB_Mix = eb->findParameterByID({ C15::PID::Shp_A_FB_Mix, VoiceGroup::II });
+  auto II_SHAPER_B_FB_Mix = eb->findParameterByID({ C15::PID::Shp_B_FB_Mix, VoiceGroup::II });
+
+  nltools_assertAlways(II_FB_Mixer_Effects_From_II->isBiPolar() == false);
+  nltools_assertAlways(II_FB_Mixer_Effects->isBiPolar() == true);
+  nltools_assertAlways(II_OSC_A_PM_FB->isBiPolar() == true);
+  nltools_assertAlways(II_OSC_B_PM_FB->isBiPolar() == true);
+  nltools_assertAlways(II_SHAPER_A_FB_Mix->isBiPolar() == false);
+  nltools_assertAlways(II_SHAPER_B_FB_Mix->isBiPolar() == false);
+
+  if(II_FB_Mixer_Effects_From_II->getControlPositionValue() < 1 && II_FB_Mixer_Effects->getControlPositionValue() != 0
+     && II_FB_Mixer_Level->getControlPositionValue() > 0
+     && (II_OSC_A_PM_FB->getControlPositionValue() != 0 || II_OSC_B_PM_FB->getControlPositionValue() != 0
+         || II_SHAPER_A_FB_Mix->getControlPositionValue() > 0 || II_SHAPER_B_FB_Mix->getControlPositionValue() > 0))
+  {
+    setResult("ok");
+  }
+  else
+  {
+    setResult("empty");
+  }
+}
+
+void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_II::onChange(const EditBuffer *eb)
+{
+  auto setResult = [this](const std::string &s)
+  {
+    const std::string texture = "Split_FX_FB_R_TO_L.png";
+    if(s == "empty")
+      setValue("Split_FX_FB_Empty.png");
+    else
+      setValue(texture);
+  };
+
+  auto II_FB_Mixer_Effects_From_II = eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
+  auto II_FB_Mixer_Effects = eb->findParameterByID({ C15::PID::FB_Mix_FX, VoiceGroup::II });
+  auto II_FB_Mixer_Level = eb->findParameterByID({ C15::PID::FB_Mix_Lvl, VoiceGroup::II });
+  auto II_OSC_A_PM_FB = eb->findParameterByID({ C15::PID::Osc_A_PM_FB, VoiceGroup::II });
+  auto II_OSC_B_PM_FB = eb->findParameterByID({ C15::PID::Osc_B_PM_FB, VoiceGroup::II });
+  auto II_SHAPER_A_FB_Mix = eb->findParameterByID({ C15::PID::Shp_A_FB_Mix, VoiceGroup::II });
+  auto II_SHAPER_B_FB_Mix = eb->findParameterByID({ C15::PID::Shp_B_FB_Mix, VoiceGroup::II });
+
+  nltools_assertAlways(II_FB_Mixer_Effects_From_II->isBiPolar() == false);
+  nltools_assertAlways(II_FB_Mixer_Effects->isBiPolar() == true);
+  nltools_assertAlways(II_OSC_A_PM_FB->isBiPolar() == true);
+  nltools_assertAlways(II_OSC_B_PM_FB->isBiPolar() == true);
+  nltools_assertAlways(II_SHAPER_A_FB_Mix->isBiPolar() == false);
+  nltools_assertAlways(II_SHAPER_B_FB_Mix->isBiPolar() == false);
+
+  if(II_FB_Mixer_Effects_From_II->getControlPositionValue() > 0 && II_FB_Mixer_Effects->getControlPositionValue() != 0
+     && II_FB_Mixer_Level->getControlPositionValue() > 0
+     && (II_OSC_A_PM_FB->getControlPositionValue() != 0 || II_OSC_B_PM_FB->getControlPositionValue() != 0
+         || II_SHAPER_A_FB_Mix->getControlPositionValue() > 0 || II_SHAPER_B_FB_Mix->getControlPositionValue() > 0))
+  {
+    setResult("ok");
+  }
+  else
+  {
+    setResult("empty");
+  }
+}
+
+void DescriptiveLayouts::InitCurrentVoiceText::onChange(VoiceGroup newSelection)
+{
+  auto str = nltools::string::concat("Part ", toString(newSelection));
+  setValue({str, 0});
 }

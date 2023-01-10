@@ -2,6 +2,7 @@
 
 #include <Parameters.h>
 #include <parameter_group.h>
+#include <SplitPointRounding.h>
 
 namespace Engine
 {
@@ -201,7 +202,7 @@ namespace Engine
       {
         nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
                            _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
-                           ", position:", m_position, ")");
+                           ", position:", m_position, ", scaled:", m_scaled, ")");
       }
     };
 
@@ -221,19 +222,41 @@ namespace Engine
       }
       inline bool modulate(const float &_mod)
       {
-        m_unclipped = m_base + (m_amount * _mod);
+        if(m_splitpoint)
+        {
+          m_unclipped = m_base + SplitPointRounding::getModulation(_mod, m_amount);
+        }
+        else
+        {
+          m_unclipped = m_base + (m_amount * _mod);
+        }
         return m_position != m_unclipped;  // basic change detection (position needs to be updated from outside)
       }
       inline void update_modulation_aspects(const float &_mod)
       {
-        m_base = m_position - (m_amount * _mod);
+        if(m_splitpoint)
+        {
+          m_base = m_position - SplitPointRounding::getModulation(_mod, m_amount);
+        }
+        else
+        {
+          m_base = m_position - (m_amount * _mod);
+        }
         m_ceil = m_base + m_amount;
       }
       inline void log(const char *const _msg, const C15::ParameterDescriptor &_descriptor)
       {
         nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
                            _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
-                           ", position:", m_position, ", mc:", (int) m_source, ", amt:", m_amount, ")");
+                           ", position:", m_position, ", mc:", (int) m_source, ", amt:", m_amount,
+                           ", scaled:", m_scaled, ")");
+      }
+      inline void log(const uint32_t &_layer, const char *const _msg, const C15::ParameterDescriptor &_descriptor)
+      {
+        nltools::Log::info(
+            _msg, "(layer: ", _layer, ", label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+            _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index, ", position:", m_position,
+            ", mc:", (int) m_source, ", amt:", m_amount, ", scaled:", m_scaled, ")");
       }
     };
 
@@ -249,7 +272,14 @@ namespace Engine
       {
         nltools::Log::info(_msg, "(label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
                            _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
-                           ", position:", m_position, ")");
+                           ", position:", m_position, ", scaled:", m_scaled, ")");
+      }
+      inline void log(const uint32_t &_layer, const char *const _msg, const C15::ParameterDescriptor &_descriptor)
+      {
+        nltools::Log::info(_msg, "(layer: ", _layer,
+                           ", label:", C15::ParameterGroups[(unsigned) _descriptor.m_group].m_label_short,
+                           _descriptor.m_pg.m_param_label_long, ", index:", _descriptor.m_param.m_index,
+                           ", position:", m_position, ", scaled:", m_scaled, ")");
       }
     };
 

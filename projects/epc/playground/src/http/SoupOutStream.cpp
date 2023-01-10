@@ -11,6 +11,7 @@ SoupOutStream::SoupOutStream(SoupServer *server, SoupMessage *msg, const Glib::u
 
   soup_message_set_status(msg, SOUP_STATUS_OK);
   soup_message_headers_append(msg->response_headers, "Content-Type", contentType.c_str());
+  soup_message_headers_append(msg->response_headers, "Access-Control-Allow-Origin", "*");
   soup_message_headers_set_encoding(msg->response_headers, SOUP_ENCODING_CHUNKED);
   soup_message_body_set_accumulate(msg->response_body, FALSE);
 

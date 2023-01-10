@@ -6,7 +6,7 @@
 #include "EpcWifi.h"
 #include "Application.h"
 
-EpcWifi::EpcWifi(HardwareFeatures& hw)
+EpcWifi::EpcWifi(const HardwareFeatures& hw)
     : m_currentEpcWifiState(std::nullopt)
     , m_newEpcWifiState(false)
     , m_busy(false)

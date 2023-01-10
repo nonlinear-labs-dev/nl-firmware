@@ -81,14 +81,24 @@ void PanelUnitPresetMode::letChangedButtonsBlink(Buttons buttonId, const std::li
   bool anyChanged = false;
   for(const auto paramID : currentParams)
   {
-    try
+    Parameter* parameter = editBuffer->findParameterByID({ paramID, vg });
+
+    if(!parameter)
+      parameter = editBuffer->findParameterByID({ paramID, VoiceGroup::Global });
+
+    if(editBuffer->getType() == SoundType::Single)
     {
-      anyChanged |= ebParameters.at(paramID)->isChangedFromLoaded();
+      if(parameter->isPolyphonic())
+      {
+        parameter = editBuffer->findParameterByID({ paramID, VoiceGroup::I });
+        if(!parameter)
+        {
+          parameter = editBuffer->findParameterByID({ paramID, VoiceGroup::Global });
+        }
+      }
     }
-    catch(...)
-    {
-      anyChanged |= globalParameters.at(paramID)->isChangedFromLoaded();
-    }
+
+    anyChanged |= parameter->isChangedFromLoaded();
   }
   states[(int) buttonId] = anyChanged ? TwoStateLED::BLINK : TwoStateLED::OFF;
 }
@@ -110,6 +120,18 @@ void PanelUnitPresetMode::setStateForButton(Buttons buttonId, const std::list<in
 
     if(!parameter)
       parameter = editBuffer->findParameterByID({ i, VoiceGroup::Global });
+
+    if(editBuffer->getType() == SoundType::Single)
+    {
+      if(parameter->isPolyphonic())
+      {
+        parameter = editBuffer->findParameterByID({ i, VoiceGroup::I });
+        if(!parameter)
+        {
+          parameter = editBuffer->findParameterByID({ i, VoiceGroup::Global });
+        }
+      }
+    }
 
     if(parameter != nullptr)
     {
@@ -191,6 +213,28 @@ std::pair<bool, bool> PanelUnitPresetMode::trySpecialCaseParameter(const Paramet
     }
   }
   return { false, false };
+}
+
+void PanelUnitPresetMode::setup()
+{
+  PanelUnitParameterEditMode::setup();
+  setupButtonConnection(Buttons::BUTTON_DEFAULT,
+                        [&](Buttons button, ButtonModifiers modifiers, bool state)
+                        {
+                          auto& settings = *Application::get().getSettings();
+                          SettingsUseCases useCases(settings);
+                          auto& famSetting = *settings.getSetting<FocusAndModeSetting>();
+                          auto focusAndMode = famSetting.getState();
+                          if(state)
+                          {
+                            useCases.setFocusAndMode({ focusAndMode.focus, UIMode::Select, UIDetail::InitSound });
+                          }
+                          else if(focusAndMode.detail == UIDetail::InitSound)
+                          {
+                            useCases.setFocusAndMode(famSetting.getOldState());
+                          }
+                          return true;
+                        });
 }
 
 PanelUnitSoundMode::PanelUnitSoundMode()

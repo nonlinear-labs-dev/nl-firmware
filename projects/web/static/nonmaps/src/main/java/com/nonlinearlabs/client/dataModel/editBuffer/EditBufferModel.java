@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.dataModel.editBuffer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -64,8 +65,10 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 	public StringDataModelEntity sourceUUIDI = new StringDataModelEntity("");
 	public StringDataModelEntity sourceUUIDII = new StringDataModelEntity("");
 
-	public EnumDataModelEntity<VoiceGroup> sourceVGI = new EnumDataModelEntity<EditBufferModel.VoiceGroup>(EditBufferModel.VoiceGroup.class, VoiceGroup.I);
-	public EnumDataModelEntity<VoiceGroup> sourceVGII = new EnumDataModelEntity<EditBufferModel.VoiceGroup>(EditBufferModel.VoiceGroup.class, VoiceGroup.I);
+	public EnumDataModelEntity<VoiceGroup> sourceVGI = new EnumDataModelEntity<EditBufferModel.VoiceGroup>(
+			EditBufferModel.VoiceGroup.class, VoiceGroup.I);
+	public EnumDataModelEntity<VoiceGroup> sourceVGII = new EnumDataModelEntity<EditBufferModel.VoiceGroup>(
+			EditBufferModel.VoiceGroup.class, VoiceGroup.I);
 
 	private EditBufferModel() {
 		ParameterFactory.assertSorted();
@@ -107,6 +110,18 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 		if (global != null)
 			return global;
 
+		boolean isSingle = soundType.getValue() == SoundType.Single;
+		boolean isMonophonic = Arrays.binarySearch(ParameterFactory.monophonicParameters, paramID) >= 0;
+
+		if(isSingle && isMonophonic)
+		{
+			return byVoiceGroup[voiceGroup.getValue().ordinal()].parameters.get(paramID);
+		}
+		else if(isSingle && !isMonophonic)
+		{
+			return byVoiceGroup[VoiceGroup.I.ordinal()].parameters.get(paramID);
+		}
+
 		return byVoiceGroup[voiceGroup.getValue().ordinal()].parameters.get(paramID);
 	}
 
@@ -124,34 +139,34 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 
 	public String getPresetNameOfVoiceGroup(VoiceGroup group) {
 		switch (group) {
-		case I:
-		case Global:
-			return loadedPresetInVG1.getValue();
+			case I:
+			case Global:
+				return loadedPresetInVG1.getValue();
 
-		case II:
-			return loadedPresetInVG2.getValue();
+			case II:
+				return loadedPresetInVG2.getValue();
 		}
 		return "";
 	}
 
 	public String getPresetNameOfVoiceGroupWithSuffix(VoiceGroup group) {
-		switch(group) {
+		switch (group) {
 			case I:
 			case Global:
-			return loadedPresetInVG1WithSuffix.getValue();
+				return loadedPresetInVG1WithSuffix.getValue();
 			case II:
-			return loadedPresetInVG2WithSuffix.getValue();
+				return loadedPresetInVG2WithSuffix.getValue();
 		}
 		return "";
 	}
 
-	public MacroControlParameterModel getParameter(ModSource value, VoiceGroup vg) {
+	public MacroControlParameterModel getParameter(ModSource value) {
 		return (MacroControlParameterModel) getParameter(value.toParameterId());
 	}
 
 	public List<ModulateableParameterModel> getAllModulateableParameters() {
 		List<ModulateableParameterModel> ret = new ArrayList<ModulateableParameterModel>();
-		for(VoiceGroup vg: new VoiceGroup[]{VoiceGroup.I, VoiceGroup.II, VoiceGroup.Global}) {
+		for (VoiceGroup vg : new VoiceGroup[] { VoiceGroup.I, VoiceGroup.II, VoiceGroup.Global }) {
 			ret.addAll(byVoiceGroup[vg.ordinal()].modulateableParametersCache);
 		}
 		return ret;

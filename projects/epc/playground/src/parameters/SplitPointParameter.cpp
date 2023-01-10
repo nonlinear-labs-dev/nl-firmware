@@ -1,6 +1,5 @@
 #include "SplitPointParameter.h"
-#include <parameters/scale-converters/LinearBipolar60StScaleConverter.h>
-#include <parameters/scale-converters/SplitPointScaleConverter.h>
+#include <parameters/MacroControlParameter.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableDualVoiceGroupMasterAndSplitPointLayout.h>
 #include "groups/ParameterGroup.h"
 #include "proxies/hwui/HWUI.h"
@@ -13,6 +12,7 @@
 #include <device-settings/SplitPointSyncParameters.h>
 #include <parameter_declarations.h>
 #include <libundo/undo/Scope.h>
+#include <SplitPointRounding.h>
 
 SplitPointParameter::SplitPointParameter(ParameterGroup* group, const ParameterId& id)
     : ModulateableParameter(group, id)
@@ -34,17 +34,17 @@ Layout* SplitPointParameter::createLayout(FocusAndMode focusAndMode) const
 }
 
 void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator initiator, tControlPositionValue value,
-                                     bool dosendToPlaycontroller)
+                                     bool notifyAudioEngine)
 {
   const auto syncActive = isSynced();
 
   if(syncActive && isAtExtremes(value) && initiator != Initiator::INDIRECT_SPLIT_SYNC)
   {
-    clampToExtremes(transaction, dosendToPlaycontroller);
+    clampToExtremes(transaction, notifyAudioEngine);
     return;
   }
 
-  Parameter::setCpValue(transaction, initiator, value, dosendToPlaycontroller);
+  Parameter::setCpValue(transaction, initiator, value, notifyAudioEngine);
 
   if(syncActive)
   {
@@ -53,27 +53,27 @@ void SplitPointParameter::setCpValue(UNDO::Transaction* transaction, Initiator i
       auto other = getSibling();
       auto siblingValue
           = getValue().getNextStepValue(value, other->getVoiceGroup() == VoiceGroup::I ? -1 : 1, false, false);
-      other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, dosendToPlaycontroller);
+      other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, siblingValue, notifyAudioEngine);
     }
   }
 }
 
-void SplitPointParameter::clampToExtremes(UNDO::Transaction* transaction, bool dosendToPlaycontroller)
+void SplitPointParameter::clampToExtremes(UNDO::Transaction* transaction, bool notifyAudioEngine)
 {
   auto other = getSibling();
   if(getVoiceGroup() == VoiceGroup::I)
   {
     auto myVal = getValue().getNextStepValue(1, -1, false, false);
     auto otherVal = 1.0;
-    other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, otherVal, dosendToPlaycontroller);
-    setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, myVal, dosendToPlaycontroller);
+    other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, otherVal, notifyAudioEngine);
+    setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, myVal, notifyAudioEngine);
   }
   else if(getVoiceGroup() == VoiceGroup::II)
   {
     auto myVal = getValue().getNextStepValue(0, 1, false, false);
     auto otherVal = 0.0;
-    other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, otherVal, dosendToPlaycontroller);
-    setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, myVal, dosendToPlaycontroller);
+    other->setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, otherVal, notifyAudioEngine);
+    setCpValue(transaction, Initiator::INDIRECT_SPLIT_SYNC, myVal, notifyAudioEngine);
   }
 }
 
@@ -185,4 +185,27 @@ bool SplitPointParameter::isSynced() const
     return settings.getSetting<SplitPointSyncParameters>()->get();
   }
   return false;
+}
+
+void SplitPointParameter::applyMacroControl(tDisplayValue mcValue, Initiator initiator)
+{
+  auto newValue
+      = getModulationBase() + (double) SplitPointRounding::getModulation(mcValue, (float) getModulationAmount());
+  getValue().setRawValue(initiator, newValue);
+}
+
+void SplitPointParameter::updateModulationBase()
+{
+  auto calcModulationBase = [this]
+  {
+    if(auto macroParam = getMacroControl())
+    {
+      auto _mod = (float) macroParam->getControlPositionValue();
+      auto curValue = getValue().getQuantizedClipped();
+      return curValue - (double) SplitPointRounding::getModulation(_mod, (float) getModulationAmount());
+    }
+    return 0.0;
+  };
+
+  setModulationBase(calcModulationBase());
 }

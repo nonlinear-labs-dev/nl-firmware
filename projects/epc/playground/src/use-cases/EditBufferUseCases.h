@@ -35,6 +35,8 @@ class EditBufferUseCases
   void convertToSplit(VoiceGroup currentSelectedVoiceGroup);
   void convertToDual(SoundType type, VoiceGroup group);
 
+  void initSoundAs(SoundType type, Defaults defaults);
+
   void initSound(Defaults defaults);
   void initPart(VoiceGroup part, Defaults defaults);
 
@@ -57,6 +59,9 @@ class EditBufferUseCases
   void unlockGroup(ParameterGroup* group);
   void lockGroup(ParameterGroup* group);
 
+  void lockParametersTemporarily(const std::vector<ParameterId>& id);
+  void unlockParametersTemporarily(const std::vector<ParameterId>& id);
+
   std::unique_ptr<ParameterUseCases> getUseCase(const ParameterId& id);
   std::unique_ptr<ModParameterUseCases> getModParamUseCase(const ParameterId& id);
   std::unique_ptr<MacroControlParameterUseCases> getMCUseCase(const ParameterId& id);
@@ -74,10 +79,11 @@ class EditBufferUseCases
 
   void selectLastSelectedMacroControlParameter();
 
+  void copyFX(VoiceGroup from, VoiceGroup to);
+
  private:
   VoiceGroup invert(VoiceGroup vg);
   [[nodiscard]] PresetManager* getPresetManager() const;
 
   EditBuffer& m_editBuffer;
-
 };

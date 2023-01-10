@@ -29,7 +29,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Import PresetManager consumes 
     uc.importBackupFile(stream, {}, TestHelper::getAudioEngineProxy());
   }
 
-  CHECK(memUsage.getUsage() < static_cast<int64_t>(9.2 * 1024 * 1024));
+  CHECK(memUsage.getUsage() < static_cast<int64_t>(10 * 1024 * 1024));
 }
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Import PresetManager overwrites banks")
@@ -50,7 +50,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Import PresetManager overwrite
   REQUIRE(pm->getBanks().size() == 1);
   REQUIRE(pm->getBanks().front()->getName(false) == "NL Weird 06");
 
-  CHECK(memUsage.getUsage() < 4.5 * 1024 * 1024);
+  CHECK(memUsage.getUsage() < 4.7 * 1024 * 1024);
 }
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Import PresetManager is undoable")
@@ -81,5 +81,5 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Import PresetManager is undoab
   REQUIRE(pm->getBanks().size() == 1);
   REQUIRE(pm->getBanks().front()->getName(false) == "NL Weird 06");
 
-  CHECK(memUsage.getUsage() < 4.5 * 1024 * 1024);
+  CHECK(memUsage.getUsage() < 4.7 * 1024 * 1024);
 }

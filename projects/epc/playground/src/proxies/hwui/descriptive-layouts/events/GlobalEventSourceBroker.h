@@ -19,7 +19,7 @@ namespace DescriptiveLayouts
     using Callback = std::function<void(std::experimental::any)>;
 
     sigc::connection connect(EventSources source, const Callback& cb);
-
+    EventSourceBase* getEventSource(EventSources e);
    private:
     std::map<EventSources, std::unique_ptr<EventSourceBase>> m_map;
   };

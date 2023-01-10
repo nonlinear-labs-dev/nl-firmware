@@ -1,5 +1,6 @@
 #include "ParameterNotAvailableInSoundInfo.h"
 #include "ParameterCarousel.h"
+#include <parameters/Parameter.h>
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>

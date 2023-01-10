@@ -17,6 +17,7 @@ public class ModulateableParameterModelUpdater extends BasicParameterModelUpdate
 		super.doUpdate();
 		String modSource = getChildText(root, "modSrc");
 		String modAmount = getChildText(root, "modAmount");
+		String modBase = getChildText(root, "modBase");
 
 		String modAmountCoarse = getChildText(root, "mod-amount-coarse");
 		String modAmountFine = getChildText(root, "mod-amount-fine");
@@ -31,6 +32,11 @@ public class ModulateableParameterModelUpdater extends BasicParameterModelUpdate
 
 		if (!modAmount.isEmpty()) {
 			target.modAmount.value.setValue(Double.valueOf(modAmount));
+			notify = true;
+		}
+
+		if (!modBase.isEmpty()) {
+			target.modBase.value.setValue(Double.valueOf(modBase));
 			notify = true;
 		}
 

@@ -7,7 +7,6 @@ class MacroControlsGroup : public ParameterGroup
 {
  public:
   explicit MacroControlsGroup(ParameterGroupSet* parent);
-  ~MacroControlsGroup() override;
 
   void init() override;
 

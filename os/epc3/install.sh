@@ -8,7 +8,7 @@ post_install() {
     
     echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
 
-    echo "root@192.168.10.11:/mnt/usb-stick  /mnt/usb-stick  fuse.sshfs  sshfs_sync,direct_io,cache=no,reconnect,defaults,_netdev,ServerAliveInterval=2,ServerAliveCountMax=3,StrictHostKeyChecking=off  0  0" >> /etc/fstab
+    echo "root@192.168.10.11:/mnt/usb-stick  /mnt/usb-stick  fuse.sshfs  sshfs_sync,direct_io,cache=no,reconnect,defaults,_netdev,ServerAliveInterval=2,ServerAliveCountMax=3,StrictHostKeyChecking=off  0  0" > /etc/fstab
 
     ssh-keygen -A
     systemctl enable cpupower
@@ -16,9 +16,7 @@ post_install() {
     useradd -m sscl
     echo 'sscl:sscl' | chpasswd
     echo 'sscl ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-    
-    genfstab -U / >> /etc/fstab
-    
+        
     MKINITSCRIPT=/usr/share/libalpm/scripts/mkinitcpio-install
     echo "grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=arch_grub --recheck" >> $MKINITSCRIPT
     echo "grub-mkconfig -o /boot/grub/grub.cfg" >> $MKINITSCRIPT

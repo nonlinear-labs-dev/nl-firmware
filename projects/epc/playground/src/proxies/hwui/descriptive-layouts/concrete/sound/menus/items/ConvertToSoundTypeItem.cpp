@@ -37,12 +37,10 @@ ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toTyp
                                   default:
                                     break;
                                 }
+
+                                SettingsUseCases sUseCases(*Application::get().getSettings());
+                                sUseCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
                               }),
-                          OneShotTypes::FinishCB(
-                              []()
-                              {
-                                SettingsUseCases useCases(*Application::get().getSettings());
-                                useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-                              }))
+                          OneShotTypes::FinishCB([]() {}))
 {
 }

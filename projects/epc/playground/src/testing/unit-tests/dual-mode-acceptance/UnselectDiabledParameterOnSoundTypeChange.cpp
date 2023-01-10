@@ -139,12 +139,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"FROM Layer")
   {
     ebUseCases.selectParameter({ FB_Mix_FX_Src, VoiceGroup::II });
 
-    THEN("Single Preset Loaded")
-    {
-      ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { FB_Mix_FX, VoiceGroup::I });
-    }
-
     THEN("Split Preset Loaded")
     {
       ebUseCases.load(presets.getSplitPreset());
@@ -155,29 +149,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"FROM Layer")
     {
       ebUseCases.convertToSplit(VoiceGroup::I);
       CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { FB_Mix_FX_Src, VoiceGroup::II });
-    }
-
-    THEN("Single converted")
-    {
-      ebUseCases.convertToSingle(VoiceGroup::I);
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { FB_Mix_FX, VoiceGroup::I });
-    }
-  }
-
-  WHEN("OUT: To FX x selected")
-  {
-    ebUseCases.selectParameter({ Out_Mix_To_FX, VoiceGroup::II });
-
-    THEN("Single Preset Loaded")
-    {
-      ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { Out_Mix_Lvl, VoiceGroup::I });
-    }
-
-    THEN("Single converted")
-    {
-      ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { Out_Mix_Lvl, VoiceGroup::I });
     }
   }
 
@@ -274,7 +245,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"FROM Layer")
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Loaded")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Loaded")
 {
   using namespace C15::PID;
   MockPresetStorage presets;
@@ -290,23 +261,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Loaded")
   }
 
   CHECK(eb->getType() == SoundType::Split);
-
-  WHEN("OUT: To FX x selected")
-  {
-    ebUseCases.selectParameter({ Out_Mix_To_FX, VoiceGroup::II });
-
-    THEN("Single Preset Loaded")
-    {
-      ebUseCases.load(presets.getSinglePreset());
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { Out_Mix_Lvl, VoiceGroup::I });
-    }
-
-    THEN("Single Convert")
-    {
-      ebUseCases.convertToSingle(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::I)->getID() == ParameterId { Out_Mix_Lvl, VoiceGroup::I });
-    }
-  }
 
   WHEN("Part: Volume selected")
   {

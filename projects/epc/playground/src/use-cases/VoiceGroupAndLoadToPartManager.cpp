@@ -1,4 +1,5 @@
 #include "VoiceGroupAndLoadToPartManager.h"
+#include <parameters/Parameter.h>
 #include <presets/EditBuffer.h>
 #include <presets/PresetManager.h>
 
@@ -52,6 +53,14 @@ void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroupAndUpdateParameterSelec
   auto selected = m_editBuffer.getSelected(getCurrentVoiceGroup());
   auto id = selected->getID();
 
+  if(m_editBuffer.getType() == SoundType::Single)
+  {
+    auto isMonoPhonic = selected->getType() == C15::Descriptors::ParameterType::Monophonic_Unmodulateable || selected->getType() == C15::Descriptors::ParameterType::Monophonic_Modulateable;
+    if(isMonoPhonic)
+      m_editBuffer.undoableSelectParameter(transaction, { id.getNumber(), m_currentVoiceGroup }, false);
+    return;
+  }
+
   if(id.getVoiceGroup() != VoiceGroup::Global)
   {
     m_editBuffer.undoableSelectParameter(transaction, { id.getNumber(), m_currentVoiceGroup }, false);
@@ -68,9 +77,6 @@ void VoiceGroupAndLoadToPartManager::toggleCurrentVoiceGroupAndUpdateParameterSe
 
 void VoiceGroupAndLoadToPartManager::toggleCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction)
 {
-  if(m_editBuffer.getType() == SoundType::Single)
-    return;
-
   if(m_currentVoiceGroup == VoiceGroup::I)
     setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::II);
   else if(m_currentVoiceGroup == VoiceGroup::II)

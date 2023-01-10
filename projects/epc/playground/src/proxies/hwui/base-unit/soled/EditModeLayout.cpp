@@ -16,7 +16,7 @@ EditModeLayout::EditModeLayout()
   findControlOfType<SelectedRibbonsIndication>()->setVisible(false);
   addControl(new ParamEditModeRibbonBehaviourLabel(Rect(118, 2, 10, 13)));
   addControl(new DottedLine(Rect(111, 16, 17, 1)));
-};
+}
 
 EditModeLayout::~EditModeLayout()
 {

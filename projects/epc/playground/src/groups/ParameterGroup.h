@@ -2,13 +2,20 @@
 
 #include "playground.h"
 #include "GroupId.h"
-#include "parameters/Parameter.h"
 #include "http/UpdateDocumentContributor.h"
 #include "tools/IntrusiveList.h"
-#include "parameters/ModulateableParameter.h"
+#include "sync/SyncedItem.h"
+#include "tools/Signal.h"
+#include "ParameterId.h"
+
+namespace UNDO
+{
+  class Transaction;
+}
 
 class PresetParameterGroup;
 class ParameterGroupSet;
+class Parameter;
 
 class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListItem<ParameterGroup *>, public SyncedItem
 {
@@ -31,28 +38,16 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
 
   tParameterPtr findParameterByID(const ParameterId &id) const;
 
-  template <typename tParameterPtrT> tParameterPtrT *findAndCastParameterByID(const ParameterId &id) const
+  template <typename tParameterPtrT> inline tParameterPtrT *findAndCastParameterByID(const ParameterId &id) const
   {
     if(auto p = getParameterByID(id))
       return dynamic_cast<tParameterPtrT *>(p);
     return nullptr;
   }
 
-  void forEachParameter(const std::function<void(Parameter *p)> &cb)
-  {
-    for(auto p : m_parameters)
-      cb(p);
-  }
-
-  const IntrusiveList<tParameterPtr> &getParameters() const
-  {
-    return m_parameters;
-  }
-
-  IntrusiveList<tParameterPtr> &getParameters()
-  {
-    return m_parameters;
-  }
+  void forEachParameter(const std::function<void(Parameter *p)> &cb);
+  const IntrusiveList<tParameterPtr> &getParameters() const;
+  IntrusiveList<tParameterPtr> &getParameters();
 
   void undoableReset(UNDO::Transaction *transaction, Initiator initiator);
 
@@ -84,9 +79,10 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   void undoableLoadDefault(UNDO::Transaction *transaction, Defaults mode);
   void validateParameterTypes() const;
 
+  bool isPolyphonic() const;
+
  protected:
-  template<typename T>
-  T* appendParameter(T *p)
+  template <typename T> inline T *appendParameter(T *p)
   {
     m_parameters.append(p);
     return p;

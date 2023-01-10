@@ -1,17 +1,11 @@
 #include "UnisonGroup.h"
-
-#include "parameters/Parameter.h"
 #include "parameter_declarations.h"
-#include <proxies/hwui/HWUI.h>
-#include <parameters/scale-converters/dimension/VoicesDimension.h>
 #include <parameters/UnisonVoicesParameter.h>
 
 UnisonGroup::UnisonGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Unison", vg }, "Unison", "Unison", "Unison")
 {
 }
-
-UnisonGroup::~UnisonGroup() = default;
 
 void UnisonGroup::init()
 {

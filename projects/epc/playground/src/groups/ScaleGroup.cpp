@@ -9,10 +9,6 @@ ScaleGroup::ScaleGroup(ParameterGroupSet* parent)
 {
 }
 
-ScaleGroup::~ScaleGroup()
-{
-}
-
 bool ScaleGroup::isAnyOffsetChanged() const
 {
   for(const auto p : getParameters())
@@ -49,12 +45,10 @@ void ScaleGroup::init()
 
 void ScaleGroup::onBaseKeyParameterChanged(const Parameter*)
 {
-  m_updateNames.doTask(
-      [=]()
-      {
-        for(auto a : getParameters())
-          a->onChange();
-      });
+  m_updateNames.doTask([=]() {
+    for(auto a : getParameters())
+      a->onChange();
+  });
 }
 
 bool ScaleGroup::isScaleParameter(const ParameterId& id)

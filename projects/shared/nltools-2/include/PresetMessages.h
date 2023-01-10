@@ -96,10 +96,6 @@ namespace nltools
     struct SinglePresetMessage : public detail::PresetMessage<nltools::msg::MessageType::SinglePreset>
     {
       // data
-      SingularParameterArray<ParameterType::Local_Modulateable, controls::LocalModulateableParameter>
-          m_localModulateables;
-      SingularParameterArray<ParameterType::Local_Unmodulateable, controls::LocalUnmodulateableParameter>
-          m_localUnmodulateables;
       SingularParameterArray<ParameterType::Polyphonic_Modulateable, controls::PolyphonicModulateableParameter>
           m_polyphonicModulateables;
       SingularParameterArray<ParameterType::Polyphonic_Unmodulateable, controls::PolyphonicUnmodulateableParameter>
@@ -110,13 +106,6 @@ namespace nltools
       {
         if(!SinglePresetMessage::validateCommon(_msg))
           return false;
-        // temporary: local parameters
-        for(const auto& element : _msg.m_localUnmodulateables)
-          if(!element.validateParameterType())
-            return false;
-        for(const auto& element : _msg.m_localUnmodulateables)
-          if(!element.validateParameterType())
-            return false;
         // polyphonic parameters
         for(const auto& element : _msg.m_polyphonicUnmodulateables)
           if(!element.validateParameterType())
@@ -131,9 +120,6 @@ namespace nltools
     inline bool operator==(const SinglePresetMessage& _lhs, const SinglePresetMessage& _rhs)
     {
       auto ret = SinglePresetMessage::compareCommon(_lhs, _rhs);
-      // temporary: local parameters
-      ret &= _lhs.m_localModulateables == _rhs.m_localModulateables;
-      ret &= _lhs.m_localUnmodulateables == _rhs.m_localUnmodulateables;
       // polyphonic parameters
       ret &= _lhs.m_polyphonicModulateables == _rhs.m_polyphonicModulateables;
       ret &= _lhs.m_polyphonicUnmodulateables == _rhs.m_polyphonicUnmodulateables;
@@ -148,9 +134,6 @@ namespace nltools
     struct SplitPresetMessage : public detail::PresetMessage<nltools::msg::MessageType::SplitPreset>
     {
       // data
-      DualParameterArray<ParameterType::Local_Modulateable, controls::LocalModulateableParameter> m_localModulateables;
-      DualParameterArray<ParameterType::Local_Unmodulateable, controls::LocalUnmodulateableParameter>
-          m_localUnmodulateables;
       DualParameterArray<ParameterType::Polyphonic_Modulateable, controls::PolyphonicModulateableParameter>
           m_polyphonicModulateables;
       DualParameterArray<ParameterType::Polyphonic_Unmodulateable, controls::PolyphonicUnmodulateableParameter>
@@ -161,15 +144,6 @@ namespace nltools
       {
         if(!SplitPresetMessage::validateCommon(_msg))
           return false;
-        // temporary: local parameters
-        for(const auto& layer : _msg.m_localUnmodulateables)
-          for(const auto& element : layer)
-            if(!element.validateParameterType())
-              return false;
-        for(const auto& layer : _msg.m_localModulateables)
-          for(const auto& element : layer)
-            if(!element.validateParameterType())
-              return false;
         // polyphonic parameters
         for(const auto& layer : _msg.m_polyphonicModulateables)
           for(const auto& element : layer)
@@ -186,9 +160,6 @@ namespace nltools
     inline bool operator==(const SplitPresetMessage& _lhs, const SplitPresetMessage& _rhs)
     {
       auto ret = SplitPresetMessage::compareCommon(_lhs, _rhs);
-      // temporary: local parameters
-      ret &= _lhs.m_localModulateables == _rhs.m_localModulateables;
-      ret &= _lhs.m_localUnmodulateables == _rhs.m_localUnmodulateables;
       // polyphonic parameters
       ret &= _lhs.m_polyphonicModulateables == _rhs.m_polyphonicModulateables;
       ret &= _lhs.m_polyphonicUnmodulateables == _rhs.m_polyphonicUnmodulateables;
@@ -203,9 +174,6 @@ namespace nltools
     struct LayerPresetMessage : public detail::PresetMessage<nltools::msg::MessageType::LayerPreset>
     {
       // data
-      DualParameterArray<ParameterType::Local_Modulateable, controls::LocalModulateableParameter> m_localModulateables;
-      DualParameterArray<ParameterType::Local_Unmodulateable, controls::LocalUnmodulateableParameter>
-          m_localUnmodulateables;
       DualParameterArray<ParameterType::Polyphonic_Modulateable, controls::PolyphonicModulateableParameter>
           m_polyphonicModulateables;
       DualParameterArray<ParameterType::Polyphonic_Unmodulateable, controls::PolyphonicUnmodulateableParameter>
@@ -216,15 +184,6 @@ namespace nltools
       {
         if(!LayerPresetMessage::validateCommon(_msg))
           return false;
-        // temporary: local parameters
-        for(const auto& layer : _msg.m_localUnmodulateables)
-          for(const auto& element : layer)
-            if(!element.validateParameterType())
-              return false;
-        for(const auto& layer : _msg.m_localModulateables)
-          for(const auto& element : layer)
-            if(!element.validateParameterType())
-              return false;
         // polyphonic parameters
         for(const auto& layer : _msg.m_polyphonicModulateables)
           for(const auto& element : layer)
@@ -244,8 +203,8 @@ namespace nltools
         {
           const auto index = (uint32_t) id;
           // copy data from Part I to Part II (assuming already correct id)
-          auto& lhs = m_localModulateables[0][index];
-          const auto& rhs = m_localModulateables[1][index];
+          const auto& rhs = m_polyphonicModulateables[0][index];
+          auto& lhs = m_polyphonicModulateables[1][index];
           lhs.m_controlPosition = rhs.m_controlPosition;
           lhs.m_macro = rhs.m_macro;
           lhs.m_modulationAmount = rhs.m_modulationAmount;
@@ -253,20 +212,17 @@ namespace nltools
       }
 
      private:
-      static constexpr C15::Parameters::Local_Modulateables s_voiceParams[] = {
-        C15::Parameters::Local_Modulateables::Unison_Detune,
-        C15::Parameters::Local_Modulateables::Unison_Phase,
-        C15::Parameters::Local_Modulateables::Unison_Pan,
-        C15::Parameters::Local_Modulateables::Mono_Grp_Glide,
+      static constexpr C15::Parameters::Polyphonic_Modulateables s_voiceParams[] = {
+        C15::Parameters::Polyphonic_Modulateables::Unison_Detune,
+        C15::Parameters::Polyphonic_Modulateables::Unison_Phase,
+        C15::Parameters::Polyphonic_Modulateables::Unison_Pan,
+        C15::Parameters::Polyphonic_Modulateables::Mono_Grp_Glide,
       };
     };
 
     inline bool operator==(const LayerPresetMessage& _lhs, const LayerPresetMessage& _rhs)
     {
       auto ret = LayerPresetMessage::compareCommon(_lhs, _rhs);
-      // temporary: local parameters
-      ret &= _lhs.m_localModulateables == _rhs.m_localModulateables;
-      ret &= _lhs.m_localUnmodulateables == _rhs.m_localUnmodulateables;
       // polyphonic parameters
       ret &= _lhs.m_polyphonicModulateables == _rhs.m_polyphonicModulateables;
       ret &= _lhs.m_polyphonicUnmodulateables == _rhs.m_polyphonicUnmodulateables;

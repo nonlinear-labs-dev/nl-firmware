@@ -9,7 +9,6 @@ import com.google.gwt.xml.client.NodeList;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.ServerProxy;
-import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.world.Control;

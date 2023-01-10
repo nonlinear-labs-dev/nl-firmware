@@ -3,10 +3,6 @@
 #include "parameters/Parameter.h"
 #include "presets/ParameterGroupSet.h"
 #include "presets/PresetParameterGroup.h"
-#include <fstream>
-#include <parameters/ModulateableParameter.h>
-#include <parameters/MacroControlParameter.h>
-#include <nltools/logging/Log.h>
 #include <libundo/undo/Scope.h>
 #include <xml/Attribute.h>
 #include <nltools/logging/Log.h>
@@ -69,6 +65,22 @@ ParameterGroup::tParameterPtr ParameterGroup::findParameterByID(const ParameterI
   return getParameterByID(id);
 }
 
+void ParameterGroup::forEachParameter(const std::function<void(Parameter *)> &cb)
+{
+  for(auto p : m_parameters)
+    cb(p);
+}
+
+const IntrusiveList<ParameterGroup::tParameterPtr> &ParameterGroup::getParameters() const
+{
+  return m_parameters;
+}
+
+IntrusiveList<ParameterGroup::tParameterPtr> &ParameterGroup::getParameters()
+{
+  return m_parameters;
+}
+
 sigc::connection ParameterGroup::onGroupChanged(const sigc::slot<void> &slot)
 {
   return m_signalGroupChanged.connectAndInit(slot);
@@ -116,9 +128,7 @@ void ParameterGroup::writeDocument(Writer &writer, tUpdateID knownRevision) cons
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("parameter-group", Attribute("id", getID()), Attribute("short-name", getShortName()),
-                  Attribute("long-name", m_webUIName), Attribute("changed", changed),
-                  [&]()
-                  {
+                  Attribute("long-name", m_webUIName), Attribute("changed", changed), [&]() {
                     if(changed)
                       for(const auto p : m_parameters)
                         p->writeDocument(writer, knownRevision);
@@ -228,44 +238,10 @@ nlohmann::json ParameterGroup::serialize() const
 
 void ParameterGroup::validateParameterTypes() const
 {
-  bool hasAny = false;
-  bool isPoly = false;
-  bool isMono = false;
-  bool isGlobal = false;
-  bool isLocal = false;
 
-  int polyCount = 0;
-  int monoCount = 0;
-  int globalCount = 0;
-  int localCount = 0;
+}
 
-  for(const auto& p: getParameters())
-  {
-    auto foundType = p->getType();
-    auto isPolyParam = foundType == C15::Descriptors::ParameterType::Polyphonic_Unmodulateable || foundType == C15::Descriptors::ParameterType::Polyphonic_Modulateable;
-    auto isMonoParam = foundType == C15::Descriptors::ParameterType::Monophonic_Unmodulateable || foundType == C15::Descriptors::ParameterType::Monophonic_Modulateable;
-    auto isGlobalParam = foundType == C15::Descriptors::ParameterType::Global_Modulateable || foundType == C15::Descriptors::ParameterType::Global_Unmodulateable;
-    auto isLocalParam = foundType == C15::Descriptors::ParameterType::Local_Modulateable || foundType == C15::Descriptors::ParameterType::Local_Unmodulateable;
-
-    polyCount += isPolyParam;
-    monoCount += isMonoParam;
-    globalCount += isGlobalParam;
-    localCount += isLocalParam;
-
-    if(!hasAny)
-    {
-      hasAny = true;
-      isPoly = isPolyParam;
-      isMono = isMonoParam;
-      isGlobal = isGlobalParam;
-      isLocal = isLocalParam;
-    }
-    else
-    {
-      nltools_detailedAssertAlways(isPoly == isPolyParam, "poly not consistent");
-      nltools_detailedAssertAlways(isMono == isMonoParam, "mono not consistent");
-      nltools_detailedAssertAlways(isGlobal == isGlobalParam, "global not consistent");
-      nltools_detailedAssertAlways(isLocal == isLocalParam, "local not consistent");
-    }
-  }
+bool ParameterGroup::isPolyphonic() const
+{
+  return m_parameters.begin()->isPolyphonic();
 }

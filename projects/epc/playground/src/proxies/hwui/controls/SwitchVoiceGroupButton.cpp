@@ -1,6 +1,7 @@
 #include "SwitchVoiceGroupButton.h"
 #include "groups/MasterGroup.h"
 #include "groups/ScaleGroup.h"
+#include "groups/MacroControlsGroup.h"
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
@@ -29,6 +30,18 @@ SwitchVoiceGroupButton::SwitchVoiceGroupButton(Buttons pos)
 
   Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
       sigc::mem_fun(this, &SwitchVoiceGroupButton::rebuild));
+
+  rebuild();
+}
+
+namespace
+{
+  bool isAnyScaleParameterChanged()
+  {
+    auto& eb = *Application::get().getPresetManager()->getEditBuffer();
+    auto group = eb.getParameterGroupByID({ "Scale", VoiceGroup::Global });
+    return group->isAnyParameterChanged();
+  }
 }
 
 void SwitchVoiceGroupButton::rebuild()
@@ -39,9 +52,12 @@ void SwitchVoiceGroupButton::rebuild()
 
   if(allowToggling(selected, eb))
     setText(StringAndSuffix { "I / II", 0 });
-  else if(MasterGroup::isMasterParameter(selected))
+  else if(MasterGroup::isMasterParameter(selected) && selected->getID().getNumber() != C15::PID::Master_FX_Mix)
   {
-    setText(StringAndSuffix { "Scale...", 0 });
+    if(isAnyScaleParameterChanged())
+      setText(StringAndSuffix { "Scale..*", 0 });
+    else
+      setText(StringAndSuffix { "Scale..", 0 });
   }
   else if(ScaleGroup::isScaleParameter(selected))
   {
@@ -69,10 +85,20 @@ bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const Edit
     return false;
 
   if(selected->getVoiceGroup() == VoiceGroup::Global)
-    return false;
+  {
+    return MacroControlsGroup::isMacroControl(selected->getID().getNumber());
+  }
 
   if(editBuffer->getType() == SoundType::Single)
+  {
+    const auto type = selected->getType();
+    if(type == C15::Descriptors::ParameterType::Monophonic_Modulateable
+       || type == C15::Descriptors::ParameterType::Monophonic_Unmodulateable)
+    {
+      return true;
+    }
     return false;
+  }
 
   auto layerAndGroupAllowToggling
       = ((editBuffer->getType() == SoundType::Layer)

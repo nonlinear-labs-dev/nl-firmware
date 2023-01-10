@@ -20,69 +20,70 @@ public class ModulateableParameterModel extends BasicParameterModel {
 
 		public String toString() {
 			switch (this) {
-			case A:
-				return "\uE000";
-	
-			case B:
-				return "\uE001";
-	
-			case C:
-				return "\uE002";
-	
-			case D:
-				return "\uE003";
-	
-			case E:
-				return "\uE200";
-	
-			case F:
-				return "\uE201";
-	
-			default:
+				case A:
+					return "\uE000";
+
+				case B:
+					return "\uE001";
+
+				case C:
+					return "\uE002";
+
+				case D:
+					return "\uE003";
+
+				case E:
+					return "\uE200";
+
+				case F:
+					return "\uE201";
+
+				default:
 			}
-	
+
 			return "";
 		}
 
 		public ParameterId toParameterId() {
 			switch (this) {
-			case E:
-				return new ParameterId(369, VoiceGroup.Global);
+				case E:
+					return new ParameterId(369, VoiceGroup.Global);
 
-			case F:
-				return new ParameterId(371, VoiceGroup.Global);
+				case F:
+					return new ParameterId(371, VoiceGroup.Global);
 
-			default:
-				break;
+				default:
+					break;
 			}
 			return new ParameterId(242 + ordinal(), VoiceGroup.Global);
 		}
 
 		public static ModSource fromParameterId(ParameterId i) {
 			switch (i.getNumber()) {
-			case 243:
-				return A;
+				case 243:
+					return A;
 
-			case 244:
-				return B;
+				case 244:
+					return B;
 
-			case 245:
-				return C;
+				case 245:
+					return C;
 
-			case 246:
-				return D;
+				case 246:
+					return D;
 
-			case 369:
-				return E;
+				case 369:
+					return E;
 
-			case 371:
-				return F;
+				case 371:
+					return F;
 			}
 			return None;
 		}
 	}
 
 	public ValueDataModelEntity modAmount = new ValueDataModelEntity();
+	public ValueDataModelEntity modBase = new ValueDataModelEntity();
 	public EnumDataModelEntity<ModSource> modSource = new EnumDataModelEntity<ModSource>(ModSource.class,
 			ModSource.None);
 	public DoubleDataModelEntity ogModAmount = new DoubleDataModelEntity();
@@ -94,6 +95,7 @@ public class ModulateableParameterModel extends BasicParameterModel {
 		modAmount.metaData.bipolar.setValue(BooleanValues.on);
 		modAmount.onChange(e -> notifyChanges());
 		modSource.onChange(e -> notifyChanges());
+		modBase.onChange(e -> notifyChanges());
 		ogModAmount.onChange(e -> notifyChanges());
 		ogModSource.onChange(e -> notifyChanges());
 	}
@@ -106,6 +108,7 @@ public class ModulateableParameterModel extends BasicParameterModel {
 	@Override
 	public void getHash(Checksum crc) {
 		crc.eat(modAmount.getQuantizedAndClipped(true));
+		crc.eat(modBase.getQuantizedAndClipped(true));
 		crc.eat(modSource.hashCode());
 		super.getHash(crc);
 	}

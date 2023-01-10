@@ -226,9 +226,6 @@ OutContainer cleanParameterIDSForType(const InContainer &ids, SoundType type)
   switch(type)
   {
     case SoundType::Single:
-      std::copy_if(ids.begin(), ids.end(), std::back_inserter(ret),
-                   [](int id) { return id != C15::PID::FB_Mix_Comb_Src && id != C15::PID::FB_Mix_SVF_Src && id != C15::PID::FB_Mix_FX_Src && id != C15::PID::Out_Mix_To_FX; });
-      break;
     case SoundType::Split:
       std::copy_if(ids.begin(), ids.end(), std::back_inserter(ret),
                    [](int id) { return id != C15::PID::FB_Mix_Comb_Src && id != C15::PID::FB_Mix_SVF_Src; });
@@ -578,7 +575,9 @@ void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
   {
     for(auto t : mc->getTargets())
     {
-      if(t->getID().getVoiceGroup() == currentVG)
+      auto shouldHighlightDual = t->getID().getVoiceGroup() == currentVG;
+      auto shouldHighlightSingle = t->isPolyphonic() || (t->isMonophonic() && t->getID().getVoiceGroup() == currentVG);
+      if((editBuffer->isDual() && shouldHighlightDual) || (editBuffer->getType() == SoundType::Single && shouldHighlightSingle))
       {
         auto buttonID = m_mappings.findButton(t->getID().getNumber());
         if(buttonID != Buttons::INVALID)
@@ -600,6 +599,22 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
   for(auto targetID : targets)
   {
     auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+
+    bool isPolyphonic = false;
+
+    if(editBuffer->getType() == SoundType::Single)
+    {
+      auto param = editBuffer->findParameterByID({targetID, vg});
+      if(!param)
+      {
+        param = editBuffer->findParameterByID({targetID, VoiceGroup::Global});
+      }
+      isPolyphonic = param->getType() == C15::Descriptors::ParameterType::Polyphonic_Modulateable || param->getType() == C15::Descriptors::ParameterType::Polyphonic_Unmodulateable;
+
+      if(isPolyphonic)
+        vg = VoiceGroup::I;
+    }
+
     const auto currentParam = editBuffer->findParameterByID({ targetID, vg });
 
     if(isSignalFlowingThrough(currentParam))

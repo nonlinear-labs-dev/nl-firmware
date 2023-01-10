@@ -10,7 +10,7 @@ class ScopedLock
 {
  public:
   explicit ScopedLock(UNDO::Transaction* trans);
-  ~ScopedLock();
+  virtual ~ScopedLock();
 
   void addLock(const ParameterId& id);
   void addLock(Parameter* param);

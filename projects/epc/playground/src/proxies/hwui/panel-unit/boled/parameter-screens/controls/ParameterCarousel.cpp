@@ -103,6 +103,14 @@ void ParameterCarousel::setupChildControlsThatFit(Parameter* selectedParameter, 
     auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
     auto eb = Application::get().getPresetManager()->getEditBuffer();
 
+    if(eb->getType() == SoundType::Single)
+    {
+      if(selectedParameter->isPolyphonic())
+      {
+        vg = VoiceGroup::I;
+      }
+    }
+
     auto param = eb->findParameterByID({ i, vg });
 
     if(!param)
@@ -216,10 +224,7 @@ void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Param
 
   if(paramID == Master_Volume || paramID == Master_Tune || paramID == Master_Pan || paramID == Master_Serial_FX)
   {
-    if(isDualSound)
-      setupChildControls(selectedParameter, { Master_Volume, Master_Tune, Master_Pan, Master_Serial_FX });
-    else
-      setupChildControls(selectedParameter, { Master_Volume, Master_Tune });
+    setupChildControls(selectedParameter, { Master_Volume, Master_Tune, Master_Serial_FX, Master_Pan });
   }
   else if(paramID == Scale_Base_Key || ScaleGroup::isScaleParameter(selectedParameter))
   {
