@@ -58,6 +58,7 @@ small {font-size: 80%;}
 .columns {
     display: grid;
     gap: 1ch;
+    align-items: start;
 }
 
 /* headings */

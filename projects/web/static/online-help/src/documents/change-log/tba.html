@@ -44,7 +44,7 @@
     </section>
     <section>
         <h3>Parameter Enhancements</h3>
-        <div class="section" style="page-break-after: always;">
+        <div class="section">
             <h4>Modulateable Parameters</h4>
             <p>The number of modulateable Parameters has been increased - most Parameters are now modulateable:</p>
             <ul>
@@ -57,6 +57,10 @@
                 <li><span data-keyword="Scale">Offsets</span> (blending between two scalings via modulation)</li>
                 <li><span data-keyword="Part">Split Point</span> - when unlinked, the parameter can now be modulated individually per Part</li>
             </ul>
+            <div data-highlight="note">
+                <p>The modulation mechanism has also been refined, modulated parameters now behave more consistent.</p>
+                <p>Rounding issues of displayed modulation ranges (for example unstable upper/lower limits) have been removed and discrepancies between displayed and audible parameter positions (especially the <span data-keyword="Part">Split Point</span> parameter) should no longer occur.</p>
+            </div>
         </div>
         <div class="section">
             <h4>Parameter Ranges</h4>
@@ -70,7 +74,7 @@
                 <li><span data-keyword="Unison">Detune</span> - new maximum at 24 st</li>
             </ul>
         </div>
-        <div class="section">
+        <div class="section" style="page-break-after: always;">
             <h4>Parameter Scaling and Rounding</h4>
             <p>Scaling and Rounding behavior has been reworked:</p>
             <ul>
@@ -106,23 +110,27 @@
                     <p>The <span data-keyword="Feedback Mixer">Effects - From I-II</span> and <span data-keyword="Output Mixer">To FX I-II</span> parameters are also available for defining the Effects and Feedback routing for both Effect chains. The routings are indicated in the Single <span data-keyword="Sound">Screen</span>.</p>
                 </div>
             </div>
-            
+            <div data-highlight="note">
+                <h5>Converting Single Sounds into Split/Layer Sounds</h5>
+                <p>With two Effect chains in <span data-keyword="Single">Sounds</span>, the conversion mechanism has changed. The primary goal of Sound conversions is to be a lossless process as much as possible. For example, FX/Part routings and mixing are maintained. But this introduces some subtle consequences when converting Single Sounds.</p>
+                <p>At the moment, most provided <span data-keyword="Single">Sounds</span> only use FX I exclusively. After a conversion to a <span data-keyword="Split"></span>/<span data-keyword="Layer">Sound</span>, both Parts will reflect this routing and the whole Sound is effectively sent to the main channel of Part I, whereas the main channel of Part II is effectively muted. This may feel wrong (and not comparable to previous software versions), but it ensures that a conversion back to a <span data-keyword="Single">Sound</span> can maintain the initial routing.</p>
+            </div>
         </div>
         <div class="section">
             <h4>New: Dual Effects/Part Mixing</h4>
             <p>Two new parameters have been added for more versatile mixing of Parts (or Effects in <span data-keyword="Single">Sounds</span>):</p>
             <ul>
-                <li class="section" style="page-break-after: always;"">
+                <li>
                     <header><span data-keyword="Master">Serial FX</span></header>
                     <p>Usually both Effect chains run in parallel. With this new parameter, the output of one chain can be fed into the input of the other chain, allowing for flexibility in the order of effects and their complexity.</p>
                 </li>
-                <li class="section">
+                <li>
                     <header><span data-keyword="Master">Part/FX Pan</span></header>
                     <p>Both Effect chains can be panned against each other, more flexibly distributing their output signals in the resulting stereo mix.</p>
                 </li>
             </ul>
         </div>
-        <div class="section">
+        <div class="section" style="page-break-after: always;">
             <h4>New: two new virtual Ribbons</h4>
             <p><span data-keyword="Ribbon">3, 4</span> have been added to the <span data-keyword="Hardware">Sources</span> allowing for more flexible modulation and hopefully better integrating <span data-keyword="Macro">Controls</span> <span data-utf="mc-e"></span> and <span data-utf="mc-f"></span>.</p>
             <p>The two sets of <span data-keyword="Ribbons"></span> (<span data-keyword="">1, 2</span> and <span data-keyword="">3, 4</span>) are quickly accessible on the <span data-keyword="Base">Unit</span> (see below).</p>
@@ -130,6 +138,39 @@
     </section>
     <section>
         <h3>User Interface Enhancements</h3>
+        <div class="section">
+            <h4 data-detail="Panel Unit">Sound Initialization</h4>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Initialize Screen">
+                    <picture class="content" data-src="./images/hardware-ui/boled/sound/boled-snd-initialize.png"></picture>
+                </figure>
+                <div class="section">
+                    <p>When holding down the <span data-keyword="Default">Button</span> in the <span data-keyword="Sound"></span> or <span data-keyword="Preset">Screen</span>, the <span data-keyword="Initialize">Screen</span> will be visible. Here, <span data-keyword="Soft Buttons">1,2,3</span> can be used to initialize with a desired <span data-keyword="Sound">Type</span>. In <span data-keyword="Split"></span> or <span data-keyword="Layer">Sounds</span>, <span data-keyword="Soft Button">4</span> can be used to initialize only the Part/FX currently in focus.</p>
+                </div>
+            </div>
+            <h4>Quickly transforming typical Single Sounds into Split/Layer Sounds</h4>
+            <div data-highlight="note">
+                <p>As desribed above, the conversion mechanism may not produce desired results, as it treats <span data-keyword="Single">Sounds</span> with both Effect chains, including their routings and mixing.</p>
+                <p>Instead, the <span data-keyword="Initialize">Screen</span> can be used as a quick workaround:</p>
+            </div>
+            <ol>
+                <li>When in the <span data-keyword="Preset">Screen</span>, hold the <span data-keyword="Default">Button</span> and initialize a Dual Sound with <span data-keyword="Soft Button">2</span> or <span data-keyword="">3</span>. </li>
+                <li>Press <span data-keyword="Soft Button">4</span> to enable the <code><b>To Part</b></code> mode.</li>
+                <li>Use <span data-keyword="Soft Button">1</span> to specify the target Part. Use the <span data-keyword="Inc"></span>/<span data-keyword="Dec">Buttons</span> or the <span data-keyword="Encoder"></span> to select the source and its FX group.</li>
+                <li>Press <span data-keyword="Enter"></span> to finish loading (if <code><b>Direct Load</b></code> is not already enabed).</li>
+            </ol>
+        </div>
+        <div class="section" style="page-break-after: always;">
+            <h4 data-detail="Panel Unit">Copy FX</h4>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Sound Edit Screen - copy FX">
+                    <picture class="content" data-src="./images/hardware-ui/boled/sound/boled-snd-edit-copy-fx.png"></picture>
+                </figure>
+                <div>
+                    <p>When pressing the <span data-keyword="Edit">Button</span> in the <span data-keyword="Sound">Screen</span>, two new options provide a quick way to copy the Effect chain from one Part into the other.</p>
+                </div>
+            </div>
+        </div>
         <div class="section">
             <h4 data-detail="Graphical UI">Preset Search</h4>
             <div data-columns="2">
@@ -146,7 +187,7 @@
             <h4 data-detail="Graphical UI">Fine Mode</h4>
             <p>In the <span data-keyword="Parameter">Tab</span>, a new icon shows if the <span data-keyword="Fine">Mode</span> is active (when pressing the <kbd>Shift</kbd> key). The Fine Mode can also be enabled permanently be clicking the icon (and will stay enabled as long as the selected Parameter has a Fine Resolution).</p>
         </div>
-        <div class="section" style="page-break-after: always;">
+        <div class="section">
             <h4 data-detail="Panel Unit">Scale Parameter Screen</h4>
             <div data-columns="2">
                 <figure class="border maximize" data-label="Scale Screen">
@@ -186,30 +227,30 @@
             </div>
         </div>
     </section>
-    <section style="page-break-before: always;">
+    <section>
         <h3>Additional Fixes</h3>
         <ul>
-            <li class="section">
+            <li>
                 <header>Importing older Banks converted some parameters wrongfully</header>
                 <p>Affected Parameters were: <span data-keyword="Envelope A/B/C">Attack Velocity</span> and <span data-keyword="">Time Key Tracking</span>, <span data-keyword="Shaper A/B">Feedback - Env C</span> and <span data-keyword="Output Mixer">Key Pan</span>.</p>
             </li>
-            <li class="section">
+            <li>
                 <header><span data-keyword="Recorder"></span></header>
                 <p>When closing the <span data-keyword="Recorder">Tab</span> in the browser, the playback will stop automatically.</p>
             </li>
-            <li class="section">
+            <li>
                 <header><span data-keyword="Part">Selection</span></header>
                 <p>Selecting a <span data-keyword="Part"></span> (or <span data-keyword="FX">Group</span> in <span data-keyword="Single">Sounds</span>) is now undoable.</p>
             </li>
-            <li class="section">
+            <li>
                 <header><span data-keyword="Envelope A/B/C">Attack Curvature</span></header>
                 <p>The Parameters are now applied for each voice. When the Parameter changes within the Attack segment of a played node, the change will not apply for the active voice.</p>
             </li>
-            <li class="section">
+            <li>
                 <header>Wrong <span data-keyword="Envelope C">Decay 1/2</span> times</header>
                 <p>In earlier versions, <span data-keyword="Envelope C">Decay 1/2</span> times were wrongfully influenced by <span data-keyword="Envelope B">Decay 1/2 Velocity</span> parameters.</p>
             </li>
-            <li class="section">
+            <li>
                 <header>Voice Mixing in <span data-keyword="Single">Sounds</span> is now consistent</header>
                 <p>All 24 voices are now mixed and unambiguously routed to a specific <span data-keyword="FX">Group</span>.</p>
             </li>
