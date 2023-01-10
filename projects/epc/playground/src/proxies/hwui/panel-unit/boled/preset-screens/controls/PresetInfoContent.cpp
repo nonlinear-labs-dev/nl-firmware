@@ -76,7 +76,8 @@ namespace {
   auto prettyPrintPresetColor(const Preset* preset)
   {
     std::string presetColor = preset->getAttribute("color", "---");
-    if(presetColor == "none")
+
+    if(presetColor.empty() || presetColor == "none")
       presetColor = "---";
     else if(presetColor != "---" && std::isalpha(presetColor[0]))
       presetColor[0] = static_cast<char>(std::toupper(presetColor[0]));
