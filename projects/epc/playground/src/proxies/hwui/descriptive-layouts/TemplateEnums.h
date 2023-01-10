@@ -39,7 +39,7 @@ namespace DescriptiveLayouts
        MonoGlideText, UnisonVoicesText, UnisonDetuneText, UnisonPhaseText, UnisonPanText, MonoEnabled, UnisonEnabled,
        CurrentVoiceGroupLabel, SoundParamsButtonText, SoundVoicesButtonText, SoundFxMixMasterButtonText,
        SoundMasterButtonText, MonoButtonText, UnisonButtonText, VGIMuted, VGIIMuted, VGIIsMuted, VGIIIsMuted,
-       IsSingleSound, IsLayerSound, IsSplitSound, SplitPointIValue, SplitPointIIValue,
+       IsSingleSound, IsLayerSound, IsSplitSound, IsDualSound, SplitPointIValue, SplitPointIIValue,
 
        // try to use more generic names, the specific meaning is implemented in the EventProvider
        Edit, Fine, Locked, Position, NumItems,
