@@ -37,7 +37,7 @@ parameters:
     token: Prio
     label_long: Key Priority
     label_short: Priority
-    control_position: { coarse: 2, fine: 2, scale: SWITCH_PRIO, initial: 0.0f }
+    control_position: { coarse: 2, fine: 2, scale: SWITCH_PRIO, initial: 0.5f }
     rendering_args: { scaling: Linear, factor: 2.0f, offset: 0.0f, section: None, clock: None, signal: None }
     info: >
       When pressing multiple keys in Mono mode, they are sorted according to the priority set by this parameter.
