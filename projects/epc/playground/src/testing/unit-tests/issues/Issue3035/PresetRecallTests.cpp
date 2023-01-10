@@ -49,7 +49,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Loading Preset with
 
   WHEN("Bender is -1")
   {
-    benderUseCase.setControlPosition(-1.);
+    benderUseCase.changeFromAudioEngine(-1., HWChangeSource::TCD);
     TestHelper::doMainLoopIteration();
     CHECK(bender->getControlPositionValue() == -1);
     CHECK(mcA->getControlPositionValue() == 0);
@@ -58,7 +58,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Loading Preset with
 
   WHEN("Bender is 1")
   {
-    benderUseCase.setControlPosition(1.);
+    benderUseCase.changeFromAudioEngine(1., HWChangeSource::TCD);
     TestHelper::doMainLoopIteration();
     CHECK(bender->getControlPositionValue() == 1);
     CHECK(mcA->getControlPositionValue() == 1);
@@ -69,7 +69,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Loading Preset with
 
   WHEN("Bender is 1 and Held while saving")
   {
-    benderUseCase.setControlPosition(1.);
+    benderUseCase.changeFromAudioEngine(1., HWChangeSource::TCD);
     TestHelper::doMainLoopIteration();
 
     auto bank = pmUseCases.createBankAndStoreEditBuffer();
