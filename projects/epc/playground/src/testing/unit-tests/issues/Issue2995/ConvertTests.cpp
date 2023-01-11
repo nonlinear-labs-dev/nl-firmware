@@ -8,7 +8,19 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "all ids of monophonic")
   auto all = eb.findAllParametersOfType({C15::Descriptors::ParameterType::Monophonic_Unmodulateable, C15::Descriptors::ParameterType::Monophonic_Modulateable});
   for(const auto& p: all)
   {
-    nltools::Log::error(p.getNumber());
+    auto param = eb.findParameterByID(p);
+    CHECK(param->isMonophonic());
+  }
+}
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "all ids of polyphonic")
+{
+  auto& eb = *TestHelper::getEditBuffer();
+  auto all = eb.findAllParametersOfType({C15::Descriptors::ParameterType::Polyphonic_Unmodulateable, C15::Descriptors::ParameterType::Polyphonic_Modulateable});
+  for(const auto& p: all)
+  {
+    auto param = eb.findParameterByID(p);
+    CHECK(param->isPolyphonic());
   }
 }
 
@@ -137,6 +149,114 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
 
   auto part_vol_I = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
   auto part_tune_I = eb.findParameterByID({ C15::PID::Voice_Grp_Tune, VoiceGroup::I });
+
+  WHEN("split is loaded")
+  {
+    ebUseCases.initSoundAs(SoundType::Split, Defaults::FactoryDefault);
+
+    WHEN("convert II to single")
+    {
+      auto to_fx = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
+      auto to_fx_II = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+      auto fx_from = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
+      auto fx_from_II = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+
+      {
+        auto testScope = TestHelper::createTestScope();
+        to_fx_II->setCPFromHwui(testScope->getTransaction(), 0.3);
+        fx_from_II->setCPFromHwui(testScope->getTransaction(), 0.3);
+      }
+
+      auto to_fx_II_pre = to_fx_II->getControlPositionValue();
+      auto to_fx_I_pre = to_fx->getControlPositionValue();
+      auto fx_from_I_pre = fx_from->getControlPositionValue();
+      auto fx_from_II_pre = fx_from_II->getControlPositionValue();
+
+      WHEN("convert I")
+      {
+        ebUseCases.convertToSingle(VoiceGroup::I);
+
+        THEN("to-fx not inverted")
+        {
+          CHECK(to_fx->getControlPositionValue() == Approx(to_fx_I_pre));
+        }
+
+        THEN("fx_from not inverted")
+        {
+          CHECK(fx_from->getControlPositionValue() == Approx(fx_from_I_pre));
+        }
+      }
+
+      WHEN("convert II")
+      {
+        ebUseCases.convertToSingle(VoiceGroup::II);
+
+        THEN("to-fx inverted")
+        {
+          CHECK(to_fx->getControlPositionValue() == Approx(1 - to_fx_II_pre));
+        }
+
+        THEN("fx_from inverted")
+        {
+          CHECK(fx_from->getControlPositionValue() == Approx(1 - fx_from_II_pre));
+        }
+      }
+    }
+  }
+
+  WHEN("layer is loaded")
+  {
+    ebUseCases.initSoundAs(SoundType::Layer, Defaults::FactoryDefault);
+
+    WHEN("convert II to single")
+    {
+      auto to_fx = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
+      auto to_fx_II = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+      auto fx_from = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
+      auto fx_from_II = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+
+      {
+        auto testScope = TestHelper::createTestScope();
+        to_fx_II->setCPFromHwui(testScope->getTransaction(), 0.3);
+        fx_from_II->setCPFromHwui(testScope->getTransaction(), 0.3);
+      }
+
+      auto to_fx_II_pre = to_fx_II->getControlPositionValue();
+      auto to_fx_I_pre = to_fx->getControlPositionValue();
+      auto fx_from_I_pre = fx_from->getControlPositionValue();
+      auto fx_from_II_pre = fx_from_II->getControlPositionValue();
+
+      WHEN("convert I")
+      {
+        ebUseCases.convertToSingle(VoiceGroup::I);
+
+        THEN("to-fx not inverted")
+        {
+          CHECK(to_fx->getControlPositionValue() == Approx(to_fx_I_pre));
+        }
+
+        THEN("fx_from not inverted")
+        {
+          CHECK(fx_from->getControlPositionValue() == Approx(fx_from_I_pre));
+        }
+      }
+
+      WHEN("convert II")
+      {
+        ebUseCases.convertToSingle(VoiceGroup::II);
+
+        THEN("to-fx inverted")
+        {
+          CHECK(to_fx->getControlPositionValue() == Approx(1 - to_fx_II_pre));
+        }
+
+        THEN("fx_from inverted")
+        {
+          CHECK(fx_from->getControlPositionValue() == Approx(1 - fx_from_II_pre));
+        }
+      }
+    }
+  }
 
   WHEN("Single preset is prepared and loaded")
   {

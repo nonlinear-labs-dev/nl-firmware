@@ -795,10 +795,10 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   else if(oldType == SoundType::Layer)
     undoableConvertLayerToSingle(transaction, copyFrom);
 
-  initToFX(transaction);
+  copyToFXAndFxFrom(transaction, copyFrom);
   initFadeFrom(transaction, VoiceGroup::I);
   initFadeFrom(transaction, VoiceGroup::II);
-  initCrossFB(transaction);
+  initCrossFBExceptFromFX(transaction);
   initSplitPoint(transaction);
   initMasterPanAndSeperation(transaction);
 
@@ -825,6 +825,13 @@ void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, Vo
   ScopedLock locks(transaction);
   locks.addGroupLock({ "Unison", VoiceGroup::I });
   locks.addGroupLock({ "Mono", VoiceGroup::I });
+
+  ScopedLock lock2(transaction);
+  lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
+  lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+  lock2.addLock({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
+  lock2.addLock({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+
   if(copyFrom != VoiceGroup::I)
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
 
@@ -841,6 +848,12 @@ void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, Vo
   if(copyFrom != VoiceGroup::I)
   {
     ScopedMonophonicParameterLock lock(transaction, *this);
+    ScopedLock lock2(transaction);
+    lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
+    lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+    lock2.addLock({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
+    lock2.addLock({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
   }
 
@@ -2054,7 +2067,6 @@ void EditBuffer::copyPolyParametersFromI(UNDO::Transaction *transaction, const P
 
   for(auto targetGroup : getParameterGroups(group))
   {
-    using namespace C15::Descriptors;
     if(targetGroup->isPolyphonic())
     {
       targetGroup->copyFrom(transaction, preset->findParameterGroup({ targetGroup->getID().getName(), VoiceGroup::I }));
@@ -2067,4 +2079,18 @@ void EditBuffer::sendPresetLoadSignal()
   SettingsUseCases useCases(getSettings());
   useCases.setRibbonSelection(SelectedRibbons::Ribbon1_2);
   m_signalPresetLoaded.send();
+}
+
+void EditBuffer::copyToFXAndFxFrom(UNDO::Transaction *transaction, VoiceGroup copyFrom)
+{
+  if(copyFrom == VoiceGroup::II)
+  {
+    auto to_fx_I = findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
+    auto to_fx_II = findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+    to_fx_I->setCPFromHwui(transaction, 1 - to_fx_II->getControlPositionValue());
+
+    auto from_fx_I = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
+    auto from_fx_II = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+    from_fx_I->setCPFromHwui(transaction, 1 - from_fx_II->getControlPositionValue());
+  }
 }

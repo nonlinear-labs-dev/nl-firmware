@@ -288,4 +288,5 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void copySpecialFXFromParamForLoadSingleIntoDualPart(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to,
                                                        const Preset *preset);
   void copyPolyParametersFromI(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup group);
+  void copyToFXAndFxFrom(UNDO::Transaction *transaction, VoiceGroup copyFrom);
 };
