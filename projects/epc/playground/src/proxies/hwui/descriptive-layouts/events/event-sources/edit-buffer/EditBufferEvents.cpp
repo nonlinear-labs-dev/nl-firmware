@@ -722,7 +722,7 @@ void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_I::onChange(const EditBuffer 
   nltools_assertAlways(II_SHAPER_A_FB_Mix->isBiPolar() == false);
   nltools_assertAlways(II_SHAPER_B_FB_Mix->isBiPolar() == false);
 
-  if(II_FB_Mixer_Effects_From_II->getControlPositionValue() < 1 && II_FB_Mixer_Effects->getControlPositionValue() != 0
+  if(II_FB_Mixer_Effects_From_II->getControlPositionValue() > 0 && II_FB_Mixer_Effects->getControlPositionValue() != 0
      && II_FB_Mixer_Level->getControlPositionValue() > 0
      && (II_OSC_A_PM_FB->getControlPositionValue() != 0 || II_OSC_B_PM_FB->getControlPositionValue() != 0
          || II_SHAPER_A_FB_Mix->getControlPositionValue() > 0 || II_SHAPER_B_FB_Mix->getControlPositionValue() > 0))
@@ -761,7 +761,7 @@ void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_II::onChange(const EditBuffer
   nltools_assertAlways(II_SHAPER_A_FB_Mix->isBiPolar() == false);
   nltools_assertAlways(II_SHAPER_B_FB_Mix->isBiPolar() == false);
 
-  if(II_FB_Mixer_Effects_From_II->getControlPositionValue() > 0 && II_FB_Mixer_Effects->getControlPositionValue() != 0
+  if(II_FB_Mixer_Effects_From_II->getControlPositionValue() < 1 && II_FB_Mixer_Effects->getControlPositionValue() != 0
      && II_FB_Mixer_Level->getControlPositionValue() > 0
      && (II_OSC_A_PM_FB->getControlPositionValue() != 0 || II_OSC_B_PM_FB->getControlPositionValue() != 0
          || II_SHAPER_A_FB_Mix->getControlPositionValue() > 0 || II_SHAPER_B_FB_Mix->getControlPositionValue() > 0))
