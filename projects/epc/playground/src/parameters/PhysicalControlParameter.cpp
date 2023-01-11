@@ -188,7 +188,11 @@ void PhysicalControlParameter::onSelected()
 void PhysicalControlParameter::onUnselected()
 {
   Parameter::onUnselected();
+  resetChangedFromHWUIPosition();
+}
 
+void PhysicalControlParameter::resetChangedFromHWUIPosition()
+{
   if(m_lastChangedFromHWUI && getReturnMode() != ReturnMode::None)
   {
     m_lastChangedFromHWUI = false;
