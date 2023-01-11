@@ -41,3 +41,9 @@ bool DescriptiveLayouts::SoundConditions::IsSplitSound::check() const
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   return eb->getType() == SoundType::Split;
 }
+
+bool DescriptiveLayouts::SoundConditions::IsDualSound::check() const
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  return eb->isDual();
+}

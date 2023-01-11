@@ -1,0 +1,53 @@
+{
+  "layouts": {
+    "Single-Sound-Init-Layout": {
+      "Selector": {
+        "UIFocus": "Any",
+        "UIMode": "Select",
+        "UIDetail": "InitSound"
+      },
+      "Conditions": [
+        "isSingleSound"
+      ],
+      "Controls": {
+        "Header": {
+          "Class": "InvertedLabel",
+          "Position": "96, 18",
+          "Init": {
+            "Text[Text]": "Initialize"
+          }
+        },
+        "Init_As_Single": {
+          "Class": "Button",
+          "Position": "BUTTON_A",
+          "Init": {
+            "Text[Text]": "as Single"
+          }
+        },
+        "Init_As_Split": {
+          "Class": "Button",
+          "Position": "BUTTON_B",
+          "Init": {
+            "Text[Text]": "as Split"
+          }
+        },
+        "Init_As_Layer": {
+          "Class": "Button",
+          "Position": "BUTTON_C",
+          "Init": {
+            "Text[Text]": "as Layer"
+          }
+        },
+        "Init_Part": {
+          "Class": "Button",
+          "Position": "BUTTON_D"
+        }
+      },
+      "EventSinks": {
+        "BUTTON_A": "InitAsSingle",
+        "BUTTON_B": "InitAsSplit",
+        "BUTTON_C": "InitAsLayer"
+      }
+    }
+  }
+}

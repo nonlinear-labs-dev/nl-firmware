@@ -1,11 +1,14 @@
 {
   "layouts": {
-    "Sound-Init-Layout": {
+    "Dual-Sound-Init-Layout": {
       "Selector": {
         "UIFocus": "Any",
         "UIMode": "Select",
         "UIDetail": "InitSound"
       },
+      "Conditions": [
+        "isDualSound"
+      ],
       "Controls": {
         "Header": {
           "Class": "InvertedLabel",
