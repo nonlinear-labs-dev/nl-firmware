@@ -36,10 +36,9 @@ class ParameterCarousel : public Carousel
   void setupChildControlsThatFit(Parameter* selectedParameter, const std::list<int>& buttonAssignments);
   void setupChildControlsForParameterWithoutButtonMapping(Parameter *selectedParameter);
   void setupChildControlsThatDontFit(Parameter *selectedParameter, const std::list<int> &buttonAssignments);
-  int firstParameterIDOfCarousel() const;
 
-
-  int lastParameterIDOfCarousel() const;
+  std::optional<int> firstParameterIDOfCarousel() const;
+  std::optional<int> lastParameterIDOfCarousel() const;
 };
 
 

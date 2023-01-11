@@ -5,11 +5,13 @@
 #include "MiniParameter.h"
 #include "parameters/Parameter.h"
 #include "MiniParameterLabel.h"
+#include "nltools/Assert.h"
 
 MiniParameter::MiniParameter(Parameter *param, const Rect &pos)
     : super(pos)
     , m_param(param)
 {
+  nltools_assertAlways(param != nullptr);
   m_label = addControl(new MiniParameterLabel(param, Rect(0, 0, 56, 9)));
 
   if(param->getID().getNumber() == ScaleGroup::getScaleBaseParameterNumber())

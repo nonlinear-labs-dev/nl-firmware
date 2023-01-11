@@ -167,11 +167,14 @@ void ParameterCarousel::antiTurn()
   if(!handled)
   {
     auto idToSelect = lastParameterIDOfCarousel();
-    auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
-    if(ParameterId::isGlobal(idToSelect))
-      ebUseCases.selectParameter({ idToSelect, VoiceGroup::Global }, true);
-    else
-      ebUseCases.selectParameter({ idToSelect, vg }, true);
+    if(idToSelect.has_value())
+    {
+      auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+      if(ParameterId::isGlobal(idToSelect.value()))
+        ebUseCases.selectParameter({ idToSelect.value(), VoiceGroup::Global }, true);
+      else
+        ebUseCases.selectParameter({ idToSelect.value(), vg }, true);
+    }
   }
 }
 
@@ -206,11 +209,14 @@ void ParameterCarousel::turn()
   if(!handled)
   {
     auto idToSelect = firstParameterIDOfCarousel();
-    auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
-    if(ParameterId::isGlobal(idToSelect))
-      ebUseCases.selectParameter({ idToSelect, VoiceGroup::Global }, true);
-    else
-      ebUseCases.selectParameter({ idToSelect, vg }, true);
+    if(idToSelect.has_value())
+    {
+      auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+      if(ParameterId::isGlobal(idToSelect.value()))
+        ebUseCases.selectParameter({ idToSelect.value(), VoiceGroup::Global }, true);
+      else
+        ebUseCases.selectParameter({ idToSelect.value(), vg }, true);
+    }
   }
 }
 
@@ -284,13 +290,17 @@ void ParameterCarousel::setupChildControlsThatDontFit(Parameter* selectedParamet
   }
 }
 
-int ParameterCarousel::firstParameterIDOfCarousel() const
+std::optional<int> ParameterCarousel::firstParameterIDOfCarousel() const
 {
+  if(m_currentCarouselContentIDs.empty())
+    return std::nullopt;
   return m_currentCarouselContentIDs.front();
 }
 
-int ParameterCarousel::lastParameterIDOfCarousel() const
+std::optional<int> ParameterCarousel::lastParameterIDOfCarousel() const
 {
+  if(m_currentCarouselContentIDs.empty())
+    return std::nullopt;
   return m_currentCarouselContentIDs.back();
 }
 
