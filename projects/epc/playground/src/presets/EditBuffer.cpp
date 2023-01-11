@@ -826,6 +826,7 @@ void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, Vo
   locks.addGroupLock({ "Unison", VoiceGroup::I });
   locks.addGroupLock({ "Mono", VoiceGroup::I });
 
+  ScopedMonophonicParameterLock fxLock(transaction, *this);
   ScopedLock lock2(transaction);
   lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
   lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
