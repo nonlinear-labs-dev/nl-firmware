@@ -23,7 +23,7 @@ FocusAndMode FocusAndModeSetting::getState() const
 
 FocusAndMode FocusAndModeSetting::getOldState() const
 {
-  return m_oldFocusAndMode;
+  return removeInvalidStatesFromOldMode(m_oldFocusAndMode);
 }
 
 bool FocusAndModeSetting::persistent() const
@@ -121,5 +121,48 @@ FocusAndMode FocusAndModeSetting::restrictFocusAndMode(FocusAndMode in) const
   in = fixFocusAndModeWithAnys(in);
   in = removeEditOnFocusChange(in);
   in = removeInvalidsFromSound(in);
+  return in;
+}
+
+FocusAndMode FocusAndModeSetting::removeInvalidStatesFromOldMode(FocusAndMode in) const
+{
+  if(in.detail == UIDetail::InitSound)
+  {
+    if(m_focusAndMode.focus == UIFocus::Presets)
+      in = FocusAndMode{UIFocus::Sound, UIMode::Select, UIDetail::Init};
+    else
+      in = FocusAndMode{UIFocus::Presets, UIMode::Select, UIDetail::Init};
+  }
+
+  if(in.focus == UIFocus::Presets)
+  {
+    if(in.mode == UIMode::Edit || in.mode == UIMode::Store || in.mode == UIMode::Info)
+    {
+      if(m_focusAndMode.focus == UIFocus::Presets)
+        in = FocusAndMode{UIFocus::Sound, UIMode::Select, UIDetail::Init};
+      else
+        in = FocusAndMode{UIFocus::Presets, UIMode::Select, UIDetail::Init};
+    }
+  }
+
+  if(in.focus == UIFocus::Sound)
+  {
+    if(in.mode == UIMode::Edit || in.mode == UIMode::Info)
+    {
+      if(in.mode == UIMode::Edit && !(m_focusAndMode.focus == UIFocus::Sound && m_focusAndMode.mode == UIMode::Select))
+        in = FocusAndMode{UIFocus::Sound, UIMode::Select, UIDetail::Init};
+      else
+        in = FocusAndMode{UIFocus::Presets, UIMode::Select, UIDetail::Init};
+    }
+  }
+
+  if(in.focus == UIFocus::Setup)
+  {
+    if(m_focusAndMode.focus == UIFocus::Presets)
+      in = FocusAndMode{UIFocus::Sound, UIMode::Select, UIDetail::Init};
+    else
+      in = FocusAndMode{UIFocus::Presets, UIMode::Select, UIDetail::Init};
+  }
+
   return in;
 }

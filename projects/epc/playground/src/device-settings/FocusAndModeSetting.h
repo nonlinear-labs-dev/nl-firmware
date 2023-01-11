@@ -25,6 +25,7 @@ class FocusAndModeSetting : public Setting
   static FocusAndMode fixFocusAndModeWithAnys(FocusAndMode in);
   static FocusAndMode removeInvalidsFromSound(FocusAndMode in);
 
+  FocusAndMode removeInvalidStatesFromOldMode(FocusAndMode in) const;
   FocusAndMode restrictFocusAndMode(FocusAndMode in) const;
   FocusAndMode removeEditOnFocusChange(FocusAndMode in) const;
 
