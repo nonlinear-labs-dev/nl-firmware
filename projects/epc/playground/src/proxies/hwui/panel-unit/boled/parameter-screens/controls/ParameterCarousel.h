@@ -4,6 +4,7 @@
 #include "Carousel.h"
 #include "MiniParameter.h"
 #include <nltools/Types.h>
+#include <optional>
 
 class Application;
 class Parameter;
