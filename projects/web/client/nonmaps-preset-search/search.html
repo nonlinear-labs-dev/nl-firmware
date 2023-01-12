@@ -94,18 +94,19 @@
 
 <template name="presetSearchColor">
     <button {{attributes}}>
-        <div class="square"></div>
     </button>
 </template>
 
 <template name="bankSelect">
     <div class="banks">
-        <button class="toggle">
-            <div {{ previousBankAttribute }}>
-                <div class="arrow left">&#xe303;</div>
-            </div>
-            <div {{ nextBankAttribute }}>
-                <div class="arrow right">&#xe301;</div>
+        <button class="toggle no-close-bank-menu">
+            <div class="no-close-bank-menu next-prev-bank-buttons">
+                <div {{ previousBankAttribute }}>
+                    <div class="arrow left no-close-bank-menu">&#xe303;</div>
+                </div>
+                <div {{ nextBankAttribute }}>
+                    <div class="arrow right no-close-bank-menu">&#xe301;</div>
+                </div>
             </div>
             <div class="title">{{ get "buttonName" }}</div>
             <div class="symbol">
@@ -152,7 +153,7 @@
 
 <template name="searchResultPreset">
     <div {{presetAttributes}}>
-        <div {{colorAttributes}}>▮</div>
+        <div {{colorAttributes}}></div>
         <div class="number">{{ get "number" }}</div>
         <div class="name">{{ get "name" }}</div>
         <div class="type">{{ get "type" }}</div>

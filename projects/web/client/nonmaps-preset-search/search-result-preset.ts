@@ -1,6 +1,6 @@
 import { globals, glue } from "../glue";
 import "./search.html";
-import { cachedSearch, getPresetHeight, multipleSelection, multipleSelectionStartedByShiftClick, scrollY } from "./shared-state";
+import { cachedSearch, getPresetHeight, multipleSelection, multipleSelectionStartedByShiftClick, numPresetsBeforeFirstVisible, scrollY } from "./shared-state";
 
 const presetCSVFormat = "text/preset-csv";
 
@@ -18,7 +18,7 @@ class Presenter {
         const scroll = scrollY.get();
         const offset = scroll / getPresetHeight();
 
-        idx = Math.floor(idx + offset);
+        idx = Math.floor(idx + offset) - numPresetsBeforeFirstVisible;
         const id = cachedSearch.get()[idx];
 
         if (id) {
@@ -136,21 +136,33 @@ const events = {
     },
     "startDrag"(event: JQuery.Event, presenter: Presenter, innerState: InnerState | null) {
         const o = event['originalEvent'].detail.originalEvent;
-        dispatchDragEvent(event['currentTarget'], o, innerState!.dataTransfer, 'dragstart');
+        dispatchDragEvent(event['currentTarget'], o, innerState!.dataTransfer!, 'dragstart');
+    },
+    "stopDrag"(event: JQuery.Event, presenter: Presenter, innerState: InnerState | null) {
+        const o = event['originalEvent'].detail.originalEvent;
+        dispatchDragEvent(this._lastTarget, o, innerState!.dataTransfer!, "drop");
+        dispatchDragEvent(this._lastTarget, o, innerState!.dataTransfer!, "dragend");
+    },
+    "cancelDrag"(event: JQuery.Event, presenter: Presenter, innerState: InnerState | null) {
+        const o = event['originalEvent'].detail.originalEvent;
+        var e = new DragEvent("dragend", {});
+        this._lastTarget.dispatchEvent(e);
     },
     "performDrag"(event: JQuery.Event, presenter: Presenter, innerState: InnerState | null) {
+        console.log("perform drag");
+
         const o = event['originalEvent'].detail.originalEvent;
         const target = getElementAt(o.pageX, o.pageY);
-        dispatchDragEvent(target, o, innerState!.dataTransfer, "drag");
+        dispatchDragEvent(target, o, innerState!.dataTransfer!, "drag");
 
         if (target != this._lastTarget) {
-            dispatchDragEvent(this._lastTarget, o, innerState!.dataTransfer, "dragleave");
+            dispatchDragEvent(this._lastTarget, o, innerState!.dataTransfer!, "dragleave");
             this._lastTarget = target;
-            dispatchDragEvent(target, o, innerState!.dataTransfer, "dragenter");
+            dispatchDragEvent(target, o, innerState!.dataTransfer!, "dragenter");
         }
-        dispatchDragEvent(target, o, innerState!.dataTransfer, "dragover");
+        dispatchDragEvent(target, o, innerState!.dataTransfer!, "dragover");
     },
-    'dragstart'(event: JQuery.Event, presenter: Presenter) {
+    'dragstart'(event: JQuery.Event, presenter: Presenter, innerState: InnerState | null) {
         var t = (event as JQuery.DragStartEvent).originalEvent!.dataTransfer!;
         t.clearData();
         var s = multipleSelection.get();

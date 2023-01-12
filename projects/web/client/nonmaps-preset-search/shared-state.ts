@@ -4,6 +4,7 @@ export var cachedSearch = new ReactiveVar<Array<string>>([]);
 export var scrollY = new ReactiveVar<number>(0);
 export var multipleSelection = new ReactiveVar<Array<string> | null>(null);
 export var multipleSelectionStartedByShiftClick = new ReactiveVar<boolean>(false);
+export const numPresetsBeforeFirstVisible = 20;
 
 export function getPresetHeight() {
     var e = document.getElementsByClassName("preset");

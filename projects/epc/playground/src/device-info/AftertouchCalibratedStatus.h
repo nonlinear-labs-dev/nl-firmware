@@ -17,5 +17,5 @@ class AftertouchCalibratedStatus : public DeviceInformationItem
  private:
   void onCalibrationChanged(bool calibrated);
   sigc::connection m_connection;
-  bool m_isCalibrated;
+  bool m_isCalibrated = false;
 };

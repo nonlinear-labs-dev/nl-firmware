@@ -66,10 +66,12 @@
     outline: none;
 }
 
-.preset-search {
-    -webkit-touch-callout: none !important;
+body {
     -webkit-user-select: none !important;
     user-select: none;
+}
+
+.preset-search {
 
     ::-webkit-scrollbar {
         width: 2mm;
@@ -87,7 +89,6 @@
     ::-webkit-scrollbar-track {
         background: #666666;
         border: 69px none #ffffff;
-        border-radius: 8px;
     }
 
     ::-webkit-scrollbar-track:hover {
@@ -206,14 +207,9 @@
 
         button {
             padding: 0;
-
             border-radius: 1mm;
-
-            .square {
-                border-radius: 1mm;
-                width: 7mm;
-                height: 7mm;
-            }
+            width: 7mm;
+            height: 7mm;
         }
 
         button.settings {
@@ -240,30 +236,30 @@
         }
 
         button.selected {
-            outline: 2px #ffffff solid;
+            border: 0.5mm #ffffff solid;
         }
 
-        button.green .square {
+        button.green {
             background-color: @preset-color-green;
         }
 
-        button.blue .square {
+        button.blue {
             background-color: @preset-color-blue;
         }
 
-        button.yellow .square {
+        button.yellow {
             background-color: @preset-color-yellow;
         }
 
-        button.orange .square {
+        button.orange {
             background-color: @preset-color-orange;
         }
 
-        button.purple .square {
+        button.purple {
             background-color: @preset-color-purple;
         }
 
-        button.red .square {
+        button.red {
             background-color: @preset-color-red;
         }
     }
@@ -307,6 +303,10 @@
 
             * {
                 display: inline-block;
+            }
+
+            .next-prev-bank-buttons {
+                display: flex;
             }
 
             #select-previous-bank,
@@ -370,6 +370,7 @@
                 border-bottom: solid 1px #b3b3b3;
 
                 button {
+                    color: black;
                     margin: 2mm;
                     padding: 1mm;
                     min-width: 15mm;
@@ -501,6 +502,7 @@
         position: relative;
         overflow: auto;
         border: 1px solid gray;
+        touch-action: pan-y;
     }
 
     .no-pointer-events {
@@ -513,13 +515,14 @@
         width: 100%;
         flex-grow: 2;
         flex-shrink: 2;
-        touch-action: none;
+
         background-color: black;
         border-right: 1px solid gray;
 
         .preset {
             position: relative;
-            display: block;
+            display: flex;
+            align-items: center;
             color: white;
             white-space: nowrap;
             border-bottom: 1px solid gray;
@@ -528,70 +531,67 @@
             background-color: rgb(25, 25, 25);
 
             .color {
-                position: relative;
+                min-width: 0.5em;
+                min-height: 1em;
+                margin: 1mm;
                 display: inline-block;
-                width: 1ex;
                 color: transparent;
+                vertical-align: middle;
             }
 
             .number {
-                position: relative;
                 display: inline-block;
                 width: 9ex;
                 white-space: nowrap;
+                vertical-align: middle;
             }
 
             .name {
-                position: absolute;
                 display: inline-block;
                 white-space: nowrap;
                 overflow: hidden;
                 left: 10ex;
                 right: 1ex + 2mm;
+                vertical-align: middle;
+                flex-grow: 2;
             }
 
             .type {
-                position: absolute;
+                align-self: flex-end;
                 display: inline-block;
                 overflow: hidden;
-                right: 0;
                 width: 1ex;
                 padding-right: 5mm;
                 text-align: center;
+                vertical-align: middle;
             }
 
             .color.green {
-                color: @preset-color-green;
+                background-color: @preset-color-green;
             }
 
             .color.blue {
-                color: @preset-color-blue;
+                background-color: @preset-color-blue;
             }
 
             .color.yellow {
-                color: @preset-color-yellow;
+                background-color: @preset-color-yellow;
             }
 
             .color.orange {
-                color: @preset-color-orange;
+                background-color: @preset-color-orange;
             }
 
             .color.purple {
-                color: @preset-color-purple;
+                background-color: @preset-color-purple;
             }
 
             .color.red {
-                color: @preset-color-red;
+                background-color: @preset-color-red;
             }
 
             .color.none {
-                color: @preset-color-none;
-            }
-
-            .color .square {
-                width: 1cm;
-                height: 1cm;
-                display: block;
+                background-color: @preset-color-none;
             }
         }
 
@@ -681,15 +681,27 @@
 }
 
 .context-menu-list {
-    border-radius: 1.5mm;
-    border: 1px solid darkgray;
+    border-radius: 1mm;
+    border: 1px solid rgb(128, 128, 128);
 }
 
 .context-menu-list,
 .context-menu-item {
-    background-color: #4d4d4d;
-    color: white;
-    padding-left: 1ex;
+    background-color: rgb(77, 77, 77);
+    color: rgb(230, 230, 230);
+    padding-left: 0.75ex;
+    line-height: 100%;
+    margin-top: 4.2mm;
+    margin-bottom: 4.2mm;
+    font-size: 4mm;
+}
+
+.context-menu-item:first-child {
+    margin-top: 1.5mm;
+}
+
+.context-menu-item:last-child {
+    margin-bottom: 1.5mm;
 }
 
 .context-menu-item.context-menu-hover {
