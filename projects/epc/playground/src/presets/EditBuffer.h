@@ -290,4 +290,5 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void copyPolyParametersFromI(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup group);
   void copyToFXAndFxFrom(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void undoableResetCrossPartFXParametersForLoadToPart(UNDO::Transaction *transaction, const VoiceGroup &copyTo) const;
+  void undoableResetCrossPartFXParametersForLoadToPartOfLayer(UNDO::Transaction* transaction, VoiceGroup copyTo);
 };

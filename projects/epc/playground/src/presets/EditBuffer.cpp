@@ -1560,6 +1560,10 @@ void EditBuffer::undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transac
     copySinglePresetMasterToPartMaster(transaction, preset, copyTo);
 
   undoableResetCrossPartFXParametersForLoadToPart(transaction, copyTo);
+  if(preset->getType() == SoundType::Layer)
+  {
+    undoableResetCrossPartFXParametersForLoadToPartOfLayer(transaction, copyTo);
+  }
 
   initFadeParameters(transaction, copyTo);
   if(preset->getType() == SoundType::Layer)
@@ -1632,6 +1636,10 @@ void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transac
   }
 
   undoableResetCrossPartFXParametersForLoadToPart(transaction, copyTo);
+  if(preset->getType() == SoundType::Layer)
+  {
+    undoableResetCrossPartFXParametersForLoadToPartOfLayer(transaction, copyTo);
+  }
 
   getParameterGroupByID({ "Unison", VoiceGroup::II })->undoableLoadDefault(transaction, Defaults::FactoryDefault);
   getParameterGroupByID({ "Mono", VoiceGroup::II })->undoableLoadDefault(transaction, Defaults::FactoryDefault);
@@ -2110,4 +2118,20 @@ void EditBuffer::copyToFXAndFxFrom(UNDO::Transaction *transaction, VoiceGroup co
     auto from_fx_II = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
     from_fx_I->setCPFromHwui(transaction, 1 - from_fx_II->getControlPositionValue());
   }
+}
+
+void EditBuffer::undoableResetCrossPartFXParametersForLoadToPartOfLayer(UNDO::Transaction *transaction,
+                                                                        VoiceGroup copyTo)
+{
+  auto FB_MIX_AB = findParameterByID({C15::PID::FB_Mix_Osc, copyTo});
+  FB_MIX_AB->setCPFromHwui(transaction, 0);
+
+  auto FB_MIX_COMB = findParameterByID({C15::PID::FB_Mix_Comb, copyTo});
+  auto FB_MIX_COMB_FROM = findParameterByID({C15::PID::FB_Mix_Comb_Src, copyTo});
+  FB_MIX_COMB->setCPFromHwui(transaction, FB_MIX_COMB->getControlPositionValue() * (1 - FB_MIX_COMB_FROM->getControlPositionValue()));
+  FB_MIX_COMB_FROM->setCPFromHwui(transaction, 0);
+
+  auto FB_MIX_SVF = findParameterByID({C15::PID::FB_Mix_SVF, copyTo});
+  auto FB_MIX_SVF_FROM = findParameterByID({C15::PID::FB_Mix_SVF_Src, copyTo});
+  FB_MIX_SVF->setCPFromHwui(transaction, FB_MIX_SVF->getControlPositionValue() * (1 - FB_MIX_SVF_FROM->getControlPositionValue()));
 }
