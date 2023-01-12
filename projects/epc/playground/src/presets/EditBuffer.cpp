@@ -730,16 +730,10 @@ void EditBuffer::combineSplitPartGlobalMaster(UNDO::Transaction *transaction, Vo
   findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I })->setCPFromHwui(transaction, 0);
   findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->setCPFromHwui(transaction, 0);
 
-  ParabolicGainDbScaleConverter dbGainConverter;
-
-  auto vgVolumeDisplay = dbGainConverter.controlPositionToDisplay(originVolume->getControlPositionValue());
-  auto masterVolumeDisplay = dbGainConverter.controlPositionToDisplay(masterVolumeParameter->getControlPositionValue());
-
-  auto newVolume = dbGainConverter.displayToControlPosition(vgVolumeDisplay + masterVolumeDisplay);
   auto newTune = originTune->getControlPositionValue() + masterTuneParameter->getControlPositionValue();
 
-  masterVolumeParameter->copyFrom(transaction, originVolume);
-  masterVolumeParameter->setCPFromHwui(transaction, newVolume);
+  masterVolumeParameter->setModulationAmount(transaction, originVolume->getModulationAmount());
+  masterVolumeParameter->setModulationSource(transaction, originVolume->getModulationSource());
 
   masterTuneParameter->copyFrom(transaction, originTune);
   masterTuneParameter->setCPFromHwui(transaction, newTune);
@@ -762,15 +756,8 @@ void EditBuffer::combineLayerPartGlobalMaster(UNDO::Transaction *transaction, Vo
   findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I })->setCPFromHwui(transaction, 0);
   findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->setCPFromHwui(transaction, 0);
 
-  ParabolicGainDbScaleConverter dbGainConverter;
-
-  auto vgVolumeDisplay = dbGainConverter.controlPositionToDisplay(originVolume->getControlPositionValue());
-  auto masterVolumeDisplay = dbGainConverter.controlPositionToDisplay(masterVolumeParameter->getControlPositionValue());
-
-  auto newVolume = dbGainConverter.displayToControlPosition(vgVolumeDisplay + masterVolumeDisplay);
   auto newTune = originTune->getControlPositionValue() + masterTuneParameter->getControlPositionValue();
 
-  masterVolumeParameter->setCPFromHwui(transaction, newVolume);
   masterVolumeParameter->setModulationSource(transaction, originVolume->getModulationSource());
   masterVolumeParameter->setModulationAmount(transaction, originVolume->getModulationAmount());
 
@@ -788,7 +775,8 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   setName(transaction, getVoiceGroupName(copyFrom));
   undoableSetTypeFromConvert(transaction, SoundType::Single);
 
-  copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(transaction, copyFrom);
+  auto master_vol = findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
+  copyPartVolumesToGlobalMasterAndFXMixForConvertDualToSingle(transaction, copyFrom);
 
   if(oldType == SoundType::Split)
     undoableConvertSplitToSingle(transaction, copyFrom);
@@ -1967,7 +1955,7 @@ void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertSingleToDual(UND
   partVolII->setCPFromHwui(transaction, partVolumeCpVgII);
 }
 
-void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(UNDO::Transaction *transaction,
+void EditBuffer::copyPartVolumesToGlobalMasterAndFXMixForConvertDualToSingle(UNDO::Transaction *transaction,
                                                                              VoiceGroup copyFrom)
 {
   const auto masterVolume = findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
@@ -1990,7 +1978,8 @@ void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(UND
   {
     const double ratio = parabolicGainCpToAmplitude(partVolI->getControlPositionValue())
         / parabolicGainCpToAmplitude(partVolII->getControlPositionValue());
-    masterFX_MIX->setCPFromHwui(transaction, (std::sqrt((ratio * ratio) - ratio + 1.0) - ratio) / (1.0 - ratio));
+    auto value = (std::sqrt((ratio * ratio) - ratio + 1.0) - ratio) / (1.0 - ratio);
+    masterFX_MIX->setCPFromHwui(transaction, value);
   }
   const auto masterVolumeAmplitude = parabolicGainCpToAmplitude(masterVolume->getControlPositionValue());
   // determine master volume according to selected part
@@ -2003,14 +1992,13 @@ void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(UND
     }
     else
     {
-      masterVolume->setCPFromHwui(
-          transaction,
-          std::min(
-              amplitudeToParabolicGainCp(
-                  masterVolumeAmplitude
-                  * parabolicGainCpToAmplitude(partVolumeSelf->getControlPositionValue()
-                                               / parabolicFadeCpToAmplitude(masterFX_MIX->getControlPositionValue()))),
-              1.0));
+      auto value = std::min(
+          amplitudeToParabolicGainCp(
+              masterVolumeAmplitude
+              * parabolicGainCpToAmplitude(partVolumeSelf->getControlPositionValue())
+                                           / parabolicFadeCpToAmplitude(masterFX_MIX->getControlPositionValue())),
+          1.0);
+      masterVolume->setCPFromHwui(transaction, value);
     }
   }
   else
@@ -2022,15 +2010,14 @@ void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(UND
     }
     else
     {
+      auto value = std::min(
+          amplitudeToParabolicGainCp(masterVolumeAmplitude
+                                     * parabolicGainCpToAmplitude(
+                                         partVolumeSelf->getControlPositionValue())
+                                         / parabolicFadeCpToAmplitude(1.0 - masterFX_MIX->getControlPositionValue())),
+          1.0);
       // handle general case by normalizing amplitudes
-      masterVolume->setCPFromHwui(
-          transaction,
-          std::min(amplitudeToParabolicGainCp(
-                       masterVolumeAmplitude
-                       * parabolicGainCpToAmplitude(
-                           partVolumeSelf->getControlPositionValue()
-                           / parabolicFadeCpToAmplitude(1.0 - masterFX_MIX->getControlPositionValue()))),
-                   1.0));
+      masterVolume->setCPFromHwui(transaction, value);
     }
   }
 }
