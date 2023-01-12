@@ -4,7 +4,7 @@ import { Tracker } from "meteor/tracker";
 import { globals, glue } from "../glue";
 import "./search-result-preset";
 import "./search.html";
-import { cachedSearch, getPresetHeight, scrollY } from "./shared-state";
+import { cachedSearch, getPresetHeight, multipleSelection, multipleSelectionStartedByShiftClick, scrollY } from "./shared-state";
 
 type StringArray = Array<String>;
 enum SearchOperator { And, Or }
@@ -264,11 +264,22 @@ document.addEventListener('wheel', (event) => {
         event.stopImmediatePropagation();
 }, true);
 
+function sendEventToPreset(name: string, event: JQuery.Event) {
+    var presetHeight = getPresetHeight();
+    const scroller = document.getElementById("preset-search-results-scroller")!;
+    const top = scroller.getBoundingClientRect().top;
+    var presetHeight = getPresetHeight();
+    var offsetY = scrollY.get() + event.clientY! - top;
+    var idx = offsetY / presetHeight;
+    const searchResult = cachedSearch.get();
+    const presetId = searchResult[(Math.floor(idx))]!;
+    const preset = document.getElementById(presetId);
+    preset?.dispatchEvent(new CustomEvent(name, { detail: { originalEvent: event } }));
+}
+
 glue("nonmapsPresetSearch",
     (id, innerState) => {
         const searchResult = cachedSearch.get();
-        const options = searchOptions.get().sorting;
-        const maxPresetsVisibleOnOnePage = 100;
         const scroller = document.getElementById("preset-search-results-scroller");
 
         if (scroller) {
@@ -279,17 +290,13 @@ glue("nonmapsPresetSearch",
         }
 
         return {
-            allPresets: searchResult,
-            shownPresets: Array.from(Array(maxPresetsVisibleOnOnePage).keys()),
             collapsed: searchCollapsed.get(),
             numResults: searchResult.length,
             hasSearchQuery: searchQuery.get().length > 0
         }
     }, () => {
         syncCollapsedState(true);
-        return {
-            lastKnownPointerY: 0
-        }
+        return {};
     }, {
     "sortByNumberAttributes"() {
         return {
@@ -319,40 +326,6 @@ glue("nonmapsPresetSearch",
     "timeSortDirectionAttributes"() {
         return {
             class: ["sort ", searchOptions.get().sorting.find(z => z.by == SortBy.Time)!.direction == SortDirection.Asc ? "asc" : "desc"]
-        }
-    },
-    "presetSearchResultsScrollerAttributes"(presenter) {
-        if (showBankSelectPane.get())
-            return {
-                id: "preset-search-results-scroller",
-                style: "overflow: hidden;"
-            }
-
-        return {
-            id: "preset-search-results-scroller",
-            style: "overflow: auto;"
-        }
-    },
-    "presetSearchResultsScrollerPaneAttributes"(presenter) {
-        var presetHeight = getPresetHeight();
-        var paneHeight = presetHeight * presenter.allPresets.length;
-
-        return {
-            id: "preset-search-results-scroller-pane",
-            style: "height: " + paneHeight + "px"
-        }
-    },
-    "presetSearchResultsAttributes"(presenter, innerState) {
-        const ph = getPresetHeight();
-        const scroll = scrollY.get();
-        const offset = scroll / ph;
-        const firstPresetIdx = Math.floor(offset);
-        const numPresets = presenter.allPresets.length;
-        const h = (numPresets - firstPresetIdx) * ph;
-
-        return {
-            id: "preset-search-results",
-            style: "top:" + getSearchResultScrollOffset() + "px; height: " + h + "px;"
         }
     }
 },
@@ -402,31 +375,6 @@ glue("nonmapsPresetSearch",
             else {
                 $("input.search-string").get(0)!.focus();
             }
-        },
-        "scrollY"(event: JQuery.Event, presenter, innerState) {
-            const list = document.getElementById("preset-search-results-scroller")!;
-            list.setPointerCapture(event['originalEvent'].detail.pointerId);
-            list.scrollBy(0, event['originalEvent'].detail.diffY);
-            innerState!.lastKnownPointerY = event['originalEvent'].detail.pageY;
-        },
-        "pointermove"(event: JQuery.Event, presenter, innerState) {
-            const list = document.getElementById("preset-search-results-scroller")!;
-            if (list && list.hasPointerCapture(event['originalEvent'].pointerId)) {
-                const pageY = event['originalEvent'].pageY;
-                const diff = innerState!.lastKnownPointerY - pageY;
-                innerState!.lastKnownPointerY = pageY;
-                list.scrollBy(0, diff);
-            }
-        },
-        "pointerup"(event: JQuery.Event) {
-            const list = document.getElementById("preset-search-results-scroller")!;
-            if (list)
-                list.releasePointerCapture(event['originalEvent'].pointerId);
-        },
-        "scroll #preset-search-results-scroller"(event) {
-            scrollY.set(event['target'].scrollTop);
-            $("#preset-search-results").css("top", getSearchResultScrollOffset() + "px");
-            Tracker.flush();
         }
     });
 
@@ -612,5 +560,253 @@ glue("bankOption", (id: string) => {
     "click"(event, presenter) {
         var old = searchBanks.get();
         searchBanks.set(old.includes(presenter.id) ? old.filter(v => v != presenter.id) : old.concat([presenter.id]));
+    }
+});
+
+enum PointerOperation {
+    Scroll,
+    DragPreset,
+    SelectOrLoad,
+    ContextMenu
+}
+
+class Position {
+    public x: number;
+    public y: number;
+}
+
+function getHysteresis() {
+    return document.getElementById("hysteresis")?.clientWidth ?? 10;
+}
+
+class SearchResultsInnerState {
+    constructor(public contextMenuTimeout: null | number = null) {
+    }
+
+    public startContextMenuTimeout(x: number, y: number) {
+        this.cancelContextMenuTimeout();
+        this.contextMenuTimeout = Meteor.setTimeout(() => {
+            if (this.possibleOperations.has(PointerOperation.ContextMenu)) {
+                const list = document.getElementById("preset-search-results-scroller-pane")!;
+                list.dispatchEvent(new ContextMenuEvent(x, y));
+                this.onContextMenu();
+            }
+        }, 500);
+    }
+
+    public cancelContextMenuTimeout() {
+        if (this.contextMenuTimeout)
+            Meteor.clearTimeout(this.contextMenuTimeout);
+        this.contextMenuTimeout = null;
+    }
+
+    public onPointerDown(event: JQuery.Event) {
+        this.possibleOperations.add(PointerOperation.Scroll);
+        this.possibleOperations.add(PointerOperation.DragPreset);
+        this.possibleOperations.add(PointerOperation.SelectOrLoad);
+        this.possibleOperations.add(PointerOperation.ContextMenu);
+        this.pointerDown = { x: event.clientX!, y: event.clientY! };
+        this.xHysteresisDone = false;
+        this.startedDragging.set(false);
+    }
+
+    public onPointerMove(event: JQuery.Event) {
+        const hysteresis = getHysteresis();
+
+        if (this.pointerDown) {
+            if (Math.abs(event.clientY! - this.pointerDown.y) >= hysteresis) {
+                this.possibleOperations.delete(PointerOperation.DragPreset);
+                this.possibleOperations.delete(PointerOperation.SelectOrLoad);
+                this.possibleOperations.delete(PointerOperation.ContextMenu);
+            }
+            else if (Math.abs(event.clientX! - this.pointerDown.x) >= hysteresis) {
+                this.xHysteresisDone = true;
+                this.possibleOperations.delete(PointerOperation.Scroll);
+                this.possibleOperations.delete(PointerOperation.SelectOrLoad);
+                this.possibleOperations.delete(PointerOperation.ContextMenu);
+            }
+
+            if (this.xHysteresisDone && !this.startedDragging.get()) {
+                sendEventToPreset("startDrag", event);
+                this.startedDragging.set(true);
+            }
+            else if (this.startedDragging.get()) {
+                sendEventToPreset("performDrag", event);
+            }
+        }
+    }
+
+    public onPointerUp(event: JQuery.Event) {
+        this.pointerDown = null;
+
+        if (this.possibleOperations.has(PointerOperation.SelectOrLoad)) {
+            sendEventToPreset("selectOrLoad", event);
+        }
+    }
+
+    public onContextMenu() {
+        this.possibleOperations.delete(PointerOperation.DragPreset);
+        this.possibleOperations.delete(PointerOperation.SelectOrLoad);
+        this.possibleOperations.delete(PointerOperation.Scroll);
+    }
+
+    public isContextMenuAllowed(): boolean {
+        return this.possibleOperations.has(PointerOperation.ContextMenu);
+    }
+
+    public isDragging() {
+        return this.startedDragging.get();
+    }
+
+    private possibleOperations = new Set<PointerOperation>();
+    private pointerDown: Position | null = null;
+    private xHysteresisDone = false;
+    private startedDragging = new ReactiveVar<boolean>(false);
+}
+
+
+class ContextMenuEvent extends MouseEvent {
+    constructor(x: number, y: number) {
+        super("contextmenu", {
+            clientX: x,
+            clientY: y,
+            bubbles: true
+        });
+    }
+}
+
+glue("searchResults",
+    () => {
+        const maxPresetsVisibleOnOnePage = 100;
+        return {
+            shownPresets: Array.from(Array(maxPresetsVisibleOnOnePage).keys())
+        }
+    },
+    () => new SearchResultsInnerState(),
+    {
+        "scrollerAttributes"(presenter) {
+            if (showBankSelectPane.get())
+                return {
+                    id: "preset-search-results-scroller",
+                    style: "overflow: hidden;"
+                }
+
+            return {
+                id: "preset-search-results-scroller",
+                style: "overflow: auto;"
+            }
+        },
+        "scrollerPaneAttributes"(presenter) {
+            var presetHeight = getPresetHeight();
+            var paneHeight = presetHeight * cachedSearch.get().length;
+
+            return {
+                id: "preset-search-results-scroller-pane",
+                style: "height: " + paneHeight + "px"
+            }
+        },
+        "resultsAttributes"(presenter, innerState) {
+            const ph = getPresetHeight();
+            const scroll = scrollY.get();
+            const offset = scroll / ph;
+            const firstPresetIdx = Math.floor(offset);
+            const numPresets = cachedSearch.get().length;
+            const h = (numPresets - firstPresetIdx) * ph;
+
+            return {
+                id: "preset-search-results",
+                style: "top:" + getSearchResultScrollOffset() + "px; height: " + h + "px;",
+                class: innerState!.isDragging() ? "" : "no-pointer-events"
+            }
+        }
+    },
+    {
+        "touchstart #preset-search-results-scroller-pane"(event, _presenter, innerState) {
+            const o = event['originalEvent'];
+            innerState!.startContextMenuTimeout(o.touches[0].clientX, o.touches[0].clientY);
+        },
+        "touchcancel"(event, _presenter, innerState) {
+            innerState!.cancelContextMenuTimeout();
+        },
+        "touchend"(event, _presenter, innerState) {
+            innerState!.cancelContextMenuTimeout();
+        },
+        "pointerdown #preset-search-results-scroller-pane"(event, presenter, innerState) {
+            const list = document.getElementById("preset-search-results-scroller-pane")!;
+            list.setPointerCapture(event['originalEvent'].pointerId);
+            innerState!.onPointerDown(event);
+        },
+        "pointermove"(event, presenter, innerState) {
+            innerState!.onPointerMove(event);
+        },
+        "pointerup"(event, presenter, innerState) {
+            const list = document.getElementById("preset-search-results-scroller-pane")!;
+            if (list)
+                list.releasePointerCapture(event['originalEvent'].pointerId);
+            innerState!.onPointerUp(event);
+        },
+        "scroll #preset-search-results-scroller"(event, presenter, innerState) {
+            innerState!.cancelContextMenuTimeout();
+            scrollY.set(event['target'].scrollTop);
+            $("#preset-search-results").css("top", getSearchResultScrollOffset() + "px");
+            Tracker.flush();
+        },
+        "contextmenu"(event, presenter, innerState) {
+            if (!innerState!.isContextMenuAllowed()) {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+                return;
+            }
+            innerState!.onContextMenu();
+        }
+    });
+
+
+$['contextMenu']({
+    selector: '#preset-search-results-scroller-pane',
+    build: (_element, event: JQuery.Event) => {
+        const scroller = document.getElementById("preset-search-results-scroller")!;
+        const top = scroller.getBoundingClientRect().top;
+        const originalEvent = event['originalEvent'];
+        var presetHeight = getPresetHeight();
+        var offsetY = scrollY.get() + originalEvent.clientY - top;
+        var idx = offsetY / presetHeight;
+        const searchResult = cachedSearch.get();
+        const presetId = searchResult[(Math.floor(idx))]!;
+
+        return {
+            items: {
+                "multiple": {
+                    name: multipleSelection.get() ? "Disable Multiple Selection" : "Start Multiple Selection",
+                    callback: function () {
+                        multipleSelectionStartedByShiftClick.set(false);
+                        multipleSelection.get() ? multipleSelection.set(null) : multipleSelection.set([presetId])
+                    }
+                },
+                "bank": {
+                    name: "Show in Bank",
+                    callback: function () {
+                        window['scrollToNonMapsPreset'](presetId);
+                    }
+                },
+                "info": {
+                    name: "Preset Info",
+                    visible: function (key, opt) {
+                        return !window['isPresetInfoVisible']();
+                    },
+                    callback: function () {
+                        playgroundProxy.selectPreset(presetId);
+                        window['showPresetInfo'](presetId);
+                    }
+                },
+                "select-all": {
+                    name: "Select All",
+                    callback: function () {
+                        multipleSelectionStartedByShiftClick.set(true);
+                        multipleSelection.set([...cachedSearch.get()]);
+                    }
+                }
+            }
+        }
     }
 });

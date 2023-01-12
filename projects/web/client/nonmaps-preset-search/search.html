@@ -32,15 +32,7 @@
                 </div>
             </div>
 
-            <div {{ presetSearchResultsScrollerAttributes }}>
-                <div {{ presetSearchResultsScrollerPaneAttributes }}>
-                    <div {{ presetSearchResultsAttributes }}>
-                        {{ #each get "shownPresets"}}
-                        {{ > searchResultPreset }}
-                        {{ /each }}
-                    </div>
-                </div>
-            </div>
+            {{ > searchResults }}
             <div class="num-results">Results: {{ get "numResults" }}</div>
         </div>
     </div>
@@ -143,6 +135,18 @@
             <div class="name">{{ get "number" }} - {{ get "name" }}</div>
             <div {{checkAttributes}}>&#xe0a4;</div>
         </button>
+    </div>
+</template>
+
+<template name="searchResults">
+    <div {{ scrollerAttributes }}>
+        <div {{ scrollerPaneAttributes }}>
+            <div {{ resultsAttributes }}>
+                {{ #each get "shownPresets"}}
+                {{ > searchResultPreset }}
+                {{ /each }}
+            </div>
+        </div>
     </div>
 </template>
 

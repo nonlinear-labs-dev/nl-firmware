@@ -1,11 +1,9 @@
-import { ReactiveVar } from "meteor/reactive-var";
 import { globals, glue } from "../glue";
 import "./search.html";
-import { cachedSearch, getPresetHeight, scrollY } from "./shared-state";
+import { cachedSearch, getPresetHeight, multipleSelection, multipleSelectionStartedByShiftClick, scrollY } from "./shared-state";
 
 const presetCSVFormat = "text/preset-csv";
-var multipleSelection = new ReactiveVar<Array<string> | null>(null);
-var multipleSelectionStartedByShiftClick = false;
+
 const db = globals.syncedDatabase;
 const pg = globals.playgroundProxy;
 
@@ -111,90 +109,46 @@ function dispatchDragEvent(target: Element | null, srcEvent: PointerEvent, d: Da
 }
 
 const events = {
-    "pointerdown"(event: JQuery.Event, presenter: Presenter, innerState: InnerState | null) {
-        innerState!.pointerDownX = event.clientX!;
-        innerState!.pointerDownY = event.clientY!;
-        innerState!.pointerY = event.clientY!;
-        console.log("capture pointer ", event['originalEvent'].pointerId, " for element " + event['currentTarget']);
-        event['currentTarget']?.setPointerCapture(event['originalEvent'].pointerId);
-        event.preventDefault();
-    },
-    "pointermove"(event: JQuery.Event, presenter: Presenter, innerState: InnerState | null) {
-        if (event.buttons) {
-            const diffFromStartX = Math.abs(innerState!.pointerDownX - event.clientX!);
-            const diffFromStartY = Math.abs(innerState!.pointerDownY - event.clientY!);
-            const hysteresis = document.getElementById("hysteresis")?.clientWidth || 10;
+    "selectOrLoad"(event: JQuery.Event, presenter: Presenter) {
+        const o = event['originalEvent'].detail.originalEvent;
+        var ms = multipleSelection.get();
 
-            if (innerState?.dragMode == DragMode.DragPresets) {
-                const target = getElementAt(event.pageX!, event.pageY!);
-                dispatchDragEvent(target, event['originalEvent'], innerState.dataTransfer, "drag");
-
-                if (target != this._lastTarget) {
-                    dispatchDragEvent(this._lastTarget, event['originalEvent'], innerState.dataTransfer, "dragleave");
-                    this._lastTarget = target;
-                    dispatchDragEvent(target, event['originalEvent'], innerState.dataTransfer, "dragenter");
-                }
-                dispatchDragEvent(target, event['originalEvent'], innerState.dataTransfer, "dragover");
-                event.stopPropagation();
-            }
-            else if (diffFromStartX > hysteresis && (innerState?.dragMode == DragMode.None)) {
-                innerState!.dragMode = DragMode.DragPresets;
-                dispatchDragEvent(event['currentTarget'], event['originalEvent'], innerState.dataTransfer, 'dragstart');
-                event.stopPropagation();
-            }
-            else if ((diffFromStartY > hysteresis && (innerState?.dragMode == DragMode.None))) {
-                document.getElementById("preset-search-results")?.dispatchEvent(
-                    new CustomEvent("scrollY", {
-                        detail: {
-                            diffY: 0,
-                            pageY: event['originalEvent'].pageY,
-                            pointerId: event['originalEvent'].pointerId
-                        }
-                    }))
-            }
-            event.preventDefault();
-        }
-    },
-    "pointerup"(event: JQuery.Event, presenter: Presenter, innerState: InnerState | null) {
-        event['currentTarget']?.releasePointerCapture(event['originalEvent'].pointerId);
-        event.preventDefault();
-
-        if (innerState?.dragMode == DragMode.None) {
-            var ms = multipleSelection.get();
-
-            if (multipleSelectionStartedByShiftClick && !event.shiftKey) {
-                multipleSelection.set(null);
-            }
-
-            if (event.shiftKey && !ms) {
-                multipleSelectionStartedByShiftClick = true;
-                multipleSelection.set([]);
-            }
-
-            ms = multipleSelection.get();
-
-            if (ms) {
-                multipleSelection.set(ms.includes(presenter.id) ? ms.filter(v => v != presenter.id) : ms.concat([presenter.id]));
-            }
-            else {
-                if (presenter.selected)
-                    pg.loadPreset(presenter.id);
-                else
-                    pg.selectPreset(presenter.id);
-            }
-        }
-        else if (innerState?.dragMode == DragMode.DragPresets) {
-            const target = getElementAt(event.pageX!, event.pageY!);
-            dispatchDragEvent(target, event['originalEvent'], innerState.dataTransfer, "drop");
-            dispatchDragEvent(target, event['originalEvent'], innerState.dataTransfer, "dragend");
-            event.stopPropagation();
+        if (multipleSelectionStartedByShiftClick.get() && !o.shiftKey) {
+            multipleSelection.set(null);
         }
 
-        innerState!.dragMode = DragMode.None;
+        if (o.shiftKey && !ms) {
+            multipleSelectionStartedByShiftClick.set(true);
+            multipleSelection.set([]);
+        }
+
+        ms = multipleSelection.get();
+
+        if (ms) {
+            multipleSelection.set(ms.includes(presenter.id) ? ms.filter(v => v != presenter.id) : ms.concat([presenter.id]));
+        }
+        else {
+            if (presenter.selected)
+                pg.loadPreset(presenter.id);
+            else
+                pg.selectPreset(presenter.id);
+        }
     },
-    "contextmenu"(event: JQuery.Event) {
-        event['currentTarget']?.releasePointerCapture(event['originalEvent'].pointerId);
-        event.preventDefault();
+    "startDrag"(event: JQuery.Event, presenter: Presenter, innerState: InnerState | null) {
+        const o = event['originalEvent'].detail.originalEvent;
+        dispatchDragEvent(event['currentTarget'], o, innerState!.dataTransfer, 'dragstart');
+    },
+    "performDrag"(event: JQuery.Event, presenter: Presenter, innerState: InnerState | null) {
+        const o = event['originalEvent'].detail.originalEvent;
+        const target = getElementAt(o.pageX, o.pageY);
+        dispatchDragEvent(target, o, innerState!.dataTransfer, "drag");
+
+        if (target != this._lastTarget) {
+            dispatchDragEvent(this._lastTarget, o, innerState!.dataTransfer, "dragleave");
+            this._lastTarget = target;
+            dispatchDragEvent(target, o, innerState!.dataTransfer, "dragenter");
+        }
+        dispatchDragEvent(target, o, innerState!.dataTransfer, "dragover");
     },
     'dragstart'(event: JQuery.Event, presenter: Presenter) {
         var t = (event as JQuery.DragStartEvent).originalEvent!.dataTransfer!;
@@ -230,45 +184,6 @@ const events = {
 
 glue("searchResultPreset", (id) => new Presenter(Number.parseInt(id)), () => new InnerState(false), attributes, events);
 
-$['contextMenu']({
-    selector: '.preset',
-    build: () => {
-        return {
-            items: {
-                "multiple": {
-                    name: multipleSelection.get() ? "Disable Multiple Selection" : "Start Multiple Selection",
-                    callback: function () {
-                        multipleSelectionStartedByShiftClick = false;
-                        multipleSelection.get() ? multipleSelection.set(null) : multipleSelection.set([this[0].id])
-                    }
-                },
-                "bank": {
-                    name: "Show in Bank",
-                    callback: function () {
-                        window['scrollToNonMapsPreset'](this[0].id);
-                    }
-                },
-                "info": {
-                    name: "Preset Info",
-                    visible: function (key, opt) {
-                        return !window['isPresetInfoVisible']();
-                    },
-                    callback: function () {
-                        pg.selectPreset(this[0].id);
-                        window['showPresetInfo'](this[0].id);
-                    }
-                },
-                "select-all": {
-                    name: "Select All",
-                    callback: function () {
-                        multipleSelectionStartedByShiftClick = true;
-                        multipleSelection.set([...cachedSearch.get()]);
-                    }
-                }
-            }
-        }
-    }
-});
 
 function encodePresetDragDropData(csv: string): string {
     return JSON.stringify({ format: 'preset/csv', data: csv });
