@@ -979,6 +979,58 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new paramete
   }
 }
 
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new parameters -> explicit 2")
+{
+  auto& eb = *TestHelper::getEditBuffer();
+  auto masterParameter = eb.findParameterByID({C15::PID::Master_Volume, VoiceGroup::Global});
+  auto fx_mixParameter = eb.findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global});
+  auto partVolI = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::I});
+  auto partVolII = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::II});
+
+  MockPresetStorage presets;
+  EditBufferUseCases ebUseCases(eb);
+
+  WHEN("Single loaded")
+  {
+    ebUseCases.load(presets.getSinglePreset());
+
+    ebUseCases.initSound(Defaults::FactoryDefault);
+
+    WHEN("FX Mix to 50% and master volume is set to 0 dB")
+    {
+      auto fx_mix_pos = 0.5;
+      auto mst_vol = 0.5;
+
+      ParameterUseCases masterVol(masterParameter);
+      masterVol.setControlPosition(mst_vol);
+      ParameterUseCases fxMix(fx_mixParameter);
+      fxMix.setControlPosition(fx_mix_pos);
+
+      REQUIRE(masterParameter->getDisplayString() == "0.000 dB");
+      REQUIRE(fx_mixParameter->getDisplayString() == "50.0 %");
+
+      WHEN("convert to layer")
+      {
+        ebUseCases.convertToLayer(VoiceGroup::I);
+
+        INFO("with master_vol: " << mst_vol << " fx_mix_pos: " << fx_mix_pos);
+        CHECK(partVolI->getControlPositionValue() == partVolI->getValue().getQuantizedValue(0.433, true));
+
+        CHECK(partVolI->getDisplayString() == "-2.50 dB");
+        CHECK(partVolII->getDisplayString() == "-2.50 dB");
+
+        THEN("convert back")
+        {
+          ebUseCases.convertToSingle(VoiceGroup::I);
+
+          REQUIRE(masterParameter->getDisplayString() == "0.000 dB");
+          REQUIRE(fx_mixParameter->getDisplayString() == "50.0 %");
+        }
+      }
+    }
+  }
+}
+
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert split to single: in poly landet part I selbst bei selektion von II")
 {
   MockPresetStorage presets;
