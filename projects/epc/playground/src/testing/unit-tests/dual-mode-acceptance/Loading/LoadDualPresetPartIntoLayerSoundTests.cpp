@@ -89,11 +89,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Layer
       CHECK(eb->getType() == SoundType::Layer);
     }
 
-    THEN("Cross FB I ignored")
-    {
-      CHECK(oldCrossFBIHash == EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>()));
-    }
-
     THEN("Local Normal was copied to current VG")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::I }), 0.666);
@@ -236,11 +231,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Layer
     THEN("Local Normal was copied to current VG")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::II }), 0.666);
-    }
-
-    THEN("Cross FB II ignored")
-    {
-      CHECK(oldCrossFBIIHash == EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>()));
     }
 
     THEN("Local I untouched")
