@@ -994,14 +994,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new paramete
 
     WHEN("FX Mix to 50% and master volume is set to 0 dB")
     {
-      /*
-       * dual.masterVolumeCp = 0.5f;
-      dual.partVolumeCp[0] = 0.5f;
-      dual.partVolumeCp[1] = 0.5f;
-      Single single = convertDualToSingle(dual, VgI);
-      single.masterVolumeCp == 0.57735; // true (+ 2.49877 dB)
-       */
-
       auto mst_vol = 0.5;
       auto part_vol = 0.5;
 
