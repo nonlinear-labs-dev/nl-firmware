@@ -863,63 +863,6 @@ namespace {
   }
 }
 
-//TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> and back leads to sameish results")
-//{
-//  auto& eb = *TestHelper::getEditBuffer();
-//  auto masterParameter = eb.findParameterByID({C15::PID::Master_Volume, VoiceGroup::Global});
-//  auto fx_mixParameter = eb.findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global});
-//  auto partVolI = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::I});
-//  auto partVolII = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::II});
-//
-//  MockPresetStorage presets;
-//  EditBufferUseCases ebUseCases(eb);
-//
-//  WHEN("Single loaded")
-//  {
-//    ebUseCases.load(presets.getSinglePreset());
-//
-//    WHEN("FX Mix and master volume is set")
-//    {
-//      auto fx_mix_pos = GENERATE(0.0, 0.25, 0.5, 0.75, 1.0);
-//      auto mst_vol = GENERATE(0.0, 0.25, 0.5, 0.75, 1.0);
-//
-//      auto partVolumeCpVgI = amplitudeToParabolicGainCp(
-//          mst_vol * parabolicFadeCpToAmplitude(fx_mix_pos)
-//      );
-//
-//      auto partVolumeCpVgII = amplitudeToParabolicGainCp(
-//          mst_vol * parabolicFadeCpToAmplitude(1.0 - fx_mix_pos)
-//      );
-//
-//      ParameterUseCases masterVol(masterParameter);
-//      masterVol.setControlPosition(mst_vol);
-//      ParameterUseCases fxMix(fx_mixParameter);
-//      fxMix.setControlPosition(fx_mix_pos);
-//
-//      THEN("converted to split")
-//      {
-//        auto vg = GENERATE(VoiceGroup::I, VoiceGroup::II);
-//        ebUseCases.convertToSplit(vg);
-//
-//        INFO("with master_vol: " << mst_vol << " fx_mix_pos: " << fx_mix_pos);
-//        CHECK(partVolI->getControlPositionValue() == Approx(partVolumeCpVgI).epsilon(0.01));
-//        CHECK(partVolII->getControlPositionValue() == Approx(partVolumeCpVgII).epsilon(0.01));
-//      }
-//
-//      THEN("converted to layer")
-//      {
-//        auto vg = GENERATE(VoiceGroup::I, VoiceGroup::II);
-//        ebUseCases.convertToLayer(vg);
-//
-//        INFO("with master_vol: " << mst_vol << " fx_mix_pos: " << fx_mix_pos);
-//        CHECK(partVolI->getControlPositionValue() == Approx(partVolumeCpVgI).epsilon(0.01));
-//        CHECK(partVolII->getControlPositionValue() == Approx(partVolumeCpVgII).epsilon(0.01));
-//      }
-//
-//    }
-//  }
-//}
-
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new parameters -> explicit")
 {
   auto& eb = *TestHelper::getEditBuffer();
@@ -974,6 +917,105 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new paramete
           REQUIRE(masterParameter->getDisplayString() == "0.000 dB");
           REQUIRE(fx_mixParameter->getDisplayString() == "0.0 %");
         }
+      }
+    }
+  }
+}
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new parameters -> explicit 2")
+{
+  auto& eb = *TestHelper::getEditBuffer();
+  auto masterParameter = eb.findParameterByID({C15::PID::Master_Volume, VoiceGroup::Global});
+  auto fx_mixParameter = eb.findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global});
+  auto partVolI = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::I});
+  auto partVolII = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::II});
+
+  MockPresetStorage presets;
+  EditBufferUseCases ebUseCases(eb);
+
+  WHEN("Single loaded")
+  {
+    ebUseCases.load(presets.getSinglePreset());
+
+    ebUseCases.initSound(Defaults::FactoryDefault);
+
+    WHEN("FX Mix to 50% and master volume is set to 0 dB")
+    {
+      auto fx_mix_pos = 0.5;
+      auto mst_vol = 0.5;
+
+      ParameterUseCases masterVol(masterParameter);
+      masterVol.setControlPosition(mst_vol);
+      ParameterUseCases fxMix(fx_mixParameter);
+      fxMix.setControlPosition(fx_mix_pos);
+
+      REQUIRE(masterParameter->getDisplayString() == "0.000 dB");
+      REQUIRE(fx_mixParameter->getDisplayString() == "50.0 %");
+
+      WHEN("convert to layer")
+      {
+        ebUseCases.convertToLayer(VoiceGroup::I);
+
+        INFO("with master_vol: " << mst_vol << " fx_mix_pos: " << fx_mix_pos);
+        CHECK(partVolI->getControlPositionValue() == partVolI->getValue().getQuantizedValue(0.433, true));
+
+        CHECK(partVolI->getDisplayString() == "-2.50 dB");
+        CHECK(partVolII->getDisplayString() == "-2.50 dB");
+
+        THEN("convert back")
+        {
+          ebUseCases.convertToSingle(VoiceGroup::I);
+
+          REQUIRE(masterParameter->getDisplayString() == "0.000 dB");
+          REQUIRE(fx_mixParameter->getDisplayString() == "50.0 %");
+        }
+      }
+    }
+  }
+}
+
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new parameters -> explicit 3")
+{
+  auto& eb = *TestHelper::getEditBuffer();
+  auto masterParameter = eb.findParameterByID({C15::PID::Master_Volume, VoiceGroup::Global});
+  auto fx_mixParameter = eb.findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global});
+  auto partVolI = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::I});
+  auto partVolII = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::II});
+
+  MockPresetStorage presets;
+  EditBufferUseCases ebUseCases(eb);
+
+  WHEN("Split loaded")
+  {
+    ebUseCases.load(presets.getSplitPreset());
+
+    ebUseCases.initSound(Defaults::FactoryDefault);
+
+    WHEN("FX Mix to 50% and master volume is set to 0 dB")
+    {
+      auto mst_vol = 0.5;
+      auto part_vol = 0.5;
+
+      ParameterUseCases masterVol(masterParameter);
+      masterVol.setControlPosition(mst_vol);
+
+      ParameterUseCases partIVol(partVolI);
+      ParameterUseCases partIIVol(partVolII);
+
+      partIVol.setControlPosition(part_vol);
+      partIIVol.setControlPosition(part_vol);
+
+      REQUIRE(masterParameter->getDisplayString() == "0.000 dB");
+      REQUIRE(partVolI->getDisplayString() == "0.000 dB");
+      REQUIRE(partVolII->getDisplayString() == "0.000 dB");
+
+      WHEN("convert to single")
+      {
+        ebUseCases.convertToSingle(VoiceGroup::I);
+
+        INFO("with master_vol: " << mst_vol << " and part-vol " << part_vol);
+        CHECK(masterParameter->getControlPositionValue() == Approx(0.577));
       }
     }
   }
