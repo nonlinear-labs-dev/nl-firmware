@@ -39,6 +39,7 @@ class AlsaAudioOutput : public AudioOutput
 
   snd_pcm_uframes_t m_framesProcessed = 0;
   snd_pcm_uframes_t m_numFramesPerPeriod = 0;
+  uint m_numPeriods = 0;
 
   std::unique_ptr<AudioWriterBase> m_writer;
   const AudioEngineOptions *m_options;
