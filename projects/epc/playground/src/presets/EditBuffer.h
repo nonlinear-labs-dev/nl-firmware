@@ -185,7 +185,6 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
 
   void initUnisonVoicesScaling(SoundType newType);
 
-  void initToFX(UNDO::Transaction *transaction);
   void copyPartTuneFromMasterTuneAndDefaultMasterGroup(UNDO::Transaction *transaction);
 
   void loadPresetGlobalMasterIntoVoiceGroupMaster(UNDO::Transaction *transaction, const Preset *preset,
@@ -201,7 +200,6 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void combineSplitPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void combineLayerPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void initFadeParameters(UNDO::Transaction *transaction, VoiceGroup group);
-  void initCrossFB(UNDO::Transaction *transaction);
   void initCrossFBExceptFromFX(UNDO::Transaction* transaction);
   void undoableUnmuteLayers(UNDO::Transaction *transaction);
   void undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg);
@@ -285,10 +283,6 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void initFBMixFXFrom(UNDO::Transaction *pTransaction);
   void copySpecialToFXParamForLoadSingleIntoDualPart(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to,
                                                      const Preset *preset);
-  void copySpecialFXFromParamForLoadSingleIntoDualPart(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to,
-                                                       const Preset *preset);
   void copyPolyParametersFromI(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup group);
   void copyToFXAndFxFrom(UNDO::Transaction *transaction, VoiceGroup copyFrom);
-  void undoableResetCrossPartFXParametersForLoadToPart(UNDO::Transaction *transaction, const VoiceGroup &copyTo) const;
-  void undoableResetCrossPartFXParametersForLoadToPartIntoLayer(UNDO::Transaction* transaction, VoiceGroup copyTo);
 };

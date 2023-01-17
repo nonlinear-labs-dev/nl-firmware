@@ -18,7 +18,6 @@
 #include <nltools/Testing.h>
 #include <nltools/Types.h>
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
-#include <device-settings/DirectLoadSetting.h>
 #include <presets/recall/RecallParameter.h>
 #include <parameters/UnisonVoicesParameter.h>
 #include <groups/SplitParameterGroups.h>
@@ -240,12 +239,12 @@ void EditBuffer::checkModified()
 
 PresetManager *EditBuffer::getParent()
 {
-  return static_cast<PresetManager *>(super::getParent());
+  return dynamic_cast<PresetManager *>(super::getParent());
 }
 
 const PresetManager *EditBuffer::getParent() const
 {
-  return static_cast<const PresetManager *>(super::getParent());
+  return dynamic_cast<const PresetManager *>(super::getParent());
 }
 
 sigc::connection EditBuffer::onSelectionChanged(const sigc::slot<void, Parameter *, Parameter *> &s,
@@ -827,10 +826,10 @@ void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, Vo
   locks.addGroupLock({ "Mono", VoiceGroup::I });
 
   ScopedLock lock2(transaction);
-  lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
-  lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
-  lock2.addLock({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-  lock2.addLock({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+  lock2.addLock({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+  lock2.addLock({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
+  lock2.addLock({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+  lock2.addLock({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
 
   if(copyFrom != VoiceGroup::I)
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
@@ -849,10 +848,10 @@ void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, Vo
   {
     ScopedMonophonicParameterLock lock(transaction, *this);
     ScopedLock lock2(transaction);
-    lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
-    lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
-    lock2.addLock({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-    lock2.addLock({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+    lock2.addLock({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+    lock2.addLock({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
+    lock2.addLock({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+    lock2.addLock({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
 
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
   }
@@ -923,8 +922,8 @@ void EditBuffer::copyPartTuneFromMasterTuneAndDefaultMasterGroup(UNDO::Transacti
 
   {
     ScopedLock lock(transaction);
-    lock.addLock({C15::PID::Master_Pan, VoiceGroup::Global});
-    lock.addLock({C15::PID::Master_Serial_FX, VoiceGroup::Global});
+    lock.addLock({ C15::PID::Master_Pan, VoiceGroup::Global });
+    lock.addLock({ C15::PID::Master_Serial_FX, VoiceGroup::Global });
 
     for(auto &parameter : global->getParameters())
     {
@@ -1049,7 +1048,7 @@ void EditBuffer::undoableLoadPresetPartIntoPart(UNDO::Transaction *transaction, 
   {
     case SoundType::Single:
     case SoundType::Invalid:
-      undoableLoadPresetPartIntoSingleSound(transaction, preset, from, copyTo);
+      nltools::Log::error("can't load to part if current sound is single sound!");
       break;
     case SoundType::Split:
       if(preset->isDual())
@@ -1121,12 +1120,6 @@ void EditBuffer::undoableInitPart(UNDO::Transaction *transaction, VoiceGroup vg,
 void EditBuffer::TEST_doDeferredJobs()
 {
   doDeferedJobs();
-}
-
-void EditBuffer::initToFX(UNDO::Transaction *transaction)
-{
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-    findParameterByID({ C15::PID::Out_Mix_To_FX, vg })->loadDefault(transaction, Defaults::FactoryDefault);
 }
 
 std::vector<Parameter *> EditBuffer::getCrossFBParameters(const VoiceGroup &to) const
@@ -1222,13 +1215,10 @@ void EditBuffer::copySinglePresetMasterToPartMaster(UNDO::Transaction *transacti
     partTune->setModulationSource(transaction, presetGlobalTune->getModulationSource());
     partTune->setModulationAmount(transaction, presetGlobalTune->getModulationAmount());
 
-    auto volumeConverter
-        = static_cast<const ParabolicGainDbScaleConverter *>(ebGlobalVolume->getValue().getScaleConverter());
-
-    auto presetVolumeDisplay = volumeConverter->controlPositionToDisplay(presetGlobalVolume->getValue());
-    auto ebVolumeDisplay = volumeConverter->controlPositionToDisplay(ebGlobalVolume->getControlPositionValue());
-
-    auto newVolumeCP = volumeConverter->displayToControlPosition(presetVolumeDisplay - ebVolumeDisplay);
+    ParabolicGainDbScaleConverter volumeConverter;
+    auto presetVolumeDisplay = volumeConverter.controlPositionToDisplay(presetGlobalVolume->getValue());
+    auto ebVolumeDisplay = volumeConverter.controlPositionToDisplay(ebGlobalVolume->getControlPositionValue());
+    auto newVolumeCP = volumeConverter.displayToControlPosition(presetVolumeDisplay - ebVolumeDisplay);
 
     partVolume->setCPFromHwui(transaction, newVolumeCP);
     partVolume->setModulationSource(transaction, presetGlobalVolume->getModulationSource());
@@ -1312,17 +1302,6 @@ void EditBuffer::initFadeParameters(UNDO::Transaction *transaction, VoiceGroup g
   auto f2 = findParameterByID({ C15::PID::Voice_Grp_Fade_Range, group });
   if(!f2->isLocked())
     f2->loadDefault(transaction, Defaults::FactoryDefault);
-}
-
-void EditBuffer::initCrossFB(UNDO::Transaction *transaction)
-{
-  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
-  {
-    for(auto param : getCrossFBParameters(vg))
-    {
-      param->loadDefault(transaction, Defaults::FactoryDefault);
-    }
-  }
 }
 
 void EditBuffer::initCrossFBExceptFromFX(UNDO::Transaction *transaction)
@@ -1435,6 +1414,123 @@ void EditBuffer::calculateSplitPointFromFadeParams(UNDO::Transaction *transactio
   findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II })->stepCPFromHwui(transaction, 1, {});
 }
 
+namespace
+{
+  double linearLevelAttenuation(const double controlPosition, const double fadePosition)
+  {
+    const auto inverse = 1.0 - fadePosition;
+    return controlPosition * inverse;
+  }
+
+  double parabolicLevelAttenuation(const double controlPosition, const double fadePosition)
+  {
+    const auto inverse = 1.0 - fadePosition;
+    return controlPosition * std::sqrt(inverse);
+  }
+
+  std::vector<ParameterId> getFeedbackParametersLockedForLoadToPart(VoiceGroup loadTo)
+  {
+    return { { C15::PID::FB_Mix_Osc, loadTo },      { C15::PID::FB_Mix_Osc_Src, loadTo },
+             { C15::PID::FB_Mix_Comb_Src, loadTo }, { C15::PID::FB_Mix_SVF_Src, loadTo },
+             { C15::PID::FB_Mix_FX, loadTo },       { C15::PID::FB_Mix_FX_Src, loadTo } };
+  }
+
+  void loadPartFromSingleIntoDual(UNDO::Transaction *transaction, VoiceGroup loadFrom, VoiceGroup loadTo,
+                                  EditBuffer &eb, const Preset *preset)
+  {
+    auto source_m_fx_src = preset->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I }, false)->getValue();
+    auto source_m_fx = preset->findParameterByID({ C15::PID::FB_Mix_FX, VoiceGroup::I }, false)->getValue();
+
+    const auto fade = loadFrom == VoiceGroup::I ? source_m_fx_src : 1.0 - source_m_fx_src;
+    auto new_fx_pos = parabolicLevelAttenuation(source_m_fx, fade);
+
+    eb.findParameterByID({ C15::PID::FB_Mix_FX, loadTo })->setCPFromHwui(transaction, new_fx_pos);
+
+    eb.findParameterByID({ C15::PID::FB_Mix_Osc, loadTo })->setCPFromHwui(transaction, 0);
+    eb.findParameterByID({ C15::PID::FB_Mix_Osc_Src, loadTo })->setCPFromHwui(transaction, 0);
+    eb.findParameterByID({ C15::PID::FB_Mix_Comb_Src, loadTo })->setCPFromHwui(transaction, 0);
+    eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, loadTo })->setCPFromHwui(transaction, 0);
+
+    //copy from source
+    auto preset_fb_svf = preset->findParameterByID({ C15::PID::FB_Mix_SVF, VoiceGroup::I }, false);
+    eb.findParameterByID({ C15::PID::FB_Mix_SVF, loadTo })->setCPFromHwui(transaction, preset_fb_svf->getValue());
+
+    auto preset_fb_comb = preset->findParameterByID({ C15::PID::FB_Mix_Comb, VoiceGroup::I }, false);
+    eb.findParameterByID({ C15::PID::FB_Mix_Comb, loadTo })->setCPFromHwui(transaction, preset_fb_comb->getValue());
+
+    //Output-Mixer:
+    auto source_to_fx = preset->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I }, false);
+    auto source_level = preset->findParameterByID({ C15::PID::Out_Mix_Lvl, VoiceGroup::I }, false);
+    const auto send = loadFrom == VoiceGroup::I ? source_to_fx->getValue() : 1.0 - source_to_fx->getValue();
+
+    auto newLevel = parabolicLevelAttenuation(source_level->getValue(), send);
+    eb.findParameterByID({ C15::PID::Out_Mix_Lvl, loadTo })->setCPFromHwui(transaction, newLevel);
+  }
+
+  void loadPartFromDualIntoDual_OutputMixer(UNDO::Transaction *transaction, VoiceGroup loadFrom, VoiceGroup loadTo,
+                                            EditBuffer &eb, const Preset *preset)
+  {
+    auto src_level = preset->findParameterByID({ C15::PID::Out_Mix_Lvl, loadFrom }, false);
+    auto src_to_fx = preset->findParameterByID({ C15::PID::Out_Mix_To_FX, loadFrom }, false);
+    auto new_level = parabolicLevelAttenuation(src_level->getValue(), src_to_fx->getValue());
+    eb.findParameterByID({ C15::PID::Out_Mix_Lvl, loadTo })->setCPFromHwui(transaction, new_level);
+  }
+
+  void loadPartFromDualIntoSplit(UNDO::Transaction *transaction, VoiceGroup loadFrom, VoiceGroup loadTo, EditBuffer &eb,
+                                 const Preset *preset)
+  {
+    auto source_m_fx = preset->findParameterByID({ C15::PID::FB_Mix_FX, loadFrom }, false)->getValue();
+    auto source_m_fx_src = preset->findParameterByID({ C15::PID::FB_Mix_FX_Src, loadFrom }, false)->getValue();
+
+    // crucial: Comb/SVF/FX channel load with attenuation
+    auto new_fx = parabolicLevelAttenuation(source_m_fx, source_m_fx_src);
+    eb.findParameterByID({ C15::PID::FB_Mix_FX, loadTo })->setCPFromHwui(transaction, new_fx);
+    // crucial: defaults
+    eb.findParameterByID({ C15::PID::FB_Mix_Osc, loadTo })->setCPFromHwui(transaction, 0);
+    eb.findParameterByID({ C15::PID::FB_Mix_Osc_Src, loadTo })->setCPFromHwui(transaction, 0);
+    eb.findParameterByID({ C15::PID::FB_Mix_Comb_Src, loadTo })->setCPFromHwui(transaction, 0);
+    eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, loadTo })->setCPFromHwui(transaction, 0);
+
+    //copy from source
+    auto fb_comb_preset = preset->findParameterByID({ C15::PID::FB_Mix_Comb, loadFrom }, false);
+    eb.findParameterByID({ C15::PID::FB_Mix_Comb, loadTo })->setCPFromHwui(transaction, fb_comb_preset->getValue());
+
+    auto fb_svf_preset = preset->findParameterByID({ C15::PID::FB_Mix_SVF, loadFrom }, false);
+    eb.findParameterByID({ C15::PID::FB_Mix_SVF, loadTo })->setCPFromHwui(transaction, fb_svf_preset->getValue());
+
+    loadPartFromDualIntoDual_OutputMixer(transaction, loadFrom, loadTo, eb, preset);
+  }
+
+  void loadPartFromDualIntoLayer(UNDO::Transaction *transaction, VoiceGroup loadFrom, VoiceGroup loadTo, EditBuffer &eb,
+                                 const Preset *preset)
+  {
+    auto source_m_comb = preset->findParameterByID({ C15::PID::FB_Mix_Comb, loadFrom }, false)->getValue();
+    auto source_m_comb_src = preset->findParameterByID({ C15::PID::FB_Mix_Comb_Src, loadFrom }, false)->getValue();
+    auto source_m_svf = preset->findParameterByID({ C15::PID::FB_Mix_SVF, loadFrom }, false)->getValue();
+    auto source_m_svf_src = preset->findParameterByID({ C15::PID::FB_Mix_SVF_Src, loadFrom }, false)->getValue();
+    auto source_m_fx = preset->findParameterByID({ C15::PID::FB_Mix_FX, loadFrom }, false)->getValue();
+    auto source_m_fx_src = preset->findParameterByID({ C15::PID::FB_Mix_FX_Src, loadFrom }, false)->getValue();
+
+    // crucial: Comb/SVF/FX channel load with attenuation
+    auto new_comb = linearLevelAttenuation(source_m_comb, source_m_comb_src);
+    auto new_svf = linearLevelAttenuation(source_m_svf, source_m_svf_src);
+    auto new_fx = parabolicLevelAttenuation(source_m_fx, source_m_fx_src);
+
+    eb.findParameterByID({ C15::PID::FB_Mix_Comb, loadTo })->setCPFromHwui(transaction, new_comb);
+    eb.findParameterByID({ C15::PID::FB_Mix_SVF, loadTo })->setCPFromHwui(transaction, new_svf);
+    eb.findParameterByID({ C15::PID::FB_Mix_FX, loadTo })->setCPFromHwui(transaction, new_fx);
+
+    // crucial: defaults
+    eb.findParameterByID({ C15::PID::FB_Mix_Osc, loadTo })->setCPFromHwui(transaction, 0);
+    eb.findParameterByID({ C15::PID::FB_Mix_Osc_Src, loadTo })->setCPFromHwui(transaction, 0);
+    eb.findParameterByID({ C15::PID::FB_Mix_Comb_Src, loadTo })->setCPFromHwui(transaction, 0);
+    eb.findParameterByID({ C15::PID::FB_Mix_SVF_Src, loadTo })->setCPFromHwui(transaction, 0);
+    eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, loadTo })->setCPFromHwui(transaction, 0);
+
+    loadPartFromDualIntoDual_OutputMixer(transaction, loadFrom, loadTo, eb, preset);
+  }
+}
+
 void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
                                                VoiceGroup loadInto)
 {
@@ -1442,45 +1538,36 @@ void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, c
     auto toFxParam = findParameterByID({ C15::PID::Out_Mix_To_FX, loadInto });
     auto splitPointI = findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I });
     auto splitPointII = findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II });
+
     auto monophonicParameters = findAllParametersOfType(C15::Descriptors::ParameterType::Monophonic_Unmodulateable);
     auto monophonicModparams = findAllParametersOfType(C15::Descriptors::ParameterType::Monophonic_Modulateable);
-    std::vector<ParameterId> all = combine(monophonicModparams, monophonicParameters);
-    all.erase(
-        std::remove_if(all.begin(), all.end(), [loadInto](const auto &id) { return id.getVoiceGroup() == loadInto; }),
-        all.end());
+
+    auto monophonicsNotInLoadInto = combine(monophonicModparams, monophonicParameters);
+    monophonicsNotInLoadInto.erase(std::remove_if(monophonicsNotInLoadInto.begin(), monophonicsNotInLoadInto.end(),
+                                                  [loadInto](const auto &id)
+                                                  { return id.getVoiceGroup() == loadInto; }),
+                                   monophonicsNotInLoadInto.end());
 
     ScopedLock locks(transaction);
     locks.addLock(toFxParam);
     locks.addLock(splitPointI);
     locks.addLock(splitPointII);
-    locks.addLock({C15::PID::FB_Mix_FX_Src, loadInto});
-    locks.addLock({C15::PID::FB_Mix_FX, loadInto});
-
-    for(const auto &pid : all)
-      if(auto p = findParameterByID(pid))
-        locks.addLock(p);
+    locks.addLocks(getFeedbackParametersLockedForLoadToPart(loadInto));
+    locks.addLocks(monophonicsNotInLoadInto);
 
     super::copyFrom(transaction, preset, from, loadInto);
   }
 
   copyPolyParametersFromI(transaction, preset, loadInto);
 
-  copySpecialToFXParamForLoadSingleIntoDualPart(transaction, from, loadInto, preset);
-
   copySinglePresetMasterToPartMaster(transaction, preset, loadInto);
-  setVoiceGroupName(transaction, preset->getName(), loadInto);
-
-  {
-    ScopedLock lock(transaction);
-    lock.addLock({C15::PID::FB_Mix_FX, loadInto});
-    lock.addLock({C15::PID::FB_Mix_FX_Src, loadInto});
-
-    initCrossFBExceptFromFX(transaction);
-  }
 
   initFadeFrom(transaction, loadInto);
-  undoableResetCrossPartFXParametersForLoadToPart(transaction, loadInto);
+  loadPartFromSingleIntoDual(transaction, from, loadInto, *this, preset);
+  findParameterByID({ C15::PID::Out_Mix_To_FX, loadInto })->setCPFromHwui(transaction, 0);
+
   updateLoadFromPartOrigin(transaction, preset, from, loadInto);
+  setVoiceGroupName(transaction, preset->getName(), loadInto);
 }
 
 void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup from,
@@ -1491,10 +1578,12 @@ void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, c
                           findParameterByID({ C15::PID::Voice_Grp_Fade_Range, loadTo }) };
 
   {
-    auto all = findAllParametersOfType({ C15::Descriptors::ParameterType::Monophonic_Unmodulateable,
-                                         C15::Descriptors::ParameterType::Monophonic_Modulateable });
-    all.erase(std::remove_if(all.begin(), all.end(), [loadTo](const auto &id) { return id.getVoiceGroup() == loadTo; }),
-              all.end());
+    auto allNonLoadIntoMonophonics
+        = findAllParametersOfType({ C15::Descriptors::ParameterType::Monophonic_Unmodulateable,
+                                    C15::Descriptors::ParameterType::Monophonic_Modulateable });
+    allNonLoadIntoMonophonics.erase(std::remove_if(allNonLoadIntoMonophonics.begin(), allNonLoadIntoMonophonics.end(),
+                                                   [loadTo](const auto &id) { return id.getVoiceGroup() == loadTo; }),
+                                    allNonLoadIntoMonophonics.end());
 
     ScopedLock locks(transaction);
     locks.addLock(toFxParam);
@@ -1502,19 +1591,8 @@ void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, c
     locks.addGroupLock({ "Unison", VoiceGroup::II });
     locks.addGroupLock({ "Mono", VoiceGroup::I });
     locks.addGroupLock({ "Mono", VoiceGroup::II });
-    locks.addLock({C15::PID::FB_Mix_FX_Src, loadTo});
-    locks.addLock({C15::PID::FB_Mix_FX, loadTo});
-    locks.addLock({C15::PID::FB_Mix_Comb, loadTo});
-    locks.addLock({C15::PID::FB_Mix_Comb_Src, loadTo});
-    locks.addLock({C15::PID::FB_Mix_SVF, loadTo});
-    locks.addLock({C15::PID::FB_Mix_SVF_Src, loadTo});
-
-    for(const auto &pid : all)
-      if(auto p = findParameterByID(pid))
-        locks.addLock(p);
-
-    for(auto p : getCrossFBParameters(loadTo))
-      locks.addLock(p);
+    locks.addLocks(getFeedbackParametersLockedForLoadToPart(loadTo));
+    locks.addLocks(allNonLoadIntoMonophonics);
 
     for(auto p : fadeFromParams)
       locks.addLock(p);
@@ -1531,8 +1609,8 @@ void EditBuffer::loadSinglePresetIntoLayerPart(UNDO::Transaction *transaction, c
   getParameterGroupByID({ "Unison", VoiceGroup::II })->undoableLoadDefault(transaction, Defaults::FactoryDefault);
   getParameterGroupByID({ "Mono", VoiceGroup::II })->undoableLoadDefault(transaction, Defaults::FactoryDefault);
 
-  undoableResetCrossPartFXParametersForLoadToPart(transaction, loadTo);
-  undoableResetCrossPartFXParametersForLoadToPartIntoLayer(transaction, loadTo);
+  loadPartFromSingleIntoDual(transaction, from, loadTo, *this, preset);
+  findParameterByID({ C15::PID::Out_Mix_To_FX, loadTo })->setCPFromHwui(transaction, 0);
 
   updateLoadFromPartOrigin(transaction, preset, from, loadTo);
 
@@ -1561,9 +1639,9 @@ void EditBuffer::undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transac
 
   {
     ScopedLock locks(transaction);
-    locks.addLock({C15::PID::FB_Mix_FX_Src, copyTo});
-    locks.addLock({C15::PID::Out_Mix_To_FX, copyTo});
-    locks.addLock({C15::PID::FB_Mix_FX, copyTo});
+    locks.addLock({ C15::PID::FB_Mix_FX_Src, copyTo });
+    locks.addLock({ C15::PID::Out_Mix_To_FX, copyTo });
+    locks.addLock({ C15::PID::FB_Mix_FX, copyTo });
 
     for(auto p : getCrossFBParameters(copyTo))
       locks.addLock(p);
@@ -1574,12 +1652,8 @@ void EditBuffer::undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transac
     super::copyFrom(transaction, preset, from, copyTo);
   }
 
-  if(preset->isDual())
-    copySumOfMasterGroupToVoiceGroupMasterGroup(transaction, preset, from, copyTo);
-  else
-    copySinglePresetMasterToPartMaster(transaction, preset, copyTo);
-
-  undoableResetCrossPartFXParametersForLoadToPart(transaction, copyTo);
+  loadPartFromDualIntoSplit(transaction, from, copyTo, *this, preset);
+  copySumOfMasterGroupToVoiceGroupMasterGroup(transaction, preset, from, copyTo);
 
   initFadeParameters(transaction, copyTo);
   if(preset->getType() == SoundType::Layer)
@@ -1595,24 +1669,7 @@ void EditBuffer::undoableLoadPresetPartIntoSplitSound(UNDO::Transaction *transac
     getParameterGroupByID(monoTo)->copyFrom(transaction, preset->findParameterGroup(monoI));
   }
 
-  if(preset->isDual())
-    setVoiceGroupName(transaction, preset->getVoiceGroupName(from), copyTo);
-  else
-    setVoiceGroupName(transaction, preset->getName(), copyTo);
-}
-
-void EditBuffer::undoableResetCrossPartFXParametersForLoadToPart(UNDO::Transaction *transaction,
-                                                                 const VoiceGroup &copyTo) const
-{
-  auto FB_Mix_FX_Src_Param = findParameterByID({C15::PID::FB_Mix_FX_Src, copyTo});
-  auto FB_Mix_FX_Src_Param_Val = FB_Mix_FX_Src_Param->getControlPositionValue();
-
-  auto FB_Mix_FX_Param = findParameterByID({C15::PID::FB_Mix_FX, copyTo});
-  auto FB_Mix_FX_Param_Val = FB_Mix_FX_Param->getControlPositionValue();
-
-  findParameterByID({C15::PID::Out_Mix_To_FX, copyTo})->setCPFromHwui(transaction, 0);
-  FB_Mix_FX_Param->setCPFromHwui(transaction, FB_Mix_FX_Param_Val * (1 - FB_Mix_FX_Src_Param_Val));
-  FB_Mix_FX_Src_Param->setCPFromHwui(transaction, 0);
+  setVoiceGroupName(transaction, preset->getVoiceGroupName(from), copyTo);
 }
 
 void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transaction, const Preset *preset,
@@ -1623,16 +1680,16 @@ void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transac
 
   {
     ScopedLock locks(transaction);
-    locks.addLock({C15::PID::FB_Mix_FX_Src, copyTo});
-    locks.addLock({C15::PID::Out_Mix_To_FX, copyTo});
-    locks.addLock({C15::PID::FB_Mix_FX, copyTo});
+    locks.addLock({ C15::PID::FB_Mix_FX_Src, copyTo });
+    locks.addLock({ C15::PID::Out_Mix_To_FX, copyTo });
+    locks.addLock({ C15::PID::FB_Mix_FX, copyTo });
     locks.addLock({ C15::PID::Voice_Grp_Fade_From, copyTo });
     locks.addLock({ C15::PID::Voice_Grp_Fade_Range, copyTo });
-    locks.addLock({C15::PID::FB_Mix_Osc, copyTo});
-    locks.addLock({C15::PID::FB_Mix_Comb, copyTo});
-    locks.addLock({C15::PID::FB_Mix_Comb_Src, copyTo});
-    locks.addLock({C15::PID::FB_Mix_SVF, copyTo});
-    locks.addLock({C15::PID::FB_Mix_SVF_Src, copyTo});
+    locks.addLock({ C15::PID::FB_Mix_Osc, copyTo });
+    locks.addLock({ C15::PID::FB_Mix_Comb, copyTo });
+    locks.addLock({ C15::PID::FB_Mix_Comb_Src, copyTo });
+    locks.addLock({ C15::PID::FB_Mix_SVF, copyTo });
+    locks.addLock({ C15::PID::FB_Mix_SVF_Src, copyTo });
 
     if(preset->getType() == SoundType::Split)
     {
@@ -1657,11 +1714,10 @@ void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transac
     initFadeParameters(transaction, copyTo);
   }
 
-  undoableResetCrossPartFXParametersForLoadToPart(transaction, copyTo);
-  if(getType() == SoundType::Layer)
-  {
-    undoableResetCrossPartFXParametersForLoadToPartIntoLayer(transaction, copyTo);
-  }
+  findParameterByID({ C15::PID::Out_Mix_To_FX, copyTo })->setCPFromHwui(transaction, 0);
+  //undoableResetCrossPartFXParametersForLoadToPartIntoLayer(transaction, copyTo);
+
+  loadPartFromDualIntoLayer(transaction, copyFrom, copyTo, *this, preset);
 
   getParameterGroupByID({ "Unison", VoiceGroup::II })->undoableLoadDefault(transaction, Defaults::FactoryDefault);
   getParameterGroupByID({ "Mono", VoiceGroup::II })->undoableLoadDefault(transaction, Defaults::FactoryDefault);
@@ -1670,27 +1726,6 @@ void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transac
     setVoiceGroupName(transaction, preset->getVoiceGroupName(copyFrom), copyTo);
   else
     setVoiceGroupName(transaction, preset->getName(), copyTo);
-}
-
-void EditBuffer::undoableLoadPresetPartIntoSingleSound(UNDO::Transaction *transaction, const Preset *preset,
-                                                       VoiceGroup copyFrom, VoiceGroup copyTo)
-{
-  SendEditBufferScopeGuard scopeGuard(transaction, true);
-
-  setVoiceGroupName(transaction, preset->getName(), copyTo);
-  super::copyFrom(transaction, preset, copyFrom, copyTo);
-
-  if(preset->isDual())
-    copySumOfMasterGroupToVoiceGroupMasterGroup(transaction, preset, copyFrom, copyTo);
-  else
-    copySinglePresetMasterToPartMaster(transaction, preset, copyTo);
-
-  if(preset->isDual())
-    setVoiceGroupName(transaction, preset->getVoiceGroupName(copyFrom), copyTo);
-  else
-    setVoiceGroupName(transaction, preset->getName(), copyTo);
-
-  initFadeParameters(transaction, copyTo);
 }
 
 void EditBuffer::undoableLoadSelectedToPart(VoiceGroup from, VoiceGroup to)
@@ -2073,37 +2108,16 @@ void EditBuffer::copySpecialToFXParamForLoadSingleIntoDualPart(UNDO::Transaction
   }
 }
 
-void EditBuffer::copySpecialFXFromParamForLoadSingleIntoDualPart(UNDO::Transaction *transaction, VoiceGroup from,
-                                                                 VoiceGroup to, const Preset *preset)
-{
-  auto fx_src_I = findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
-  auto fx_src_II = findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
-
-  auto target = to == VoiceGroup::I ? fx_src_I : fx_src_II;
-  auto sourceParameter = preset->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I }, true);
-
-  target->copyFrom(transaction, sourceParameter);
-
-  if(from != VoiceGroup::I)
-  {
-    target->setCPFromHwui(transaction, 1.0 - sourceParameter->getValue());
-  }
-}
-
 void EditBuffer::copyPolyParametersFromI(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup group)
 {
   ScopedLock lock(transaction);
-  lock.addLock(findParameterByID({ C15::PID::FB_Mix_Comb_Src, group }));
   lock.addLock(findParameterByID({ C15::PID::FB_Mix_Osc, group }));
   lock.addLock(findParameterByID({ C15::PID::FB_Mix_Osc_Src, group }));
+  lock.addLock(findParameterByID({ C15::PID::FB_Mix_Comb_Src, group }));
   lock.addLock(findParameterByID({ C15::PID::FB_Mix_SVF_Src, group }));
+  lock.addLock(findParameterByID({ C15::PID::FB_Mix_SVF, group }));
   lock.addLock(findParameterByID({ C15::PID::FB_Mix_FX, group }));
   lock.addLock(findParameterByID({ C15::PID::FB_Mix_FX_Src, group }));
-  if(getType() == SoundType::Layer)
-  {
-    lock.addLock(findParameterByID({ C15::PID::FB_Mix_Comb, group }));
-    lock.addLock(findParameterByID({ C15::PID::FB_Mix_SVF, group }));
-  }
 
   lock.addLock(findParameterByID({ C15::PID::Out_Mix_To_FX, group }));
 
@@ -2139,29 +2153,12 @@ void EditBuffer::copyToFXAndFxFrom(UNDO::Transaction *transaction, VoiceGroup co
 {
   if(copyFrom == VoiceGroup::II)
   {
-    auto to_fx_I = findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
-    auto to_fx_II = findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+    auto to_fx_I = findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+    auto to_fx_II = findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
     to_fx_I->setCPFromHwui(transaction, 1 - to_fx_II->getControlPositionValue());
 
-    auto from_fx_I = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-    auto from_fx_II = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+    auto from_fx_I = findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+    auto from_fx_II = findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
     from_fx_I->setCPFromHwui(transaction, 1 - from_fx_II->getControlPositionValue());
   }
-}
-
-void EditBuffer::undoableResetCrossPartFXParametersForLoadToPartIntoLayer(UNDO::Transaction *transaction,
-                                                                        VoiceGroup copyTo)
-{
-  auto FB_MIX_AB = findParameterByID({C15::PID::FB_Mix_Osc, copyTo});
-  FB_MIX_AB->setCPFromHwui(transaction, 0);
-
-  auto FB_MIX_COMB = findParameterByID({C15::PID::FB_Mix_Comb, copyTo});
-  auto FB_MIX_COMB_FROM = findParameterByID({C15::PID::FB_Mix_Comb_Src, copyTo});
-  FB_MIX_COMB->setCPFromHwui(transaction, FB_MIX_COMB->getControlPositionValue() * (1 - FB_MIX_COMB_FROM->getControlPositionValue()));
-  FB_MIX_COMB_FROM->setCPFromHwui(transaction, 0);
-
-  auto FB_MIX_SVF = findParameterByID({C15::PID::FB_Mix_SVF, copyTo});
-  auto FB_MIX_SVF_FROM = findParameterByID({C15::PID::FB_Mix_SVF_Src, copyTo});
-  FB_MIX_SVF->setCPFromHwui(transaction, FB_MIX_SVF->getControlPositionValue() * (1 - FB_MIX_SVF_FROM->getControlPositionValue()));
-  FB_MIX_SVF_FROM->setCPFromHwui(transaction, 0);
 }

@@ -1,14 +1,17 @@
 #include <testing/TestHelper.h>
 #include "testing/unit-tests/mock/MockPresetStorage.h"
+#include <presets/Preset.h>
+#include <presets/PresetParameter.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "issue 3497")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load-to-part cross-fx-reset new rule-set")
 {
   MockPresetStorage presets;
   auto& eb = *app->getPresetManager()->getEditBuffer();
 
-  auto loadIntoSoundType = GENERATE(SoundType::Split, SoundType::Layer);
-
   EditBufferUseCases ebUseCases(eb);
+
+  auto out_mix_lvl_vg_I = eb.findParameterByID({C15::PID::Out_Mix_Lvl, VoiceGroup::I});
+  auto out_mix_lvl_vg_II = eb.findParameterByID({C15::PID::Out_Mix_Lvl, VoiceGroup::II});
 
   auto out_mix_to_fx_vg_I = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
   auto out_mix_to_fx_vg_II = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
@@ -34,305 +37,285 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "issue 3497")
   auto fb_mix_svf_src_vg_I = eb.findParameterByID({ C15::PID::FB_Mix_SVF_Src, VoiceGroup::I });
   auto fb_mix_svf_src_vg_II = eb.findParameterByID({ C15::PID::FB_Mix_SVF_Src, VoiceGroup::II });
 
-  WHEN("some sound of type is loaded " << toString(loadIntoSoundType))
+  auto fb_mix_osc_I = eb.findParameterByID({ C15::PID::FB_Mix_Osc, VoiceGroup::I });
+  auto fb_mix_osc_II = eb.findParameterByID({ C15::PID::FB_Mix_Osc, VoiceGroup::II });
+
+  auto fb_mix_osc_src_I = eb.findParameterByID({ C15::PID::FB_Mix_Osc_Src, VoiceGroup::I });
+  auto fb_mix_osc_src_II = eb.findParameterByID({ C15::PID::FB_Mix_Osc_Src, VoiceGroup::II });
+
+  auto setPresetValues = [&](Preset* p, VoiceGroup src)
   {
-    ebUseCases.initSoundAs(loadIntoSoundType, Defaults::FactoryDefault);
+    auto scope = TestHelper::createTestScope();
+    auto transaction = scope->getTransaction();
 
-    WHEN("loaded part of split preset into " << toString(loadIntoSoundType))
+    p->findParameterByID({C15::PID::FB_Mix_Osc, src}, false)->setValue(transaction, 1);
+    p->findParameterByID({C15::PID::FB_Mix_Osc_Src, src}, false)->setValue(transaction, 0.1);
+    p->findParameterByID({C15::PID::FB_Mix_Comb, src}, false)->setValue(transaction, 0.36);
+    p->findParameterByID({C15::PID::FB_Mix_Comb_Src, src}, false)->setValue(transaction, 0.87);
+    p->findParameterByID({C15::PID::FB_Mix_SVF, src}, false)->setValue(transaction, 0.187);
+    p->findParameterByID({C15::PID::FB_Mix_SVF_Src, src}, false)->setValue(transaction, 0.97);
+    p->findParameterByID({C15::PID::FB_Mix_FX, src}, false)->setValue(transaction, 0.18);
+    p->findParameterByID({C15::PID::FB_Mix_FX_Src, src}, false)->setValue(transaction, 0.28);
+    p->findParameterByID({C15::PID::Out_Mix_Lvl, src}, false)->setValue(transaction, 0.38);
+    p->findParameterByID({C15::PID::Out_Mix_To_FX, src}, false)->setValue(transaction, 0.1);
+  };
+
+  auto quantizeApprox = [](Parameter* p, double cp) {
+    return p->getValue().getQuantizedValue(cp, true);
+  };
+
+
+  WHEN("layer sound is loaded")
+  {
+    ebUseCases.initSoundAs(SoundType::Layer, Defaults::FactoryDefault);
+
+    auto loadTarget = GENERATE(VoiceGroup::I, VoiceGroup::II);
+
+    auto out_mix_lvl = eb.findParameterByID({C15::PID::Out_Mix_Lvl, loadTarget});
+    auto out_mix_to_fx = eb.findParameterByID({C15::PID::Out_Mix_To_FX, loadTarget});
+
+    auto fb_mix_fx = eb.findParameterByID({ C15::PID::FB_Mix_FX, loadTarget });
+    auto fb_mix_fx_src = eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, loadTarget });
+    auto fb_mix_osc = eb.findParameterByID({ C15::PID::FB_Mix_Osc, loadTarget });
+    auto fb_mix_osc_src = eb.findParameterByID({ C15::PID::FB_Mix_Osc_Src, loadTarget });
+    auto fb_mix_comb = eb.findParameterByID({ C15::PID::FB_Mix_Comb, loadTarget });
+    auto fb_mix_comb_src = eb.findParameterByID({ C15::PID::FB_Mix_Comb_Src, loadTarget });
+    auto fb_mix_svf = eb.findParameterByID({ C15::PID::FB_Mix_SVF, loadTarget });
+    auto fb_mix_svf_src = eb.findParameterByID({ C15::PID::FB_Mix_SVF_Src, loadTarget });
+
+    THEN("load single part I into " << toString(loadTarget) << " of layer")
     {
-      SECTION("loaded into I")
-      {
-        ParameterUseCases fbMixFx(fb_mix_fx_vg_I);
-        ParameterUseCases fbMixFxSrc(fb_mix_fx_src_vg_I);
-        ParameterUseCases fbComb(fb_mix_comb_vg_I);
-        ParameterUseCases fbCombSrc(fb_mix_comb_src_vg_I);
-        ParameterUseCases fbSvf(fb_mix_svf_vg_I);
-        ParameterUseCases fbSvfSrc(fb_mix_svf_src_vg_I);
+      setPresetValues(presets.getSinglePreset(), VoiceGroup::I);
+      ebUseCases.loadToPart(presets.getSinglePreset(), VoiceGroup::I, loadTarget);
 
-        fbMixFx.setControlPosition(0.18);
-        fbMixFxSrc.setControlPosition(0.28);
-        fbComb.setControlPosition(0.36);
-        fbCombSrc.setControlPosition(0.87);
-        fbSvf.setControlPosition(0.187);
-        fbSvfSrc.setControlPosition(0.97);
+      CHECK(fb_mix_osc->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_osc_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_comb->getControlPositionValue() == quantizeApprox(fb_mix_comb, 0.36));
+      CHECK(fb_mix_comb_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_svf->getControlPositionValue() == quantizeApprox(fb_mix_svf, 0.187));
+      CHECK(fb_mix_svf_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_fx->getControlPositionValue() == quantizeApprox(fb_mix_fx, 0.152733));
+      CHECK(fb_mix_fx_src->getControlPositionValue() == Approx(0));
 
-        auto old_FB_MIX_FX_val = fb_mix_fx_vg_I->getControlPositionValue();
-        auto old_FB_Mix_FX_src_val = fb_mix_fx_src_vg_I->getControlPositionValue();
-
-        auto old_FB_MIX_Comb_val = fb_mix_comb_vg_I->getControlPositionValue();
-        auto old_FB_MIX_Comb_src_val = fb_mix_comb_src_vg_I->getControlPositionValue();
-
-        auto old_FB_MIX_SVF_val = fb_mix_svf_vg_I->getControlPositionValue();
-        auto old_FB_MIX_SVF_src_val = fb_mix_svf_src_vg_I->getControlPositionValue();
-
-        ebUseCases.loadToPart(presets.getSplitPreset(), VoiceGroup::I, VoiceGroup::I);
-
-        CHECK(out_mix_to_fx_vg_I->getControlPositionValue() == 0);
-        CHECK(fb_mix_fx_vg_I->getControlPositionValue()
-              == fb_mix_fx_vg_I->getValue().getQuantizedValue(old_FB_MIX_FX_val * (1 - old_FB_Mix_FX_src_val), true));
-        CHECK(fb_mix_fx_src_vg_I->getControlPositionValue() == 0);
-
-        if(loadIntoSoundType == SoundType::Layer)
-        {
-          THEN("special into layer rules apply")
-          {
-            CHECK(fb_mix_a_b_vg_I->getControlPositionValue() == 0);
-            CHECK(fb_mix_comb_vg_I->getControlPositionValue()
-                  == fb_mix_comb_vg_I->getValue().getQuantizedValue(old_FB_MIX_Comb_val * (1 - old_FB_MIX_Comb_src_val),
-                                                                    true));
-            CHECK(fb_mix_comb_src_vg_I->getControlPositionValue() == 0);
-
-            CHECK(fb_mix_svf_vg_I->getControlPositionValue()
-                  == fb_mix_svf_vg_I->getValue().getQuantizedValue(old_FB_MIX_SVF_val * (1 - old_FB_MIX_SVF_src_val),
-                                                                   true));
-            CHECK(fb_mix_svf_src_vg_I->getControlPositionValue() == 0);
-          }
-        }
-      }
-
-      SECTION("loaded into II")
-      {
-        ParameterUseCases fbMixFx(fb_mix_fx_vg_II);
-        ParameterUseCases fbMixFxSrc(fb_mix_fx_src_vg_II);
-        ParameterUseCases fbComb(fb_mix_comb_vg_II);
-        ParameterUseCases fbCombSrc(fb_mix_comb_src_vg_II);
-        ParameterUseCases fbSvf(fb_mix_svf_vg_II);
-        ParameterUseCases fbSvfSrc(fb_mix_svf_src_vg_II);
-
-        fbMixFx.setControlPosition(0.18);
-        fbMixFxSrc.setControlPosition(0.28);
-        fbComb.setControlPosition(0.36);
-        fbCombSrc.setControlPosition(0.87);
-        fbSvf.setControlPosition(0.187);
-        fbSvfSrc.setControlPosition(0.97);
-
-        auto old_FB_MIX_FX_val = fb_mix_fx_vg_II->getControlPositionValue();
-        auto old_FB_Mix_FX_src_val = fb_mix_fx_src_vg_II->getControlPositionValue();
-
-        auto old_FB_MIX_Comb_val = fb_mix_comb_vg_II->getControlPositionValue();
-        auto old_FB_MIX_Comb_src_val = fb_mix_comb_src_vg_II->getControlPositionValue();
-
-        auto old_FB_MIX_SVF_val = fb_mix_svf_vg_II->getControlPositionValue();
-        auto old_FB_MIX_SVF_src_val = fb_mix_svf_src_vg_II->getControlPositionValue();
-
-        ebUseCases.loadToPart(presets.getSplitPreset(), VoiceGroup::I, VoiceGroup::II);
-
-        CHECK(out_mix_to_fx_vg_II->getControlPositionValue() == 0);
-        CHECK(fb_mix_fx_vg_II->getControlPositionValue()
-              == fb_mix_fx_vg_II->getValue().getQuantizedValue(old_FB_MIX_FX_val * (1 - old_FB_Mix_FX_src_val), true));
-        CHECK(fb_mix_fx_src_vg_II->getControlPositionValue() == 0);
-
-        if(loadIntoSoundType == SoundType::Layer)
-        {
-
-          THEN("special into layer rules apply")
-          {
-            CHECK(fb_mix_a_b_vg_II->getControlPositionValue() == 0);
-            CHECK(fb_mix_comb_vg_II->getControlPositionValue()
-                  == fb_mix_comb_vg_II->getValue().getQuantizedValue(
-                      old_FB_MIX_Comb_val * (1 - old_FB_MIX_Comb_src_val), true));
-            CHECK(fb_mix_comb_src_vg_II->getControlPositionValue() == 0);
-
-            CHECK(fb_mix_svf_vg_II->getControlPositionValue()
-                  == fb_mix_svf_vg_II->getValue().getQuantizedValue(old_FB_MIX_SVF_val * (1 - old_FB_MIX_SVF_src_val),
-                                                                    true));
-            CHECK(fb_mix_svf_src_vg_II->getControlPositionValue() == 0);
-          }
-        }
-      }
+      CHECK(out_mix_lvl->getControlPositionValue() == quantizeApprox(out_mix_lvl, 0.36));
+      CHECK(out_mix_to_fx->getControlPositionValue() == Approx(0));
     }
 
-    WHEN("loaded part of layer preset into " << toString(loadIntoSoundType))
+    THEN("load single part II into " << toString(loadTarget) << " of layer")
     {
-      SECTION("loaded into I")
-      {
-        ParameterUseCases fbMixFx(fb_mix_fx_vg_I);
-        ParameterUseCases fbMixFxSrc(fb_mix_fx_src_vg_I);
-        ParameterUseCases fbComb(fb_mix_comb_vg_I);
-        ParameterUseCases fbCombSrc(fb_mix_comb_src_vg_I);
-        ParameterUseCases fbSvf(fb_mix_svf_vg_I);
-        ParameterUseCases fbSvfSrc(fb_mix_svf_src_vg_I);
+      setPresetValues(presets.getSinglePreset(), VoiceGroup::I);
+      ebUseCases.loadToPart(presets.getSinglePreset(), VoiceGroup::II, loadTarget);
 
-        fbMixFx.setControlPosition(0.18);
-        fbMixFxSrc.setControlPosition(0.28);
-        fbComb.setControlPosition(0.36);
-        fbCombSrc.setControlPosition(0.87);
-        fbSvf.setControlPosition(0.187);
-        fbSvfSrc.setControlPosition(0.97);
+      CHECK(fb_mix_osc->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_osc_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_comb->getControlPositionValue() == quantizeApprox(fb_mix_comb, 0.36));
+      CHECK(fb_mix_comb_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_svf->getControlPositionValue() == quantizeApprox(fb_mix_svf, 0.187));
+      CHECK(fb_mix_svf_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_fx->getControlPositionValue() == quantizeApprox(fb_mix_fx, 0.095247));
+      CHECK(fb_mix_fx_src->getControlPositionValue() == Approx(0));
 
-        auto old_FB_MIX_FX_val = fb_mix_fx_vg_I->getControlPositionValue();
-        auto old_FB_Mix_FX_src_val = fb_mix_fx_src_vg_I->getControlPositionValue();
-
-        auto old_FB_MIX_Comb_val = fb_mix_comb_vg_I->getControlPositionValue();
-        auto old_FB_MIX_Comb_src_val = fb_mix_comb_src_vg_I->getControlPositionValue();
-
-        auto old_FB_MIX_SVF_val = fb_mix_svf_vg_I->getControlPositionValue();
-        auto old_FB_MIX_SVF_src_val = fb_mix_svf_src_vg_I->getControlPositionValue();
-
-        ebUseCases.loadToPart(presets.getLayerPreset(), VoiceGroup::I, VoiceGroup::I);
-
-        CHECK(out_mix_to_fx_vg_I->getControlPositionValue() == 0);
-        CHECK(fb_mix_fx_vg_I->getControlPositionValue()
-              == fb_mix_fx_vg_I->getValue().getQuantizedValue(old_FB_MIX_FX_val * (1 - old_FB_Mix_FX_src_val), true));
-        CHECK(fb_mix_fx_src_vg_I->getControlPositionValue() == 0);
-
-        if(loadIntoSoundType == SoundType::Layer)
-        {
-
-          THEN("special into layer rules apply")
-          {
-            CHECK(fb_mix_a_b_vg_I->getControlPositionValue() == 0);
-            CHECK(fb_mix_comb_vg_I->getControlPositionValue()
-                  == fb_mix_comb_vg_I->getValue().getQuantizedValue(old_FB_MIX_Comb_val * (1 - old_FB_MIX_Comb_src_val),
-                                                                    true));
-            CHECK(fb_mix_comb_src_vg_I->getControlPositionValue() == 0);
-
-            CHECK(fb_mix_svf_vg_I->getControlPositionValue()
-                  == fb_mix_svf_vg_I->getValue().getQuantizedValue(old_FB_MIX_SVF_val * (1 - old_FB_MIX_SVF_src_val),
-                                                                   true));
-            CHECK(fb_mix_svf_src_vg_I->getControlPositionValue() == 0);
-          }
-        }
-      }
-
-      SECTION("loaded into II")
-      {
-        ParameterUseCases fbMixFx(fb_mix_fx_vg_II);
-        ParameterUseCases fbMixFxSrc(fb_mix_fx_src_vg_II);
-        ParameterUseCases fbComb(fb_mix_comb_vg_II);
-        ParameterUseCases fbCombSrc(fb_mix_comb_src_vg_II);
-        ParameterUseCases fbSvf(fb_mix_svf_vg_II);
-        ParameterUseCases fbSvfSrc(fb_mix_svf_src_vg_II);
-
-        fbMixFx.setControlPosition(0.18);
-        fbMixFxSrc.setControlPosition(0.28);
-        fbComb.setControlPosition(0.36);
-        fbCombSrc.setControlPosition(0.87);
-        fbSvf.setControlPosition(0.187);
-        fbSvfSrc.setControlPosition(0.97);
-
-        auto old_FB_MIX_FX_val = fb_mix_fx_vg_II->getControlPositionValue();
-        auto old_FB_Mix_FX_src_val = fb_mix_fx_src_vg_II->getControlPositionValue();
-
-        auto old_FB_MIX_Comb_val = fb_mix_comb_vg_II->getControlPositionValue();
-        auto old_FB_MIX_Comb_src_val = fb_mix_comb_src_vg_II->getControlPositionValue();
-
-        auto old_FB_MIX_SVF_val = fb_mix_svf_vg_II->getControlPositionValue();
-        auto old_FB_MIX_SVF_src_val = fb_mix_svf_src_vg_II->getControlPositionValue();
-
-        ebUseCases.loadToPart(presets.getLayerPreset(), VoiceGroup::I, VoiceGroup::II);
-
-        CHECK(out_mix_to_fx_vg_II->getControlPositionValue() == 0);
-        CHECK(fb_mix_fx_vg_II->getControlPositionValue()
-              == fb_mix_fx_vg_II->getValue().getQuantizedValue(old_FB_MIX_FX_val * (1 - old_FB_Mix_FX_src_val), true));
-        CHECK(fb_mix_fx_src_vg_II->getControlPositionValue() == 0);
-
-        //layer specific rules
-        if(loadIntoSoundType == SoundType::Layer)
-        {
-
-          THEN("special into layer rules apply")
-          {
-            CHECK(fb_mix_a_b_vg_II->getControlPositionValue() == 0);
-            CHECK(fb_mix_comb_vg_II->getControlPositionValue()
-                  == fb_mix_comb_vg_II->getValue().getQuantizedValue(
-                      old_FB_MIX_Comb_val * (1 - old_FB_MIX_Comb_src_val), true));
-            CHECK(fb_mix_comb_src_vg_II->getControlPositionValue() == 0);
-
-            CHECK(fb_mix_svf_vg_II->getControlPositionValue()
-                  == fb_mix_svf_vg_II->getValue().getQuantizedValue(old_FB_MIX_SVF_val * (1 - old_FB_MIX_SVF_src_val),
-                                                                    true));
-            CHECK(fb_mix_svf_src_vg_II->getControlPositionValue() == 0);
-          }
-        }
-      }
+      CHECK(out_mix_lvl->getControlPositionValue() == quantizeApprox(out_mix_lvl, 0.120167));
+      CHECK(out_mix_to_fx->getControlPositionValue() == Approx(0));
     }
 
-    WHEN("loaded part of single preset into " << toString(loadIntoSoundType))
+    THEN("load split part I into " << toString(loadTarget) << " of layer")
     {
-      SECTION("loaded into I")
-      {
-        ParameterUseCases fbMixFx(fb_mix_fx_vg_I);
-        ParameterUseCases fbMixFxSrc(fb_mix_fx_src_vg_I);
-        ParameterUseCases fbComb(fb_mix_comb_vg_I);
-        ParameterUseCases fbCombSrc(fb_mix_comb_src_vg_I);
-        ParameterUseCases fbSvf(fb_mix_svf_vg_I);
-        ParameterUseCases fbSvfSrc(fb_mix_svf_src_vg_I);
+      setPresetValues(presets.getSplitPreset(), VoiceGroup::I);
+      ebUseCases.loadToPart(presets.getSplitPreset(), VoiceGroup::I, loadTarget);
 
-        fbMixFx.setControlPosition(0.18);
-        fbMixFxSrc.setControlPosition(0.28);
-        fbComb.setControlPosition(0.36);
-        fbCombSrc.setControlPosition(0.87);
-        fbSvf.setControlPosition(0.187);
-        fbSvfSrc.setControlPosition(0.97);
+      CHECK(fb_mix_osc->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_osc_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_comb->getControlPositionValue() == quantizeApprox(fb_mix_comb, 0.0468));
+      CHECK(fb_mix_comb_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_svf->getControlPositionValue() == quantizeApprox(fb_mix_svf, 0.00560999));
+      CHECK(fb_mix_svf_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_fx->getControlPositionValue() == quantizeApprox(fb_mix_fx, 0.152735));
+      CHECK(fb_mix_fx_src->getControlPositionValue() == Approx(0));
 
-        auto old_FB_MIX_FX_val = fb_mix_fx_vg_I->getControlPositionValue();
-        auto old_FB_Mix_FX_src_val = fb_mix_fx_src_vg_I->getControlPositionValue();
+      CHECK(out_mix_lvl->getControlPositionValue() == quantizeApprox(out_mix_lvl, 0.36));
+      CHECK(out_mix_to_fx->getControlPositionValue() == Approx(0));
+    }
 
-        auto old_FB_MIX_Comb_val = fb_mix_comb_vg_I->getControlPositionValue();
-        auto old_FB_MIX_Comb_src_val = fb_mix_comb_src_vg_I->getControlPositionValue();
+    THEN("load split part II into " << toString(loadTarget) << " of layer")
+    {
+      setPresetValues(presets.getSplitPreset(), VoiceGroup::II);
+      ebUseCases.loadToPart(presets.getSplitPreset(), VoiceGroup::II, loadTarget);
 
-        auto old_FB_MIX_SVF_val = fb_mix_svf_vg_I->getControlPositionValue();
-        auto old_FB_MIX_SVF_src_val = fb_mix_svf_src_vg_I->getControlPositionValue();
+      CHECK(fb_mix_osc->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_osc_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_comb->getControlPositionValue() == quantizeApprox(fb_mix_comb, 0.0468));
+      CHECK(fb_mix_comb_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_svf->getControlPositionValue() == quantizeApprox(fb_mix_svf, 0.00560999));
+      CHECK(fb_mix_svf_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_fx->getControlPositionValue() == quantizeApprox(fb_mix_fx, 0.152735));
+      CHECK(fb_mix_fx_src->getControlPositionValue() == Approx(0));
 
-        ebUseCases.loadToPart(presets.getSinglePreset(), VoiceGroup::I, VoiceGroup::I);
+      CHECK(out_mix_lvl->getControlPositionValue() == quantizeApprox(out_mix_lvl, 0.36));
+      CHECK(out_mix_to_fx->getControlPositionValue() == Approx(0));
+    }
 
-        CHECK(out_mix_to_fx_vg_I->getControlPositionValue() == 0);
-        CHECK(fb_mix_fx_vg_I->getControlPositionValue() == fb_mix_fx_vg_I->getValue().getQuantizedValue(old_FB_MIX_FX_val * (1 - old_FB_Mix_FX_src_val), true));
-        CHECK(fb_mix_fx_src_vg_I->getControlPositionValue() == 0);
+    THEN("load layer part I into " << toString(loadTarget) << " of layer")
+    {
+      setPresetValues(presets.getLayerPreset(), VoiceGroup::I);
+      ebUseCases.loadToPart(presets.getLayerPreset(), VoiceGroup::I, loadTarget);
 
-        if(loadIntoSoundType == SoundType::Layer)
-        {
-          CHECK(fb_mix_a_b_vg_I->getControlPositionValue() == 0);
-          CHECK(fb_mix_comb_vg_I->getControlPositionValue() == fb_mix_comb_vg_I->getValue().getQuantizedValue(old_FB_MIX_Comb_val * (1 - old_FB_MIX_Comb_src_val), true));
-          CHECK(fb_mix_comb_src_vg_I->getControlPositionValue() == 0);
+      CHECK(fb_mix_osc->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_osc_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_comb->getControlPositionValue() == quantizeApprox(fb_mix_comb, 0.0468));
+      CHECK(fb_mix_comb_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_svf->getControlPositionValue() == quantizeApprox(fb_mix_svf, 0.00560999));
+      CHECK(fb_mix_svf_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_fx->getControlPositionValue() == quantizeApprox(fb_mix_fx, 0.152735));
+      CHECK(fb_mix_fx_src->getControlPositionValue() == Approx(0));
 
-          CHECK(fb_mix_svf_vg_I->getControlPositionValue() == fb_mix_svf_vg_I->getValue().getQuantizedValue(old_FB_MIX_SVF_val * (1 - old_FB_MIX_SVF_src_val), true));
-          CHECK(fb_mix_svf_src_vg_I->getControlPositionValue() == 0);
-        }
-      }
+      CHECK(out_mix_lvl->getControlPositionValue() == quantizeApprox(out_mix_lvl, 0.36));
+      CHECK(out_mix_to_fx->getControlPositionValue() == Approx(0));
+    }
 
-      SECTION("loaded into II")
-      {
-        ParameterUseCases fbMixFx(fb_mix_fx_vg_II);
-        ParameterUseCases fbMixFxSrc(fb_mix_fx_src_vg_II);
-        ParameterUseCases fbComb(fb_mix_comb_vg_II);
-        ParameterUseCases fbCombSrc(fb_mix_comb_src_vg_II);
-        ParameterUseCases fbSvf(fb_mix_svf_vg_II);
-        ParameterUseCases fbSvfSrc(fb_mix_svf_src_vg_II);
+    THEN("load layer part II into " << toString(loadTarget) << " of layer")
+    {
+      setPresetValues(presets.getLayerPreset(), VoiceGroup::II);
+      ebUseCases.loadToPart(presets.getLayerPreset(), VoiceGroup::II, loadTarget);
 
-        fbMixFx.setControlPosition(0.18);
-        fbMixFxSrc.setControlPosition(0.28);
-        fbComb.setControlPosition(0.36);
-        fbCombSrc.setControlPosition(0.87);
-        fbSvf.setControlPosition(0.187);
-        fbSvfSrc.setControlPosition(0.97);
+      CHECK(fb_mix_osc->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_osc_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_comb->getControlPositionValue() == quantizeApprox(fb_mix_comb, 0.0468));
+      CHECK(fb_mix_comb_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_svf->getControlPositionValue() == quantizeApprox(fb_mix_svf, 0.00560999));
+      CHECK(fb_mix_svf_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_fx->getControlPositionValue() == quantizeApprox(fb_mix_fx, 0.152735));
+      CHECK(fb_mix_fx_src->getControlPositionValue() == Approx(0));
 
-        auto old_FB_MIX_FX_val = fb_mix_fx_vg_II->getControlPositionValue();
-        auto old_FB_Mix_FX_src_val = fb_mix_fx_src_vg_II->getControlPositionValue();
+      CHECK(out_mix_lvl->getControlPositionValue() == quantizeApprox(out_mix_lvl, 0.36));
+      CHECK(out_mix_to_fx->getControlPositionValue() == Approx(0));
+    }
+  }
 
-        auto old_FB_MIX_Comb_val = fb_mix_comb_vg_II->getControlPositionValue();
-        auto old_FB_MIX_Comb_src_val = fb_mix_comb_src_vg_II->getControlPositionValue();
+  WHEN("split sound is loaded")
+  {
+    ebUseCases.initSoundAs(SoundType::Split, Defaults::FactoryDefault);
 
-        auto old_FB_MIX_SVF_val = fb_mix_svf_vg_II->getControlPositionValue();
-        auto old_FB_MIX_SVF_src_val = fb_mix_svf_src_vg_II->getControlPositionValue();
+    auto loadTarget = GENERATE(VoiceGroup::I, VoiceGroup::II);
 
-        ebUseCases.loadToPart(presets.getSinglePreset(), VoiceGroup::I, VoiceGroup::II);
+    auto out_mix_lvl = eb.findParameterByID({C15::PID::Out_Mix_Lvl, loadTarget});
+    auto out_mix_to_fx = eb.findParameterByID({C15::PID::Out_Mix_To_FX, loadTarget});
 
-        CHECK(out_mix_to_fx_vg_II->getControlPositionValue() == 0);
-        CHECK(fb_mix_fx_vg_II->getControlPositionValue() == fb_mix_fx_vg_II->getValue().getQuantizedValue(old_FB_MIX_FX_val * (1 - old_FB_Mix_FX_src_val), true));
-        CHECK(fb_mix_fx_src_vg_II->getControlPositionValue() == 0);
+    auto fb_mix_fx = eb.findParameterByID({ C15::PID::FB_Mix_FX, loadTarget });
+    auto fb_mix_fx_src = eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, loadTarget });
+    auto fb_mix_osc = eb.findParameterByID({ C15::PID::FB_Mix_Osc, loadTarget });
+    auto fb_mix_osc_src = eb.findParameterByID({ C15::PID::FB_Mix_Osc_Src, loadTarget });
+    auto fb_mix_comb = eb.findParameterByID({ C15::PID::FB_Mix_Comb, loadTarget });
+    auto fb_mix_comb_src = eb.findParameterByID({ C15::PID::FB_Mix_Comb_Src, loadTarget });
+    auto fb_mix_svf = eb.findParameterByID({ C15::PID::FB_Mix_SVF, loadTarget });
+    auto fb_mix_svf_src = eb.findParameterByID({ C15::PID::FB_Mix_SVF_Src, loadTarget });
 
-        if(loadIntoSoundType == SoundType::Layer)
-        {
-          CHECK(fb_mix_a_b_vg_II->getControlPositionValue() == 0);
-          CHECK(fb_mix_comb_vg_II->getControlPositionValue() == fb_mix_comb_vg_II->getValue().getQuantizedValue(old_FB_MIX_Comb_val * (1 - old_FB_MIX_Comb_src_val), true));
-          CHECK(fb_mix_comb_src_vg_II->getControlPositionValue() == 0);
+    THEN("load single part I into " << toString(loadTarget) << " of split")
+    {
+      setPresetValues(presets.getSinglePreset(), VoiceGroup::I);
+      ebUseCases.loadToPart(presets.getSinglePreset(), VoiceGroup::I, loadTarget);
 
-          CHECK(fb_mix_svf_vg_II->getControlPositionValue() == fb_mix_svf_vg_II->getValue().getQuantizedValue(old_FB_MIX_SVF_val * (1 - old_FB_MIX_SVF_src_val), true));
-          CHECK(fb_mix_svf_src_vg_II->getControlPositionValue() == 0);
-        }
-      }
+      CHECK(fb_mix_osc->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_osc_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_comb->getControlPositionValue() == quantizeApprox(fb_mix_comb, 0.36));
+      CHECK(fb_mix_comb_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_svf->getControlPositionValue() == quantizeApprox(fb_mix_svf, 0.187));
+      CHECK(fb_mix_svf_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_fx->getControlPositionValue() == quantizeApprox(fb_mix_fx, 0.152733));
+      CHECK(fb_mix_fx_src->getControlPositionValue() == Approx(0));
+
+      CHECK(out_mix_lvl->getControlPositionValue() == quantizeApprox(out_mix_lvl, 0.36));
+      CHECK(out_mix_to_fx->getControlPositionValue() == Approx(0));
+    }
+
+    THEN("load single part II into " << toString(loadTarget) << " of split")
+    {
+      setPresetValues(presets.getSinglePreset(), VoiceGroup::I);
+      ebUseCases.loadToPart(presets.getSinglePreset(), VoiceGroup::II, loadTarget);
+
+      CHECK(fb_mix_osc->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_osc_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_comb->getControlPositionValue() == quantizeApprox(fb_mix_comb, 0.36));
+      CHECK(fb_mix_comb_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_svf->getControlPositionValue() == quantizeApprox(fb_mix_svf, 0.187));
+      CHECK(fb_mix_svf_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_fx->getControlPositionValue() == quantizeApprox(fb_mix_fx, 0.095247));
+      CHECK(fb_mix_fx_src->getControlPositionValue() == Approx(0));
+
+      CHECK(out_mix_lvl->getControlPositionValue() == quantizeApprox(out_mix_lvl, 0.120167));
+      CHECK(out_mix_to_fx->getControlPositionValue() == Approx(0));
+    }
+
+    THEN("load split part I into " << toString(loadTarget) << " of split")
+    {
+      setPresetValues(presets.getSplitPreset(), VoiceGroup::I);
+      ebUseCases.loadToPart(presets.getSplitPreset(), VoiceGroup::I, loadTarget);
+
+      CHECK(fb_mix_osc->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_osc_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_comb->getControlPositionValue() == quantizeApprox(fb_mix_comb, 0.36));
+      CHECK(fb_mix_comb_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_svf->getControlPositionValue() == quantizeApprox(fb_mix_svf, 0.187));
+      CHECK(fb_mix_svf_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_fx->getControlPositionValue() == quantizeApprox(fb_mix_fx, 0.152735));
+      CHECK(fb_mix_fx_src->getControlPositionValue() == Approx(0));
+
+      CHECK(out_mix_lvl->getControlPositionValue() == quantizeApprox(out_mix_lvl, 0.36));
+      CHECK(out_mix_to_fx->getControlPositionValue() == Approx(0));
+    }
+
+    THEN("load split part II into " << toString(loadTarget) << " of split")
+    {
+      setPresetValues(presets.getSplitPreset(), VoiceGroup::II);
+      ebUseCases.loadToPart(presets.getSplitPreset(), VoiceGroup::II, loadTarget);
+
+      CHECK(fb_mix_osc->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_osc_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_comb->getControlPositionValue() == quantizeApprox(fb_mix_comb, 0.36));
+      CHECK(fb_mix_comb_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_svf->getControlPositionValue() == quantizeApprox(fb_mix_svf, 0.187));
+      CHECK(fb_mix_svf_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_fx->getControlPositionValue() == quantizeApprox(fb_mix_fx, 0.152735));
+      CHECK(fb_mix_fx_src->getControlPositionValue() == Approx(0));
+
+      CHECK(out_mix_lvl->getControlPositionValue() == quantizeApprox(out_mix_lvl, 0.36));
+      CHECK(out_mix_to_fx->getControlPositionValue() == Approx(0));
+    }
+
+    THEN("load layer part I into " << toString(loadTarget) << " of split")
+    {
+      setPresetValues(presets.getLayerPreset(), VoiceGroup::I);
+      ebUseCases.loadToPart(presets.getLayerPreset(), VoiceGroup::I, loadTarget);
+
+      CHECK(fb_mix_osc->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_osc_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_comb->getControlPositionValue() == quantizeApprox(fb_mix_comb, 0.36));
+      CHECK(fb_mix_comb_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_svf->getControlPositionValue() == quantizeApprox(fb_mix_svf, 0.187));
+      CHECK(fb_mix_svf_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_fx->getControlPositionValue() == quantizeApprox(fb_mix_fx, 0.152735));
+      CHECK(fb_mix_fx_src->getControlPositionValue() == Approx(0));
+
+      CHECK(out_mix_lvl->getControlPositionValue() == quantizeApprox(out_mix_lvl, 0.36));
+      CHECK(out_mix_to_fx->getControlPositionValue() == Approx(0));
+    }
+
+    THEN("load layer part II into " << toString(loadTarget) << " of split")
+    {
+      setPresetValues(presets.getLayerPreset(), VoiceGroup::II);
+      ebUseCases.loadToPart(presets.getLayerPreset(), VoiceGroup::II, loadTarget);
+
+      CHECK(fb_mix_osc->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_osc_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_comb->getControlPositionValue() == quantizeApprox(fb_mix_comb, 0.36));
+      CHECK(fb_mix_comb_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_svf->getControlPositionValue() == quantizeApprox(fb_mix_svf, 0.187));
+      CHECK(fb_mix_svf_src->getControlPositionValue() == Approx(0));
+      CHECK(fb_mix_fx->getControlPositionValue() == quantizeApprox(fb_mix_fx, 0.152735));
+      CHECK(fb_mix_fx_src->getControlPositionValue() == Approx(0));
+
+      CHECK(out_mix_lvl->getControlPositionValue() == quantizeApprox(out_mix_lvl, 0.36));
+      CHECK(out_mix_to_fx->getControlPositionValue() == Approx(0));
     }
   }
 }

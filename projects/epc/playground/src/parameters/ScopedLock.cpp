@@ -54,3 +54,11 @@ void ScopedLock::addLocks(const std::vector<Parameter*>& params)
     addLock(p);
   }
 }
+
+void ScopedLock::addLocks(const std::vector<ParameterId>& paramIds)
+{
+  for(auto id: paramIds)
+  {
+    addLock(id);
+  }
+}
