@@ -253,12 +253,11 @@ public class EditBufferUseCases {
 	}
 
 	public void selectParameter(int paramNumber) {
-		GWT.log("select Parameter: " + paramNumber);
 		ParameterId id = toParamId(paramNumber);
-		GWT.log("select Parameter-Id: " + id.toString());
 		if (EditBufferModel.get().selectedParameter.setValue(id.getNumber()))
 			NonMaps.get().getServerProxy().selectParameter(id);
 	}
+
 
 	public void incParameter(int paramNumber, boolean fine) {
 		incDecParameter(paramNumber, fine, 1);
@@ -500,7 +499,6 @@ public class EditBufferUseCases {
 	}
 
 	public void selectVoiceGroup(VoiceGroup group) {
-		GWT.log("selectVoiceGroup: " + group.toString());
 		boolean changed = EditBufferModel.get().voiceGroup.setValue(group);
 		if (SetupModel.get().systemSettings.syncVoiceGroups.getBool() && changed) {
 			NonMaps.theMaps.getServerProxy().syncVoiceGroup();
@@ -532,6 +530,11 @@ public class EditBufferUseCases {
 		if (EditBufferModel.get().soundType.getValue() == SoundType.Single) {
 			if(containsElement(paramNumber, ParameterFactory.monophonicParameters)) {
 				return ParameterFactory.isGlobalParameter(paramNumber) ? VoiceGroup.Global : EditBufferModel.get().voiceGroup.getValue();
+			}
+			else if(containsElement(paramNumber, ParameterFactory.getGlobalParameters())){
+				return VoiceGroup.Global;
+			} else {
+				return VoiceGroup.I;
 			}
 		}
 
