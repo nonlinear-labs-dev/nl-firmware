@@ -111,7 +111,7 @@ public class SingleSoundSettings extends OverlayLayout {
 		masterValue = addChild(new ParameterValue(this, VoiceGroup.Global, 247));
 	}
 
-	private Rect getOuterBox() {
+	public Rect getOuterBox() {
 		Rect newRect = getPixRect().copy();
 		double reduceBy = newRect.getWidth() / 4;
 		double verticalMargin = Millimeter.toPixels(3);
@@ -147,8 +147,6 @@ public class SingleSoundSettings extends OverlayLayout {
 		tuneLabel.doLayout(boxStart, middleLine + lineOffset, entryWidth, labelHeight);
 		masterValue.doLayout(boxStart + entryWidth, middleLine - lineOffset + entryOffset, entryWidth, entryHeight);
 		tuneValue.doLayout(boxStart + entryWidth, middleLine + lineOffset + entryOffset, entryWidth, entryHeight);
-		// volume.doLayout(0, h / 3, 9 * partSize, 2 * h / 3);
-		// tune.doLayout(11 * partSize, h / 3, 9 * partSize, 2 * h / 3);
 	}
 
 	@Override

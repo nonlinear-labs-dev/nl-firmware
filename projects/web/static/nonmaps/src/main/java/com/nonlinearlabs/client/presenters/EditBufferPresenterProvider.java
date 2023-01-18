@@ -8,6 +8,8 @@ import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.SerialFX;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.SingleSoundFBToPoly;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
@@ -95,6 +97,30 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         model.soundType.onChange(v -> {
             presenter.soundType = v;
             notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(408, VoiceGroup.Global)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            if(cp == 0) {
+                presenter.serialFX = SerialFX.None;
+            } else if(cp > 0) {
+                presenter.serialFX = SerialFX.FX_I_IN_II;
+            } else if(cp < 0) {
+                presenter.serialFX = SerialFX.FX_II_IN_I;
+            }
+            return true;
+        });
+
+        model.getParameter(new ParameterId(362, VoiceGroup.I)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            if(cp > 0 && cp < 1)
+                presenter.fbToPolyArrowState = SingleSoundFBToPoly.FXI_FXII_To_Poly;
+            else if(cp == 0)
+                presenter.fbToPolyArrowState = SingleSoundFBToPoly.FXI_To_Poly;
+            else if(cp == 1)
+                presenter.fbToPolyArrowState = SingleSoundFBToPoly.FXII_To_Poly;
+
             return true;
         });
     }
