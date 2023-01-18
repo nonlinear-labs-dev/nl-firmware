@@ -136,6 +136,11 @@ public class SingleSoundLayout extends SoundLayout {
 			addChild(vgII = new VoiceGroup_II_Indicator(this));
 			addChild(serialArrow = new SerialArrow(this));
 			addChild(fbToPoly = new FBToPolyArrows(this));
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				setVisible(ebp.isSingleSoundFeedbackToPolyActive.calculateState());
+				return true;
+			});
 		}
 
 		@Override

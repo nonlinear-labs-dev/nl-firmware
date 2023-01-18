@@ -20,6 +20,22 @@ public class EditBufferPresenter {
         FXI_FXII_To_Poly
     }
 
+    public class FBToPolyParameterPrerequisites {
+        //all prefixed with flowingThrough
+        boolean fb_mix_fx = false;
+        boolean fb_mix_lvl = false;
+        boolean osc_a_pm_fb = false;
+        boolean osc_b_pm_fb = false;
+        boolean shp_a_fb_mix = false;
+        boolean shp_b_fb_mix = false;
+
+        public boolean calculateState() {
+            return fb_mix_fx && fb_mix_lvl && (
+                osc_a_pm_fb || osc_b_pm_fb || shp_a_fb_mix || shp_b_fb_mix
+            );
+        }
+    }
+
     public boolean allParametersLocked = false;
     public boolean isAnyParameterLocked = false;
     public boolean isAnyParameterChanged = false;
@@ -46,7 +62,7 @@ public class EditBufferPresenter {
     public RGB voiceGroupI_BackgroundColor = RGBA.transparent();
     public RGB voiceGroupII_BackgroundColor = RGBA.transparent();
 
-    public boolean isSingleSoundFeedbackToPolyActive = false;
+    public FBToPolyParameterPrerequisites isSingleSoundFeedbackToPolyActive = new FBToPolyParameterPrerequisites();
     public SerialFX serialFX = SerialFX.None;
     public SingleSoundFBToPoly fbToPolyArrowState = SingleSoundFBToPoly.FXI_To_Poly;
 

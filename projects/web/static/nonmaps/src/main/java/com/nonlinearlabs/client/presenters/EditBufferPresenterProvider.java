@@ -109,10 +109,11 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             } else if(cp < 0) {
                 presenter.serialFX = SerialFX.FX_II_IN_I;
             }
+            notifyChanges();
             return true;
         });
 
-        model.getParameter(new ParameterId(362, VoiceGroup.I)).value.onChange(v -> {
+        model.getParameter(new ParameterId(354, VoiceGroup.I)).value.onChange(v -> {
             double cp = v.getClippedValue();
             if(cp > 0 && cp < 1)
                 presenter.fbToPolyArrowState = SingleSoundFBToPoly.FXI_FXII_To_Poly;
@@ -120,7 +121,53 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
                 presenter.fbToPolyArrowState = SingleSoundFBToPoly.FXI_To_Poly;
             else if(cp == 1)
                 presenter.fbToPolyArrowState = SingleSoundFBToPoly.FXII_To_Poly;
+            
+                notifyChanges();
+            return true;
+        });
 
+
+        model.getParameter(new ParameterId(160, VoiceGroup.I)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            presenter.isSingleSoundFeedbackToPolyActive.fb_mix_fx = cp != 0;
+            notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(299, VoiceGroup.I)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            presenter.isSingleSoundFeedbackToPolyActive.fb_mix_lvl = cp > 0;
+            notifyChanges();
+            return true;
+        });
+
+
+        model.getParameter(new ParameterId(68, VoiceGroup.I)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            presenter.isSingleSoundFeedbackToPolyActive.osc_a_pm_fb = cp != 0;
+            notifyChanges();
+            return true;
+        });
+
+
+        model.getParameter(new ParameterId(98, VoiceGroup.I)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            presenter.isSingleSoundFeedbackToPolyActive.osc_b_pm_fb = cp != 0;
+            notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(78, VoiceGroup.I)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            presenter.isSingleSoundFeedbackToPolyActive.shp_a_fb_mix = cp > 0;
+            notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(108, VoiceGroup.I)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            presenter.isSingleSoundFeedbackToPolyActive.shp_b_fb_mix = cp > 0;
+            notifyChanges();
             return true;
         });
     }
