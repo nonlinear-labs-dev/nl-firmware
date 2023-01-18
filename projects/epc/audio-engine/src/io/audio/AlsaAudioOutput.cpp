@@ -71,9 +71,7 @@ void AlsaAudioOutput::open(const std::string& deviceName)
   snd_pcm_uframes_t ringBufferSize = static_cast<snd_pcm_uframes_t>(m_options->getAlsaRingBufferSize());
   checkAlsa(snd_pcm_hw_params_set_buffer_size_near(m_handle, hwparams, &ringBufferSize));
   checkAlsa(snd_pcm_hw_params(m_handle, hwparams));
-  checkAlsa(snd_pcm_sw_params_current(m_handle, swparams));
-  checkAlsa(snd_pcm_sw_params(m_handle, swparams));
-
+  
   nltools::Log::info("Alsa periods:", periods);
   nltools::Log::info("Alsa frames per period:", framesPerPeriod);
   nltools::Log::info("Alsa ringbuffer size:", ringBufferSize);
@@ -123,7 +121,7 @@ void AlsaAudioOutput::doBackgroundWork()
 
     if(avail == 0)
     {
-      poll(pollFileDescriptors, numPollFDs, 10);
+      poll(pollFileDescriptors, numPollFDs, 1);
     }
     else if(avail < 0)
     {
