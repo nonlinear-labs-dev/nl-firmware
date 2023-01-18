@@ -1,6 +1,6 @@
 import { globals, glue } from "../glue";
 import "./search.html";
-import { cachedSearch, getPresetHeight, multipleSelection, multipleSelectionStartedByShiftClick, numPresetsBeforeFirstVisible, scrollY } from "./shared-state";
+import { cachedSearch, currentContextMenuItem, getPresetHeight, multipleSelection, multipleSelectionStartedByShiftClick, numPresetsBeforeFirstVisible, scrollY, setPresetHeight } from "./shared-state";
 
 const presetCSVFormat = "text/preset-csv";
 
@@ -43,10 +43,12 @@ class Presenter {
             if (ms)
                 presetSelected = ms.includes(id);
 
+            var isShowingCtxMenu = currentContextMenuItem.get().includes(id);
+
             this.id = id;
             this.number = number;
             this.name = preset['name-suffixed'];
-            this.selected = presetSelected;
+            this.selected = presetSelected || isShowingCtxMenu;
             this.loaded = presetLoaded;
             this.color = preset['attributes']['color'];
             this.type = typeSign;
@@ -196,8 +198,15 @@ const events = {
 
 glue("searchResultPreset", (id) => new Presenter(Number.parseInt(id)), () => new InnerState(false), attributes, events);
 
-
 function encodePresetDragDropData(csv: string): string {
     return JSON.stringify({ format: 'preset/csv', data: csv });
 }
 
+Meteor.startup(() => {
+    const observer = new MutationObserver((mutationList, observer) => {
+        if (setPresetHeight())
+            observer.disconnect();
+    });
+
+    observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+});

@@ -40,6 +40,10 @@ export class PlaygroundProxy {
         this.send("/logger/log?message=" + message);
     }
 
+    setPresetAttribute(preset: string, key: string, value: any) {
+        this.send("/banks/set-preset-attribute?uuid=" + preset + "&key=" + key + "&value=" + value);
+    }
+
     private connect() {
         const hostName = location.hostname.length == 0 ? "localhost" : location.hostname;
         const port = !playgroundPort || playgroundPort.length < 2 ? ":8080" : playgroundPort;

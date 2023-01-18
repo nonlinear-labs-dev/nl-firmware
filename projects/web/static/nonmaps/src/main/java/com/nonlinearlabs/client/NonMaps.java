@@ -27,6 +27,7 @@ import com.nonlinearlabs.client.world.NonLinearWorld;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.maps.CachingMapsControl;
 import com.nonlinearlabs.client.world.maps.NonRect;
+import com.nonlinearlabs.client.world.overlay.CompareDialog;
 import com.nonlinearlabs.client.world.overlay.PresetInfoDialog;
 
 public class NonMaps extends Mouseing implements EntryPoint {
@@ -399,6 +400,15 @@ public class NonMaps extends Mouseing implements EntryPoint {
 		NonMaps.get().nonlinearWorld.invalidate(Control.INVALIDATION_FLAG_UI_CHANGED);
 	}
 
+	public static void comparePresetToEditbuffer(String presetId) {
+		CompareDialog.open(get().nonlinearWorld.getPresetManager().findPreset(presetId));
+	}
+
+	public static void comparePresets(String lhs, String rhs) {
+		var pm = get().nonlinearWorld.getPresetManager();
+		CompareDialog.open(pm.findPreset(lhs), pm.findPreset(rhs));
+	}
+
 	public static native void togglePresetSearch() /*-{
 		$wnd.togglePresetSearch();
 	}-*/;
@@ -413,6 +423,8 @@ public class NonMaps extends Mouseing implements EntryPoint {
 		$wnd.showPresetInfo = @com.nonlinearlabs.client.NonMaps::showPresetInfo(Ljava/lang/String;);
 		$wnd.nextZIndex = @com.nonlinearlabs.client.NonMaps::nextZIndex();
 		$wnd.redrawNonWorld = @com.nonlinearlabs.client.NonMaps::redrawNonWorld();
+		$wnd.comparePresetToEditbuffer = @com.nonlinearlabs.client.NonMaps::comparePresetToEditbuffer(Ljava/lang/String;);
+		$wnd.comparePresets = @com.nonlinearlabs.client.NonMaps::comparePresets(Ljava/lang/String;Ljava/lang/String;);
 	}-*/;
 
 	public static native int nextZIndex() /*-{

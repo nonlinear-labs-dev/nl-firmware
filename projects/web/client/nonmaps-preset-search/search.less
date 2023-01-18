@@ -3,6 +3,11 @@
     src: url("/nonmaps/images/SSP-LW25-Regular.otf");
 }
 
+@the-green-distance: 5mm;
+@the-red-distance: 0.58 * @the-green-distance;
+@the-blue-distance: 0.8 * @the-green-distance;
+
+
 @preset-color-green: rgb(82, 173, 69);
 @preset-color-blue: rgb(75, 105, 213);
 @preset-color-yellow: rgb(204, 197, 54);
@@ -15,7 +20,7 @@
 @input-text-color: #676767;
 
 //@header-color: #aeb5d6;
-@header-color: #a0a0a0;
+@header-color: rgb(150, 150, 150);
 @dark-background: #292929;
 @input-background-color: #111111;
 @bank-selection-background-color: rgb(174, 174, 174);
@@ -133,22 +138,25 @@ body {
         border-top-left-radius: 0mm;
         border-bottom-left-radius: 0mm;
         background-color: @header-color;
-        display: block;
+        display: flex;
         align-items: center;
+        justify-items: center;
         padding: 2mm;
         color: black;
         font-weight: 800;
         font-size: 7mm;
+        line-height: 7mm;
+
+        color: rgb(25, 25, 25);
 
         .symbol {
-            display: inline-block;
             position: relative;
             align-self: flex-start;
             z-index: 1;
+            padding-bottom: 1mm;
         }
 
         .title {
-            display: inline-block;
             position: absolute;
             text-align: center;
             left: 0px;
@@ -162,7 +170,9 @@ body {
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 2mm;
+        padding: @the-red-distance;
+        padding-left: 2mm;
+        padding-right: 2mm;
 
         .search-string {
             align-items: center;
@@ -205,6 +215,9 @@ body {
         padding: 2mm;
         margin-left: 1mm;
 
+        padding-top: @the-green-distance - @the-red-distance;
+        padding-bottom: @the-blue-distance;
+
         button {
             padding: 0;
             border-radius: 1mm;
@@ -216,18 +229,17 @@ body {
             display: flex;
             justify-content: center;
             align-items: center;
-
             color: @settings-button-color;
             border: @settings-button-color 0.75mm solid;
             border-radius: 2mm;
-
             width: 9mm;
             height: 9mm;
+            vertical-align: middle;
             font-size: 7mm;
-            padding-bottom: 1mm;
+            line-height: 7mm;
             background-color: #434343;
-            flex-grow: 0;
             margin-left: 3mm;
+            padding-bottom: 0.5mm;
         }
 
         button.settings.active {
@@ -268,15 +280,17 @@ body {
         display: block;
         padding: 2mm;
         width: 100%;
+        padding-top: 0.2 * @the-green-distance;
+        padding-bottom: @the-red-distance;
 
         .arrow {
             display: inline-block;
             position: relative;
             background-color: #292929;
             color: #aeaeae;
-            width: 6mm;
-            height: 6mm;
-            line-height: 6mm;
+            width: 7mm;
+            height: 7mm;
+            line-height: 7mm;
             font-size: 4mm;
             pointer-events: none;
             border-radius: 1mm;
@@ -285,6 +299,9 @@ body {
         .arrow.down {
             color: #292929;
             background-color: transparent;
+            font-size: 6mm;
+            padding-top: 0.5mm;
+            margin-right: 3mm;
         }
 
         button.toggle {
@@ -299,7 +316,7 @@ body {
             color: black;
             background-color: @bank-selection-background-color;
             text-align: left;
-            font-size: 4mm;
+            font-size: 5mm;
 
             * {
                 display: inline-block;
@@ -307,6 +324,9 @@ body {
 
             .next-prev-bank-buttons {
                 display: flex;
+                width: 14mm;
+                justify-content: space-between;
+                margin-right: 2mm;
             }
 
             #select-previous-bank,
@@ -318,7 +338,6 @@ body {
                 height: 5mm;
                 text-align: center;
                 vertical-align: middle;
-                margin-right: 2mm;
             }
 
             .disabled {
@@ -428,11 +447,16 @@ body {
         line-height: 5mm;
         text-align: center;
 
+        margin-bottom: @the-red-distance;
+
         * {
             border: 1px solid @input-background-color;
             border-radius: 1mm;
             margin: 2mm;
+            margin-top: 0;
+            margin-bottom: 0;
             min-width: 1cm;
+            height: 8mm;
         }
 
         @sort-symbol-size: 2mm;
@@ -478,12 +502,6 @@ body {
             flex-grow: 2;
         }
 
-        .sort-by-time {
-            .sort {
-                vertical-align: bottom;
-            }
-        }
-
         .clock-symbol {
             display: inline-block;
             border: none;
@@ -491,6 +509,7 @@ body {
             margin: 0;
             margin-right: 2mm;
             min-width: 0;
+            vertical-align: sub;
         }
 
         .clock-symbol::after {
@@ -515,17 +534,21 @@ body {
         width: 100%;
         flex-grow: 2;
         flex-shrink: 2;
-
-        background-color: black;
+        touch-action: none;
         border-right: 1px solid gray;
+
+        .preset-container {
+            padding: 2px;
+            background-color: black;
+            border-bottom: 2px solid rgb(77, 77, 77);
+        }
 
         .preset {
             position: relative;
             display: flex;
             align-items: center;
-            color: white;
+            color: rgb(179, 179, 179);
             white-space: nowrap;
-            border-bottom: 1px solid gray;
             padding-top: 2mm;
             padding-bottom: 1mm;
             background-color: rgb(25, 25, 25);
@@ -597,10 +620,12 @@ body {
 
         .preset.selected {
             background-color: @selected-preset-background-color;
+            color: rgb(250, 250, 250);
         }
 
         .preset.loaded {
             background-color: @loaded-preset-background-color;
+            color: rgb(250, 250, 250);
         }
     }
 
@@ -616,22 +641,27 @@ body {
     .settings-pane-container {
         .settings-pane {
             display: none;
+            justify-content: space-around;
+            align-items: center;
             position: relative;
             background: #434343;
             border-radius: 2mm;
             margin: 2mm;
             padding: 1mm;
+            margin-top: 0;
+            margin-bottom: 0.6 * @the-green-distance;
             border: @active-border 2px solid;
             color: @active-border;
             font-size: smaller;
 
-            hr {
-                border: 1px solid @active-border;
+            div {
+                display: flex;
+                flex-direction: column;
             }
 
             .group {
-                display: block;
-                text-align: center;
+                display: inline-block;
+                text-align: left;
 
                 .option {
                     display: inline-block;
@@ -706,4 +736,54 @@ body {
 
 .context-menu-item.context-menu-hover {
     background-color: #4d4d4d;
+}
+
+.color-tags {
+
+    min-width: max-content;
+
+
+    .context-menu-item {
+        min-width: fit-content;
+        width: fit-content;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .color {
+        min-width: 0.5em;
+        min-height: 1em;
+        margin: 1mm;
+        display: inline-block;
+        color: transparent;
+        vertical-align: middle;
+    }
+
+    .color.green {
+        background-color: @preset-color-green;
+    }
+
+    .color.blue {
+        background-color: @preset-color-blue;
+    }
+
+    .color.yellow {
+        background-color: @preset-color-yellow;
+    }
+
+    .color.orange {
+        background-color: @preset-color-orange;
+    }
+
+    .color.purple {
+        background-color: @preset-color-purple;
+    }
+
+    .color.red {
+        background-color: @preset-color-red;
+    }
+
+    .color.none {
+        background-color: @preset-color-none;
+    }
 }

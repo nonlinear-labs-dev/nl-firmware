@@ -71,8 +71,6 @@
         </div>
     </div>
 
-    <hr>
-
     <div class="group search-in">
         <div class="options">
             <div class="option">
@@ -100,7 +98,7 @@
 <template name="bankSelect">
     <div class="banks">
         <button class="toggle no-close-bank-menu">
-            <div class="no-close-bank-menu next-prev-bank-buttons">
+            <div {{ nextPreviousBankAttribute }}>
                 <div {{ previousBankAttribute }}>
                     <div class="arrow left no-close-bank-menu">&#xe303;</div>
                 </div>
@@ -152,10 +150,12 @@
 </template>
 
 <template name="searchResultPreset">
-    <div {{presetAttributes}}>
-        <div {{colorAttributes}}></div>
-        <div class="number">{{ get "number" }}</div>
-        <div class="name">{{ get "name" }}</div>
-        <div class="type">{{ get "type" }}</div>
+    <div class="preset-container">
+        <div {{presetAttributes}}>
+            <div {{colorAttributes}}></div>
+            <div class="number">{{ get "number" }}</div>
+            <div class="name">{{ get "name" }}</div>
+            <div class="type">{{ get "type" }}</div>
+        </div>
     </div>
 </template>

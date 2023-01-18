@@ -4,7 +4,7 @@ import { Tracker } from "meteor/tracker";
 import { globals, glue } from "../glue";
 import "./search-result-preset";
 import "./search.html";
-import { cachedSearch, getPresetHeight, multipleSelection, multipleSelectionStartedByShiftClick, numPresetsBeforeFirstVisible, scrollY } from "./shared-state";
+import { cachedSearch, currentContextMenuItem, getPresetHeight, multipleSelection, multipleSelectionStartedByShiftClick, numPresetsBeforeFirstVisible, scrollY } from "./shared-state";
 
 type StringArray = Array<String>;
 enum SearchOperator { And, Or }
@@ -404,7 +404,13 @@ glue("presetSearchColors",
             innerState!.showSettings.set(v);
 
             if (v)
-                $(".settings-pane").slideDown();
+                $(".settings-pane").slideDown({
+                    start: function () {
+                        $(this).css({
+                            display: "flex"
+                        })
+                    }
+                });
             else
                 $(".settings-pane").slideUp();
         }
@@ -506,6 +512,16 @@ glue("bankSelect", (id: string, innerState) => {
             }
             return a;
         },
+        "nextPreviousBankAttribute"(presenter) {
+            var a = { class: "no-close-bank-menu next-prev-bank-buttons", style: "display: none" };
+            if (searchBanks.get().length == 1) {
+                const b = searchBanks.get()[0];
+                if (presenter.banks.indexOf(b) < presenter.banks.length - 1) {
+                    a['style'] = "display: flex";
+                }
+            }
+            return a;
+        }
     }
     , {
         "click #select-previous-bank"(event, presenter) {
@@ -585,6 +601,7 @@ function getHysteresis() {
 }
 
 class SearchResultsInnerState {
+
     constructor(public contextMenuTimeout: null | number = null) {
     }
 
@@ -658,6 +675,10 @@ class SearchResultsInnerState {
         if (this.possibleOperations.has(PointerOperation.SelectOrLoad)) {
             sendEventToPreset("selectOrLoad", event);
         }
+    }
+
+    public onLostCapture() {
+        this.pointerDown = null;
     }
 
     public cancelDragging() {
@@ -784,6 +805,9 @@ glue("searchResults",
                 innerState!.onPointerUp(event);
             }
         },
+        "lostpointercapture"(event, presenter, innerState) {
+            innerState!.onLostCapture();
+        },
         "scroll #preset-search-results-scroller"(event, presenter, innerState) {
             innerState!.cancelContextMenuTimeout();
             innerState!.cancelDragging();
@@ -804,15 +828,54 @@ glue("searchResults",
 
 $['contextMenu']({
     selector: '#preset-search-results-scroller-pane',
-    build: (_element, event: JQuery.Event) => {
+    reposition: false,
+    presetUUID: "",
+    events: {
+        show: function (e) {
+            currentContextMenuItem.set(currentContextMenuItem.get().concat([e.presetUUID]));
+        },
+        hide: function (e) {
+            currentContextMenuItem.set(currentContextMenuItem.get().filter(v => v != e.presetUUID));
+        }
+    },
+    build: (_element, event: any) => {
         const scroller = document.getElementById("preset-search-results-scroller")!;
         const top = scroller.getBoundingClientRect().top;
         const originalEvent = event['originalEvent'];
         var presetHeight = getPresetHeight();
-        var offsetY = scrollY.get() + originalEvent.clientY - top;
+
+        var offsetY = 0;
+        if (originalEvent) {
+            offsetY = scrollY.get() + originalEvent.clientY - top;
+        }
+        else {
+            offsetY = scrollY.get() + event.pageY - top;
+        }
+
         var idx = offsetY / presetHeight;
         const searchResult = cachedSearch.get();
         const presetId = searchResult[(Math.floor(idx))]!;
+
+        if (multipleSelection.get() && !multipleSelection.get()?.includes(presetId))
+            return false;
+
+        event.data.presetUUID = presetId;
+
+        function addColorBoxToMenuItem(_opt: any, $itemElement: Element, itemKey: string) {
+            var s = $itemElement[0].querySelector("span.color");
+            if (!s || s.length == 0)
+                $itemElement.prepend('<span class="' + itemKey + ' color"></span>');
+        }
+
+        function setSelectedPresetColors(itemKey: string) {
+            if (multipleSelection.get()) {
+                for (var p of multipleSelection.get()!) {
+                    playgroundProxy.setPresetAttribute(p, "color", itemKey);
+                }
+            } else {
+                playgroundProxy.setPresetAttribute(presetId, "color", itemKey);
+            }
+        }
 
         return {
             items: {
@@ -845,8 +908,40 @@ $['contextMenu']({
                         multipleSelectionStartedByShiftClick.set(true);
                         multipleSelection.set([...cachedSearch.get()]);
                     }
+                },
+                "compare-to-editbuffer": {
+                    name: "Compare to Editbuffer...",
+                    visible: function (key, opt) {
+                        return !multipleSelection.get();
+                    },
+                    callback: function () {
+                        window['comparePresetToEditbuffer'](presetId);
+                    }
+                },
+                "compare-to-preset": {
+                    name: "Compare...",
+                    visible: function (key, opt) {
+                        return multipleSelection.get() && multipleSelection.get()?.length == 2;
+                    },
+                    callback: function () {
+                        window['comparePresets'](multipleSelection.get()![0], multipleSelection.get()![1]);
+                    }
+                },
+                "color-tag": {
+                    name: "Color Tag",
+                    className: "color-tags",
+                    items: {
+                        green: { name: "Green", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors },
+                        blue: { name: "Blue", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors },
+                        yellow: { name: "Yellow", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors },
+                        orange: { name: "Orange", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors },
+                        purple: { name: "Purple", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors },
+                        red: { name: "Red", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors },
+                        none: { name: "None", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors }
+                    }
                 }
             }
         }
     }
 });
+
