@@ -10,6 +10,8 @@ import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.presenters.EditBufferPresenter.SerialFX;
 import com.nonlinearlabs.client.presenters.EditBufferPresenter.SingleSoundFBToPoly;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.SingleSoundFXToOut;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.SingleSoundPolyToFX;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
@@ -167,6 +169,34 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         model.getParameter(new ParameterId(108, VoiceGroup.I)).value.onChange(v -> {
             double cp = v.getClippedValue();
             presenter.isSingleSoundFeedbackToPolyActive.shp_b_fb_mix = cp > 0;
+            notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(362, VoiceGroup.I)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            if(cp > 0 && cp < 1){
+                presenter.polyToFX = SingleSoundPolyToFX.Poly_To_FXI_FXII;
+            } else if(cp == 0) {
+                presenter.polyToFX = SingleSoundPolyToFX.Poly_To_FXI;
+            } else if(cp == 1) {
+                presenter.polyToFX = SingleSoundPolyToFX.Poly_To_FXII;
+            }
+            notifyChanges(); 
+            return true;
+        });
+
+        model.getParameter(new ParameterId(428, VoiceGroup.Global)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            
+            if(cp > 0 && cp < 1) {
+                presenter.fxToOut = SingleSoundFXToOut.FXI_FXII;
+            } else if(cp == 0) {
+                presenter.fxToOut = SingleSoundFXToOut.FXI;
+            } else if(cp == 1) {
+                presenter.fxToOut = SingleSoundFXToOut.FXII;
+            }
+
             notifyChanges();
             return true;
         });

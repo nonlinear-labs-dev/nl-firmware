@@ -20,8 +20,19 @@ public class EditBufferPresenter {
         FXI_FXII_To_Poly
     }
 
+    public enum SingleSoundPolyToFX {
+        Poly_To_FXI,
+        Poly_To_FXII,
+        Poly_To_FXI_FXII
+    }
+
+    public enum SingleSoundFXToOut {
+        FXI,
+        FXII,
+        FXI_FXII
+    }
+
     public class FBToPolyParameterPrerequisites {
-        //all prefixed with flowingThrough
         boolean fb_mix_fx = false;
         boolean fb_mix_lvl = false;
         boolean osc_a_pm_fb = false;
@@ -65,6 +76,8 @@ public class EditBufferPresenter {
     public FBToPolyParameterPrerequisites isSingleSoundFeedbackToPolyActive = new FBToPolyParameterPrerequisites();
     public SerialFX serialFX = SerialFX.None;
     public SingleSoundFBToPoly fbToPolyArrowState = SingleSoundFBToPoly.FXI_To_Poly;
+    public SingleSoundPolyToFX polyToFX = SingleSoundPolyToFX.Poly_To_FXI;
+    public SingleSoundFXToOut fxToOut = SingleSoundFXToOut.FXI;
 
     public String currentPartName;
     public SoundType soundType;

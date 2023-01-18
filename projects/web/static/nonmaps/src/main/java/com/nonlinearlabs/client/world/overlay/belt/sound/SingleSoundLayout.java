@@ -176,16 +176,126 @@ public class SingleSoundLayout extends SoundLayout {
 		}
 	}
 
+	protected class PolyToFBArrow extends SVGImage {
+		private int selectedPhase = 0;
 
+		PolyToFBArrow(OverlayLayout parent) {
+			super(parent, "LC-to-RT--feedback.svg", "LC-to-RB--feedback.svg", "LC-to-RT+LC-to-RB--feedback.svg");
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				
+				switch(ebp.polyToFX) {
+					case Poly_To_FXI:
+						selectedPhase = 0;
+						break;
+					case Poly_To_FXII:
+						selectedPhase = 1;
+						break;
+					case Poly_To_FXI_FXII:
+						selectedPhase = 2;
+						break;
+				}
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				return true;
+			});
+		}
+
+		@Override
+		public int getSelectedPhase() {
+			return selectedPhase;
+		}
+	}
+
+	protected class FXToOutArrows extends SVGImage {
+		private int selectedPhase = 0;
+
+		FXToOutArrows(OverlayLayout parent) {
+			super(parent, "LT-to-RC.svg", "LB-to-RC.svg", "LT-to-RC+LB-to-RC.svg");
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				switch(ebp.fxToOut){
+					case FXI:
+						selectedPhase = 0;
+						break;
+					case FXII:
+						selectedPhase = 1;
+						break;
+					case FXI_FXII:
+						selectedPhase = 2;
+						break;
+					
+				}
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				return true;
+			});
+		}
+
+		@Override
+		public int getSelectedPhase() {
+			return selectedPhase;
+		}
+	}
+
+	protected class PolyToFXContainer extends OverlayLayout {
+		private SVGImage vgI;
+		private SVGImage vgII;
+		private SVGImage polyToFBArrow;
+		private SVGImage serial;
+		private SVGImage fxToOut;
+
+		PolyToFXContainer(OverlayLayout parent) {
+			super(parent);
+			addChild(polyToFBArrow = new PolyToFBArrow(this));
+			addChild(vgI = new VoiceGroup_I_Indicator(this));
+			addChild(vgII = new VoiceGroup_II_Indicator(this));
+			addChild(serial = new SerialArrow(this));
+			addChild(fxToOut = new FXToOutArrows(this));
+		}
+
+		@Override
+		public void doLayout(double x, double y, double w, double h) {
+			super.doLayout(x, y, w, h);
+
+			//arrows from poly to fx
+			double arrowWidth = polyToFBArrow.getPictureWidth();
+			polyToFBArrow.doLayout(0, 0, arrowWidth, h);
+
+			//voicegroup
+			double yOffset = Millimeter.toPixels(2);			
+			double vgHeight = vgI.getPictureHeight();
+			double vgWidth = vgI.getPictureWidth();
+			vgI.doLayout(arrowWidth, (h / 2) - (vgHeight * 2) + yOffset, vgWidth, vgHeight);
+			vgII.doLayout(arrowWidth, (h / 2) + (vgHeight) - yOffset, vgWidth, vgHeight);
+
+			//serial
+			double xOffset = Millimeter.toPixels(3);
+			double serialArrowHeight = serial.getPictureHeight();
+			double serialArrowWidth = serial.getPictureWidth();
+			serial.doLayout(arrowWidth - (serialArrowWidth / 2) + xOffset, (h / 2) - (serialArrowHeight / 2) + Millimeter.toPixels(3), serialArrowHeight, serialArrowWidth);
+
+			//fx to out
+			double outArrowWidth = fxToOut.getPictureWidth();
+			double outArrowHeight = fxToOut.getPictureHeight();
+			fxToOut.doLayout(arrowWidth + vgWidth, 0, outArrowWidth, h);
+		}
+
+
+		@Override
+		public void draw(Context2d ctx, int i) {
+			super.draw(ctx, i);
+		}
+	}
 
 	private SingleSoundSettings settings = null;
 	private FBContainer fbContainer = null;
+	private PolyToFXContainer polyToFXContainer = null;
 
 	protected SingleSoundLayout(OverlayLayout parent) {
 		super(parent);
 		settings = new SingleSoundSettings(this);
 		setSettings(settings);
 		addChild(fbContainer = new FBContainer(this));
+		addChild(polyToFXContainer = new PolyToFXContainer(this));
 	}
 
 	@Override
@@ -193,8 +303,11 @@ public class SingleSoundLayout extends SoundLayout {
 	{
 		super.doLayout(x, y, w, h);
 		double left = settings.getOuterBox().getLeft();
+		double right = settings.getOuterBox().getRight();
 		double width = w/12;
 		fbContainer.doLayout(left - width, 0, width, h);
+		double polyContainerWidth = w/8;
+		polyToFXContainer.doLayout(right, 0, polyContainerWidth, h);
 	}
 
 	@Override
