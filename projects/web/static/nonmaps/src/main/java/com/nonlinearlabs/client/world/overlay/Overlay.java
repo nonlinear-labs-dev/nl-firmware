@@ -64,106 +64,11 @@ public class Overlay extends OverlayLayout {
 		}
 	}
 
-	private class SingleSoundFX_I_Unused extends SVGImage {
-		protected boolean isUnused = false;
-		protected boolean inSingle = false;
 
-		protected double out_mix_lvl, out_mix_to_fx, master_serial_fx, master_fx_mix, fb_mix_lvl, fb_mix_fx, fb_mix_fx_src, osc_a_pm_fb, osc_b_pm_fb, shp_a_fb_mix, shp_b_fb_mix;
-
-		
-		public SingleSoundFX_I_Unused(OverlayLayout parent)
+	private class SingleSoundFXUnusedBase extends SVGImage {
+		public SingleSoundFXUnusedBase(OverlayLayout parent)
 		{
 			super(parent, "mute-part-a.svg");
-			
-			BasicParameterModel p_out_mix_lvl = EditBufferModel.get().getParameter(new ParameterId(185, VoiceGroup.I));
-			BasicParameterModel p_out_mix_to_fx = EditBufferModel.get().getParameter(new ParameterId(362, VoiceGroup.I));
-			
-			BasicParameterModel p_master_serial_fx = EditBufferModel.get().getParameter(new ParameterId(408, VoiceGroup.Global));
-			BasicParameterModel p_master_fx_mix = EditBufferModel.get().getParameter(new ParameterId(428, VoiceGroup.Global));
-
-			BasicParameterModel p_fb_mix_lvl = EditBufferModel.get().getParameter(new ParameterId(299, VoiceGroup.I));
-			BasicParameterModel p_fb_mix_fx = EditBufferModel.get().getParameter(new ParameterId(160, VoiceGroup.I));
-			BasicParameterModel p_fb_mix_fx_src = EditBufferModel.get().getParameter(new ParameterId(354, VoiceGroup.I));
-			
-			BasicParameterModel p_osc_a_pm_fb = EditBufferModel.get().getParameter(new ParameterId(68, VoiceGroup.I));
-			BasicParameterModel p_shp_a_fb_mix = EditBufferModel.get().getParameter(new ParameterId(78, VoiceGroup.I));
-			BasicParameterModel p_osc_b_pm_fb = EditBufferModel.get().getParameter(new ParameterId(98, VoiceGroup.I));
-			BasicParameterModel p_shp_b_fb_mix = EditBufferModel.get().getParameter(new ParameterId(108, VoiceGroup.I));
-			
-
-			p_out_mix_lvl.value.value.onChange(value -> {
-				out_mix_lvl = value;
-				updateIsActive();
-				return true;
-			});
-
-			p_out_mix_to_fx.value.value.onChange(value -> {
-				out_mix_to_fx = value;
-				updateIsActive();
-				return true;
-			});
-
-			p_master_serial_fx.value.value.onChange(value -> {
-				master_serial_fx = value;
-				updateIsActive();
-				return true;
-			});
-			
-			p_master_fx_mix.value.value.onChange(value -> {
-				master_fx_mix = value;
-				updateIsActive();
-				return true;
-			});
-			
-			p_fb_mix_lvl.value.value.onChange(value -> {
-				fb_mix_lvl = value;
-				updateIsActive();
-				return true;
-			});
-
-			p_fb_mix_fx.value.value.onChange(value -> {
-				fb_mix_fx = value;
-				updateIsActive();
-				return true;
-			});
-			
-			p_fb_mix_fx_src.value.value.onChange(value -> {
-				fb_mix_fx_src = value;
-				updateIsActive();
-				return true;
-			});
-			
-			p_osc_a_pm_fb.value.value.onChange(value -> {
-				osc_a_pm_fb = value;
-				updateIsActive();
-				return true;
-			});
-			
-			p_shp_a_fb_mix.value.value.onChange(value -> {
-				shp_a_fb_mix = value;
-				updateIsActive();
-				return true;
-			});
-			
-			p_osc_b_pm_fb.value.value.onChange(value -> {
-				osc_b_pm_fb = value;
-				updateIsActive();
-				return true;
-			});
-
-			p_shp_b_fb_mix.value.value.onChange(value -> {
-				shp_b_fb_mix = value;
-				updateIsActive();
-				return true;
-			});
-
-			EditBufferModel.get().soundType.onChange(v -> {
-				inSingle = v == SoundType.Single;
-				setVisible(inSingle && isUnused);
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return true;
-			});
-
 			setVisible(false);
 		}
 		
@@ -171,34 +76,30 @@ public class Overlay extends OverlayLayout {
 		public int getSelectedPhase() {
 			return 0;
 		}
+	}
+	private class SingleSoundFX_I_Unused extends SingleSoundFXUnusedBase {
+		SingleSoundFX_I_Unused(OverlayLayout parent)
+		{
+			super(parent);
 
-		public void updateIsActive() {
-		var out_mix = out_mix_lvl > 0 && out_mix_to_fx < 1;
-			var fx_input = out_mix || master_serial_fx < 0;
-			var fx_output = master_fx_mix < 1 || master_serial_fx > 0;
-			var fx_feedback = fb_mix_lvl > 0 && fb_mix_fx != 0 && fb_mix_fx_src < 1 && (osc_a_pm_fb != 0 || shp_a_fb_mix != 0 || osc_b_pm_fb != 0 || shp_b_fb_mix != 0);
-			var fx_used = fx_input && (fx_output || fx_feedback);
-			isUnused = !fx_used;
-			setVisible(isUnused && inSingle);
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				setVisible(ebp.fxIUnused);
+				return true;
+			});
 		}
+		
 	}
 	
-	private class SingleSoundFX_II_Unused extends SingleSoundFX_I_Unused
+	private class SingleSoundFX_II_Unused extends SingleSoundFXUnusedBase
 	{
 		public SingleSoundFX_II_Unused(OverlayLayout parent)
 		{
 			super(parent);
-		}
 
-		@Override
-		public void updateIsActive() {
-			var out_mix = out_mix_lvl > 0 && out_mix_to_fx > 0;
-			var fx_input = out_mix || master_serial_fx > 0;
-			var fx_output = master_fx_mix > 0 || master_serial_fx < 0;
-			var fx_feedback = fb_mix_lvl > 0 && fb_mix_fx != 0 && fb_mix_fx_src > 0 && (osc_a_pm_fb != 0 || shp_a_fb_mix != 0 || osc_b_pm_fb != 0 || shp_b_fb_mix != 0);
-			var fx_used = fx_input && (fx_output || fx_feedback);
-			isUnused = !fx_used;
-			setVisible(isUnused && inSingle);
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				setVisible(ebp.fxIIUnused);
+				return true;
+			});
 		}
 	}
 

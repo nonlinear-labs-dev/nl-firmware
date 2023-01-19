@@ -6,6 +6,9 @@ import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
 
 public class EditBufferPresenter {
+    public boolean fxIUnused = false;
+    public boolean fxIIUnused = false;
+    
     public boolean allParametersLocked = false;
     public boolean isAnyParameterLocked = false;
     public boolean isAnyParameterChanged = false;
