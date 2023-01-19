@@ -614,15 +614,18 @@ class SearchResultsInnerState {
         this.touchStartTime = null;
     }
 
-    public openContextMenu() {
+    public openContextMenu(): boolean {
+        var ret = false;
         if (this.touchStartTime && Date.now() - this.touchStartTime > 500) {
             if (this.possibleOperations.has(PointerOperation.ContextMenu)) {
                 const list = document.getElementById("preset-search-results-scroller-pane")!;
                 list.dispatchEvent(new ContextMenuEvent(this.touchStartPosition?.x!, this.touchStartPosition?.y!));
                 this.onContextMenu();
+                ret = true;
             }
         }
         this.touchStartTime = null;
+        return ret;
     }
 
     public onPointerDown(event: JQuery.Event): boolean {
@@ -665,6 +668,9 @@ class SearchResultsInnerState {
     }
 
     public onPointerUp(event: JQuery.Event) {
+        if (this.openContextMenu())
+            return;
+
         this.pointerDown = null;
 
         if (this.currentPresetTarget.get()) {
@@ -680,6 +686,12 @@ class SearchResultsInnerState {
 
     public onLostCapture() {
         this.pointerDown = null;
+
+        if (this.currentPresetTarget.get()) {
+            sendEventToPresetWithId(this.currentPresetTarget.get()!, "cancelDrag", null);
+        }
+
+        this.currentPresetTarget.set(null);
     }
 
     public cancelDragging() {
@@ -809,7 +821,6 @@ glue("searchResults",
         },
         "lostpointercapture"(event, presenter, innerState) {
             innerState!.onLostCapture();
-            innerState!.cancelContextMenuTimeout();
             innerState!.cancelDragging();
         },
         "scroll #preset-search-results-scroller"(event, presenter, innerState) {

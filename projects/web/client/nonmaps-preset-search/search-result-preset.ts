@@ -151,8 +151,6 @@ const events = {
         this._lastTarget.dispatchEvent(e);
     },
     "performDrag"(event: JQuery.Event, presenter: Presenter, innerState: InnerState | null) {
-        console.log("perform drag");
-
         const o = event['originalEvent'].detail.originalEvent;
         const target = getElementAt(o.pageX, o.pageY);
         dispatchDragEvent(target, o, innerState!.dataTransfer!, "drag");
