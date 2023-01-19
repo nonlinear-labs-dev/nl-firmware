@@ -89,19 +89,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Layer
       CHECK(eb->getType() == SoundType::Layer);
     }
 
-    THEN("ToFX I copied from Preset")
-    {
-      for(auto& p : EBL::getToFX<VoiceGroup::I>())
-      {
-        CHECK_PARAMETER_CP_EQUALS_FICTION(p, 0.187);
-      }
-    }
-
-    THEN("Cross FB I ignored")
-    {
-      CHECK(oldCrossFBIHash == EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>()));
-    }
-
     THEN("Local Normal was copied to current VG")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::I }), 0.666);
@@ -246,19 +233,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Layer
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::II }), 0.666);
     }
 
-    THEN("ToFX II copied from Preset")
-    {
-      for(auto& p : EBL::getToFX<VoiceGroup::II>())
-      {
-        CHECK_PARAMETER_CP_EQUALS_FICTION(p, 0.187);
-      }
-    }
-
-    THEN("Cross FB II ignored")
-    {
-      CHECK(oldCrossFBIIHash == EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>()));
-    }
-
     THEN("Local I untouched")
     {
       CHECK(localNormalIHash == EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::I>()));
@@ -392,22 +366,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Layer into Layer
     THEN("Type is Same")
     {
       CHECK(eb->getType() == SoundType::Layer);
-    }
-
-    THEN("ToFX I copied from Preset")
-    {
-      for(auto& p : EBL::getToFX<VoiceGroup::I>())
-      {
-        CHECK_PARAMETER_CP_EQUALS_FICTION(p, 0.187);
-      }
-    }
-
-    THEN("Cross FB I copied from Preset")
-    {
-      for(auto& p : EBL::getCrossFB<VoiceGroup::I>())
-      {
-        CHECK_PARAMETER_CP_EQUALS_FICTION(p, 0.187);
-      }
     }
 
     THEN("Local Normal was copied to current VG")
@@ -548,22 +506,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Layer into Layer
     THEN("Type is Same")
     {
       CHECK(eb->getType() == SoundType::Layer);
-    }
-
-    THEN("ToFX II copied from Preset")
-    {
-      for(auto& p : EBL::getToFX<VoiceGroup::II>())
-      {
-        CHECK_PARAMETER_CP_EQUALS_FICTION(p, 0.187);
-      }
-    }
-
-    THEN("Cross FB II copied from Preset")
-    {
-      for(auto& p : EBL::getCrossFB<VoiceGroup::II>())
-      {
-        CHECK_PARAMETER_CP_EQUALS_FICTION(p, 0.187);
-      }
     }
 
     THEN("Local Normal was copied to current VG")

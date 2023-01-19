@@ -17,6 +17,7 @@ class ScopedLock
   void addGroupLock(const GroupId& id);
 
   void addLocks(const std::vector<Parameter*>& params);
+  void addLocks(const std::vector<ParameterId>& paramIds);
 
  private:
   UNDO::Transaction* m_transaction;
