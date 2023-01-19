@@ -1715,7 +1715,6 @@ void EditBuffer::undoableLoadPresetPartIntoLayerSound(UNDO::Transaction *transac
   }
 
   findParameterByID({ C15::PID::Out_Mix_To_FX, copyTo })->setCPFromHwui(transaction, 0);
-  //undoableResetCrossPartFXParametersForLoadToPartIntoLayer(transaction, copyTo);
 
   loadPartFromDualIntoLayer(transaction, copyFrom, copyTo, *this, preset);
 
