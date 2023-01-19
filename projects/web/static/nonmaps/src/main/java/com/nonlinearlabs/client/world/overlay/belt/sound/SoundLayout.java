@@ -61,7 +61,7 @@ public class SoundLayout extends OverlayLayout {
 
 		double menuWidth = soundTypeMenu.getPictureWidth();
 		double menuHeight = soundTypeMenu.getPictureHeight();
-		soundTypeMenu.doLayout(1 * partSize - menuWidth / 2, h / 2 - menuHeight / 2, menuWidth, menuHeight);
+		soundTypeMenu.doLayout(menuWidth / 2, h / 2 - menuHeight / 2, menuWidth, menuHeight);
 		soundSettings.doLayout(2 * partSize, 0, 4 * partSize, h);
 
 		double settingsWidth = settings.getPictureWidth();
