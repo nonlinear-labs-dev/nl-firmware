@@ -224,6 +224,40 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             presenter.layerFXToII = false;
             notifyChanges();
         }
+
+        calculateFXUnused();
+    }
+
+    private void calculateFXUnused() {
+        var out_mix_lvl = EditBufferModel.get().getParameter(new ParameterId(185, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var out_mix_to_fx = EditBufferModel.get().getParameter(new ParameterId(362, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var master_serial_fx = EditBufferModel.get().getParameter(new ParameterId(408, VoiceGroup.Global)).value.getQuantizedAndClipped(true);
+        var master_fx_mix = EditBufferModel.get().getParameter(new ParameterId(428, VoiceGroup.Global)).value.getQuantizedAndClipped(true);
+        var fb_mix_lvl = EditBufferModel.get().getParameter(new ParameterId(299, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var fb_mix_fx = EditBufferModel.get().getParameter(new ParameterId(160, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var fb_mix_fx_src = EditBufferModel.get().getParameter(new ParameterId(354, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var osc_a_pm_fb = EditBufferModel.get().getParameter(new ParameterId(68, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var shp_a_fb_mix = EditBufferModel.get().getParameter(new ParameterId(78, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var osc_b_pm_fb = EditBufferModel.get().getParameter(new ParameterId(98, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var shp_b_fb_mix = EditBufferModel.get().getParameter(new ParameterId(108, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+
+        {
+            var out_mix = out_mix_lvl > 0 && out_mix_to_fx < 1;
+            var fx_input = out_mix || master_serial_fx < 0;
+            var fx_output = master_fx_mix < 1 || master_serial_fx > 0;
+            var fx_feedback = fb_mix_lvl > 0 && fb_mix_fx != 0 && fb_mix_fx_src < 1 && (osc_a_pm_fb != 0 || shp_a_fb_mix != 0 || osc_b_pm_fb != 0 || shp_b_fb_mix != 0);
+            var fx_used = fx_input && (fx_output || fx_feedback);
+            presenter.fxIUnused = !fx_used;
+        }
+
+        {
+            var out_mix = out_mix_lvl > 0 && out_mix_to_fx > 0;
+			var fx_input = out_mix || master_serial_fx > 0;
+			var fx_output = master_fx_mix > 0 || master_serial_fx < 0;
+			var fx_feedback = fb_mix_lvl > 0 && fb_mix_fx != 0 && fb_mix_fx_src > 0 && (osc_a_pm_fb != 0 || shp_a_fb_mix != 0 || osc_b_pm_fb != 0 || shp_b_fb_mix != 0);
+			var fx_used = fx_input && (fx_output || fx_feedback);
+			presenter.fxIIUnused = !fx_used;
+        }
     }
 
     private boolean cpNotZero(int num, VoiceGroup vg) {

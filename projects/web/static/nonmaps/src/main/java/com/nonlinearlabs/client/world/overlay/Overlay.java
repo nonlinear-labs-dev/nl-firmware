@@ -64,6 +64,45 @@ public class Overlay extends OverlayLayout {
 		}
 	}
 
+
+	private class SingleSoundFXUnusedBase extends SVGImage {
+		public SingleSoundFXUnusedBase(OverlayLayout parent)
+		{
+			super(parent, "mute-part-a.svg");
+			setVisible(false);
+		}
+		
+		@Override
+		public int getSelectedPhase() {
+			return 0;
+		}
+	}
+	private class SingleSoundFX_I_Unused extends SingleSoundFXUnusedBase {
+		SingleSoundFX_I_Unused(OverlayLayout parent)
+		{
+			super(parent);
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				setVisible(ebp.fxIUnused);
+				return true;
+			});
+		}
+		
+	}
+	
+	private class SingleSoundFX_II_Unused extends SingleSoundFXUnusedBase
+	{
+		public SingleSoundFX_II_Unused(OverlayLayout parent)
+		{
+			super(parent);
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				setVisible(ebp.fxIIUnused);
+				return true;
+			});
+		}
+	}
+
 	private Belt belt = null;
 	private GlobalButtons buttons = null;
 	private UndoRedoButtons undoRedo = null;
@@ -76,12 +115,16 @@ public class Overlay extends OverlayLayout {
 	private LayerDisplay layerDisplay;
 	private PartMuteDisplay partMuteDisplayI;
 	private PartMuteDisplay partMuteDisplayII;
+	private SingleSoundFX_I_Unused fxIUnused;
+	private SingleSoundFX_II_Unused fxIIUnused;
 
 	public Overlay(Viewport parent) {
 		super(parent);
 		addChild(layerDisplay = new LayerDisplay(this));
 		addChild(partMuteDisplayI = new PartMuteDisplay(this, VoiceGroup.I));
 		addChild(partMuteDisplayII = new PartMuteDisplay(this, VoiceGroup.II));
+		addChild(fxIUnused = new SingleSoundFX_I_Unused(this));
+		addChild(fxIIUnused = new SingleSoundFX_II_Unused(this));
 		addChild(belt = new Belt(this, parent.getNonMaps()));
 		addChild(buttons = new GlobalButtons(this, belt));
 		addChild(undoRedo = new UndoRedoButtons(this, belt));
@@ -295,6 +338,12 @@ public class Overlay extends OverlayLayout {
 		partMuteDisplayI.doLayout(layerDisplayPos.getLeft() - Millimeter.toPixels(0.2),
 				layerDisplayPos.getTop() + muteYMargin, layerDisplayPos.getWidth(), muteHeight);
 		partMuteDisplayII.doLayout(layerDisplayPos.getLeft() - Millimeter.toPixels(0.2),
+				layerDisplayPos.getTop() + muteHeight + (muteYMargin), layerDisplayPos.getWidth(), muteHeight);
+
+		fxIUnused.doLayout(layerDisplayPos.getLeft() + Millimeter.toPixels(1),
+				layerDisplayPos.getTop() + muteYMargin, layerDisplayPos.getWidth(), muteHeight);
+
+		fxIIUnused.doLayout(layerDisplayPos.getLeft() + Millimeter.toPixels(1),
 				layerDisplayPos.getTop() + muteHeight + (muteYMargin), layerDisplayPos.getWidth(), muteHeight);
 
 		double beltHeight = Millimeter.toPixels(40);
