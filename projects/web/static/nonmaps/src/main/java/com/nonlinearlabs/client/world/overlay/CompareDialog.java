@@ -497,14 +497,8 @@ public class CompareDialog extends GWTDialog {
 			refresh();
 		});
 
-		boolean aActive = (presetA != null && presetA.isDual()) || (presetA == null);
-		boolean bActive = (presetB != null && presetB.isDual()) || (presetB == null);
-		selectVGA.setVisible(aActive);
-		selectVGB.setVisible(bActive);
-		if(!aActive)
-			selectVGA.setHeight("0px");
-		if(!bActive)
-			selectVGB.setHeight("0px");
+		selectVGA.setVisible(true);
+		selectVGB.setVisible(true);
 	}
 
 	private boolean hideParameter(int id, SoundType type) {
