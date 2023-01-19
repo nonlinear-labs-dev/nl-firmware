@@ -730,16 +730,10 @@ void EditBuffer::combineSplitPartGlobalMaster(UNDO::Transaction *transaction, Vo
   findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I })->setCPFromHwui(transaction, 0);
   findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->setCPFromHwui(transaction, 0);
 
-  ParabolicGainDbScaleConverter dbGainConverter;
-
-  auto vgVolumeDisplay = dbGainConverter.controlPositionToDisplay(originVolume->getControlPositionValue());
-  auto masterVolumeDisplay = dbGainConverter.controlPositionToDisplay(masterVolumeParameter->getControlPositionValue());
-
-  auto newVolume = dbGainConverter.displayToControlPosition(vgVolumeDisplay + masterVolumeDisplay);
   auto newTune = originTune->getControlPositionValue() + masterTuneParameter->getControlPositionValue();
 
-  masterVolumeParameter->copyFrom(transaction, originVolume);
-  masterVolumeParameter->setCPFromHwui(transaction, newVolume);
+  masterVolumeParameter->setModulationAmount(transaction, originVolume->getModulationAmount());
+  masterVolumeParameter->setModulationSource(transaction, originVolume->getModulationSource());
 
   masterTuneParameter->copyFrom(transaction, originTune);
   masterTuneParameter->setCPFromHwui(transaction, newTune);
@@ -762,15 +756,8 @@ void EditBuffer::combineLayerPartGlobalMaster(UNDO::Transaction *transaction, Vo
   findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I })->setCPFromHwui(transaction, 0);
   findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->setCPFromHwui(transaction, 0);
 
-  ParabolicGainDbScaleConverter dbGainConverter;
-
-  auto vgVolumeDisplay = dbGainConverter.controlPositionToDisplay(originVolume->getControlPositionValue());
-  auto masterVolumeDisplay = dbGainConverter.controlPositionToDisplay(masterVolumeParameter->getControlPositionValue());
-
-  auto newVolume = dbGainConverter.displayToControlPosition(vgVolumeDisplay + masterVolumeDisplay);
   auto newTune = originTune->getControlPositionValue() + masterTuneParameter->getControlPositionValue();
 
-  masterVolumeParameter->setCPFromHwui(transaction, newVolume);
   masterVolumeParameter->setModulationSource(transaction, originVolume->getModulationSource());
   masterVolumeParameter->setModulationAmount(transaction, originVolume->getModulationAmount());
 
@@ -788,7 +775,8 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   setName(transaction, getVoiceGroupName(copyFrom));
   undoableSetTypeFromConvert(transaction, SoundType::Single);
 
-  copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(transaction, copyFrom);
+  auto master_vol = findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
+  copyPartVolumesToGlobalMasterAndFXMixForConvertDualToSingle(transaction, copyFrom);
 
   if(oldType == SoundType::Split)
     undoableConvertSplitToSingle(transaction, copyFrom);
@@ -826,11 +814,12 @@ void EditBuffer::undoableConvertLayerToSingle(UNDO::Transaction *transaction, Vo
   locks.addGroupLock({ "Unison", VoiceGroup::I });
   locks.addGroupLock({ "Mono", VoiceGroup::I });
 
+  ScopedMonophonicParameterLock fxLock(transaction, *this);
   ScopedLock lock2(transaction);
-  lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
-  lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
-  lock2.addLock({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-  lock2.addLock({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+  lock2.addLock({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+  lock2.addLock({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
+  lock2.addLock({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+  lock2.addLock({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
 
   if(copyFrom != VoiceGroup::I)
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
@@ -849,10 +838,10 @@ void EditBuffer::undoableConvertSplitToSingle(UNDO::Transaction *transaction, Vo
   {
     ScopedMonophonicParameterLock lock(transaction, *this);
     ScopedLock lock2(transaction);
-    lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
-    lock2.addLock({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
-    lock2.addLock({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-    lock2.addLock({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+    lock2.addLock({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+    lock2.addLock({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
+    lock2.addLock({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+    lock2.addLock({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
 
     copyVoiceGroup(transaction, copyFrom, VoiceGroup::I);
   }
@@ -923,8 +912,8 @@ void EditBuffer::copyPartTuneFromMasterTuneAndDefaultMasterGroup(UNDO::Transacti
 
   {
     ScopedLock lock(transaction);
-    lock.addLock({C15::PID::Master_Pan, VoiceGroup::Global});
-    lock.addLock({C15::PID::Master_Serial_FX, VoiceGroup::Global});
+    lock.addLock({ C15::PID::Master_Pan, VoiceGroup::Global });
+    lock.addLock({ C15::PID::Master_Serial_FX, VoiceGroup::Global });
 
     for(auto &parameter : global->getParameters())
     {
@@ -1966,39 +1955,70 @@ void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertSingleToDual(UND
   partVolII->setCPFromHwui(transaction, partVolumeCpVgII);
 }
 
-void EditBuffer::copyGlobalMasterAndFXMixToPartVolumesForConvertDualToSingle(UNDO::Transaction *transaction,
+void EditBuffer::copyPartVolumesToGlobalMasterAndFXMixForConvertDualToSingle(UNDO::Transaction *transaction,
                                                                              VoiceGroup copyFrom)
 {
   const auto masterVolume = findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
   const auto masterFX_MIX = findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global });
-  const auto partVolSelf = findParameterByID({ C15::PID::Voice_Grp_Volume, copyFrom });
-  const auto partVolOther = findParameterByID({ C15::PID::Voice_Grp_Volume, invert(copyFrom) });
-  // express fx mix as control pos difference (clamped to +/- 0.5, which is half a slider range [-inf ... 0 dB])
-  auto partVolCPDiff
-      = std::clamp(partVolSelf->getControlPositionValue() - partVolOther->getControlPositionValue(), -0.5, 0.5);
-  auto partVolCPDiffAbs = std::abs(partVolCPDiff);
-  auto fadeGainDiff = 0.5 - partVolCPDiffAbs;
-  auto amplitude = 1.0 / parabolicFadeCpToAmplitude(fadeGainDiff);
-  // derive master vol as product of master amplitude, part amplitude and normalization
-  auto masterVolumeCp
-      = amplitudeToParabolicGainCp(parabolicGainCpToAmplitude(masterVolume->getControlPositionValue())
-                                   * parabolicGainCpToAmplitude(partVolSelf->getControlPositionValue()) * amplitude);
+  const auto partVolI = findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
+  const auto partVolII = findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
 
-  masterVolume->setCPFromHwui(transaction, masterVolumeCp);
+  const auto partVolumeSelf = findParameterByID({ C15::PID::Voice_Grp_Volume, copyFrom });
 
-  // determine fx mix
-  if(partVolCPDiff == 0.0)
+  // handle edge cases without ratio
+  if(partVolII->getControlPositionValue() == 0.0)
   {
-    // 50% if part volumes are equal
+    masterFX_MIX->setCPFromHwui(transaction, 0);
+  }
+  else if(partVolI->getControlPositionValue() == partVolII->getControlPositionValue())
+  {
     masterFX_MIX->setCPFromHwui(transaction, 0.5);
   }
   else
   {
-    // ??? (exceptionally close (max. err 2.6951%) but not quite...)
-    // (no real derivation for this...)
-    const auto fade = std::sqrt(0.5 * partVolCPDiffAbs);
-    const auto direction = (copyFrom == VoiceGroup::I ? 1.0 : -1.0);
-    masterFX_MIX->setCPFromHwui(transaction, 0.5 + (direction * (partVolCPDiff > 0.0 ? -fade : fade)));
+    const double ratio = parabolicGainCpToAmplitude(partVolI->getControlPositionValue())
+        / parabolicGainCpToAmplitude(partVolII->getControlPositionValue());
+    auto value = (std::sqrt((ratio * ratio) - ratio + 1.0) - ratio) / (1.0 - ratio);
+    masterFX_MIX->setCPFromHwui(transaction, value);
+  }
+  const auto masterVolumeAmplitude = parabolicGainCpToAmplitude(masterVolume->getControlPositionValue());
+  // determine master volume according to selected part
+  if(copyFrom == VoiceGroup::I)
+  {
+    // handle edge case without amplitudes
+    if(masterFX_MIX->getControlPositionValue() == 1.0)
+    {
+      masterVolume->setCPFromHwui(transaction, 0);
+    }
+    else
+    {
+      auto value = std::min(
+          amplitudeToParabolicGainCp(
+              masterVolumeAmplitude
+              * parabolicGainCpToAmplitude(partVolumeSelf->getControlPositionValue())
+                                           / parabolicFadeCpToAmplitude(masterFX_MIX->getControlPositionValue())),
+          1.0);
+      masterVolume->setCPFromHwui(transaction, value);
+    }
+  }
+  else
+  {
+    // handle edge case without amplitudes
+    if(masterFX_MIX->getControlPositionValue() == 0.0)
+    {
+      masterVolume->setCPFromHwui(transaction, 0);
+    }
+    else
+    {
+      auto value = std::min(
+          amplitudeToParabolicGainCp(masterVolumeAmplitude
+                                     * parabolicGainCpToAmplitude(
+                                         partVolumeSelf->getControlPositionValue())
+                                         / parabolicFadeCpToAmplitude(1.0 - masterFX_MIX->getControlPositionValue())),
+          1.0);
+      // handle general case by normalizing amplitudes
+      masterVolume->setCPFromHwui(transaction, value);
+    }
   }
 }
 
@@ -2085,12 +2105,12 @@ void EditBuffer::copyToFXAndFxFrom(UNDO::Transaction *transaction, VoiceGroup co
 {
   if(copyFrom == VoiceGroup::II)
   {
-    auto to_fx_I = findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
-    auto to_fx_II = findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+    auto to_fx_I = findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+    auto to_fx_II = findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
     to_fx_I->setCPFromHwui(transaction, 1 - to_fx_II->getControlPositionValue());
 
-    auto from_fx_I = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-    auto from_fx_II = findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+    auto from_fx_I = findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+    auto from_fx_II = findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
     from_fx_I->setCPFromHwui(transaction, 1 - from_fx_II->getControlPositionValue());
   }
 }

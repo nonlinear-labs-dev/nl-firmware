@@ -20,8 +20,8 @@ int SingleSoundEditMenu::getDefaultItemHeight() const
 void SingleSoundEditMenu::init()
 {
   auto fullWidth = Rect { 0, 0, 256, 12 };
-  addItem<ConvertToSoundTypeItem>(fullWidth, SoundType::Split);
   addItem<ConvertToSoundTypeItem>(fullWidth, SoundType::Layer);
+  addItem<ConvertToSoundTypeItem>(fullWidth, SoundType::Split);
   addItem<CopyFX<VoiceGroup::I, VoiceGroup::II>>(fullWidth);
   addItem<CopyFX<VoiceGroup::II, VoiceGroup::I>>(fullWidth);
   addItem<InitSound>(fullWidth);

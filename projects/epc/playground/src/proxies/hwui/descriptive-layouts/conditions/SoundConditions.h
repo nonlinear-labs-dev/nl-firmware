@@ -36,5 +36,11 @@ namespace DescriptiveLayouts
      public:
       bool check() const override;
     };
+
+    class IsDualSound : public EditBufferCondition
+    {
+     public:
+      bool check() const override;
+    };
   };
 }

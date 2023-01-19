@@ -34,7 +34,7 @@ PanelUnitParameterEditMode::PanelUnitParameterEditMode()
   Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->onChange(
       sigc::hide(sigc::mem_fun(this, &PanelUnitParameterEditMode::bruteForceUpdateLeds)));
 
-  Application::get().getPresetManager()->getEditBuffer()->onPresetLoaded(
+  Application::get().getPresetManager()->getEditBuffer()->onChange(
       sigc::mem_fun(this, &PanelUnitParameterEditMode::bruteForceUpdateLeds));
 }
 

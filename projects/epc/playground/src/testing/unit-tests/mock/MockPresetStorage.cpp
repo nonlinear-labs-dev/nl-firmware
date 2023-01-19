@@ -62,7 +62,6 @@ Preset *MockPresetStorage::createSplitPreset()
 {
   auto editBuffer = getEditBuffer();
   EditBufferUseCases ebU(*editBuffer);
-  ebU.convertToSingle(VoiceGroup::I);
   ebU.convertToSplit(VoiceGroup::I);
 
   BankUseCases bankU(m_bank, *TestHelper::getSettings());

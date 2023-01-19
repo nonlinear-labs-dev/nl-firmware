@@ -29,6 +29,7 @@ ConditionRegistry::ConditionRegistry()
   m_theConditionMap["hasMcSelected"] = std::make_unique<ParameterConditions::HasMcSelected>();
   m_theConditionMap["isSingleSound"] = std::make_unique<SoundConditions::IsSingleSound>();
   m_theConditionMap["isSplitSound"] = std::make_unique<SoundConditions::IsSplitSound>();
+  m_theConditionMap["isDualSound"] = std::make_unique<SoundConditions::IsDualSound>();
   m_theConditionMap["isLayerSound"] = std::make_unique<SoundConditions::IsLayerSound>();
   m_theConditionMap["isFineActive"] = std::make_unique<HWUIConditions::IsFineActive>();
 

@@ -1,11 +1,14 @@
 {
   "layouts": {
-    "Sound-Init-Layout": {
+    "Dual-Sound-Init-Layout": {
       "Selector": {
         "UIFocus": "Any",
         "UIMode": "Select",
         "UIDetail": "InitSound"
       },
+      "Conditions": [
+        "isDualSound"
+      ],
       "Controls": {
         "Header": {
           "Class": "InvertedLabel",
@@ -25,14 +28,14 @@
           "Class": "Button",
           "Position": "BUTTON_B",
           "Init": {
-            "Text[Text]": "as Split"
+            "Text[Text]": "as Layer"
           }
         },
         "Init_As_Layer": {
           "Class": "Button",
           "Position": "BUTTON_C",
           "Init": {
-            "Text[Text]": "as Layer"
+            "Text[Text]": "as Split"
           }
         },
         "Init_Part": {
@@ -43,8 +46,8 @@
       },
       "EventSinks": {
         "BUTTON_A": "InitAsSingle",
-        "BUTTON_B": "InitAsSplit",
-        "BUTTON_C": "InitAsLayer",
+        "BUTTON_B": "InitAsLayer",
+        "BUTTON_C": "InitAsSplit",
         "BUTTON_D": "InitPart"
       }
     }
