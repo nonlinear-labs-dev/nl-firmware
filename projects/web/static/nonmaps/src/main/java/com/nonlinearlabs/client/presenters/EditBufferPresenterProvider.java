@@ -200,6 +200,56 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             notifyChanges();
             return true;
         });
+
+        model.getParameter(new ParameterId(185, VoiceGroup.I)).value.onChange(v -> {
+            presenter.layerToFX.outmix_I_lvl = v.getClippedValue();
+            notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(185, VoiceGroup.II)).value.onChange(v -> {
+            presenter.layerToFX.outmix_II_lvl = v.getClippedValue();
+            notifyChanges();
+            return true;
+        });
+
+
+        model.getParameter(new ParameterId(362, VoiceGroup.I)).value.onChange(v -> {
+            presenter.layerToFX.to_fx_I = v.getClippedValue();
+            notifyChanges();
+            return true;
+        });
+
+
+        model.getParameter(new ParameterId(362, VoiceGroup.II)).value.onChange(v -> {
+            presenter.layerToFX.to_fx_II = v.getClippedValue();
+            notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(358, VoiceGroup.I)).value.onChange(v -> {
+            presenter.layerFXToOut.part_vol_I = v.getClippedValue();
+            notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(358, VoiceGroup.II)).value.onChange(v -> {
+            presenter.layerFXToOut.part_vol_II = v.getClippedValue();
+            notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(395, VoiceGroup.I)).value.onChange(v -> {
+            presenter.layerFXToOut.part_mute_I = v.getClippedValue();
+            notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(395, VoiceGroup.II)).value.onChange(v -> {
+            presenter.layerFXToOut.part_mute_II = v.getClippedValue();
+            notifyChanges();
+            return true;
+        });
     }
 
     private void monitorAllParameters() {

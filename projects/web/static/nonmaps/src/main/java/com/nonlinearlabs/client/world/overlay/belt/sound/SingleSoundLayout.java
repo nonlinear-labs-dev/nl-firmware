@@ -2,12 +2,9 @@ package com.nonlinearlabs.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
-import com.nonlinearlabs.client.presenters.EditBufferPresenter.SerialFX;
 
 public class SingleSoundLayout extends SoundLayout {
 
@@ -20,75 +17,6 @@ public class SingleSoundLayout extends SoundLayout {
 		@Override
 		public int getSelectedPhase() {
 			return 0;
-		}
-	}
-
-	protected class VoiceGroup_I_Indicator extends SVGImage {
-	
-		VoiceGroup_I_Indicator(OverlayLayout parent) {
-			super(parent, "FX-I-active.svg", "FX-I-inactive.svg");
-		
-			EditBufferPresenterProvider.get().onChange(e -> {
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			VoiceGroup currentVG = EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
-			return currentVG == VoiceGroup.I ? 0 : 1;
-		}
-	}
-
-	protected class VoiceGroup_II_Indicator extends SVGImage {
-	
-		VoiceGroup_II_Indicator(OverlayLayout parent) {
-			super(parent, "FX-II-active.svg", "FX-II-inactive.svg");
-		
-			EditBufferPresenterProvider.get().onChange(e -> {
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			VoiceGroup currentVG = EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
-			return currentVG == VoiceGroup.I ? 1 : 0;
-		}
-	}
-
-	protected class SerialArrow extends SVGImage {
-		int selectedPhase = 0;
-
-		SerialArrow(OverlayLayout parent) {
-			super(parent, "CT-to-CB.svg", "CB-to-CT.svg");
-			setVisible(false);
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				switch(ebp.serialFX) {
-					case None:
-						setVisible(false);
-					break;
-					case FX_I_IN_II:
-						selectedPhase = 0;
-						invalidate(INVALIDATION_FLAG_UI_CHANGED);
-						setVisible(true);
-					break;
-					case FX_II_IN_I:
-						selectedPhase = 1;
-						invalidate(INVALIDATION_FLAG_UI_CHANGED);
-						setVisible(true);
-						break;
-				}
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
 		}
 	}
 
@@ -132,8 +60,8 @@ public class SingleSoundLayout extends SoundLayout {
 		public FBContainer(OverlayLayout parent) {
 			super(parent);
 			addChild(fb = new StaticImage(this, "FB.svg"));
-			addChild(vgI = new VoiceGroup_I_Indicator(this));
-			addChild(vgII = new VoiceGroup_II_Indicator(this));
+			addChild(vgI = new FX_I_Indicator(this));
+			addChild(vgII = new FX_II_Indicator(this));
 			addChild(serialArrow = new SerialArrow(this));
 			addChild(fbToPoly = new FBToPolyArrows(this));
 
@@ -246,8 +174,8 @@ public class SingleSoundLayout extends SoundLayout {
 		PolyToFXContainer(OverlayLayout parent) {
 			super(parent);
 			addChild(polyToFBArrow = new PolyToFBArrow(this));
-			addChild(vgI = new VoiceGroup_I_Indicator(this));
-			addChild(vgII = new VoiceGroup_II_Indicator(this));
+			addChild(vgI = new FX_I_Indicator(this));
+			addChild(vgII = new FX_II_Indicator(this));
 			addChild(serial = new SerialArrow(this));
 			addChild(fxToOut = new FXToOutArrows(this));
 		}
