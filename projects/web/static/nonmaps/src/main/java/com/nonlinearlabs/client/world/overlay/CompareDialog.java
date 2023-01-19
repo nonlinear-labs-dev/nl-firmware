@@ -23,7 +23,6 @@ import com.nonlinearlabs.client.ServerProxy.DownloadHandler;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
-import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.world.maps.parameters.PhysicalControlParameter.ReturnMode;
 import com.nonlinearlabs.client.world.maps.parameters.PlayControls.MacroControls.Macros.MacroControls;
 import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
@@ -475,17 +474,8 @@ public class CompareDialog extends GWTDialog {
 		selectVGA.addItem("Part I");
 		selectVGB.addItem("Part I");
 
-		SoundType ebType = EditBufferPresenterProvider.getPresenter().soundType;
-
-		if (presetA != null && presetA.getType() != SoundType.Single)
-			selectVGA.addItem("Part II");
-		if (presetA == null && ebType != SoundType.Single)
-			selectVGA.addItem("Part II");
-
-		if (presetB != null && presetB.getType() != SoundType.Single)
-			selectVGB.addItem("Part II");
-		if (presetB == null && ebType != SoundType.Single)
-			selectVGB.addItem("Part II");
+		selectVGA.addItem("Part II");
+		selectVGB.addItem("Part II");
 
 		if (selectVGA.getItemCount() > selA)
 			selectVGA.setSelectedIndex(selA);
@@ -507,14 +497,8 @@ public class CompareDialog extends GWTDialog {
 			refresh();
 		});
 
-		boolean aActive = (presetA != null && presetA.isDual()) || (presetA == null && ebType != SoundType.Single);
-		boolean bActive = (presetB != null && presetB.isDual()) || (presetB == null && ebType != SoundType.Single);
-		selectVGA.setVisible(aActive);
-		selectVGB.setVisible(bActive);
-		if(!aActive)
-			selectVGA.setHeight("0px");
-		if(!bActive)
-			selectVGB.setHeight("0px");
+		selectVGA.setVisible(true);
+		selectVGB.setVisible(true);
 	}
 
 	private boolean hideParameter(int id, SoundType type) {
