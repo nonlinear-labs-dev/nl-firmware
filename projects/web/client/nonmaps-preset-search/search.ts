@@ -601,27 +601,28 @@ function getHysteresis() {
 }
 
 class SearchResultsInnerState {
-
-    constructor(public contextMenuTimeout: null | number = null) {
+    constructor(public touchStartTime: null | number = null) {
     }
 
     public startContextMenuTimeout(x: number, y: number) {
-
         this.cancelContextMenuTimeout();
-        this.contextMenuTimeout = Meteor.setTimeout(() => {
-            if (this.possibleOperations.has(PointerOperation.ContextMenu)) {
-                const list = document.getElementById("preset-search-results-scroller-pane")!;
-                list.dispatchEvent(new ContextMenuEvent(x, y));
-                this.onContextMenu();
-            }
-        }, 500);
+        this.touchStartTime = Date.now();
+        this.touchStartPosition = { x: x, y: y };
     }
 
     public cancelContextMenuTimeout() {
-        if (this.contextMenuTimeout) {
-            Meteor.clearTimeout(this.contextMenuTimeout);
+        this.touchStartTime = null;
+    }
+
+    public openContextMenu() {
+        if (this.touchStartTime && Date.now() - this.touchStartTime > 500) {
+            if (this.possibleOperations.has(PointerOperation.ContextMenu)) {
+                const list = document.getElementById("preset-search-results-scroller-pane")!;
+                list.dispatchEvent(new ContextMenuEvent(this.touchStartPosition?.x!, this.touchStartPosition?.y!));
+                this.onContextMenu();
+            }
         }
-        this.contextMenuTimeout = null;
+        this.touchStartTime = null;
     }
 
     public onPointerDown(event: JQuery.Event): boolean {
@@ -705,6 +706,7 @@ class SearchResultsInnerState {
 
     private possibleOperations = new Set<PointerOperation>();
     private pointerDown: Position | null = null;
+    private touchStartPosition: Position | null = null;
     private xHysteresisDone = false;
     private currentPresetTarget = new ReactiveVar<string | null>(null);
 }
@@ -783,7 +785,7 @@ glue("searchResults",
         "touchend"(event, _presenter, innerState) {
             const o = event['originalEvent'];
             if (o.touches.length == 0)
-                innerState!.cancelContextMenuTimeout();
+                innerState!.openContextMenu();
         },
         "pointerdown #preset-search-results-scroller-pane"(event, presenter, innerState) {
             const list = document.getElementById("preset-search-results-scroller-pane")!;
@@ -807,11 +809,13 @@ glue("searchResults",
         },
         "lostpointercapture"(event, presenter, innerState) {
             innerState!.onLostCapture();
+            innerState!.cancelContextMenuTimeout();
+            innerState!.cancelDragging();
         },
         "scroll #preset-search-results-scroller"(event, presenter, innerState) {
             innerState!.cancelContextMenuTimeout();
             innerState!.cancelDragging();
-            scrollY.set(event['target'].scrollTop);
+            scrollY.set(Math.max(0, event['target'].scrollTop));
             $("#preset-search-results").css("top", getSearchResultScrollOffset() + "px");
             Tracker.flush();
         },
