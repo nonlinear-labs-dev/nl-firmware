@@ -43,6 +43,34 @@ public class EditBufferPresenter {
         None
     }
 
+    public enum SplitToFX_From_VG_I {
+        PartI,
+        PartII,
+        PartI_PartII,
+        None
+    }
+
+    public enum SplitToFX_From_VG_II {
+        PartI,
+        PartII,
+        PartI_PartII,
+        None
+    }
+
+    public enum Split_I_To_Out {
+        PartI,
+        PartII,
+        PartI_PartII,
+        None
+    }
+
+    public enum Split_II_To_Out {
+        PartI,
+        PartII,
+        PartI_PartII,
+        None
+    }
+
     public class FBToPolyParameterPrerequisites {
         boolean fb_mix_fx = false;
         boolean fb_mix_lvl = false;
@@ -132,6 +160,105 @@ public class EditBufferPresenter {
         }
     } 
 
+    public class SplitToFXFrom_VG_I_ParameterStates {
+        double out_mix_to_fx;
+        double out_mix_lvl;
+
+        public SplitToFX_From_VG_I calculate() {
+            if(out_mix_to_fx == 0 && out_mix_lvl > 0)
+                return SplitToFX_From_VG_I.PartI;
+            else if(out_mix_to_fx == 1 && out_mix_lvl > 0)
+                return SplitToFX_From_VG_I.PartII;
+            else if(out_mix_to_fx > 0 && out_mix_to_fx < 1 && out_mix_lvl > 0)
+                return SplitToFX_From_VG_I.PartI_PartII;
+
+            return SplitToFX_From_VG_I.None;
+        }
+    }
+
+    public class SplitToFXFrom_VG_II_ParameterStates {
+        double out_mix_to_fx;
+        double out_mix_lvl;
+
+        public SplitToFX_From_VG_II calculate() {
+            if(out_mix_to_fx == 0 && out_mix_lvl > 0)
+                return SplitToFX_From_VG_II.PartI;
+            else if(out_mix_to_fx == 1 && out_mix_lvl > 0)
+                return SplitToFX_From_VG_II.PartII;
+            else if(out_mix_to_fx > 0 && out_mix_to_fx < 1 && out_mix_lvl > 0)
+                return SplitToFX_From_VG_II.PartI_PartII;
+
+            return SplitToFX_From_VG_II.None;
+        }
+    }
+
+    public class SplitIToOutParameterStates {
+        double part_vol_I, part_vol_II;
+        
+        public Split_I_To_Out calculate() {
+            if(part_vol_I > 0 && part_vol_II == 0)
+                return Split_I_To_Out.PartI;
+            else if(part_vol_I == 0 && part_vol_II > 0)
+                return Split_I_To_Out.PartII;
+            else if(part_vol_I > 0 && part_vol_II > 0)
+                return Split_I_To_Out.PartI_PartII;
+            return Split_I_To_Out.None;
+        }
+    }
+
+    public class SplitIIToOutParameterStates {
+        double part_vol_I, part_vol_II;
+
+        public Split_II_To_Out calculate() {
+            if(part_vol_I > 0 && part_vol_II == 0)
+                return Split_II_To_Out.PartI;
+            else if(part_vol_I == 0 && part_vol_II > 0)
+                return Split_II_To_Out.PartII;
+            else if(part_vol_I > 0 && part_vol_II > 0)
+                return Split_II_To_Out.PartI_PartII;
+            return Split_II_To_Out.None;
+        }
+    }
+
+    public abstract class SplitFB_Into_X_ParameterStates {
+        double fb_mix_fx_src, fb_mix_fx, fb_mix_lvl, osc_a_pm_fb, osc_b_pm_fb, shp_a_fb_mix, shp_b_fb_mix;
+        
+        public boolean isFeedbackUsed() {
+            boolean used = (osc_a_pm_fb != 0 || osc_b_pm_fb != 0 || shp_a_fb_mix > 0 || shp_b_fb_mix > 0);
+            return used;
+        }
+
+        public boolean calculate() { return false; }
+    }
+
+    public class SplitFB_I_Into_I_ParameterStates extends SplitFB_Into_X_ParameterStates {
+        @Override
+        public boolean calculate() {
+            return fb_mix_fx_src < 1 && fb_mix_fx != 0 && fb_mix_lvl > 0 && isFeedbackUsed();
+        }
+    }
+
+    public class SplitFB_I_Into_II_ParameterStates extends SplitFB_Into_X_ParameterStates {
+        @Override
+        public boolean calculate() {
+            return fb_mix_fx_src > 0 && fb_mix_fx != 0 && fb_mix_lvl > 0 && isFeedbackUsed();
+        }
+    }
+
+    public class SplitFB_II_Into_I_ParameterStates extends SplitFB_Into_X_ParameterStates {
+        @Override
+        public boolean calculate() {
+            return fb_mix_fx_src > 0 && fb_mix_fx != 0 && fb_mix_lvl > 0 && isFeedbackUsed();
+        }
+    }
+
+    public class SplitFB_II_Into_II_ParameterStates extends SplitFB_Into_X_ParameterStates {
+        @Override
+        public boolean calculate() {
+            return fb_mix_fx_src < 1 && fb_mix_fx != 0 && fb_mix_lvl > 0 && isFeedbackUsed();
+        }
+    }
+
     public boolean allParametersLocked = false;
     public boolean isAnyParameterLocked = false;
     public boolean isAnyParameterChanged = false;
@@ -158,14 +285,31 @@ public class EditBufferPresenter {
     public RGB voiceGroupI_BackgroundColor = RGBA.transparent();
     public RGB voiceGroupII_BackgroundColor = RGBA.transparent();
 
+    public String currentPartName;
+    public SoundType soundType;
+
+    //arrow states
+    //general
+    public SerialFX serialFX = SerialFX.None;
+
+    //split
+    public SplitToFXFrom_VG_I_ParameterStates splitToFXArrow_I = new SplitToFXFrom_VG_I_ParameterStates();
+    public SplitToFXFrom_VG_II_ParameterStates splitToFXArrow_II = new SplitToFXFrom_VG_II_ParameterStates();
+    public SplitIToOutParameterStates splitIToOut = new SplitIToOutParameterStates();
+    public SplitIIToOutParameterStates splitIIToOut = new SplitIIToOutParameterStates();
+    
+    public SplitFB_I_Into_I_ParameterStates split_fb_I_into_I = new SplitFB_I_Into_I_ParameterStates();
+    public SplitFB_I_Into_II_ParameterStates split_fb_I_into_II = new SplitFB_I_Into_II_ParameterStates();
+    public SplitFB_II_Into_I_ParameterStates split_fb_II_into_I = new SplitFB_II_Into_I_ParameterStates();
+    public SplitFB_II_Into_II_ParameterStates split_fb_II_into_II = new SplitFB_II_Into_II_ParameterStates();
+    //layer
     public LayerFXToOutParameterStates layerFXToOut = new LayerFXToOutParameterStates();
     public LayerToFXParameterStates layerToFX = new LayerToFXParameterStates();
+    
+    //single
     public FBToPolyParameterPrerequisites isSingleSoundFeedbackToPolyActive = new FBToPolyParameterPrerequisites();
-    public SerialFX serialFX = SerialFX.None;
     public SingleSoundFBToPoly fbToPolyArrowState = SingleSoundFBToPoly.FXI_To_Poly;
     public SingleSoundPolyToFX polyToFX = SingleSoundPolyToFX.Poly_To_FXI;
     public SingleSoundFXToOut fxToOut = SingleSoundFXToOut.FXI;
 
-    public String currentPartName;
-    public SoundType soundType;
 }

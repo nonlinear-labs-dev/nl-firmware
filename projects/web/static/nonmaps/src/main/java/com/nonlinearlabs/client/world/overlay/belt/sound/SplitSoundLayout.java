@@ -25,6 +25,7 @@ import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 import com.nonlinearlabs.client.world.overlay.DragProxy;
 import com.nonlinearlabs.client.world.overlay.Label;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
+import com.nonlinearlabs.client.world.overlay.SVGImage;
 
 public class SplitSoundLayout extends SoundLayout {
 
@@ -33,14 +34,268 @@ public class SplitSoundLayout extends SoundLayout {
 		setSettings(new SplitSoundSettings(this));
 	}
 
+	private class SplitPart_I_ToFX extends SVGImage {
+		int selectedPhase = 0;
+
+		SplitPart_I_ToFX(OverlayLayout parent) {
+			super(parent, "RC-to-LT--feedback.svg", "RC-to-LB--feedback.svg", "RC-to-LT+RC-to-LB--feedback.svg");
+			
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				switch(ebp.splitToFXArrow_I.calculate())
+				{
+					case None:
+						setVisible(false);
+						return true;
+					case PartI:
+						selectedPhase = 0;
+						break;
+					case PartII:
+						selectedPhase = 1;
+						break;
+					case PartI_PartII:
+						selectedPhase = 2;
+						break;
+					
+				}
+
+				setVisible(true);
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				return true;
+			});
+		}
+
+		@Override
+		public int getSelectedPhase() {
+			return selectedPhase;
+		}
+	}
+
+	private class SplitPart_II_ToFX extends SVGImage {
+		int selectedPhase = 0;
+
+		SplitPart_II_ToFX(OverlayLayout parent) {
+			super(parent, "LC-to-RB--feedback.svg", "LC-to-RT--feedback.svg", "LC-to-RT+LC-to-RB--feedback.svg");
+		
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				switch(ebp.splitToFXArrow_II.calculate())
+				{
+					case None:
+						setVisible(false);
+						return true;
+					case PartI:
+						selectedPhase = 0;
+						break;
+					case PartII:
+						selectedPhase = 1;
+						break;
+					case PartI_PartII:
+						selectedPhase = 2;
+						break;
+					
+				}
+
+				setVisible(true);
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				return true;
+			});
+		}
+
+		@Override
+		public int getSelectedPhase() {
+			return selectedPhase;
+		}
+	}
+
+	private class Split_I_To_Out extends SVGImage {
+		int selectedPhase = 0;
+
+		Split_I_To_Out(OverlayLayout parent) {
+			super(parent, "RT-to-LC.svg", "RB-to-LC.svg", "RT-to-LC+RB-to-LC.svg");
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				switch(ebp.splitIToOut.calculate()) {
+					case None:
+						setVisible(false);
+						return true;
+					case PartI:
+						selectedPhase = 0;
+						break;
+					case PartII:
+						selectedPhase = 1;
+						break;
+					case PartI_PartII:
+						selectedPhase = 2;
+						break;
+					default:
+						break;
+
+				}
+				setVisible(true);
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				return true;
+			});
+		}
+
+		@Override
+		public int getSelectedPhase() {
+			return selectedPhase;
+		}
+	}
+
+	private class Split_II_To_Out extends SVGImage {
+		int selectedPhase = 0;
+
+		Split_II_To_Out(OverlayLayout parent) {
+			super(parent, "LT-to-RC.svg", "LB-to-RC.svg", "LT-to-RC+LB-to-RC.svg");
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				switch(ebp.splitIIToOut.calculate()) {
+					case None:
+						setVisible(false);
+						return true;
+					case PartI:
+						selectedPhase = 0;
+						break;
+					case PartII:
+						selectedPhase = 1;	
+						break;
+					case PartI_PartII:
+						selectedPhase = 2;
+						break;
+					default:
+						break;
+					
+				}
+				setVisible(true);
+				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+				return true;
+			});
+		}
+
+		@Override
+		public int getSelectedPhase() {
+			return selectedPhase;
+		}
+	}
+
+	private class Feedback_from_I_Into_I extends SVGImage {
+		int selectedPhase = 0;
+
+		Feedback_from_I_Into_I(OverlayLayout parent) {
+			super(parent, "LT-to-RT.svg");
+
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				setVisible(ebp.split_fb_I_into_I.calculate());
+				return true;
+			});
+		}
+
+		@Override
+		public int getSelectedPhase() {
+			return selectedPhase;
+		}
+	}
+
+
+	private class Feedback_from_I_Into_II extends SVGImage {
+		int selectedPhase = 0;
+
+		Feedback_from_I_Into_II(OverlayLayout parent) {
+			super(parent, "LB-to-RB.svg");
+
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				setVisible(ebp.split_fb_I_into_II.calculate());
+				return true;
+			});
+		}
+
+		@Override
+		public int getSelectedPhase() {
+			return selectedPhase;
+		}
+	}
+
+
+	private class Feedback_from_II_Into_I extends SVGImage {
+		int selectedPhase = 0;
+
+		Feedback_from_II_Into_I(OverlayLayout parent) {
+			super(parent, "RT-to-LT.svg");
+
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				setVisible(ebp.split_fb_II_into_I.calculate());
+				return true;
+			});
+		}
+
+		@Override
+		public int getSelectedPhase() {
+			return selectedPhase;
+		}
+	}
+
+	private class Feedback_from_II_Into_II extends SVGImage {
+		int selectedPhase = 0;
+
+		Feedback_from_II_Into_II(OverlayLayout parent) {
+			super(parent, "RB-to-LB.svg");
+
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				setVisible(ebp.split_fb_II_into_II.calculate());
+				return true;
+			});
+		}
+
+		@Override
+		public int getSelectedPhase() {
+			return selectedPhase;
+		}
+	}
+
 	private class SplitSoundSettings extends OverlayLayout {
+		VoiceGroupSoundSettings vgI, vgII;
+		SplitPoint splitPoint;
+
+		SVGImage partIToFXArrows, partIIToFXArrows;
+
+		SVGImage fxI_I, fxI_II, fxII_I, fxII_II; 
+
+		SVGImage serialI, serialII;
+
+		SVGImage ItoOut, IItoOut;
+
+		SVGImage fb_from_I_Into_I, fb_from_I_Into_II, fb_from_II_Into_I, fb_from_II_Into_II;
+
 		SplitSoundSettings(SplitSoundLayout parent) {
 			super(parent);
-			addChild(new SplitFXIndicator(VoiceGroup.I, this));
-			addChild(new VoiceGroupSoundSettings(VoiceGroup.I, this));
-			addChild(new SplitPoint(this));
-			addChild(new VoiceGroupSoundSettings(VoiceGroup.II, this));
-			addChild(new SplitFXIndicator(VoiceGroup.II, this));
+			addChild(vgI = new VoiceGroupSoundSettings(VoiceGroup.I, this));
+			addChild(splitPoint = new SplitPoint(this));
+			addChild(vgII = new VoiceGroupSoundSettings(VoiceGroup.II, this));
+
+
+			addChild(partIToFXArrows = new SplitPart_I_ToFX(this));
+			addChild(partIIToFXArrows = new SplitPart_II_ToFX(this));
+
+			addChild(fxI_I = new FX_I_Indicator(this));
+			addChild(fxI_II = new FX_I_Indicator(this));
+
+			addChild(fxII_I = new FX_II_Indicator(this));
+			addChild(fxII_II = new FX_II_Indicator(this));
+
+			addChild(serialI = new SerialArrow(this));
+			addChild(serialII = new SerialArrow(this));
+
+			addChild(ItoOut = new Split_I_To_Out(this));
+			addChild(IItoOut = new Split_II_To_Out(this));
+			
+			addChild(fb_from_I_Into_I = new Feedback_from_I_Into_I(this));
+			addChild(fb_from_I_Into_II = new Feedback_from_I_Into_II(this));
+			addChild(fb_from_II_Into_I = new Feedback_from_II_Into_I(this));
+			addChild(fb_from_II_Into_II = new Feedback_from_II_Into_II(this));
 		}
 
 		@Override
@@ -51,32 +306,52 @@ public class SplitSoundLayout extends SoundLayout {
 			double splitPointWidth = Math.min(w / 4, Millimeter.toPixels(40));
 			double settingWidth = (w - splitPointWidth - 2 * margin) / 2;
 
-			getChildren().get(1).doLayout(0, margin, settingWidth, h - 2 * margin);
-			getChildren().get(2).doLayout(settingWidth + margin, (h - splitPointHeight) / 2, splitPointWidth,
+			vgI.doLayout(0, margin, settingWidth, h - 2 * margin);
+			splitPoint.doLayout(settingWidth + margin, (h - splitPointHeight) / 2, splitPointWidth,
 					splitPointHeight);
-			getChildren().get(3).doLayout(w - settingWidth, margin, settingWidth, h - 2 * margin);
+			vgII.doLayout(w - settingWidth, margin, settingWidth, h - 2 * margin);
+		
+			double toFXArrowWidth = partIToFXArrows.getPictureWidth();
+			double rightEnd = (w - settingWidth) + settingWidth;
+			partIToFXArrows.doLayout(0 - toFXArrowWidth, margin, toFXArrowWidth, h - 2 * margin);
+			partIIToFXArrows.doLayout(rightEnd, margin, toFXArrowWidth, h - 2 * margin);
+		
+			double fx_width = fxII_I.getPictureWidth();
+			double fx_height = fxII_I.getPictureHeight();
+			double fxI_x_pos = 0 - toFXArrowWidth - fx_width;
+			double yPosOffset = h / 6;
+			double yBase = h / 2;
+			fxI_I.doLayout(fxI_x_pos, 0 + yPosOffset, fx_width, fx_height);
+			fxII_I.doLayout(fxI_x_pos, yBase + yPosOffset, fx_width, fx_height);
+			
+			double fxII_x_pos = rightEnd + toFXArrowWidth;
+			fxI_II.doLayout(fxII_x_pos, 0 + yPosOffset, fx_width, fx_height);
+			fxII_II.doLayout(fxII_x_pos, yBase + yPosOffset, fx_width, fx_height);
 
-			SplitFXIndicator fxI = (SplitFXIndicator) getChildren().get(0);
-			SplitFXIndicator fxII = (SplitFXIndicator) getChildren().get(4);
+			serialI.doLayout(fxI_x_pos, 0, fx_width, h);
+			serialII.doLayout(fxII_x_pos, 0, fx_width, h);
 
-			double fxIW = fxI.getSelectedImage().getImgWidth();
-			double fxIH = fxI.getSelectedImage().getImgHeight();
+			double toOutWidth = ItoOut.getPictureWidth();
+			double II_x_pos = fxII_x_pos + fx_width;
+			double I_x_pos = fxI_x_pos - toOutWidth;
 
-			double fxIIW = fxII.getSelectedImage().getImgWidth();
-			double fxIIH = fxII.getSelectedImage().getImgHeight();
+			ItoOut.doLayout(I_x_pos, 0, toOutWidth, h);
+			IItoOut.doLayout(II_x_pos, 0, toOutWidth, h);
 
-			fxI.doLayout(-fxIW, h / 2 - (fxIH / 2), fxIW, fxIH);
-			fxII.doLayout(w, h / 2 - (fxIIH / 2), fxIIW, fxIIH);
+			fb_from_I_Into_I.doLayout(0 - toFXArrowWidth, 0, toFXArrowWidth, h);
+			fb_from_I_Into_II.doLayout(0 - toFXArrowWidth, 0, toFXArrowWidth, h);
+			
+			fb_from_II_Into_I.doLayout(rightEnd, 0, toFXArrowWidth, h);
+			fb_from_II_Into_II.doLayout(rightEnd, 0, toFXArrowWidth, h);
 		}
 
 		@Override
 		public void draw(Context2d ctx, int flags) {
 			if (SetupModel.get().systemSettings.syncSplit.isFalse()) {
-				SplitPoint splits = (SplitPoint) getChildren().get(2);
-				Rect left = splits.getRectOfVG(VoiceGroup.I);
-				Rect right = splits.getRectOfVG(VoiceGroup.II);
-				Rect startLeft = getChildren().get(1).getPixRect();
-				Rect endRight = getChildren().get(3).getPixRect();
+				Rect left = splitPoint.getRectOfVG(VoiceGroup.I);
+				Rect right = splitPoint.getRectOfVG(VoiceGroup.II);
+				Rect startLeft = vgI.getPixRect();
+				Rect endRight = vgII.getPixRect();
 				RGB bgI = EditBufferPresenterProvider.getPresenter().voiceGroupI_BackgroundColor;
 				RGB bgII = EditBufferPresenterProvider.getPresenter().voiceGroupII_BackgroundColor;
 

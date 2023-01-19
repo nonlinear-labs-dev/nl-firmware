@@ -124,7 +124,20 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             else if(cp == 1)
                 presenter.fbToPolyArrowState = SingleSoundFBToPoly.FXII_To_Poly;
             
-                notifyChanges();
+            presenter.split_fb_I_into_I.fb_mix_fx_src = cp;
+            presenter.split_fb_I_into_II.fb_mix_fx_src = cp;
+
+            notifyChanges();
+            return true;
+        });
+
+
+        model.getParameter(new ParameterId(354, VoiceGroup.II)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            presenter.split_fb_II_into_I.fb_mix_fx_src = cp;
+            presenter.split_fb_II_into_II.fb_mix_fx_src = cp;
+
+            notifyChanges();
             return true;
         });
 
@@ -132,6 +145,16 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         model.getParameter(new ParameterId(160, VoiceGroup.I)).value.onChange(v -> {
             double cp = v.getClippedValue();
             presenter.isSingleSoundFeedbackToPolyActive.fb_mix_fx = cp != 0;
+            presenter.split_fb_I_into_I.fb_mix_fx = cp;
+            presenter.split_fb_I_into_II.fb_mix_fx = cp;
+            notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(160, VoiceGroup.II)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            presenter.split_fb_II_into_I.fb_mix_fx = cp;
+            presenter.split_fb_II_into_II.fb_mix_fx = cp;
             notifyChanges();
             return true;
         });
@@ -139,22 +162,50 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         model.getParameter(new ParameterId(299, VoiceGroup.I)).value.onChange(v -> {
             double cp = v.getClippedValue();
             presenter.isSingleSoundFeedbackToPolyActive.fb_mix_lvl = cp > 0;
+            presenter.split_fb_I_into_I.fb_mix_lvl = cp;
+            presenter.split_fb_I_into_II.fb_mix_lvl = cp;
             notifyChanges();
             return true;
         });
 
+        model.getParameter(new ParameterId(299, VoiceGroup.II)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            presenter.split_fb_II_into_I.fb_mix_lvl = cp;
+            presenter.split_fb_II_into_II.fb_mix_lvl = cp;
+            notifyChanges();
+            return true;
+        });
 
         model.getParameter(new ParameterId(68, VoiceGroup.I)).value.onChange(v -> {
             double cp = v.getClippedValue();
             presenter.isSingleSoundFeedbackToPolyActive.osc_a_pm_fb = cp != 0;
+            presenter.split_fb_I_into_I.osc_a_pm_fb = cp;
+            presenter.split_fb_I_into_II.osc_a_pm_fb = cp;
             notifyChanges();
             return true;
         });
 
+        model.getParameter(new ParameterId(68, VoiceGroup.II)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            presenter.split_fb_II_into_I.osc_a_pm_fb = cp;
+            presenter.split_fb_II_into_II.osc_a_pm_fb = cp;
+            notifyChanges();
+            return true;
+        });
 
         model.getParameter(new ParameterId(98, VoiceGroup.I)).value.onChange(v -> {
             double cp = v.getClippedValue();
             presenter.isSingleSoundFeedbackToPolyActive.osc_b_pm_fb = cp != 0;
+            presenter.split_fb_I_into_I.osc_b_pm_fb = cp;
+            presenter.split_fb_I_into_II.osc_b_pm_fb = cp;
+            notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(98, VoiceGroup.II)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            presenter.split_fb_II_into_I.osc_b_pm_fb = cp;
+            presenter.split_fb_II_into_II.osc_b_pm_fb = cp;
             notifyChanges();
             return true;
         });
@@ -162,6 +213,16 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         model.getParameter(new ParameterId(78, VoiceGroup.I)).value.onChange(v -> {
             double cp = v.getClippedValue();
             presenter.isSingleSoundFeedbackToPolyActive.shp_a_fb_mix = cp > 0;
+            presenter.split_fb_I_into_I.shp_a_fb_mix = cp;
+            presenter.split_fb_I_into_II.shp_a_fb_mix = cp;
+            notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(78, VoiceGroup.II)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            presenter.split_fb_II_into_I.shp_a_fb_mix = cp;
+            presenter.split_fb_II_into_II.shp_a_fb_mix = cp;
             notifyChanges();
             return true;
         });
@@ -169,6 +230,16 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         model.getParameter(new ParameterId(108, VoiceGroup.I)).value.onChange(v -> {
             double cp = v.getClippedValue();
             presenter.isSingleSoundFeedbackToPolyActive.shp_b_fb_mix = cp > 0;
+            presenter.split_fb_I_into_I.shp_b_fb_mix = cp;
+            presenter.split_fb_I_into_II.shp_b_fb_mix = cp;
+            notifyChanges();
+            return true;
+        });
+
+        model.getParameter(new ParameterId(108, VoiceGroup.II)).value.onChange(v -> {
+            double cp = v.getClippedValue();
+            presenter.split_fb_II_into_I.shp_b_fb_mix = cp;
+            presenter.split_fb_II_into_II.shp_b_fb_mix = cp;
             notifyChanges();
             return true;
         });
@@ -203,12 +274,14 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
 
         model.getParameter(new ParameterId(185, VoiceGroup.I)).value.onChange(v -> {
             presenter.layerToFX.outmix_I_lvl = v.getClippedValue();
+            presenter.splitToFXArrow_I.out_mix_lvl = v.getClippedValue();
             notifyChanges();
             return true;
         });
 
         model.getParameter(new ParameterId(185, VoiceGroup.II)).value.onChange(v -> {
             presenter.layerToFX.outmix_II_lvl = v.getClippedValue();
+            presenter.splitToFXArrow_II.out_mix_lvl = v.getClippedValue();
             notifyChanges();
             return true;
         });
@@ -216,6 +289,7 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
 
         model.getParameter(new ParameterId(362, VoiceGroup.I)).value.onChange(v -> {
             presenter.layerToFX.to_fx_I = v.getClippedValue();
+            presenter.splitToFXArrow_I.out_mix_to_fx = v.getClippedValue();
             notifyChanges();
             return true;
         });
@@ -223,18 +297,23 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
 
         model.getParameter(new ParameterId(362, VoiceGroup.II)).value.onChange(v -> {
             presenter.layerToFX.to_fx_II = v.getClippedValue();
+            presenter.splitToFXArrow_II.out_mix_to_fx = v.getClippedValue();
             notifyChanges();
             return true;
         });
 
         model.getParameter(new ParameterId(358, VoiceGroup.I)).value.onChange(v -> {
             presenter.layerFXToOut.part_vol_I = v.getClippedValue();
+            presenter.splitIToOut.part_vol_I = v.getClippedValue();
+            presenter.splitIIToOut.part_vol_I = v.getClippedValue();
             notifyChanges();
             return true;
         });
 
         model.getParameter(new ParameterId(358, VoiceGroup.II)).value.onChange(v -> {
             presenter.layerFXToOut.part_vol_II = v.getClippedValue();
+            presenter.splitIToOut.part_vol_II = v.getClippedValue();
+            presenter.splitIIToOut.part_vol_II = v.getClippedValue();
             notifyChanges();
             return true;
         });
