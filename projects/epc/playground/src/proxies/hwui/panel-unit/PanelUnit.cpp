@@ -58,8 +58,13 @@ PanelUnit::PanelUnit(Settings &settings, Oleds &oleds, LayoutFolderMonitor *mon)
         auto selParam = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
         auto mc = MacroControlsGroup::paramIDToModSrc(selParam->getID());
 
+        //select other parameter as we could be on MacroControl but VG II focus, we only want to assign to non-monophonics in part II
         auto targetId = m_macroControlAssignmentStateMachine.getCurrentModulateableParameter();
         auto target = editBuffer->findParameterByID(targetId);
+        if(editBuffer->getType() == SoundType::Single && target && target->isPolyphonic())
+          targetId = ParameterId(targetId.getNumber(), VoiceGroup::I);
+
+        target = editBuffer->findParameterByID(targetId);
 
         if(auto modParam = dynamic_cast<ModulateableParameter *>(target))
         {
