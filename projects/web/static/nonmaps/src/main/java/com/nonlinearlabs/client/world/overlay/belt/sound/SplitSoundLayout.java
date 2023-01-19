@@ -41,7 +41,7 @@ public class SplitSoundLayout extends SoundLayout {
 			super(parent, "RC-to-LT--feedback.svg", "RC-to-LB--feedback.svg", "RC-to-LT+RC-to-LB--feedback.svg");
 			
 			EditBufferPresenterProvider.get().onChange(ebp -> {
-				switch(ebp.splitToFXArrow_I.calculate())
+				switch(ebp.splitToFXArrow_I)
 				{
 					case None:
 						setVisible(false);
@@ -77,7 +77,7 @@ public class SplitSoundLayout extends SoundLayout {
 			super(parent, "LC-to-RB--feedback.svg", "LC-to-RT--feedback.svg", "LC-to-RT+LC-to-RB--feedback.svg");
 		
 			EditBufferPresenterProvider.get().onChange(ebp -> {
-				switch(ebp.splitToFXArrow_II.calculate())
+				switch(ebp.splitToFXArrow_II)
 				{
 					case None:
 						setVisible(false);
@@ -113,7 +113,7 @@ public class SplitSoundLayout extends SoundLayout {
 			super(parent, "RT-to-LC.svg", "RB-to-LC.svg", "RT-to-LC+RB-to-LC.svg");
 
 			EditBufferPresenterProvider.get().onChange(ebp -> {
-				switch(ebp.splitIToOut.calculate()) {
+				switch(ebp.splitToOut) {
 					case None:
 						setVisible(false);
 						return true;
@@ -149,7 +149,7 @@ public class SplitSoundLayout extends SoundLayout {
 			super(parent, "LT-to-RC.svg", "LB-to-RC.svg", "LT-to-RC+LB-to-RC.svg");
 
 			EditBufferPresenterProvider.get().onChange(ebp -> {
-				switch(ebp.splitIIToOut.calculate()) {
+				switch(ebp.splitToOut) {
 					case None:
 						setVisible(false);
 						return true;
@@ -186,7 +186,7 @@ public class SplitSoundLayout extends SoundLayout {
 
 
 			EditBufferPresenterProvider.get().onChange(ebp -> {
-				setVisible(ebp.split_fb_I_into_I.calculate());
+				setVisible(ebp.split_fb_I_into_I);
 				return true;
 			});
 		}
@@ -206,7 +206,7 @@ public class SplitSoundLayout extends SoundLayout {
 
 
 			EditBufferPresenterProvider.get().onChange(ebp -> {
-				setVisible(ebp.split_fb_I_into_II.calculate());
+				setVisible(ebp.split_fb_I_into_II);
 				return true;
 			});
 		}
@@ -226,7 +226,7 @@ public class SplitSoundLayout extends SoundLayout {
 
 
 			EditBufferPresenterProvider.get().onChange(ebp -> {
-				setVisible(ebp.split_fb_II_into_I.calculate());
+				setVisible(ebp.split_fb_II_into_I);
 				return true;
 			});
 		}
@@ -245,7 +245,7 @@ public class SplitSoundLayout extends SoundLayout {
 
 
 			EditBufferPresenterProvider.get().onChange(ebp -> {
-				setVisible(ebp.split_fb_II_into_II.calculate());
+				setVisible(ebp.split_fb_II_into_II);
 				return true;
 			});
 		}

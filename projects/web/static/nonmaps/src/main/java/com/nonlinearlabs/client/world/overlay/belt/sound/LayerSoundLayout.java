@@ -33,83 +33,50 @@ public class LayerSoundLayout extends SoundLayout {
 		setSettings(new LayerSoundSettings(this));
 	}
 
-	private class LayerPolyToFXArrow extends SVGImage {
-		private int selectedPhase = 0;
-
-		LayerPolyToFXArrow(OverlayLayout parent) {
-			super(parent, 
-			"LT-to-RT.svg", "LB-to-RB.svg", "LT-to-RB.svg",
-			"LB-to-RT.svg", "LT-to-RT+LT-to-RB.svg", "LB-to-RB+LB-to-RT.svg",
-			"LT-to-RT+LB-to-RB.svg", "LT-to-RB+LB-to-RT.svg", "LT-to-RT+LT-to-RB+LB-to-RB.svg",
-			"LT-to-RT+LB-to-RB+LB-to-RT.svg", "LT-to-RT+LT-to-RB+LB-to-RT.svg",
-			"LT-to-RB+LB-to-RB+LB-to-RT.svg", "LT-to-RT+LT-to-RB+LB-to-RT+LB-to-RB.svg",
-			"LT-to-RT+LB-to-RT.svg", "LT-to-LB+LB-to-RB.svg");
+	private class Layer_Poly_To_FX_I_I extends SVGImage {
+		Layer_Poly_To_FX_I_I(OverlayLayout parent) {
+			super(parent, "LT-to-RT.svg");
 
 			EditBufferPresenterProvider.get().onChange(ebp -> {
-				int oldPhase = selectedPhase;
-				switch(ebp.layerToFX.calculate()) {
-					case A:
-						selectedPhase = 0;
-						break;
-					case B:
-						selectedPhase = 1;
-						break;
-					case C:
-						selectedPhase = 2;
-						break;
-					case D:
-						selectedPhase = 3;
-						break;
-					case E:
-						selectedPhase = 4;
-						break;
-					case F:
-						selectedPhase = 5;
-						break;
-					case G:
-						selectedPhase = 6;
-						break;
-					case H:
-						selectedPhase = 7;
-						break;
-					case I:
-						selectedPhase = 8;
-						break;
-					case J:
-						selectedPhase = 9;
-						break;
-					case K:
-						selectedPhase = 10;
-						break;
-					case L:
-						selectedPhase = 11;
-						break;
-					case M:
-						selectedPhase = 12;
-						break;
-					case N:
-						selectedPhase = 13;
-						break;
-					case O:
-						selectedPhase = 14;
-						break;
-					case NONE:
-						setVisible(false);
-						return true;
-				}
-				if(selectedPhase != oldPhase)
-				{
-					if(isVisible() == false)
-						setVisible(true);
-					invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				}
+				setVisible(ebp.layerIToFXI);
 				return true;
 			});
 		}
+	}
 
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
+
+	private class Layer_Poly_To_FX_II_II extends SVGImage {
+		Layer_Poly_To_FX_II_II(OverlayLayout parent) {
+			super(parent, "LB-to-RB.svg");
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				setVisible(ebp.layerIIToFXII);
+				return true;
+			});
+		}
+	}
+
+
+	private class Layer_Poly_To_FX_I_II extends SVGImage {
+		Layer_Poly_To_FX_I_II(OverlayLayout parent) {
+			super(parent, "LT-to-RB.svg");
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				setVisible(ebp.layerIToFXII);
+				return true;
+			});
+		}
+	}
+
+
+	private class Layer_Poly_To_FX_II_I extends SVGImage {
+		Layer_Poly_To_FX_II_I(OverlayLayout parent) {
+			super(parent, "LB-to-RT.svg");
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				setVisible(ebp.layerIIToFXI);
+				return true;
+			});
 		}
 	}
 
@@ -120,7 +87,7 @@ public class LayerSoundLayout extends SoundLayout {
 			super(parent, "LT-to-RC.svg", "LB-to-RC.svg", "LT-to-RC+LB-to-RC.svg");
 
 			EditBufferPresenterProvider.get().onChange(ebp -> {
-				switch(ebp.layerFXToOut.calculate()) {
+				switch(ebp.layerFXToOut) {
 					case None:
 						setVisible(false);
 						return true;
@@ -130,7 +97,7 @@ public class LayerSoundLayout extends SoundLayout {
 					case PartII:
 						selectedPhase = 1;
 						break;
-					case PartI_II:
+					case PartI_PartII:
 						selectedPhase = 2;
 						break;
 				}
@@ -149,7 +116,7 @@ public class LayerSoundLayout extends SoundLayout {
 	}
 
 	private class LayerSoundSettings extends OverlayLayout {
-		private SVGImage layerToFXArrows;
+		private SVGImage layerToFXArrows1, layerToFXArrows2, layerToFXArrows3, layerToFXArrows4;
 		private OverlayLayout vgI, vgII;
 		private LayerSoundFBIndicator fb;
 		private SVGImage fxI, fxII;
@@ -161,7 +128,10 @@ public class LayerSoundLayout extends SoundLayout {
 			addChild(fb = new LayerSoundFBIndicator(this));
 			addChild(vgI = new VoiceGroupSoundSettings(VoiceGroup.I, this));
 			addChild(vgII = new VoiceGroupSoundSettings(VoiceGroup.II, this));
-			addChild(layerToFXArrows = new LayerPolyToFXArrow(this));
+			addChild(layerToFXArrows1 = new Layer_Poly_To_FX_I_I(this));
+			addChild(layerToFXArrows2 = new Layer_Poly_To_FX_I_II(this));
+			addChild(layerToFXArrows3 = new Layer_Poly_To_FX_II_I(this));
+			addChild(layerToFXArrows4 = new Layer_Poly_To_FX_II_II(this));
 			addChild(fxI = new FX_I_Indicator(this));
 			addChild(fxII = new FX_II_Indicator(this));
 			addChild(serial = new SerialArrow(this));
@@ -182,8 +152,11 @@ public class LayerSoundLayout extends SoundLayout {
 			fb.doLayout(-fbW, h / 2 - (fbH / 2), fbW, fbH);
 
 			double layerWidth = vgI.getPixRect().getWidth();
-			double layerToFXWidth = layerToFXArrows.getPictureWidth();
-			layerToFXArrows.doLayout(layerWidth, 0, layerToFXWidth, h);
+			double layerToFXWidth = layerToFXArrows1.getPictureWidth();
+			layerToFXArrows1.doLayout(layerWidth, 0, layerToFXWidth, h);
+			layerToFXArrows2.doLayout(layerWidth, 0, layerToFXWidth, h);
+			layerToFXArrows3.doLayout(layerWidth, 0, layerToFXWidth, h);
+			layerToFXArrows4.doLayout(layerWidth, 0, layerToFXWidth, h);
 
 			double fxIWidth = fxI.getPictureWidth();
 			fxI.doLayout(layerWidth + layerToFXWidth, 0, fxIWidth, h/2);

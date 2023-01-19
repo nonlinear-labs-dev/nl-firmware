@@ -66,7 +66,7 @@ public class SingleSoundLayout extends SoundLayout {
 			addChild(fbToPoly = new FBToPolyArrows(this));
 
 			EditBufferPresenterProvider.get().onChange(ebp -> {
-				setVisible(ebp.isSingleSoundFeedbackToPolyActive.calculateState());
+				setVisible(ebp.isSingleSoundFeedbackToPolyActive);
 				return true;
 			});
 		}
