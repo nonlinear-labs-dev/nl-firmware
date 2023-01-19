@@ -432,7 +432,7 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
     auto selParamID = selParam->getID();
 
     tLedStates states;
-    states.fill(false);
+    states.fill(TwoStateLED::OFF);
 
     collectLedStates(states, selParamID);
 
@@ -452,19 +452,19 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
         collectLedStates(states, tgt->getID());
     }
 
-    setLedStates(states);
-
     if(selParam->getParentGroup()->getID().getName() == "MCs" || MacroControlsGroup::isMacroTime(selParam->getID()))
     {
-      letMacroControlTargetsBlink();
+      letMacroControlTargetsBlink(states);
     }
 
     if(Application::get().getSettings()->getSetting<SignalFlowIndicationSetting>()->get())
-      letTargetsBlink(selParam);
+      letTargetsBlink(selParam, states);
+
+    setLedStates(states);
   }
 }
 
-void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam)
+void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam, tLedStates &states)
 {
   auto group = selParam->getParentGroup();
   auto groupName = group->getID().getName();
@@ -473,46 +473,46 @@ void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam)
 
   if(groupName == "Env A")
   {
-    letOtherTargetsBlink({ Osc_A_PM_Self_Env_A, Shp_A_Drive_Env_A, Osc_B_PM_A_Env_A });
+    letOtherTargetsBlink({ Osc_A_PM_Self_Env_A, Shp_A_Drive_Env_A, Osc_B_PM_A_Env_A }, states);
   }
   else if(groupName == "Env B")
   {
-    letOtherTargetsBlink({ Osc_A_PM_B_Env_B, Osc_B_PM_Self_Env_B, Shp_B_Drive_Env_B });
+    letOtherTargetsBlink({ Osc_A_PM_B_Env_B, Osc_B_PM_Self_Env_B, Shp_B_Drive_Env_B }, states);
   }
   else if(groupName == "Env C")
   {
     letOtherTargetsBlink({ Osc_A_Pitch_Env_C, Osc_A_Fluct_Env_C, Osc_A_PM_FB_Env_C, Shp_A_FB_Env_C, Osc_B_Pitch_Env_C,
                            Osc_B_Fluct_Env_C, Osc_B_PM_FB_Env_C, Shp_B_FB_Env_C, Comb_Flt_Pitch_Env_C, Comb_Flt_AP_Env_C,
-                           Comb_Flt_LP_Env_C, SV_Flt_Cut_Env_C, SV_Flt_Res_Env_C });
+                           Comb_Flt_LP_Env_C, SV_Flt_Cut_Env_C, SV_Flt_Res_Env_C }, states);
   }
   else if(groupName == "Osc A" || groupName == "Sh A")
   {
-    letOscAShaperABlink({ Osc_B_PM_A, Shp_B_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_A_Lvl });
+    letOscAShaperABlink({ Osc_B_PM_A, Shp_B_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_A_Lvl }, states);
   }
   else if(groupName == "Osc B" || groupName == "Sh B")
   {
-    letOscBShaperBBlink({ Osc_A_PM_B, Shp_A_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_B_Lvl });
+    letOscBShaperBBlink({ Osc_A_PM_B, Shp_A_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_B_Lvl }, states);
   }
   else if(groupName == "Comb")
   {
-    letOtherTargetsBlink({ SV_Flt_Comb_Mix, Out_Mix_Comb_Lvl, FB_Mix_Comb });
+    letOtherTargetsBlink({ SV_Flt_Comb_Mix, Out_Mix_Comb_Lvl, FB_Mix_Comb }, states);
   }
   else if(groupName == "FB")
   {
-    letOtherTargetsBlink({ Osc_A_PM_FB, Shp_A_FB_Mix, Osc_B_PM_FB, Shp_B_FB_Mix });
+    letOtherTargetsBlink({ Osc_A_PM_FB, Shp_A_FB_Mix, Osc_B_PM_FB, Shp_B_FB_Mix }, states);
   }
   else if(groupName == "SVF")
   {
-    letOtherTargetsBlink({ Out_Mix_SVF_Lvl, FB_Mix_SVF });
+    letOtherTargetsBlink({ Out_Mix_SVF_Lvl, FB_Mix_SVF }, states);
   }
   else if(groupName == "Gap Filt" || groupName == "Cab" || groupName == "Echo" || groupName == "Reverb"
           || groupName == "Flang")
   {
-    letOtherTargetsBlink({ FB_Mix_FX });
+    letOtherTargetsBlink({ FB_Mix_FX }, states);
 
     if(groupName == "Reverb")
     {
-      letReverbBlink({ FB_Mix_Rvb });
+      letReverbBlink({ FB_Mix_Rvb }, states);
     }
   }
 }
@@ -538,7 +538,7 @@ void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, ParameterI
   auto button = m_mappings.findButton(selectedParameterID.getNumber());
 
   if(button != Buttons::INVALID)
-    states[static_cast<size_t>(button)] = true;
+    states[static_cast<size_t>(button)] = TwoStateLED::ON;
 }
 
 const BOLED &PanelUnitParameterEditMode::getBoled() const
@@ -556,12 +556,11 @@ void PanelUnitParameterEditMode::setLedStates(const tLedStates &states)
   auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
   for(int i = 0; i < NUM_LEDS; i++)
-    panelUnit.getLED((Buttons) i)->setState(states[i] ? TwoStateLED::ON : TwoStateLED::OFF);
+    panelUnit.getLED((Buttons) i)->setState(states[i]);
 }
 
-void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
+void PanelUnitParameterEditMode::letMacroControlTargetsBlink(tLedStates &states)
 {
-  auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
   Parameter *selParam = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
   auto currentVG = Application::get().getVGManager()->getCurrentVoiceGroup();
@@ -581,7 +580,7 @@ void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
       {
         auto buttonID = m_mappings.findButton(t->getID().getNumber());
         if(buttonID != Buttons::INVALID)
-          panelUnit.getLED(buttonID)->setState(TwoStateLED::BLINK);
+          states[static_cast<size_t>(buttonID)] = TwoStateLED::BLINK;
       }
     }
 
@@ -590,11 +589,9 @@ void PanelUnitParameterEditMode::letMacroControlTargetsBlink()
   }
 }
 
-void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &targets)
+void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &targets, tLedStates &states)
 {
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  auto hwui = Application::get().getHWUI();
-  auto &panelUnit = hwui->getPanelUnit();
 
   for(auto targetID : targets)
   {
@@ -621,7 +618,8 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
     {
       auto state = editBuffer->getSelected(vg) == currentParam ? TwoStateLED::ON
                                                                                          : TwoStateLED::BLINK;
-      panelUnit.getLED(m_mappings.findButton(targetID))->setState(state);
+      auto button = m_mappings.findButton(currentParam->getID().getNumber());
+      states[static_cast<size_t>(button)] = state;
     }
   }
 }
@@ -631,11 +629,10 @@ bool PanelUnitParameterEditMode::isSignalFlowingThrough(const Parameter *p) cons
   return std::abs(p->getControlPositionValue()) > std::numeric_limits<tControlPositionValue>::epsilon();
 }
 
-void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &targets)
+void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &targets, tLedStates &states)
 {
   auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
   const auto stateVariableFilterFMAB = editBuffer->findParameterByID({ C15::PID::SV_Flt_FM_A_B, vg });
   const auto combFilterPMAB = editBuffer->findParameterByID({ C15::PID::Comb_Flt_PM_A_B, vg });
@@ -646,38 +643,38 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
   for(auto targetID : targets)
   {
     const auto currentParam = editBuffer->findParameterByID({ targetID, vg });
+    auto button = m_mappings.findButton(currentParam->getID().getNumber());
     switch(targetID)
     {
       case C15::PID::SV_Flt_In_A_B:
         if(SVCombMix->getControlPositionValue() != combMin && SVCombMix->getControlPositionValue() != combMax)
           if(currentParam->getControlPositionValue() < 1)
-            panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+            states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
         break;
       case C15::PID::Comb_Flt_In_A_B:
         if(currentParam->getControlPositionValue() < 1)
-          panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+          states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
         break;
       case C15::PID::Comb_Flt_PM:
         if(isSignalFlowingThrough(currentParam) && combFilterPMAB->getControlPositionValue() < 1)
-          panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+          states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
         break;
       case C15::PID::SV_Flt_FM:
         if(isSignalFlowingThrough(currentParam) && stateVariableFilterFMAB->getControlPositionValue() < 1)
-          panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+          states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
         break;
       default:
         if(isSignalFlowingThrough(currentParam))
-          panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+          states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
         break;
     }
   }
 }
 
-void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &targets)
+void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &targets, tLedStates &states)
 {
   auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
   const auto combFilterPMAB = editBuffer->findParameterByID({ C15::PID::Comb_Flt_PM_A_B, vg });
   const auto stateVariableFilterFMAB = editBuffer->findParameterByID({ C15::PID::SV_Flt_FM_A_B, vg });
@@ -688,46 +685,47 @@ void PanelUnitParameterEditMode::letOscBShaperBBlink(const std::vector<int> &tar
   for(auto targetID : targets)
   {
     auto currentParam = editBuffer->findParameterByID({ targetID, vg });
+    auto button = m_mappings.findButton(currentParam->getID().getNumber());
     switch(targetID)
     {
       case C15::PID::SV_Flt_In_A_B:
         if(SVCombMix->getControlPositionValue() != combMin && SVCombMix->getControlPositionValue() != combMax)
           if(currentParam->getControlPositionValue() > 0)
-            panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+            states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
         break;
       case C15::PID::Comb_Flt_In_A_B:
         if(currentParam->getControlPositionValue() > 0)
-          panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+          states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
         break;
       case C15::PID::Comb_Flt_PM:
         if(isSignalFlowingThrough(currentParam) && combFilterPMAB->getControlPositionValue() > 0)
-          panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+          states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
         break;
       case C15::PID::SV_Flt_FM:
         if(isSignalFlowingThrough(currentParam) && stateVariableFilterFMAB->getControlPositionValue() > 0)
-          panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+          states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
         break;
       default:
         if(isSignalFlowingThrough(currentParam))
-          panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+          states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
         break;
     }
   }
 }
 
-void PanelUnitParameterEditMode::letReverbBlink(const std::vector<int> &targets)
+void PanelUnitParameterEditMode::letReverbBlink(const std::vector<int> &targets, tLedStates &states)
 {
   auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-  auto &panelUnit = Application::get().getHWUI()->getPanelUnit();
 
   for(auto targetID : targets)
   {
     const auto currentParam = editBuffer->findParameterByID({ targetID, vg });
     const auto effectParam = editBuffer->findParameterByID({ C15::PID::FB_Mix_FX, vg });
+    auto button = m_mappings.findButton(currentParam->getID().getNumber());
 
     if(isSignalFlowingThrough(currentParam) && isSignalFlowingThrough(effectParam))
-      panelUnit.getLED(m_mappings.findButton(targetID))->setState(TwoStateLED::BLINK);
+      states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
   }
 }
 

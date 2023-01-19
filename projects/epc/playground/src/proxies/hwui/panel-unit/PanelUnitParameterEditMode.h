@@ -9,6 +9,7 @@
 #include <array>
 #include <list>
 #include <vector>
+#include <proxies/hwui/TwoStateLED.h>
 
 class PresetBank;
 class Parameter;
@@ -39,7 +40,7 @@ class PanelUnitParameterEditMode : public UsageMode
   ButtonParameterMapping &getMappings();
 
  private:
-  typedef std::array<bool, NUM_LEDS> tLedStates;
+  typedef std::array<TwoStateLED::LedState, NUM_LEDS> tLedStates;
 
   void onParamSelectionChanged(Parameter *oldParam, Parameter *newParam);
 
@@ -55,12 +56,12 @@ class PanelUnitParameterEditMode : public UsageMode
 
   void collectLedStates(tLedStates &states, ParameterId selectedParameterID);
 
-  void letTargetsBlink(Parameter *selParam);
-  void letMacroControlTargetsBlink();
-  void letOscAShaperABlink(const std::vector<int> &targets);
-  void letOscBShaperBBlink(const std::vector<int> &targets);
-  void letOtherTargetsBlink(const std::vector<int> &targets);
-  void letReverbBlink(const std::vector<int> &targets);
+  void letTargetsBlink(Parameter *selParam, tLedStates &states);
+  void letMacroControlTargetsBlink(tLedStates &states);
+  void letOscAShaperABlink(const std::vector<int> &targets, tLedStates &states);
+  void letOscBShaperBBlink(const std::vector<int> &targets, tLedStates &states);
+  void letOtherTargetsBlink(const std::vector<int> &targets, tLedStates &states);
+  void letReverbBlink(const std::vector<int> &targets, tLedStates &states);
   bool isSignalFlowingThrough(const Parameter *p) const;
   void setLedStates(const tLedStates &states);
 
