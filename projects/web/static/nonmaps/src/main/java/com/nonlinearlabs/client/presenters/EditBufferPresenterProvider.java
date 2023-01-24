@@ -252,7 +252,7 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         presenter.splitToOut = calculateSplitToOutArrow();
 
         presenter.split_fb_I_into_I = calculateSplitFeedbackFromI_into_I();
-        presenter.split_fb_I_into_II = calculateSplitFeedbackFromI_into_I();
+        presenter.split_fb_I_into_II = calculateSplitFeedbackFromI_into_II();
         presenter.split_fb_II_into_I = calculateSplitFeedbackFromII_into_I();
         presenter.split_fb_II_into_II = calculateSplitFeedbackFromII_into_II();
 
