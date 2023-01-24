@@ -10,6 +10,8 @@ import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.presenters.EditBufferPresenter;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.GenericArrowEnum;
+import com.nonlinearlabs.client.tools.Pair;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
@@ -33,109 +35,40 @@ public class LayerSoundLayout extends SoundLayout {
 		setSettings(new LayerSoundSettings(this));
 	}
 
-	private class Layer_Poly_To_FX_I_I extends SVGImage {
-		Layer_Poly_To_FX_I_I(OverlayLayout parent) {
-			super(parent, "LT-to-RT.svg");
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				setVisible(ebp.layerIToFXI);
-				return true;
-			});
-		}
-	}
-
-
-	private class Layer_Poly_To_FX_II_II extends SVGImage {
-		Layer_Poly_To_FX_II_II(OverlayLayout parent) {
-			super(parent, "LB-to-RB.svg");
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				setVisible(ebp.layerIIToFXII);
-				return true;
-			});
-		}
-	}
-
-
-	private class Layer_Poly_To_FX_I_II extends SVGImage {
-		Layer_Poly_To_FX_I_II(OverlayLayout parent) {
-			super(parent, "LT-to-RB.svg");
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				setVisible(ebp.layerIToFXII);
-				return true;
-			});
-		}
-	}
-
-
-	private class Layer_Poly_To_FX_II_I extends SVGImage {
-		Layer_Poly_To_FX_II_I(OverlayLayout parent) {
-			super(parent, "LB-to-RT.svg");
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				setVisible(ebp.layerIIToFXI);
-				return true;
-			});
-		}
-	}
-
-	private class LayerToFXOutArrows extends SVGImage {
-		private int selectedPhase = 0;
-
-		LayerToFXOutArrows(OverlayLayout parent) {
-			super(parent, "LT-to-RC.svg", "LB-to-RC.svg", "LT-to-RC+LB-to-RC.svg");
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				switch(ebp.layerFXToOut) {
-					case None:
-						setVisible(false);
-						return true;
-					case PartI:
-						selectedPhase = 0;
-						break;
-					case PartII:
-						selectedPhase = 1;
-						break;
-					case PartI_PartII:
-						selectedPhase = 2;
-						break;
-				}
-
-				if(isVisible() == false)
-					setVisible(true);
-
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
-		}
-	}
-
 	private class LayerSoundSettings extends OverlayLayout {
-		private SVGImage layerToFXArrows1, layerToFXArrows2, layerToFXArrows3, layerToFXArrows4;
+		private EditBufferBooleanImage layerToFXArrows1, layerToFXArrows2, layerToFXArrows3, layerToFXArrows4;
 		private OverlayLayout vgI, vgII;
 		private LayerSoundFBIndicator fb;
 		private SVGImage fxI, fxII;
 		private SVGImage serial;
-		private SVGImage layerFXToOutArrows;
+		private MappedSvgImage<GenericArrowEnum> layerFXToOutArrows;
 
 		LayerSoundSettings(LayerSoundLayout parent) {
 			super(parent);
 			addChild(fb = new LayerSoundFBIndicator(this));
 			addChild(vgI = new VoiceGroupSoundSettings(VoiceGroup.I, this));
 			addChild(vgII = new VoiceGroupSoundSettings(VoiceGroup.II, this));
-			addChild(layerToFXArrows1 = new Layer_Poly_To_FX_I_I(this));
-			addChild(layerToFXArrows2 = new Layer_Poly_To_FX_I_II(this));
-			addChild(layerToFXArrows3 = new Layer_Poly_To_FX_II_I(this));
-			addChild(layerToFXArrows4 = new Layer_Poly_To_FX_II_II(this));
+			addChild(layerToFXArrows1 = new EditBufferBooleanImage(this, "LT-to-RT.svg"));
+			addChild(layerToFXArrows2 = new EditBufferBooleanImage(this, "LT-to-RB.svg"));
+			addChild(layerToFXArrows3 = new EditBufferBooleanImage(this, "LB-to-RT.svg"));
+			addChild(layerToFXArrows4 = new EditBufferBooleanImage(this, "LB-to-RB.svg"));
 			addChild(fxI = new FX_I_Indicator(this));
 			addChild(fxII = new FX_II_Indicator(this));
 			addChild(serial = new SerialArrow(this));
-			addChild(layerFXToOutArrows = new LayerToFXOutArrows(this));
+			addChild(layerFXToOutArrows = new MappedSvgImage<GenericArrowEnum>(this,
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI, "LT-to-RC.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartII, "LB-to-RC.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI_PartII, "LT-to-RC+LB-to-RC.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.None, null)));
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				layerToFXArrows1.update(ebp.layerIToFXI);
+				layerToFXArrows2.update(ebp.layerIToFXII);
+				layerToFXArrows3.update(ebp.layerIIToFXI);
+				layerToFXArrows4.update(ebp.layerIIToFXII);
+				layerFXToOutArrows.update(ebp.layerFXToOut);
+				return true;
+			});
 		}
 
 		@Override

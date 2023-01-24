@@ -11,6 +11,8 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.presenters.EditBufferPresenter;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.GenericArrowEnum;
+import com.nonlinearlabs.client.tools.Pair;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
@@ -34,242 +36,17 @@ public class SplitSoundLayout extends SoundLayout {
 		setSettings(new SplitSoundSettings(this));
 	}
 
-	private class SplitPart_I_ToFX extends SVGImage {
-		int selectedPhase = 0;
-
-		SplitPart_I_ToFX(OverlayLayout parent) {
-			super(parent, "RC-to-LT--feedback.svg", "RC-to-LB--feedback.svg", "RC-to-LT+RC-to-LB--feedback.svg");
-			
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				switch(ebp.splitToFXArrow_I)
-				{
-					case None:
-						setVisible(false);
-						return true;
-					case PartI:
-						selectedPhase = 0;
-						break;
-					case PartII:
-						selectedPhase = 1;
-						break;
-					case PartI_PartII:
-						selectedPhase = 2;
-						break;
-					
-				}
-
-				setVisible(true);
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
-		}
-	}
-
-	private class SplitPart_II_ToFX extends SVGImage {
-		int selectedPhase = 0;
-
-		SplitPart_II_ToFX(OverlayLayout parent) {
-			super(parent, "LC-to-RB--feedback.svg", "LC-to-RT--feedback.svg", "LC-to-RT+LC-to-RB--feedback.svg");
-		
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				switch(ebp.splitToFXArrow_II)
-				{
-					case None:
-						setVisible(false);
-						return true;
-					case PartI:
-						selectedPhase = 0;
-						break;
-					case PartII:
-						selectedPhase = 1;
-						break;
-					case PartI_PartII:
-						selectedPhase = 2;
-						break;
-					
-				}
-
-				setVisible(true);
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
-		}
-	}
-
-	private class Split_I_To_Out extends SVGImage {
-		int selectedPhase = 0;
-
-		Split_I_To_Out(OverlayLayout parent) {
-			super(parent, "RT-to-LC.svg", "RB-to-LC.svg", "RT-to-LC+RB-to-LC.svg");
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				switch(ebp.splitToOut) {
-					case None:
-						setVisible(false);
-						return true;
-					case PartI:
-						selectedPhase = 0;
-						break;
-					case PartII:
-						selectedPhase = 1;
-						break;
-					case PartI_PartII:
-						selectedPhase = 2;
-						break;
-					default:
-						break;
-
-				}
-				setVisible(true);
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
-		}
-	}
-
-	private class Split_II_To_Out extends SVGImage {
-		int selectedPhase = 0;
-
-		Split_II_To_Out(OverlayLayout parent) {
-			super(parent, "LT-to-RC.svg", "LB-to-RC.svg", "LT-to-RC+LB-to-RC.svg");
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				switch(ebp.splitToOut) {
-					case None:
-						setVisible(false);
-						return true;
-					case PartI:
-						selectedPhase = 0;
-						break;
-					case PartII:
-						selectedPhase = 1;	
-						break;
-					case PartI_PartII:
-						selectedPhase = 2;
-						break;
-					default:
-						break;
-					
-				}
-				setVisible(true);
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
-		}
-	}
-
-	private class Feedback_from_I_Into_I extends SVGImage {
-		int selectedPhase = 0;
-
-		Feedback_from_I_Into_I(OverlayLayout parent) {
-			super(parent, "LT-to-RT.svg");
-
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				setVisible(ebp.split_fb_I_into_I);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
-		}
-	}
-
-
-	private class Feedback_from_I_Into_II extends SVGImage {
-		int selectedPhase = 0;
-
-		Feedback_from_I_Into_II(OverlayLayout parent) {
-			super(parent, "LB-to-RB.svg");
-
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				setVisible(ebp.split_fb_I_into_II);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
-		}
-	}
-
-
-	private class Feedback_from_II_Into_I extends SVGImage {
-		int selectedPhase = 0;
-
-		Feedback_from_II_Into_I(OverlayLayout parent) {
-			super(parent, "RT-to-LT.svg");
-
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				setVisible(ebp.split_fb_II_into_I);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
-		}
-	}
-
-	private class Feedback_from_II_Into_II extends SVGImage {
-		int selectedPhase = 0;
-
-		Feedback_from_II_Into_II(OverlayLayout parent) {
-			super(parent, "RB-to-LB.svg");
-
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				setVisible(ebp.split_fb_II_into_II);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
-		}
-	}
-
 	private class SplitSoundSettings extends OverlayLayout {
 		VoiceGroupSoundSettings vgI, vgII;
 		SplitPoint splitPoint;
 
-		SVGImage partIToFXArrows, partIIToFXArrows;
+		MappedSvgImage<GenericArrowEnum> partIToFXArrows, partIIToFXArrows, ItoOut, IItoOut;
+		EditBufferBooleanImage fb_from_I_Into_I, fb_from_I_Into_II, fb_from_II_Into_I, fb_from_II_Into_II;
 
 		SVGImage fxI_I, fxI_II, fxII_I, fxII_II; 
+		SerialArrow serialI, serialII;
 
-		SVGImage serialI, serialII;
-
-		SVGImage ItoOut, IItoOut;
-
-		SVGImage fb_from_I_Into_I, fb_from_I_Into_II, fb_from_II_Into_I, fb_from_II_Into_II;
-
+		
 		SplitSoundSettings(SplitSoundLayout parent) {
 			super(parent);
 			addChild(vgI = new VoiceGroupSoundSettings(VoiceGroup.I, this));
@@ -277,9 +54,30 @@ public class SplitSoundLayout extends SoundLayout {
 			addChild(vgII = new VoiceGroupSoundSettings(VoiceGroup.II, this));
 
 
-			addChild(partIToFXArrows = new SplitPart_I_ToFX(this));
-			addChild(partIIToFXArrows = new SplitPart_II_ToFX(this));
+			addChild(partIToFXArrows = new MappedSvgImage<GenericArrowEnum>(this, 
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI, "RC-to-LT--feedback.svg"), 
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartII, "RC-to-LB--feedback.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI_PartII, "RC-to-LT+RC-to-LB--feedback.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.None, null)));
+			
+			addChild(partIIToFXArrows = new MappedSvgImage<GenericArrowEnum>(this, 
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI, "LC-to-RB--feedback.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartII, "LC-to-RT--feedback.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI_PartII, "LC-to-RT+LC-to-RB--feedback.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.None, null)));
 
+			addChild(ItoOut = new MappedSvgImage<GenericArrowEnum>(this,
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI, "RT-to-LC.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartII, "RB-to-LC.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI_PartII, "RT-to-LC+RB-to-LC.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.None, null)));
+											
+			addChild(IItoOut = new MappedSvgImage<GenericArrowEnum>(this,
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI, "LT-to-RC.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartII, "LB-to-RC.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI_PartII, "LT-to-RC+LB-to-RC.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.None, null)));
+			
 			addChild(fxI_I = new FX_I_Indicator(this));
 			addChild(fxI_II = new FX_I_Indicator(this));
 
@@ -289,13 +87,23 @@ public class SplitSoundLayout extends SoundLayout {
 			addChild(serialI = new SerialArrow(this));
 			addChild(serialII = new SerialArrow(this));
 
-			addChild(ItoOut = new Split_I_To_Out(this));
-			addChild(IItoOut = new Split_II_To_Out(this));
-			
-			addChild(fb_from_I_Into_I = new Feedback_from_I_Into_I(this));
-			addChild(fb_from_I_Into_II = new Feedback_from_I_Into_II(this));
-			addChild(fb_from_II_Into_I = new Feedback_from_II_Into_I(this));
-			addChild(fb_from_II_Into_II = new Feedback_from_II_Into_II(this));
+
+			addChild(fb_from_I_Into_I = new EditBufferBooleanImage(this, "LT-to-RT.svg"));
+			addChild(fb_from_I_Into_II = new EditBufferBooleanImage(this, "LB-to-RB.svg"));
+			addChild(fb_from_II_Into_I = new EditBufferBooleanImage(this, "RT-to-LT.svg"));
+			addChild(fb_from_II_Into_II = new EditBufferBooleanImage(this, "RB-to-LB.svg"));
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				partIToFXArrows.update(ebp.splitToFXArrow_I);
+				partIIToFXArrows.update(ebp.splitToFXArrow_II);
+				
+				fb_from_I_Into_I.update(ebp.split_fb_I_into_I);
+				fb_from_I_Into_II.update(ebp.split_fb_I_into_II);
+				fb_from_II_Into_I.update(ebp.split_fb_II_into_I);
+				fb_from_II_Into_II.update(ebp.split_fb_II_into_II);
+
+				return true;
+			});
 		}
 
 		@Override
