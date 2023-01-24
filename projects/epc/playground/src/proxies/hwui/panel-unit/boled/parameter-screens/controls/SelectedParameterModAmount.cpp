@@ -85,7 +85,10 @@ void SelectedParameterModAmount::onParamValueChanged(const Parameter *param)
       range.first = 0.5 * (range.first + 1);
       range.second = 0.5 * (range.second + 1);
     }
-    setRange(range.first, range.second);
+    if(p->getModulationSource() == MacroControls::NONE)
+      setRange(0, 0);
+    else
+      setRange(range.first, range.second);
   }
   else
   {

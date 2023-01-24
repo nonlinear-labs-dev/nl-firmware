@@ -7,7 +7,6 @@ import com.nonlinearlabs.client.world.RGBA;
 
 public class EditBufferPresenter {
 
-
 	public enum SerialFX {
         FX_I_IN_II,
         FX_II_IN_I,
@@ -39,6 +38,9 @@ public class EditBufferPresenter {
         None
     }
 
+    public boolean fxIUnused = false;
+    public boolean fxIIUnused = false;
+    
     public boolean allParametersLocked = false;
     public boolean isAnyParameterLocked = false;
     public boolean isAnyParameterChanged = false;

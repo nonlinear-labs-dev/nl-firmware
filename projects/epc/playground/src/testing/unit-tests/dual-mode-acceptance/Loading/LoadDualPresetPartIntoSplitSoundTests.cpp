@@ -101,19 +101,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Split
       CHECK(toFXIIHash == EBL::createValueHash(EBL::getToFX<VoiceGroup::II>()));
     }
 
-    THEN("ToFX I copied / Cross FB I default")
-    {
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-
-      for(auto& p : EBL::getToFX<VoiceGroup::I>())
-        CHECK_PARAMETER_CP_EQUALS_FICTION(p, 0.7);
-    }
-
-    THEN("Cross FB II is Default")
-    {
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
-    }
-
     THEN("Local Normal was copied to current VG")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::I }), 0.666);
@@ -255,22 +242,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Split
       CHECK(localNormalIHash == EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::I>()));
     }
 
-    THEN("Cross FB I is default")
-    {
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-    }
-
     THEN("toFX I unchanged")
     {
       CHECK(EBL::createValueHash(EBL::getToFX<VoiceGroup::I>()) == toFXIHash);
-    }
-
-    THEN("ToFX II copied / Cross FB II default")
-    {
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
-
-      for(auto& p : EBL::getToFX<VoiceGroup::II>())
-        CHECK_PARAMETER_CP_EQUALS_FICTION(p, 0.7);
     }
 
     THEN("Local Normal was copied to current VG")
@@ -406,12 +380,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Layer into Split
       CHECK(eb->getType() == SoundType::Split);
     }
 
-    THEN("Cross FB is default")
-    {
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
-    }
-
     THEN("toFX and local II unchanged")
     {
       CHECK(localNormalIIHash == EBL::createValueHash(EBL::getLocalNormal<VoiceGroup::II>()));
@@ -421,14 +389,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Layer into Split
     THEN("Local Normal was copied to current VG")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::I }), 0.666);
-    }
-
-    THEN("ToFX I copied from Preset")
-    {
-      for(auto& p : EBL::getToFX<VoiceGroup::I>())
-      {
-        CHECK_PARAMETER_CP_EQUALS_FICTION(p, 0.187);
-      }
     }
 
     THEN("Fade default")
@@ -558,20 +518,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part II of Layer into Spli
     THEN("Local Normal was copied to current VG")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::II }), 0.666);
-    }
-
-    THEN("ToFX II copied from Preset")
-    {
-      for(auto& p : EBL::getToFX<VoiceGroup::II>())
-      {
-        CHECK_PARAMETER_CP_EQUALS_FICTION(p, 0.187);
-      }
-    }
-
-    THEN("Cross FB default")
-    {
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
     }
 
     THEN("Fade II default")

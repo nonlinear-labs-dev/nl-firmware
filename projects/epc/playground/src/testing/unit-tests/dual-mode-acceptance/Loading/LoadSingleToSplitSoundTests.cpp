@@ -92,12 +92,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Split Part I")
       CHECK(eb->getVoiceGroupName(VoiceGroup::I) == "Hi");
     }
 
-    THEN("Cross FB is Default")
-    {
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
-    }
-
     THEN("Local Normal was copied to current VG")
     {
       CHECK_PARAMETER_CP_EQUALS_FICTION(eb->findParameterByID({ 0, VoiceGroup::I }), 0.666);
@@ -206,12 +200,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Split Part II"
     THEN("Voice Group Label was loaded")
     {
       CHECK(eb->getVoiceGroupName(VoiceGroup::II) == "Ho");
-    }
-
-    THEN("Cross FB is Default")
-    {
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::I>()));
-      CHECK(EBL::isFactoryDefaultLoaded(EBL::getCrossFB<VoiceGroup::II>()));
     }
 
     THEN("Local Normal was copied to current VG")

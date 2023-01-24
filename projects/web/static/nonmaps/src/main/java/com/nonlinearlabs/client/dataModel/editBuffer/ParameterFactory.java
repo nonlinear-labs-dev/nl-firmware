@@ -70,9 +70,9 @@ public class ParameterFactory {
 	static public int[] voicesParameters = { 249, 250, 252, 253, 364, 365, 366, 367 };
 
 	static public int[] monophonicParameters = {
-		211, 213, 214, 216, 218, 219, 221, 222, 223, 307, 308, 310, 389, 188, 190, 191,
-		192, 194, 196, 197, 199, 201, 203, 204, 206, 207, 209, 225, 227, 229, 231, 232, 
-		233, 342, 235, 237, 238, 240, 241, 344
+		188, 190, 191, 192, 194, 196, 197, 199, 201, 203, 204, 206, 207, 209,
+		211, 213, 214, 216, 218, 219, 221, 222, 223, 225, 227, 229, 231, 232,
+		233, 235, 237, 238, 240, 241, 307, 308, 310, 342, 344, 389
 	};
 
 	static public HashMap<SoundType, int[]> hiddenParametersBySoundType = new HashMap<SoundType, int[]>();
@@ -279,6 +279,7 @@ public class ParameterFactory {
 		assert (isSorted(modulationRouters));
 		assert (isSorted(scaleOffsetParameters));
 		assert (isSorted(voicesParameters));
+		assert (isSorted(monophonicParameters));
 
 		assert (isSorted(parameterGroups));
 		assert (isSorted(globalParameterGroups));

@@ -14,15 +14,14 @@ ModulationBoundSlider::ModulationBoundSlider(const Rect &pos)
       mem_fun(this, &ModulationBoundSlider::onSelectionChanged), vg);
 }
 
-ModulationBoundSlider::~ModulationBoundSlider()
-{
-}
+ModulationBoundSlider::~ModulationBoundSlider() = default;
 
 void ModulationBoundSlider::onSelectionChanged(Parameter *, Parameter *newParam)
 {
   m_paramChanged.disconnect();
 
-  if(m_param = dynamic_cast<ModulateableParameter *>(newParam))
+  m_param = dynamic_cast<ModulateableParameter *>(newParam);
+  if(m_param)
     m_paramChanged = m_param->onParameterChanged(mem_fun(this, &ModulationBoundSlider::onParameterChanged));
 }
 

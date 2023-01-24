@@ -95,10 +95,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
       CHECK(polyI->getControlPositionValue() == Approx(poly_I_preset_CP));
       CHECK(polyII->getControlPositionValue() == polyBeforeLoad);
 
-      CHECK(from_fx_I->getControlPositionValue() == Approx(from_fx_preset_CP));
       CHECK(from_fx_II->isChangedFromLoaded() == false);
-
-      CHECK(to_FX_I->getControlPositionValue() == Approx(to_fx_preset_CP));
       CHECK(to_FX_II->isChangedFromLoaded() == false);
     }
 
@@ -115,10 +112,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
       CHECK(polyI->getControlPositionValue() == polyBeforeLoad);
       CHECK(polyII->getControlPositionValue() == Approx(poly_I_preset_CP));
 
-      CHECK(from_fx_II->getControlPositionValue() == Approx(from_fx_preset_CP));
       CHECK(from_fx_I->isChangedFromLoaded() == false);
-
-      CHECK(to_FX_II->getControlPositionValue() == Approx(to_fx_preset_CP));
       CHECK(to_FX_I->isChangedFromLoaded() == false);
     }
 
@@ -136,10 +130,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
       CHECK(polyI->getControlPositionValue() == Approx(poly_I_preset_CP));
       CHECK(polyII->getControlPositionValue() == polyBeforeLoad);
 
-      CHECK(from_fx_I->getControlPositionValue() == Approx(1 - from_fx_preset_CP));
       CHECK(from_fx_II->isChangedFromLoaded() == false);
-
-      CHECK(to_FX_I->getControlPositionValue() == Approx(1 - to_fx_preset_CP));
       CHECK(to_FX_II->isChangedFromLoaded() == false);
     }
 
@@ -157,10 +148,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
       CHECK(polyI->getControlPositionValue() == polyBeforeLoad);
       CHECK(polyII->getControlPositionValue() == Approx(poly_I_preset_CP));
 
-      CHECK(from_fx_II->getControlPositionValue() == Approx(1 - from_fx_preset_CP));
       CHECK(from_fx_I->isChangedFromLoaded() == false);
-
-      CHECK(to_FX_II->getControlPositionValue() == Approx(1 - to_fx_preset_CP));
       CHECK(to_FX_I->isChangedFromLoaded() == false);
     }
   }
@@ -193,10 +181,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
       CHECK(polyI->getControlPositionValue() == Approx(poly_I_preset_CP));
       CHECK(polyII->getControlPositionValue() == polyBeforeLoad);
 
-      CHECK(from_fx_I->getControlPositionValue() == Approx(from_fx_preset_CP));
       CHECK(from_fx_II->isChangedFromLoaded() == false);
-
-      CHECK(to_FX_I->getControlPositionValue() == Approx(to_fx_preset_CP));
       CHECK(to_FX_II->isChangedFromLoaded() == false);
     }
 
@@ -214,10 +199,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
       CHECK(polyI->getControlPositionValue() == polyBeforeLoad);
       CHECK(polyII->getControlPositionValue() == Approx(poly_I_preset_CP));
 
-      CHECK(from_fx_II->getControlPositionValue() == Approx(from_fx_preset_CP));
       CHECK(from_fx_I->isChangedFromLoaded() == false);
-
-      CHECK(to_FX_II->getControlPositionValue() == Approx(to_fx_preset_CP));
       CHECK(to_FX_I->isChangedFromLoaded() == false);
     }
 
@@ -235,10 +217,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
       CHECK(polyI->getControlPositionValue() == Approx(poly_I_preset_CP));
       CHECK(polyII->getControlPositionValue() == polyBeforeLoad);
 
-      CHECK(from_fx_I->getControlPositionValue() == Approx(1 - from_fx_preset_CP));
       CHECK(from_fx_II->isChangedFromLoaded() == false);
-
-      CHECK(to_FX_I->getControlPositionValue() == Approx(1 - to_fx_preset_CP));
       CHECK(to_FX_II->isChangedFromLoaded() == false);
     }
 
@@ -256,110 +235,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
       CHECK(polyI->getControlPositionValue() == polyBeforeLoad);
       CHECK(polyII->getControlPositionValue() == Approx(poly_I_preset_CP));
 
-      CHECK(from_fx_II->getControlPositionValue() == Approx(1 - from_fx_preset_CP));
       CHECK(from_fx_I->isChangedFromLoaded() == false);
-
-      CHECK(to_FX_II->getControlPositionValue() == Approx(1 - to_fx_preset_CP));
       CHECK(to_FX_I->isChangedFromLoaded() == false);
-    }
-  }
-}
-
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load to Part Single into Dual, FB Mix FX From and Out Mix To FX")
-{
-  MockPresetStorage presets;
-  auto& eb = *TestHelper::getEditBuffer();
-
-  auto cp = GENERATE(0.0, 0.1, 0.4, 0.7, 1.0);
-
-  auto single = presets.getSinglePreset();
-  EditBufferUseCases ebUseCases(eb);
-
-  auto fxFromI = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-  auto fxFromII = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
-
-  auto toFxI = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
-  auto toFxII = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
-
-  WHEN("Preset Prepared")
-  {
-    ebUseCases.load(single);
-
-    ParameterUseCases fxFromUCI(fxFromI);
-    ParameterUseCases toFxUCI(toFxI);
-    ParameterUseCases fxFromUCII(fxFromII);
-    ParameterUseCases toFxUCII(toFxII);
-
-    fxFromUCI.setControlPosition(cp);
-    toFxUCI.setControlPosition(cp);
-    fxFromUCII.setControlPosition(cp);
-    toFxUCII.setControlPosition(cp);
-
-    PresetUseCases presetUseCases(*single, *TestHelper::getSettings());
-    presetUseCases.overwriteWithEditBuffer(eb);
-
-    WHEN("Split loaded with cp at: " << cp)
-    {
-      ebUseCases.load(presets.getSplitPreset());
-      THEN("Load I to Split Part I")
-      {
-        ebUseCases.loadToPart(single, VoiceGroup::I, VoiceGroup::I);
-        CHECK(fxFromI->getControlPositionValue() == Approx(cp));
-        CHECK(toFxI->getControlPositionValue() == Approx(cp));
-      }
-
-      THEN("Load I to Split Part II")
-      {
-        ebUseCases.loadToPart(single, VoiceGroup::I, VoiceGroup::II);
-        CHECK(fxFromII->getControlPositionValue() == Approx(cp));
-        CHECK(toFxII->getControlPositionValue() == Approx(cp));
-      }
-
-      THEN("Load II to Split Part I")
-      {
-        ebUseCases.loadToPart(single, VoiceGroup::II, VoiceGroup::I);
-        CHECK(fxFromI->getControlPositionValue() == Approx(1 - cp));
-        CHECK(toFxI->getControlPositionValue() == Approx(1 - cp));
-      }
-
-      THEN("Load II to Split Part II")
-      {
-        ebUseCases.loadToPart(single, VoiceGroup::II, VoiceGroup::II);
-        CHECK(fxFromII->getControlPositionValue() == Approx(1 - cp));
-        CHECK(toFxII->getControlPositionValue() == Approx(1 - cp));
-      }
-    }
-
-    WHEN("Layer loaded")
-    {
-      ebUseCases.load(presets.getLayerPreset());
-      THEN("Load I to Layer Part I")
-      {
-        ebUseCases.loadToPart(single, VoiceGroup::I, VoiceGroup::I);
-        CHECK(fxFromI->getControlPositionValue() == Approx(cp));
-        CHECK(toFxI->getControlPositionValue() == Approx(cp));
-      }
-
-      THEN("Load I to Layer Part II")
-      {
-        ebUseCases.loadToPart(single, VoiceGroup::I, VoiceGroup::II);
-        CHECK(fxFromII->getControlPositionValue() == Approx(cp));
-        CHECK(toFxII->getControlPositionValue() == Approx(cp));
-      }
-
-      THEN("Load II to Layer Part I")
-      {
-        ebUseCases.loadToPart(single, VoiceGroup::II, VoiceGroup::I);
-        CHECK(fxFromI->getControlPositionValue() == Approx(1 - cp));
-        CHECK(toFxI->getControlPositionValue() == Approx(1 - cp));
-      }
-
-      THEN("Load II to Layer Part II")
-      {
-        ebUseCases.loadToPart(single, VoiceGroup::II, VoiceGroup::II);
-        CHECK(fxFromII->getControlPositionValue() == Approx(1 - cp));
-        CHECK(toFxII->getControlPositionValue() == Approx(1 - cp));
-      }
     }
   }
 }

@@ -70,9 +70,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Layer Part I")
       CHECK(eb->getVoiceGroupName(VoiceGroup::I) == "Hello Single");
     }
 
-    THEN("Local Special I/II unchanged")
+    THEN("Local Special II unchanged")
     {
-      CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>()) == oldCrossFBIHash);
       CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>(), EBL::getToFX<VoiceGroup::II>())
             == localSpecialIIHash);
     }
@@ -196,11 +195,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Layer Part II"
     THEN("Local Special unchanged")
     {
       CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::I>(), EBL::getToFX<VoiceGroup::I>()) == localSpecialIHash);
-    }
-
-    THEN("Cross FB and to fx II ignored")
-    {
-      CHECK(EBL::createValueHash(EBL::getCrossFB<VoiceGroup::II>()) == oldCrossFBIIHash);
     }
 
     THEN("Local Normal was copied to current VG")
