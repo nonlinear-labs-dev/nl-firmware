@@ -17,9 +17,9 @@ import com.nonlinearlabs.client.world.RGB;
 import com.nonlinearlabs.client.world.RGBA;
 import com.nonlinearlabs.client.world.Rect;
 
-class SoundTypeOverlayDisplay extends OverlayLayout {
+class LayerDisplay extends OverlayLayout {
 
-    public SoundTypeOverlayDisplay(OverlayLayout parent) {
+    public LayerDisplay(OverlayLayout parent) {
         super(parent);
 
         NonMaps.get().getNonLinearWorld().getPresetManager().onLoadToPartModeToggled((x) -> {
@@ -56,31 +56,6 @@ class SoundTypeOverlayDisplay extends OverlayLayout {
 
     private VoiceGroup getSelectedVoiceGroup() {
         return EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
-    }
-
-    public Rect getSingleSoundFXRect(VoiceGroup vg) {
-        final double margin = Millimeter.toPixels(0.5);
-        final double partWidth = Millimeter.toPixels(2.5);
-        final Rect pix = getPixRect().copy();
-        final double centerY = pix.getCenterPoint().getY();
-        final double centerX = pix.getCenterPoint().getX();
-        final double halfPartWidth = partWidth / 2; 
-        final double offsetY = Millimeter.toPixels(1);
-        final Rect polyBox = new Rect(centerX - partWidth, centerY - offsetY, partWidth, partWidth);
-        final Rect monoIBox = new Rect(centerX, centerY - (halfPartWidth + margin) - offsetY, partWidth, partWidth);
-        final Rect monoIIBox = new Rect(centerX, centerY + (halfPartWidth + margin) - offsetY, partWidth, partWidth);
-        
-        switch(vg)
-        {
-            case I:
-                return monoIBox;
-            case II:
-                return monoIIBox;
-            case Global:
-                return polyBox;
-        }
-
-        return null;
     }
 
     private void drawSplitIndication(Context2d ctx, RGB fill, RGB stroke) {
@@ -170,9 +145,16 @@ class SoundTypeOverlayDisplay extends OverlayLayout {
 
     private void drawSingleIndication(Context2d ctx, RGB fill, RGB stroke)
     {
-        final Rect polyBox = getSingleSoundFXRect(VoiceGroup.Global);
-        final Rect monoIBox = getSingleSoundFXRect(VoiceGroup.I);
-        final Rect monoIIBox = getSingleSoundFXRect(VoiceGroup.II);
+        final double margin = Millimeter.toPixels(0.5);
+        final double partWidth = Millimeter.toPixels(2.5);
+        final Rect pix = getPixRect().copy();
+        final double centerY = pix.getCenterPoint().getY();
+        final double centerX = pix.getCenterPoint().getX();
+        final double halfPartWidth = partWidth / 2; 
+        final double offsetY = Millimeter.toPixels(1);
+        final Rect polyBox = new Rect(centerX - partWidth, centerY - offsetY, partWidth, partWidth);
+        final Rect monoIBox = new Rect(centerX, centerY - (halfPartWidth + margin) - offsetY, partWidth, partWidth);
+        final Rect monoIIBox = new Rect(centerX, centerY + (halfPartWidth + margin) - offsetY, partWidth, partWidth);
         final RGB ogFill = fill;
         final RGB lighterFill = ogFill.brighter(96);
         final RGB polyFill = ogFill.brighter(64);

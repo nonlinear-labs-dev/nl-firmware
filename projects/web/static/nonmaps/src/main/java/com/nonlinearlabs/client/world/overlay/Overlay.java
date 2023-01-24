@@ -68,7 +68,7 @@ public class Overlay extends OverlayLayout {
 	private class SingleSoundFXUnusedBase extends SVGImage {
 		public SingleSoundFXUnusedBase(OverlayLayout parent)
 		{
-			super(parent, "unused-fx.svg");
+			super(parent, "mute-part-a.svg");
 			setVisible(false);
 		}
 		
@@ -112,7 +112,7 @@ public class Overlay extends OverlayLayout {
 	private UndoTreeWindow undo;
 	private List<CompareDialog> compareDialogs;
 	private ModalDialog modalDialog;
-	private SoundTypeOverlayDisplay soundTypeDisplay;
+	private LayerDisplay layerDisplay;
 	private PartMuteDisplay partMuteDisplayI;
 	private PartMuteDisplay partMuteDisplayII;
 	private SingleSoundFX_I_Unused fxIUnused;
@@ -120,7 +120,7 @@ public class Overlay extends OverlayLayout {
 
 	public Overlay(Viewport parent) {
 		super(parent);
-		addChild(soundTypeDisplay = new SoundTypeOverlayDisplay(this));
+		addChild(layerDisplay = new LayerDisplay(this));
 		addChild(partMuteDisplayI = new PartMuteDisplay(this, VoiceGroup.I));
 		addChild(partMuteDisplayII = new PartMuteDisplay(this, VoiceGroup.II));
 		addChild(fxIUnused = new SingleSoundFX_I_Unused(this));
@@ -216,7 +216,7 @@ public class Overlay extends OverlayLayout {
 			r.setBottom(belt.getPixRect().getTop());
 
 		Rect gbr = buttons.getPixRect();
-		Rect soundTypeDisplayRect = soundTypeDisplay.getPixRect().copy();
+		Rect soundTypeDisplayRect = layerDisplay.getPixRect().copy();
 		soundTypeDisplayRect.setTop(soundTypeDisplayRect.getTop() + 1);
 		r.setTop(soundTypeDisplayRect.getTop() + 1);
 
@@ -328,28 +328,24 @@ public class Overlay extends OverlayLayout {
 
 		double layerDisplayWidth = Millimeter.toPixels(10);
 		double layerDisplayHeight = Millimeter.toPixels(10);
-		soundTypeDisplay.doLayout((w - layerDisplayWidth) / 2, 0, layerDisplayWidth, layerDisplayHeight);
+		layerDisplay.doLayout((w - layerDisplayWidth) / 2, 0, layerDisplayWidth, layerDisplayHeight);
 
-		Rect soundTypeDisplayPos = soundTypeDisplay.getRelativePosition();
+		Rect layerDisplayPos = layerDisplay.getRelativePosition();
 
-		double muteHeight = soundTypeDisplayPos.getHeight() / 3;
+		double muteHeight = layerDisplayPos.getHeight() / 3;
 		double muteYMargin = muteHeight / 2;
 
-		partMuteDisplayI.doLayout(soundTypeDisplayPos.getLeft() - Millimeter.toPixels(0.2),
-				soundTypeDisplayPos.getTop() + muteYMargin, soundTypeDisplayPos.getWidth(), muteHeight);
-		partMuteDisplayII.doLayout(soundTypeDisplayPos.getLeft() - Millimeter.toPixels(0.2),
-				soundTypeDisplayPos.getTop() + muteHeight + (muteYMargin), soundTypeDisplayPos.getWidth(), muteHeight);
+		partMuteDisplayI.doLayout(layerDisplayPos.getLeft() - Millimeter.toPixels(0.2),
+				layerDisplayPos.getTop() + muteYMargin, layerDisplayPos.getWidth(), muteHeight);
+		partMuteDisplayII.doLayout(layerDisplayPos.getLeft() - Millimeter.toPixels(0.2),
+				layerDisplayPos.getTop() + muteHeight + (muteYMargin), layerDisplayPos.getWidth(), muteHeight);
 
+		fxIUnused.doLayout(layerDisplayPos.getLeft() + Millimeter.toPixels(1),
+				layerDisplayPos.getTop() + muteYMargin, layerDisplayPos.getWidth(), muteHeight);
 
-		Rect monoI = soundTypeDisplay.getSingleSoundFXRect(VoiceGroup.I);
-		Rect monoII = soundTypeDisplay.getSingleSoundFXRect(VoiceGroup.II);
-		
-		double fxUnusedWidth = monoI.getWidth();
-		double fxUnusedHeight = monoI.getHeight();
+		fxIIUnused.doLayout(layerDisplayPos.getLeft() + Millimeter.toPixels(1),
+				layerDisplayPos.getTop() + muteHeight + (muteYMargin), layerDisplayPos.getWidth(), muteHeight);
 
-		fxIUnused.doLayout(monoI.getLeft(), monoI.getTop(), fxUnusedWidth, fxUnusedHeight);
-		fxIIUnused.doLayout(monoII.getLeft(), monoII.getTop(), fxUnusedWidth, fxUnusedHeight);
-		
 		double beltHeight = Millimeter.toPixels(40);
 		belt.doLayout(0, h - beltHeight, w, beltHeight);
 		beltHeight = belt.getRelativePosition().getHeight();

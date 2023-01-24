@@ -247,7 +247,7 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             var fx_output = master_fx_mix < 1 || master_serial_fx > 0;
             var fx_feedback = fb_mix_lvl > 0 && fb_mix_fx != 0 && fb_mix_fx_src < 1 && (osc_a_pm_fb != 0 || shp_a_fb_mix != 0 || osc_b_pm_fb != 0 || shp_b_fb_mix != 0);
             var fx_used = fx_input && (fx_output || fx_feedback);
-            presenter.fxIUnused = !fx_used && model.soundType.getValue() == SoundType.Single;
+            presenter.fxIUnused = !fx_used;
         }
 
         {
@@ -256,7 +256,7 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
 			var fx_output = master_fx_mix > 0 || master_serial_fx < 0;
 			var fx_feedback = fb_mix_lvl > 0 && fb_mix_fx != 0 && fb_mix_fx_src > 0 && (osc_a_pm_fb != 0 || shp_a_fb_mix != 0 || osc_b_pm_fb != 0 || shp_b_fb_mix != 0);
 			var fx_used = fx_input && (fx_output || fx_feedback);
-			presenter.fxIIUnused = !fx_used && model.soundType.getValue() == SoundType.Single;
+			presenter.fxIIUnused = !fx_used;
         }
     }
 

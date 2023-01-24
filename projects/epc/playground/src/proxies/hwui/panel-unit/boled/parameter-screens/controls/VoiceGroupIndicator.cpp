@@ -14,11 +14,7 @@ VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r, bool allowLoadToPart, bo
     : Control(r)
     , m_allowLoadToPart(allowLoadToPart)
     , m_alwaysDraw(alwaysDraw)
-    , m_fxUnused(Rect(0, 0, 6, 5), "fx-unused.png")
 {
-  m_fxUnused.setTransparent(true);
-  m_fxUnused.setColor(FrameBufferColors::C43);
-
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto vgManager = Application::get().getVGManager();
   auto vg = vgManager->getCurrentVoiceGroup();
@@ -107,9 +103,12 @@ void VoiceGroupIndicator::drawCrossForLayer(FrameBuffer& fb, int centerX, int ce
 
 void VoiceGroupIndicator::drawCrossForSingle(FrameBuffer& fb, int centerX, int centerY) const
 {
-  auto pos = getPosition();
-  m_fxUnused.setPosition({centerX - 2, centerY - 2, 6, 5});
-  m_fxUnused.redraw(fb);
+  fb.setPixel(centerX - 1, centerY - 1);
+  fb.setPixel(centerX - 1, centerY + 1);
+  fb.setPixel(centerX, centerY);
+  fb.setPixel(centerX + 1, centerY);
+  fb.setPixel(centerX + 2, centerY - 1);
+  fb.setPixel(centerX + 2, centerY + 1);
 }
 
 bool VoiceGroupIndicator::drawSingle(FrameBuffer& fb)
