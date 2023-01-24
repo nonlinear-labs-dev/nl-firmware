@@ -473,3 +473,17 @@ void EditBufferUseCases::initSoundAs(SoundType type, Defaults defaults)
 
   m_editBuffer.undoableInitSound(scope->getTransaction(), defaults);
 }
+
+void EditBufferUseCases::convertSingleToSplitFXIOnly()
+{
+  auto scope = m_editBuffer.getUndoScope().startTransaction("Convert Single to Split (FX I Only)");
+  auto transaction = scope->getTransaction();
+  m_editBuffer.undoableConvertSingleToDualWithFXIOnly(transaction, SoundType::Split);
+}
+
+void EditBufferUseCases::convertSingleToLayerFXIOnly()
+{
+  auto scope = m_editBuffer.getUndoScope().startTransaction("Convert Single to Layer (FX I Only)");
+  auto transaction = scope->getTransaction();
+  m_editBuffer.undoableConvertSingleToDualWithFXIOnly(transaction, SoundType::Layer);
+}

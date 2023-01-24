@@ -1307,6 +1307,17 @@ void EditBuffer::initCrossFBExceptFromFX(UNDO::Transaction *transaction)
   }
 }
 
+void EditBuffer::initCrossFB(UNDO::Transaction *transaction)
+{
+  for(auto vg : { VoiceGroup::I, VoiceGroup::II })
+  {
+    for(auto param : getCrossFBParameters(vg))
+    {
+      param->loadDefault(transaction, Defaults::FactoryDefault);
+    }
+  }
+}
+
 void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction, VoiceGroup copyFrom)
 {
   setVoiceGroupName(transaction, getName(), VoiceGroup::I);
@@ -1334,7 +1345,7 @@ void EditBuffer::undoableConvertSingleToSplit(UNDO::Transaction *transaction, Vo
   initFadeFrom(transaction, VoiceGroup::II);
   initSplitPoint(transaction);
   initCrossFBExceptFromFX(transaction);
-  initFBMixFXFrom(transaction);
+  applyConversionRuleForFBMixFXFromSingleToDual(transaction);
 }
 
 void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction, VoiceGroup copyFrom)
@@ -1368,7 +1379,7 @@ void EditBuffer::undoableConvertSingleToLayer(UNDO::Transaction *transaction, Vo
   undoableUnisonMonoLoadDefaults(transaction, VoiceGroup::II);
   initSplitPoint(transaction);
   initCrossFBExceptFromFX(transaction);
-  initFBMixFXFrom(transaction);
+  applyConversionRuleForFBMixFXFromSingleToDual(transaction);
 }
 
 void EditBuffer::undoableConvertLayerToSplit(UNDO::Transaction *transaction)
@@ -2103,7 +2114,7 @@ void EditBuffer::copyPartVolumesToGlobalMasterAndFXMixForConvertDualToSingle(UND
   }
 }
 
-void EditBuffer::initFBMixFXFrom(UNDO::Transaction *transaction)
+void EditBuffer::applyConversionRuleForFBMixFXFromSingleToDual(UNDO::Transaction *transaction)
 {
   auto parameterI = findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
   auto parameterII = findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
@@ -2180,4 +2191,33 @@ void EditBuffer::copyToFXAndFxFrom(UNDO::Transaction *transaction, VoiceGroup co
     auto from_fx_II = findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
     from_fx_I->setCPFromHwui(transaction, 1 - from_fx_II->getControlPositionValue());
   }
+}
+
+void EditBuffer::undoableConvertSingleToDualWithFXIOnly(UNDO::Transaction *transaction, SoundType type)
+{
+  SendEditBufferScopeGuard scopeGuard(transaction, true);
+  undoableSetTypeFromConvert(transaction, type);
+  setVoiceGroupName(transaction, getName(), VoiceGroup::I);
+  setVoiceGroupName(transaction, getName(), VoiceGroup::II);
+
+  {
+    using namespace C15::Descriptors;
+    copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
+  }
+
+  copyPartTuneFromMasterTuneAndDefaultMasterGroup(transaction);
+  initFadeFrom(transaction, VoiceGroup::I);
+  initFadeFrom(transaction, VoiceGroup::II);
+  initSplitPoint(transaction);
+  initCrossFB(transaction);
+
+  auto toFXI = findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+  auto toFXII = findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
+  toFXI->loadDefault(transaction, Defaults::FactoryDefault);
+  toFXII->loadDefault(transaction, Defaults::FactoryDefault);
+
+  undoableUnmuteLayers(transaction);
+  initRecallValues(transaction);
+  transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());
+  m_deferredJobs.trigger();
 }

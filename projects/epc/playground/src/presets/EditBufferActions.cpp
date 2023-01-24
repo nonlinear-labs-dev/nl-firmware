@@ -286,18 +286,28 @@ EditBufferActions::EditBufferActions(UpdateDocumentContributor* parent, EditBuff
     auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
     EditBufferUseCases useCase { editBuffer };
     useCase.convertToSingle(voiceGroup);
-    //TODO move functionality someplace else -> hwui subscribe to eb->onConverted?
-    //Application::get().getHWUI()->setCurrentVoiceGroupAndUpdateParameterSelection(transaction, VoiceGroup::I);
   });
 
   addAction("convert-to-split", [&editBuffer](auto request) {
+    auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
     EditBufferUseCases useCase { editBuffer };
-    useCase.convertToSplit(VoiceGroup::I); // TODO pass current VG from WebUI
+    useCase.convertToSplit(voiceGroup);
   });
 
   addAction("convert-to-layer", [&editBuffer](auto request) {
+    auto voiceGroup = to<VoiceGroup>(request->get("voice-group"));
     EditBufferUseCases useCase { editBuffer };
-    useCase.convertToLayer(VoiceGroup::II); //TODO pass current VG from WebUI
+    useCase.convertToLayer(voiceGroup);
+  });
+
+  addAction("convert-to-split-fx-I-only", [&editBuffer](auto request) {
+    EditBufferUseCases useCase{editBuffer};
+    useCase.convertSingleToSplitFXIOnly();
+  });
+
+  addAction("convert-to-layer-fx-I-only", [&editBuffer](auto request) {
+    EditBufferUseCases useCase{editBuffer};
+    useCase.convertSingleToLayerFXIOnly();
   });
 
   addAction("load-selected-preset-part-into-editbuffer-part", [&editBuffer](auto request) {
