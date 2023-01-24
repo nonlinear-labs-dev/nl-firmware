@@ -10,45 +10,12 @@
 #include <device-settings/Settings.h>
 #include <device-settings/FocusAndModeSetting.h>
 
-auto getSoundType()
-{
-  return Application::get().getPresetManager()->getEditBuffer()->getType();
-}
-
 BankButton::BankButton(const Rect& pos, bool bankFocus)
     : ControlWithChildren(pos)
     , m_bankFocus(bankFocus)
 {
-  auto& app = Application::get();
-  auto& eb = *app.getPresetManager()->getEditBuffer();
-  auto& vg = *app.getVGManager();
-  auto& settings = eb.getSettings();
-  m_soundTypeChanged = eb.onSoundTypeChanged(sigc::hide(sigc::mem_fun(this, &BankButton::bruteForce)));
-
-  m_loadToPartChanged = vg.onLoadToPartModeChanged(sigc::hide(sigc::mem_fun(this, &BankButton::bruteForce)));
-
-  m_settingChanged
-      = settings.getSetting<FocusAndModeSetting>()->onChange(sigc::mem_fun(this, &BankButton::onFocusAndModeChanged));
-}
-
-void BankButton::onFocusAndModeChanged(const Setting* s)
-{
-  if(auto fam = dynamic_cast<const FocusAndModeSetting*>(s))
-  {
-    auto currState = fam->getState();
-    auto oldState = fam->getOldState();
-
-    auto anyStore = currState.mode == UIMode::Store || oldState.mode == UIMode::Store;
-    if(anyStore && currState != oldState)
-    {
-      bruteForce();
-    }
-  }
-}
-
-BankButton::~BankButton()
-{
-  m_soundTypeChanged.disconnect();
+  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+  famSetting.onChange(sigc::mem_fun(this, &BankButton::onFocusAndModeChanged));
 }
 
 bool BankButton::onButton(Buttons b, bool down, ButtonModifiers modifiers)
@@ -61,21 +28,35 @@ bool BankButton::onButton(Buttons b, bool down, ButtonModifiers modifiers)
   return false;
 }
 
-void BankButton::bruteForce()
+void BankButton::installDefault(FocusAndMode focusAndMode)
 {
-  clear();
+  addControl(new Button("I / II", { 4, 0, 50, 11 }));
+  auto bankbutton = addControl(new Button("Bank", { 0, 15, 58, 11 }));
 
-  if(Application::get().getVGManager()->isInLoadToPart()
-     && Application::get().getSettings()->getSetting<FocusAndModeSetting>()->getState().mode != UIMode::Store)
-    installLoadToPart();
-  else
-    installDefault();
+  bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
+
+  auto toggleBankFocus = [this]
+  {
+    SettingsUseCases useCases(*Application::get().getSettings());
+
+    if(m_bankFocus)
+      useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Unchanged, UIDetail::Unchanged });
+    else
+      useCases.setFocusAndMode({ UIFocus::Banks, UIMode::Unchanged, UIDetail::Unchanged });
+  };
+
+  auto toggleVoiceGroup = []
+  {
+    VoiceGroupUseCases vgUseCases(Application::get().getVGManager(),
+                                  Application::get().getPresetManager()->getEditBuffer());
+    vgUseCases.toggleVoiceGroupSelectionSilent();
+  };
+
+  m_buttonAHandler = std::make_unique<ShortVsLongPress>(toggleBankFocus, toggleVoiceGroup);
 }
 
-void BankButton::installDefault()
+void BankButton::installSmall(FocusAndMode focusAndMode)
 {
-  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
-  auto focusAndMode = famSetting.getState();
   auto bankbutton = addControl(new Button("Bank", { 0, 15, 58, 11 }));
   bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
 
@@ -92,31 +73,16 @@ void BankButton::installDefault()
   m_buttonAHandler = std::make_unique<ShortVsLongPress>(toggleBankFocus, toggleBankFocus);
 }
 
-void BankButton::installLoadToPart()
+void BankButton::onFocusAndModeChanged(const Setting* s)
 {
-  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
-  auto focusAndMode = famSetting.getState();
-  auto bankbutton = addControl(new Button("Bank", { 4, 0, 50, 11 }));
-  bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
+  clear();
 
-  addControl(new Button("I / II", { 0, 15, 58, 11 }));
-
-  auto toggleBankFocus = [this]
+  if(auto fam = dynamic_cast<const FocusAndModeSetting*>(s))
   {
-    SettingsUseCases useCases(*Application::get().getSettings());
-
-    if(m_bankFocus)
-      useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Unchanged, UIDetail::Unchanged });
+    auto focusAndMode = fam->getState();
+    if(focusAndMode.mode == UIMode::Store || focusAndMode.mode == UIMode::Edit)
+      installSmall(focusAndMode);
     else
-      useCases.setFocusAndMode({ UIFocus::Banks, UIMode::Unchanged, UIDetail::Unchanged });
-  };
-
-  m_buttonAHandler = std::make_unique<ShortVsLongPress>(
-      []
-      {
-        VoiceGroupUseCases vgUseCases(Application::get().getVGManager(),
-                                      Application::get().getPresetManager()->getEditBuffer());
-        vgUseCases.toggleVoiceGroupSelectionSilent();
-      },
-      toggleBankFocus);
+      installDefault(focusAndMode);
+  }
 }
