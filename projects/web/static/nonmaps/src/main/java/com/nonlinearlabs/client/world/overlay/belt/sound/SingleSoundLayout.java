@@ -1,6 +1,5 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
-import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
@@ -95,12 +94,6 @@ public class SingleSoundLayout extends SoundLayout {
 			double arrowHeight = fbToPoly.getPictureHeight();
 			double arrowWidth = fbToPoly.getPictureWidth();
 			fbToPoly.doLayout(vgWidth + fbWidth / 1.5, h / 2 - arrowHeight / 3 - yOffset, arrowHeight, arrowWidth);
-		}
-
-		@Override
-		public void draw(Context2d ctx, int invalidationFlags)
-		{
-			super.draw(ctx, invalidationFlags);
 		}
 	}
 
@@ -206,12 +199,6 @@ public class SingleSoundLayout extends SoundLayout {
 			double outArrowHeight = fxToOut.getPictureHeight();
 			fxToOut.doLayout(arrowWidth + vgWidth, 0, outArrowWidth, h);
 		}
-
-
-		@Override
-		public void draw(Context2d ctx, int i) {
-			super.draw(ctx, i);
-		}
 	}
 
 	private SingleSoundSettings settings = null;
@@ -236,11 +223,5 @@ public class SingleSoundLayout extends SoundLayout {
 		fbContainer.doLayout(left - width, 0, width, h);
 		double polyContainerWidth = w/8;
 		polyToFXContainer.doLayout(right, 0, polyContainerWidth, h);
-	}
-
-	@Override
-	public void draw(Context2d ctx, int invalidationFlags)
-	{
-		super.draw(ctx, invalidationFlags);
 	}
 }

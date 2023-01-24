@@ -320,7 +320,7 @@ public class SplitSoundLayout extends SoundLayout {
 			double fx_height = fxII_I.getPictureHeight();
 			double fxI_x_pos = 0 - toFXArrowWidth - fx_width;
 			double yPosOffset = h / 6;
-			double yBase = h / 2;
+			double yBase = h / 2 - (yPosOffset / 4);
 			fxI_I.doLayout(fxI_x_pos, 0 + yPosOffset, fx_width, fx_height);
 			fxII_I.doLayout(fxI_x_pos, yBase + yPosOffset, fx_width, fx_height);
 			
@@ -338,11 +338,14 @@ public class SplitSoundLayout extends SoundLayout {
 			ItoOut.doLayout(I_x_pos, 0, toOutWidth, h);
 			IItoOut.doLayout(II_x_pos, 0, toOutWidth, h);
 
-			fb_from_I_Into_I.doLayout(0 - toFXArrowWidth, 0, toFXArrowWidth, h);
-			fb_from_I_Into_II.doLayout(0 - toFXArrowWidth, 0, toFXArrowWidth, h);
+
+			double fb_height = fb_from_I_Into_I.getPictureHeight();
+			double upper_offset = Millimeter.toPixels(0.3);
+			fb_from_I_Into_I.doLayout(0 - toFXArrowWidth, yPosOffset - upper_offset, toFXArrowWidth, fb_height);
+			fb_from_I_Into_II.doLayout(0 - toFXArrowWidth, h - yPosOffset - fb_height, toFXArrowWidth, fb_height);
 			
-			fb_from_II_Into_I.doLayout(rightEnd, 0, toFXArrowWidth, h);
-			fb_from_II_Into_II.doLayout(rightEnd, 0, toFXArrowWidth, h);
+			fb_from_II_Into_I.doLayout(rightEnd, yPosOffset - upper_offset, toFXArrowWidth, fb_height);
+			fb_from_II_Into_II.doLayout(rightEnd, h - yPosOffset - fb_height, toFXArrowWidth, fb_height);
 		}
 
 		@Override
