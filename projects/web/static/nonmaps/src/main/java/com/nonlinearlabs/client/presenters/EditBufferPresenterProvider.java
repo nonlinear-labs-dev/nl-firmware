@@ -231,7 +231,18 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         }
 
         bruteForceSoundBeltArrowStates();
+        calculateSerialFx();
         calculateFXUnused();
+    }
+
+    private void calculateSerialFx() {
+        var serialFXCp = model.getParameter(new ParameterId(408, VoiceGroup.Global)).value.getQuantizedAndClipped(true);
+        if(serialFXCp > 0)
+            presenter.serialFX = SerialFX.FX_I_IN_II;
+        else if(serialFXCp < 0)
+            presenter.serialFX = SerialFX.FX_II_IN_I;
+        else
+            presenter.serialFX = SerialFX.None;
     }
 
     private void bruteForceSoundBeltArrowStates() {
