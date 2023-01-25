@@ -46,6 +46,7 @@ public class SingleSoundLayout extends SoundLayout {
 
 			EditBufferPresenterProvider.get().onChange(ebp -> {
 				setVisible(ebp.isSingleSoundFeedbackToPolyActive);
+				fbToPoly.update(ebp.fbToPolyArrowState);
 				return true;
 			});
 		}
@@ -98,6 +99,13 @@ public class SingleSoundLayout extends SoundLayout {
 												new Pair<SingleSoundFXToOut, String>(SingleSoundFXToOut.FXI, "LT-to-RC.svg"),
 												new Pair<SingleSoundFXToOut, String>(SingleSoundFXToOut.FXII, "LB-to-RC.svg"),
 												new Pair<SingleSoundFXToOut, String>(SingleSoundFXToOut.FXI_FXII, "LT-to-RC+LB-to-RC.svg")));
+		
+		
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				fxToOut.update(ebp.fxToOut);
+				polyToFBArrow.update(ebp.polyToFX);
+				return true;
+			});	
 		}
 
 		@Override
