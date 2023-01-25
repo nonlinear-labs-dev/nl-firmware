@@ -140,7 +140,6 @@ void SingleSoundFBFXIndicator::bruteForce()
 
   if(isLabel1Visible)
   {
-    label1 = addControl(new PNGControl({ 0, (getHeight() / 2) - 5, 8, 5 }, "FB_Label.png"));
     if(currentVG == VoiceGroup::I)
     {
       FXI = addControl(new PNGControl({ 10, 0, 16, 7 }, "FX_I_select.png"));
@@ -175,11 +174,14 @@ void SingleSoundFBFXIndicator::bruteForce()
     {
       fbToPoly = addControl(new PNGControl({ 26, 2, 16, 16 }, "Single_Lower_Arrow_Right_To_Left.png"));
     }
+
+    label1 = addControl(new PNGControl({ getWidth() - 9, 0, 8, 5 }, "FB_Label.png"));
   }
 
   for(const auto& c: getControls<PNGControl>())
   {
     c->useImageColors(false);
+    c->setTransparent(true);
     c->setColor(FrameBufferColors::C255);
   }
 }
