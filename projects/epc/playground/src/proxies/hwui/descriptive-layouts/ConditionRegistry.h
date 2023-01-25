@@ -12,11 +12,15 @@ class ConditionRegistry : public sigc::trackable
   tCondition getCondition(const std::string& key);
   static ConditionRegistry& get();
   sigc::connection onChange(const std::function<void()>& cb);
+  void lock();
+  void unlock();
 
  private:
   ConditionRegistry();
   void onConditionChanged();
+  bool isLocked();
 
+  int locks = 0;
   Signal<void> m_signal;
   std::map<std::string, std::unique_ptr<ConditionBase>> m_theConditionMap;
 

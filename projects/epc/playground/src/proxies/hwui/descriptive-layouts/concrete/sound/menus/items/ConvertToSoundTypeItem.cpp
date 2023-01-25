@@ -8,12 +8,14 @@
 #include "ConvertToSoundTypeItem.h"
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
+#include "proxies/hwui/descriptive-layouts/ConditionRegistry.h"
 
 ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toType)
     : AnimatedGenericItem(nltools::string::concat("Convert to ", toString(toType)), rect,
                           OneShotTypes::StartCB(
                               [=]
                               {
+                                ConditionRegistry::get().lock();
                                 EditBufferUseCases useCases(*Application::get().getPresetManager()->getEditBuffer());
                                 auto selectedVG = Application::get().getVGManager()->getCurrentVoiceGroup();
 
@@ -37,10 +39,13 @@ ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toTyp
                                   default:
                                     break;
                                 }
-
+                              }),
+                          OneShotTypes::FinishCB(
+                              []()
+                              {
                                 SettingsUseCases sUseCases(*Application::get().getSettings());
                                 sUseCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-                              }),
-                          OneShotTypes::FinishCB([]() {}))
+                                ConditionRegistry::get().unlock();
+                              }))
 {
 }

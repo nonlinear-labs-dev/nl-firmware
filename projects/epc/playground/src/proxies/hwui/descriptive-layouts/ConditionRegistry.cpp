@@ -44,6 +44,25 @@ sigc::connection ConditionRegistry::onChange(const std::function<void()>& cb)
 
 void ConditionRegistry::onConditionChanged()
 {
-  if(Application::get().getSettings()->getSetting<LayoutMode>()->get() != LayoutVersionMode::Old)
-    m_signal.deferedSend();
+  if(!isLocked())
+    if(Application::get().getSettings()->getSetting<LayoutMode>()->get() != LayoutVersionMode::Old)
+      m_signal.deferedSend();
+}
+
+bool ConditionRegistry::isLocked()
+{
+  return locks > 0;
+}
+
+void ConditionRegistry::lock()
+{
+  locks++;
+}
+
+void ConditionRegistry::unlock()
+{
+  locks--;
+  if(locks == 0) {
+    onConditionChanged();
+  }
 }
