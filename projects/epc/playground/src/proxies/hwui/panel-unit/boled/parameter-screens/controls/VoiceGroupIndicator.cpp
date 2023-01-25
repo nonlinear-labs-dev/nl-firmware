@@ -91,7 +91,7 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
   return true;
 }
 
-void VoiceGroupIndicator::drawCrossForLayer(FrameBuffer& fb, int centerX, int centerY) const
+void VoiceGroupIndicator::drawCrossForLayer(FrameBuffer& fb, int centerX, int centerY)
 {
   fb.setPixel(centerX - 2, centerY - 2);
   fb.setPixel(centerX - 2, centerY + 2);
@@ -105,10 +105,9 @@ void VoiceGroupIndicator::drawCrossForLayer(FrameBuffer& fb, int centerX, int ce
   fb.setPixel(centerX + 2, centerY + 1);
 }
 
-void VoiceGroupIndicator::drawCrossForSingle(FrameBuffer& fb, int centerX, int centerY) const
+void VoiceGroupIndicator::drawCrossForSingle(FrameBuffer& fb, int centerX, int centerY)
 {
-  auto pos = getPosition();
-  m_fxUnused.setPosition({centerX - 2, centerY - 2, 6, 5});
+  auto offset = fb.offset({(centerX - 2), (centerY - 2)});
   m_fxUnused.redraw(fb);
 }
 
