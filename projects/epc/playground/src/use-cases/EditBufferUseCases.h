@@ -34,6 +34,8 @@ class EditBufferUseCases
   void convertToSingle(VoiceGroup partToUse);
   void convertToSplit(VoiceGroup currentSelectedVoiceGroup);
   void convertToDual(SoundType type, VoiceGroup group);
+  void convertSingleToSplitFXIOnly();
+  void convertSingleToLayerFXIOnly();
 
   void initSoundAs(SoundType type, Defaults defaults);
 

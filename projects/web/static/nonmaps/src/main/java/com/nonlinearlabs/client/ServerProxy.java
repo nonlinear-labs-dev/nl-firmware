@@ -1074,13 +1074,25 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
-	public void convertToSplit() {
+	public void convertToSplit(VoiceGroup vg) {
 		StaticURI.Path path = new StaticURI.Path("param-editor", "convert-to-split");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("voice-group", vg.toString()));
+		queueJob(uri, false);
+	}
+
+	public void convertToLayer(VoiceGroup vg) {
+		StaticURI.Path path = new StaticURI.Path("param-editor", "convert-to-layer");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("voice-group", vg.toString()));
+		queueJob(uri, false);
+	}
+
+	public void convertSingleToSplitFXIOnly() {
+		StaticURI.Path path = new StaticURI.Path("param-editor", "convert-to-split-fx-I-only");
 		queueJob(new StaticURI(path), false);
 	}
 
-	public void convertToLayer() {
-		StaticURI.Path path = new StaticURI.Path("param-editor", "convert-to-layer");
+	public void convertSingleToLayerFXIOnly() {
+		StaticURI.Path path = new StaticURI.Path("param-editor", "convert-to-layer-fx-I-only");
 		queueJob(new StaticURI(path), false);
 	}
 
