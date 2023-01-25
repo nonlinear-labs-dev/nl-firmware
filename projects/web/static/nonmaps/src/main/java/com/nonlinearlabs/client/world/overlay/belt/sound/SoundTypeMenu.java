@@ -15,8 +15,8 @@ public class SoundTypeMenu extends SVGImage {
 
 	public class SoundTypeMenuContextMenu extends ContextMenu {
 
-		private void addSingleChild() {
-			addChild(new ContextMenuItem(this, "Convert to Single") {
+		private void addSingleChild(String suffix) {
+			addChild(new ContextMenuItem(this, "Convert to Single" + suffix) {
 				@Override
 				public Control click(Position eventPoint) {
 					EditBufferUseCases.get().convertToSingleSound();
@@ -25,8 +25,8 @@ public class SoundTypeMenu extends SVGImage {
 			});
 		} 
 
-		private void addLayerChild() {
-			addChild(new ContextMenuItem(this, "Convert to Layer") {
+		private void addLayerChild(String suffix) {
+			addChild(new ContextMenuItem(this, "Convert to Layer" + suffix) {
 				@Override
 				public Control click(Position eventPoint) {
 					EditBufferUseCases.get().convertToLayerSound();
@@ -35,11 +35,31 @@ public class SoundTypeMenu extends SVGImage {
 			});
 		}
 
-		private void addSplitChild() {
-			addChild(new ContextMenuItem(this, "Convert to Split") {
+		private void addSplitChild(String suffix) {
+			addChild(new ContextMenuItem(this, "Convert to Split" + suffix) {
 				@Override
 				public Control click(Position eventPoint) {
 					EditBufferUseCases.get().convertToSplitSound();
+					return super.click(eventPoint);
+				}
+			});
+		}
+
+		private void addSplitChildWithFX() {
+			addChild(new ContextMenuItem(this, "Convert to Split (FX I only)") {
+				@Override
+				public Control click(Position eventPoint) {
+					EditBufferUseCases.get().convertToSplitWithFXIOnly();
+					return super.click(eventPoint);
+				}
+			});
+		}
+
+		private void addLayerChildWithFX() {
+			addChild(new ContextMenuItem(this, "Convert to Layer (FX I only)") {
+				@Override
+				public Control click(Position eventPoint) {
+					EditBufferUseCases.get().convertToLayerWithFXIOnly();
 					return super.click(eventPoint);
 				}
 			});
@@ -52,18 +72,20 @@ public class SoundTypeMenu extends SVGImage {
 
 
 			if (currentSetting == EditBufferModel.SoundType.Single) {
-				addLayerChild();
-				addSplitChild();
+				addLayerChildWithFX();
+				addLayerChild(" (both FX)");
+				addSplitChildWithFX();
+				addSplitChild(" (both FX)");
 			}
 
 			if (currentSetting == EditBufferModel.SoundType.Layer) {
-				addSingleChild();
-				addSplitChild();
+				addSingleChild(" (both FX)");
+				addSplitChild("");
 			}
 
 			if (currentSetting == EditBufferModel.SoundType.Split) {
-				addSingleChild();
-				addLayerChild();
+				addSingleChild(" (both FX)");
+				addLayerChild("");
 			}
 		}
 	}
