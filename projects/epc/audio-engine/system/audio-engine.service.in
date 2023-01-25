@@ -13,12 +13,8 @@ ExecStartPre=/usr/bin/bash -c "while [ ! -f /proc/asound/EMPHASE/id ]; do sleep 
 # WAIT FOR AUDIO DEVICE
 ExecStartPre=/usr/bin/bash -c "while [ ! -f /proc/asound/PCH/id ]; do sleep 0.1; done"
 
-# SETUP FRAME SIZE DEPENDENT ON CPU
-ExecStartPre=/usr/bin/bash -c "/usr/bin/systemctl set-environment FRAMES_PER_PERIOD=49"
-ExecStartPre=/usr/bin/bash -c "if cat /proc/cpuinfo | grep \"model name\" | grep \"5010\" > /dev/null; then /usr/bin/systemctl set-environment FRAMES_PER_PERIOD=64; fi"
-
 # START THE ENGINE
-ExecStart=@C15_INSTALL_PATH@/audio-engine/audio-engine -t hw:EMPHASE -a hw:PCH -n 3 -s ${FRAMES_PER_PERIOD} -r 48000 --playground-host=localhost --heartbeat=hw:EMPHASE
+ExecStart=@C15_INSTALL_PATH@/audio-engine/audio-engine -t hw:EMPHASE -a hw:PCH -n 8 -s 16 -r 48000 --playground-host=localhost --heartbeat=hw:EMPHASE
 
 Restart=on-failure
 RestartSec=1
