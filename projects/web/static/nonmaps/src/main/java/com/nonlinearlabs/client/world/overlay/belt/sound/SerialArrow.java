@@ -1,38 +1,22 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.SerialFX;
+import com.nonlinearlabs.client.tools.Pair;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
-import com.nonlinearlabs.client.world.overlay.SVGImage;
 
-class SerialArrow extends SVGImage {
-	int selectedPhase = 0;
+class SerialArrow extends MappedSvgImage<SerialFX> {
 
 	SerialArrow(OverlayLayout parent) {
-		super(parent, "CT-to-CB.svg", "CB-to-CT.svg");
+		super(parent, new Pair<SerialFX, String>(SerialFX.FX_I_IN_II, "CT-to-CB.svg"), 
+					  new Pair<SerialFX, String>(SerialFX.FX_II_IN_I, "CB-to-CT.svg"), 
+					  new Pair<SerialFX, String>(SerialFX.None, null));
+
 		setVisible(false);
 
 		EditBufferPresenterProvider.get().onChange(ebp -> {
-			switch(ebp.serialFX) {
-				case None:
-					setVisible(false);
-				break;
-				case FX_I_IN_II:
-					selectedPhase = 0;
-					invalidate(INVALIDATION_FLAG_UI_CHANGED);
-					setVisible(true);
-				break;
-				case FX_II_IN_I:
-					selectedPhase = 1;
-					invalidate(INVALIDATION_FLAG_UI_CHANGED);
-					setVisible(true);
-					break;
-			}
+			update(ebp.serialFX);
 			return true;
 		});
-	}
-
-	@Override
-	public int getSelectedPhase() {
-		return selectedPhase;
 	}
 }
