@@ -2200,10 +2200,7 @@ void EditBuffer::undoableConvertSingleToDualWithFXIOnly(UNDO::Transaction *trans
   setVoiceGroupName(transaction, getName(), VoiceGroup::I);
   setVoiceGroupName(transaction, getName(), VoiceGroup::II);
 
-  {
-    using namespace C15::Descriptors;
-    copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
-  }
+  copyVoiceGroup(transaction, VoiceGroup::I, VoiceGroup::II);
 
   copyPartTuneFromMasterTuneAndDefaultMasterGroup(transaction);
   initFadeFrom(transaction, VoiceGroup::I);
