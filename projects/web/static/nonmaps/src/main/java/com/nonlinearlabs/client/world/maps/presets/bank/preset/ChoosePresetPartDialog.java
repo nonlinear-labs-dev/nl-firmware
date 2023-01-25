@@ -20,20 +20,37 @@ public class ChoosePresetPartDialog extends GWTDialog {
     public ChoosePresetPartDialog(Preset p, VoiceGroup target) {
         setModal(true);
         setWidth("20em");
-        addHeader("Part of Dual Preset?");
+        addHeader("Part of Preset?");
 
         preset = p;
 
         HTMLPanel panel = new HTMLPanel("");
         HTMLPanel buttons = new HTMLPanel("");
-        panel.add(new Label("Which part of the dual preset do you want to load into EditBuffer part " + target.toString() + "?", true));
+        if(preset.isDual())
+            panel.add(new Label("Which part of the dual preset do you want to load into EditBuffer Part " + target.toString() + "?", true));
+        else
+            panel.add(new Label("Which of the FX groups do you want to load together with synth voice group into the Editbuffer Part " + target.toString() + "?", true));
+
 
         Button part1, part2, cancelButton;
         
         String I = p.getPartName(VoiceGroup.I);
         String II = p.getPartName(VoiceGroup.II);
 
-        buttons.add(part1 = new Button(I.isEmpty() ? "Part I" : "Part I: " + I, new ClickHandler() {
+        String buttonNameI = "";
+        String buttonNameII = "";
+        if(preset.isDual())
+        {
+            buttonNameI = "Part I";
+            buttonNameII = "Part II";
+        }
+        else
+        {
+            buttonNameI = "FX I";
+            buttonNameII = "FX II";
+        }
+
+        buttons.add(part1 = new Button(buttonNameI, new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent arg0) {
@@ -42,7 +59,7 @@ public class ChoosePresetPartDialog extends GWTDialog {
             }
         }));
 
-        buttons.add(part2 = new Button(II.isEmpty() ? "Part II" : "Part II: " + II, new ClickHandler() {
+        buttons.add(part2 = new Button(buttonNameII, new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent arg0) {
