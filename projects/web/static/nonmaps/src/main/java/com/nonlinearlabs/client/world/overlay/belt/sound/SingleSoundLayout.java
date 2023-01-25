@@ -1,7 +1,12 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.SingleSoundFBToPoly;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.SingleSoundFXToOut;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.SingleSoundPolyToFX;
+import com.nonlinearlabs.client.tools.Pair;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 
@@ -19,42 +24,13 @@ public class SingleSoundLayout extends SoundLayout {
 		}
 	}
 
-	protected class FBToPolyArrows extends SVGImage {
-		int selectedPhase = 0;
-
-		FBToPolyArrows(OverlayLayout parent) {
-			super(parent, "LT-to-RC+LB-to-RC.svg", "LT-to-RC.svg", "LB-to-RC.svg");
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				switch(ebp.fbToPolyArrowState) {
-					case FXI_To_Poly:
-					selectedPhase = 1;
-					break;
-					case FXII_To_Poly:
-					selectedPhase = 2;
-					break;
-					case FXI_FXII_To_Poly:
-					selectedPhase = 0;
-					break;
-				}
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
-		}
-	} 
-
 	protected class FBContainer extends OverlayLayout
 	{
 		private SVGImage fb;
 		private SVGImage vgI;
 		private SVGImage vgII;
 		private SerialArrow serialArrow;
-		private SVGImage fbToPoly;
+		private MappedSvgImage<SingleSoundFBToPoly> fbToPoly;
 
 		public FBContainer(OverlayLayout parent) {
 			super(parent);
@@ -62,7 +38,11 @@ public class SingleSoundLayout extends SoundLayout {
 			addChild(vgI = new FX_I_Indicator(this));
 			addChild(vgII = new FX_II_Indicator(this));
 			addChild(serialArrow = new SerialArrow(this));
-			addChild(fbToPoly = new FBToPolyArrows(this));
+			addChild(fbToPoly = new MappedSvgImage<SingleSoundFBToPoly>(this, 
+									new Pair<SingleSoundFBToPoly, String>(SingleSoundFBToPoly.FXI_To_Poly, "LT-to-RC.svg"),
+									new Pair<SingleSoundFBToPoly, String>(SingleSoundFBToPoly.FXII_To_Poly, "LB-to-RC.svg"),
+									new Pair<SingleSoundFBToPoly, String>(SingleSoundFBToPoly.FXI_FXII_To_Poly, "LT-to-RC+LB-to-RC.svg")
+			));
 
 			EditBufferPresenterProvider.get().onChange(ebp -> {
 				setVisible(ebp.isSingleSoundFeedbackToPolyActive);
@@ -97,80 +77,27 @@ public class SingleSoundLayout extends SoundLayout {
 		}
 	}
 
-	protected class PolyToFBArrow extends SVGImage {
-		private int selectedPhase = 0;
-
-		PolyToFBArrow(OverlayLayout parent) {
-			super(parent, "LC-to-RT--feedback.svg", "LC-to-RB--feedback.svg", "LC-to-RT+LC-to-RB--feedback.svg");
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				
-				switch(ebp.polyToFX) {
-					case Poly_To_FXI:
-						selectedPhase = 0;
-						break;
-					case Poly_To_FXII:
-						selectedPhase = 1;
-						break;
-					case Poly_To_FXI_FXII:
-						selectedPhase = 2;
-						break;
-				}
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
-		}
-	}
-
-	protected class FXToOutArrows extends SVGImage {
-		private int selectedPhase = 0;
-
-		FXToOutArrows(OverlayLayout parent) {
-			super(parent, "LT-to-RC.svg", "LB-to-RC.svg", "LT-to-RC+LB-to-RC.svg");
-
-			EditBufferPresenterProvider.get().onChange(ebp -> {
-				switch(ebp.fxToOut){
-					case FXI:
-						selectedPhase = 0;
-						break;
-					case FXII:
-						selectedPhase = 1;
-						break;
-					case FXI_FXII:
-						selectedPhase = 2;
-						break;
-					
-				}
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return true;
-			});
-		}
-
-		@Override
-		public int getSelectedPhase() {
-			return selectedPhase;
-		}
-	}
-
 	protected class PolyToFXContainer extends OverlayLayout {
 		private SVGImage vgI;
 		private SVGImage vgII;
-		private SVGImage polyToFBArrow;
+		private MappedSvgImage<SingleSoundPolyToFX> polyToFBArrow;
 		private SVGImage serial;
-		private SVGImage fxToOut;
+		private MappedSvgImage<SingleSoundFXToOut> fxToOut;
 
 		PolyToFXContainer(OverlayLayout parent) {
 			super(parent);
-			addChild(polyToFBArrow = new PolyToFBArrow(this));
+			addChild(polyToFBArrow = new MappedSvgImage<SingleSoundPolyToFX>(this, 
+												new Pair<SingleSoundPolyToFX, String>(SingleSoundPolyToFX.Poly_To_FXI, "LC-to-RT--feedback.svg"),
+												new Pair<SingleSoundPolyToFX, String>(SingleSoundPolyToFX.Poly_To_FXII, "LC-to-RB--feedback.svg"),
+												new Pair<SingleSoundPolyToFX, String>(SingleSoundPolyToFX.Poly_To_FXI_FXII, "LC-to-RT+LC-to-RB--feedback.svg")));
+
 			addChild(vgI = new FX_I_Indicator(this));
 			addChild(vgII = new FX_II_Indicator(this));
 			addChild(serial = new SerialArrow(this));
-			addChild(fxToOut = new FXToOutArrows(this));
+			addChild(fxToOut = new MappedSvgImage<SingleSoundFXToOut>(this,
+												new Pair<SingleSoundFXToOut, String>(SingleSoundFXToOut.FXI, "LT-to-RC.svg"),
+												new Pair<SingleSoundFXToOut, String>(SingleSoundFXToOut.FXII, "LB-to-RC.svg"),
+												new Pair<SingleSoundFXToOut, String>(SingleSoundFXToOut.FXI_FXII, "LT-to-RC+LB-to-RC.svg")));
 		}
 
 		@Override
@@ -196,7 +123,6 @@ public class SingleSoundLayout extends SoundLayout {
 
 			//fx to out
 			double outArrowWidth = fxToOut.getPictureWidth();
-			double outArrowHeight = fxToOut.getPictureHeight();
 			fxToOut.doLayout(arrowWidth + vgWidth, 0, outArrowWidth, h);
 		}
 	}
@@ -216,6 +142,7 @@ public class SingleSoundLayout extends SoundLayout {
 	@Override
 	public void doLayout(double x, double y, double w, double h)
 	{
+		GWT.log("SingleSoundLayout::doLayout");
 		super.doLayout(x, y, w, h);
 		double left = settings.getOuterBox().getLeft();
 		double right = settings.getOuterBox().getRight();
