@@ -527,6 +527,131 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
         TasksAndExpectations { { StepModAmount { 1, Direction::Inc, Resolution::Fine } },
                                { ExpectModAmount { 0.511 }, ExpectModAmountString { "51.1 %" } } });
 
+    testModulation<writeJava>(__LINE__, "inc upper limit, first fine, then coarse",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0,
+                                      .targetParameterNumber = C15::PID::Osc_A_Fluct,
+                                      .initialTargetControlPosition = 0,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { {}, { ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 0.5 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Inc, Resolution::Fine } },
+                                                     { ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 0.501 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Inc, Resolution::Coarse } },
+                                                     { ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 0.51 } } });
+
+    testModulation<writeJava>(__LINE__, "dec upper limit, first fine, then coarse",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0,
+                                      .targetParameterNumber = C15::PID::Osc_A_Fluct,
+                                      .initialTargetControlPosition = 0,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { {}, { ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 0.5 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Dec, Resolution::Fine } },
+                                                     { ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 0.499 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Dec, Resolution::Coarse } },
+                                                     { ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 0.49 } } });
+
+    testModulation<writeJava>(__LINE__, "inc lower limit, first fine, then coarse",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0.5,
+                                      .targetParameterNumber = C15::PID::Osc_A_Fluct,
+                                      .initialTargetControlPosition = 0.5,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { {}, { ExpectModRangeLow { 0.25 }, ExpectModRangeHi { 0.75 } } },
+
+                              TasksAndExpectations { { StepModRangeLow { 1, Direction::Inc, Resolution::Fine } },
+                                                     { ExpectModRangeLow { 0.251 }, ExpectModRangeHi { 0.75 } } },
+
+                              TasksAndExpectations { { StepModRangeLow { 1, Direction::Inc, Resolution::Coarse } },
+                                                     { ExpectModRangeLow { 0.26 }, ExpectModRangeHi { 0.75 } } });
+
+    testModulation<writeJava>(__LINE__, "dec lower limit, first fine, then coarse",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0.5,
+                                      .targetParameterNumber = C15::PID::Osc_A_Fluct,
+                                      .initialTargetControlPosition = 0.5,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { {}, { ExpectModRangeLow { 0.25 }, ExpectModRangeHi { 0.75 } } },
+
+                              TasksAndExpectations { { StepModRangeLow { 1, Direction::Dec, Resolution::Fine } },
+                                                     { ExpectModRangeLow { 0.249 }, ExpectModRangeHi { 0.75 } } },
+
+                              TasksAndExpectations { { StepModRangeLow { 1, Direction::Dec, Resolution::Coarse } },
+                                                     { ExpectModRangeLow { 0.24 }, ExpectModRangeHi { 0.75 } } });
+
+    testModulation<writeJava>(__LINE__, "inc upper limit fine, then dec coarse",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0,
+                                      .targetParameterNumber = C15::PID::Osc_A_Fluct,
+                                      .initialTargetControlPosition = 0,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { {}, { ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 0.5 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Inc, Resolution::Fine } },
+                                                     { ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 0.501 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Inc, Resolution::Fine } },
+                                                     { ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 0.502 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Dec, Resolution::Coarse } },
+                                                     { ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 0.5 } } });
+
+    testModulation<writeJava>(__LINE__, "dec lower limit fine, then inc coarse",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0.5,
+                                      .targetParameterNumber = C15::PID::Osc_A_Fluct,
+                                      .initialTargetControlPosition = 0.5,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { {}, { ExpectModRangeLow { 0.25 }, ExpectModRangeHi { 0.75 } } },
+
+                              TasksAndExpectations { { StepModRangeLow { 1, Direction::Dec, Resolution::Fine } },
+                                                     { ExpectModRangeLow { 0.249 }, ExpectModRangeHi { 0.75 } } },
+
+                              TasksAndExpectations { { StepModRangeLow { 1, Direction::Dec, Resolution::Fine } },
+                                                     { ExpectModRangeLow { 0.248 }, ExpectModRangeHi { 0.75 } } },
+
+                              TasksAndExpectations { { StepModRangeLow { 1, Direction::Inc, Resolution::Coarse } },
+                                                     { ExpectModRangeLow { 0.25 }, ExpectModRangeHi { 0.75 } } });
+
+    testModulation<writeJava>(__LINE__, "dec upper limit, first fine, then coarse",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0,
+                                      .targetParameterNumber = C15::PID::Osc_A_Fluct,
+                                      .initialTargetControlPosition = 0,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { {}, { ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 0.5 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Dec, Resolution::Fine } },
+                                                     { ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 0.499 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Dec, Resolution::Coarse } },
+                                                     { ExpectModRangeLow { 0.0 }, ExpectModRangeHi { 0.49 } } });
+
     testModulation<writeJava>(__LINE__, "nothing special",
                               Setup { .hwParameterNumber = C15::PID::Bender,
                                       .initialHwPosition = 0,
@@ -847,6 +972,114 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Modulation Batch")
 
         TasksAndExpectations { { StepModAmount { 1, Direction::Inc, Resolution::Fine } },
                                { ExpectModAmount { 0.5055 }, ExpectModAmountString { "101.1 %" } } });
+
+    testModulation<writeJava>(__LINE__, "inc upper limit, first fine, then coarse",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0.5,
+                                      .targetParameterNumber = C15::PID::FB_Mix_Comb,
+                                      .initialTargetControlPosition = 0,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { {}, { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.5 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Inc, Resolution::Fine } },
+                                                     { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.501 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Inc, Resolution::Coarse } },
+                                                     { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.51 } } });
+
+    testModulation<writeJava>(__LINE__, "dec upper limit, first fine, then coarse",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0.5,
+                                      .targetParameterNumber = C15::PID::FB_Mix_Comb,
+                                      .initialTargetControlPosition = 0,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { {}, { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.5 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Dec, Resolution::Fine } },
+                                                     { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.499 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Dec, Resolution::Coarse } },
+                                                     { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.49 } } });
+
+    testModulation<writeJava>(__LINE__, "inc lower limit, first fine, then coarse",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0.5,
+                                      .targetParameterNumber = C15::PID::FB_Mix_Comb,
+                                      .initialTargetControlPosition = 0,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { {}, { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.5 } } },
+
+                              TasksAndExpectations { { StepModRangeLow { 1, Direction::Inc, Resolution::Fine } },
+                                                     { ExpectModRangeLow { -0.499 }, ExpectModRangeHi { 0.5 } } },
+
+                              TasksAndExpectations { { StepModRangeLow { 1, Direction::Inc, Resolution::Coarse } },
+                                                     { ExpectModRangeLow { -0.49 }, ExpectModRangeHi { 0.5 } } });
+
+    testModulation<writeJava>(__LINE__, "dec lower limit, first fine, then coarse",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0.5,
+                                      .targetParameterNumber = C15::PID::FB_Mix_Comb,
+                                      .initialTargetControlPosition = 0,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { {}, { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.5 } } },
+
+                              TasksAndExpectations { { StepModRangeLow { 1, Direction::Dec, Resolution::Fine } },
+                                                     { ExpectModRangeLow { -0.501 }, ExpectModRangeHi { 0.5 } } },
+
+                              TasksAndExpectations { { StepModRangeLow { 1, Direction::Dec, Resolution::Coarse } },
+                                                     { ExpectModRangeLow { -0.51 }, ExpectModRangeHi { 0.5 } } });
+
+    testModulation<writeJava>(__LINE__, "inc upper limit fine, then dec coarse",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0.5,
+                                      .targetParameterNumber = C15::PID::FB_Mix_Comb,
+                                      .initialTargetControlPosition = 0,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { {}, { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.5 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Inc, Resolution::Fine } },
+                                                     { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.501 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Inc, Resolution::Fine } },
+                                                     { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.502 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Dec, Resolution::Coarse } },
+                                                     { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.5 } } });
+
+    testModulation<writeJava>(__LINE__, "dec upper limit fine, then inc coarse",
+                              Setup { .hwParameterNumber = C15::PID::Bender,
+                                      .initialHwPosition = 0,
+                                      .initialHWAmount = 1.0,
+                                      .initialMacroControlPosition = 0.5,
+                                      .targetParameterNumber = C15::PID::FB_Mix_Comb,
+                                      .initialTargetControlPosition = 0,
+                                      .initialModAmount = 0.5 },
+
+                              TasksAndExpectations { {}, { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.5 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Dec, Resolution::Fine } },
+                                                     { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.499 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Dec, Resolution::Fine } },
+                                                     { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.498 } } },
+
+                              TasksAndExpectations { { StepModRangeHi { 1, Direction::Inc, Resolution::Coarse } },
+                                                     { ExpectModRangeLow { -0.5 }, ExpectModRangeHi { 0.5 } } });
 
     testModulation<writeJava>(__LINE__, "nothing special",
                               Setup { .hwParameterNumber = C15::PID::Bender,
