@@ -787,7 +787,6 @@ void EditBuffer::undoableConvertDualToSingle(UNDO::Transaction *transaction, Voi
   initFadeFrom(transaction, VoiceGroup::II);
   initCrossFBExceptFromFX(transaction);
   initSplitPoint(transaction);
-  initMasterPanAndSeperation(transaction);
 
   {
     ScopedMonophonicParameterLock lock(transaction, *this);
@@ -1227,14 +1226,6 @@ void EditBuffer::initSplitPoint(UNDO::Transaction *transaction)
     auto splitPoint = findParameterByID({ C15::PID::Split_Split_Point, vg });
     splitPoint->loadDefault(transaction, Defaults::FactoryDefault);
   }
-}
-
-void EditBuffer::initMasterPanAndSeperation(UNDO::Transaction *transaction)
-{
-  auto masterPan = findParameterByID({ C15::PID::Master_Pan, VoiceGroup::Global });
-  masterPan->loadDefault(transaction, Defaults::FactoryDefault);
-  auto masterSep = findParameterByID({ C15::PID::Master_Serial_FX, VoiceGroup::Global });
-  masterSep->loadDefault(transaction, Defaults::FactoryDefault);
 }
 
 void EditBuffer::initFadeFrom(UNDO::Transaction *transaction, VoiceGroup vg)

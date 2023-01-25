@@ -1301,3 +1301,43 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to S
     }
   }
 }
+
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Dual Sound to Single should not reset Master Serial FX and FX Pan")
+{
+  auto eb = TestHelper::getEditBuffer();
+
+  EditBufferUseCases ebUseCases(*eb);
+  auto fromType = GENERATE(SoundType::Layer, SoundType::Split);
+  auto useVG = GENERATE(VoiceGroup::I, VoiceGroup::II);
+  ebUseCases.initSoundAs(fromType, Defaults::FactoryDefault);
+
+  WHEN("master serial fx is set to non default")
+  {
+    auto id = C15::PID::Master_Serial_FX;
+    auto p = eb->findParameterByID({id, VoiceGroup::Global});
+    ParameterUseCases pUseCases(p);
+    pUseCases.setControlPosition(0.187);
+    REQUIRE_FALSE(p->isDefaultLoaded());
+
+    THEN("converted " << toString(fromType) << " - " << toString(useVG) <<" to single")
+    {
+      ebUseCases.convertToSingle(VoiceGroup::I);
+      REQUIRE(p->getControlPositionValue() == Approx(0.187));
+    }
+  }
+
+  WHEN("master fx pan is set to non default")
+  {
+    auto id = C15::PID::Master_Pan;
+    auto p = eb->findParameterByID({id, VoiceGroup::Global});
+    ParameterUseCases pUseCases(p);
+    pUseCases.setControlPosition(0.187);
+    REQUIRE_FALSE(p->isDefaultLoaded());
+
+    THEN("converted " << toString(fromType) << " - " << toString(useVG) <<" to single")
+    {
+      ebUseCases.convertToSingle(VoiceGroup::I);
+      REQUIRE(p->getControlPositionValue() == Approx(0.187));
+    }
+  }
+}
