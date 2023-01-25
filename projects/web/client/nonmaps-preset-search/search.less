@@ -75,7 +75,6 @@ body {
 }
 
 .preset-search {
-
     ::-webkit-scrollbar {
         width: 2mm;
     }
@@ -92,7 +91,6 @@ body {
     ::-webkit-scrollbar-track {
         background: #666666;
         border: 69px none #ffffff;
-        border-bottom-right-radius: 2mm;
     }
 
     ::-webkit-scrollbar-track:hover {
@@ -213,8 +211,8 @@ body {
         padding: 2mm;
         margin-left: 1mm;
 
-        padding-top: @the-green-distance - @the-red-distance;
-        padding-bottom: @the-blue-distance;
+        padding-top: 0;
+        padding-bottom: @the-blue-distance - 1mm;
 
         button {
             padding: 0;
@@ -235,7 +233,6 @@ body {
             background-color: #434343;
             margin-left: 3mm;
             text-rendering: geometricPrecision;
-            padding-bottom: 0.4mm;
             padding-left: 0.17mm;
         }
 
@@ -250,6 +247,7 @@ body {
 
         button.green {
             background-color: @preset-color-green;
+            margin-left: 1mm;
         }
 
         button.blue {
@@ -500,11 +498,15 @@ body {
         }
 
         .sort-by-number {
-            width: 4em;
+            width: 3.5em;
         }
 
         .sort-by-name {
             flex-grow: 2;
+        }
+
+        .sort-by-time {
+            width: 3.5em;
         }
 
         .clock-symbol {
@@ -541,7 +543,7 @@ body {
         .preset-container {
             padding: 2px;
             background-color: black;
-            border-bottom: 2px solid rgb(77, 77, 77);
+            border-bottom: 1.5px solid rgb(77, 77, 77);
         }
 
         .preset {
@@ -550,9 +552,10 @@ body {
             align-items: center;
             color: rgb(179, 179, 179);
             white-space: nowrap;
-            padding-top: 2mm;
+            padding-top: 1mm;
             padding-bottom: 1mm;
             background-color: rgb(25, 25, 25);
+            text-rendering: geometricPrecision;
 
             .color {
                 min-width: 1.75mm;
@@ -566,29 +569,44 @@ body {
 
             .number {
                 display: inline-block;
-                width: 9ex;
+                width: 8.5ex;
                 white-space: nowrap;
                 vertical-align: middle;
+                flex-grow: 0;
+                flex-shrink: 0;
             }
 
             .name {
-                display: inline-block;
+                display: flex;
                 white-space: nowrap;
                 overflow: hidden;
-                left: 10ex;
-                right: 1ex + 2mm;
+                text-align: left;
                 vertical-align: middle;
                 flex-grow: 2;
+
+                .name-first {
+                    display: inline-block;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    vertical-align: middle;
+                }
+
+                .name-second {
+                    display: inline-block;
+                    vertical-align: middle;
+                    max-width: 10em;
+                }
             }
 
             .type {
                 align-self: flex-end;
                 display: inline-block;
-                overflow: hidden;
-                width: 1ex;
-                padding-right: 5mm;
-                text-align: center;
+                width: 2ex;
+                flex-grow: 0;
+                flex-shrink: 0;
                 vertical-align: middle;
+                text-align: center;
             }
 
             .color.green {
@@ -664,8 +682,10 @@ body {
             .group {
                 display: inline-block;
                 text-align: left;
+                width: 50%;
 
                 .option {
+
                     display: inline-block;
                     filter: grayscale(1);
 
@@ -708,6 +728,10 @@ body {
                     }
                 }
             }
+
+            .group.search-in {
+                border-left: 1px solid;
+            }
         }
     }
 }
@@ -741,9 +765,7 @@ body {
 }
 
 .color-tags {
-
     min-width: max-content;
-
 
     .context-menu-item {
         min-width: fit-content;

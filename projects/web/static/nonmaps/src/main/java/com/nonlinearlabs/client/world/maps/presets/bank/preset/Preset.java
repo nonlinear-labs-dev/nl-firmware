@@ -471,6 +471,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		return 3;
 	}
 
+	@Override
+	public double getTopMargin() {
+		return 1;
+	}
+
 	public void load() {
 		VoiceGroup vg = EditBufferPresenterProvider.getPresenter().voiceGroupEnum;
 		LoadToPartMode loadToPart = getParent().getParent().getLoadToPartMode();

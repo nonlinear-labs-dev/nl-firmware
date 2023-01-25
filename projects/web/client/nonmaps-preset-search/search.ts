@@ -907,14 +907,24 @@ $['contextMenu']({
                         window['scrollToNonMapsPreset'](presetId);
                     }
                 },
-                "info": {
+                "preset-info": {
                     name: "Preset Info",
                     visible: function (key, opt) {
                         return !window['isPresetInfoVisible']();
                     },
                     callback: function () {
                         playgroundProxy.selectPreset(presetId);
-                        window['showPresetInfo'](presetId);
+                        window['showPresetInfo']();
+                    }
+                },
+                "bank-info": {
+                    name: "Bank Info",
+                    visible: function (key, opt) {
+                        return !window['isBankInfoVisible']();
+                    },
+                    callback: function () {
+                        playgroundProxy.selectPreset(presetId);
+                        window['showBankInfo']();
                     }
                 },
                 "select-all": {

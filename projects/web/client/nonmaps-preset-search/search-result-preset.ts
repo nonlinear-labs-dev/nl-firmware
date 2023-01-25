@@ -32,9 +32,9 @@ class Presenter {
             var typeSign = "";
 
             if (preset['type'] == "Layer")
-                typeSign = "=";
+                typeSign = "&#xe0f3;";
             else if (preset['type'] == "Split")
-                typeSign = "ᐦ";
+                typeSign = "&#xe0f0;";
 
             var ms = multipleSelection.get();
             var presetSelected = ms == null && bank['selected-preset'] == id && pm['selected-bank'] == bankUuid;
@@ -52,12 +52,23 @@ class Presenter {
             this.loaded = presetLoaded;
             this.color = preset['attributes']['color'];
             this.type = typeSign;
+
+            if (this.name.length > 10) {
+                this.nameFirst = this.name.substring(0, this.name.length - 10);
+                this.nameSecond = this.name.substring(this.name.length - 10);
+            }
+            else {
+                this.nameFirst = this.name;
+                this.nameSecond = "";
+            }
         }
     }
 
     id: string = "";
     number: string = "";
     name: string = "";
+    nameFirst: string = "";
+    nameSecond: string = "";
     selected: boolean = false;
     loaded: boolean = false;
     color: string = "none";

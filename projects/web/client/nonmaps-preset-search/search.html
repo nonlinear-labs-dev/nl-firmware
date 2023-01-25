@@ -154,8 +154,11 @@
         <div {{presetAttributes}}>
             <div {{colorAttributes}}></div>
             <div class="number">{{ get "number" }}</div>
-            <div class="name">{{ get "name" }}</div>
-            <div class="type">{{ get "type" }}</div>
+            <div class="name">
+                <span class="name-first">{{ get "nameFirst" }}</span>
+                <span class="name-second">{{ get "nameSecond" }}</span>
+            </div>
+            <div class="type">{{{ get "type" }}}</div>
         </div>
     </div>
 </template>

@@ -27,6 +27,7 @@ import com.nonlinearlabs.client.world.NonLinearWorld;
 import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.maps.CachingMapsControl;
 import com.nonlinearlabs.client.world.maps.NonRect;
+import com.nonlinearlabs.client.world.overlay.BankInfoDialog;
 import com.nonlinearlabs.client.world.overlay.CompareDialog;
 import com.nonlinearlabs.client.world.overlay.PresetInfoDialog;
 
@@ -392,8 +393,16 @@ public class NonMaps extends Mouseing implements EntryPoint {
 		return PresetInfoDialog.isShown();
 	}
 
-	public static void showPresetInfo(String preset) {
+	public static void showPresetInfo() {
 		PresetInfoDialog.toggle();
+	}
+
+	public static boolean isBankInfoVisible() {
+		return BankInfoDialog.isShown();
+	}
+
+	public static void showBankInfo() {
+		BankInfoDialog.toggle();
 	}
 
 	public static void redrawNonWorld() {
@@ -420,7 +429,9 @@ public class NonMaps extends Mouseing implements EntryPoint {
 	private static native void exportGlobalMethods() /*-{
 		$wnd.scrollToNonMapsPreset = @com.nonlinearlabs.client.NonMaps::scrollToPreset(Ljava/lang/String;);
 		$wnd.isPresetInfoVisible = @com.nonlinearlabs.client.NonMaps::isPresetInfoVisible();
-		$wnd.showPresetInfo = @com.nonlinearlabs.client.NonMaps::showPresetInfo(Ljava/lang/String;);
+		$wnd.showPresetInfo = @com.nonlinearlabs.client.NonMaps::showPresetInfo();
+		$wnd.isBankInfoVisible = @com.nonlinearlabs.client.NonMaps::isBankInfoVisible();
+		$wnd.showBankInfo = @com.nonlinearlabs.client.NonMaps::showBankInfo();
 		$wnd.nextZIndex = @com.nonlinearlabs.client.NonMaps::nextZIndex();
 		$wnd.redrawNonWorld = @com.nonlinearlabs.client.NonMaps::redrawNonWorld();
 		$wnd.comparePresetToEditbuffer = @com.nonlinearlabs.client.NonMaps::comparePresetToEditbuffer(Ljava/lang/String;);
