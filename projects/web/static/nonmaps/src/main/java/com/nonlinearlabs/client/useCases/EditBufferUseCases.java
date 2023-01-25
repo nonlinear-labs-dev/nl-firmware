@@ -308,12 +308,22 @@ public class EditBufferUseCases {
 	}
 
 	public void convertToSplitSound() {
-		NonMaps.get().getServerProxy().convertToSplit();
+		NonMaps.get().getServerProxy().convertToSplit(EditBufferModel.get().voiceGroup.getValue());
 		EditBufferModel.get().soundType.setValue(SoundType.Split);
 	}
 
 	public void convertToLayerSound() {
-		NonMaps.get().getServerProxy().convertToLayer();
+		NonMaps.get().getServerProxy().convertToLayer(EditBufferModel.get().voiceGroup.getValue());
+		EditBufferModel.get().soundType.setValue(SoundType.Layer);
+	}
+
+	public void convertToSplitWithFXIOnly() {
+		NonMaps.get().getServerProxy().convertSingleToSplitFXIOnly();
+		EditBufferModel.get().soundType.setValue(SoundType.Split);
+	}
+
+	public void convertToLayerWithFXIOnly() {
+		NonMaps.get().getServerProxy().convertSingleToLayerFXIOnly();
 		EditBufferModel.get().soundType.setValue(SoundType.Layer);
 	}
 

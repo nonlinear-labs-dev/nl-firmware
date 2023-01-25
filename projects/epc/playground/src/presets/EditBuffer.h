@@ -193,7 +193,6 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction *transaction, const Preset *preset,
                                                    VoiceGroup copyFrom, VoiceGroup copyTo);
   void initSplitPoint(UNDO::Transaction *transaction);
-  void initMasterPanAndSeperation(UNDO::Transaction *transaction);
   void initFadeFrom(UNDO::Transaction *transaction, VoiceGroup vg);
   void defaultFadeParameters(UNDO::Transaction *transaction);
   void copyVoicesGroups(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to);
@@ -201,6 +200,7 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void combineLayerPartGlobalMaster(UNDO::Transaction *transaction, VoiceGroup copyFrom);
   void initFadeParameters(UNDO::Transaction *transaction, VoiceGroup group);
   void initCrossFBExceptFromFX(UNDO::Transaction* transaction);
+  void initCrossFB(UNDO::Transaction* transaction);
   void undoableUnmuteLayers(UNDO::Transaction *transaction);
   void undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg);
   void undoableConvertSingleToLayer(UNDO::Transaction *transaction, VoiceGroup copyFrom);
@@ -280,9 +280,10 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
                                 const VoiceGroup &loadTo);
   void copyGlobalMasterAndFXMixToPartVolumesForConvertSingleToDual(UNDO::Transaction *transaction);
   void copyPartVolumesToGlobalMasterAndFXMixForConvertDualToSingle(UNDO::Transaction *transaction, VoiceGroup copyFrom);
-  void initFBMixFXFrom(UNDO::Transaction *pTransaction);
+  void applyConversionRuleForFBMixFXFromSingleToDual(UNDO::Transaction *transaction);
   void copySpecialToFXParamForLoadSingleIntoDualPart(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to,
                                                      const Preset *preset);
   void copyPolyParametersFromI(UNDO::Transaction *transaction, const Preset *preset, VoiceGroup group);
   void copyToFXAndFxFrom(UNDO::Transaction *transaction, VoiceGroup copyFrom);
+  void undoableConvertSingleToDualWithFXIOnly(UNDO::Transaction *transaction, SoundType type);
 };
