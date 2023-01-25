@@ -200,11 +200,7 @@ public class LayerSoundLayout extends SoundLayout {
 			if (dragProxy.getOrigin() instanceof IPreset)
 				if (dragProxy.getOrigin() instanceof Preset) {
 					Preset p = (Preset) dragProxy.getOrigin();
-					if (p.isDual()) {
-						choosePresetPart = new ChoosePresetPartDialog(p, group);
-					} else {
-						NonMaps.get().getServerProxy().loadPresetPartIntoPart(p.getUUID(), VoiceGroup.I, group);
-					}
+					choosePresetPart = new ChoosePresetPartDialog(p, group);
 				}
 
 			setIsDropTarget(false);

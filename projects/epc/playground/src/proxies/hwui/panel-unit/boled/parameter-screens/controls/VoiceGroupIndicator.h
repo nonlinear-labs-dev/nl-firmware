@@ -1,5 +1,6 @@
 #pragma once
 #include <proxies/hwui/controls/Control.h>
+#include "proxies/hwui/controls/PNGControl.h"
 
 class VoiceGroupIndicator : public Control
 {
@@ -32,6 +33,8 @@ class VoiceGroupIndicator : public Control
   const Parameter* m_param = nullptr;
   const bool m_allowLoadToPart;
   const bool m_alwaysDraw;
-  void drawCrossForLayer(FrameBuffer& fb, int centerX, int centerY) const;
-  void drawCrossForSingle(FrameBuffer& fb, int centerX, int centerY) const;
+  void drawCrossForLayer(FrameBuffer& fb, int centerX, int centerY);
+  void drawCrossForSingle(FrameBuffer& fb, int centerX, int centerY);
+
+  PNGControl m_fxUnused;
 };

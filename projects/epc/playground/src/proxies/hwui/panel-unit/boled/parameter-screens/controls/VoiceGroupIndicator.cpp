@@ -14,7 +14,11 @@ VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r, bool allowLoadToPart, bo
     : Control(r)
     , m_allowLoadToPart(allowLoadToPart)
     , m_alwaysDraw(alwaysDraw)
+    , m_fxUnused(Rect(0, 0, 6, 5), "fx-unused.png")
 {
+  m_fxUnused.setTransparent(true);
+  m_fxUnused.setColor(FrameBufferColors::C43);
+
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto vgManager = Application::get().getVGManager();
   auto vg = vgManager->getCurrentVoiceGroup();
@@ -87,7 +91,7 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
   return true;
 }
 
-void VoiceGroupIndicator::drawCrossForLayer(FrameBuffer& fb, int centerX, int centerY) const
+void VoiceGroupIndicator::drawCrossForLayer(FrameBuffer& fb, int centerX, int centerY)
 {
   fb.setPixel(centerX - 2, centerY - 2);
   fb.setPixel(centerX - 2, centerY + 2);
@@ -101,14 +105,10 @@ void VoiceGroupIndicator::drawCrossForLayer(FrameBuffer& fb, int centerX, int ce
   fb.setPixel(centerX + 2, centerY + 1);
 }
 
-void VoiceGroupIndicator::drawCrossForSingle(FrameBuffer& fb, int centerX, int centerY) const
+void VoiceGroupIndicator::drawCrossForSingle(FrameBuffer& fb, int centerX, int centerY)
 {
-  fb.setPixel(centerX - 1, centerY - 1);
-  fb.setPixel(centerX - 1, centerY + 1);
-  fb.setPixel(centerX, centerY);
-  fb.setPixel(centerX + 1, centerY);
-  fb.setPixel(centerX + 2, centerY - 1);
-  fb.setPixel(centerX + 2, centerY + 1);
+  auto offset = fb.offset({(centerX - 2), (centerY - 2)});
+  m_fxUnused.redraw(fb);
 }
 
 bool VoiceGroupIndicator::drawSingle(FrameBuffer& fb)

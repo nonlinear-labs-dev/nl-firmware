@@ -9,20 +9,13 @@ class BankButton : public ControlWithChildren
 {
  public:
   BankButton(const Rect& pos, bool bankFocus);
-  ~BankButton() override;
-
   bool onButton(Buttons b, bool down, ButtonModifiers modifiers);
 
  private:
-  void bruteForce();
-
-  void installDefault();
-  void installLoadToPart();
-  void onFocusAndModeChanged(const Setting* s);
+  void installDefault(FocusAndMode focusAndMode);
+  void installSmall(FocusAndMode focusAndMode);
+  void onFocusAndModeChanged(const Setting* setting);
 
   std::unique_ptr<ShortVsLongPress> m_buttonAHandler;
   const bool m_bankFocus;
-  sigc::connection m_soundTypeChanged;
-  sigc::connection m_loadToPartChanged;
-  sigc::connection m_settingChanged;
 };

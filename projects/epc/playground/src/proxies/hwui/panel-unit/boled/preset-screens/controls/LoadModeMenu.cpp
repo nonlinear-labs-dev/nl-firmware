@@ -26,7 +26,7 @@ bool LoadModeMenu::redraw(FrameBuffer& fb)
 
 LoadModeMenu::LoadModeMenu(const Rect& rect)
     : ControlWithChildren(rect)
-    , m_toggleDirectLoadAction { [this] {
+    , m_toggleDirectLoadAction { [] {
       DirectLoadUseCases useCase(getDirectLoadSetting());
       auto hwui = Application::get().getHWUI();
       useCase.toggleDirectLoadFromHWUI(hwui);
@@ -91,13 +91,13 @@ void LoadModeMenu::setBackgroundColor(FrameBuffer& fb) const
 
 void LoadModeMenu::installDual()
 {
-  m_buttonDHandler = std::make_unique<ShortVsLongPress>([this] { toggleLoadToPartDetail(); }, m_toggleDirectLoadAction);
+  m_buttonDHandler = std::make_unique<ShortVsLongPress>(m_toggleDirectLoadAction, [this] { toggleLoadToPartDetail(); });
 
-  auto loadToPartButton = addControl(new Button("To Part", { 0, 15, 58, 11 }));
-  loadToPartButton->setHighlight(isLoadToPartEnabled());
-
-  auto directLoadButton = addControl(new Button("Direct Ld", { 4, 0, 50, 11 }));
+  auto directLoadButton = addControl(new Button("Direct Ld", { 0, 15, 58, 11 }));
   directLoadButton->setHighlight(isDirectLoadEnabled());
+
+  auto loadToPartButton = addControl(new Button("To Part", { 4, 0, 50, 11 }));
+  loadToPartButton->setHighlight(isLoadToPartEnabled());
 }
 
 SoundType LoadModeMenu::getSoundType()
