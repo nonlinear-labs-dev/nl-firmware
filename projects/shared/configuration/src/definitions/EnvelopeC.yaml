@@ -209,7 +209,7 @@ parameters:
     token: Loop
     label_long: Loop
     label_short: Loop
-    control_position: { coarse: 200, fine: 2000, scale: LINEAR_200_PERCENT, initial: 0.0f }
+    control_position: { coarse: 200, fine: 2000, scale: LINEAR_200_PERCENT, initial: 0.0f, inactive: 0 }
     modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 200.0f, offset: 0.0f, section: Poly, clock: Sync, signal: None }
     info: >
