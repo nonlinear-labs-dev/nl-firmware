@@ -10,10 +10,13 @@
 #include "use-cases/EditBufferUseCases.h"
 #include "proxies/hwui/descriptive-layouts/ConditionRegistry.h"
 
-namespace {
-  std::string getSuffix(SoundType convertTo) {
+namespace
+{
+  std::string getSuffix(SoundType convertTo)
+  {
     auto currentType = Application::get().getPresetManager()->getEditBuffer()->getType();
-    if((currentType != SoundType::Single && convertTo == SoundType::Single) || (currentType == SoundType::Single && convertTo != SoundType::Single))
+    if((currentType != SoundType::Single && convertTo == SoundType::Single)
+       || (currentType == SoundType::Single && convertTo != SoundType::Single))
       return " (both FX)";
     else
       return "";
@@ -60,13 +63,13 @@ ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toTyp
 {
 }
 
-
 ConvertToSoundTypeItemWithFX::ConvertToSoundTypeItemWithFX(const Rect& rect, SoundType convertTo)
 
     : AnimatedGenericItem(nltools::string::concat("Convert to ", toString(convertTo), " (FX I only)"), rect,
                           OneShotTypes::StartCB(
                               [=]
                               {
+                                ConditionRegistry::get().lock();
                                 EditBufferUseCases useCases(*Application::get().getPresetManager()->getEditBuffer());
 
                                 switch(convertTo)
@@ -84,11 +87,13 @@ ConvertToSoundTypeItemWithFX::ConvertToSoundTypeItemWithFX(const Rect& rect, Sou
                                   default:
                                     break;
                                 }
-
+                              }),
+                          OneShotTypes::FinishCB(
+                              []()
+                              {
+                                ConditionRegistry::get().unlock();
                                 SettingsUseCases sUseCases(*Application::get().getSettings());
                                 sUseCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-                              }),
-                          OneShotTypes::FinishCB([]() {}))
+                              }))
 {
 }
-
