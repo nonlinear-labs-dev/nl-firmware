@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
@@ -33,6 +34,12 @@ public class LayerSoundLayout extends SoundLayout {
 	protected LayerSoundLayout(OverlayLayout parent) {
 		super(parent);
 		setSettings(new LayerSoundSettings(this));
+	}
+
+	@Override
+	public void doLayout(double x, double y, double w, double h) {
+		GWT.log("SingleSoundLayout::doLayout" + x + "/" + y + " " + w + "/" + h);
+		super.doLayout(x, y, w, h);
 	}
 
 	private class LayerSoundSettings extends OverlayLayout {
@@ -84,7 +91,7 @@ public class LayerSoundLayout extends SoundLayout {
 			double fbH = fb.getSelectedImage().getImgHeight();
 			fb.doLayout(-fbW, h / 2 - (fbH / 2), fbW, fbH);
 
-			double layerWidth = vgI.getPixRect().getWidth();
+			double layerWidth = vgI.getPositionRelativeToParent(this).getWidth();
 			double layerToFXWidth = layerToFXArrows1.getPictureWidth();
 			layerToFXArrows1.doLayout(layerWidth, 0, layerToFXWidth, h);
 			layerToFXArrows2.doLayout(layerWidth, 0, layerToFXWidth, h);

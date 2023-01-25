@@ -1,6 +1,7 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
+import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
@@ -34,6 +35,12 @@ public class SplitSoundLayout extends SoundLayout {
 	protected SplitSoundLayout(OverlayLayout parent) {
 		super(parent);
 		setSettings(new SplitSoundSettings(this));
+	}
+
+	@Override
+	public void doLayout(double x, double y, double w, double h) {
+		GWT.log("SplitSoundLayout::doLayout" + x + "/" + y + " " + w + "/" + h);
+		super.doLayout(x, y, w, h);
 	}
 
 	private class SplitSoundSettings extends OverlayLayout {

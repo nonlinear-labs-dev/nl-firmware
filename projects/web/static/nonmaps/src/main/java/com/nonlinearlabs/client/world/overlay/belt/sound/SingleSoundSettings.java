@@ -15,6 +15,7 @@ import com.nonlinearlabs.client.world.Position;
 import com.nonlinearlabs.client.world.Rect;
 import com.nonlinearlabs.client.world.RenameDialog;
 import com.nonlinearlabs.client.world.overlay.Label;
+import com.nonlinearlabs.client.world.overlay.OverlayControl;
 import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 
 public class SingleSoundSettings extends OverlayLayout {
@@ -111,8 +112,16 @@ public class SingleSoundSettings extends OverlayLayout {
 		masterValue = addChild(new ParameterValue(this, VoiceGroup.Global, 247));
 	}
 
-	public Rect getOuterBox() {
+	public Rect getOuterBoxPixRect() {
 		Rect newRect = getPixRect().copy();
+		double reduceBy = newRect.getWidth() / 4;
+		double verticalMargin = Millimeter.toPixels(3);
+		newRect.applyPadding(reduceBy, verticalMargin, reduceBy, verticalMargin);
+		return newRect;
+	}
+
+	public Rect getOuterBox() {
+		Rect newRect = getPositionRelativeToParent((OverlayControl)getParent()).copy();
 		double reduceBy = newRect.getWidth() / 4;
 		double verticalMargin = Millimeter.toPixels(3);
 		newRect.applyPadding(reduceBy, verticalMargin, reduceBy, verticalMargin);
@@ -121,6 +130,13 @@ public class SingleSoundSettings extends OverlayLayout {
 
 	private Rect getInnerBox() {
 		Rect outer = getOuterBox();
+		outer.reduceWidthBy(Millimeter.toPixels(8));
+		outer.reduceHeightBy(Millimeter.toPixels(2));
+		return outer;
+	}
+
+	private Rect getInnerBoxPixRect() {
+		Rect outer = getOuterBoxPixRect();
 		outer.reduceWidthBy(Millimeter.toPixels(8));
 		outer.reduceHeightBy(Millimeter.toPixels(2));
 		return outer;
@@ -153,8 +169,8 @@ public class SingleSoundSettings extends OverlayLayout {
 	public void draw(Context2d ctx, int invalidationFlag)
 	{
 		double margin = Millimeter.toPixels(1);
-		getOuterBox().drawRoundedArea(ctx, margin, 1, new Gray(0x66), new Gray(0x66));
-		getInnerBox().drawRoundedArea(ctx, margin, 1, new Gray(30), new Gray(30));
+		getOuterBoxPixRect().drawRoundedArea(ctx, margin, 1, new Gray(0x66), new Gray(0x66));
+		getInnerBoxPixRect().drawRoundedArea(ctx, margin, 1, new Gray(30), new Gray(30));
 		super.draw(ctx, invalidationFlag);
 	}
 
