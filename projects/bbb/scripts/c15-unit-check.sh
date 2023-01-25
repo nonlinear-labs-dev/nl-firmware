@@ -149,7 +149,7 @@ get_ro_mnts() {
 }
 
 get_journal_dmesg() {
-    rm /tmp/epc_journal.log /tmp/epc_dmesg.log /tmp/bbb_journal.log /tmp/bbb_dmesg.log &> /dev/null
+    rm /tmp/epc_journal.log /tmp/epc_dmesg.log /tmp/bbb_journal.log /tmp/bbb_dmesg.log > /dev/null
 
     getInfoAsRoot 'journalctl -b -p "emerg".."warning"' >> /tmp/epc_journal.log \
         && getInfoAsRoot 'dmesg --level=err,warn' >> /tmp/epc_dmesg.log \
@@ -356,18 +356,18 @@ while getopts ":hgbs" option; do
             [ -z "${NUMARR[0]}" ] && DURATION=14400 || DURATION="${NUMARR[0]}"
             [ -z "${NUMARR[1]}" ] && FACTOR=60 || FACTOR="${NUMARR[1]}"
             LOG_FILE="/tmp/buffer_test.log"
-            rm $LOG_FILE &> /dev/null; touch $LOG_FILE
+            rm $LOG_FILE > /dev/null; touch $LOG_FILE
             check_buffer_underruns ${DURATION} ${FACTOR};;
         s)
             set -f; OLDIFS=$IFS; IFS=','; NUMARR=($2); set +f; IFS=$OLDIFS;
             LOG_FILE="/tmp/stress_test.log"
-            rm $LOG_FILE &> /dev/null; touch $LOG_FILE
+            rm $LOG_FILE > /dev/null; touch $LOG_FILE
             [ -z "${NUMARR[0]}" ] && DURATION=1200 || DURATION="${NUMARR[0]}"
             [ -z "${NUMARR[1]}" ] && FACTOR=60 || FACTOR="${NUMARR[1]}"
             run_epc_stress_test ${DURATION} ${FACTOR};;
         g)
             LOG_FILE="/tmp/general_check.log"
-            rm $LOG_FILE &> /dev/null; touch $LOG_FILE
+            rm $LOG_FILE > /dev/null; touch $LOG_FILE
             general_check;;
         h | \?)
             usage
