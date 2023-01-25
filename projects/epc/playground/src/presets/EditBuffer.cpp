@@ -2213,6 +2213,12 @@ void EditBuffer::undoableConvertSingleToDualWithFXIOnly(UNDO::Transaction *trans
   toFXI->loadDefault(transaction, Defaults::FactoryDefault);
   toFXII->loadDefault(transaction, Defaults::FactoryDefault);
 
+  auto masterSerialFX = findParameterByID({C15::PID::Master_Serial_FX, VoiceGroup::Global});
+  auto masterFXPan = findParameterByID({C15::PID::Master_Pan, VoiceGroup::Global});
+
+  masterSerialFX->setCPFromHwui(transaction, 0);
+  masterFXPan->setCPFromHwui(transaction, 0);
+
   undoableUnmuteLayers(transaction);
   initRecallValues(transaction);
   transaction->addUndoSwap(this, m_lastLoadedPreset, Uuid::converted());

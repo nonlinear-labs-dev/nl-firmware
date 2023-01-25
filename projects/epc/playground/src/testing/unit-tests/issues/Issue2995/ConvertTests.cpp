@@ -1251,7 +1251,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to S
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to Split/Layer with FX-I only should not reset Master Serial FX and FX Pan")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to Split/Layer with FX-I only should reset Master Serial FX and FX Pan")
 {
   auto eb = TestHelper::getEditBuffer();
 
@@ -1270,13 +1270,13 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to S
     THEN("converted to split")
     {
       ebUseCases.convertSingleToSplitFXIOnly();
-      REQUIRE(p->getControlPositionValue() == Approx(0.187));
+      REQUIRE(p->getControlPositionValue() == Approx(0));
     }
 
     THEN("converted to layer")
     {
-      ebUseCases.convertToLayer(VoiceGroup::I);
-      REQUIRE(p->getControlPositionValue() == Approx(0.187));
+      ebUseCases.convertSingleToLayerFXIOnly();
+      REQUIRE(p->getControlPositionValue() == Approx(0));
     }
   }
 
@@ -1290,15 +1290,14 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to S
 
     THEN("converted to split")
     {
-      ebUseCases.convertToSplit(VoiceGroup::I);
-      REQUIRE(p->getControlPositionValue() == Approx(0.187));
+      ebUseCases.convertSingleToSplitFXIOnly();
+      REQUIRE(p->getControlPositionValue() == Approx(0));
     }
 
     THEN("converted to layer")
     {
-      ebUseCases.convertToLayer(VoiceGroup::I);
-      REQUIRE(p->getControlPositionValue() == Approx(0.187));
+      ebUseCases.convertSingleToLayerFXIOnly();
+      REQUIRE(p->getControlPositionValue() == Approx(0));
     }
   }
-
 }
