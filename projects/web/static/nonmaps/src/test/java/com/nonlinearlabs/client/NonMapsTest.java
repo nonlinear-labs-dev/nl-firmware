@@ -584,6 +584,158 @@ public class NonMapsTest extends GWTTestCase {
                                                 new ExpectModAmount(0.511),
                                                 new ExpectModAmountString("51.1 %"))));
 
+            javaTestModulation("inc upper limit, first fine, then coarse",
+                        new Setup(274, 0, 1, 0, 57, 0, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0),
+                                                new ExpectModRangeHi(0.5))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Inc, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0),
+                                                new ExpectModRangeHi(0.501))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0),
+                                                new ExpectModRangeHi(0.51))));
+
+            javaTestModulation("dec upper limit, first fine, then coarse",
+                        new Setup(274, 0, 1, 0, 57, 0, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0),
+                                                new ExpectModRangeHi(0.5))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Dec, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0),
+                                                new ExpectModRangeHi(0.499))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Dec, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0),
+                                                new ExpectModRangeHi(0.49))));
+
+            javaTestModulation("inc lower limit, first fine, then coarse",
+                        new Setup(274, 0, 1, 0.5, 57, 0.5, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0.25),
+                                                new ExpectModRangeHi(0.75))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Inc, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0.251),
+                                                new ExpectModRangeHi(0.75))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0.26),
+                                                new ExpectModRangeHi(0.75))));
+
+            javaTestModulation("dec lower limit, first fine, then coarse",
+                        new Setup(274, 0, 1, 0.5, 57, 0.5, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0.25),
+                                                new ExpectModRangeHi(0.75))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Dec, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0.249),
+                                                new ExpectModRangeHi(0.75))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Dec, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0.24),
+                                                new ExpectModRangeHi(0.75))));
+
+            javaTestModulation("inc upper limit fine, then dec coarse",
+                        new Setup(274, 0, 1, 0, 57, 0, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0),
+                                                new ExpectModRangeHi(0.5))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Inc, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0),
+                                                new ExpectModRangeHi(0.501))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Inc, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0),
+                                                new ExpectModRangeHi(0.502))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Dec, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0),
+                                                new ExpectModRangeHi(0.5))));
+
+            javaTestModulation("dec lower limit fine, then inc coarse",
+                        new Setup(274, 0, 1, 0.5, 57, 0.5, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0.25),
+                                                new ExpectModRangeHi(0.75))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Dec, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0.249),
+                                                new ExpectModRangeHi(0.75))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Dec, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0.248),
+                                                new ExpectModRangeHi(0.75))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0.25),
+                                                new ExpectModRangeHi(0.75))));
+
+            javaTestModulation("dec upper limit, first fine, then coarse",
+                        new Setup(274, 0, 1, 0, 57, 0, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0),
+                                                new ExpectModRangeHi(0.5))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Dec, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0),
+                                                new ExpectModRangeHi(0.499))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Dec, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(0),
+                                                new ExpectModRangeHi(0.49))));
+
             javaTestModulation("nothing special",
                         new Setup(274, 0, 1, 0, 57, 0, 1),
                         new TasksAndExpectations(
@@ -913,6 +1065,138 @@ public class NonMapsTest extends GWTTestCase {
                                                 new ExpectModAmount(0.5055),
                                                 new ExpectModAmountString("101.1 %"))));
 
+            javaTestModulation("inc upper limit, first fine, then coarse",
+                        new Setup(274, 0, 1, 0.5, 156, 0, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.5))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Inc, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.501))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.51))));
+
+            javaTestModulation("dec upper limit, first fine, then coarse",
+                        new Setup(274, 0, 1, 0.5, 156, 0, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.5))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Dec, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.499))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Dec, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.49))));
+
+            javaTestModulation("inc lower limit, first fine, then coarse",
+                        new Setup(274, 0, 1, 0.5, 156, 0, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.5))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Inc, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.499),
+                                                new ExpectModRangeHi(0.5))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.49),
+                                                new ExpectModRangeHi(0.5))));
+
+            javaTestModulation("dec lower limit, first fine, then coarse",
+                        new Setup(274, 0, 1, 0.5, 156, 0, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.5))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Dec, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.501),
+                                                new ExpectModRangeHi(0.5))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeLow(1, Direction.Dec, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.51),
+                                                new ExpectModRangeHi(0.5))));
+
+            javaTestModulation("inc upper limit fine, then dec coarse",
+                        new Setup(274, 0, 1, 0.5, 156, 0, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.5))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Inc, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.501))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Inc, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.502))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Dec, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.5))));
+
+            javaTestModulation("dec upper limit fine, then inc coarse",
+                        new Setup(274, 0, 1, 0.5, 156, 0, 0.5),
+                        new TasksAndExpectations(
+                                    new Tasks(),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.5))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Dec, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.499))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Dec, Resolution.Fine)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.498))),
+                        new TasksAndExpectations(
+                                    new Tasks(
+                                                new StepModRangeHi(1, Direction.Inc, Resolution.Coarse)),
+                                    new Expectations(
+                                                new ExpectModRangeLow(-0.5),
+                                                new ExpectModRangeHi(0.5))));
+
             javaTestModulation("nothing special",
                         new Setup(274, 0, 1, 0, 156, 0, 1),
                         new TasksAndExpectations(
@@ -1224,6 +1508,5 @@ public class NonMapsTest extends GWTTestCase {
                                                 new ExpectModRangeLow(-0.25),
                                                 new ExpectControlPosition(-0.3),
                                                 new ExpectModRangeHi(-0.35))));
-
       }
 }

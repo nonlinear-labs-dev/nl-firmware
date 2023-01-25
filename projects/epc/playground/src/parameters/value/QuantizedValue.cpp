@@ -71,11 +71,11 @@ Parameter *QuantizedValue::IncrementalChanger::getOwner()
   return m_value.m_owner;
 }
 
-QuantizedValue::QuantizedValue(Parameter* owner, const ScaleConverter* scale)
-  : super(scale, ParameterDB::getDefaultValue(owner->getID()))
-  , m_owner(owner)
-  , m_coarseDenominator(ParameterDB::getCourseDenominator(owner->getID()))
-  , m_fineDenominator(ParameterDB::getFineDenominator(owner->getID()))
+QuantizedValue::QuantizedValue(Parameter *owner, const ScaleConverter *scale)
+    : super(scale, ParameterDB::getDefaultValue(owner->getID()))
+    , m_owner(owner)
+    , m_coarseDenominator(ParameterDB::getCourseDenominator(owner->getID()))
+    , m_fineDenominator(ParameterDB::getFineDenominator(owner->getID()))
 {
 }
 
@@ -135,10 +135,10 @@ tControlPositionValue QuantizedValue::getNextStepValue(tControlPositionValue val
     }
   }
 
-  if(!fine && !isValueCoarseQuantized())
+  if(!fine && !isValueCoarseQuantized(value))
   {
-    double fineValue = getQuantizedClippedValue(true);
-    double coarseValue = getQuantizedClippedValue(false);
+    double fineValue = getQuantizedValue(getClippedValue(value), true);
+    double coarseValue = getQuantizedValue(getClippedValue(value), false);
 
     if(coarseValue < fineValue && incs == -1)
     {
@@ -168,8 +168,13 @@ tControlPositionValue QuantizedValue::getNextStepValue(tControlPositionValue val
 
 bool QuantizedValue::isValueCoarseQuantized() const
 {
-  auto fine = getQuantizedClippedValue(true);
-  auto coarse = getQuantizedClippedValue(false);
+  return isValueCoarseQuantized(getClippedValue());
+}
+
+bool QuantizedValue::isValueCoarseQuantized(tControlPositionValue v) const
+{
+  auto fine = getQuantizedValue(getClippedValue(v), true);
+  auto coarse = getQuantizedValue(getClippedValue(v), false);
   return fine == coarse;
 }
 

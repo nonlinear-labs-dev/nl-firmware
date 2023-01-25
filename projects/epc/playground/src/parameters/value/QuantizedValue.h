@@ -13,7 +13,7 @@ class QuantizedValue : public ClippedValue
   typedef ClippedValue super;
 
  public:
-  QuantizedValue(Parameter* owner, const ScaleConverter *scale);
+  QuantizedValue(Parameter *owner, const ScaleConverter *scale);
   QuantizedValue(Parameter *owner, const ScaleConverter *scale, tValueType def, tControlPositionValue coarseDenominator,
                  tControlPositionValue fineDenominator);
 
@@ -82,6 +82,7 @@ class QuantizedValue : public ClippedValue
 
  private:
   [[nodiscard]] bool isValueCoarseQuantized() const;
+  [[nodiscard]] bool isValueCoarseQuantized(tControlPositionValue v) const;
 
   Parameter *m_owner;
 

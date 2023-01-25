@@ -180,20 +180,12 @@ void ModParameterUseCases::incUpperModulationBound(int inc, bool fine)
   if(auto mcParam = dynamic_cast<MacroControlParameter*>(m_modParam->getMacroControl()))
   {
     auto& value = m_modParam->getValue();
-    const auto cpRange = value.getScaleConverter()->getControlPositionRange().getRangeWidth();
-    const auto fineDenom = m_modParam->getModulationAmountFineDenominator();
-    const auto coarseDenom = m_modParam->getModulationAmountCoarseDenominator();
-    auto denominator = fine ? fineDenom : coarseDenom;
-
-    auto oldAmount = m_modParam->getModulationAmount();
-    auto newAmount = (round(oldAmount * denominator) + inc) / denominator;
     auto range = m_modParam->getModulationRange(true);
+    auto rangeWidth = m_modParam->getValue().getScaleConverter()->getControlPositionRange().getRangeWidth();
+    range.second = m_modParam->getValue().getNextStepValue(range.second, inc, fine, false);
+    auto newAmount = (range.second - range.first) / rangeWidth;
+    const auto cpRange = value.getScaleConverter()->getControlPositionRange().getRangeWidth();
     auto mcVal = mcParam->getValue().getQuantizedClippedValue(true);
-    auto upperBound = range.first + newAmount * cpRange;
-
-    if(upperBound > 1.0)
-      newAmount = (1.0 - range.first) / cpRange;
-
     auto newValue = range.first + newAmount * cpRange * mcVal;
     setModulationLimit(newAmount, newValue);
   }
@@ -204,25 +196,13 @@ void ModParameterUseCases::incLowerModulationBound(int inc, bool fine)
   if(auto mcParam = dynamic_cast<MacroControlParameter*>(m_modParam->getMacroControl()))
   {
     auto& value = m_modParam->getValue();
-    const auto cpRange = value.getScaleConverter()->getControlPositionRange().getRangeWidth();
-    const auto fineDenom = m_modParam->getModulationAmountFineDenominator();
-    const auto coarseDenom = m_modParam->getModulationAmountCoarseDenominator();
-    auto denominator = fine ? fineDenom : coarseDenom;
-
-    auto oldAmount = m_modParam->getModulationAmount();
-    auto newAmount = (round(oldAmount * denominator) - inc) / denominator;
     auto range = m_modParam->getModulationRange(true);
+    auto rangeWidth = m_modParam->getValue().getScaleConverter()->getControlPositionRange().getRangeWidth();
+    range.first = m_modParam->getValue().getNextStepValue(range.first, inc, fine, false);
+    auto newAmount = (range.second - range.first) / rangeWidth;
+    const auto cpRange = value.getScaleConverter()->getControlPositionRange().getRangeWidth();
     auto mcVal = mcParam->getValue().getQuantizedClippedValue(true);
-    auto lowerBound = range.second - newAmount * cpRange;
-    auto minLowerBound = m_modParam->isBiPolar() ? -1.0 : 0.0;
-
-    if(lowerBound < minLowerBound)
-    {
-      newAmount = (minLowerBound - range.second) / -cpRange;
-      lowerBound = minLowerBound;
-    }
-
-    auto newValue = lowerBound + newAmount * cpRange * mcVal;
+    auto newValue = range.first + newAmount * cpRange * mcVal;
     setModulationLimit(newAmount, newValue);
   }
 }
