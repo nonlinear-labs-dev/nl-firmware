@@ -114,7 +114,7 @@
         "fx-to-out":{
           "Class": "FX_TO_OUT",
           "Position": "235, 23",
-          "Events": "Layer_FX_TO_OUT_Imagestate => Image[ImagePath]"
+          "Events": "Layer_FX_TO_OUT_Imagestate => Image[ImagePath], Layer_FX_TO_OUT_Visibility => Image[Visibility]"
         }
       },
       "EventSinks": {

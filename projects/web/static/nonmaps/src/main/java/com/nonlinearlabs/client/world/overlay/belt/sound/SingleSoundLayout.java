@@ -1,6 +1,5 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.EditBufferPresenter.SingleSoundFBToPoly;
@@ -150,7 +149,6 @@ public class SingleSoundLayout extends SoundLayout {
 	@Override
 	public void doLayout(double x, double y, double w, double h)
 	{
-		GWT.log("SingleSoundLayout::doLayout" + x + "/" + y + " " + w + "/" + h);
 		super.doLayout(x, y, w, h);
 		double left = settings.getOuterBox().getLeft();
 		double right = settings.getOuterBox().getRight();

@@ -528,6 +528,26 @@ void DescriptiveLayouts::Serial_FX_Imagestate::onChange(const EditBuffer *eb)
     setValue("Layer_To_FX_Empty.png");
 }
 
+
+void DescriptiveLayouts::Layer_FX_TO_OUT_Visibility::onChange(const EditBuffer *eb)
+{
+  auto partVolumeI = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
+  auto partVolumeII = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
+  auto partMuteI = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I });
+  auto partMuteII = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II });
+
+  nltools_assertAlways(partVolumeI->isBiPolar() == false);
+  nltools_assertAlways(partVolumeII->isBiPolar() == false);
+  nltools_assertAlways(partMuteI->isBiPolar() == false);
+  nltools_assertAlways(partMuteII->isBiPolar() == false);
+
+  if(partVolumeI->getControlPositionValue() == 0 && partVolumeII->getControlPositionValue() == 0)
+    setValue(false);
+  else
+    setValue(true);
+}
+
+
 void DescriptiveLayouts::Layer_FX_TO_OUT_Imagestate::onChange(const EditBuffer *eb)
 {
   auto setResult = [this](const std::string &s)

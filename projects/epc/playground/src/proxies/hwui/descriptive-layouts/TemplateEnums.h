@@ -55,7 +55,7 @@ namespace DescriptiveLayouts
 
        AnyLayerCrossFB, AnyLayerCrossFBToI, AnyLayerCrossFBToII, ToFXIIUnder100, ToFXIUnder100, ToFXIIOver0, ToFXIOver0,
        LayerFBState, LayerFXState, LayerFXOffset, FX_I_Imagestate, FX_II_Imagestate, LayerToFXPath,
-       Serial_FX_Imagestate, Layer_FX_TO_OUT_Imagestate, Split_FX_TO_OUT_Imagestate, Split_FX_TO_OUT_Imagestate_flipped,
+       Serial_FX_Imagestate, Layer_FX_TO_OUT_Visibility, Layer_FX_TO_OUT_Imagestate, Split_FX_TO_OUT_Imagestate, Split_FX_TO_OUT_Imagestate_flipped,
        Split_Arrows_To_FX_L_TO_R_I, Split_Arrows_To_FX_L_TO_R_II, Split_Arrows_To_FX_R_TO_L_I,
        Split_Arrows_To_FX_R_TO_L_II, Split_Arrows_FX_To_I, Split_Arrows_FX_To_II,
        InitCurrentVoiceText);

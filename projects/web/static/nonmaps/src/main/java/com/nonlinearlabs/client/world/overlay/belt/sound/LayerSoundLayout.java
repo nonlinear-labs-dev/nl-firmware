@@ -1,9 +1,7 @@
 package com.nonlinearlabs.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.Millimeter;
-import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
@@ -34,12 +32,6 @@ public class LayerSoundLayout extends SoundLayout {
 	protected LayerSoundLayout(OverlayLayout parent) {
 		super(parent);
 		setSettings(new LayerSoundSettings(this));
-	}
-
-	@Override
-	public void doLayout(double x, double y, double w, double h) {
-		GWT.log("SingleSoundLayout::doLayout" + x + "/" + y + " " + w + "/" + h);
-		super.doLayout(x, y, w, h);
 	}
 
 	private class LayerSoundSettings extends OverlayLayout {

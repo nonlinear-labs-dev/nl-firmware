@@ -109,6 +109,9 @@ public class SplitSoundLayout extends SoundLayout {
 				fb_from_II_Into_I.update(ebp.split_fb_II_into_I);
 				fb_from_II_Into_II.update(ebp.split_fb_II_into_II);
 
+				IItoOut.update(ebp.splitToOut);
+				ItoOut.update(ebp.splitToOut);
+
 				return true;
 			});
 		}

@@ -233,6 +233,8 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         bruteForceSoundBeltArrowStates();
         calculateSerialFx();
         calculateFXUnused();
+
+        notifyChanges();
     }
 
     private void calculateSerialFx() {
@@ -525,11 +527,14 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         var part_mute_I = model.getParameter(new ParameterId(395, VoiceGroup.I)).value.getQuantizedAndClipped(true);
         var part_mute_II = model.getParameter(new ParameterId(395, VoiceGroup.II)).value.getQuantizedAndClipped(true);
         
-        if(part_vol_I > 0 && (part_vol_II == 0 || part_mute_II == 1))
+        var part_I_muted = part_mute_I == 1;
+        var part_II_muted = part_mute_II == 1;
+
+        if(part_vol_I > 0 && (part_vol_II == 0 || part_II_muted) && !part_I_muted)
             return GenericArrowEnum.PartI;
-        else if(part_vol_II > 0 && (part_vol_I == 0 || part_mute_I == 1))
+        else if(part_vol_II > 0 && (part_vol_I == 0 || part_I_muted) && !part_II_muted)
             return GenericArrowEnum.PartII;
-        else if(part_vol_I > 0 && part_vol_II > 0)
+        else if(part_vol_I > 0 && part_vol_II > 0 && !part_I_muted && !part_II_muted)
             return GenericArrowEnum.PartI_PartII;
         
         return GenericArrowEnum.None;

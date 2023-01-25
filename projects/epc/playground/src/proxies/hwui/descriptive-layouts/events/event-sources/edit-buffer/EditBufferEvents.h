@@ -250,6 +250,12 @@ namespace DescriptiveLayouts
     void onChange(const EditBuffer* eb) override;
   };
 
+  class Layer_FX_TO_OUT_Visibility : public EditBufferEvent<bool>
+  {
+   public:
+    void onChange(const EditBuffer* eb) override;
+  };
+
   class Split_FX_TO_OUT_Imagestate : public EditBufferEvent<std::string>
   {
    public:
