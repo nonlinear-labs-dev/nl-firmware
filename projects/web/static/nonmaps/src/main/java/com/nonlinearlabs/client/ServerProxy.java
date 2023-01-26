@@ -1324,4 +1324,18 @@ public class ServerProxy {
 					}
 				});
 	}
+
+	public void getVoiceGroupsWhereFXIsUnused(Preset p, Consumer<String> cb) {
+		downloadFile("/presets/isFXUnused?uuid=" + URL.encodeQueryString(p.getUUID()),
+		new DownloadHandler() {
+			@Override
+			public void onFileDownloaded(String text) {
+				cb.accept(text);
+			}
+
+			@Override
+			public void onError() {
+			}
+		});
+	}
 }

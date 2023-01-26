@@ -22,6 +22,8 @@
 #include <Application.h>
 #include <device-settings/DateTimeAdjustment.h>
 #include "use-cases/SplashScreenUseCases.h"
+#include <presets/PresetParameter.h>
+#include <parameters/presenter-rules/ParameterPresenterRules.h>
 
 PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, PresetManager& presetManager,
                                            AudioEngineProxy& aeProxy, Settings& settings)
@@ -169,6 +171,28 @@ PresetManagerActions::PresetManagerActions(UpdateDocumentContributor* parent, Pr
               auto bank = Application::get().getPresetManager()->findBank(Uuid { bankUuid });
               PresetManagerUseCases useCase { m_presetManager, m_settings };
               useCase.selectMidiBank(bank);
+            });
+
+  addAction("isFXUnused",
+            [&](const std::shared_ptr<NetworkRequest>& request) mutable
+            {
+              if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
+              {
+                auto presetUUID = request->get("uuid", "");
+                if(auto preset = Application::get().getPresetManager()->findPreset(Uuid { presetUUID }))
+                {
+                  auto fxI_unused = ParameterPresenterRules::isPresetFXUnused_I(preset);
+                  auto fxII_unused = ParameterPresenterRules::isPresetFXUnused_II(preset);
+                  if(fxI_unused && fxII_unused)
+                    http->respond("both");
+                  else if(fxI_unused)
+                    http->respond("I");
+                  else if(fxII_unused)
+                    http->respond("II");
+                  else
+                    http->respond("none");
+                }
+              }
             });
 }
 
