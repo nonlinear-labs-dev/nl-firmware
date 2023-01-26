@@ -84,10 +84,6 @@ body {
         border-radius: 2mm;
     }
 
-    ::-webkit-scrollbar-thumb:hover {
-        background: #ffffff;
-    }
-
     ::-webkit-scrollbar-track {
         background: #666666;
         border: 69px none #ffffff;
@@ -228,12 +224,12 @@ body {
             border-radius: 2mm;
             width: 9mm;
             height: 9mm;
-            font-size: 7mm;
-            line-height: 7mm;
             background-color: #434343;
             margin-left: 3mm;
-            text-rendering: geometricPrecision;
-            padding-left: 0.17mm;
+
+            svg {
+                margin: 3px;
+            }
         }
 
         button.settings.active {
@@ -275,7 +271,7 @@ body {
         display: block;
         padding: 2mm;
         width: 100%;
-        padding-top: 0.2 * @the-green-distance;
+        padding-top: 0;
         padding-bottom: @the-red-distance;
 
         .arrow {
@@ -296,7 +292,6 @@ body {
             background-color: transparent;
             font-size: 6mm;
             padding-top: 0.5mm;
-            margin-right: 3mm;
         }
 
         button.toggle {
@@ -312,6 +307,7 @@ body {
             background-color: @bank-selection-background-color;
             text-align: left;
             font-size: 5mm;
+            overflow: hidden;
 
             * {
                 display: inline-block;
@@ -322,6 +318,7 @@ body {
                 width: 16mm;
                 justify-content: space-between;
                 margin-right: 2mm;
+                flex-shrink: 0;
             }
 
             #select-previous-bank,
@@ -341,19 +338,20 @@ body {
 
             .title {
                 pointer-events: none;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                flex-grow: 1;
             }
 
             .symbol {
-                position: absolute;
-                display: flex;
+                display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                right: 2mm;
                 width: 7mm;
                 height: 7mm;
                 font-size: 6mm;
                 text-align: center;
-                font-weight: bolder;
                 margin-bottom: 2px;
                 pointer-events: none;
             }
@@ -367,6 +365,10 @@ body {
     .select-pane-container {
         display: flex;
         justify-content: center;
+
+        ::-webkit-scrollbar-track {
+            border-bottom-right-radius: 2mm;
+        }
 
         .select-pane {
             position: fixed;
@@ -414,6 +416,13 @@ body {
                         color: white;
                         font-size: 4mm;
                         line-height: 7mm;
+                        overflow: hidden;
+
+                        .name {
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                        }
                     }
 
                     .select .check.hidden {

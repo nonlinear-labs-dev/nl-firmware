@@ -47,7 +47,13 @@
         {{ > presetSearchColor "orange" }}
         {{ > presetSearchColor "purple" }}
         {{ > presetSearchColor "red" }}
-        <button {{ searchSettingsAttributes }}>&#xe186;</button>
+        <button {{ searchSettingsAttributes }}>
+            <svg viewBox="0 0 500 500">
+                <path fill="currentColor"
+                    d="M 250 145 C 192 145 145 192 145 251 C 145 309 192 356 250 356 C 308 356 355 309 355 251 C 355 192 308 145 250 145 Z M 499 283 L 440 299 C 435 317 429 335 419 351 L 449 404 L 403 450 L 350 420 C 334 429 317 437 299 441 L 283 500 L 217 500 L 201 441 C 183 437 166 429 150 420 L 97 450 L 51 404 L 81 351 C 72 335 65 317 60 299 L 2 283 L 2 218 L 60 202 C 65 183 72 166 81 150 L 51 97 L 97 50 L 150 81 C 166 71 183 64 201 59 L 217 1 L 283 1 L 299 59 C 317 64 334 71 350 81 L 403 50 L 449 97 L 419 150 C 429 166 435 183 440 202 L 499 218 L 499 283 Z ">
+                </path>
+            </svg>
+        </button>
     </div>
     <div id="settings-pane-container" class="settings-pane-container">
         <div class="settings-pane">
