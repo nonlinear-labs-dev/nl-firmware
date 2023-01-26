@@ -315,13 +315,11 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         var to_fx_I = model.getParameter(new ParameterId(362, VoiceGroup.I)).value.getQuantizedAndClipped(true);
         var to_fx_II = model.getParameter(new ParameterId(362, VoiceGroup.II)).value.getQuantizedAndClipped(true);
         
-        var outmix_I_infinite = outmix_I_lvl == 0;
         var outmix_II_infinite = outmix_II_lvl == 0;
         var outmix_I_open = outmix_I_lvl > 0;
         var outmix_II_open = outmix_II_lvl > 0;
         var FX_I_TO_I_ONLY = to_fx_I == 0;
         var FX_II_TO_II_ONLY = to_fx_II == 0;
-        var FX_I_TO_II_ONLY = to_fx_I == 1;
         var FX_II_TO_I_ONLY = to_fx_II == 1;
         var FX_I_TO_BOTH = to_fx_I > 0 && to_fx_I < 1;
         var FX_II_TO_BOTH = to_fx_II > 0 && to_fx_II < 1;
@@ -332,32 +330,16 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             return true;
         else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_I_ONLY)
             return true;
-        else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_BOTH)
-            return false;
-        else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_I_ONLY)
-            return false;
         else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_BOTH)
             return true;
         else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_II_ONLY)
             return true;
         else if(outmix_I_open && outmix_II_infinite && FX_I_TO_BOTH)
             return true;
-        else if(outmix_I_open && outmix_II_infinite && FX_I_TO_II_ONLY)
-            return false;
         else if(outmix_I_open && outmix_II_infinite && FX_I_TO_I_ONLY)
             return true;
-        else if(outmix_II_open && outmix_I_infinite && FX_II_TO_BOTH)
-            return false;
-        else if(outmix_II_open && outmix_I_infinite && FX_II_TO_I_ONLY)
-            return false;
-        else if(outmix_II_open && outmix_I_infinite && FX_II_TO_II_ONLY)
-            return false;
         else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_I_ONLY)
             return true;
-        else if(outmix_I_open && outmix_II_open && FX_II_TO_II_ONLY && FX_I_TO_II_ONLY)
-            return false;
-        else if(outmix_I_infinite && outmix_II_infinite)
-            return false;
         
         return false;
     }
@@ -368,11 +350,9 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         var to_fx_I = model.getParameter(new ParameterId(362, VoiceGroup.I)).value.getQuantizedAndClipped(true);
         var to_fx_II = model.getParameter(new ParameterId(362, VoiceGroup.II)).value.getQuantizedAndClipped(true);
         
-        var outmix_I_infinite = outmix_I_lvl == 0;
         var outmix_II_infinite = outmix_II_lvl == 0;
         var outmix_I_open = outmix_I_lvl > 0;
         var outmix_II_open = outmix_II_lvl > 0;
-        var FX_I_TO_I_ONLY = to_fx_I == 0;
         var FX_II_TO_II_ONLY = to_fx_II == 0;
         var FX_I_TO_II_ONLY = to_fx_I == 1;
         var FX_II_TO_I_ONLY = to_fx_II == 1;
@@ -389,28 +369,12 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             return true;
         else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_I_ONLY)
             return true;
-        else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_BOTH)
-            return false;
-        else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_II_ONLY)
-            return false;
         else if(outmix_I_open && outmix_II_infinite && FX_I_TO_BOTH)
             return true;
         else if(outmix_I_open && outmix_II_infinite && FX_I_TO_II_ONLY)
             return true;
-        else if(outmix_I_open && outmix_II_infinite && FX_I_TO_I_ONLY)
-            return false;
-        else if(outmix_II_open && outmix_I_infinite && FX_II_TO_BOTH)
-            return false;
-        else if(outmix_II_open && outmix_I_infinite && FX_II_TO_I_ONLY)
-            return false;
-        else if(outmix_II_open && outmix_I_infinite && FX_II_TO_II_ONLY)
-            return false;
-        else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_I_ONLY)
-            return false;
         else if(outmix_I_open && outmix_II_open && FX_II_TO_II_ONLY && FX_I_TO_II_ONLY)
             return true;
-        else if(outmix_I_infinite && outmix_II_infinite)
-            return false;
             
         return false;    
     }
@@ -422,11 +386,9 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         var to_fx_II = model.getParameter(new ParameterId(362, VoiceGroup.II)).value.getQuantizedAndClipped(true);
         
         var outmix_I_infinite = outmix_I_lvl == 0;
-        var outmix_II_infinite = outmix_II_lvl == 0;
         var outmix_I_open = outmix_I_lvl > 0;
         var outmix_II_open = outmix_II_lvl > 0;
         var FX_I_TO_I_ONLY = to_fx_I == 0;
-        var FX_II_TO_II_ONLY = to_fx_II == 0;
         var FX_I_TO_II_ONLY = to_fx_I == 1;
         var FX_II_TO_I_ONLY = to_fx_II == 1;
         var FX_I_TO_BOTH = to_fx_I > 0 && to_fx_I < 1;
@@ -434,8 +396,6 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
 
         if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_BOTH)
             return true;
-        else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_II_ONLY)
-            return false;
         else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_I_ONLY)
             return true;
         else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_BOTH)
@@ -444,26 +404,12 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             return true;
         else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_BOTH)
             return true;
-        else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_II_ONLY)
-            return false;
-        else if(outmix_I_open && outmix_II_infinite && FX_I_TO_BOTH)
-            return false;
-        else if(outmix_I_open && outmix_II_infinite && FX_I_TO_II_ONLY)
-            return false;
-        else if(outmix_I_open && outmix_II_infinite && FX_I_TO_I_ONLY)
-            return false;
         else if(outmix_II_open && outmix_I_infinite && FX_II_TO_BOTH)
             return true;
         else if(outmix_II_open && outmix_I_infinite && FX_II_TO_I_ONLY)
             return true;
-        else if(outmix_II_open && outmix_I_infinite && FX_II_TO_II_ONLY)
-            return false;
         else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_I_ONLY)
             return true;
-        else if(outmix_I_open && outmix_II_open && FX_II_TO_II_ONLY && FX_I_TO_II_ONLY)
-            return false;
-        else if(outmix_I_infinite && outmix_II_infinite)
-            return false;
                 
         return false;    
     }
@@ -475,13 +421,11 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         var to_fx_II = model.getParameter(new ParameterId(362, VoiceGroup.II)).value.getQuantizedAndClipped(true);
         
         var outmix_I_infinite = outmix_I_lvl == 0;
-        var outmix_II_infinite = outmix_II_lvl == 0;
         var outmix_I_open = outmix_I_lvl > 0;
         var outmix_II_open = outmix_II_lvl > 0;
         var FX_I_TO_I_ONLY = to_fx_I == 0;
         var FX_II_TO_II_ONLY = to_fx_II == 0;
         var FX_I_TO_II_ONLY = to_fx_I == 1;
-        var FX_II_TO_I_ONLY = to_fx_II == 1;
         var FX_I_TO_BOTH = to_fx_I > 0 && to_fx_I < 1;
         var FX_II_TO_BOTH = to_fx_II > 0 && to_fx_II < 1;
 
@@ -489,34 +433,18 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             return true;
         else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_II_ONLY)
             return true;
-        else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_I_ONLY)
-            return false;
         else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_BOTH)
             return true;
-        else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_I_ONLY)
-            return false;
         else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_BOTH)
             return true;
         else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_II_ONLY)
             return true;
-        else if(outmix_I_open && outmix_II_infinite && FX_I_TO_BOTH)
-            return false;
-        else if(outmix_I_open && outmix_II_infinite && FX_I_TO_II_ONLY)
-            return false;
-        else if(outmix_I_open && outmix_II_infinite && FX_I_TO_I_ONLY)
-            return false;
         else if(outmix_II_open && outmix_I_infinite && FX_II_TO_BOTH)
             return true;
-        else if(outmix_II_open && outmix_I_infinite && FX_II_TO_I_ONLY)
-            return false;
         else if(outmix_II_open && outmix_I_infinite && FX_II_TO_II_ONLY)
             return true;
-        else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_I_ONLY)
-            return false;
         else if(outmix_I_open && outmix_II_open && FX_II_TO_II_ONLY && FX_I_TO_II_ONLY)
             return true;
-        else if(outmix_I_infinite && outmix_II_infinite)
-            return false;
         
         return false;    
     }
