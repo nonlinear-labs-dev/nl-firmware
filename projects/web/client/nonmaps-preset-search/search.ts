@@ -4,7 +4,7 @@ import { Tracker } from "meteor/tracker";
 import { globals, glue } from "../glue";
 import "./search-result-preset";
 import "./search.html";
-import { cachedSearch, getPresetHeight, scrollY } from "./shared-state";
+import { cachedSearch, currentContextMenuItem, getPresetHeight, multipleSelection, multipleSelectionStartedByShiftClick, numPresetsBeforeFirstVisible, scrollY } from "./shared-state";
 
 type StringArray = Array<String>;
 enum SearchOperator { And, Or }
@@ -78,7 +78,6 @@ function doesPresetMatch(preset: any, searchOptions: SearchOptions, subquery: St
     return false;
 }
 
-
 function getPresetSortKey(lhs: any, rhs: any, by: SortBy): number {
     switch (by) {
         case SortBy.Number:
@@ -119,8 +118,6 @@ function getPresetSortResult(lhs: any, rhs: any): number {
 }
 
 function performSearch() {
-    console.log("start search");
-
     const query = searchQuery.get().trim().toLowerCase().split(" ");
     const banks: Array<String> = searchBanks.get().length != 0 ? searchBanks.get() : syncedDatabase.queryItem("/preset-manager")?.['banks'];
     const colors = searchColors.get();
@@ -139,7 +136,6 @@ function performSearch() {
     if (!ret)
         ret = [];
 
-    console.log("finished search with #results: ", ret.length);
     return ret;
 }
 
@@ -200,7 +196,6 @@ function selectPreset(what: string) {
     }
 }
 
-
 function changeSortOrder(by: SortBy) {
     var o = searchOptions.get();
     if (o.sorting[0].by == by) {
@@ -233,7 +228,8 @@ function syncCollapsedState(collapsed: boolean) {
 }
 
 function getSearchResultScrollOffset() {
-    return scrollY.get() - scrollY.get() % getPresetHeight();
+    const h = getPresetHeight();
+    return scrollY.get() - scrollY.get() % h - h * numPresetsBeforeFirstVisible;
 }
 
 function isEventOutsideVisibleBankSelectPane(event): boolean {
@@ -250,8 +246,8 @@ function isEventOutsideVisibleBankSelectPane(event): boolean {
 }
 
 document.addEventListener('click', (event) => {
-    var toggleButton = $(".banks .toggle")[0];
-    if (toggleButton == event.target)
+    const classes = (event.target as Element).classList;
+    if (classes && (classes.contains("no-close-bank-menu")))
         return;
 
     if (isEventOutsideVisibleBankSelectPane(event))
@@ -264,32 +260,47 @@ document.addEventListener('wheel', (event) => {
         event.stopImmediatePropagation();
 }, true);
 
+function findPresetTarget(event: JQuery.Event): string {
+    var presetHeight = getPresetHeight();
+    const scroller = document.getElementById("preset-search-results-scroller")!;
+    const top = scroller.getBoundingClientRect().top;
+    var offsetY = scrollY.get() + event.clientY! - top;
+    var idx = offsetY / presetHeight;
+    const searchResult = cachedSearch.get();
+    return searchResult[(Math.floor(idx))]!;
+}
+
+function sendEventToPresetWithId(id: string, name: string, event: JQuery.Event | null) {
+    const preset = document.getElementById(id);
+    preset?.dispatchEvent(new CustomEvent(name, { detail: { originalEvent: event } }));
+}
+
+function sendEventToPreset(name: string, event: JQuery.Event): string {
+    const presetId = findPresetTarget(event);
+    sendEventToPresetWithId(presetId, name, event);
+    return presetId;
+}
+
 glue("nonmapsPresetSearch",
     (id, innerState) => {
         const searchResult = cachedSearch.get();
-        const options = searchOptions.get().sorting;
-        const maxPresetsVisibleOnOnePage = 100;
         const scroller = document.getElementById("preset-search-results-scroller");
 
         if (scroller) {
             var presetHeight = getPresetHeight();
-            var paneHeight = presetHeight * searchResult.length;
+            var paneHeight = presetHeight * (searchResult.length + numPresetsBeforeFirstVisible);
             var maxScroll = paneHeight - scroller!.clientHeight;
             scrollY.set(Math.max(0, Math.min(maxScroll, scrollY.get())));
         }
 
         return {
-            allPresets: searchResult,
-            shownPresets: Array.from(Array(maxPresetsVisibleOnOnePage).keys()),
             collapsed: searchCollapsed.get(),
             numResults: searchResult.length,
             hasSearchQuery: searchQuery.get().length > 0
         }
     }, () => {
         syncCollapsedState(true);
-        return {
-            lastKnownPointerY: 0
-        }
+        return {};
     }, {
     "sortByNumberAttributes"() {
         return {
@@ -319,40 +330,6 @@ glue("nonmapsPresetSearch",
     "timeSortDirectionAttributes"() {
         return {
             class: ["sort ", searchOptions.get().sorting.find(z => z.by == SortBy.Time)!.direction == SortDirection.Asc ? "asc" : "desc"]
-        }
-    },
-    "presetSearchResultsScrollerAttributes"(presenter) {
-        if (showBankSelectPane.get())
-            return {
-                id: "preset-search-results-scroller",
-                style: "overflow: hidden;"
-            }
-
-        return {
-            id: "preset-search-results-scroller",
-            style: "overflow: auto;"
-        }
-    },
-    "presetSearchResultsScrollerPaneAttributes"(presenter) {
-        var presetHeight = getPresetHeight();
-        var paneHeight = presetHeight * presenter.allPresets.length;
-
-        return {
-            id: "preset-search-results-scroller-pane",
-            style: "height: " + paneHeight + "px"
-        }
-    },
-    "presetSearchResultsAttributes"(presenter, innerState) {
-        const ph = getPresetHeight();
-        const scroll = scrollY.get();
-        const offset = scroll / ph;
-        const firstPresetIdx = Math.floor(offset);
-        const numPresets = presenter.allPresets.length;
-        const h = (numPresets - firstPresetIdx) * ph;
-
-        return {
-            id: "preset-search-results",
-            style: "top:" + getSearchResultScrollOffset() + "px; height: " + h + "px;"
         }
     }
 },
@@ -402,31 +379,6 @@ glue("nonmapsPresetSearch",
             else {
                 $("input.search-string").get(0)!.focus();
             }
-        },
-        "scrollY"(event: JQuery.Event, presenter, innerState) {
-            const list = document.getElementById("preset-search-results-scroller")!;
-            list.setPointerCapture(event['originalEvent'].detail.pointerId);
-            list.scrollBy(0, event['originalEvent'].detail.diffY);
-            innerState!.lastKnownPointerY = event['originalEvent'].detail.pageY;
-        },
-        "pointermove"(event: JQuery.Event, presenter, innerState) {
-            const list = document.getElementById("preset-search-results-scroller")!;
-            if (list && list.hasPointerCapture(event['originalEvent'].pointerId)) {
-                const pageY = event['originalEvent'].pageY;
-                const diff = innerState!.lastKnownPointerY - pageY;
-                innerState!.lastKnownPointerY = pageY;
-                list.scrollBy(0, diff);
-            }
-        },
-        "pointerup"(event: JQuery.Event) {
-            const list = document.getElementById("preset-search-results-scroller")!;
-            if (list)
-                list.releasePointerCapture(event['originalEvent'].pointerId);
-        },
-        "scroll #preset-search-results-scroller"(event) {
-            scrollY.set(event['target'].scrollTop);
-            $("#preset-search-results").css("top", getSearchResultScrollOffset() + "px");
-            Tracker.flush();
         }
     });
 
@@ -446,14 +398,19 @@ glue("presetSearchColors",
             }
         }
     }
-
     , {
         "click .settings"(event, presenter, innerState) {
             var v = !innerState!.showSettings.get();
             innerState!.showSettings.set(v);
 
             if (v)
-                $(".settings-pane").slideDown();
+                $(".settings-pane").slideDown({
+                    start: function () {
+                        $(this).css({
+                            display: "flex"
+                        })
+                    }
+                });
             else
                 $(".settings-pane").slideUp();
         }
@@ -531,10 +488,11 @@ glue("bankSelect", (id: string, innerState) => {
                 const b = searchBanks.get()[0];
                 if (presenter.banks.indexOf(b) > 0) {
                     a['style'] = "display: flex";
+                    a['class'] = "no-close-bank-menu";
                 }
                 else {
                     a['style'] = "display: flex";
-                    a['class'] = "disabled";
+                    a['class'] = "disabled no-close-bank-menu";
                 }
             }
             return a;
@@ -545,14 +503,25 @@ glue("bankSelect", (id: string, innerState) => {
                 const b = searchBanks.get()[0];
                 if (presenter.banks.indexOf(b) < presenter.banks.length - 1) {
                     a['style'] = "display: flex";
+                    a['class'] = "no-close-bank-menu";
                 }
                 else {
                     a['style'] = "display: flex";
-                    a['class'] = "disabled";
+                    a['class'] = "disabled no-close-bank-menu";
                 }
             }
             return a;
         },
+        "nextPreviousBankAttribute"(presenter) {
+            var a = { class: "no-close-bank-menu next-prev-bank-buttons", style: "display: none" };
+            if (searchBanks.get().length == 1) {
+                const b = searchBanks.get()[0];
+                if (presenter.banks.indexOf(b) < presenter.banks.length - 1) {
+                    a['style'] = "display: flex";
+                }
+            }
+            return a;
+        }
     }
     , {
         "click #select-previous-bank"(event, presenter) {
@@ -614,3 +583,390 @@ glue("bankOption", (id: string) => {
         searchBanks.set(old.includes(presenter.id) ? old.filter(v => v != presenter.id) : old.concat([presenter.id]));
     }
 });
+
+enum PointerOperation {
+    Scroll,
+    DragPreset,
+    SelectOrLoad,
+    ContextMenu
+}
+
+class Position {
+    public x: number;
+    public y: number;
+}
+
+function getHysteresis() {
+    return document.getElementById("hysteresis")?.clientWidth ?? 10;
+}
+
+class SearchResultsInnerState {
+    constructor(public touchStartTime: null | number = null) {
+    }
+
+    public startContextMenuTimeout(x: number, y: number) {
+        this.cancelContextMenuTimeout();
+        this.touchStartTime = Date.now();
+        this.touchStartPosition = { x: x, y: y };
+    }
+
+    public cancelContextMenuTimeout() {
+        this.touchStartTime = null;
+    }
+
+    public openContextMenu(): boolean {
+        var ret = false;
+        if (this.touchStartTime && Date.now() - this.touchStartTime > 500) {
+            if (this.possibleOperations.has(PointerOperation.ContextMenu)) {
+                const list = document.getElementById("preset-search-results-scroller-pane")!;
+                list.dispatchEvent(new ContextMenuEvent(this.touchStartPosition?.x!, this.touchStartPosition?.y!));
+                this.onContextMenu();
+                ret = true;
+            }
+        }
+        this.touchStartTime = null;
+        return ret;
+    }
+
+    public onPointerDown(event: JQuery.Event): boolean {
+        if (this.pointerDown)
+            return false;
+
+        this.possibleOperations.add(PointerOperation.Scroll);
+        this.possibleOperations.add(PointerOperation.DragPreset);
+        this.possibleOperations.add(PointerOperation.SelectOrLoad);
+        this.possibleOperations.add(PointerOperation.ContextMenu);
+        this.pointerDown = { x: event.clientX!, y: event.clientY! };
+        this.xHysteresisDone = false;
+        this.currentPresetTarget.set(null);
+        return true;
+    }
+
+    public onPointerMove(event: JQuery.Event) {
+        const hysteresis = getHysteresis();
+
+        if (this.pointerDown) {
+            if (Math.abs(event.clientY! - this.pointerDown.y) >= hysteresis) {
+                this.possibleOperations.delete(PointerOperation.DragPreset);
+                this.possibleOperations.delete(PointerOperation.SelectOrLoad);
+                this.possibleOperations.delete(PointerOperation.ContextMenu);
+            }
+            else if (Math.abs(event.clientX! - this.pointerDown.x) >= hysteresis) {
+                this.xHysteresisDone = true;
+                this.possibleOperations.delete(PointerOperation.Scroll);
+                this.possibleOperations.delete(PointerOperation.SelectOrLoad);
+                this.possibleOperations.delete(PointerOperation.ContextMenu);
+            }
+
+            if (this.xHysteresisDone && this.currentPresetTarget.get() == null) {
+                this.currentPresetTarget.set(sendEventToPreset("startDrag", event));
+            }
+            else if (this.currentPresetTarget.get()) {
+                sendEventToPresetWithId(this.currentPresetTarget.get()!, "performDrag", event);
+            }
+        }
+    }
+
+    public onPointerUp(event: JQuery.Event) {
+        if (this.openContextMenu())
+            return;
+
+        this.pointerDown = null;
+
+        if (this.currentPresetTarget.get()) {
+            sendEventToPresetWithId(this.currentPresetTarget.get()!, "stopDrag", event);
+        }
+
+        this.currentPresetTarget.set(null);
+
+        if (this.possibleOperations.has(PointerOperation.SelectOrLoad)) {
+            sendEventToPreset("selectOrLoad", event);
+        }
+    }
+
+    public onLostCapture() {
+        this.pointerDown = null;
+
+        if (this.currentPresetTarget.get()) {
+            sendEventToPresetWithId(this.currentPresetTarget.get()!, "cancelDrag", null);
+        }
+
+        this.currentPresetTarget.set(null);
+    }
+
+    public cancelDragging() {
+        if (this.currentPresetTarget.get()) {
+            sendEventToPresetWithId(this.currentPresetTarget.get()!, "cancelDrag", null);
+        }
+
+        this.currentPresetTarget.set(null);
+    }
+
+    public onContextMenu() {
+        this.possibleOperations.delete(PointerOperation.DragPreset);
+        this.possibleOperations.delete(PointerOperation.SelectOrLoad);
+        this.possibleOperations.delete(PointerOperation.Scroll);
+    }
+
+    public isContextMenuAllowed(): boolean {
+        return this.possibleOperations.has(PointerOperation.ContextMenu);
+    }
+
+    public isDragging() {
+        return this.currentPresetTarget.get() != null;
+    }
+
+    private possibleOperations = new Set<PointerOperation>();
+    private pointerDown: Position | null = null;
+    private touchStartPosition: Position | null = null;
+    private xHysteresisDone = false;
+    private currentPresetTarget = new ReactiveVar<string | null>(null);
+}
+
+
+class ContextMenuEvent extends MouseEvent {
+    constructor(x: number, y: number) {
+        super("contextmenu", {
+            clientX: x,
+            clientY: y,
+            bubbles: true
+        });
+    }
+}
+
+glue("searchResults",
+    () => {
+        const maxPresetsVisibleOnOnePage = 100;
+        return {
+            shownPresets: Array.from(Array(maxPresetsVisibleOnOnePage).keys())
+        }
+    },
+    () => new SearchResultsInnerState(),
+    {
+        "scrollerAttributes"(presenter) {
+            if (showBankSelectPane.get())
+                return {
+                    id: "preset-search-results-scroller",
+                    style: "overflow: hidden;"
+                }
+
+            return {
+                id: "preset-search-results-scroller",
+                style: "overflow: auto;"
+            }
+        },
+        "scrollerPaneAttributes"(presenter) {
+            var presetHeight = getPresetHeight();
+            var paneHeight = presetHeight * (cachedSearch.get().length);
+
+            return {
+                id: "preset-search-results-scroller-pane",
+                style: "height: " + paneHeight + "px"
+            }
+        },
+        "resultsAttributes"(presenter, innerState) {
+            const ph = getPresetHeight();
+            const scroll = scrollY.get();
+            const offset = scroll / ph;
+            const firstPresetIdx = Math.floor(offset);
+            const numPresets = cachedSearch.get().length + numPresetsBeforeFirstVisible;
+            const h = (numPresets - firstPresetIdx) * ph;
+
+            return {
+                id: "preset-search-results",
+                style: "top:" + getSearchResultScrollOffset() + "px; height: " + h + "px;",
+                class: innerState!.isDragging() ? "" : "no-pointer-events"
+            }
+        }
+    },
+    {
+        "touchstart #preset-search-results-scroller-pane"(event, _presenter, innerState) {
+            const o = event['originalEvent'];
+            if (o.touches.length > 1) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                return;
+            }
+            innerState!.startContextMenuTimeout(o.touches[0].clientX, o.touches[0].clientY);
+        },
+        "touchcancel"(event, _presenter, innerState) {
+            const o = event['originalEvent'];
+            if (o.touches.length == 0)
+                innerState!.cancelContextMenuTimeout();
+        },
+        "touchend"(event, _presenter, innerState) {
+            const o = event['originalEvent'];
+            if (o.touches.length == 0)
+                innerState!.openContextMenu();
+        },
+        "pointerdown #preset-search-results-scroller-pane"(event, presenter, innerState) {
+            const list = document.getElementById("preset-search-results-scroller-pane")!;
+            if (innerState!.onPointerDown(event))
+                list.setPointerCapture(event['originalEvent'].pointerId);
+
+        },
+        "pointermove"(event, presenter, innerState) {
+            const o = event['originalEvent'];
+            const list = document.getElementById("preset-search-results-scroller-pane")!;
+            if (list.hasPointerCapture(o.pointerId))
+                innerState!.onPointerMove(event);
+        },
+        "pointerup"(event, presenter, innerState) {
+            const o = event['originalEvent'];
+            const list = document.getElementById("preset-search-results-scroller-pane")!;
+            if (list.hasPointerCapture(o.pointerId)) {
+                list.releasePointerCapture(event['originalEvent'].pointerId);
+                innerState!.onPointerUp(event);
+            }
+        },
+        "lostpointercapture"(event, presenter, innerState) {
+            innerState!.onLostCapture();
+            innerState!.cancelDragging();
+        },
+        "scroll #preset-search-results-scroller"(event, presenter, innerState) {
+            innerState!.cancelContextMenuTimeout();
+            innerState!.cancelDragging();
+            scrollY.set(Math.max(0, event['target'].scrollTop));
+            $("#preset-search-results").css("top", getSearchResultScrollOffset() + "px");
+            Tracker.flush();
+        },
+        "contextmenu"(event, presenter, innerState) {
+            if (!innerState!.isContextMenuAllowed()) {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+                return;
+            }
+            innerState!.onContextMenu();
+        }
+    });
+
+
+$['contextMenu']({
+    selector: '#preset-search-results-scroller-pane',
+    reposition: false,
+    presetUUID: "",
+    events: {
+        show: function (e) {
+            currentContextMenuItem.set(currentContextMenuItem.get().concat([e.presetUUID]));
+        },
+        hide: function (e) {
+            currentContextMenuItem.set(currentContextMenuItem.get().filter(v => v != e.presetUUID));
+        }
+    },
+    build: (_element, event: any) => {
+        const scroller = document.getElementById("preset-search-results-scroller")!;
+        const top = scroller.getBoundingClientRect().top;
+        const originalEvent = event['originalEvent'];
+        var presetHeight = getPresetHeight();
+
+        var offsetY = 0;
+        if (originalEvent) {
+            offsetY = scrollY.get() + originalEvent.clientY - top;
+        }
+        else {
+            offsetY = scrollY.get() + event.pageY - top;
+        }
+
+        var idx = offsetY / presetHeight;
+        const searchResult = cachedSearch.get();
+        const presetId = searchResult[(Math.floor(idx))]!;
+
+        if (multipleSelection.get() && !multipleSelection.get()?.includes(presetId))
+            return false;
+
+        event.data.presetUUID = presetId;
+
+        function addColorBoxToMenuItem(_opt: any, $itemElement: Element, itemKey: string) {
+            var s = $itemElement[0].querySelector("span.color");
+            if (!s || s.length == 0)
+                $itemElement.prepend('<span class="' + itemKey + ' color"></span>');
+        }
+
+        function setSelectedPresetColors(itemKey: string) {
+            if (multipleSelection.get()) {
+                for (var p of multipleSelection.get()!) {
+                    playgroundProxy.setPresetAttribute(p, "color", itemKey);
+                }
+            } else {
+                playgroundProxy.setPresetAttribute(presetId, "color", itemKey);
+            }
+        }
+
+        return {
+            items: {
+                "multiple": {
+                    name: multipleSelection.get() ? "Disable Multiple Selection" : "Start Multiple Selection",
+                    callback: function () {
+                        multipleSelectionStartedByShiftClick.set(false);
+                        multipleSelection.get() ? multipleSelection.set(null) : multipleSelection.set([presetId])
+                    }
+                },
+                "bank": {
+                    name: "Show in Bank",
+                    callback: function () {
+                        window['scrollToNonMapsPreset'](presetId);
+                    }
+                },
+                "preset-info": {
+                    name: "Preset Info",
+                    visible: function (key, opt) {
+                        return !window['isPresetInfoVisible']();
+                    },
+                    callback: function () {
+                        playgroundProxy.selectPreset(presetId);
+                        window['showPresetInfo']();
+                    }
+                },
+                "bank-info": {
+                    name: "Bank Info",
+                    visible: function (key, opt) {
+                        return !window['isBankInfoVisible']();
+                    },
+                    callback: function () {
+                        playgroundProxy.selectPreset(presetId);
+                        window['showBankInfo']();
+                    }
+                },
+                "select-all": {
+                    name: "Select All",
+                    callback: function () {
+                        multipleSelectionStartedByShiftClick.set(true);
+                        multipleSelection.set([...cachedSearch.get()]);
+                    }
+                },
+                "compare-to-editbuffer": {
+                    name: "Compare to Editbuffer...",
+                    visible: function (key, opt) {
+                        return !multipleSelection.get();
+                    },
+                    callback: function () {
+                        window['comparePresetToEditbuffer'](presetId);
+                    }
+                },
+                "compare-to-preset": {
+                    name: "Compare...",
+                    visible: function (key, opt) {
+                        return multipleSelection.get() && multipleSelection.get()?.length == 2;
+                    },
+                    callback: function () {
+                        window['comparePresets'](multipleSelection.get()![0], multipleSelection.get()![1]);
+                    }
+                },
+                "color-tag": {
+                    name: "Color Tag",
+                    className: "color-tags",
+                    items: {
+                        green: { name: "Green", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors },
+                        blue: { name: "Blue", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors },
+                        yellow: { name: "Yellow", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors },
+                        orange: { name: "Orange", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors },
+                        purple: { name: "Purple", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors },
+                        red: { name: "Red", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors },
+                        none: { name: "None", icon: addColorBoxToMenuItem, callback: setSelectedPresetColors }
+                    }
+                }
+            }
+        }
+    }
+});
+
