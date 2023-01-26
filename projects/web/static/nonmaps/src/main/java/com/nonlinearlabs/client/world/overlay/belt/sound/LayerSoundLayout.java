@@ -2,14 +2,16 @@ package com.nonlinearlabs.client.world.overlay.belt.sound;
 
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
-import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.presenters.EditBufferPresenter;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.GenericArrowEnum;
+import com.nonlinearlabs.client.tools.Pair;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
@@ -34,12 +36,39 @@ public class LayerSoundLayout extends SoundLayout {
 	}
 
 	private class LayerSoundSettings extends OverlayLayout {
+		private MappedSvgImage<Boolean> layerToFXArrows1, layerToFXArrows2, layerToFXArrows3, layerToFXArrows4;
+		private OverlayLayout vgI, vgII;
+		private LayerSoundFBIndicator fb;
+		private SVGImage fxI, fxII;
+		private SVGImage serial;
+		private MappedSvgImage<GenericArrowEnum> layerFXToOutArrows;
+
 		LayerSoundSettings(LayerSoundLayout parent) {
 			super(parent);
-			addChild(new LayerSoundFBIndicator(this));
-			addChild(new VoiceGroupSoundSettings(VoiceGroup.I, this));
-			addChild(new VoiceGroupSoundSettings(VoiceGroup.II, this));
-			addChild(new LayerSoundFXIndicator(this));
+			addChild(fb = new LayerSoundFBIndicator(this));
+			addChild(vgI = new VoiceGroupSoundSettings(VoiceGroup.I, this));
+			addChild(vgII = new VoiceGroupSoundSettings(VoiceGroup.II, this));
+			addChild(layerToFXArrows1 = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LT-to-RT.svg"), new Pair<Boolean, String>(false, null)));
+			addChild(layerToFXArrows2 = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LT-to-RB.svg"), new Pair<Boolean, String>(false, null)));
+			addChild(layerToFXArrows3 = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LB-to-RT.svg"), new Pair<Boolean, String>(false, null)));
+			addChild(layerToFXArrows4 = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LB-to-RB.svg"), new Pair<Boolean, String>(false, null)));
+			addChild(fxI = new FX_I_Indicator(this));
+			addChild(fxII = new FX_II_Indicator(this));
+			addChild(serial = new SerialArrow(this));
+			addChild(layerFXToOutArrows = new MappedSvgImage<GenericArrowEnum>(this,
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI, "LT-to-RC.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartII, "LB-to-RC.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI_PartII, "LT-to-RC+LB-to-RC.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.None, null)));
+
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				layerToFXArrows1.update(ebp.layerIToFXI);
+				layerToFXArrows2.update(ebp.layerIToFXII);
+				layerToFXArrows3.update(ebp.layerIIToFXI);
+				layerToFXArrows4.update(ebp.layerIIToFXII);
+				layerFXToOutArrows.update(ebp.layerFXToOut);
+				return true;
+			});
 		}
 
 		@Override
@@ -48,18 +77,28 @@ public class LayerSoundLayout extends SoundLayout {
 			double parts = 20;
 			double unit = h / parts;
 
-			getChildren().get(1).doLayout(0, 1.5 * unit, w, 8 * unit);
-			getChildren().get(2).doLayout(0, 10.5 * unit, w, 8 * unit);
+			vgI.doLayout(0, 1.5 * unit, w, 8 * unit);
+			vgII.doLayout(0, 10.5 * unit, w, 8 * unit);
 
-			LayerSoundFBIndicator fb = (LayerSoundFBIndicator) getChildren().get(0);
 			double fbW = fb.getSelectedImage().getImgWidth();
 			double fbH = fb.getSelectedImage().getImgHeight();
 			fb.doLayout(-fbW, h / 2 - (fbH / 2), fbW, fbH);
 
-			LayerSoundFXIndicator fx = (LayerSoundFXIndicator) getChildren().get(3);
-			double fxW = fb.getSelectedImage().getImgWidth();
-			double fxH = fb.getSelectedImage().getImgHeight();
-			fx.doLayout(w + 9, h / 2 - (fxH / 2), fxW, fxH);
+			double layerWidth = vgI.getPositionRelativeToParent(this).getWidth();
+			double layerToFXWidth = layerToFXArrows1.getPictureWidth();
+			layerToFXArrows1.doLayout(layerWidth, 0, layerToFXWidth, h);
+			layerToFXArrows2.doLayout(layerWidth, 0, layerToFXWidth, h);
+			layerToFXArrows3.doLayout(layerWidth, 0, layerToFXWidth, h);
+			layerToFXArrows4.doLayout(layerWidth, 0, layerToFXWidth, h);
+
+			double fxIWidth = fxI.getPictureWidth();
+			fxI.doLayout(layerWidth + layerToFXWidth, 0, fxIWidth, h/2);
+			fxII.doLayout(layerWidth + layerToFXWidth, h/2, fxIWidth, h/2);
+			serial.doLayout(layerWidth + layerToFXWidth, 0, fxIWidth, h);
+
+			double xPos = layerWidth + layerToFXWidth + fxIWidth;
+			double toOutArrowWidth = layerFXToOutArrows.getPictureWidth(); 
+			layerFXToOutArrows.doLayout(xPos, 0, toOutArrowWidth, h);
 		}
 	}
 

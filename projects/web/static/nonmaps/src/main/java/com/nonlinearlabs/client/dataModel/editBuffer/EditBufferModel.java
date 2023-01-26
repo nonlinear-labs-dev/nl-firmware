@@ -32,6 +32,12 @@ public class EditBufferModel extends Notifier<EditBufferModel> {
 		I, II, Global
 	}
 
+	public enum SerialFX {
+        FX_I_IN_II,
+        FX_II_IN_I,
+        None
+    }
+
 	public static class ByVoiceGroup {
 		public HashMap<String, ParameterGroupModel> parameterGroups = new HashMap<String, ParameterGroupModel>();
 		public HashMap<Integer, BasicParameterModel> parameters = new HashMap<Integer, BasicParameterModel>();

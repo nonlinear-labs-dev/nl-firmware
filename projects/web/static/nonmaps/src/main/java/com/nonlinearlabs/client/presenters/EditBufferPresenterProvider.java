@@ -8,6 +8,11 @@ import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.MacroControlParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.GenericArrowEnum;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.SerialFX;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.SingleSoundFBToPoly;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.SingleSoundFXToOut;
+import com.nonlinearlabs.client.presenters.EditBufferPresenter.SingleSoundPolyToFX;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterFactory;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.editBuffer.PhysicalControlParameterModel;
@@ -143,34 +148,19 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     }
 
     private void bruteForce() {
-        boolean anyScaleNotDef = isAnyScaleOffsetParameterNotDefault();
-        if (presenter.isAnyScaleOffsetParameterNotDefault != anyScaleNotDef) {
-            presenter.isAnyScaleOffsetParameterNotDefault = anyScaleNotDef;
-            notifyChanges();
-        }
+        int oldPresenterHash = presenter.hashCode();
 
+        presenter.isAnyScaleOffsetParameterNotDefault = isAnyScaleOffsetParameterNotDefault();
+        
         boolean anyChanged = isAnyParameterChanged();
         if (model.soundType.getValue() != SoundType.Single) {
             anyChanged |= isPartLabelChanged(VoiceGroup.I) || isPartLabelChanged(VoiceGroup.II);
         }
 
-        if (presenter.isAnyParameterChanged != anyChanged) {
-            presenter.isAnyParameterChanged = anyChanged;
-            notifyChanges();
-        }
-
-        boolean anyLocked = isAnyParameterLocked();
-        if (anyLocked != presenter.isAnyParameterLocked) {
-            presenter.isAnyParameterLocked = anyLocked;
-            notifyChanges();
-        }
-
-        boolean allLocked = areAllParametersLocked();
-        if (allLocked != presenter.allParametersLocked) {
-            presenter.allParametersLocked = allLocked;
-            notifyChanges();
-        }
-
+        presenter.isAnyParameterChanged = anyChanged;
+        presenter.isAnyParameterLocked = isAnyParameterLocked();
+        presenter.allParametersLocked = areAllParametersLocked();
+        
         if (model.soundType.getValue() == SoundType.Split) {
             BasicParameterModel sI = model.getParameter(new ParameterId(356, VoiceGroup.I));
             BasicParameterModel sII = model.getParameter(new ParameterId(356, VoiceGroup.II));
@@ -181,51 +171,332 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             double iII = dII.intValue();
             boolean splitOverlap = iI >= iII;
             presenter.splitOverlap = splitOverlap;
-            notifyChanges();
         } else if (presenter.splitOverlap != false) {
             presenter.splitOverlap = false;
-            notifyChanges();
         }
 
         if (model.soundType.getValue() == SoundType.Split) {
-            boolean lfxI = isCrossFX(VoiceGroup.II);
-            boolean lfxII = isCrossFX(VoiceGroup.I);
-
-            if (lfxI != presenter.splitFXToI || lfxII != presenter.splitFXToII) {
-                presenter.splitFXToI = lfxI;
-                presenter.splitFXToII = lfxII;
-                notifyChanges();
-            }
-        } else if (presenter.splitFXToI != false || presenter.splitFXToII != false) {
+            presenter.splitFXToI = isCrossFX(VoiceGroup.II);
+            presenter.splitFXToII = isCrossFX(VoiceGroup.I);
+        } else {
             presenter.splitFXToI = false;
             presenter.splitFXToII = false;
-            notifyChanges();
         }
 
         if (model.soundType.getValue() == SoundType.Layer) {
-            boolean fbI = isLayerFB(VoiceGroup.I);
-            boolean fbII = isLayerFB(VoiceGroup.II);
-            boolean fxI = isCrossFX(VoiceGroup.II);
-            boolean fxII = isCrossFX(VoiceGroup.I);
-
-            if (fbI != presenter.layerFBI || fbII != presenter.layerFBII || fxI != presenter.layerFXToI
-                    || fxII != presenter.layerFXToII) {
-                presenter.layerFBI = fbI;
-                presenter.layerFBII = fbII;
-                presenter.layerFXToI = fxI;
-                presenter.layerFXToII = fxII;
-                notifyChanges();
-            }
-        } else if (presenter.layerFBI != false || presenter.layerFBII != false || presenter.layerFXToI != false
-                || presenter.layerFXToII != false) {
+            presenter.layerFBI = isLayerFB(VoiceGroup.I);
+            presenter.layerFBII = isLayerFB(VoiceGroup.II);
+            presenter.layerFXToI = isCrossFX(VoiceGroup.II);
+            presenter.layerFXToII = isCrossFX(VoiceGroup.I);
+        } else  {
             presenter.layerFBI = false;
             presenter.layerFBII = false;
             presenter.layerFXToI = false;
             presenter.layerFXToII = false;
-            notifyChanges();
         }
 
+        bruteForceSoundBeltArrowStates();
+        calculateSerialFx();
         calculateFXUnused();
+
+        if(oldPresenterHash != presenter.hashCode())
+        {
+            notifyChanges();
+        }
+    }
+
+    private void calculateSerialFx() {
+        var serialFXCp = model.getParameter(new ParameterId(408, VoiceGroup.Global)).value.getQuantizedAndClipped(true);
+        if(serialFXCp > 0)
+            presenter.serialFX = SerialFX.FX_I_IN_II;
+        else if(serialFXCp < 0)
+            presenter.serialFX = SerialFX.FX_II_IN_I;
+        else
+            presenter.serialFX = SerialFX.None;
+    }
+
+    private void bruteForceSoundBeltArrowStates() {
+        presenter.splitToFXArrow_I = calculateSplitToFXArrow(VoiceGroup.I);
+        presenter.splitToFXArrow_II = calculateSplitToFXArrow(VoiceGroup.II);
+
+        presenter.splitToOut = calculateSplitToOutArrow();
+
+        presenter.split_fb_I_into_I = calculateSplitFeedbackFromI_into_I();
+        presenter.split_fb_I_into_II = calculateSplitFeedbackFromI_into_II();
+        presenter.split_fb_II_into_I = calculateSplitFeedbackFromII_into_I();
+        presenter.split_fb_II_into_II = calculateSplitFeedbackFromII_into_II();
+
+
+        presenter.layerFXToOut = calculateLayerFXToOut();
+        presenter.layerIToFXI = calculateLayerIToFXI();
+        presenter.layerIToFXII = calculateLayerIToFXII();
+        presenter.layerIIToFXI = calculateLayerIIToFXI();
+        presenter.layerIIToFXII = calculateLayerIIToFXII();
+
+        presenter.isSingleSoundFeedbackToPolyActive = calculateSingleSoundFeedbackToPolyActive();
+        presenter.fbToPolyArrowState = calculateSingleSoundPolyArrowState();
+        presenter.polyToFX = calculateSingleSoundPolyToFXState();
+        presenter.fxToOut = calculateSingleSoundFXToOutState();
+    }
+
+    public SingleSoundFXToOut calculateSingleSoundFXToOutState() {
+        var cp = model.getParameter(new ParameterId(428, VoiceGroup.Global)).value.getQuantizedAndClipped(true);
+        if(cp == 0) {
+            return SingleSoundFXToOut.FXI;
+        } else if(cp == 1) {
+            return SingleSoundFXToOut.FXII;
+        } else {
+            return SingleSoundFXToOut.FXI_FXII;
+        }
+    }
+
+    public SingleSoundPolyToFX calculateSingleSoundPolyToFXState() {
+        var cp = model.getParameter(new ParameterId(362, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        if(cp > 0 && cp < 1){
+            return SingleSoundPolyToFX.Poly_To_FXI_FXII;
+        } else if(cp == 0) {
+            return SingleSoundPolyToFX.Poly_To_FXI;
+        } else {
+            return SingleSoundPolyToFX.Poly_To_FXII;
+        }
+    }
+
+    public SingleSoundFBToPoly calculateSingleSoundPolyArrowState() {
+        var cp = model.getParameter(new ParameterId(354, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        if(cp > 0 && cp < 1)
+            return SingleSoundFBToPoly.FXI_FXII_To_Poly;
+        else if(cp == 0)
+            return SingleSoundFBToPoly.FXI_To_Poly;
+        else
+            return SingleSoundFBToPoly.FXII_To_Poly;
+    }
+
+    public boolean calculateSingleSoundFeedbackToPolyActive() {
+        var fb_mix_fx = model.getParameter(new ParameterId(160, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var fb_mix_lvl = model.getParameter(new ParameterId(299, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        return fb_mix_fx != 0 && fb_mix_lvl > 0 && isFeedbackUsed(VoiceGroup.I);
+    }
+
+    public boolean calculateLayerIToFXI() {
+        var outmix_I_lvl = model.getParameter(new ParameterId(185, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var outmix_II_lvl = model.getParameter(new ParameterId(185, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        var to_fx_I = model.getParameter(new ParameterId(362, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var to_fx_II = model.getParameter(new ParameterId(362, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        
+        var outmix_II_infinite = outmix_II_lvl == 0;
+        var outmix_I_open = outmix_I_lvl > 0;
+        var outmix_II_open = outmix_II_lvl > 0;
+        var FX_I_TO_I_ONLY = to_fx_I == 0;
+        var FX_II_TO_II_ONLY = to_fx_II == 0;
+        var FX_II_TO_I_ONLY = to_fx_II == 1;
+        var FX_I_TO_BOTH = to_fx_I > 0 && to_fx_I < 1;
+        var FX_II_TO_BOTH = to_fx_II > 0 && to_fx_II < 1;
+
+        if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_BOTH)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_II_ONLY)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_I_ONLY)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_BOTH)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_II_ONLY)
+            return true;
+        else if(outmix_I_open && outmix_II_infinite && FX_I_TO_BOTH)
+            return true;
+        else if(outmix_I_open && outmix_II_infinite && FX_I_TO_I_ONLY)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_I_ONLY)
+            return true;
+        
+        return false;
+    }
+
+    public boolean calculateLayerIToFXII() {
+        var outmix_I_lvl = model.getParameter(new ParameterId(185, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var outmix_II_lvl = model.getParameter(new ParameterId(185, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        var to_fx_I = model.getParameter(new ParameterId(362, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var to_fx_II = model.getParameter(new ParameterId(362, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        
+        var outmix_II_infinite = outmix_II_lvl == 0;
+        var outmix_I_open = outmix_I_lvl > 0;
+        var outmix_II_open = outmix_II_lvl > 0;
+        var FX_II_TO_II_ONLY = to_fx_II == 0;
+        var FX_I_TO_II_ONLY = to_fx_I == 1;
+        var FX_II_TO_I_ONLY = to_fx_II == 1;
+        var FX_I_TO_BOTH = to_fx_I > 0 && to_fx_I < 1;
+        var FX_II_TO_BOTH = to_fx_II > 0 && to_fx_II < 1;
+
+        if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_BOTH)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_II_ONLY)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_I_ONLY)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_BOTH)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_I_ONLY)
+            return true;
+        else if(outmix_I_open && outmix_II_infinite && FX_I_TO_BOTH)
+            return true;
+        else if(outmix_I_open && outmix_II_infinite && FX_I_TO_II_ONLY)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_II_TO_II_ONLY && FX_I_TO_II_ONLY)
+            return true;
+            
+        return false;    
+    }
+
+    public boolean calculateLayerIIToFXI() {
+        var outmix_I_lvl = model.getParameter(new ParameterId(185, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var outmix_II_lvl = model.getParameter(new ParameterId(185, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        var to_fx_I = model.getParameter(new ParameterId(362, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var to_fx_II = model.getParameter(new ParameterId(362, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        
+        var outmix_I_infinite = outmix_I_lvl == 0;
+        var outmix_I_open = outmix_I_lvl > 0;
+        var outmix_II_open = outmix_II_lvl > 0;
+        var FX_I_TO_I_ONLY = to_fx_I == 0;
+        var FX_I_TO_II_ONLY = to_fx_I == 1;
+        var FX_II_TO_I_ONLY = to_fx_II == 1;
+        var FX_I_TO_BOTH = to_fx_I > 0 && to_fx_I < 1;
+        var FX_II_TO_BOTH = to_fx_II > 0 && to_fx_II < 1;
+
+        if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_BOTH)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_I_ONLY)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_BOTH)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_I_ONLY)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_BOTH)
+            return true;
+        else if(outmix_II_open && outmix_I_infinite && FX_II_TO_BOTH)
+            return true;
+        else if(outmix_II_open && outmix_I_infinite && FX_II_TO_I_ONLY)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_I_ONLY)
+            return true;
+                
+        return false;    
+    }
+
+    public boolean calculateLayerIIToFXII() {
+        var outmix_I_lvl = model.getParameter(new ParameterId(185, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var outmix_II_lvl = model.getParameter(new ParameterId(185, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        var to_fx_I = model.getParameter(new ParameterId(362, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var to_fx_II = model.getParameter(new ParameterId(362, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        
+        var outmix_I_infinite = outmix_I_lvl == 0;
+        var outmix_I_open = outmix_I_lvl > 0;
+        var outmix_II_open = outmix_II_lvl > 0;
+        var FX_I_TO_I_ONLY = to_fx_I == 0;
+        var FX_II_TO_II_ONLY = to_fx_II == 0;
+        var FX_I_TO_II_ONLY = to_fx_I == 1;
+        var FX_I_TO_BOTH = to_fx_I > 0 && to_fx_I < 1;
+        var FX_II_TO_BOTH = to_fx_II > 0 && to_fx_II < 1;
+
+        if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_BOTH)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_BOTH && FX_II_TO_II_ONLY)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_II_ONLY && FX_II_TO_BOTH)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_BOTH)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_I_TO_I_ONLY && FX_II_TO_II_ONLY)
+            return true;
+        else if(outmix_II_open && outmix_I_infinite && FX_II_TO_BOTH)
+            return true;
+        else if(outmix_II_open && outmix_I_infinite && FX_II_TO_II_ONLY)
+            return true;
+        else if(outmix_I_open && outmix_II_open && FX_II_TO_II_ONLY && FX_I_TO_II_ONLY)
+            return true;
+        
+        return false;    
+    }
+
+    public GenericArrowEnum calculateLayerFXToOut() {
+        var part_vol_I = model.getParameter(new ParameterId(358, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var part_vol_II = model.getParameter(new ParameterId(358, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        var part_mute_I = model.getParameter(new ParameterId(395, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var part_mute_II = model.getParameter(new ParameterId(395, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        
+        var part_I_muted = part_mute_I == 1;
+        var part_II_muted = part_mute_II == 1;
+
+        if(part_vol_I > 0 && (part_vol_II == 0 || part_II_muted) && !part_I_muted)
+            return GenericArrowEnum.PartI;
+        else if(part_vol_II > 0 && (part_vol_I == 0 || part_I_muted) && !part_II_muted)
+            return GenericArrowEnum.PartII;
+        else if(part_vol_I > 0 && part_vol_II > 0 && !part_I_muted && !part_II_muted)
+            return GenericArrowEnum.PartI_PartII;
+        
+        return GenericArrowEnum.None;
+    }
+
+    public boolean calculateSplitFeedbackFromI_into_I() {
+        var fb_mix_fx_src = model.getParameter(new ParameterId(354, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var fb_mix_fx = model.getParameter(new ParameterId(160, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var fb_mix_lvl = model.getParameter(new ParameterId(299, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        return fb_mix_fx_src < 1 && fb_mix_fx != 0 && fb_mix_lvl > 0 && isFeedbackUsed(VoiceGroup.I);
+    }
+
+    public boolean calculateSplitFeedbackFromI_into_II() {
+        var fb_mix_fx_src = model.getParameter(new ParameterId(354, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var fb_mix_fx = model.getParameter(new ParameterId(160, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var fb_mix_lvl = model.getParameter(new ParameterId(299, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        return fb_mix_fx_src > 0 && fb_mix_fx != 0 && fb_mix_lvl > 0 && isFeedbackUsed(VoiceGroup.I);
+    }
+
+
+    public boolean calculateSplitFeedbackFromII_into_I() {
+        var fb_mix_fx_src = model.getParameter(new ParameterId(354, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        var fb_mix_fx = model.getParameter(new ParameterId(160, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        var fb_mix_lvl = model.getParameter(new ParameterId(299, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        return fb_mix_fx_src > 0 && fb_mix_fx != 0 && fb_mix_lvl > 0 && isFeedbackUsed(VoiceGroup.II);
+    }
+
+    public boolean calculateSplitFeedbackFromII_into_II() {
+        var fb_mix_fx_src = model.getParameter(new ParameterId(354, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        var fb_mix_fx = model.getParameter(new ParameterId(160, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        var fb_mix_lvl = model.getParameter(new ParameterId(299, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        return fb_mix_fx_src < 1 && fb_mix_fx != 0 && fb_mix_lvl > 0 && isFeedbackUsed(VoiceGroup.II);
+    }
+
+    public boolean isFeedbackUsed(VoiceGroup vg) {
+        var osc_a_pm_fb = model.getParameter(new ParameterId(68, vg)).value.getQuantizedAndClipped(true);
+        var osc_b_pm_fb = model.getParameter(new ParameterId(98, vg)).value.getQuantizedAndClipped(true);
+        var shp_a_fb_mix = model.getParameter(new ParameterId(78, vg)).value.getQuantizedAndClipped(true);
+        var shp_b_fb_mix = model.getParameter(new ParameterId(108, vg)).value.getQuantizedAndClipped(true);
+        boolean used = (osc_a_pm_fb != 0 || osc_b_pm_fb != 0 || shp_a_fb_mix > 0 || shp_b_fb_mix > 0);
+        return used;
+    }
+
+    private GenericArrowEnum calculateSplitToFXArrow(VoiceGroup vg) {
+        var out_mix_to_fx = model.getParameter(new ParameterId(362, vg)).value.getClippedValue();
+        var out_mix_lvl = model.getParameter(new ParameterId(185, vg)).value.getClippedValue();
+        if(out_mix_to_fx == 0 && out_mix_lvl > 0)
+            return GenericArrowEnum.PartI;
+        else if(out_mix_to_fx == 1 && out_mix_lvl > 0)
+            return GenericArrowEnum.PartII;
+        else if(out_mix_to_fx > 0 && out_mix_to_fx < 1 && out_mix_lvl > 0)
+            return GenericArrowEnum.PartI_PartII;
+        return GenericArrowEnum.None;
+    }
+
+    private GenericArrowEnum calculateSplitToOutArrow() {
+        var part_vol_I = model.getParameter(new ParameterId(358, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var part_vol_II = model.getParameter(new ParameterId(358, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        
+        if(part_vol_I > 0 && part_vol_II == 0)
+            return GenericArrowEnum.PartI;
+        else if(part_vol_I == 0 && part_vol_II > 0)
+            return GenericArrowEnum.PartII;
+        else if(part_vol_I > 0 && part_vol_II > 0)
+            return GenericArrowEnum.PartI_PartII;
+        return GenericArrowEnum.None;
     }
 
     private void calculateFXUnused() {

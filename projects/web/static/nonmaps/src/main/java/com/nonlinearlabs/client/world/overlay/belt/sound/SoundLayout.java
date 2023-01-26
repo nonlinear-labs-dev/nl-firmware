@@ -61,12 +61,14 @@ public class SoundLayout extends OverlayLayout {
 
 		double menuWidth = soundTypeMenu.getPictureWidth();
 		double menuHeight = soundTypeMenu.getPictureHeight();
-		soundTypeMenu.doLayout(1 * partSize - menuWidth / 2, h / 2 - menuHeight / 2, menuWidth, menuHeight);
+		soundTypeMenu.doLayout(menuWidth / 2, h / 2 - menuHeight / 2, menuWidth, menuHeight);
 		soundSettings.doLayout(2 * partSize, 0, 4 * partSize, h);
 
 		double settingsWidth = settings.getPictureWidth();
 		double settingsHeight = settings.getPictureHeight();
-		settings.doLayout(7 * partSize - settingsWidth / 2, h / 2 - settingsHeight / 2, settingsWidth, settingsHeight);
-		fade.doLayout(7 * partSize - settingsWidth / 2 + settingsWidth *1.5, h / 2 - settingsHeight / 2, settingsWidth, settingsHeight);
+		double rightEnd = w - (menuWidth / 2);
+		double margin = settingsWidth * 0.25;
+		settings.doLayout(rightEnd - margin - settingsWidth * 2, h / 2 - settingsHeight / 2, settingsWidth, settingsHeight);
+		fade.doLayout(rightEnd - settingsWidth + margin, h / 2 - settingsHeight / 2, settingsWidth, settingsHeight);
 	}
 }
