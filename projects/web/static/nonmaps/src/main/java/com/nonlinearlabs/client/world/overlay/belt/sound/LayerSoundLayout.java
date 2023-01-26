@@ -6,6 +6,7 @@ import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.presenters.EditBufferPresenter;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
@@ -35,7 +36,7 @@ public class LayerSoundLayout extends SoundLayout {
 	}
 
 	private class LayerSoundSettings extends OverlayLayout {
-		private EditBufferBooleanImage layerToFXArrows1, layerToFXArrows2, layerToFXArrows3, layerToFXArrows4;
+		private MappedSvgImage<Boolean> layerToFXArrows1, layerToFXArrows2, layerToFXArrows3, layerToFXArrows4;
 		private OverlayLayout vgI, vgII;
 		private LayerSoundFBIndicator fb;
 		private SVGImage fxI, fxII;
@@ -47,10 +48,10 @@ public class LayerSoundLayout extends SoundLayout {
 			addChild(fb = new LayerSoundFBIndicator(this));
 			addChild(vgI = new VoiceGroupSoundSettings(VoiceGroup.I, this));
 			addChild(vgII = new VoiceGroupSoundSettings(VoiceGroup.II, this));
-			addChild(layerToFXArrows1 = new EditBufferBooleanImage(this, "LT-to-RT.svg"));
-			addChild(layerToFXArrows2 = new EditBufferBooleanImage(this, "LT-to-RB.svg"));
-			addChild(layerToFXArrows3 = new EditBufferBooleanImage(this, "LB-to-RT.svg"));
-			addChild(layerToFXArrows4 = new EditBufferBooleanImage(this, "LB-to-RB.svg"));
+			addChild(layerToFXArrows1 = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LT-to-RT.svg"), new Pair<Boolean, String>(false, null)));
+			addChild(layerToFXArrows2 = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LT-to-RB.svg"), new Pair<Boolean, String>(false, null)));
+			addChild(layerToFXArrows3 = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LB-to-RT.svg"), new Pair<Boolean, String>(false, null)));
+			addChild(layerToFXArrows4 = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LB-to-RB.svg"), new Pair<Boolean, String>(false, null)));
 			addChild(fxI = new FX_I_Indicator(this));
 			addChild(fxII = new FX_II_Indicator(this));
 			addChild(serial = new SerialArrow(this));

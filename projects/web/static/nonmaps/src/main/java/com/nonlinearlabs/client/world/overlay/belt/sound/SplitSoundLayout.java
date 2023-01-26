@@ -48,7 +48,7 @@ public class SplitSoundLayout extends SoundLayout {
 		SplitPoint splitPoint;
 
 		MappedSvgImage<GenericArrowEnum> partIToFXArrows, partIIToFXArrows, ItoOut, IItoOut;
-		EditBufferBooleanImage fb_from_I_Into_I, fb_from_I_Into_II, fb_from_II_Into_I, fb_from_II_Into_II;
+		MappedSvgImage<Boolean> fb_from_I_Into_I, fb_from_I_Into_II, fb_from_II_Into_I, fb_from_II_Into_II;
 
 		SVGImage fxI_I, fxI_II, fxII_I, fxII_II; 
 		SerialArrow serialI, serialII;
@@ -95,10 +95,10 @@ public class SplitSoundLayout extends SoundLayout {
 			addChild(serialII = new SerialArrow(this));
 
 
-			addChild(fb_from_I_Into_I = new EditBufferBooleanImage(this, "LT-to-RT.svg"));
-			addChild(fb_from_I_Into_II = new EditBufferBooleanImage(this, "LB-to-RB.svg"));
-			addChild(fb_from_II_Into_I = new EditBufferBooleanImage(this, "RT-to-LT.svg"));
-			addChild(fb_from_II_Into_II = new EditBufferBooleanImage(this, "RB-to-LB.svg"));
+			addChild(fb_from_I_Into_I = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LT-to-RT.svg"), new Pair<Boolean, String>(false, null)));
+			addChild(fb_from_I_Into_II = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LB-to-RB.svg"), new Pair<Boolean, String>(false, null)));
+			addChild(fb_from_II_Into_I = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "RT-to-LT.svg"), new Pair<Boolean, String>(false, null)));
+			addChild(fb_from_II_Into_II = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "RB-to-LB.svg"), new Pair<Boolean, String>(false, null)));
 
 			EditBufferPresenterProvider.get().onChange(ebp -> {
 				partIToFXArrows.update(ebp.splitToFXArrow_I);
