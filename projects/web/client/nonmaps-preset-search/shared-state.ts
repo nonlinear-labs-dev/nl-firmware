@@ -29,3 +29,15 @@ export function setPresetHeight(): boolean {
     }
     return false;
 }
+
+function listenOnDevicePixelRatio() {
+    function onChange() {
+        console.log("devicePixelRatio changed: " + window.devicePixelRatio);
+        presetHeight.set(null);
+        setPresetHeight();
+        listenOnDevicePixelRatio();
+    }
+
+    matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`).addEventListener("change", onChange, { once: true });
+}
+listenOnDevicePixelRatio();
