@@ -28,4 +28,16 @@ namespace OneShotTypes
     }
     std::optional<CB> cb;
   };
+
+  struct CatchAllCB
+  {
+    CatchAllCB() {
+      cb = std::nullopt;
+    }
+
+    CatchAllCB(const CB& c) {
+      cb = c;
+    }
+    std::optional<CB> cb;
+  };
 }

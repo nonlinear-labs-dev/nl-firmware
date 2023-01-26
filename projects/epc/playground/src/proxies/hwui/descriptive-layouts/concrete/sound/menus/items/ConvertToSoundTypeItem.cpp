@@ -8,11 +8,15 @@
 #include "ConvertToSoundTypeItem.h"
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
+#include "proxies/hwui/descriptive-layouts/ConditionRegistry.h"
 
-namespace {
-  std::string getSuffix(SoundType convertTo) {
+namespace
+{
+  std::string getSuffix(SoundType convertTo)
+  {
     auto currentType = Application::get().getPresetManager()->getEditBuffer()->getType();
-    if((currentType != SoundType::Single && convertTo == SoundType::Single) || (currentType == SoundType::Single && convertTo != SoundType::Single))
+    if((currentType != SoundType::Single && convertTo == SoundType::Single)
+       || (currentType == SoundType::Single && convertTo != SoundType::Single))
       return " (both FX)";
     else
       return "";
@@ -24,6 +28,7 @@ ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toTyp
                           OneShotTypes::StartCB(
                               [=]
                               {
+                                ConditionRegistry::get().lock();
                                 EditBufferUseCases useCases(*Application::get().getPresetManager()->getEditBuffer());
                                 auto selectedVG = Application::get().getVGManager()->getCurrentVoiceGroup();
 
@@ -47,14 +52,16 @@ ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toTyp
                                   default:
                                     break;
                                 }
-
+                              }),
+                          OneShotTypes::FinishCB(
+                              []()
+                              {
                                 SettingsUseCases sUseCases(*Application::get().getSettings());
                                 sUseCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
                               }),
-                          OneShotTypes::FinishCB([]() {}))
+                          OneShotTypes::CatchAllCB { [] { ConditionRegistry::get().unlock(); } })
 {
 }
-
 
 ConvertToSoundTypeItemWithFX::ConvertToSoundTypeItemWithFX(const Rect& rect, SoundType convertTo)
 
@@ -62,6 +69,7 @@ ConvertToSoundTypeItemWithFX::ConvertToSoundTypeItemWithFX(const Rect& rect, Sou
                           OneShotTypes::StartCB(
                               [=]
                               {
+                                ConditionRegistry::get().lock();
                                 EditBufferUseCases useCases(*Application::get().getPresetManager()->getEditBuffer());
 
                                 switch(convertTo)
@@ -79,11 +87,13 @@ ConvertToSoundTypeItemWithFX::ConvertToSoundTypeItemWithFX(const Rect& rect, Sou
                                   default:
                                     break;
                                 }
-
+                              }),
+                          OneShotTypes::FinishCB(
+                              []
+                              {
                                 SettingsUseCases sUseCases(*Application::get().getSettings());
                                 sUseCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
                               }),
-                          OneShotTypes::FinishCB([]() {}))
+                          OneShotTypes::CatchAllCB { [] { ConditionRegistry::get().unlock(); } })
 {
 }
-
