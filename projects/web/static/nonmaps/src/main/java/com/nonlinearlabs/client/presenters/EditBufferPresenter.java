@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.presenters;
 
+import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.world.RGB;
@@ -96,4 +97,59 @@ public class EditBufferPresenter {
     public SingleSoundFBToPoly fbToPolyArrowState = SingleSoundFBToPoly.FXI_To_Poly;
     public SingleSoundPolyToFX polyToFX = SingleSoundPolyToFX.Poly_To_FXI;
     public SingleSoundFXToOut fxToOut = SingleSoundFXToOut.FXI;
+
+    @Override
+    public int hashCode() {
+        Checksum sum = new Checksum();
+        sum.eat(fxIUnused);
+        sum.eat(fxIIUnused);
+        sum.eat(allParametersLocked);
+        sum.eat(isAnyParameterLocked);
+        sum.eat(isAnyParameterChanged);
+        sum.eat(isAnyScaleOffsetParameterNotDefault);
+
+        sum.eat(layerFBI);
+        sum.eat(layerFBII);
+        sum.eat(splitFXToI);
+        sum.eat(splitFXToII);
+        sum.eat(layerFXToI);
+        sum.eat(layerFXToII);
+    
+        sum.eat(loadedPresetUUID);
+        sum.eat(selectedParameter.hash);
+        sum.eat(voiceGroup);
+        sum.eat(voiceGroupIndicationColor.hashCode());
+        sum.eat(voiceGroupEnum.ordinal());
+        sum.eat(splitOverlap);
+    
+        sum.eat(voiceGroupI_ForegroundColor.hashCode());
+        sum.eat(voiceGroupII_ForegroundColor.hashCode());
+        sum.eat(voiceGroupI_BackgroundColor.hashCode());
+        sum.eat(voiceGroupII_BackgroundColor.hashCode());
+    
+        sum.eat(currentPartName);
+        sum.eat(soundType.ordinal());
+        sum.eat(serialFX.ordinal());
+    
+        sum.eat(splitToFXArrow_I.ordinal());
+        sum.eat(splitToFXArrow_II.ordinal());
+        sum.eat(splitToOut.ordinal());
+        sum.eat(split_fb_I_into_I);
+        sum.eat(split_fb_I_into_II);
+        sum.eat(split_fb_II_into_I);
+        sum.eat(split_fb_II_into_II);
+
+        sum.eat(layerFXToOut.ordinal());
+        sum.eat(layerIToFXI);
+        sum.eat(layerIToFXII);
+        sum.eat(layerIIToFXI);
+        sum.eat(layerIIToFXII);        
+
+        sum.eat(isSingleSoundFeedbackToPolyActive);
+        sum.eat(fbToPolyArrowState.ordinal());
+        sum.eat(polyToFX.ordinal());
+        sum.eat(fxToOut.ordinal());
+        sum.eat(voiceGroup);
+        return (int) sum.getHash();
+    }
 }
