@@ -58,6 +58,7 @@ small {font-size: 80%;}
 .columns {
     display: grid;
     gap: 1ch;
+    align-items: start;
 }
 
 /* headings */
@@ -676,7 +677,7 @@ svg.image-container a {
 
     @page {
         size: A4 portrait;
-        /* margin: 4em 5em; */
+        margin: 4em 4em;
     }
 
     figure > .maximize {
