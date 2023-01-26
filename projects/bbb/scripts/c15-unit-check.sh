@@ -29,6 +29,7 @@ check_soundcard_driver_param() {
     executeAsRoot \
         "Soundcard driver parameter fix applied?" \
         "cat /etc/modprobe.d/snd_hda_intel.conf | grep 'snd_hda_intel bdl_pos_adj=1,1,1'"
+    printf "\n" | tee -a $LOG_FILE
 }
 
 check_epc_network_exists() {
@@ -84,7 +85,7 @@ check_usb_stick() {
    executeAsRoot \
         "Read from usb stick on EPC?" \
         "[ \"\$(cat /mnt/usb-stick/test-file)\" = '2' ]"
-
+    printf "\n" | tee -a $LOG_FILE
 }
 
 check_BBB_AP() {
@@ -137,47 +138,43 @@ check_ping_timeout() {
         "mkdir -p /mnt/sda1; mount /dev/sda1 /mnt/sda1; zstdcat /mnt/sda1/initramfs-linux-rt.img | grep ping_bbb"
 }
 
-check_date() {
+get_date() {
     printf "\nePC - date: $(getInfoAsRoot 'date "+%F %T"')\n" | tee -a $LOG_FILE \
         && printf "BBB - date: $(date "+%F %T")\n" | tee -a $LOG_FILE
-    printf "\n" | tee -a $LOG_FILE
 }
 
-check_ro_mnts() {
-    printf "ePC - RO mounts:\n$(getInfoAsRoot 'mount | grep "(ro"')\n" | tee -a $LOG_FILE \
-        && printf "BBB - RO mounts:\n$(mount | grep "(ro")\n" | tee -a $LOG_FILE
-    printf "\n" | tee -a $LOG_FILE
+get_ro_mnts() {
+    printf "\nePC - RO mounts:\n$(getInfoAsRoot 'mount | grep "(ro"')\n" | tee -a $LOG_FILE \
+        && printf "\nBBB - RO mounts:\n$(mount | grep "(ro")\n" | tee -a $LOG_FILE
 }
 
 get_journal_dmesg() {
-    rm /tmp/journal_epc.log /tmp/dmesg_epc.log /tmp/journal_bbb.log /tmp/dmesg_bbb.log
+    rm /tmp/epc_journal.log /tmp/epc_dmesg.log /tmp/bbb_journal.log /tmp/bbb_dmesg.log > /dev/null
 
-    getInfoAsRoot 'journalctl -b -p "emerg".."warning"' >> /tmp/journal_epc.log \
-    && getInfoAsRoot 'dmesg --level=err,warn' >> /tmp/dmesg_epc.log \
-    && printf "Got journal and dmesg from ePC: Yes!\n" | tee -a $LOG_FILE \
-    || printf "Got journal and dmesg from ePC: No!\n" | tee -a $LOG_FILE
+    getInfoAsRoot 'journalctl -b -p "emerg".."warning"' >> /tmp/epc_journal.log \
+        && getInfoAsRoot 'dmesg --level=err,warn' >> /tmp/epc_dmesg.log \
+        && printf "\nGot journal and dmesg from ePC: Yes!\n" | tee -a $LOG_FILE \
+        || printf "\nGot journal and dmesg from ePC: No!\n" | tee -a $LOG_FILE
 
-    journalctl -b -p "emerg".."warning" >> /tmp/journal_bbb.log \
-    && dmesg --level=err,warn >> /tmp/dmesg_bbb.log \
-    && printf "Got journal and dmesg from BBB: Yes!\n" | tee -a $LOG_FILE \
-    || printf "Got journal and dmesg from BBB: No!\n" | tee -a $LOG_FILE
+    journalctl -b -p "emerg".."warning" >> /tmp/bbb_journal.log \
+        && dmesg --level=err,warn >> /tmp/bbb_dmesg.log \
+        && printf "Got journal and dmesg from BBB: Yes!\n" | tee -a $LOG_FILE \
+        || printf "Got journal and dmesg from BBB: No!\n" | tee -a $LOG_FILE
 
-    printf "\n" | tee -a $LOG_FILE
     return 0
 }
 
 get_partition_info() {
-    printf "ePC - lsblk:\n$(getInfoAsRoot 'lsblk')\n" | tee -a $LOG_FILE \
-    && printf "ePC - mount:\n$(getInfoAsRoot 'mount | grep /dev/sda')\n" | tee -a $LOG_FILE
+    printf "\nePC - lsblk:\n$(getInfoAsRoot 'lsblk')\n" | tee -a $LOG_FILE \
+        && printf "\nePC - mount:\n$(getInfoAsRoot 'mount | grep /dev/sda')\n" | tee -a $LOG_FILE
 
-    printf "BBB - lsblk:\n$(lsblk)\n" | tee -a $LOG_FILE \
-    && printf "BBB - mount:\n$(mount | grep /dev/mmc)\n" | tee -a $LOG_FILE
-
-    printf "\n" | tee -a $LOG_FILE
+    printf "\nBBB - lsblk:\n$(lsblk)\n" | tee -a $LOG_FILE \
+        && printf "\nBBB - mount:\n$(mount | grep /dev/mmc)\n" | tee -a $LOG_FILE
     return 0
 }
 
 check_persistent_files() {
+    printf "\n" | tee -a $LOG_FILE
     executeAsRoot \
         "Calibration files?" \
         "ls /persistent/calibration/*.cal"
@@ -202,16 +199,13 @@ check_alsa_settings() {
 }
 
 get_network_settings_bbb() {
-    cat /etc/network/interfaces | tee -a $LOG_FILE \
-    && printf "\n" | tee -a $LOG_FILE \
-    && cat /etc/hostapd.conf | tee -a $LOG_FILE
-    printf "\n" | tee -a $LOG_FILE
+    cat /etc/network/interfaces | tee -a $LOG_FILE
+    cat /etc/hostapd.conf | tee -a $LOG_FILE
 }
 
 get_update_script_vers() {
     VERS=$(cat /usr/C15/scripts/install-update.sh | grep version)
-    printf "Update script ${VERS} \n" | tee -a $LOG_FILE
-    printf "\n" | tee -a $LOG_FILE
+    printf "\nUpdate script ${VERS}\n\n" | tee -a $LOG_FILE
 }
 
 check_for_present_tools() {
@@ -240,14 +234,16 @@ check_for_present_tools() {
 }
 
 check_lpc() {
-    systemctl stop bbbb \
-    && lpc reset && printf "LPC reset: Yes\n" | tee -a $LOG_FILE \
-    || printf "LPC reset: No\n" | tee -a $LOG_FILE
+    systemctl stop bbbb
+    lpc reset && printf "LPC reset: Yes\n" | tee -a $LOG_FILE \
+        || printf "LPC reset: No\n" | tee -a $LOG_FILE
 
     printf "LPC version: $(lpc req sw-version; lpc-read +q -h) \n" | tee -a $LOG_FILE \
-    || printf "Can not get LPC version!\n" | tee -a $LOG_FILE
+        || printf "Can not get LPC version!\n" | tee -a $LOG_FILE
 
-    printf "\n" | tee -a $LOG_FILE
+    printf "HW ID: $(lpc req uhid64; lpc-read +q -h) \n" | tee -a $LOG_FILE \
+        || printf "Can not get HW ID!\n" | tee -a $LOG_FILE
+
     systemctl restart bbbb
     return 0
 }
@@ -258,7 +254,7 @@ run_epc_stress_test() {
         executeAsRoot "Created /tmp/usb?" "mkdir /tmp/usb"
         executeAsRoot "Unmounted USB Stick?" "umount /dev/sdb"
         executeAsRoot "Mounted USB Stick?" "mount /dev/sdb /tmp/usb" \
-        || read -p "Can not find USB stick! Try again!"
+            || read -p "Can not find USB stick! Try again!"
     done
 
     if ( ! getInfoAsRoot "[ -x /tmp/usb/Diagnosis_Tools/Benchmarks/Prime95_Linux_19/mprime ]" ); then
@@ -305,7 +301,7 @@ check_buffer_underruns() {
     for COUNTER in $(seq 0 $CHECK_FREQ $TEST_DURATION); do
         if ( $(getInfoAsRoot "journalctl -u audio-engine -S \"${DATE}\" | grep -q x-run") ); then
             printf "Bufferunderun detected! " | tee -a $LOG_FILE \
-            && getInfoAsRoot 'date "+%y-%m-%d %T"' | tee -a $LOG_FILE && return 1
+                && getInfoAsRoot 'date "+%y-%m-%d %T"' | tee -a $LOG_FILE && return 1
         fi
         sleep $CHECK_FREQ;
     done
@@ -327,7 +323,7 @@ usage() {
 }
 
 general_check() {
-        printf "Will run general C15 check on ePC and BBB\n" | tee -a $LOG_FILE
+        printf "Will run general C15 check on ePC and BBB\n\n" | tee -a $LOG_FILE
         check_userland_exists
         check_iface_names
         check_overlay
@@ -339,8 +335,8 @@ general_check() {
         check_mitigations
         check_ping_timeout
 
-        check_date
-        check_ro_mnts
+        get_date
+        get_ro_mnts
         get_journal_dmesg
         get_partition_info
 
@@ -360,18 +356,18 @@ while getopts ":hgbs" option; do
             [ -z "${NUMARR[0]}" ] && DURATION=14400 || DURATION="${NUMARR[0]}"
             [ -z "${NUMARR[1]}" ] && FACTOR=60 || FACTOR="${NUMARR[1]}"
             LOG_FILE="/tmp/buffer_test.log"
-            rm $LOG_FILE; touch $LOG_FILE
+            rm $LOG_FILE > /dev/null; touch $LOG_FILE
             check_buffer_underruns ${DURATION} ${FACTOR};;
         s)
             set -f; OLDIFS=$IFS; IFS=','; NUMARR=($2); set +f; IFS=$OLDIFS;
             LOG_FILE="/tmp/stress_test.log"
-            rm $LOG_FILE; touch $LOG_FILE
+            rm $LOG_FILE > /dev/null; touch $LOG_FILE
             [ -z "${NUMARR[0]}" ] && DURATION=1200 || DURATION="${NUMARR[0]}"
             [ -z "${NUMARR[1]}" ] && FACTOR=60 || FACTOR="${NUMARR[1]}"
             run_epc_stress_test ${DURATION} ${FACTOR};;
         g)
             LOG_FILE="/tmp/general_check.log"
-            rm $LOG_FILE; touch $LOG_FILE
+            rm $LOG_FILE > /dev/null; touch $LOG_FILE
             general_check;;
         h | \?)
             usage

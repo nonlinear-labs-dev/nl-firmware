@@ -71,14 +71,13 @@ void AlsaAudioOutput::open(const std::string& deviceName)
   snd_pcm_uframes_t ringBufferSize = static_cast<snd_pcm_uframes_t>(m_options->getAlsaRingBufferSize());
   checkAlsa(snd_pcm_hw_params_set_buffer_size_near(m_handle, hwparams, &ringBufferSize));
   checkAlsa(snd_pcm_hw_params(m_handle, hwparams));
-  checkAlsa(snd_pcm_sw_params_current(m_handle, swparams));
-  checkAlsa(snd_pcm_sw_params(m_handle, swparams));
-
+  
   nltools::Log::info("Alsa periods:", periods);
   nltools::Log::info("Alsa frames per period:", framesPerPeriod);
   nltools::Log::info("Alsa ringbuffer size:", ringBufferSize);
 
   m_numFramesPerPeriod = framesPerPeriod;
+  m_numPeriods = periods;
 
   m_writer = AudioWriterBase::create(m_handle, format, channels);
 }
@@ -100,30 +99,44 @@ void AlsaAudioOutput::stop()
 void AlsaAudioOutput::doBackgroundWork()
 {
   pthread_setname_np(pthread_self(), "AudioOut");
-  const auto framesPerCallback = m_numFramesPerPeriod;
+  const auto bufferSize = m_numFramesPerPeriod * m_numPeriods;
 
   snd_pcm_prepare(m_handle);
 
-  SampleFrame prefillAudio[framesPerCallback];
-  std::fill(prefillAudio, prefillAudio + framesPerCallback, SampleFrame {});
+  SampleFrame audio[bufferSize];
+  std::fill(audio, audio + bufferSize, SampleFrame {});
+  playback(audio, bufferSize);
 
   snd_pcm_start(m_handle);
-  playback(prefillAudio, framesPerCallback);
 
-  SampleFrame audio[framesPerCallback];
-  std::fill(audio, audio + framesPerCallback, SampleFrame {});
+  int numPollFDs = snd_pcm_poll_descriptors_count(m_handle);
+  pollfd pollFileDescriptors[numPollFDs];
+  numPollFDs = snd_pcm_poll_descriptors(m_handle, pollFileDescriptors, numPollFDs);
 
-  auto microsPerBuffer = std::micro::den * framesPerCallback / m_options->getSampleRate();
+  const auto recSR = 1.0 / m_options->getSampleRate();
 
   while(m_run)
   {
-    auto startDSP = g_get_monotonic_time();
-    m_cb(audio, framesPerCallback);
-    auto endDSP = g_get_monotonic_time();
-    playback(audio, framesPerCallback);
+    auto avail = snd_pcm_avail(m_handle);
 
-    auto diff = endDSP - startDSP;
-    reportPerformanceRatio(1.0 * diff / microsPerBuffer);
+    if(avail == 0)
+    {
+      poll(pollFileDescriptors, numPollFDs, 1);
+    }
+    else if(avail < 0)
+    {
+      handleWriteError(avail);
+    }
+    else
+    {
+      auto startDSP = g_get_monotonic_time();
+      m_cb(audio, avail);
+      auto endDSP = g_get_monotonic_time();
+      playback(audio, avail);
+      auto diff = endDSP - startDSP;
+
+      reportPerformanceRatio(1.0 * m_options->getSampleRate() * diff / (std::micro::den * avail));
+    }
   }
 }
 
