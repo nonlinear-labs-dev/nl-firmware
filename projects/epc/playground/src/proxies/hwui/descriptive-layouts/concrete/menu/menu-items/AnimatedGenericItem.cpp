@@ -8,10 +8,9 @@
 
 #include <utility>
 
-Animator::Animator(std::chrono::milliseconds length, ProgressCB pcb, FinishedCB fcb, CatchAllCB cacb)
+Animator::Animator(std::chrono::milliseconds length, ProgressCB pcb, FinishedCB fcb)
     : m_animationCB(std::move(pcb))
     , m_animationFinishedCB(std::move(fcb))
-    , m_animationCatchAllCB(std::move(cacb))
     , m_animationLength(length)
 {
   m_signal = Application::get().getMainContext()->signal_idle().connect(sigc::mem_fun(this, &Animator::doAnimation));
@@ -19,7 +18,6 @@ Animator::Animator(std::chrono::milliseconds length, ProgressCB pcb, FinishedCB 
 
 Animator::~Animator()
 {
-  m_animationCatchAllCB();
   m_signal.disconnect();
 }
 
@@ -63,9 +61,6 @@ void AnimatedGenericItem::startAnimation()
 
           if(m_finish.cb.has_value())
             m_finish.cb.value()();
-        }, [this](){
-          if(m_finally.cb.has_value())
-            m_finally.cb.value()();
         });
 }
 
