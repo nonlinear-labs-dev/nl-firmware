@@ -87,7 +87,7 @@
                 <li>Decay 1/2 Velocity - more flexible velocity influence on times (similar to <span data-keyword="Envelope">A/B</span>)</li>
                 <li class="section">
                     <header style="font-weight: bold;">New: Loop</header>
-                    <p>With the new Loop Parameter, <span data-keyword="Envelope">C</span> can run in Loop mode (Loop > 0.0%), allowing for simple polyphonic repeating sequences:</p>
+                    <p>With the new Loop Parameter, <span data-keyword="Envelope">C</span> can run in Loop mode (Loop > 0.0%), allowing for polyphonic repeating sequences:</p>
                     <p>The loop consists of the Decay 1 and 2 segments (Decay 2 has a linear curve in Loop mode) and can apply only for the Sustain phase (Loop &lt;= 100.0%, stopping when a key is released) or for the Sustain and Release phase (Loop &gt; 100.0%). At Loop = 200.0%, the loop will continue endlessly.</p>
                     <p>The loop is bound to key events. When pressing a key, Envelope C will start normally if the Loop parameter is at zero, otherwise it will start in Loop mode. Similarly, when releasing a key, Envelope C will stop normally if the Loop parameter is below or equal to 100.0%, otherwise it will stop in Loop mode.</p>
                     <p>The Decay 1/2 times control the rate of the loop.</p>
@@ -97,8 +97,8 @@
         </div>
         <div class="section">
             <h4>New: Single Sounds with Dual Effects</h4>
-            <p><span data-keyword="Single">Sounds</span> now provide two Effect chains, allowing for more complex setups similar to <span data-keyword="Split/Layer">Sounds</span>. The mix of the two chains can be controlled by a new parameter:</p>
-            <ul>
+            <p><span data-keyword="Single">Sounds</span> now provide two Effect chains, allowing for more complex routings similar to <span data-keyword="Split/Layer">Sounds</span>. The mix of the two chains can be controlled by a new parameter:</p>
+            <ul style="page-break-after: always;">
                 <li><span data-keyword="Master">FX Mix</span> - crossfading between Effects <span data-utf="ind-part-1"></span> and <span data-utf="ind-part-2"></span> - similar to <span data-keyword="Part">Volumes</span> in <span data-keyword="Split/Layer">Sounds</span>)</li>
             </ul>
             <div data-columns="2">
@@ -131,9 +131,9 @@
             <p>The two sets of <span data-keyword="Ribbons"></span> (<span data-keyword="">1, 2</span> and <span data-keyword="">3, 4</span>) are quickly accessible on the <span data-keyword="Base">Unit</span> (see below).</p>
         </div>
     </section>
-    <section>
+    <section style="page-break-before: always;">
         <h3>User Interface Enhancements</h3>
-        <div class="section" style="page-break-after: always;">
+        <div class="section">
             <h4 data-detail="Panel-Unit">Preset Screen</h4>
             <p>The behavior of <span data-keyword="Soft Button">1</span> and <span data-keyword="">4</span> has been reworked.</p>
             <div data-columns="2">
@@ -174,7 +174,7 @@
                 </div>
             </div>
         </div>
-        <div class="section" style="page-break-after: always;">
+        <div class="section">
             <h4 data-detail="Panel Unit">Copy FX</h4>
             <div data-columns="2">
                 <figure class="border maximize" data-label="Sound Edit Screen - copy FX">
@@ -202,7 +202,7 @@
             <h4 data-detail="Graphical UI">Fine Mode</h4>
             <p>In the <span data-keyword="Parameter">Tab</span>, a new icon shows if the <span data-keyword="Fine">Mode</span> is active (when pressing the <kbd>Shift</kbd> key). The Fine Mode can also be enabled permanently by clicking the icon (and will stay enabled as long as the selected Parameter has a Fine Resolution).</p>
         </div>
-        <div class="section">
+        <div class="section" style="page-break-after: always;">
             <h4 data-detail="Panel Unit">Scale Parameter Screen</h4>
             <div data-columns="2">
                 <figure class="border maximize" data-label="Scale Screen">
@@ -215,7 +215,7 @@
         </div>
         <div class="section">
             <h4 data-detail="Panel Unit">Hardware Source and Macro Control Screens</h4>
-            <p>Routing <span data-keyword="Hardware">Sources</span> to <span data-keyword="Macro">Controls</span> has been more complex than it needed to be, possibly causing some confusion when trying to modify the <span data-keyword="Modulation">Matrix</span>. Therefore, setting <span data-keyword="Hardware">Amounts</span> has been simplified, deprecating the <span data-keyword="Hardware Amount">Screen</span> and bundling all functionality exclusively within the <span data-keyword="Macro Control">Screen</span>.</p>
+            <p>Routing <span data-keyword="Hardware">Sources</span> to <span data-keyword="Macro">Controls</span> has been more complex than it needed to be, possibly causing some confusion when trying to modify the <span data-keyword="Modulation">Matrix</span>. Also, with the two new <span data-keyword="Ribbons">Ribbons</span>, there are two more amounts to consider. Therefore, setting <span data-keyword="Hardware">Amounts</span> has been simplified, deprecating the <span data-keyword="Hardware Amount">Screen</span> and bundling all functionality exclusively within the <span data-keyword="Macro Control">Screen</span>.</p>
             <div data-columns="2">
                 <figure class="border maximize" data-label="Macro Control Screen">
                     <picture class="content" data-src="./images/hardware-ui/boled/parameter/boled-mc-22-51.png"></picture>
@@ -249,7 +249,7 @@
                 <header>Importing older Banks converted some parameters wrongfully</header>
                 <p>Affected Parameters were: <span data-keyword="Envelope A/B/C">Attack Velocity</span> and <span data-keyword="">Time Key Tracking</span>, <span data-keyword="Shaper A/B">Feedback - Env C</span> and <span data-keyword="Output Mixer">Key Pan</span>.</p>
             </li>
-            <li>
+            <li style="page-break-before: always;">
                 <header><span data-keyword="Recorder"></span></header>
                 <p>When closing the <span data-keyword="Recorder">Tab</span> in the browser, the playback will stop automatically.</p>
             </li>
@@ -280,7 +280,7 @@
         <div class="section">
             <h4>Audible artifacts of modulated Parameters</h4>
             <p>With the introduction of more modulateable Parameters, some audible artifacts may appear when some parameters are transitioning (the issue is not really new, but modulation increases the chance of noticing the artifacts).</p>
-            <p>The rendering of these movements is often not computed in audio rate (as a means of not wasting CPU power), leading to the described artifacts. Affected Parameters are:</p>
+            <p style="page-break-before: always;">The rendering of these movements is often not computed in audio rate (as a means of not wasting CPU power), leading to the described artifacts. Affected Parameters are:</p>
             <ul>
                 <li><span data-keyword="Oscillator">A/B</span>: Phase Modulation - Envelope and Shaper Amounts</li>
                 <li><span data-keyword="Shaper">A/B</span>: Drive Envelope Amount and FB - Gate - EnvC.</li>

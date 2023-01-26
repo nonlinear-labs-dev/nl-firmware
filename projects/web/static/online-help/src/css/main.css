@@ -677,7 +677,7 @@ svg.image-container a {
 
     @page {
         size: A4 portrait;
-        /* margin: 4em 5em; */
+        margin: 4em 4em;
     }
 
     figure > .maximize {
