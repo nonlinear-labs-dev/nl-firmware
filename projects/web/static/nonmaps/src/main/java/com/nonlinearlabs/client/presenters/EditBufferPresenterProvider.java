@@ -148,34 +148,19 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
     }
 
     private void bruteForce() {
-        boolean anyScaleNotDef = isAnyScaleOffsetParameterNotDefault();
-        if (presenter.isAnyScaleOffsetParameterNotDefault != anyScaleNotDef) {
-            presenter.isAnyScaleOffsetParameterNotDefault = anyScaleNotDef;
-            notifyChanges();
-        }
+        int oldPresenterHash = presenter.hashCode();
 
+        presenter.isAnyScaleOffsetParameterNotDefault = isAnyScaleOffsetParameterNotDefault();
+        
         boolean anyChanged = isAnyParameterChanged();
         if (model.soundType.getValue() != SoundType.Single) {
             anyChanged |= isPartLabelChanged(VoiceGroup.I) || isPartLabelChanged(VoiceGroup.II);
         }
 
-        if (presenter.isAnyParameterChanged != anyChanged) {
-            presenter.isAnyParameterChanged = anyChanged;
-            notifyChanges();
-        }
-
-        boolean anyLocked = isAnyParameterLocked();
-        if (anyLocked != presenter.isAnyParameterLocked) {
-            presenter.isAnyParameterLocked = anyLocked;
-            notifyChanges();
-        }
-
-        boolean allLocked = areAllParametersLocked();
-        if (allLocked != presenter.allParametersLocked) {
-            presenter.allParametersLocked = allLocked;
-            notifyChanges();
-        }
-
+        presenter.isAnyParameterChanged = anyChanged;
+        presenter.isAnyParameterLocked = isAnyParameterLocked();
+        presenter.allParametersLocked = areAllParametersLocked();
+        
         if (model.soundType.getValue() == SoundType.Split) {
             BasicParameterModel sI = model.getParameter(new ParameterId(356, VoiceGroup.I));
             BasicParameterModel sII = model.getParameter(new ParameterId(356, VoiceGroup.II));
@@ -186,55 +171,38 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
             double iII = dII.intValue();
             boolean splitOverlap = iI >= iII;
             presenter.splitOverlap = splitOverlap;
-            notifyChanges();
         } else if (presenter.splitOverlap != false) {
             presenter.splitOverlap = false;
-            notifyChanges();
         }
 
         if (model.soundType.getValue() == SoundType.Split) {
-            boolean lfxI = isCrossFX(VoiceGroup.II);
-            boolean lfxII = isCrossFX(VoiceGroup.I);
-
-            if (lfxI != presenter.splitFXToI || lfxII != presenter.splitFXToII) {
-                presenter.splitFXToI = lfxI;
-                presenter.splitFXToII = lfxII;
-                notifyChanges();
-            }
-        } else if (presenter.splitFXToI != false || presenter.splitFXToII != false) {
+            presenter.splitFXToI = isCrossFX(VoiceGroup.II);
+            presenter.splitFXToII = isCrossFX(VoiceGroup.I);
+        } else {
             presenter.splitFXToI = false;
             presenter.splitFXToII = false;
-            notifyChanges();
         }
 
         if (model.soundType.getValue() == SoundType.Layer) {
-            boolean fbI = isLayerFB(VoiceGroup.I);
-            boolean fbII = isLayerFB(VoiceGroup.II);
-            boolean fxI = isCrossFX(VoiceGroup.II);
-            boolean fxII = isCrossFX(VoiceGroup.I);
-
-            if (fbI != presenter.layerFBI || fbII != presenter.layerFBII || fxI != presenter.layerFXToI
-                    || fxII != presenter.layerFXToII) {
-                presenter.layerFBI = fbI;
-                presenter.layerFBII = fbII;
-                presenter.layerFXToI = fxI;
-                presenter.layerFXToII = fxII;
-                notifyChanges();
-            }
-        } else if (presenter.layerFBI != false || presenter.layerFBII != false || presenter.layerFXToI != false
-                || presenter.layerFXToII != false) {
+            presenter.layerFBI = isLayerFB(VoiceGroup.I);
+            presenter.layerFBII = isLayerFB(VoiceGroup.II);
+            presenter.layerFXToI = isCrossFX(VoiceGroup.II);
+            presenter.layerFXToII = isCrossFX(VoiceGroup.I);
+        } else  {
             presenter.layerFBI = false;
             presenter.layerFBII = false;
             presenter.layerFXToI = false;
             presenter.layerFXToII = false;
-            notifyChanges();
         }
 
         bruteForceSoundBeltArrowStates();
         calculateSerialFx();
         calculateFXUnused();
 
-        notifyChanges();
+        if(oldPresenterHash != presenter.hashCode())
+        {
+            notifyChanges();
+        }
     }
 
     private void calculateSerialFx() {
