@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
+import com.nonlinearlabs.client.ServerProxy;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
@@ -432,7 +433,20 @@ public class SplitSoundLayout extends SoundLayout {
 			if (dragProxy.getOrigin() instanceof IPreset)
 				if (dragProxy.getOrigin() instanceof Preset) {
 					Preset p = (Preset) dragProxy.getOrigin();
-					choosePresetPart = new ChoosePresetPartDialog(p, group);
+					if(!p.isDual()) {
+						NonMaps.get().getServerProxy().getVoiceGroupsWhereFXIsUnused(p, unused_vg_string -> {
+							if(unused_vg_string == "II") {
+								EditBufferUseCases.get().loadPresetPartIntoPart(p.getUUID(), VoiceGroup.I, group);
+							} else if(unused_vg_string == "I") {
+								EditBufferUseCases.get().loadPresetPartIntoPart(p.getUUID(), VoiceGroup.II, group);
+							} else {
+								choosePresetPart = new ChoosePresetPartDialog(p, group);
+							}
+						});
+					}
+					else {
+						choosePresetPart = new ChoosePresetPartDialog(p, group);
+					}
 				}
 
 			setIsDropTarget(false);
