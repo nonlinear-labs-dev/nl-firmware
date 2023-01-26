@@ -66,3 +66,8 @@ void ConditionRegistry::unlock()
     onConditionChanged();
   }
 }
+
+std::unique_ptr<ConditionRegistry::ConditionRegistryScopedLock> ConditionRegistry::createLock()
+{
+  return std::make_unique<ConditionRegistryScopedLock>();
+}

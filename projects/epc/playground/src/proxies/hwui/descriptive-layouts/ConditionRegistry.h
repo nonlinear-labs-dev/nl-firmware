@@ -8,14 +8,26 @@
 class ConditionRegistry : public sigc::trackable
 {
  public:
+  class ConditionRegistryScopedLock {
+   public:
+    ConditionRegistryScopedLock() {
+      ConditionRegistry::get().lock();
+    }
+    ~ConditionRegistryScopedLock() {
+      ConditionRegistry::get().unlock();
+    }
+  };
+
   typedef ConditionBase* tCondition;
   tCondition getCondition(const std::string& key);
   static ConditionRegistry& get();
   sigc::connection onChange(const std::function<void()>& cb);
+  static std::unique_ptr<ConditionRegistryScopedLock> createLock();
+
+ private:
   void lock();
   void unlock();
 
- private:
   ConditionRegistry();
   void onConditionChanged();
   bool isLocked();
@@ -25,4 +37,5 @@ class ConditionRegistry : public sigc::trackable
   std::map<std::string, std::unique_ptr<ConditionBase>> m_theConditionMap;
 
   friend class ConditionBase;
+  friend class ConditionRegistryScopedLock;
 };

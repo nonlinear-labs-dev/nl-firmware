@@ -28,7 +28,7 @@ ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toTyp
                           OneShotTypes::StartCB(
                               [=]
                               {
-                                ConditionRegistry::get().lock();
+                                m_lock = ConditionRegistry::createLock();
                                 EditBufferUseCases useCases(*Application::get().getPresetManager()->getEditBuffer());
                                 auto selectedVG = Application::get().getVGManager()->getCurrentVoiceGroup();
 
@@ -54,12 +54,12 @@ ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toTyp
                                 }
                               }),
                           OneShotTypes::FinishCB(
-                              []()
+                              [=]()
                               {
                                 SettingsUseCases sUseCases(*Application::get().getSettings());
                                 sUseCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-                              }),
-                          OneShotTypes::CatchAllCB { [] { ConditionRegistry::get().unlock(); } })
+                                m_lock.reset();
+                              }))
 {
 }
 
@@ -69,7 +69,7 @@ ConvertToSoundTypeItemWithFX::ConvertToSoundTypeItemWithFX(const Rect& rect, Sou
                           OneShotTypes::StartCB(
                               [=]
                               {
-                                ConditionRegistry::get().lock();
+                                m_lock = ConditionRegistry::createLock();
                                 EditBufferUseCases useCases(*Application::get().getPresetManager()->getEditBuffer());
 
                                 switch(convertTo)
@@ -89,11 +89,11 @@ ConvertToSoundTypeItemWithFX::ConvertToSoundTypeItemWithFX(const Rect& rect, Sou
                                 }
                               }),
                           OneShotTypes::FinishCB(
-                              []
+                              [=]
                               {
                                 SettingsUseCases sUseCases(*Application::get().getSettings());
                                 sUseCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-                              }),
-                          OneShotTypes::CatchAllCB { [] { ConditionRegistry::get().unlock(); } })
+                                m_lock.reset();
+                              }))
 {
 }
