@@ -61,6 +61,18 @@
         "FontSize": 8,
         "TextAlign": "Center"
       }
+    },
+    "edit-button-sound": {
+      "selector": {
+        "UIFocus": "Sound",
+        "UIMode": "Edit",
+        "PrimitiveClasses": "Text",
+        "ControlClasses": "InvertedLabel",
+        "ControlInstances": "EditTextHeader"
+      },
+      "styles": {
+        "TextAlign": "Right"
+      }
     }
   }
 }

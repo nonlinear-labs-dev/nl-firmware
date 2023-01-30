@@ -176,7 +176,7 @@ bool DescriptiveLayouts::UnisonButtonText::isChanged(const EditBuffer *eb)
 
 void DescriptiveLayouts::CurrentVoiceGroupText::onChange(VoiceGroup newSelection)
 {
-  setValue({ toString(newSelection), 0 });
+  setValue({ "Part " + toString(newSelection), 0 });
 }
 
 void DescriptiveLayouts::VGIMuted::onChange(const EditBuffer *eb)
