@@ -63,11 +63,19 @@ public class LayerSoundLayout extends SoundLayout {
 			});
 		}
 
+		private double getMaxWidth(SVGImage... images) {
+			double currMax = 0;
+			for(SVGImage i: images) {
+				currMax = Math.max(currMax, i.getPictureWidth());
+			}
+			return currMax;
+		}
+
 		@Override
 		public void doLayout(double x, double y, double w, double h) {
 			super.doLayout(x, y, w, h);
 
-			double layerToFXWidth = layerToFXArrows1.getPictureWidth();
+			double layerToFXWidth = getMaxWidth(layerToFXArrows1, layerToFXArrows2, layerToFXArrows3, layerToFXArrows4);
 			layerToFXArrows1.doLayout(0, 0, layerToFXWidth, h);
 			layerToFXArrows2.doLayout(0, 0, layerToFXWidth, h);
 			layerToFXArrows3.doLayout(0, 0, layerToFXWidth, h);
