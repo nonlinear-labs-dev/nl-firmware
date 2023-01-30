@@ -112,7 +112,7 @@ public class BeltParameterLayout extends OverlayLayout {
 	private OverlayControl editorMode;
 	private OverlayControl valueDisplay;
 	private SplitValueDisplay splitValueDisplay;
-	private OverlayControl parameterName;
+	private CurrentValuesName parameterName;
 	private OverlayControl dottedLine;
 	private OverlayControl infoButton;
 	private OverlayControl contextMenu;
@@ -318,10 +318,15 @@ public class BeltParameterLayout extends OverlayLayout {
 
 		dottedLine.doLayout(mcSourceDisplay.getRelativePosition().getRight() - dottedLineInset, 0, lineWidth, h);
 		infoButton.doLayout(undoRedoMargin + undoWidth / 4 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim, modSrcDim);
-		double sliderFourth = sliderWidth / 4;
-		double sliderThreeFourth = sliderFourth * 3;
-		fineButton.doLayout(sliderLeft + sliderThreeFourth, h - modSrcDim * 1.4, modSrcDim, modSrcDim);
 		
+		double fineHeight = fineButton.getPictureHeight();
+		double fineWidth = fineButton.getPictureWidth();
+		double quarterWidthOfName = parameterName.getRelativePosition().getWidth() / 4;
+		double nameStart = parameterName.getPositionRelativeToParent(this).getLeft();
+		
+		fineButton.doLayout(nameStart + quarterWidthOfName - fineWidth, parameterName.getPositionRelativeToParent(this).getCenterPoint().getY() - (fineHeight / 2), fineWidth, fineHeight);
+		fineButton.setVisible(currentRecall.isVisible());
+
 		contextMenu.doLayout(undoRedoMargin + undoWidth * 0.75 - modSrcDim / 2, (h - modSrcDim) / 2, modSrcDim,
 				modSrcDim);
 
