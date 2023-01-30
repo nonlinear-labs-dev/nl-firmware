@@ -32,46 +32,40 @@ import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 import com.nonlinearlabs.client.world.overlay.SVGImage;
 
 public class SplitSoundLayout extends SoundLayout {
+	private OverlayLayout leftC, rightC;
+	private SplitSoundSettings settings;
 
 	protected SplitSoundLayout(OverlayLayout parent) {
 		super(parent);
-		setSettings(new SplitSoundSettings(this));
+		settings = new SplitSoundSettings(this);
+		setSettings(settings);
+		addChild(leftC = new SplitSoundLeftContainer(this));
+		addChild(rightC = new SplitSoundRightContainer(this));
 	}
 
 	@Override
 	public void doLayout(double x, double y, double w, double h) {
-		GWT.log("SplitSoundLayout::doLayout" + x + "/" + y + " " + w + "/" + h);
 		super.doLayout(x, y, w, h);
+		double settingsWidth = soundSettings.getRelativePosition().getWidth();
+		double containerW = (w - settingsWidth) / 2;
+		leftC.doLayout(0, y, containerW, h);
+		rightC.doLayout(w - containerW, y, containerW, h);
 	}
 
-	private class SplitSoundSettings extends OverlayLayout {
-		VoiceGroupSoundSettings vgI, vgII;
-		SplitPoint splitPoint;
+	private class SplitSoundLeftContainer extends OverlayLayout {
+		private MappedSvgImage<GenericArrowEnum> partIToFXArrows;
+		private MappedSvgImage<GenericArrowEnum> ItoOut;
+		private MappedSvgImage<Boolean> fb_from_I_Into_I, fb_from_I_Into_II;
+		private SVGImage fxI_I, fxI_II;
+		private SerialArrow serialI;
 
-		MappedSvgImage<GenericArrowEnum> partIToFXArrows, partIIToFXArrows, ItoOut, IItoOut;
-		MappedSvgImage<Boolean> fb_from_I_Into_I, fb_from_I_Into_II, fb_from_II_Into_I, fb_from_II_Into_II;
-
-		SVGImage fxI_I, fxI_II, fxII_I, fxII_II; 
-		SerialArrow serialI, serialII;
-
-		
-		SplitSoundSettings(SplitSoundLayout parent) {
+		public SplitSoundLeftContainer(OverlayLayout parent) {
 			super(parent);
-			addChild(vgI = new VoiceGroupSoundSettings(VoiceGroup.I, this));
-			addChild(splitPoint = new SplitPoint(this));
-			addChild(vgII = new VoiceGroupSoundSettings(VoiceGroup.II, this));
-
 
 			addChild(partIToFXArrows = new MappedSvgImage<GenericArrowEnum>(this, 
 											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI, "RC-to-LT--feedback.svg"), 
 											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartII, "RC-to-LB--feedback.svg"),
 											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI_PartII, "RC-to-LT+RC-to-LB--feedback.svg"),
-											new Pair<GenericArrowEnum, String>(GenericArrowEnum.None, null)));
-			
-			addChild(partIIToFXArrows = new MappedSvgImage<GenericArrowEnum>(this, 
-											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI, "LC-to-RB--feedback.svg"),
-											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartII, "LC-to-RT--feedback.svg"),
-											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI_PartII, "LC-to-RT+LC-to-RB--feedback.svg"),
 											new Pair<GenericArrowEnum, String>(GenericArrowEnum.None, null)));
 
 			addChild(ItoOut = new MappedSvgImage<GenericArrowEnum>(this,
@@ -79,6 +73,74 @@ public class SplitSoundLayout extends SoundLayout {
 											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartII, "RB-to-LC.svg"),
 											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI_PartII, "RT-to-LC+RB-to-LC.svg"),
 											new Pair<GenericArrowEnum, String>(GenericArrowEnum.None, null)));
+
+
+			addChild(fxI_I = new FX_I_Indicator(this));
+			addChild(fxI_II = new FX_II_Indicator(this));
+
+			addChild(serialI = new SerialArrow(this));
+
+			addChild(fb_from_I_Into_I = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LT-to-RT.svg"), new Pair<Boolean, String>(false, null)));
+			addChild(fb_from_I_Into_II = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LB-to-RB.svg"), new Pair<Boolean, String>(false, null)));
+			
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				partIToFXArrows.update(ebp.splitToFXArrow_I);
+				
+				fb_from_I_Into_I.update(ebp.split_fb_I_into_I);
+				fb_from_I_Into_II.update(ebp.split_fb_I_into_II);
+				
+				ItoOut.update(ebp.splitToOut);
+
+				return true;
+			});
+		}
+
+		@Override
+		public void doLayout(double x, double y, double w, double h) {
+			super.doLayout(x, y, w, h);
+
+			double margin = Millimeter.toPixels(2);
+
+			double toFXArrowWidth = partIToFXArrows.getPictureWidth();
+			partIToFXArrows.doLayout(w - toFXArrowWidth, margin, toFXArrowWidth, h - 2 * margin);
+		
+			double fx_width = fxI_I.getPictureWidth();
+			double fx_height = fxI_I.getPictureHeight();
+			double fxI_x_pos = w - toFXArrowWidth - fx_width;
+			double yPosOffset = h / 6;
+			double yBase = h / 2 - (yPosOffset / 4);
+
+			fxI_I.doLayout(fxI_x_pos, 0 + yPosOffset, fx_width, fx_height);
+			fxI_II.doLayout(fxI_x_pos, yBase + yPosOffset, fx_width, fx_height);
+			serialI.doLayout(fxI_x_pos, 0, fx_width, h);
+
+			double toOutWidth = ItoOut.getPictureWidth();
+			ItoOut.doLayout(fxI_x_pos - toOutWidth, 0, toOutWidth, h);
+
+			double fb_height = fb_from_I_Into_I.getPictureHeight();
+			double upper_offset = Millimeter.toPixels(0.3);
+			fb_from_I_Into_I.doLayout(w - toFXArrowWidth, yPosOffset - upper_offset, toFXArrowWidth, fb_height);
+			fb_from_I_Into_II.doLayout(w - toFXArrowWidth, h - yPosOffset - fb_height, toFXArrowWidth, fb_height);			
+		}
+	}
+
+	private class SplitSoundRightContainer extends OverlayLayout {
+		private MappedSvgImage<GenericArrowEnum> partIIToFXArrows;
+		private MappedSvgImage<GenericArrowEnum> IItoOut;
+		private SVGImage fxII_I, fxII_II;
+		private SerialArrow serialII;
+		private MappedSvgImage<Boolean> fb_from_II_Into_I, fb_from_II_Into_II;
+
+		public SplitSoundRightContainer(OverlayLayout parent) {
+			super(parent);	
+
+			addChild(partIIToFXArrows = new MappedSvgImage<GenericArrowEnum>(this, 
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI, "LC-to-RB--feedback.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartII, "LC-to-RT--feedback.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI_PartII, "LC-to-RT+LC-to-RB--feedback.svg"),
+											new Pair<GenericArrowEnum, String>(GenericArrowEnum.None, null)));
+
+			
 											
 			addChild(IItoOut = new MappedSvgImage<GenericArrowEnum>(this,
 											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI, "LT-to-RC.svg"),
@@ -86,35 +148,65 @@ public class SplitSoundLayout extends SoundLayout {
 											new Pair<GenericArrowEnum, String>(GenericArrowEnum.PartI_PartII, "LT-to-RC+LB-to-RC.svg"),
 											new Pair<GenericArrowEnum, String>(GenericArrowEnum.None, null)));
 			
-			addChild(fxI_I = new FX_I_Indicator(this));
-			addChild(fxI_II = new FX_I_Indicator(this));
-
-			addChild(fxII_I = new FX_II_Indicator(this));
+			addChild(fxII_I = new FX_I_Indicator(this));
 			addChild(fxII_II = new FX_II_Indicator(this));
 
-			addChild(serialI = new SerialArrow(this));
 			addChild(serialII = new SerialArrow(this));
 
 
-			addChild(fb_from_I_Into_I = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LT-to-RT.svg"), new Pair<Boolean, String>(false, null)));
-			addChild(fb_from_I_Into_II = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LB-to-RB.svg"), new Pair<Boolean, String>(false, null)));
 			addChild(fb_from_II_Into_I = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "RT-to-LT.svg"), new Pair<Boolean, String>(false, null)));
 			addChild(fb_from_II_Into_II = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "RB-to-LB.svg"), new Pair<Boolean, String>(false, null)));
-
+		
 			EditBufferPresenterProvider.get().onChange(ebp -> {
-				partIToFXArrows.update(ebp.splitToFXArrow_I);
 				partIIToFXArrows.update(ebp.splitToFXArrow_II);
 				
-				fb_from_I_Into_I.update(ebp.split_fb_I_into_I);
-				fb_from_I_Into_II.update(ebp.split_fb_I_into_II);
 				fb_from_II_Into_I.update(ebp.split_fb_II_into_I);
 				fb_from_II_Into_II.update(ebp.split_fb_II_into_II);
 
 				IItoOut.update(ebp.splitToOut);
-				ItoOut.update(ebp.splitToOut);
-
+				
 				return true;
 			});
+		}
+
+		@Override
+		public void doLayout(double x, double y, double w, double h) {
+			super.doLayout(x, y, w, h);
+
+			double margin = Millimeter.toPixels(2);
+
+			double toFXArrowWidth = partIIToFXArrows.getPictureWidth();
+			partIIToFXArrows.doLayout(0, margin, toFXArrowWidth, h - 2 * margin);
+		
+			double fx_width = fxII_I.getPictureWidth();
+			double fx_height = fxII_I.getPictureHeight();
+			double fxI_x_pos = 0 + toFXArrowWidth;
+			double yPosOffset = h / 6;
+			double yBase = h / 2 - (yPosOffset / 4);
+
+			fxII_I.doLayout(fxI_x_pos, 0 + yPosOffset, fx_width, fx_height);
+			fxII_II.doLayout(fxI_x_pos, yBase + yPosOffset, fx_width, fx_height);
+			serialII.doLayout(fxI_x_pos, 0, fx_width, h);
+
+			double toOutWidth = IItoOut.getPictureWidth();			
+			IItoOut.doLayout(fxI_x_pos + fx_width, 0, toOutWidth, h);
+
+			double fb_height = fb_from_II_Into_I.getPictureHeight();
+			double upper_offset = Millimeter.toPixels(0.3);
+			fb_from_II_Into_I.doLayout(0, yPosOffset - upper_offset, toFXArrowWidth, fb_height);
+			fb_from_II_Into_II.doLayout(0, h - yPosOffset - fb_height, toFXArrowWidth, fb_height);
+		}
+	}
+
+	private class SplitSoundSettings extends OverlayLayout {
+		VoiceGroupSoundSettings vgI, vgII;
+		SplitPoint splitPoint;
+		
+		SplitSoundSettings(SplitSoundLayout parent) {
+			super(parent);
+			addChild(vgI = new VoiceGroupSoundSettings(VoiceGroup.I, this));
+			addChild(splitPoint = new SplitPoint(this));
+			addChild(vgII = new VoiceGroupSoundSettings(VoiceGroup.II, this));
 		}
 
 		@Override
@@ -129,42 +221,6 @@ public class SplitSoundLayout extends SoundLayout {
 			splitPoint.doLayout(settingWidth + margin, (h - splitPointHeight) / 2, splitPointWidth,
 					splitPointHeight);
 			vgII.doLayout(w - settingWidth, margin, settingWidth, h - 2 * margin);
-		
-			double toFXArrowWidth = partIToFXArrows.getPictureWidth();
-			double rightEnd = (w - settingWidth) + settingWidth;
-			partIToFXArrows.doLayout(0 - toFXArrowWidth, margin, toFXArrowWidth, h - 2 * margin);
-			partIIToFXArrows.doLayout(rightEnd, margin, toFXArrowWidth, h - 2 * margin);
-		
-			double fx_width = fxII_I.getPictureWidth();
-			double fx_height = fxII_I.getPictureHeight();
-			double fxI_x_pos = 0 - toFXArrowWidth - fx_width;
-			double yPosOffset = h / 6;
-			double yBase = h / 2 - (yPosOffset / 4);
-			fxI_I.doLayout(fxI_x_pos, 0 + yPosOffset, fx_width, fx_height);
-			fxII_I.doLayout(fxI_x_pos, yBase + yPosOffset, fx_width, fx_height);
-			
-			double fxII_x_pos = rightEnd + toFXArrowWidth;
-			fxI_II.doLayout(fxII_x_pos, 0 + yPosOffset, fx_width, fx_height);
-			fxII_II.doLayout(fxII_x_pos, yBase + yPosOffset, fx_width, fx_height);
-
-			serialI.doLayout(fxI_x_pos, 0, fx_width, h);
-			serialII.doLayout(fxII_x_pos, 0, fx_width, h);
-
-			double toOutWidth = ItoOut.getPictureWidth();
-			double II_x_pos = fxII_x_pos + fx_width;
-			double I_x_pos = fxI_x_pos - toOutWidth;
-
-			ItoOut.doLayout(I_x_pos, 0, toOutWidth, h);
-			IItoOut.doLayout(II_x_pos, 0, toOutWidth, h);
-
-
-			double fb_height = fb_from_I_Into_I.getPictureHeight();
-			double upper_offset = Millimeter.toPixels(0.3);
-			fb_from_I_Into_I.doLayout(0 - toFXArrowWidth, yPosOffset - upper_offset, toFXArrowWidth, fb_height);
-			fb_from_I_Into_II.doLayout(0 - toFXArrowWidth, h - yPosOffset - fb_height, toFXArrowWidth, fb_height);
-			
-			fb_from_II_Into_I.doLayout(rightEnd, yPosOffset - upper_offset, toFXArrowWidth, fb_height);
-			fb_from_II_Into_II.doLayout(rightEnd, h - yPosOffset - fb_height, toFXArrowWidth, fb_height);
 		}
 
 		@Override
