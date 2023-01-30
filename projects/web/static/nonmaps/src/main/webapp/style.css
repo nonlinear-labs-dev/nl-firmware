@@ -729,12 +729,13 @@ textarea {
 	border: 0px solid #000;
 	border-radius: 5px;
 	width: auto;
-	font-family: 'SSP-LW00';
+	font-family: 'SSP-LW25';
 	font-size: 95%;
 	font-weight: 300;
 	padding: 0.4em 0.6em;
 	resize: none;
 	outline: none;
+	color: #c2c2c2;
 	background-color: #141414;
 	border: 1px solid #575757;
 }
@@ -762,7 +763,7 @@ textarea {
 	padding: 0.3em 0.6em;
 	margin: 0;
 	font-family: SSP-LW25, Arial Unicode MS, Arial, sans-serif;
-	color: #c2c2c2;
+	color: #bbb;
 }
 
 input[type="text"]+button.reset {

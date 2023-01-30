@@ -1029,7 +1029,6 @@ select {
 .gwt-TextArea {
   padding: 5px 7px;
   margin: 3px;
-  font-size: 100%;
   font-family: SSP-LW25, Arial Unicode MS, Arial, sans-serif;
 }
 
@@ -1610,6 +1609,8 @@ select[disabled='disabled'] {
 .dialogContent textarea.editable {
   min-height: 4em;
   max-height: 10em;
+  color: white;
+  font-size: 14px;
 }
 
 .dialogContent textarea.editable.txt-oneline {
