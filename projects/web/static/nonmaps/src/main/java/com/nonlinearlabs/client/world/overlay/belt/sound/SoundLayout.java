@@ -13,7 +13,7 @@ import com.nonlinearlabs.client.world.overlay.belt.Belt.BeltTab;
 public class SoundLayout extends OverlayLayout {
 
 	private SoundTypeMenu soundTypeMenu;
-	private OverlayControl soundSettings;
+	protected OverlayControl soundSettings;
 	protected SoundSettingsButton settings;
 	private PartFade fade;
 

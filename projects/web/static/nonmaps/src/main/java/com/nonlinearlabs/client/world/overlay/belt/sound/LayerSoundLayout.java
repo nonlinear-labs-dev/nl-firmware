@@ -30,24 +30,16 @@ import com.nonlinearlabs.client.world.overlay.OverlayLayout;
 
 public class LayerSoundLayout extends SoundLayout {
 
-	protected LayerSoundLayout(OverlayLayout parent) {
-		super(parent);
-		setSettings(new LayerSoundSettings(this));
-	}
-
-	private class LayerSoundSettings extends OverlayLayout {
+	private class LayerSoundRightContainer extends OverlayLayout {
 		private MappedSvgImage<Boolean> layerToFXArrows1, layerToFXArrows2, layerToFXArrows3, layerToFXArrows4;
-		private OverlayLayout vgI, vgII;
-		private LayerSoundFBIndicator fb;
+		
 		private SVGImage fxI, fxII;
 		private SVGImage serial;
 		private MappedSvgImage<GenericArrowEnum> layerFXToOutArrows;
-
-		LayerSoundSettings(LayerSoundLayout parent) {
+		
+		public LayerSoundRightContainer(OverlayLayout parent) {
 			super(parent);
-			addChild(fb = new LayerSoundFBIndicator(this));
-			addChild(vgI = new VoiceGroupSoundSettings(VoiceGroup.I, this));
-			addChild(vgII = new VoiceGroupSoundSettings(VoiceGroup.II, this));
+
 			addChild(layerToFXArrows1 = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LT-to-RT.svg"), new Pair<Boolean, String>(false, null)));
 			addChild(layerToFXArrows2 = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LT-to-RB.svg"), new Pair<Boolean, String>(false, null)));
 			addChild(layerToFXArrows3 = new MappedSvgImage<Boolean>(this, new Pair<Boolean, String>(true, "LB-to-RT.svg"), new Pair<Boolean, String>(false, null)));
@@ -74,6 +66,54 @@ public class LayerSoundLayout extends SoundLayout {
 		@Override
 		public void doLayout(double x, double y, double w, double h) {
 			super.doLayout(x, y, w, h);
+
+			double layerToFXWidth = layerToFXArrows1.getPictureWidth();
+			layerToFXArrows1.doLayout(0, 0, layerToFXWidth, h);
+			layerToFXArrows2.doLayout(0, 0, layerToFXWidth, h);
+			layerToFXArrows3.doLayout(0, 0, layerToFXWidth, h);
+			layerToFXArrows4.doLayout(0, 0, layerToFXWidth, h);
+
+			double fxIWidth = fxI.getPictureWidth();
+			fxI.doLayout(layerToFXWidth, 0, fxIWidth, h/2);
+			fxII.doLayout(layerToFXWidth, h/2, fxIWidth, h/2);
+			serial.doLayout(layerToFXWidth, 0, fxIWidth, h);
+
+			double xPos = layerToFXWidth + fxIWidth;
+			double toOutArrowWidth = layerFXToOutArrows.getPictureWidth(); 
+			layerFXToOutArrows.doLayout(xPos, 0, toOutArrowWidth, h);
+		}
+	}
+
+	private LayerSoundRightContainer rightContainer;
+
+	protected LayerSoundLayout(OverlayLayout parent) {
+		super(parent);
+		setSettings(new LayerSoundSettings(this));
+		addChild(rightContainer = new LayerSoundRightContainer(this));
+	}
+
+	@Override
+	public void doLayout(double x, double y, double w, double h) {
+		super.doLayout(x, y, w, h);
+		double settingWidth = soundSettings.getRelativePosition().getWidth();
+		double settingRight = soundSettings.getRelativePosition().getRight();
+		rightContainer.doLayout(settingRight, 0, settingWidth / 2, h);
+	}
+
+	private class LayerSoundSettings extends OverlayLayout {
+		private LayerSoundFBIndicator fb;
+		private OverlayLayout vgI, vgII;
+
+		LayerSoundSettings(LayerSoundLayout parent) {
+			super(parent);
+			addChild(fb = new LayerSoundFBIndicator(this));
+			addChild(vgI = new VoiceGroupSoundSettings(VoiceGroup.I, this));
+			addChild(vgII = new VoiceGroupSoundSettings(VoiceGroup.II, this));
+		}
+
+		@Override
+		public void doLayout(double x, double y, double w, double h) {
+			super.doLayout(x, y, w, h);
 			double parts = 20;
 			double unit = h / parts;
 
@@ -83,22 +123,6 @@ public class LayerSoundLayout extends SoundLayout {
 			double fbW = fb.getSelectedImage().getImgWidth();
 			double fbH = fb.getSelectedImage().getImgHeight();
 			fb.doLayout(-fbW, h / 2 - (fbH / 2), fbW, fbH);
-
-			double layerWidth = vgI.getPositionRelativeToParent(this).getWidth();
-			double layerToFXWidth = layerToFXArrows1.getPictureWidth();
-			layerToFXArrows1.doLayout(layerWidth, 0, layerToFXWidth, h);
-			layerToFXArrows2.doLayout(layerWidth, 0, layerToFXWidth, h);
-			layerToFXArrows3.doLayout(layerWidth, 0, layerToFXWidth, h);
-			layerToFXArrows4.doLayout(layerWidth, 0, layerToFXWidth, h);
-
-			double fxIWidth = fxI.getPictureWidth();
-			fxI.doLayout(layerWidth + layerToFXWidth, 0, fxIWidth, h/2);
-			fxII.doLayout(layerWidth + layerToFXWidth, h/2, fxIWidth, h/2);
-			serial.doLayout(layerWidth + layerToFXWidth, 0, fxIWidth, h);
-
-			double xPos = layerWidth + layerToFXWidth + fxIWidth;
-			double toOutArrowWidth = layerFXToOutArrows.getPictureWidth(); 
-			layerFXToOutArrows.doLayout(xPos, 0, toOutArrowWidth, h);
 		}
 	}
 
