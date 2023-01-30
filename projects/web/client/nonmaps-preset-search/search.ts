@@ -516,9 +516,7 @@ glue("bankSelect", (id: string, innerState) => {
             var a = { class: "no-close-bank-menu next-prev-bank-buttons", style: "display: none" };
             if (searchBanks.get().length == 1) {
                 const b = searchBanks.get()[0];
-                if (presenter.banks.indexOf(b) < presenter.banks.length - 1) {
-                    a['style'] = "display: flex";
-                }
+                a['style'] = "display: flex";
             }
             return a;
         }
