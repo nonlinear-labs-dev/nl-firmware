@@ -56,9 +56,9 @@ ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toTyp
                           OneShotTypes::FinishCB(
                               [=]()
                               {
+                                m_lock.reset();
                                 SettingsUseCases sUseCases(*Application::get().getSettings());
                                 sUseCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-                                m_lock.reset();
                               }))
 {
 }
@@ -91,9 +91,9 @@ ConvertToSoundTypeItemWithFX::ConvertToSoundTypeItemWithFX(const Rect& rect, Sou
                           OneShotTypes::FinishCB(
                               [=]
                               {
+                                m_lock.reset();
                                 SettingsUseCases sUseCases(*Application::get().getSettings());
                                 sUseCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-                                m_lock.reset();
                               }))
 {
 }
