@@ -12,6 +12,10 @@ elif cat /proc/cpuinfo | grep "model name" | head -n1 | grep "i3-7100" > /dev/nu
 elif cat /proc/cpuinfo | grep "model name" | head -n1 | grep "i3-1011" > /dev/null; then
   echo "10i3 => epc2"
   ENABLE_EPC_WIFI=1
+elif cat /proc/cpuinfo | grep "model name" | head -n1 | grep "i5-7260" > /dev/null; then
+  echo "7i5 => epc3"
+  FIX_BUFFER_UNDERRUNS=1
+  ENABLE_EPC_WIFI=1
 elif cat /proc/cpuinfo | grep "model name" | head -n1 | grep "i3-1115" > /dev/null; then
   echo "11i3 => epc3"
   FIX_BUFFER_UNDERRUNS=1
