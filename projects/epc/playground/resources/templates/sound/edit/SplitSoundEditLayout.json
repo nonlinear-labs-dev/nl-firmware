@@ -26,7 +26,7 @@
           "Class": "InvertedLabel",
           "Position": "192, 0",
           "Init": {
-            "Text[Text]": "Edit"
+            "Text[Text]": "Edit  "
           }
         },
         "Content": {
