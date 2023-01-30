@@ -16,7 +16,7 @@ public class FineButton extends SVGImage {
 
     public FineButton(Control parent)
     {
-        super(parent, "Fine_Active.svg", "Fine_Disabled.svg", "Fine_Enabled.svg");
+        super(parent, "Fine_Active_B.svg", "Fine_Disabled_B.svg", "Fine_Enabled_B.svg");
         
         NonMaps.get().getNonLinearWorld().onShiftStateChanged(state -> {
             isShiftPressed = state == BooleanValues.on;
