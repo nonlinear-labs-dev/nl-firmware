@@ -215,6 +215,12 @@ std::pair<bool, bool> PanelUnitPresetMode::trySpecialCaseParameter(const Paramet
   return { false, false };
 }
 
+namespace {
+  bool isDefaultScreenForbiddenFromCurrentFocus(FocusAndMode fam) {
+    return fam.focus == UIFocus::Sound && fam.mode == UIMode::Select && fam.detail == UIDetail::Voices;
+  }
+}
+
 void PanelUnitPresetMode::setup()
 {
   PanelUnitParameterEditMode::setup();
@@ -225,7 +231,7 @@ void PanelUnitPresetMode::setup()
                           SettingsUseCases useCases(settings);
                           auto& famSetting = *settings.getSetting<FocusAndModeSetting>();
                           auto focusAndMode = famSetting.getState();
-                          if(state)
+                          if(state && !isDefaultScreenForbiddenFromCurrentFocus(focusAndMode))
                           {
                             useCases.setFocusAndMode({ focusAndMode.focus, UIMode::Select, UIDetail::InitSound });
                           }
