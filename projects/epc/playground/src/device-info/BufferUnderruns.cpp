@@ -9,6 +9,7 @@ BufferUnderruns::BufferUnderruns(DeviceInformation *parent)
       nltools::msg::EndPoint::Playground, [this](const auto &msg) {
         auto changed = std::exchange(m_numUnderruns, msg.numUnderruns) != msg.numUnderruns;
         changed |= std::exchange(m_framesPerPeriod, msg.framesPerPeriod) != msg.framesPerPeriod;
+        changed |= std::exchange(m_numPeriods, msg.numPeriods) != msg.numPeriods;
 
         if(changed)
           onChange();
@@ -27,5 +28,5 @@ void BufferUnderruns::writeDocument(Writer &writer, UpdateDocumentContributor::t
 
 Glib::ustring BufferUnderruns::get() const
 {
-  return nltools::string::concat(m_numUnderruns, " @ ", m_framesPerPeriod, "fpp");
+  return nltools::string::concat(m_numUnderruns, " @ ", m_numPeriods, "p x ", m_framesPerPeriod, "fpp");
 }
