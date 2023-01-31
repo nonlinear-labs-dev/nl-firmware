@@ -242,6 +242,7 @@ namespace nltools
 
       uint64_t numUnderruns = 0;
       int32_t framesPerPeriod = 0;
+      int32_t numPeriods = 0;
     };
 
     struct SetFramesPerPeriod

@@ -116,9 +116,9 @@ static std::unique_ptr<MidiInput> createTCDIn(const std::string &name, Synth *sy
 static bool checkBufferUnderruns(AudioOutput *out)
 {
   using namespace nltools::msg;
-  BufferUnderrunsChangedMessage msg { out->getNumUnderruns(), theOptions->getFramesPerPeriod() };
+  BufferUnderrunsChangedMessage msg { out->getNumUnderruns(), theOptions->getFramesPerPeriod(), theOptions->getNumPeriods() };
 
-  if(lastSent.numUnderruns != msg.numUnderruns || lastSent.framesPerPeriod != msg.framesPerPeriod)
+  if(lastSent.numUnderruns != msg.numUnderruns || lastSent.framesPerPeriod != msg.framesPerPeriod || lastSent.numPeriods != msg.numPeriods)
   {
     send<BufferUnderrunsChangedMessage>(EndPoint::Playground, msg);
     lastSent = msg;
