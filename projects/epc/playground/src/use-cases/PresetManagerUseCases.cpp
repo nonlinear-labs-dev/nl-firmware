@@ -658,14 +658,19 @@ void PresetManagerUseCases::createBankFromPresets(const std::string& csv, const 
 PresetManagerUseCases::ImportExitCode
     PresetManagerUseCases::importBackupFile(FileInStream& in, const ProgressIndication& progress, AudioEngineProxy& ae)
 {
-  if(!in.eof())
+  auto isTarGz = StringTools::hasEnding(in.getFileName(), ".tar.gz");
+  auto isTar = StringTools::hasEnding(in.getFileName(), ".tar");
+  if((!isTarGz && !isTar) or in.eof())
   {
-    if(auto lock = m_presetManager.getLoadingLock())
-    {
-      auto scope = m_presetManager.getUndoScope().startTransaction("Import Presetmanager Backup");
-      return importBackupFile(scope->getTransaction(), in, progress, ae);
-    }
+    return ImportExitCode::InvalidFile;
   }
+
+  if(auto lock = m_presetManager.getLoadingLock())
+  {
+    auto scope = m_presetManager.getUndoScope().startTransaction("Import Presetmanager Backup");
+    return importBackupFile(scope->getTransaction(), in, progress, ae);
+  }
+
   return ImportExitCode::PresetManagerLocked;
 }
 

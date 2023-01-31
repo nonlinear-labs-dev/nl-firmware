@@ -19,7 +19,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Export Backup with MIDI Bank ex
 
   CHECK(bank->isMidiSelectedBank());
 
-  const auto fileName = "/tmp/issue-2284.xml";
+  const auto fileName = "/tmp/issue-2284.tar";
 
   std::filesystem::remove(fileName);
 

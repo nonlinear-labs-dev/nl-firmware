@@ -27,6 +27,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "3343 - Can't Load Backup")
   const auto backupFileVersion99999
       = getSourceDir() + "/projects/epc/playground/test-resources/version-999999.xml.tar.gz";
 
+  const auto fakeZipFile = getSourceDir() + "/projects/epc/playground/test-resources/not-a-real-zip.zip";
+
   Application::get().stopWatchDog();
 
   auto pm = TestHelper::getPresetManager();
@@ -45,6 +47,20 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "3343 - Can't Load Backup")
     FileInStream stream(backupFileVersion99999, true);
     auto ret = uc.importBackupFile(stream, {}, TestHelper::getAudioEngineProxy());
     CHECK(ret == PresetManagerUseCases::ImportExitCode::UnsupportedVersion);
+  }
+
+  WHEN("invalid file is loaded (try zip)")
+  {
+    FileInStream stream(fakeZipFile, true);
+    auto ret = uc.importBackupFile(stream, {}, TestHelper::getAudioEngineProxy());
+    CHECK(ret == PresetManagerUseCases::ImportExitCode::InvalidFile);
+  }
+
+  WHEN("invalid file is loaded")
+  {
+    FileInStream stream(fakeZipFile, false);
+    auto ret = uc.importBackupFile(stream, {}, TestHelper::getAudioEngineProxy());
+    CHECK(ret == PresetManagerUseCases::ImportExitCode::InvalidFile);
   }
 
   WHEN("load backup with older or same version, size of data is same than on disk")
