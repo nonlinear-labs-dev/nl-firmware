@@ -120,6 +120,7 @@ class UI {
             }
 
             wave.disabled = tooLargeForWave;
+            flac.disabled = false;
 
             name.oninput = () => {
                 wave.disabled = name.value.length == 0;
