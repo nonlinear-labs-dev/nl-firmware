@@ -216,8 +216,8 @@ parameters:
       Determines the presence and decay speed of looped envelope segments (Decay 1 and 2).\n
       0%: no looped segments, normal envelope behavior with an exponential Decay 1 segment.\n
       <= 100%: the loop will repeat and approach zero until a pressed key is released. Smaller Loop values produce a faster loop decay.
-      At 100%, the loop will repeat indefinetely. After releasing a pressed key, the normal Release segment will start.
+      At 100%, the loop will repeat indefinitely. After releasing a pressed key, the normal Release segment will start.
       The Decay 2 segment is linear during loops.\n
       > 100%: the loop will repeat at full presence until a pressed key is released. Then, the loop will still repeat and approach zero.
-      Smaller Loop values produce a faster loop decay. At 200%, the loop will repeat indefinetely.\n
-      Changing this parameter is only effective when a key is pressed.
+      Smaller Loop values produce a faster loop decay. At 200%, the loop will repeat indefinitely.\n
+      Changing this parameter is only effective when a key is pressed or released.
