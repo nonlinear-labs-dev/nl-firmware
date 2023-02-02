@@ -85,13 +85,18 @@ void MultiLineLabel::updateLines()
   auto font = getFont();
 
   TextSplitter s(font, r.getWidth(), m_text);
-  int lineHeight = font->getHeight() + 3;
+  auto lineHeight = font->getHeight() + 3;
+  auto lastLineHeight = lineHeight + 2;
   int y = 0;
 
-  for(const auto &line : s.getLines())
+  const auto lines = s.getLines();
+  int currentLine = 0;
+  for(const auto &line : lines)
   {
-    addControl(new DETAIL::ChildLabel(line, m_color, font, Rect(0, y, r.getWidth(), lineHeight)));
-    y += lineHeight;
+    auto currentLineHeight = currentLine == lines.size() - 1 ? lastLineHeight : lineHeight;
+    addControl(new DETAIL::ChildLabel(line, m_color, font, Rect(0, y, r.getWidth(), currentLineHeight)));
+    y += currentLineHeight;
+    currentLine++;
   }
 
   super::setPosition(Rect(r.getLeft(), r.getTop(), r.getWidth(), y));
