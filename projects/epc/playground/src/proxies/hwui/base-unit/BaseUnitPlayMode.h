@@ -4,6 +4,8 @@
 #include "NoteShiftStateMachine.h"
 #include <proxies/hwui/ShortVsLongPress.h>
 
+class BaseUnitUIDetail;
+
 class BaseUnitPlayMode : public UsageMode
 {
  private:
@@ -22,11 +24,18 @@ class BaseUnitPlayMode : public UsageMode
   void setupBaseUnitPlusButton();
   static void modeButtonShortPress();
   static void modeButtonLongPress();
+  void funcButtonShortPress();
+  static void funcButtonLongPress();
+
+  static void toggleRibbonSelection();
+  static void toggleRibbonMode();
 
   std::unordered_map<Buttons, bool> m_buttonStates;
   NoteShiftStateMachine m_noteShiftState;
   ShortVsLongPress m_modeButtonHandler;
+  ShortVsLongPress m_funcButtonHandler;
 
   bool checkPanicAffenGriff(Buttons b, bool state);
-  void toggleRibbonSelection();
+
+  static BaseUnitUIDetail* getDetailSetting();
 };

@@ -51,6 +51,7 @@
 #include "FocusAndModeSetting.h"
 #include "SelectedRibbonsSetting.h"
 #include "AftertouchLegacyMode.h"
+#include "BaseUnitUIDetail.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -81,6 +82,7 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, cons
   addSetting("SendPresetAsLPCWriteFallback", new SendPresetAsPlaycontrollerWriteFallback(*this));
   addSetting("PresetStoreModeSetting", new PresetStoreModeSetting(*this));
   addSetting("BaseUnitUIMode", new BaseUnitUIMode(*this));
+  addSetting("BaseUnitUIDetail", new BaseUnitUIDetail(*this));
   addSetting("PanelUnitFocusAndMode", new FocusAndModeSetting(*this));
   addSetting("NoteShift", new NoteShift(*this));
   addSetting("ParameterEditModeRibbonBehaviour", new ParameterEditModeRibbonBehaviour(*this));

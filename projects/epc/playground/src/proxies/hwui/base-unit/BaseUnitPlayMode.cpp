@@ -11,9 +11,11 @@
 #include <http/UndoScope.h>
 #include <use-cases/RibbonParameterUseCases.h>
 #include <use-cases/SettingsUseCases.h>
+#include "device-settings/BaseUnitUIDetail.h"
 
 BaseUnitPlayMode::BaseUnitPlayMode()
     : m_modeButtonHandler([] { modeButtonShortPress(); }, [] { modeButtonLongPress(); })
+    , m_funcButtonHandler([=] { funcButtonShortPress(); }, [] { funcButtonLongPress(); })
 {
   for(auto b : { Buttons::BUTTON_MINUS, Buttons::BUTTON_PLUS, Buttons::BUTTON_MODE, Buttons::BUTTON_FUNCTION })
     m_buttonStates.emplace(b, false);
@@ -31,19 +33,7 @@ void BaseUnitPlayMode::setup()
                           if(checkPanicAffenGriff(Buttons::BUTTON_FUNCTION, state))
                             return true;
 
-                          if(state)
-                          {
-                            if(Application::get().getSettings()->getSetting<BaseUnitUIMode>()->get()
-                               == BaseUnitUIModes::ParameterEdit)
-                            {
-                              toggleTouchBehaviour();
-                            }
-                            else
-                            {
-                              toggleRibbonSelection();
-                            }
-                          }
-
+                          m_funcButtonHandler.onButtonEvent(state);
                           return true;
                         });
 }
@@ -69,6 +59,27 @@ void BaseUnitPlayMode::toggleRibbonSelection()
   {
     SettingsUseCases useCases(*settings);
     useCases.toggleRibbonSelection();
+  }
+}
+
+void BaseUnitPlayMode::toggleRibbonMode()
+{
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto selRibbonSetting = eb->getSettings().getSetting<SelectedRibbonsSetting>();
+  auto lastTouchedRibbon = Application::get().getPlaycontrollerProxy()->getLastTouchedRibbonParameterID();
+  if(auto ribbon = eb->findAndCastParameterByID<RibbonParameter>({ lastTouchedRibbon, VoiceGroup::Global }))
+  {
+    RibbonParameterUseCases rpuc(ribbon);
+    if(ribbon->getID().getNumber() == C15::PID::Ribbon_1 || ribbon->getID().getNumber() == C15::PID::Ribbon_2)
+    {
+      if(selRibbonSetting->get() == SelectedRibbons::Ribbon1_2)
+        rpuc.toggleTouchBehaviour();
+    }
+    else if(ribbon->getID().getNumber() == C15::PID::Ribbon_3 || ribbon->getID().getNumber() == C15::PID::Ribbon_4)
+    {
+      if(selRibbonSetting->get() == SelectedRibbons::Ribbon3_4)
+        rpuc.toggleTouchBehaviour();
+    }
   }
 }
 
@@ -143,4 +154,40 @@ bool BaseUnitPlayMode::checkPanicAffenGriff(Buttons b, bool state)
     return true;
   }
   return false;
+}
+
+void BaseUnitPlayMode::funcButtonShortPress()
+{
+  if(Application::get().getSettings()->getSetting<BaseUnitUIMode>()->get() == BaseUnitUIModes::ParameterEdit)
+  {
+    toggleTouchBehaviour();
+  }
+  else
+  {
+    if(auto setting = getDetailSetting())
+    {
+      switch(setting->get())
+      {
+        case BaseUnitUIDetails::RibbonSelect:
+          toggleRibbonSelection();
+          break;
+        case BaseUnitUIDetails::RibbonMode:
+          toggleRibbonMode();
+          break;
+      }
+    }
+  }
+}
+
+void BaseUnitPlayMode::funcButtonLongPress()
+{
+  if(auto setting = getDetailSetting())
+  {
+    setting->inc(1, true);
+  }
+}
+
+BaseUnitUIDetail* BaseUnitPlayMode::getDetailSetting()
+{
+  return Application::get().getSettings()->getSetting<BaseUnitUIDetail>();
 }
