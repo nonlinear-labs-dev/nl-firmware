@@ -99,7 +99,7 @@ void AlsaAudioOutput::stop()
 void AlsaAudioOutput::doBackgroundWork()
 {
   pthread_setname_np(pthread_self(), "AudioOut");
-  const auto bufferSize = m_numFramesPerPeriod * m_numPeriods;
+  const snd_pcm_sframes_t bufferSize = m_numFramesPerPeriod * m_numPeriods;
 
   snd_pcm_prepare(m_handle);
 
@@ -117,7 +117,7 @@ void AlsaAudioOutput::doBackgroundWork()
 
   while(m_run)
   {
-    auto avail = snd_pcm_avail(m_handle);
+    auto avail = std::min(snd_pcm_avail(m_handle), bufferSize);
 
     if(avail == 0)
     {
