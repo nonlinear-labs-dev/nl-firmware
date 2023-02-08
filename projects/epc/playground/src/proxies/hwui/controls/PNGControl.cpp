@@ -71,6 +71,9 @@ void PNGControl::loadImage(const std::string& l)
   if(l.empty())
   {
     m_imagePath = "";
+    m_image = png::image<png::rgba_pixel>();
+    recalculatePixels();
+    return;
   }
 
   try
