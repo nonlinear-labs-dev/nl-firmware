@@ -16,11 +16,11 @@ void ParamEditModeRibbonBehaviourLabel::updateText(const Setting* s)
   switch(dynamic_cast<const ParameterEditModeRibbonBehaviour*>(s)->get())
   {
     case ParameterEditModeRibbonBehaviours::PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR_RELATIVE:
-      setText(StringAndSuffix { "r" });
+      setText(StringAndSuffix { "r <" });
       break;
 
     case ParameterEditModeRibbonBehaviours::PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR_ABSOLUTE:
-      setText(StringAndSuffix { "a" });
+      setText(StringAndSuffix { "a <" });
       break;
   }
 }

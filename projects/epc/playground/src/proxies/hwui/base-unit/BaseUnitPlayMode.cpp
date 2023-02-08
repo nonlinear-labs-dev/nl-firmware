@@ -181,9 +181,14 @@ void BaseUnitPlayMode::funcButtonShortPress()
 
 void BaseUnitPlayMode::funcButtonLongPress()
 {
-  if(auto setting = getDetailSetting())
+  auto s = Application::get().getSettings()->getSetting<BaseUnitUIMode>();
+
+  if(s->get() == BaseUnitUIModes::Play)
   {
-    setting->inc(1, true);
+    if(auto setting = getDetailSetting())
+    {
+      setting->inc(1, true);
+    }
   }
 }
 
