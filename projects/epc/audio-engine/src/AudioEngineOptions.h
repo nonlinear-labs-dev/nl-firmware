@@ -48,6 +48,5 @@ class AudioEngineOptions
   Glib::ustring m_audioOutputDeviceName;
   int m_framesPerPeriod = 96;
   int m_numPeriods = 2;
-  int m_alsaBufferSize = 96 * 2;
   int m_cpuBurningSines = 0;
 };
