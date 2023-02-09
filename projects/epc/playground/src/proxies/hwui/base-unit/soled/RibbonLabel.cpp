@@ -63,7 +63,7 @@ void RibbonLabel::onRibbonSelectionChanged(const Setting *s)
     {
       if(m_parameterID.getNumber() == C15::PID::Ribbon_1)
         m_parameterID = { C15::PID::Ribbon_3, VoiceGroup::Global };
-      else
+      else if(m_parameterID.getNumber() == C15::PID::Ribbon_2)
         m_parameterID = { C15::PID::Ribbon_4, VoiceGroup::Global };
     }
   }

@@ -3,6 +3,9 @@
 #include "PlayModeLayout.h"
 #include "RibbonLabel.h"
 #include "PedalMappedToRibbonIndication.h"
+#include "device-settings/BaseUnitUIDetail.h"
+#include "RibbonModeLabel.h"
+#include "LastTouchedRibbonLabel.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <device-settings/Settings.h>
@@ -18,6 +21,8 @@ PlayModeLayout::PlayModeLayout()
 
   settings.getSetting<SelectedRibbonsSetting>()->onChange(
       sigc::mem_fun(this, &PlayModeLayout::onRibbonSelectionChanged));
+
+  settings.getSetting<BaseUnitUIDetail>()->onChange(sigc::mem_fun(this, &PlayModeLayout::onBaseUnitDetailChanged));
 
   createUpperLabels();
 }
@@ -53,15 +58,54 @@ namespace
     else
       return { 25, 1, 88, 14 };
   }
+
+  Rect getRibbonModeLabelRect()
+  {
+    return { 113, 1, 8, 14 };
+  }
+
+  Rect getRibbonTouchedIndicatorRect()
+  {
+    return { 121, 1, 8, 14 };
+  }
+
+  ParameterId getUpperIDForSetting(SelectedRibbons s)
+  {
+    if(s == SelectedRibbons::Ribbon1_2)
+    {
+      return HardwareSourcesGroup::getUpperRibbon1ParameterID();
+    }
+    else
+    {
+      return HardwareSourcesGroup::getUpperRibbon3ParameterID();
+    }
+  }
+
+  SelectedRibbonsSetting* getSelectedRibbonsSetting()
+  {
+    return Application::get().getSettings()->getSetting<SelectedRibbonsSetting>();
+  }
 }
 
 void PlayModeLayout::createUpperLabels()
 {
   remove(std::exchange(m_pedalSymbol, nullptr));
   remove(std::exchange(m_ribbonLabel, nullptr));
+  remove(std::exchange(m_ribbonMode, nullptr));
+  remove(std::exchange(m_ribbonTouchedIndicator, nullptr));
 
-  const auto id = HardwareSourcesGroup::getUpperRibbon1ParameterID();
+  const auto id = getUpperIDForSetting(getSelectedRibbonsSetting()->get());
   auto pedalMapped = isPedalMappedToCurrentUpperRibbon();
   m_pedalSymbol = addControl(new PedalMappedToRibbonIndication(getPedalIndicationRect(pedalMapped)));
   m_ribbonLabel = addControl(new RibbonLabel(id, getRibbonLabelRect(pedalMapped)));
+  if(getBaseUnitUIDetails()->get() == BaseUnitUIDetails::RibbonMode)
+  {
+    m_ribbonMode = addControl(new RibbonModeLabel(id, getRibbonModeLabelRect()));
+    m_ribbonTouchedIndicator = addControl(new LastTouchedRibbonLabel(id, getRibbonTouchedIndicatorRect()));
+  }
+}
+
+void PlayModeLayout::onBaseUnitDetailChanged(const Setting* s)
+{
+  createUpperLabels();
 }

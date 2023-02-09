@@ -49,3 +49,8 @@ void RibbonParameterUseCases::stepTouchBehaviour(int i)
     m_param->undoableIncRibbonTouchBehaviour(scope->getTransaction());
   }
 }
+
+void RibbonParameterUseCases::toggleTouchBehaviour()
+{
+  stepTouchBehaviour(1);
+}
