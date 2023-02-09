@@ -9,7 +9,7 @@ class Settings;
 class SSID : public Setting
 {
  public:
-  explicit SSID(Settings& parent, std::shared_ptr<EpcWifi> localWifi, const HardwareFeatures& hwFeatures);
+  explicit SSID(Settings& parent, const HardwareFeatures& hwFeatures);
   ~SSID() override;
 
   Glib::ustring getDisplayString() const override;
@@ -21,5 +21,4 @@ class SSID : public Setting
   const bool m_hasEPCWifi = false;
   void updateSSID(const Glib::ustring& str);
   Glib::ustring m_ssid;
-  const std::shared_ptr<EpcWifi> m_localWifi;
 };

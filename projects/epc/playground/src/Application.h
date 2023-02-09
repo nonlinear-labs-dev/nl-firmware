@@ -3,6 +3,7 @@
 #include "playground.h"
 #include "use-cases/VoiceGroupAndLoadToPartManager.h"
 #include "use-cases/RecorderManager.h"
+#include "device-settings/EpcWifi.h"
 #include <memory>
 #include <glibmm/refptr.h>
 #include <proxies/usb/USBChangeListener.h>
@@ -93,6 +94,7 @@ class Application
   std::unique_ptr<Clipboard> m_clipboard;
   std::unique_ptr<USBChangeListener> m_usbChangeListener;
   std::unique_ptr<WebUISupport> m_webUISupport;
+  std::unique_ptr<EpcWifi> m_epcWifiManager;
   ActionManagers m_actionManagers;
 
   bool m_heartbeatState;

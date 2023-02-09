@@ -7,24 +7,20 @@
 #include <nltools/messaging/Messaging.h>
 #include <nltools/messaging/Message.h>
 
-WifiSetting::WifiSetting(UpdateDocumentContributor& settings, std::shared_ptr<EpcWifi> localWifi)
+WifiSetting::WifiSetting(UpdateDocumentContributor& settings)
     : super(settings, WifiSettings::Enabled)
-    , m_localWifi(std::move(localWifi))
 {
-  nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::BeagleBone, [this](){
-     m_connectionToBBBEstablished = true;
-     setupBBBWifiIfBBBConnectedAndSettingLoaded();
-  });
+  nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::BeagleBone,
+                                        [this]()
+                                        {
+                                          m_connectionToBBBEstablished = true;
+                                          setupBBBWifiIfBBBConnectedAndSettingLoaded();
+                                        });
 }
 
 bool WifiSetting::set(tEnum m)
 {
   auto didChange = super::set(m);
-
-  if(m == WifiSettings::Enabled)
-    m_localWifi->setNewWifiState(true);
-  else if(m == WifiSettings::Disabled)
-    m_localWifi->setNewWifiState(false);
 
   if(!isLoading())
   {

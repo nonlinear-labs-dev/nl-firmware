@@ -101,10 +101,9 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, cons
   addSetting("BenderCurve", new BenderCurve(*this));
   addSetting("EditSmoothingTime", new EditSmoothingTime(*this));
 
-  auto localWifi = std::make_shared<EpcWifi>(hwFeatures);
-  addSetting("SSID", new SSID(*this, localWifi, hwFeatures));
-  addSetting("Passphrase", new Passphrase(*this, localWifi));
-  addSetting("WifiSetting", new WifiSetting(*this, localWifi));
+  addSetting("SSID", new SSID(*this, hwFeatures));
+  addSetting("Passphrase", new Passphrase(*this));
+  addSetting("WifiSetting", new WifiSetting(*this));
 
   addSetting("PresetGlitchSuppression", new PresetGlitchSuppression(*this));
   addSetting("DateTimeAdjustment", new DateTimeAdjustment(*this));
