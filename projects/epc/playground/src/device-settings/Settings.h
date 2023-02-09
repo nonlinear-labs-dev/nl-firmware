@@ -32,6 +32,7 @@ class Settings : public UpdateDocumentContributor
 
   template <typename T> T *getSetting()
   {
+    static_assert(std::is_base_of_v<Setting, T>);
     for(auto &s : m_settings)
       if(auto r = dynamic_cast<T *>(s.second.get()))
         return r;

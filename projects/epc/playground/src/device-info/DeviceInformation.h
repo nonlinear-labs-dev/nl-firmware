@@ -25,6 +25,7 @@ class DeviceInformation : public ContentSection
 
   template <typename T> std::shared_ptr<T> getItem()
   {
+    static_assert(std::is_base_of_v<DeviceInformationItem, T>);
     for(auto &s : m_items)
       if(std::shared_ptr<T> r = std::dynamic_pointer_cast<T>(s))
         return r;

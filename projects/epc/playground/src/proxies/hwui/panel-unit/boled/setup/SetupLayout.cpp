@@ -1360,7 +1360,7 @@ SetupLayout::SetupLayout(FocusAndMode focusAndMode)
     , m_focusAndMode(focusAndMode)
 {
   m_afterTouchCalibratedConnection
-      = Application::get().getSettings()->getSetting<AftertouchCalibratedStatus>()->onChange(
+      = Application::get().getDeviceInformation()->getItem<AftertouchCalibratedStatus>()->onChange(
           sigc::hide(sigc::mem_fun(this, &SetupLayout::buildPage)));
 }
 
