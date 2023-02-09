@@ -471,23 +471,33 @@ public class CompareDialog extends GWTDialog {
 		selectVGA.getElement().addClassName("voicegroup-menu");
 		selectVGB.getElement().addClassName("voicegroup-menu");
 
-		selectVGA.addItem("Part I");
-		selectVGB.addItem("Part I");
+		boolean isAEditBufferSingle = presetA == null && EditBufferModel.get().soundType.getValue() == SoundType.Single; 
+		boolean isASingle = presetA != null && presetA.getType() == SoundType.Single;
 
-		selectVGA.addItem("Part II");
-		selectVGB.addItem("Part II");
+		if(isAEditBufferSingle || isASingle) {
+			selectVGA.addItem("FX I");
+			selectVGA.addItem("FX II");
+		} else {
+			selectVGA.addItem("Part I");
+			selectVGA.addItem("Part II");	
+		}
 
+		boolean isBEditBufferSingle = presetB == null && EditBufferModel.get().soundType.getValue() == SoundType.Single;
+		boolean isBSingle = presetB != null && presetB.getType() == SoundType.Single;
+
+		if(isBEditBufferSingle || isBSingle) {
+			selectVGB.addItem("FX I");
+			selectVGB.addItem("FX II");
+		} else {
+			selectVGB.addItem("Part I");
+			selectVGB.addItem("Part II");
+		}
+		
 		if (selectVGA.getItemCount() > selA)
 			selectVGA.setSelectedIndex(selA);
 
 		if (selectVGB.getItemCount() > selB)
 			selectVGB.setSelectedIndex(selB);
-
-		if (selectVGA.getItemCount() < 2)
-			selectVGA.setEnabled(false);
-
-		if (selectVGB.getItemCount() < 2)
-			selectVGB.setEnabled(false);
 
 		selectVGA.addChangeHandler(v -> {
 			refresh();
