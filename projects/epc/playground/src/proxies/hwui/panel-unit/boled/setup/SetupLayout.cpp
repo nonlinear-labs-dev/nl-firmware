@@ -359,11 +359,14 @@ namespace NavTree
   struct StoreInitSound : OneShotEntry
   {
     explicit StoreInitSound(InnerNode *p)
-        : OneShotEntry(p, "Store Init Sound", OneShotTypes::StartCB([] {
-                         auto pm = Application::get().getPresetManager();
-                         SoundUseCases useCases(pm->getEditBuffer(), pm);
-                         useCases.storeInitSound();
-                       }))
+        : OneShotEntry(p, "Store Init Sound",
+                       OneShotTypes::StartCB(
+                           []
+                           {
+                             auto pm = Application::get().getPresetManager();
+                             SoundUseCases useCases(pm->getEditBuffer(), pm);
+                             useCases.storeInitSound();
+                           }))
     {
     }
   };
@@ -371,11 +374,14 @@ namespace NavTree
   struct ResetInitSound : OneShotEntry
   {
     explicit ResetInitSound(InnerNode *p)
-        : OneShotEntry(p, "Reset Init Sound", OneShotTypes::StartCB([] {
-                         auto pm = Application::get().getPresetManager();
-                         SoundUseCases useCases(pm->getEditBuffer(), pm);
-                         useCases.resetInitSound();
-                       }))
+        : OneShotEntry(p, "Reset Init Sound",
+                       OneShotTypes::StartCB(
+                           []
+                           {
+                             auto pm = Application::get().getPresetManager();
+                             SoundUseCases useCases(pm->getEditBuffer(), pm);
+                             useCases.resetInitSound();
+                           }))
     {
     }
   };
@@ -885,10 +891,13 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToHighRes(InnerNode *parent)
-        : OneShotEntry(parent, "Set to High-Res. Defaults", OneShotTypes::StartCB([]() {
-                         SettingsUseCases useCases(*Application::get().getSettings());
-                         useCases.setMappingsToHighRes();
-                       }))
+        : OneShotEntry(parent, "Set to High-Res. Defaults",
+                       OneShotTypes::StartCB(
+                           []()
+                           {
+                             SettingsUseCases useCases(*Application::get().getSettings());
+                             useCases.setMappingsToHighRes();
+                           }))
     {
     }
   };
@@ -897,10 +906,13 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToClassic(InnerNode *parent)
-        : OneShotEntry(parent, "Set to Classic MIDI Defaults", OneShotTypes::StartCB([]() {
-                         SettingsUseCases useCases(*Application::get().getSettings());
-                         useCases.setMappingsToClassicMidi();
-                       }))
+        : OneShotEntry(parent, "Set to Classic MIDI Defaults",
+                       OneShotTypes::StartCB(
+                           []()
+                           {
+                             SettingsUseCases useCases(*Application::get().getSettings());
+                             useCases.setMappingsToClassicMidi();
+                           }))
     {
     }
   };
@@ -1057,8 +1069,8 @@ namespace NavTree
 
   struct RecorderStopButton : OneShotEntry
   {
-    explicit RecorderStopButton(InnerNode* p)
-    : OneShotEntry(p, "Stop Playback", OneShotTypes::StartCB([]{ RecorderManager::stopRecorderPlayback(); }))
+    explicit RecorderStopButton(InnerNode *p)
+        : OneShotEntry(p, "Stop Playback", OneShotTypes::StartCB([] { RecorderManager::stopRecorderPlayback(); }))
     {
     }
   };
@@ -1093,10 +1105,13 @@ namespace NavTree
   {
 
     explicit SetRoutingsTo(InnerNode *parent)
-        : OneShotEntry(parent, getName(), OneShotTypes::StartCB([]() {
-                         SettingsUseCases useCases(*Application::get().getSettings());
-                         useCases.setAllRoutingEntries(value);
-                       }))
+        : OneShotEntry(parent, getName(),
+                       OneShotTypes::StartCB(
+                           []()
+                           {
+                             SettingsUseCases useCases(*Application::get().getSettings());
+                             useCases.setAllRoutingEntries(value);
+                           }))
     {
     }
 
@@ -1133,7 +1148,8 @@ namespace NavTree
 
     Node *getDesiredFocusChangeOnEditModeExited() override
     {
-      auto at = [](auto &list, auto n) {
+      auto at = [](auto &list, auto n)
+      {
         auto it = list.begin();
         std::advance(it, n);
         return it->get();
@@ -1305,15 +1321,15 @@ class Breadcrumb : public Control
   {
     fb.setColor(FrameBufferColors::C103);
     fb.fillRect(getPosition());
-    drawNodeRecursivly(fb, m_node);
+    drawNodeRecursively(fb, m_node);
     return true;
   }
 
-  int drawNodeRecursivly(FrameBuffer &fb, NavTree::Node *node)
+  int drawNodeRecursively(FrameBuffer &fb, NavTree::Node *node)
   {
     if(node)
     {
-      auto left = drawNodeRecursivly(fb, node->parent);
+      auto left = drawNodeRecursively(fb, node->parent);
       auto isTip = node == m_node;
       auto title = node->getName();
 
