@@ -151,7 +151,7 @@ namespace nltools
                                    [&](auto &e) { return c == e->connection; });
 
             if(it != pThis->m_connections.end())
-              pThis->doSend(c, pThis->m_cb(*it, j));
+              pThis->send(it->get(), pThis->m_cb(*it, j));
           }
           catch(...)
           {
