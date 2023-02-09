@@ -149,7 +149,9 @@ namespace nltools
             std::unique_lock<std::recursive_mutex> l(pThis->m_mutex);
             auto it = std::find_if(pThis->m_connections.begin(), pThis->m_connections.end(),
                                    [&](auto &e) { return c == e->connection; });
-            pThis->doSend(c, pThis->m_cb(*it, j));
+
+            if(it != pThis->m_connections.end())
+              pThis->send(it->get(), pThis->m_cb(*it, j));
           }
           catch(...)
           {

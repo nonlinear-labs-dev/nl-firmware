@@ -40,7 +40,6 @@ AudioEngineOptions::AudioEngineOptions(int &argc, char **&argv)
   add(mainGroup, additionalMidiDelayString, "additional-midi-delay", 'i', "incoming midi note delay (in ns)");
   add(mainGroup, m_framesPerPeriod, "frames-per-period", 's', "alsa audio input frames per period");
   add(mainGroup, m_numPeriods, "num-periods", 'n', "alsa audio input number of periods");
-  add(mainGroup, m_alsaBufferSize, "buffer-size", 'b', "alsa audio input ring buffer size");
   add(mainGroup, m_playgroundHost, "playground-host", 'x', "Where to find the playground");
   add(mainGroup, m_midiBridgeHost, "midi-bridge-host", 'd', "Where to find the midi bridge");
   add(mainGroup, m_cpuBurningSines, "num-sines", 'u',
@@ -119,11 +118,6 @@ void AudioEngineOptions::setFramesPerPeriod(int f)
 int AudioEngineOptions::getNumPeriods() const
 {
   return m_numPeriods;
-}
-
-int AudioEngineOptions::getAlsaRingBufferSize() const
-{
-  return m_alsaBufferSize;
 }
 
 std::string AudioEngineOptions::getPlaygroundHost() const
