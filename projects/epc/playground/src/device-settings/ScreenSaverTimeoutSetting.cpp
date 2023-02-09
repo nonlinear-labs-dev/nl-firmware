@@ -67,20 +67,6 @@ void ScreenSaverTimeoutSetting::init()
 {
   if(m_timeout != c_disabled)
     m_expiration.refresh(m_timeout);
-
-  if(Application::exists())
-  {
-    auto& app = Application::get();
-    auto editBuffer = app.getPresetManager()->getEditBuffer();
-    auto reschedule = sigc::mem_fun(this, &ScreenSaverTimeoutSetting::endAndReschedule);
-
-    editBuffer->onSelectionChanged(sigc::hide(sigc::hide(reschedule)), std::nullopt);
-    editBuffer->onChange(reschedule, false);
-    app.getPlaycontrollerProxy()->onLastKeyChanged(reschedule);
-    app.getSettings()->onSettingsChanged(reschedule);
-    app.getHWUI()->getPanelUnit().getEditPanel().getBoled().onLayoutInstalled(
-        sigc::mem_fun(this, &ScreenSaverTimeoutSetting::onLayoutInstalled));
-  }
 }
 
 void ScreenSaverTimeoutSetting::sendState(bool state)

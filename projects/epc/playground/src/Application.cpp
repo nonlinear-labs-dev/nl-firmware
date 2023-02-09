@@ -28,6 +28,7 @@
 #include <device-settings/SSID.h>
 #include <device-settings/Passphrase.h>
 #include <device-settings/WifiSetting.h>
+#include <device-settings/ScreenSaverTimeoutSetting.h>
 
 using namespace std::chrono_literals;
 
@@ -110,6 +111,7 @@ Application::Application(int numArgs, char **argv)
                                    *m_settings->getSetting<Passphrase>(), *m_settings->getSetting<WifiSetting>()))
     , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui, *m_settings,
                        *m_voiceGroupManager)
+    , m_screenSaverConnections(*m_settings->getSetting<ScreenSaverTimeoutSetting>())
     , m_heartbeatState(false)
     , m_isQuit(false)
 {
@@ -129,6 +131,9 @@ Application::Application(int numArgs, char **argv)
 
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
   m_voiceGroupManager->init();
+
+  m_screenSaverConnections.connectRescheduleToSources(*m_hwui, *m_presetManager->getEditBuffer(),
+                                                      *m_playcontrollerProxy, *m_settings);
 
   auto focusAndMode = m_settings->getSetting<FocusAndModeSetting>();
   SettingsUseCases useCases(*m_settings);

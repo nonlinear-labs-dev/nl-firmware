@@ -53,6 +53,7 @@ class HWUI : public sigc::trackable
   void unsetFineMode();
   bool isModifierSet(ButtonModifier m) const;
 
+  sigc::connection onButtonPressed(const sigc::slot<void, Buttons, bool> &cb);
   sigc::connection onModifiersChanged(const sigc::slot<void, ButtonModifiers> &cb);
   sigc::connection connectToBlinkTimer(const sigc::slot<void, int> &cb);
   void deInit();
@@ -99,7 +100,7 @@ class HWUI : public sigc::trackable
   sigc::connection m_editBufferParameterSelectionConnection;
 
   void onRotaryChanged();
-  Signal<void> m_inputSignal;
+  Signal<void, Buttons, bool> m_buttonPressed;
 
   std::unique_ptr<LayoutFolderMonitor> m_layoutFolderMonitor;
   PanelUnit m_panelUnit;

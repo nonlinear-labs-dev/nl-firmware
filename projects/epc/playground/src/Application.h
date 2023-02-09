@@ -4,6 +4,7 @@
 #include "use-cases/VoiceGroupAndLoadToPartManager.h"
 #include "use-cases/RecorderManager.h"
 #include "device-settings/EpcWifi.h"
+#include "proxies/hwui/ScreenSaverConnections.h"
 #include <memory>
 #include <glibmm/refptr.h>
 #include <proxies/usb/USBChangeListener.h>
@@ -96,6 +97,7 @@ class Application
   std::unique_ptr<WebUISupport> m_webUISupport;
   std::unique_ptr<EpcWifi> m_epcWifiManager;
   ActionManagers m_actionManagers;
+  ScreenSaverConnections m_screenSaverConnections;
 
   bool m_heartbeatState;
   bool m_isQuit;
