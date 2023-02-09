@@ -7,4 +7,5 @@ class MultiLineInfoContent : public MultiLineLabel
  public:
   MultiLineInfoContent();
   void setPosition(const Rect& rect) override;
+  int getBottomPadding() override;
 };
