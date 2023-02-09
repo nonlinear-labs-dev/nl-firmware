@@ -1,14 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="45" height="30" viewBox="0 0 45 30">
-  <defs>
-    <style>
-      .a {
-        fill: #e6e6e6;
-      }
-    </style>
-  </defs>
-  <title>Control_Through_Active</title>
-  <g>
-    <polygon class="a" points="32.193 27.238 40.693 18.438 23.693 18.438 32.193 27.238"/>
-    <polygon class="a" points="33.693 20.438 30.693 20.438 30.693 8.438 4.693 8.438 4.693 5.438 33.693 5.438 33.693 20.438"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="45" height="30" viewBox="0 0 45 30"><title>Control_Through_Active</title><polygon points="32.193 27.238 40.693 18.438 23.693 18.438 32.193 27.238" fill="#e6e6e6"/><polygon points="33.693 20.438 30.693 20.438 30.693 8.438 4.693 8.438 4.693 5.438 33.693 5.438 33.693 20.438" fill="#e6e6e6"/></svg>
