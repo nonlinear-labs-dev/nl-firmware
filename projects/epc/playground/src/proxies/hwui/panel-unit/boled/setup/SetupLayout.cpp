@@ -1321,15 +1321,15 @@ class Breadcrumb : public Control
   {
     fb.setColor(FrameBufferColors::C103);
     fb.fillRect(getPosition());
-    drawNodeRecursivly(fb, m_node);
+    drawNodeRecursively(fb, m_node);
     return true;
   }
 
-  int drawNodeRecursivly(FrameBuffer &fb, NavTree::Node *node)
+  int drawNodeRecursively(FrameBuffer &fb, NavTree::Node *node)
   {
     if(node)
     {
-      auto left = drawNodeRecursivly(fb, node->parent);
+      auto left = drawNodeRecursively(fb, node->parent);
       auto isTip = node == m_node;
       auto title = node->getName();
 
@@ -1359,9 +1359,7 @@ SetupLayout::SetupLayout(FocusAndMode focusAndMode)
     , m_tree(new NavTree::Setup())
     , m_focusAndMode(focusAndMode)
 {
-  m_afterTouchCalibratedConnection
-      = Application::get().getDeviceInformation()->getItem<AftertouchCalibratedStatus>()->onChange(
-          sigc::hide(sigc::mem_fun(this, &SetupLayout::buildPage)));
+  buildPage();
 }
 
 SetupLayout::~SetupLayout() = default;

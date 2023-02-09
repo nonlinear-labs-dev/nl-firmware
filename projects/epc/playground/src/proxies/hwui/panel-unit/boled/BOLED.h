@@ -10,6 +10,7 @@ class Application;
 class Parameter;
 class Setting;
 class LayoutFolderMonitor;
+class DeviceInformationItem;
 
 namespace DescriptiveLayouts
 {
@@ -33,6 +34,7 @@ class BOLED : public OLEDProxy
   void bruteForce();
 
  private:
+  void onAftertouchCalibrationChanged(const DeviceInformationItem* item);
   void toggleScreenSaver(bool enabled);
 
   void installOldLayouts(FocusAndMode foucsAndMode);
