@@ -86,20 +86,15 @@ void MultiLineLabel::updateLines()
 
   TextSplitter s(font, r.getWidth(), m_text);
   auto lineHeight = font->getHeight() + 3;
-  auto lastLineHeight = lineHeight + 2;
   int y = 0;
 
-  const auto lines = s.getLines();
-  int currentLine = 0;
-  for(const auto &line : lines)
+  for(const auto &line : s.getLines())
   {
-    auto currentLineHeight = currentLine == lines.size() - 1 ? lastLineHeight : lineHeight;
-    addControl(new DETAIL::ChildLabel(line, m_color, font, Rect(0, y, r.getWidth(), currentLineHeight)));
-    y += currentLineHeight;
-    currentLine++;
+    addControl(new DETAIL::ChildLabel(line, m_color, font, Rect(0, y, r.getWidth(), lineHeight)));
+    y += lineHeight;
   }
 
-  super::setPosition(Rect(r.getLeft(), r.getTop(), r.getWidth(), y));
+  super::setPosition(Rect(r.getLeft(), r.getTop(), r.getWidth(), y + getBottomPadding()));
 }
 
 void MultiLineLabel::drawBackground(FrameBuffer &fb)
@@ -120,4 +115,9 @@ bool MultiLineLabel::redraw(FrameBuffer &fb)
 const Glib::ustring &MultiLineLabel::getText() const
 {
   return m_text;
+}
+
+int MultiLineLabel::getBottomPadding()
+{
+  return 0;
 }

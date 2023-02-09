@@ -19,6 +19,7 @@ class MultiLineLabel : public ControlWithChildren
   void drawBackground(FrameBuffer &fb) override;
   bool redraw(FrameBuffer &fb) override;
   void setPosition(const Rect &rect) override;
+  virtual int getBottomPadding();
 
  protected:
   virtual std::shared_ptr<Font> getFont();

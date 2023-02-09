@@ -8,6 +8,11 @@ MultiLineInfoContent::MultiLineInfoContent()
 void MultiLineInfoContent::setPosition(const Rect& rect)
 {
   auto re = rect;
-  re.moveBy(0, 2);
+  re.moveBy(0, getBottomPadding());
   MultiLineLabel::setPosition(re);
+}
+
+int MultiLineInfoContent::getBottomPadding()
+{
+  return 2;
 }
