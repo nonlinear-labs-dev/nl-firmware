@@ -9,6 +9,12 @@ ScopedLock::ScopedLock(UNDO::Transaction* trans)
 {
 }
 
+ScopedLock::ScopedLock(UNDO::Transaction* trans, const std::vector<Parameter*>& params)
+    : m_transaction { trans }
+{
+  addLocks(params);
+}
+
 ScopedLock::~ScopedLock()
 {
   for(const auto& param : m_oldLockedParameters)
@@ -57,7 +63,7 @@ void ScopedLock::addLocks(const std::vector<Parameter*>& params)
 
 void ScopedLock::addLocks(const std::vector<ParameterId>& paramIds)
 {
-  for(auto id: paramIds)
+  for(auto id : paramIds)
   {
     addLock(id);
   }

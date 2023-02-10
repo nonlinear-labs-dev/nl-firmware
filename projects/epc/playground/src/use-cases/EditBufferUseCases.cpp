@@ -1,5 +1,6 @@
 #include "EditBufferUseCases.h"
 #include "presets/SendEditBufferScopeGuard.h"
+#include "presets/EditBufferConverter.h"
 #include <presets/EditBuffer.h>
 #include <presets/Preset.h>
 #include <presets/PresetManager.h>
@@ -478,12 +479,14 @@ void EditBufferUseCases::convertSingleToSplitFXIOnly()
 {
   auto scope = m_editBuffer.getUndoScope().startTransaction("Convert Single to Split (FX I Only)");
   auto transaction = scope->getTransaction();
-  m_editBuffer.undoableConvertSingleToDualWithFXIOnly(transaction, SoundType::Split);
+  EditBufferConverter ebConverter(m_editBuffer);
+  ebConverter.undoableConvertSingleToDualWithFXIOnly(transaction, SoundType::Split);
 }
 
 void EditBufferUseCases::convertSingleToLayerFXIOnly()
 {
   auto scope = m_editBuffer.getUndoScope().startTransaction("Convert Single to Layer (FX I Only)");
   auto transaction = scope->getTransaction();
-  m_editBuffer.undoableConvertSingleToDualWithFXIOnly(transaction, SoundType::Layer);
+  EditBufferConverter ebConverter(m_editBuffer);
+  ebConverter.undoableConvertSingleToDualWithFXIOnly(transaction, SoundType::Layer);
 }
