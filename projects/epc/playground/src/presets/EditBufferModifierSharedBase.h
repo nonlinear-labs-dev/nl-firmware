@@ -1,11 +1,14 @@
 #pragma once
 #include <nltools/Types.h>
+#include "libundo/undo/Transaction.h"
+#include "ParameterId.h"
 
 class EditBuffer;
 class Parameter;
 
 class EditBufferModifierSharedBase
 {
+
  public:
   EditBufferModifierSharedBase(EditBuffer &eb);
 
@@ -21,6 +24,8 @@ class EditBufferModifierSharedBase
   }
 
   [[nodiscard]] std::vector<Parameter *> getCrossFBParameters(const VoiceGroup &to) const;
+
+  void initFadeParameters(UNDO::Transaction *transaction, VoiceGroup group);
 
   EditBuffer &m_editBuffer;
 };

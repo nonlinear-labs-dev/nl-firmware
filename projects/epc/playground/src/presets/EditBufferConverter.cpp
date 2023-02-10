@@ -462,10 +462,7 @@ void EditBufferConverter::initBothFadeFrom(UNDO::Transaction *transaction)
 {
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    auto fromID = ParameterId({ C15::PID::Voice_Grp_Fade_From, vg });
-    auto rangeID = ParameterId({ C15::PID::Voice_Grp_Fade_Range, vg });
-    m_editBuffer.findParameterByID(fromID)->loadDefault(transaction, Defaults::FactoryDefault);
-    m_editBuffer.findParameterByID(rangeID)->loadDefault(transaction, Defaults::FactoryDefault);
+    initFadeParameters(transaction, vg);
   }
 }
 

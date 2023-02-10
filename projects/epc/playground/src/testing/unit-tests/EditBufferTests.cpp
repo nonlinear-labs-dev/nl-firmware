@@ -286,9 +286,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Editbuffer Contents loaded")
     REQUIRE(editBuffer->getVoiceGroupName(VoiceGroup::II) == presets.getSinglePreset()->getName());
     REQUIRE(editBuffer->getType() == SoundType::Layer);
     REQUIRE(editBuffer->isModified());
-    REQUIRE(
-        editBuffer
-            ->findAnyParameterChanged());  //we used to call initRecallValues in the function above but this function was never executed outside of tests
+    //we used to call initRecallValues in the function above but this function was never executed outside of tests
+    REQUIRE(editBuffer->findAnyParameterChanged());
   }
 }
 

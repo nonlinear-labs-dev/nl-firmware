@@ -12,40 +12,31 @@ class Parameter;
 class EditBufferToPartLoader : public EditBufferModifierSharedBase
 {
  public:
+  using tTransaction = UNDO::Transaction;
   using EditBufferModifierSharedBase::EditBufferModifierSharedBase;
 
-  void undoableLoadPresetPartIntoPart(UNDO::Transaction* transaction, const Preset* preset, VoiceGroup from,
+  void undoableLoadPresetPartIntoPart(tTransaction* transaction, const Preset* preset, VoiceGroup from,
                                       VoiceGroup copyTo);
 
  private:
-  void undoableLoadPresetPartIntoSplitSound(UNDO::Transaction* transaction, const Preset* preset, VoiceGroup from,
-                                            VoiceGroup copyTo);
-  void undoableLoadPresetPartIntoLayerSound(UNDO::Transaction* transaction, const Preset* preset, VoiceGroup copyFrom,
-                                            VoiceGroup copyTo);
-  void loadSinglePresetIntoSplitPart(UNDO::Transaction* transaction, const Preset* preset, VoiceGroup from,
-                                     VoiceGroup loadInto);
-  void loadSinglePresetIntoLayerPart(UNDO::Transaction* transaction, const Preset* preset, VoiceGroup from,
-                                     VoiceGroup loadTo);
+  void loadDualPartIntoSplitSound(tTransaction* transaction, const Preset* preset, VoiceGroup from, VoiceGroup copyTo);
+  void loadDualPartIntoLayerSound(tTransaction* transaction, const Preset* preset, VoiceGroup from, VoiceGroup copyTo);
+  void loadSingleIntoSplitPart(tTransaction* transaction, const Preset* preset, VoiceGroup from, VoiceGroup loadInto);
+  void loadSingleIntoLayerPart(tTransaction* transaction, const Preset* preset, VoiceGroup from, VoiceGroup loadTo);
 
   std::vector<ParameterId> getFeedbackParametersLockedForLoadToPart(VoiceGroup loadTo);
 
-  void copySinglePresetMasterToPartMaster(UNDO::Transaction* transaction, const Preset* preset, VoiceGroup targetGroup);
-  void loadPartFromDualIntoSplit(UNDO::Transaction* transaction, VoiceGroup loadFrom, VoiceGroup loadTo,
-                                 const Preset* preset);
-  void copySumOfMasterGroupToVoiceGroupMasterGroup(UNDO::Transaction* transaction, const Preset* preset,
-                                                   VoiceGroup copyFrom, VoiceGroup copyTo);
-  void initFadeParameters(UNDO::Transaction* transaction, VoiceGroup group);
-  void loadPartFromDualIntoLayer(UNDO::Transaction* transaction, VoiceGroup loadFrom, VoiceGroup loadTo,
-                                 const Preset* preset);
-  void copyPolyParametersFromI(UNDO::Transaction* transaction, const Preset* preset, VoiceGroup group);
-  void initFadeFrom(UNDO::Transaction* transaction, VoiceGroup vg);
-  void loadPartFromSingleIntoDual(UNDO::Transaction* transaction, VoiceGroup loadFrom, VoiceGroup loadTo,
-                                  const Preset* preset);
-  void loadPartFromDualIntoDual_OutputMixer(UNDO::Transaction* transaction, VoiceGroup loadFrom, VoiceGroup loadTo,
-                                            const Preset* preset);
-  double parabolicLevelAttenuation(const double controlPosition, const double fadePosition);
-  void updateLoadFromPartOrigin(UNDO::Transaction* transaction, const Preset* preset, const VoiceGroup& from,
-                                const VoiceGroup& loadTo);
-  void copySpecialToFXParamForLoadSingleIntoDualPart(UNDO::Transaction* transaction, VoiceGroup from, VoiceGroup to,
-                                                     const Preset* preset);
+  void copySinglePresetMasterToPartMaster(tTransaction* transaction, const Preset* preset, VoiceGroup targetGroup);
+  void loadPartFromDualIntoSplit(tTransaction* transaction, VoiceGroup from, VoiceGroup loadTo, const Preset* preset);
+  void copySumOfPartMasterToPartMaster(tTransaction* t, const Preset* preset, VoiceGroup from, VoiceGroup to);
+
+  void loadPartFromDualIntoLayer(tTransaction* transaction, VoiceGroup from, VoiceGroup to, const Preset* preset);
+  void copyPolyParametersFromI(tTransaction* transaction, const Preset* preset, VoiceGroup group);
+  void initFadeFrom(tTransaction* transaction, VoiceGroup vg);
+  void loadPartFromSingleIntoDual(tTransaction* transaction, VoiceGroup from, VoiceGroup to, const Preset* preset);
+  void applyLoadToPartOutMixerRule(tTransaction* transaction, VoiceGroup from, VoiceGroup to, const Preset* preset);
+  double parabolicLevelAttenuation(double controlPosition, double fadePosition);
+  void updateLoadFromPartOrigin(tTransaction* transaction, const Preset* preset, VoiceGroup from, VoiceGroup loadTo);
+  void setInvertedOutMixFromIIntoTarget(tTransaction* transaction, VoiceGroup from, VoiceGroup to,
+                                        const Preset* preset);
 };
