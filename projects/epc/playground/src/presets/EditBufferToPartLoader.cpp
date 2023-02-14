@@ -217,7 +217,7 @@ void EditBufferToPartLoader::loadSingleIntoLayerPart(UNDO::Transaction *transact
 
   copyPolyParametersFromI(transaction, preset, loadTo);
 
-  setInvertedOutMixFromIIntoTarget(transaction, from, loadTo, preset);
+  setInvertedOutMixFromII(transaction, from, loadTo, preset);
 
   copySinglePresetMasterToPartMaster(transaction, preset, loadTo);
 
@@ -490,8 +490,8 @@ void EditBufferToPartLoader::updateLoadFromPartOrigin(UNDO::Transaction *transac
   }
 }
 
-void EditBufferToPartLoader::setInvertedOutMixFromIIntoTarget(UNDO::Transaction *transaction, VoiceGroup from,
-                                                              VoiceGroup to, const Preset *preset)
+void EditBufferToPartLoader::setInvertedOutMixFromII(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to,
+                                                     const Preset *preset)
 {
   auto out_mix_to_fx_I = m_editBuffer.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
   auto out_mix_to_fx_II = m_editBuffer.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
