@@ -53,6 +53,8 @@ bool VoiceGroupIndicator::redraw(FrameBuffer& fb)
 
 bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
 {
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+
   auto absPos = getPosition();
   fb.setColor(m_selectedVoiceGroup == VoiceGroup::I ? FrameBufferColors::C255 : FrameBufferColors::C128);
   fb.fillRect(Rect(absPos.getLeft(), absPos.getTop(), 12, 5));
@@ -71,7 +73,7 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
     fb.drawHorizontalLine(startX + 2, startY + 2, 1);
   }
 
-  if(isLayerPartMuted(VoiceGroup::I))
+  if(ParameterPresenterRules::isLayerPartMuted(VoiceGroup::I, eb))
   {
     fb.setColor(FrameBufferColors::C43);
 
@@ -80,7 +82,7 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
     drawCrossForLayer(fb, centerX, centerY);
   }
 
-  if(isLayerPartMuted(VoiceGroup::II))
+  if(ParameterPresenterRules::isLayerPartMuted(VoiceGroup::II, eb))
   {
     fb.setColor(FrameBufferColors::C43);
 
@@ -108,7 +110,7 @@ void VoiceGroupIndicator::drawCrossForLayer(FrameBuffer& fb, int centerX, int ce
 
 void VoiceGroupIndicator::drawCrossForSingle(FrameBuffer& fb, int centerX, int centerY)
 {
-  auto offset = fb.offset({(centerX - 2), (centerY - 2)});
+  auto offset = fb.offset({ (centerX - 2), (centerY - 2) });
   m_fxUnused.redraw(fb);
 }
 
@@ -179,16 +181,6 @@ bool VoiceGroupIndicator::drawSplit(FrameBuffer& fb)
   return true;
 }
 
-bool VoiceGroupIndicator::isLayerPartMuted(VoiceGroup vg) const
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  if(auto mute = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, vg }))
-  {
-    return mute->getControlPositionValue() > 0 && eb->getType() == SoundType::Layer;
-  }
-  return false;
-}
-
 void VoiceGroupIndicator::onSoundTypeChanged(SoundType type)
 {
   m_currentSoundType = type;
@@ -247,7 +239,7 @@ bool VoiceGroupIndicator::shouldDraw()
     auto id = m_param->getID();
     auto num = id.getNumber();
 
-    auto ret = SwitchVoiceGroupButton::allowToggling(m_param, Application::get().getPresetManager()->getEditBuffer());
+    auto ret = ParameterPresenterRules::allowToggling(m_param, Application::get().getPresetManager()->getEditBuffer());
     ret |= MacroControlsGroup::isMacroControl(num);
     ret |= num == C15::PID::Split_Split_Point;
 
@@ -276,5 +268,6 @@ VoiceGroup VoiceGroupIndicator::getCurrentDisplayedVoiceGroup() const
 bool VoiceGroupIndicator::isSingleFXNotActive(VoiceGroup vg) const
 {
   auto& eb = *Application::get().getPresetManager()->getEditBuffer();
-  return vg == VoiceGroup::I ? ParameterPresenterRules::isSingleFXIUnused(eb) : ParameterPresenterRules::isSingleFXIIUnused(eb);
+  return vg == VoiceGroup::I ? ParameterPresenterRules::isSingleFXIUnused(eb)
+                             : ParameterPresenterRules::isSingleFXIIUnused(eb);
 }

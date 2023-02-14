@@ -6,6 +6,7 @@
 #include "use-cases/EditBufferUseCases.h"
 #include "groups/ScaleGroup.h"
 #include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAmountButton.h"
+#include "parameters/presenter-rules/ParameterPresenterRules.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
@@ -27,7 +28,6 @@
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <libundo/undo/Scope.h>
 #include <device-settings/Settings.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MuteIndicator.h>
 #include <sigc++/adaptors/hide.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNotAvailableInSoundInfo.h>
@@ -54,7 +54,7 @@ ModuleCaption *ParameterLayout2::createModuleCaption() const
   return new ModuleCaption(Rect(0, 0, 64, 13));
 }
 
-Control* ParameterLayout2::createParameterNameLabel() const
+Control *ParameterLayout2::createParameterNameLabel() const
 {
   return new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11));
 }
@@ -231,8 +231,8 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
         if(auto button = findControlOfType<SwitchVoiceGroupButton>())
         {
           EditBufferUseCases ebUseCases(*getCurrentEditParameter()->getParentEditBuffer());
-          if(SwitchVoiceGroupButton::allowToggling(getCurrentParameter(),
-                                                   Application::get().getPresetManager()->getEditBuffer()))
+          if(ParameterPresenterRules::allowToggling(getCurrentParameter(),
+                                                    Application::get().getPresetManager()->getEditBuffer()))
             Application::get().getVGManager()->toggleCurrentVoiceGroupAndUpdateParameterSelection();
           else if(button->getText().text == "back..")
             ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global });

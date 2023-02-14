@@ -21,7 +21,6 @@ class VoiceGroupIndicator : public Control
   bool drawLayer(FrameBuffer& fb);
   bool drawSingle(FrameBuffer& fb);
 
-  bool isLayerPartMuted(VoiceGroup vg) const;
   bool isSingleFXNotActive(VoiceGroup vg) const;
   bool shouldDraw();
 
