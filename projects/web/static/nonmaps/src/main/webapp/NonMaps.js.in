@@ -142,6 +142,16 @@ function showOleds() {
     map.set(0x0B, [219, 219, 219, 255]);
     map.set(0x0F, [255, 255, 255, 255]);
 
+    var soledMap = new Map();
+    soledMap.set(0x10, [0, 0, 0, 255]);
+    soledMap.set(0x00, [0, 0, 0, 255]);
+    soledMap.set(0x02, [255, 255, 255, 255]);
+    soledMap.set(0x05, [255, 255, 255, 255]);
+    soledMap.set(0x06, [255, 255, 255, 255]);
+    soledMap.set(0x0A, [255, 255, 255, 255]);
+    soledMap.set(0x0B, [255, 255, 255, 255]);
+    soledMap.set(0x0F, [255, 255, 255, 255]);
+
     socket = new WebSocket("ws://" + hostName + ":" + @PLAYGROUND_OLED_WEBSOCKET_PORT@);
     socket.onopen = (event) => { socket.send("{}"); };
     socket.onerror = (event) => { refresh(); };
@@ -151,6 +161,7 @@ function showOleds() {
       reader.onload = () => {
         var oledsRaw = JSON.parse(reader.result);
         var oledsPix = new Uint8ClampedArray(oledsRaw.length * 4);
+        var soledPix = new Uint8ClampedArray(oledsRaw.length * 4);
 
         for (var i = 0; i < oledsRaw.length; i++) {
           var idx = i * 4;
@@ -159,10 +170,16 @@ function showOleds() {
           oledsPix[idx + 1] = mapped[1];
           oledsPix[idx + 2] = mapped[2];
           oledsPix[idx + 3] = mapped[3];
+
+          var mappedSoled = soledMap.get(oledsRaw[i]);
+          soledPix[idx + 0] = mappedSoled[0];
+          soledPix[idx + 1] = mappedSoled[1];
+          soledPix[idx + 2] = mappedSoled[2];
+          soledPix[idx + 3] = mappedSoled[3];
         }
 
         drawBoled(oledsPix.slice(0, 4 * 256 * 64));
-        drawSoled(oledsPix.slice(4 * 256 * 64, 4 * 256 * 64 + 4 * 256 * 32));
+        drawSoled(soledPix.slice(4 * 256 * 64, 4 * 256 * 64 + 4 * 256 * 32));
       }
       reader.readAsText(event.data);
     };
