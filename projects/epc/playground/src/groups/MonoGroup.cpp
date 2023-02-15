@@ -8,14 +8,6 @@ MonoGroup::MonoGroup(ParameterGroupSet* parent, VoiceGroup vg)
 {
 }
 
-void MonoGroup::init()
-{
-  appendParameter(new UnmodulateableMonoParameter(this, { C15::PID::Mono_Grp_Enable, getVoiceGroup() }));
-  appendParameter(new UnmodulateableMonoParameter(this, { C15::PID::Mono_Grp_Prio, getVoiceGroup() }));
-  appendParameter(new UnmodulateableMonoParameter(this, { C15::PID::Mono_Grp_Legato, getVoiceGroup() }));
-  appendParameter(new MonoGlideTimeParameter(this, { C15::PID::Mono_Grp_Glide, getVoiceGroup() }));
-}
-
 bool MonoGroup::isMonoParameter(const ParameterId& id)
 {
   using namespace C15::PID;

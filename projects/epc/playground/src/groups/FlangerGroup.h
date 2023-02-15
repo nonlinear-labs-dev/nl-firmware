@@ -6,5 +6,4 @@ class FlangerGroup : public ParameterGroup
 {
  public:
   FlangerGroup(ParameterGroupSet *parent, VoiceGroup voicegroup);
-  void init() override;
 };

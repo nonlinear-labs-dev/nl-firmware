@@ -6,5 +6,4 @@ class ShaperBGroup : public ParameterGroup
 {
  public:
   ShaperBGroup(ParameterGroupSet *parent, VoiceGroup voicegroup);
-  void init() override;
 };

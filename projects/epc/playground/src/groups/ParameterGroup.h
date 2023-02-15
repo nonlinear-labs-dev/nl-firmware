@@ -27,7 +27,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
                  const char *webUIName);
   ~ParameterGroup() override;
 
-  virtual void init() = 0;
+  virtual void init();
 
   Glib::ustring getShortName() const;
   Glib::ustring getLongName() const;
@@ -77,7 +77,6 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   VoiceGroup getVoiceGroup() const;
 
   void undoableLoadDefault(UNDO::Transaction *transaction, Defaults mode);
-  void validateParameterTypes() const;
 
   bool isPolyphonic() const;
 

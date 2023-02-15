@@ -16,6 +16,7 @@ class ScaleGroup : public ParameterGroup
 
   static bool isScaleParameter(const ParameterId& id);
   static bool isScaleParameter(const Parameter* parameter);
+  static bool isScaleOffsetParameter(int id);
 
  private:
   void onBaseKeyParameterChanged(const Parameter* baseKeyParameter);

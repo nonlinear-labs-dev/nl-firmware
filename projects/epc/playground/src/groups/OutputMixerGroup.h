@@ -6,5 +6,4 @@ class OutputMixerGroup : public ParameterGroup
 {
  public:
   OutputMixerGroup(ParameterGroupSet *parent, VoiceGroup voicegroup);
-  void init() override;
 };

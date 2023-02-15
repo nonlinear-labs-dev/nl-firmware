@@ -7,25 +7,16 @@ VoiceGroupMasterGroup::VoiceGroupMasterGroup(ParameterGroupSet* parent, VoiceGro
 {
 }
 
-class FadeFrom : public VoiceGroupMasterUnmodulateableParameter
-{
- public:
-  FadeFrom(ParameterGroup* parent, const ParameterId& id, double initial)
-      : VoiceGroupMasterUnmodulateableParameter(parent, id)
-  {
-    getValue().setFactoryDefault(initial);
-  }
-};
-
 void VoiceGroupMasterGroup::init()
 {
-  appendParameter(new VoiceGroupMasterModulateableParameter(this, { C15::PID::Voice_Grp_Volume, getVoiceGroup() }));
-  appendParameter(new VoiceGroupMasterModulateableParameter(this, { C15::PID::Voice_Grp_Tune, getVoiceGroup() }));
-  appendParameter(new VoiceGroupMasterUnmodulateableParameter(this, { C15::PID::Voice_Grp_Mute, getVoiceGroup() }));
-
+  ParameterGroup::init();
   auto fadeFromInitial = getVoiceGroup() == VoiceGroup::I ? 1 : 0;
+  auto fadeFrom = findParameterByID({ C15::PID::Voice_Grp_Fade_From, getVoiceGroup() });
+  fadeFrom->getValue().setFactoryDefault(fadeFromInitial);
+}
 
-  appendParameter(new FadeFrom(this, { C15::PID::Voice_Grp_Fade_From, getVoiceGroup() }, fadeFromInitial));
-  appendParameter(
-      new VoiceGroupMasterUnmodulateableParameter(this, { C15::PID::Voice_Grp_Fade_Range, getVoiceGroup() }));
+bool VoiceGroupMasterGroup::isVoiceGroupMasterParameter(int id)
+{
+  return id == C15::PID::Voice_Grp_Volume || id == C15::PID::Voice_Grp_Tune || id == C15::PID::Voice_Grp_Mute
+      || id == C15::PID::Voice_Grp_Fade_From || id == C15::PID::Voice_Grp_Fade_Range;
 }

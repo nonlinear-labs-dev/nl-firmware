@@ -6,15 +6,3 @@ CabinetGroup::CabinetGroup(ParameterGroupSet *parent, VoiceGroup vg)
     : ParameterGroup(parent, { "Cab", vg }, "Cabinet", "Cabinet", "Cabinet")
 {
 }
-
-void CabinetGroup::init()
-{
-  appendParameter(new ModulateableParameter(this, { C15::PID::Cabinet_Drive, getVoiceGroup() }));
-  appendParameter(new ModulateableParameter(this, { C15::PID::Cabinet_Fold, getVoiceGroup() }));
-  appendParameter(new ModulateableParameter(this, { C15::PID::Cabinet_Asym, getVoiceGroup() }));
-  appendParameter(new ModulateableParameter(this, { C15::PID::Cabinet_Tilt, getVoiceGroup() }));
-  appendParameter(new ModulateableParameter(this, { C15::PID::Cabinet_Hi_Cut, getVoiceGroup() }));
-  appendParameter(new ModulateableParameter(this, { C15::PID::Cabinet_Lo_Cut, getVoiceGroup() }));
-  appendParameter(new ModulateableParameter(this, { C15::PID::Cabinet_Cab_Lvl, getVoiceGroup() }));
-  appendParameter(new ModulateableParameter(this, { C15::PID::Cabinet_Mix, getVoiceGroup() }));
-}

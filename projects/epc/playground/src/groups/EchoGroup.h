@@ -6,5 +6,4 @@ class EchoGroup : public ParameterGroup
 {
  public:
   EchoGroup(ParameterGroupSet *parent, VoiceGroup voicegroup);
-  void init() override;
 };

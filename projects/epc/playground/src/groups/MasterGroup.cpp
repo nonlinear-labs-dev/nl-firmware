@@ -8,15 +8,6 @@ MasterGroup::MasterGroup(ParameterGroupSet *parent)
 {
 }
 
-void MasterGroup::init()
-{
-  appendParameter(new ModulateableParameter(this, { C15::PID::Master_Volume, VoiceGroup::Global }));
-  appendParameter(new ModulateableParameter(this, { C15::PID::Master_Tune, VoiceGroup::Global }));
-  appendParameter(new ModulateableParameter(this, { C15::PID::Master_Pan, VoiceGroup::Global }));
-  appendParameter(new ModulateableParameter(this, { C15::PID::Master_Serial_FX, VoiceGroup::Global }));
-  appendParameter(new ModulateableParameter(this, { C15::PID::Master_FX_Mix, VoiceGroup::Global }));
-}
-
 void MasterGroup::undoableRandomize(UNDO::Transaction *transaction, Initiator initiator, double amount)
 {
 }
