@@ -2,9 +2,11 @@ package com.nonlinearlabs.client.world.overlay.InfoDialog;
 
 import java.util.Date;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -75,12 +77,7 @@ public class PresetInfoWidget {
 
 			if (force || haveFocus != comment) {
 				comment.setText(commentText);
-
-				if (comment.getElement().getScrollHeight() > 0) {
-					comment.setHeight("1em");
-					int height = comment.getElement().getScrollHeight() + 5;
-					comment.setHeight(height + "px");
-				}
+				updateCommentFieldHeight();
 			}
 
 			if (force || haveFocus != name) {
@@ -133,6 +130,10 @@ public class PresetInfoWidget {
 							comment.getText());
 				}
 			}
+		});
+
+		comment.addKeyUpHandler(event -> {
+			updateCommentFieldHeight();
 		});
 
 		name.addFocusHandler(event -> haveFocus = name);
@@ -197,6 +198,16 @@ public class PresetInfoWidget {
 		this.panel = panel;
 
 		updateInfo(NonMaps.get().getNonLinearWorld().getPresetManager().getSelectedPreset(), false);
+
+
+		//for some reason we can't properly initialize the height of the comment section on the first open so we have to recalculate it here after some time
+		Timer t = new Timer() {
+			@Override
+			public void run() {
+				updateCommentFieldHeight();
+			}
+		};
+		t.schedule(15);
 	}
 
 	private void addRow(FlexTable panel, String name, Widget content) {
@@ -208,6 +219,14 @@ public class PresetInfoWidget {
 	private void saveContent() {
 		if (haveFocus != null && m_currentShownPreset != null) {
 			haveFocus.setFocus(false);
+		}
+	}
+
+	private void updateCommentFieldHeight()	{
+		if (comment.getElement().getScrollHeight() > 0) {
+			comment.setHeight("1em");
+			int height = comment.getElement().getScrollHeight() + 10;
+			comment.setHeight(height + "px");
 		}
 	}
 }

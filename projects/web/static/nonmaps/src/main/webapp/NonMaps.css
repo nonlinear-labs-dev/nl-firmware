@@ -1608,7 +1608,7 @@ select[disabled='disabled'] {
 
 .dialogContent textarea.editable {
   min-height: 4em;
-  max-height: 10em;
+  max-height: 50vh;
   color: white;
   font-size: 14px;
 }

@@ -15,6 +15,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -170,6 +171,10 @@ public class BankInfoDialog extends GWTDialog {
 			}
 		});
 
+		comment.addKeyUpHandler(event -> {
+			updateCommentFieldHeight();
+		});
+
 		position.addKeyPressHandler(new KeyPressHandler() {
 
 			@Override
@@ -243,6 +248,15 @@ public class BankInfoDialog extends GWTDialog {
 
 		setWidget(panel);
 		setFocus(panel);
+
+		//for some reason we can't properly initialize the height of the comment section on the first open so we have to recalculate it here after some time
+		Timer t = new Timer() {
+			@Override
+			public void run() {
+				updateCommentFieldHeight();
+			}
+		};
+		t.schedule(15);
 	}
 
 	@Override
@@ -271,6 +285,14 @@ public class BankInfoDialog extends GWTDialog {
 			theDialog.updateInfo(bank);
 	}
 
+	private void updateCommentFieldHeight()	{
+		if (comment.getElement().getScrollHeight() > 0) {
+			comment.setHeight("1em");
+			int height = comment.getElement().getScrollHeight() + 10;
+			comment.setHeight(height + "px");
+		}
+	}
+
 	private void updateInfo(Bank bank) {
 		if (bank != null) {
 			String bankName = bank.getCurrentName();
@@ -280,12 +302,7 @@ public class BankInfoDialog extends GWTDialog {
 			if (haveFocus != comment) {
 				if (!commentText.equals(comment.getText())) {
 					comment.setText(commentText);
-
-					if (comment.getElement().getScrollHeight() > 0) {
-						comment.setHeight("1em");
-						int height = comment.getElement().getScrollHeight() + 5;
-						comment.setHeight(height + "px");
-					}
+					updateCommentFieldHeight();
 				}
 			}
 
