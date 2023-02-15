@@ -2,6 +2,7 @@
 #include "groups/MasterGroup.h"
 #include "groups/ScaleGroup.h"
 #include "groups/MacroControlsGroup.h"
+#include "parameters/presenter-rules/ParameterPresenterRules.h"
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
@@ -50,7 +51,7 @@ void SwitchVoiceGroupButton::rebuild()
   auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto selected = eb->getSelected(vg);
 
-  if(allowToggling(selected, eb))
+  if(ParameterPresenterRules::allowToggling(selected, eb))
     setText(StringAndSuffix { "I / II", 0 });
   else if(MasterGroup::isMasterParameter(selected) && selected->getID().getNumber() != C15::PID::Master_FX_Mix)
   {
@@ -77,36 +78,4 @@ void SwitchVoiceGroupButton::onParameterSelectionChanged(Parameter* oldSelected,
 void SwitchVoiceGroupButton::onVoiceGroupChanged(VoiceGroup newVoiceGroup)
 {
   rebuild();
-}
-
-bool SwitchVoiceGroupButton::allowToggling(const Parameter* selected, const EditBuffer* editBuffer)
-{
-  if(selected == nullptr)
-    return false;
-
-  if(selected->getVoiceGroup() == VoiceGroup::Global)
-  {
-    return MacroControlsGroup::isMacroControl(selected->getID().getNumber());
-  }
-
-  if(editBuffer->getType() == SoundType::Single)
-  {
-    const auto type = selected->getType();
-    if(type == C15::Descriptors::ParameterType::Monophonic_Modulateable
-       || type == C15::Descriptors::ParameterType::Monophonic_Unmodulateable)
-    {
-      return true;
-    }
-    return false;
-  }
-
-  auto layerAndGroupAllowToggling
-      = ((editBuffer->getType() == SoundType::Layer)
-         && (!MonoGroup::isMonoParameter(selected) && !UnisonGroup::isUnisonParameter(selected)))
-      || (editBuffer->getType() != SoundType::Layer);
-
-  if(!selected->isDisabled())
-    return layerAndGroupAllowToggling;
-  else
-    return false;
 }
