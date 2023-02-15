@@ -3,8 +3,14 @@
 
 	<g:HTMLPanel>
 		<div id="oleds">
-			<canvas id="boled" width="256" height="64"></canvas>
-			<canvas id="soled" width="128" height="32"></canvas>
+			<svg viewBox="0 0 260 102">
+				<foreignObject x="2" y="2" width="256" height="64">
+					<canvas id="boled" width="256" height="64"></canvas>
+				</foreignObject>
+				<foreignObject x="66" y="68" width="256" height="32">
+					<canvas id="soled" width="128" height="32"></canvas>
+				</foreignObject>
+			</svg>
 		</div>
 	</g:HTMLPanel>
 </ui:UiBinder>
