@@ -23,6 +23,7 @@ void ScreenSaverConnections::connectRescheduleToSources(HWUI& hwui, EditBuffer& 
   pcp.onLastKeyChanged(reschedule);
   settings.onSettingsChanged(reschedule);
   hwui.onButtonPressed(sigc::hide(sigc::hide(reschedule)));
+  hwui.onRotaryTurned(reschedule);
 
   boled.onLayoutInstalled(onLayoutInstalled);
 }

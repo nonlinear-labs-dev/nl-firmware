@@ -106,6 +106,7 @@ void HWUI::init()
 
 void HWUI::onRotaryChanged()
 {
+  m_rotaryTurned.deferedSend();
 }
 
 void HWUI::indicateBlockingMainThread()
@@ -614,4 +615,9 @@ Oleds &HWUI::getOleds()
 sigc::connection HWUI::onButtonPressed(const sigc::slot<void, Buttons, bool> &cb)
 {
   return m_buttonPressed.connect(cb);
+}
+
+sigc::connection HWUI::onRotaryTurned(const sigc::slot<void> &cb)
+{
+  return m_rotaryTurned.connect(cb);
 }
