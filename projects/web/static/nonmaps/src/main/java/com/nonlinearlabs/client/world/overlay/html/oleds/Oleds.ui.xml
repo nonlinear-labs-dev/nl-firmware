@@ -7,7 +7,7 @@
 				<foreignObject x="2" y="2" width="256" height="64">
 					<canvas id="boled" width="256" height="64"></canvas>
 				</foreignObject>
-				<foreignObject x="66" y="68" width="256" height="32">
+				<foreignObject x="66" y="68" width="128" height="32">
 					<canvas id="soled" width="128" height="32"></canvas>
 				</foreignObject>
 			</svg>

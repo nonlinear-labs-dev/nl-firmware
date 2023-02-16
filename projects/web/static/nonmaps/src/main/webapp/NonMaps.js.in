@@ -160,26 +160,34 @@ function showOleds() {
       var reader = new FileReader()
       reader.onload = () => {
         var oledsRaw = JSON.parse(reader.result);
-        var oledsPix = new Uint8ClampedArray(oledsRaw.length * 4);
-        var soledPix = new Uint8ClampedArray(oledsRaw.length * 4);
 
-        for (var i = 0; i < oledsRaw.length; i++) {
+        var boledArraySize = 256 * 64;
+        var soledArraySize = 256 * 32;
+
+        var boledsPix = new Uint8ClampedArray(boledArraySize * 4);
+        var soledPix = new Uint8ClampedArray(soledArraySize * 4);
+
+        for(var i = 0; i < boledArraySize; i++) {
           var idx = i * 4;
           var mapped = map.get(oledsRaw[i]);
-          oledsPix[idx + 0] = mapped[0];
-          oledsPix[idx + 1] = mapped[1];
-          oledsPix[idx + 2] = mapped[2];
-          oledsPix[idx + 3] = mapped[3];
-
-          var mappedSoled = soledMap.get(oledsRaw[i]);
-          soledPix[idx + 0] = mappedSoled[0];
-          soledPix[idx + 1] = mappedSoled[1];
-          soledPix[idx + 2] = mappedSoled[2];
-          soledPix[idx + 3] = mappedSoled[3];
+          boledsPix[idx + 0] = mapped[0];
+          boledsPix[idx + 1] = mapped[1];
+          boledsPix[idx + 2] = mapped[2];
+          boledsPix[idx + 3] = mapped[3];
         }
 
-        drawBoled(oledsPix.slice(0, 4 * 256 * 64));
-        drawSoled(soledPix.slice(4 * 256 * 64, 4 * 256 * 64 + 4 * 256 * 32));
+        for(var i = 0; i < soledArraySize; i++) {
+          var idx = i * 4;
+          var offset = boledArraySize;
+          var mapped = soledMap.get(oledsRaw[offset + i]);
+          soledPix[idx + 0] = mapped[0];
+          soledPix[idx + 1] = mapped[1];
+          soledPix[idx + 2] = mapped[2];
+          soledPix[idx + 3] = mapped[3];
+        }
+
+        drawBoled(boledsPix);
+        drawSoled(soledPix);
       }
       reader.readAsText(event.data);
     };
