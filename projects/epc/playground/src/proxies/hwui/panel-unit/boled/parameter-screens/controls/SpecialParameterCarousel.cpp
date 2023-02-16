@@ -7,7 +7,6 @@
 #include <proxies/hwui/HWUI.h>
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
 #include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
-#include <groups/MonoGroup.h>
 #include <sigc++/sigc++.h>
 
 SpecialParameterCarousel::SpecialParameterCarousel(const Rect &rect)
@@ -62,7 +61,8 @@ void SpecialParameterCarousel::setupControls(Parameter *parameter)
   auto ids = getParameterIdsForMode(soundType);
 
   m_currentCarouselContentIDs = {};
-  for(auto id: ids) {
+  for(auto id : ids)
+  {
     m_currentCarouselContentIDs.emplace_back(id.getNumber());
   }
 

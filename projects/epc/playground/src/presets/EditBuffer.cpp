@@ -20,9 +20,6 @@
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
 #include <presets/recall/RecallParameter.h>
 #include <parameters/UnisonVoicesParameter.h>
-#include <groups/SplitParameterGroups.h>
-#include <groups/MonoGroup.h>
-#include <groups/UnisonGroup.h>
 #include <presets/PresetParameter.h>
 #include <tools/PerformanceTimer.h>
 #include <device-settings/Settings.h>
@@ -36,6 +33,7 @@
 #include "LoadedPresetLog.h"
 #include "parameters/ScopedLockByParameterTypes.h"
 #include "use-cases/SettingsUseCases.h"
+#include "parameters/ParameterFactory.h"
 #include <sync/JsonAdlSerializers.h>
 #include <use-cases/EditBufferUseCases.h>
 #include <groups/MacroControlsGroup.h>
@@ -800,18 +798,18 @@ bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundTy
 
   if(type == SoundType::Layer)
   {
-    if(UnisonGroup::isUnisonParameter(parameter))
+    if(ParameterFactory::isUnisonParameter(parameter))
       return false;
 
-    if(MonoGroup::isMonoParameter(parameter))
+    if(ParameterFactory::isMonoParameter(parameter))
       return false;
 
-    return SplitParameterGroups::isSplitPoint(parameter) || selectedIsNotGlobal;
+    return ParameterFactory::isSplitPoint(parameter) || selectedIsNotGlobal;
   }
 
   if(type == SoundType::Split)
   {
-    return SplitParameterGroups::isSplitPoint(parameter) || selectedIsNotGlobal;
+    return ParameterFactory::isSplitPoint(parameter) || selectedIsNotGlobal;
   }
 
   return false;

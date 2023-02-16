@@ -1,27 +1,9 @@
 #include "ParameterGroupSet.h"
 #include <presets/Preset.h>
 
-#include "../groups/GapFilterGroup.h"
 #include "parameters/Parameter.h"
-
-#include "groups/EnvelopeAGroup.h"
-#include "groups/EnvelopeBGroup.h"
-#include "groups/EnvelopeCGroup.h"
-#include "groups/OscillatorAGroup.h"
-#include "groups/ShaperAGroup.h"
-#include "groups/OscillatorBGroup.h"
-#include "groups/ShaperBGroup.h"
-#include "groups/FBMixerGroup.h"
-#include "groups/CombFilterGroup.h"
-#include "groups/SVFilterGroup.h"
-#include "groups/OutputMixerGroup.h"
-#include "groups/CabinetGroup.h"
-#include "groups/FlangerGroup.h"
-#include "groups/EchoGroup.h"
-#include "groups/ReverbGroup.h"
 #include "groups/MacroControlsGroup.h"
 #include "groups/MasterGroup.h"
-#include "groups/UnisonGroup.h"
 #include "groups/HardwareSourcesGroup.h"
 #include <groups/MacroControlMappingGroup.h>
 #include <groups/ScaleGroup.h>
@@ -32,8 +14,6 @@
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
-#include <groups/MonoGroup.h>
-#include <groups/SplitParameterGroups.h>
 #include <groups/VoiceGroupMasterGroup.h>
 #include <parameter_declarations.h>
 
@@ -42,7 +22,7 @@ ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent)
 {
 }
 
-void ParameterGroupSet::init(Settings* settings)
+void ParameterGroupSet::init(Settings *settings)
 {
   auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this, settings));
   auto macroControls = appendParameterGroup(new MacroControlsGroup(this));
@@ -50,26 +30,27 @@ void ParameterGroupSet::init(Settings* settings)
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    appendParameterGroup(new EnvelopeAGroup(this, vg));
-    appendParameterGroup(new EnvelopeBGroup(this, vg));
-    appendParameterGroup(new EnvelopeCGroup(this, vg));
-    appendParameterGroup(new OscillatorAGroup(this, vg));
-    appendParameterGroup(new ShaperAGroup(this, vg));
-    appendParameterGroup(new OscillatorBGroup(this, vg));
-    appendParameterGroup(new ShaperBGroup(this, vg));
-    appendParameterGroup(new FBMixerGroup(this, vg));
-    appendParameterGroup(new CombFilterGroup(this, vg));
-    appendParameterGroup(new SVFilterGroup(this, vg));
-    appendParameterGroup(new OutputMixerGroup(this, vg));
-    appendParameterGroup(new FlangerGroup(this, vg));
-    appendParameterGroup(new CabinetGroup(this, vg));
-    appendParameterGroup(new GapFilterGroup(this, vg));
-    appendParameterGroup(new EchoGroup(this, vg));
-    appendParameterGroup(new ReverbGroup(this, vg));
-    appendParameterGroup(new UnisonGroup(this, vg));
+    appendParameterGroup(new ParameterGroup(this, { "Env A", vg }, "Envelope A", "Envelope A", "Envelope A"));
+    appendParameterGroup(new ParameterGroup(this, { "Env B", vg }, "Envelope B", "Envelope B", "Envelope B"));
+    appendParameterGroup(new ParameterGroup(this, { "Env C", vg }, "Envelope C", "Envelope C", "Envelope C"));
+    appendParameterGroup(new ParameterGroup(this, { "Osc A", vg }, "Oscillator A", "Oscillator A", "Oscillator A"));
+    appendParameterGroup(new ParameterGroup(this, { "Sh A", vg }, "Shaper A", "Shaper A", "Shaper A"));
+    appendParameterGroup(new ParameterGroup(this, { "Osc B", vg }, "Oscillator B", "Oscillator B", "Oscillator B"));
+    appendParameterGroup(new ParameterGroup(this, { "Sh B", vg }, "Shaper B", "Shaper B", "Shaper B"));
+    appendParameterGroup(new ParameterGroup(this, { "FB", vg }, "FB Mixer", "Feedback Mixer", "Feedback Mixer"));
+    appendParameterGroup(new ParameterGroup(this, { "Comb", vg }, "Comb Filter", "Comb Filter", "Comb Filter"));
+    appendParameterGroup(
+        new ParameterGroup(this, { "SVF", vg }, "SV Filter", "State Variable Filter", "State Variable Filter"));
+    appendParameterGroup(new ParameterGroup(this, { "Mixer", vg }, "Output Mixer", "Output Mixer", "Output Mixer"));
+    appendParameterGroup(new ParameterGroup(this, { "Flang", vg }, "Flanger", "Flanger", "Flanger"));
+    appendParameterGroup(new ParameterGroup(this, { "Cab", vg }, "Cabinet", "Cabinet", "Cabinet"));
+    appendParameterGroup(new ParameterGroup(this, { "Gap Filt", vg }, "Gap Filter", "Gap Filter", "Gap Filter"));
+    appendParameterGroup(new ParameterGroup(this, { "Echo", vg }, "Echo", "Echo", "Echo"));
+    appendParameterGroup(new ParameterGroup(this, { "Reverb", vg }, "Reverb", "Reverb", "Reverb"));
+    appendParameterGroup(new ParameterGroup(this, { "Unison", vg }, "Unison", "Unison", "Unison"));
 
-    appendParameterGroup(new SplitParameterGroups(this, vg));
-    appendParameterGroup(new MonoGroup(this, vg));
+    appendParameterGroup(new ParameterGroup(this, { "Split", vg }, "Split", "Split", "Split"));
+    appendParameterGroup(new ParameterGroup(this, { "Mono", vg }, "Mono", "Mono", "Mono"));
     appendParameterGroup(new VoiceGroupMasterGroup(this, vg));
 
     m_idToParameterMap[static_cast<size_t>(vg)] = getParametersSortedByNumber(vg);
@@ -203,21 +184,18 @@ void ParameterGroupSet::writeDocument(Writer &writer, UpdateDocumentContributor:
 {
   super::writeDocument(writer, knownRevision);
 
-  auto writePerVoiceGroup = [&](auto id, auto tag)
-  {
+  auto writePerVoiceGroup = [&](auto id, auto tag) {
     auto &groups = getParameterGroups(id);
     auto anyGroupChanged = false;
 
     for(auto &p : groups)
       anyGroupChanged |= p->didChangeSince(knownRevision);
 
-    writer.writeTag(tag, Attribute("changed", anyGroupChanged),
-                    [&]
-                    {
-                      if(anyGroupChanged)
-                        for(auto &p : groups)
-                          p->writeDocument(writer, knownRevision);
-                    });
+    writer.writeTag(tag, Attribute("changed", anyGroupChanged), [&] {
+      if(anyGroupChanged)
+        for(auto &p : groups)
+          p->writeDocument(writer, knownRevision);
+    });
   };
 
   writePerVoiceGroup(VoiceGroup::Global, "global-parameters");

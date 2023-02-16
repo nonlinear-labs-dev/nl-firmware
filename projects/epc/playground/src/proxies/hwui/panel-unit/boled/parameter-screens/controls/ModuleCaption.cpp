@@ -4,10 +4,8 @@
 #include <proxies/hwui/HWUI.h>
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
 #include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
-#include <groups/MonoGroup.h>
 #include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
 #include <parameters/UnisonVoicesParameter.h>
-#include <groups/SplitParameterGroups.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"

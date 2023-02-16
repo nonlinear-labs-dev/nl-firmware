@@ -3,6 +3,14 @@
 #include "parameters/Parameter.h"
 #include "presets/ParameterGroupSet.h"
 #include "presets/PresetParameterGroup.h"
+#include "parameter_group.h"
+#include "parameters/ModulateableParameter.h"
+#include "parameter_list.h"
+#include "parameters/ParameterFactory.h"
+#include "parameters/UnisonVoicesParameter.h"
+#include "parameters/SplitPointParameter.h"
+#include "ScaleGroup.h"
+#include "parameters/ScaleParameter.h"
 #include <libundo/undo/Scope.h>
 #include <xml/Attribute.h>
 #include <nltools/logging/Log.h>
@@ -236,12 +244,15 @@ nlohmann::json ParameterGroup::serialize() const
   return { { "id", getID() }, { "name", getLongName() }, { "parameters", m_parameters } };
 }
 
-void ParameterGroup::validateParameterTypes() const
-{
-
-}
-
 bool ParameterGroup::isPolyphonic() const
 {
   return m_parameters.begin()->isPolyphonic();
+}
+
+void ParameterGroup::init()
+{
+  for(auto id : ParameterFactory::getParameterIDs(getShortName()))
+  {
+    appendParameter(ParameterFactory::createParameterByType(this, { id, getVoiceGroup() }));
+  }
 }

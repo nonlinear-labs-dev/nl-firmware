@@ -2,8 +2,7 @@
 #include "parameter_declarations.h"
 #include "nltools/Types.h"
 #include "groups/MacroControlsGroup.h"
-#include "groups/MonoGroup.h"
-#include "groups/UnisonGroup.h"
+#include "parameters/ParameterFactory.h"
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 #include <presets/EditBuffer.h>
@@ -138,7 +137,7 @@ bool ParameterPresenterRules::allowToggling(const Parameter *selected, const Edi
 
   auto layerAndGroupAllowToggling
       = ((editBuffer->getType() == SoundType::Layer)
-         && (!MonoGroup::isMonoParameter(selected) && !UnisonGroup::isUnisonParameter(selected)))
+         && (!ParameterFactory::isMonoParameter(selected) && !ParameterFactory::isUnisonParameter(selected)))
       || (editBuffer->getType() != SoundType::Layer);
 
   if(!selected->isDisabled())
