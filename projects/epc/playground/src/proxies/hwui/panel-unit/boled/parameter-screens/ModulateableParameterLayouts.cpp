@@ -49,6 +49,7 @@
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/VoiceGroupUseCases.h"
 #include "parameters/ParameterFactory.h"
+#include "parameters/presenter-rules/ParameterPresenterRules.h"
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
 {
@@ -240,7 +241,7 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
             EditBufferUseCases ebUseCases(*modParam->getParentEditBuffer());
             ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global }, true);
           }
-          else if(SwitchVoiceGroupButton::allowToggling(modParam, modParam->getParentEditBuffer()))
+          else if(ParameterPresenterRules::allowToggling(modParam, modParam->getParentEditBuffer()))
           {
             VoiceGroupUseCases vgUseCases(Application::get().getVGManager(),
                                           getCurrentEditParameter()->getParentEditBuffer());

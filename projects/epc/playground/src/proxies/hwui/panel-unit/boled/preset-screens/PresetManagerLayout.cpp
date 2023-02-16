@@ -27,7 +27,6 @@
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/AnyParameterLockedIndicator.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/LoadModeMenu.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MuteIndicator.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/BankButton.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/controls/LoadToPartPresetList.h>
 #include "presets/Preset.h"
@@ -145,9 +144,9 @@ void PresetManagerLayout::setupBankSelect()
   auto isDualEB = Application::get().getPresetManager()->getEditBuffer()->isDual();
 
   if(isDualEB && vgManager->isInLoadToPart())
-    m_presets
-        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, vgManager->getPresetPartSelection(VoiceGroup::I),
-                                              vgManager->getPresetPartSelection(VoiceGroup::II)));
+    m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true,
+                                                    vgManager->getPresetPartSelection(VoiceGroup::I),
+                                                    vgManager->getPresetPartSelection(VoiceGroup::II)));
   else
     m_presets = addControl(new PresetList({ 64, 0, 128, 63 }, true));
 
@@ -226,9 +225,9 @@ void PresetManagerLayout::setupPresetSelect()
   m_loadMode = addControl(new LoadModeMenu(Rect(195, 36, 58, 62)));
 
   if(vgManager->isInLoadToPart())
-    m_presets
-        = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true, vgManager->getPresetPartSelection(VoiceGroup::I),
-                                              vgManager->getPresetPartSelection(VoiceGroup::II)));
+    m_presets = addControl(new LoadToPartPresetList(Rect(64, 0, 128, 63), true,
+                                                    vgManager->getPresetPartSelection(VoiceGroup::I),
+                                                    vgManager->getPresetPartSelection(VoiceGroup::II)));
   else
     m_presets = addControl(new PresetList(Rect(64, 0, 128, 63), true));
 

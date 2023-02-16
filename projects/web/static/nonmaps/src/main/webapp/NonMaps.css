@@ -1608,7 +1608,7 @@ select[disabled='disabled'] {
 
 .dialogContent textarea.editable {
   min-height: 4em;
-  max-height: 10em;
+  max-height: 50vh;
   color: white;
   font-size: 14px;
 }
@@ -1938,7 +1938,8 @@ button {
   visibility: hidden;
   width: 256px;
   height: 64px;
-  margin: 0.5em;
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
 }
 
 #soled {
@@ -1946,7 +1947,22 @@ button {
   visibility: hidden;
   width: 128px;
   height: 32px;
-  margin: 0.5em;
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
+}
+
+/*
+we have to use !important here as the styles get set from within the GWTDialog
+*/
+.oleds-dialog {
+  resize: both;
+  overflow: hidden !important;
+  height: unset !important;
+  min-width: 439px;
+}
+
+.oleds-dialog table {
+  width: 100%;
 }
 
 .nonmaps-context-menu-overlay {
