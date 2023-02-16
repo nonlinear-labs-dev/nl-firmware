@@ -48,6 +48,7 @@
 #include "parameter_declarations.h"
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/VoiceGroupUseCases.h"
+#include "parameters/ParameterFactory.h"
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
 {
@@ -93,7 +94,7 @@ void ModulateableParameterSelectLayout2::onSelectedParameterChanged(Parameter *,
   {
     m_paramConnection = newParam->onParameterChanged(
         sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onCurrentParameterChanged));
-    m_isScaleParameter = ScaleGroup::isScaleParameter(newParam);
+    m_isScaleParameter = ParameterFactory::isScaleParameter(newParam);
   }
 }
 
@@ -229,12 +230,12 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
       case Buttons::BUTTON_A:
         if(m_mode == Mode::ParameterValue && !isCurrentParameterDisabled())
         {
-          if(MasterGroup::isMasterParameter(modParam) && modParam->getID().getNumber() != C15::PID::Master_FX_Mix)
+          if(ParameterFactory::isMasterParameter(modParam) && modParam->getID().getNumber() != C15::PID::Master_FX_Mix)
           {
             EditBufferUseCases ebUseCases(*modParam->getParentEditBuffer());
             ebUseCases.selectParameter({ C15::PID::Scale_Base_Key, VoiceGroup::Global }, true);
           }
-          else if(ScaleGroup::isScaleParameter(modParam))
+          else if(ParameterFactory::isScaleParameter(modParam))
           {
             EditBufferUseCases ebUseCases(*modParam->getParentEditBuffer());
             ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global }, true);

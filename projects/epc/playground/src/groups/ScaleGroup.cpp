@@ -38,22 +38,3 @@ void ScaleGroup::onBaseKeyParameterChanged(const Parameter*)
       a->onChange();
   });
 }
-
-bool ScaleGroup::isScaleParameter(const ParameterId& id)
-{
-  auto number = id.getNumber();
-  return (number >= C15::PID::Scale_Base_Key && number <= C15::PID::Scale_Offset_11)
-      || number == C15::PID::Scale_Offset_0;
-}
-
-bool ScaleGroup::isScaleOffsetParameter(int id)
-{
-  return (id >= C15::PID::Scale_Offset_1 && id <= C15::PID::Scale_Offset_11) || id == C15::PID::Scale_Offset_0;
-}
-
-bool ScaleGroup::isScaleParameter(const Parameter* parameter)
-{
-  if(parameter)
-    return isScaleParameter(parameter->getID());
-  return false;
-}

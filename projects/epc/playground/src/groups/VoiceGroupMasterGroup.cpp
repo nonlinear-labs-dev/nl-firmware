@@ -14,9 +14,3 @@ void VoiceGroupMasterGroup::init()
   auto fadeFrom = findParameterByID({ C15::PID::Voice_Grp_Fade_From, getVoiceGroup() });
   fadeFrom->getValue().setFactoryDefault(fadeFromInitial);
 }
-
-bool VoiceGroupMasterGroup::isVoiceGroupMasterParameter(int id)
-{
-  return id == C15::PID::Voice_Grp_Volume || id == C15::PID::Voice_Grp_Tune || id == C15::PID::Voice_Grp_Mute
-      || id == C15::PID::Voice_Grp_Fade_From || id == C15::PID::Voice_Grp_Fade_Range;
-}

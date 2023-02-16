@@ -253,6 +253,6 @@ void ParameterGroup::init()
 {
   for(auto id : ParameterFactory::getParameterIDs(getShortName()))
   {
-    appendParameter(ParameterFactory::createParameterByType(this, id, getVoiceGroup()));
+    appendParameter(ParameterFactory::createParameterByType(this, { id, getVoiceGroup() }));
   }
 }

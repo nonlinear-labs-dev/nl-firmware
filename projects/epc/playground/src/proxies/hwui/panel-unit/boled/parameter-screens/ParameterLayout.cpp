@@ -6,6 +6,7 @@
 #include "use-cases/EditBufferUseCases.h"
 #include "groups/ScaleGroup.h"
 #include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAmountButton.h"
+#include "parameters/ParameterFactory.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
@@ -54,7 +55,7 @@ ModuleCaption *ParameterLayout2::createModuleCaption() const
   return new ModuleCaption(Rect(0, 0, 64, 13));
 }
 
-Control* ParameterLayout2::createParameterNameLabel() const
+Control *ParameterLayout2::createParameterNameLabel() const
 {
   return new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11));
 }
@@ -198,7 +199,7 @@ void ParameterSelectLayout2::init()
 Carousel *ParameterSelectLayout2::createCarousel(const Rect &rect)
 {
   auto parameter = getCurrentParameter();
-  if(!ScaleGroup::isScaleParameter(parameter))
+  if(!ParameterFactory::isScaleParameter(parameter))
   {
     return new ParameterCarousel(rect);
   }

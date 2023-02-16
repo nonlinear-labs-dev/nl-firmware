@@ -15,6 +15,7 @@
 #include "parameter_declarations.h"
 #include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MiniParameterLabel.h"
 #include "MiniParameterBarSlider.h"
+#include "parameters/ParameterFactory.h"
 
 ParameterCarousel::ParameterCarousel(const Rect& pos)
     : super(pos)
@@ -232,7 +233,7 @@ void ParameterCarousel::setupChildControlsForParameterWithoutButtonMapping(Param
   {
     setupChildControls(selectedParameter, { Master_Volume, Master_Tune, Master_Serial_FX, Master_Pan });
   }
-  else if(paramID == Scale_Base_Key || ScaleGroup::isScaleParameter(selectedParameter))
+  else if(paramID == Scale_Base_Key || ParameterFactory::isScaleParameter(selectedParameter))
   {
     setupChildControls(selectedParameter,
                        { Scale_Base_Key, Scale_Offset_0, Scale_Offset_1, Scale_Offset_2, Scale_Offset_3, Scale_Offset_4,

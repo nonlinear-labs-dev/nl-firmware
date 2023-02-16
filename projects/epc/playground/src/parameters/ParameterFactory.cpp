@@ -8,7 +8,6 @@
 #include "ScaleParameter.h"
 #include "parameters/voice-group-master-group/VoiceGroupMasterModulateableParameter.h"
 #include "groups/VoiceGroupMasterGroup.h"
-#include "groups/MonoGroup.h"
 #include "parameters/mono-mode-parameters/ModulateableMonoParameter.h"
 #include "parameters/mono-mode-parameters/UnmodulateableMonoParameter.h"
 
@@ -87,32 +86,111 @@ bool ParameterFactory::isModulateable(int id)
           || type == C15::Descriptors::ParameterType::Global_Modulateable);
 }
 
-Parameter* ParameterFactory::createParameterByType(ParameterGroup* parent, int id, VoiceGroup vg)
+Parameter* ParameterFactory::createParameterByType(ParameterGroup* parent, const ParameterId& id)
 {
-  if(id == C15::PID::Unison_Voices)
-    return new UnisonVoicesParameter(parent, vg);
-  else if(id == C15::PID::Split_Split_Point)
-    return new SplitPointParameter(parent, { id, vg });
-  else if(id == ScaleGroup::getScaleBaseParameterNumber())
-    return new BaseScaleParameter(parent, { id, vg });
-  else if(ScaleGroup::isScaleOffsetParameter(id))
-    return new ScaleParameter(parent, { id, vg });
-  else if(VoiceGroupMasterGroup::isVoiceGroupMasterParameter(id))
+  if(id.getNumber() == C15::PID::Unison_Voices)
+    return new UnisonVoicesParameter(parent, id.getVoiceGroup());
+  else if(id.getNumber() == C15::PID::Split_Split_Point)
+    return new SplitPointParameter(parent, id);
+  else if(id.getNumber() == ScaleGroup::getScaleBaseParameterNumber())
+    return new BaseScaleParameter(parent, id);
+  else if(isScaleOffsetParameter(id))
+    return new ScaleParameter(parent, id);
+  else if(isVoiceGroupMasterParameter(id))
   {
-    if(isModulateable(id))
-      return new VoiceGroupMasterModulateableParameter(parent, { id, vg });
+    if(isModulateable(id.getNumber()))
+      return new VoiceGroupMasterModulateableParameter(parent, id);
     else
-      return new VoiceGroupMasterUnmodulateableParameter(parent, { id, vg });
+      return new VoiceGroupMasterUnmodulateableParameter(parent, id);
   }
-  else if(MonoGroup::isMonoParameter({ id, vg }))
+  else if(ParameterFactory::isMonoParameter(id))
   {
-    if(isModulateable(id))
-      return new ModulateableMonoParameter(parent, { id, vg });
+    if(isModulateable(id.getNumber()))
+      return new ModulateableMonoParameter(parent, id);
     else
-      return new UnmodulateableMonoParameter(parent, { id, vg });
+      return new UnmodulateableMonoParameter(parent, id);
   }
-  else if(isModulateable(id))
-    return new ModulateableParameter(parent, { id, vg });
+  else if(isModulateable(id.getNumber()))
+    return new ModulateableParameter(parent, id);
   else
-    return new Parameter(parent, { id, vg });
+    return new Parameter(parent, id);
+}
+
+bool ParameterFactory::isUnisonParameter(const ParameterId& id)
+{
+  const auto n = id.getNumber();
+  return n == C15::PID::Unison_Voices || n == C15::PID::Unison_Detune || n == C15::PID::Unison_Phase
+      || n == C15::PID::Unison_Pan;
+}
+
+bool ParameterFactory::isUnisonParameter(const Parameter* parameter)
+{
+  if(parameter)
+    return ParameterFactory::isUnisonParameter(parameter->getID());
+  return false;
+}
+
+bool ParameterFactory::isSplitPoint(const Parameter* p)
+{
+  if(p)
+    return isSplitPoint(p->getID());
+  return false;
+}
+
+bool ParameterFactory::isSplitPoint(const ParameterId& id)
+{
+  return id.getNumber() == C15::PID::Split_Split_Point;
+}
+
+bool ParameterFactory::isMonoParameter(const ParameterId& id)
+{
+  using namespace C15::PID;
+  auto number = id.getNumber();
+  return number == Mono_Grp_Enable || number == Mono_Grp_Prio || number == Mono_Grp_Legato || number == Mono_Grp_Glide;
+}
+
+bool ParameterFactory::isMonoParameter(const Parameter* parameter)
+{
+  if(parameter)
+    return isMonoParameter(parameter->getID());
+  return false;
+}
+
+bool ParameterFactory::isVoiceGroupMasterParameter(const ParameterId& parameterId)
+{
+  const auto id = parameterId.getNumber();
+  return id == C15::PID::Voice_Grp_Volume || id == C15::PID::Voice_Grp_Tune || id == C15::PID::Voice_Grp_Mute
+      || id == C15::PID::Voice_Grp_Fade_From || id == C15::PID::Voice_Grp_Fade_Range;
+}
+
+bool ParameterFactory::isMasterParameter(const Parameter* p)
+{
+  if(p)
+  {
+    auto id = p->getID().getNumber();
+    return id == C15::PID::Master_Volume || id == C15::PID::Master_Tune || id == C15::PID::Master_Serial_FX
+        || id == C15::PID::Master_Pan || id == C15::PID::Master_FX_Mix;
+  }
+  return false;
+}
+
+bool ParameterFactory::isScaleParameter(const ParameterId& id)
+{
+  auto number = id.getNumber();
+  return (number >= C15::PID::Scale_Base_Key && number <= C15::PID::Scale_Offset_11)
+      || number == C15::PID::Scale_Offset_0;
+}
+
+bool ParameterFactory::isScaleOffsetParameter(const ParameterId& id)
+{
+  auto number = id.getNumber();
+  return (number >= C15::PID::Scale_Offset_1 && number <= C15::PID::Scale_Offset_11)
+      || number == C15::PID::Scale_Offset_0;
+}
+
+bool ParameterFactory::isScaleParameter(const Parameter* parameter)
+{
+  if(parameter)
+    return isScaleParameter(parameter->getID());
+  return false;
 }

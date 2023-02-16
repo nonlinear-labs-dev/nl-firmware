@@ -20,9 +20,6 @@
 #include <parameters/scale-converters/ParabolicGainDbScaleConverter.h>
 #include <presets/recall/RecallParameter.h>
 #include <parameters/UnisonVoicesParameter.h>
-#include <groups/SplitParameterGroups.h>
-#include <groups/MonoGroup.h>
-#include <groups/UnisonGroup.h>
 #include <presets/PresetParameter.h>
 #include <tools/PerformanceTimer.h>
 #include <device-settings/Settings.h>
@@ -36,6 +33,7 @@
 #include "LoadedPresetLog.h"
 #include "parameters/ScopedLockByParameterTypes.h"
 #include "use-cases/SettingsUseCases.h"
+#include "parameters/ParameterFactory.h"
 #include <sync/JsonAdlSerializers.h>
 #include <use-cases/EditBufferUseCases.h>
 #include <groups/MacroControlsGroup.h>
@@ -136,17 +134,15 @@ void EditBuffer::resetModifiedIndicator(UNDO::Transaction *transaction, size_t h
 {
   auto swap = UNDO::createSwapData(false, hash);
 
-  transaction->addSimpleCommand(
-      [=](UNDO::Command::State)
-      {
-        auto oldState = m_isModified;
+  transaction->addSimpleCommand([=](UNDO::Command::State) {
+    auto oldState = m_isModified;
 
-        swap->swapWith<0>(m_isModified);
-        swap->swapWith<1>(m_hashOnStore);
+    swap->swapWith<0>(m_isModified);
+    swap->swapWith<1>(m_hashOnStore);
 
-        if(oldState != m_isModified)
-          m_signalModificationState.send(m_isModified);
-      });
+    if(oldState != m_isModified)
+      m_signalModificationState.send(m_isModified);
+  });
 }
 
 bool EditBuffer::isModified() const
@@ -373,27 +369,25 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
 
     p->resetWasDefaulted(transaction);
 
-    transaction->addSimpleCommand(
-        [=](UNDO::Command::State) mutable
-        {
-          auto oldSelection = m_lastSelectedParameter;
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      auto oldSelection = m_lastSelectedParameter;
 
-          swapData->swapWith(m_lastSelectedParameter);
-          incomingMCSwapData->swapWith(m_lastSelectedMacroControl);
+      swapData->swapWith(m_lastSelectedParameter);
+      incomingMCSwapData->swapWith(m_lastSelectedMacroControl);
 
-          auto oldP = findParameterByID(oldSelection);
-          auto newP = findParameterByID(m_lastSelectedParameter);
+      auto oldP = findParameterByID(oldSelection);
+      auto newP = findParameterByID(m_lastSelectedParameter);
 
-          m_signalSelectedParameter.send(oldP, newP);
+      m_signalSelectedParameter.send(oldP, newP);
 
-          if(oldP)
-            oldP->onUnselected();
+      if(oldP)
+        oldP->onUnselected();
 
-          if(newP)
-            newP->onSelected();
+      if(newP)
+        newP->onSelected();
 
-          onChange();
-        });
+      onChange();
+    });
   }
   else if(sendReselectionSignal)
   {
@@ -478,8 +472,7 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
         Attribute("origin-I", getAttribute("origin-I", "")), Attribute("origin-II", getAttribute("origin-II", "")),
         Attribute("origin-I-vg", getAttribute("origin-I-vg", "")),
         Attribute("origin-II-vg", getAttribute("origin-II-vg", "")) },
-      [&]()
-      {
+      [&]() {
         if(changed)
           super::writeDocument(writer, knownRevision);
         m_recallSet.writeDocument(writer, knownRevision);
@@ -570,14 +563,12 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, con
 
   auto swap = UNDO::createSwapData(std::move(newId), std::move(presetOriginDescription));
 
-  transaction->addSimpleCommand(
-      [=](auto)
-      {
-        swap->swapWith<0>(m_lastLoadedPreset);
-        swap->swapWith<1>(m_presetOriginDescription);
-        sendPresetLoadSignal();
-        onChange();
-      });
+  transaction->addSimpleCommand([=](auto) {
+    swap->swapWith<0>(m_lastLoadedPreset);
+    swap->swapWith<1>(m_presetOriginDescription);
+    sendPresetLoadSignal();
+    onChange();
+  });
 
   if(resetRecall)
     initRecallValues(transaction);
@@ -615,13 +606,11 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction, Defaults mode
     undoableInitPart(transaction, vg, mode);
 
   auto swap = UNDO::createSwapData(Uuid::init());
-  transaction->addSimpleCommand(
-      [=](UNDO::Command::State) mutable
-      {
-        swap->swapWith(m_lastLoadedPreset);
-        sendPresetLoadSignal();
-        onChange();
-      });
+  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+    swap->swapWith(m_lastLoadedPreset);
+    sendPresetLoadSignal();
+    onChange();
+  });
 
   resetModifiedIndicator(transaction);
 
@@ -879,10 +868,12 @@ void EditBuffer::undoableConvertToDual(UNDO::Transaction *transaction, SoundType
 
 void EditBuffer::undoableUnisonMonoLoadDefaults(UNDO::Transaction *transaction, VoiceGroup vg)
 {
-  getParameterGroupByID({ "Mono", vg })
-      ->forEachParameter([&](auto p) -> void { p->loadDefault(transaction, Defaults::FactoryDefault); });
-  getParameterGroupByID({ "Unison", vg })
-      ->forEachParameter([&](auto p) -> void { p->loadDefault(transaction, Defaults::FactoryDefault); });
+  getParameterGroupByID({ "Mono", vg })->forEachParameter([&](auto p) -> void {
+    p->loadDefault(transaction, Defaults::FactoryDefault);
+  });
+  getParameterGroupByID({ "Unison", vg })->forEachParameter([&](auto p) -> void {
+    p->loadDefault(transaction, Defaults::FactoryDefault);
+  });
 }
 
 void EditBuffer::undoableUnmuteLayers(UNDO::Transaction *transaction)
@@ -928,14 +919,12 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
 
     cleanupParameterSelectionOnSoundTypeChange(transaction, m_type, type);
 
-    transaction->addSimpleCommand(
-        [=](auto state)
-        {
-          swap->swapWith(m_type);
-          initUnisonVoicesScaling(m_type);
-          m_signalTypeChanged.send(m_type);
-          onChange();
-        });
+    transaction->addSimpleCommand([=](auto state) {
+      swap->swapWith(m_type);
+      initUnisonVoicesScaling(m_type);
+      m_signalTypeChanged.send(m_type);
+      onChange();
+    });
   }
 }
 
@@ -1071,18 +1060,18 @@ bool EditBuffer::isDualParameterForSoundType(const Parameter *parameter, SoundTy
 
   if(type == SoundType::Layer)
   {
-    if(UnisonGroup::isUnisonParameter(parameter))
+    if(ParameterFactory::isUnisonParameter(parameter))
       return false;
 
-    if(MonoGroup::isMonoParameter(parameter))
+    if(ParameterFactory::isMonoParameter(parameter))
       return false;
 
-    return SplitParameterGroups::isSplitPoint(parameter) || selectedIsNotGlobal;
+    return ParameterFactory::isSplitPoint(parameter) || selectedIsNotGlobal;
   }
 
   if(type == SoundType::Split)
   {
-    return SplitParameterGroups::isSplitPoint(parameter) || selectedIsNotGlobal;
+    return ParameterFactory::isSplitPoint(parameter) || selectedIsNotGlobal;
   }
 
   return false;
@@ -1534,10 +1523,10 @@ void EditBuffer::loadSinglePresetIntoSplitPart(UNDO::Transaction *transaction, c
     auto monophonicModparams = findAllParametersOfType(C15::Descriptors::ParameterType::Monophonic_Modulateable);
 
     auto monophonicsNotInLoadInto = combine(monophonicModparams, monophonicParameters);
-    monophonicsNotInLoadInto.erase(std::remove_if(monophonicsNotInLoadInto.begin(), monophonicsNotInLoadInto.end(),
-                                                  [loadInto](const auto &id)
-                                                  { return id.getVoiceGroup() == loadInto; }),
-                                   monophonicsNotInLoadInto.end());
+    monophonicsNotInLoadInto.erase(
+        std::remove_if(monophonicsNotInLoadInto.begin(), monophonicsNotInLoadInto.end(),
+                       [loadInto](const auto &id) { return id.getVoiceGroup() == loadInto; }),
+        monophonicsNotInLoadInto.end());
 
     ScopedLock locks(transaction);
     locks.addLock(toFxParam);
@@ -1860,15 +1849,13 @@ void EditBuffer::undoableSetTypeFromConvert(UNDO::Transaction *transaction, Soun
 
     cleanupParameterSelectionOnSoundTypeChange(transaction, m_type, type);
 
-    transaction->addSimpleCommand(
-        [=](auto state)
-        {
-          swap->swapWith(m_type);
-          initUnisonVoicesScaling(m_type);
-          m_signalTypeChanged.send(m_type);
-          m_signalConversionHappened.send(m_type);
-          onChange();
-        });
+    transaction->addSimpleCommand([=](auto state) {
+      swap->swapWith(m_type);
+      initUnisonVoicesScaling(m_type);
+      m_signalTypeChanged.send(m_type);
+      m_signalConversionHappened.send(m_type);
+      onChange();
+    });
   }
 }
 
@@ -2075,12 +2062,11 @@ void EditBuffer::copyPartVolumesToGlobalMasterAndFXMixForConvertDualToSingle(UND
     }
     else
     {
-      auto value = std::min(
-          amplitudeToParabolicGainCp(
-              masterVolumeAmplitude
-              * parabolicGainCpToAmplitude(partVolumeSelf->getControlPositionValue())
-                                           / parabolicFadeCpToAmplitude(masterFX_MIX->getControlPositionValue())),
-          1.0);
+      auto value
+          = std::min(amplitudeToParabolicGainCp(masterVolumeAmplitude
+                                                * parabolicGainCpToAmplitude(partVolumeSelf->getControlPositionValue())
+                                                / parabolicFadeCpToAmplitude(masterFX_MIX->getControlPositionValue())),
+                     1.0);
       masterVolume->setCPFromHwui(transaction, value);
     }
   }
@@ -2093,12 +2079,11 @@ void EditBuffer::copyPartVolumesToGlobalMasterAndFXMixForConvertDualToSingle(UND
     }
     else
     {
-      auto value = std::min(
-          amplitudeToParabolicGainCp(masterVolumeAmplitude
-                                     * parabolicGainCpToAmplitude(
-                                         partVolumeSelf->getControlPositionValue())
-                                         / parabolicFadeCpToAmplitude(1.0 - masterFX_MIX->getControlPositionValue())),
-          1.0);
+      auto value
+          = std::min(amplitudeToParabolicGainCp(
+                         masterVolumeAmplitude * parabolicGainCpToAmplitude(partVolumeSelf->getControlPositionValue())
+                         / parabolicFadeCpToAmplitude(1.0 - masterFX_MIX->getControlPositionValue())),
+                     1.0);
       // handle general case by normalizing amplitudes
       masterVolume->setCPFromHwui(transaction, value);
     }
@@ -2204,8 +2189,8 @@ void EditBuffer::undoableConvertSingleToDualWithFXIOnly(UNDO::Transaction *trans
   toFXI->loadDefault(transaction, Defaults::FactoryDefault);
   toFXII->loadDefault(transaction, Defaults::FactoryDefault);
 
-  auto masterSerialFX = findParameterByID({C15::PID::Master_Serial_FX, VoiceGroup::Global});
-  auto masterFXPan = findParameterByID({C15::PID::Master_Pan, VoiceGroup::Global});
+  auto masterSerialFX = findParameterByID({ C15::PID::Master_Serial_FX, VoiceGroup::Global });
+  auto masterFXPan = findParameterByID({ C15::PID::Master_Pan, VoiceGroup::Global });
 
   masterSerialFX->setCPFromHwui(transaction, 0);
   masterFXPan->setCPFromHwui(transaction, 0);
