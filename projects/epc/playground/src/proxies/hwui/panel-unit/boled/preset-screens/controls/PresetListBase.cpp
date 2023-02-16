@@ -47,7 +47,7 @@ bool PresetListBase::redraw(FrameBuffer &fb)
   return true;
 }
 
-bool PresetListBase::animatePreset(const Preset* target, std::function<void()> cb)
+bool PresetListBase::animatePreset(const Preset *target, std::function<void()> cb)
 {
   return m_content->animateSomePreset(target, std::move(cb));
 }

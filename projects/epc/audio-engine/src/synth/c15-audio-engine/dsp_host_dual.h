@@ -328,13 +328,12 @@ class dsp_host_dual : public DSPInterface
   inline void monophonicModChain(const Engine::Parameters::MacroControl& _mc);
 
   // transitions
-  inline void fxMixTransition(const Engine::Parameters::Aspects::TimeAspect::Time& _time, const float &_mix);
+  inline void fxMixTransition(const Engine::Parameters::Aspects::TimeAspect::Time& _time, const float& _mix);
   inline void globalTransition(const Engine::Parameters::Aspects::RenderAspect::Rendering& _rendering,
                                const Engine::Parameters::Aspects::TimeAspect::Time& _time, const float& _dest);
   inline void localTransition(const uint32_t& _layer,
                               const Engine::Parameters::Aspects::RenderAspect::Rendering& _rendering,
-                              const Engine::Parameters::Aspects::TimeAspect::Time& _time,
-                              const float& _dest);
+                              const Engine::Parameters::Aspects::TimeAspect::Time& _time, const float& _dest);
   // poly/mono transition
   inline void polyphonicTransition(const uint32_t& _layer,
                                    const Engine::Parameters::Aspects::RenderAspect::Rendering& _rendering,
@@ -369,7 +368,8 @@ class dsp_host_dual : public DSPInterface
   inline void onParameterRecall(const uint32_t& _layerId,
                                 const nltools::controls::PolyphonicModulateableParameter& _param);
   inline void onParameterRecall(const uint32_t& _layerId,
-                                const nltools::controls::PolyphonicUnmodulateableParameter& _param, const bool _vaUpdate);
+                                const nltools::controls::PolyphonicUnmodulateableParameter& _param,
+                                const bool _vaUpdate);
   inline void onParameterRecall(const uint32_t& _layerId,
                                 const nltools::controls::MonophonicModulateableParameter& _param);
   inline void onParameterRecall(const uint32_t& _layerId,

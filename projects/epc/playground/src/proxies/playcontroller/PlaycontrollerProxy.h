@@ -40,7 +40,7 @@ class PlaycontrollerProxy
   sigc::connection onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s);
   sigc::connection onLastKeyChanged(sigc::slot<void> s);
   sigc::connection onUHIDChanged(const sigc::slot<void, uint64_t> &s);
-  sigc::connection onRibbonTouched(const sigc::slot<void, int>& s);
+  sigc::connection onRibbonTouched(const sigc::slot<void, int> &s);
 
   int getLastTouchedRibbonParameterID() const;
   std::string getPlaycontrollerSoftwareVersion() const;

@@ -2,7 +2,8 @@
 
 namespace MIDI_HELPER
 {
-  enum class MIDI_PROTOCOL : uint8_t {
+  enum class MIDI_PROTOCOL : uint8_t
+  {
     CHANNEL_MASK = 0b00001111,
     STATUS_MASK = 0b11110000
   };
@@ -79,6 +80,6 @@ namespace TCD_HELPER
   {
     constexpr static auto SixteenThousand = 0b11111010000000;
     uint8_t type = to(TCD_PROTOCOL::BASE) | to(id);
-    return { type, (uint8_t) (SixteenThousand >> 7), (uint8_t) (SixteenThousand & 127) };
+    return { type, (uint8_t)(SixteenThousand >> 7), (uint8_t)(SixteenThousand & 127) };
   }
 }

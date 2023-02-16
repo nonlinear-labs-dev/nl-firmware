@@ -16,7 +16,7 @@ namespace nltools
 {
   namespace msg
   {
-//    struct ParameterChangedMessage; // wtf is this?
+    //    struct ParameterChangedMessage; // wtf is this?
     struct SetPresetMessage;
   }
 }
@@ -47,10 +47,8 @@ class C15Synth : public Synth, public sigc::trackable
   // new ParameterChanged protocol
   void onHardwareSourceParameterChangedMessage(const nltools::msg::HardwareSourceParameterChangedMessage& _msg);
   void onHardwareSourceSendParameterChangedMessage(const nltools::msg::HardwareSourceSendParameterChangedMessage& _msg);
-  template<typename T>
-  void onParameterChangedMessage(const T& _msg);
-  template<typename T>
-  void onResettingParameterChangedMessage(const T& _msg);
+  template <typename T> void onParameterChangedMessage(const T& _msg);
+  template <typename T> void onResettingParameterChangedMessage(const T& _msg);
 
   void onNoteShiftMessage(const nltools::msg::Setting::NoteShiftMessage& msg);
   void onPresetGlitchMessage(const nltools::msg::Setting::PresetGlitchMessage& msg);

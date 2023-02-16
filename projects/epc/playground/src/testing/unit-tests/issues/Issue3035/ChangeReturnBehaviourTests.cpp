@@ -11,7 +11,9 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, [Pedal] Set Return-Behaviour does lead to jump of value to return value but MC is same", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "Issue 3035, [Pedal] Set Return-Behaviour does lead to jump of value to return value but MC is same",
+                 "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -19,7 +21,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, [Pedal] Set Return-
   ParameterId srcID = { C15::PID::Pedal_1, VoiceGroup::Global };
   auto pedal1 = eb->findAndCastParameterByID<PedalParameter>(srcID);
   auto pedal1Send
-      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({C15::PID::Pedal_1_Send, VoiceGroup::Global});
+      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({ C15::PID::Pedal_1_Send, VoiceGroup::Global });
   auto mcA = eb->findAndCastParameterByID<MacroControlParameter>({ C15::PID::MC_A, VoiceGroup::Global });
   auto connectionParam
       = eb->findAndCastParameterByID<ModulationRoutingParameter>({ C15::PID::Pedal_1_to_MC_A, VoiceGroup::Global });
@@ -36,7 +38,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, [Pedal] Set Return-
   //Local On
   auto settings = TestHelper::getSettings();
   settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
-  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1, RoutingSettings::tAspectIndex::LOCAL, true);
+  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1,
+                                                    RoutingSettings::tAspectIndex::LOCAL, true);
   TestHelper::doMainLoopIteration();
 
   //Macro Initial
@@ -142,14 +145,17 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, [Pedal] Set Return-
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, [Ribbon] Set Return-Behaviour does lead to jump of value to return value but MC is same", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "Issue 3035, [Ribbon] Set Return-Behaviour does lead to jump of value to return value but MC is same",
+                 "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
 
   ParameterId srcID = { C15::PID::Ribbon_1, VoiceGroup::Global };
   auto ribbon1 = eb->findAndCastParameterByID<RibbonParameter>(srcID);
-  auto ribbon1Send = eb->findAndCastParameterByID<HardwareSourceSendParameter>({C15::PID::Ribbon_1_Send, VoiceGroup::Global});
+  auto ribbon1Send
+      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({ C15::PID::Ribbon_1_Send, VoiceGroup::Global });
   auto mcA = eb->findAndCastParameterByID<MacroControlParameter>({ C15::PID::MC_A, VoiceGroup::Global });
   auto connectionParam
       = eb->findAndCastParameterByID<ModulationRoutingParameter>({ C15::PID::Ribbon_1_to_MC_A, VoiceGroup::Global });
@@ -166,7 +172,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, [Ribbon] Set Return
   //Local On
   auto settings = TestHelper::getSettings();
   settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
-  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Ribbon1, RoutingSettings::tAspectIndex::LOCAL, true);
+  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Ribbon1,
+                                                    RoutingSettings::tAspectIndex::LOCAL, true);
   TestHelper::doMainLoopIteration();
 
   //Macro Initial
@@ -254,7 +261,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, [Ribbon] Set Return
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, [Pedal] Set Return-Behaviour (non-ret to ret) leads to HW-Amount set to 100%", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "Issue 3035, [Pedal] Set Return-Behaviour (non-ret to ret) leads to HW-Amount set to 100%", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -262,7 +270,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, [Pedal] Set Return-
   ParameterId srcID = { C15::PID::Pedal_1, VoiceGroup::Global };
   auto pedal1 = eb->findAndCastParameterByID<PedalParameter>(srcID);
   auto pedal1Send
-      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({C15::PID::Pedal_1_Send, VoiceGroup::Global});
+      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({ C15::PID::Pedal_1_Send, VoiceGroup::Global });
   auto mcA = eb->findAndCastParameterByID<MacroControlParameter>({ C15::PID::MC_A, VoiceGroup::Global });
   auto connectionParam
       = eb->findAndCastParameterByID<ModulationRoutingParameter>({ C15::PID::Pedal_1_to_MC_A, VoiceGroup::Global });
@@ -279,7 +287,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, [Pedal] Set Return-
   //Local On
   auto settings = TestHelper::getSettings();
   settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
-  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1, RoutingSettings::tAspectIndex::LOCAL, true);
+  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1,
+                                                    RoutingSettings::tAspectIndex::LOCAL, true);
   TestHelper::doMainLoopIteration();
 
   //Macro Initial

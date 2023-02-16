@@ -823,8 +823,7 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
 
   auto routingIndex = hwidToRoutingIndex(hwID);
 
-  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit)
-  {
+  auto sendToDSP = [&](auto source, auto hwID, auto wasPrim, auto wasSplit) {
     switch(source)
     {
       case HWChangeSource::MIDI:

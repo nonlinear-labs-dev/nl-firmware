@@ -6,7 +6,7 @@
 #include <libundo/undo/Scope.h>
 
 MacroControlParameterUseCases::MacroControlParameterUseCases(MacroControlParameter* parameter)
-    : ParameterUseCases{parameter}
+    : ParameterUseCases { parameter }
     , m_mc { parameter }
 {
   nltools_assertAlways(m_mc != nullptr);

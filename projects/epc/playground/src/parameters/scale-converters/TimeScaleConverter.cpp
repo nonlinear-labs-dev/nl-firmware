@@ -17,7 +17,7 @@ bool TimeScaleConverter::isBiPolar() const
   return false;
 }
 
-tDisplayValue TimeScaleConverter::controlPositionToDisplay(const tControlPositionValue &cpValue) const
+tDisplayValue TimeScaleConverter::controlPositionToDisplay(const tControlPositionValue& cpValue) const
 {
   auto log_min = m_displayRange.getMin() == 0 ? 0.0 : log(m_displayRange.getMin());
   auto log_max = log(m_displayRange.getMax());

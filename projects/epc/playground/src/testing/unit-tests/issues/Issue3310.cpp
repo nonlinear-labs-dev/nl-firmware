@@ -58,11 +58,11 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "When loading any preset from '
   REQUIRE(TestHelper::getEditBuffer()->findAnyParameterChanged() == false);
 
   bank->forEachPreset([](const Preset* p) {
-     EditBufferUseCases ebUseCases(*TestHelper::getEditBuffer());
-     ebUseCases.load(p);
-     TestHelper::doMainLoopIteration();
+    EditBufferUseCases ebUseCases(*TestHelper::getEditBuffer());
+    ebUseCases.load(p);
+    TestHelper::doMainLoopIteration();
 
-     INFO("Preset " << p->getName() << " loaded as changed");
-     REQUIRE(TestHelper::getEditBuffer()->findAnyParameterChanged() == false);
+    INFO("Preset " << p->getName() << " loaded as changed");
+    REQUIRE(TestHelper::getEditBuffer()->findAnyParameterChanged() == false);
   });
 }

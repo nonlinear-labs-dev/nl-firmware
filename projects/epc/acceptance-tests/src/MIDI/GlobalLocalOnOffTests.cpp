@@ -6,7 +6,7 @@
 #include <mock/MidiOptionsHelpers.h>
 #include <mock/TCDHelpers.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"'Global Local Enable' will be combined with 'RoutingSetting'")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "'Global Local Enable' will be combined with 'RoutingSetting'")
 {
   using namespace TCD_HELPER;
 
@@ -14,16 +14,15 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"'Global Local Enable' will be c
   dsp.setType(SoundType::Split);
 
   MidiRuntimeOptions options {};
-  InputEventStage eS(&dsp, &options, [](){}, [](auto){}, [](auto){});
+  InputEventStage eS(
+      &dsp, &options, []() {}, [](auto) {}, [](auto) {});
 
   WHEN("All Routings are On")
   {
-    MidiOptionsHelper::configureOptions(&options,
-                                        [](MidiOptionsHelper::tMSG& msg)
-                                        {
-                                          msg.routings = TestHelper::createFullMappings(true);
-                                          msg.localEnable = true;
-                                        });
+    MidiOptionsHelper::configureOptions(&options, [](MidiOptionsHelper::tMSG& msg) {
+      msg.routings = TestHelper::createFullMappings(true);
+      msg.localEnable = true;
+    });
 
     bool didReceive = false;
     dsp.setOnHWChangedCB([&didReceive](auto, auto, auto) { didReceive = true; });
@@ -36,12 +35,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"'Global Local Enable' will be c
 
     WHEN("HW Event is ignored when routing local is off")
     {
-      MidiOptionsHelper::configureOptions(&options,
-                                          [](MidiOptionsHelper::tMSG& msg)
-                                          {
-                                            msg.routings = TestHelper::createFullMappings(false);
-                                            msg.localEnable = true;
-                                          });
+      MidiOptionsHelper::configureOptions(&options, [](MidiOptionsHelper::tMSG& msg) {
+        msg.routings = TestHelper::createFullMappings(false);
+        msg.localEnable = true;
+      });
 
       eS.onTCDMessage(createFullPressureHWEvent(TCD_HW_IDS::Pedal1));
       CHECK_FALSE(didReceive);
@@ -49,12 +46,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"'Global Local Enable' will be c
 
     WHEN("HW Event is ignored when global local is off")
     {
-      MidiOptionsHelper::configureOptions(&options,
-                                          [](MidiOptionsHelper::tMSG& msg)
-                                          {
-                                            msg.routings = TestHelper::createFullMappings(true);
-                                            msg.localEnable = false;
-                                          });
+      MidiOptionsHelper::configureOptions(&options, [](MidiOptionsHelper::tMSG& msg) {
+        msg.routings = TestHelper::createFullMappings(true);
+        msg.localEnable = false;
+      });
 
       eS.onTCDMessage(createFullPressureHWEvent(TCD_HW_IDS::Pedal1));
       CHECK_FALSE(didReceive);
@@ -62,12 +57,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"'Global Local Enable' will be c
 
     WHEN("HW Event is ignored when global and routing local are off")
     {
-      MidiOptionsHelper::configureOptions(&options,
-                                          [](MidiOptionsHelper::tMSG& msg)
-                                          {
-                                            msg.routings = TestHelper::createFullMappings(false);
-                                            msg.localEnable = false;
-                                          });
+      MidiOptionsHelper::configureOptions(&options, [](MidiOptionsHelper::tMSG& msg) {
+        msg.routings = TestHelper::createFullMappings(false);
+        msg.localEnable = false;
+      });
 
       eS.onTCDMessage(createFullPressureHWEvent(TCD_HW_IDS::Pedal1));
       CHECK_FALSE(didReceive);
@@ -75,7 +68,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"'Global Local Enable' will be c
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Key Events Local enable disable")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Key Events Local enable disable")
 {
   using namespace TCD_HELPER;
 
@@ -84,7 +77,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Key Events Local enable disable
 
   MidiRuntimeOptions options;
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidi;
-  InputEventStage input { &host, &options, [](){}, [&](auto m) { sendMidi.emplace_back(m); }, [](auto){} };
+  InputEventStage input { &host, &options, []() {}, [&](auto m) { sendMidi.emplace_back(m); }, [](auto) {} };
 
   WHEN("All routings are on")
   {
@@ -93,12 +86,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Key Events Local enable disable
 
     WHEN("Global Local is On")
     {
-      MidiOptionsHelper::configureOptions(&options,
-                                          [](auto& s)
-                                          {
-                                            s.routings = TestHelper::createFullMappings(true);
-                                            s.localEnable = true;
-                                          });
+      MidiOptionsHelper::configureOptions(&options, [](auto& s) {
+        s.routings = TestHelper::createFullMappings(true);
+        s.localEnable = true;
+      });
 
       input.onTCDMessage(createKeyPosEvent(12));
       input.onTCDMessage(createKeyDownEvent(127, 127));
@@ -111,12 +102,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Key Events Local enable disable
 
     WHEN("Global Local is Off")
     {
-      MidiOptionsHelper::configureOptions(&options,
-                                          [](auto& s)
-                                          {
-                                            s.routings = TestHelper::createFullMappings(true);
-                                            s.localEnable = false;
-                                          });
+      MidiOptionsHelper::configureOptions(&options, [](auto& s) {
+        s.routings = TestHelper::createFullMappings(true);
+        s.localEnable = false;
+      });
 
       input.onTCDMessage(createKeyPosEvent(12));
       input.onTCDMessage(createKeyDownEvent(12, 112));
@@ -135,12 +124,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Key Events Local enable disable
 
     WHEN("Global Local is Off")
     {
-      MidiOptionsHelper::configureOptions(&options,
-                                          [](auto& s)
-                                          {
-                                            s.routings = TestHelper::createFullMappings(false);
-                                            s.localEnable = false;
-                                          });
+      MidiOptionsHelper::configureOptions(&options, [](auto& s) {
+        s.routings = TestHelper::createFullMappings(false);
+        s.localEnable = false;
+      });
 
       input.onTCDMessage(createKeyPosEvent(12));
       input.onTCDMessage(createKeyDownEvent(12, 112));
@@ -153,12 +140,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Key Events Local enable disable
 
     WHEN("Global Local is On")
     {
-      MidiOptionsHelper::configureOptions(&options,
-                                          [](auto& s)
-                                          {
-                                            s.routings = TestHelper::createFullMappings(false);
-                                            s.localEnable = true;
-                                          });
+      MidiOptionsHelper::configureOptions(&options, [](auto& s) {
+        s.routings = TestHelper::createFullMappings(false);
+        s.localEnable = true;
+      });
 
       input.onTCDMessage(createKeyPosEvent(12));
       input.onTCDMessage(createKeyDownEvent(12, 112));

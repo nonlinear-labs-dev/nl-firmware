@@ -7,12 +7,13 @@ class Application;
 class PlayPanel
 {
  public:
-  PlayPanel(Oleds& oleds) : m_oled(oleds)
+  PlayPanel(Oleds& oleds)
+      : m_oled(oleds)
   {
   }
 
   void onTimeout();
-  SOLED &getSOLED();
+  SOLED& getSOLED();
 
  private:
   SOLED m_oled;

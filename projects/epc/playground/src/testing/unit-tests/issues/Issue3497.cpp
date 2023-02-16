@@ -10,8 +10,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load-to-part cross-fx-reset ne
 
   EditBufferUseCases ebUseCases(eb);
 
-  auto out_mix_lvl_vg_I = eb.findParameterByID({C15::PID::Out_Mix_Lvl, VoiceGroup::I});
-  auto out_mix_lvl_vg_II = eb.findParameterByID({C15::PID::Out_Mix_Lvl, VoiceGroup::II});
+  auto out_mix_lvl_vg_I = eb.findParameterByID({ C15::PID::Out_Mix_Lvl, VoiceGroup::I });
+  auto out_mix_lvl_vg_II = eb.findParameterByID({ C15::PID::Out_Mix_Lvl, VoiceGroup::II });
 
   auto out_mix_to_fx_vg_I = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
   auto out_mix_to_fx_vg_II = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
@@ -43,27 +43,23 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load-to-part cross-fx-reset ne
   auto fb_mix_osc_src_I = eb.findParameterByID({ C15::PID::FB_Mix_Osc_Src, VoiceGroup::I });
   auto fb_mix_osc_src_II = eb.findParameterByID({ C15::PID::FB_Mix_Osc_Src, VoiceGroup::II });
 
-  auto setPresetValues = [&](Preset* p, VoiceGroup src)
-  {
+  auto setPresetValues = [&](Preset* p, VoiceGroup src) {
     auto scope = TestHelper::createTestScope();
     auto transaction = scope->getTransaction();
 
-    p->findParameterByID({C15::PID::FB_Mix_Osc, src}, false)->setValue(transaction, 1);
-    p->findParameterByID({C15::PID::FB_Mix_Osc_Src, src}, false)->setValue(transaction, 0.1);
-    p->findParameterByID({C15::PID::FB_Mix_Comb, src}, false)->setValue(transaction, 0.36);
-    p->findParameterByID({C15::PID::FB_Mix_Comb_Src, src}, false)->setValue(transaction, 0.87);
-    p->findParameterByID({C15::PID::FB_Mix_SVF, src}, false)->setValue(transaction, 0.187);
-    p->findParameterByID({C15::PID::FB_Mix_SVF_Src, src}, false)->setValue(transaction, 0.97);
-    p->findParameterByID({C15::PID::FB_Mix_FX, src}, false)->setValue(transaction, 0.18);
-    p->findParameterByID({C15::PID::FB_Mix_FX_Src, src}, false)->setValue(transaction, 0.28);
-    p->findParameterByID({C15::PID::Out_Mix_Lvl, src}, false)->setValue(transaction, 0.38);
-    p->findParameterByID({C15::PID::Out_Mix_To_FX, src}, false)->setValue(transaction, 0.1);
+    p->findParameterByID({ C15::PID::FB_Mix_Osc, src }, false)->setValue(transaction, 1);
+    p->findParameterByID({ C15::PID::FB_Mix_Osc_Src, src }, false)->setValue(transaction, 0.1);
+    p->findParameterByID({ C15::PID::FB_Mix_Comb, src }, false)->setValue(transaction, 0.36);
+    p->findParameterByID({ C15::PID::FB_Mix_Comb_Src, src }, false)->setValue(transaction, 0.87);
+    p->findParameterByID({ C15::PID::FB_Mix_SVF, src }, false)->setValue(transaction, 0.187);
+    p->findParameterByID({ C15::PID::FB_Mix_SVF_Src, src }, false)->setValue(transaction, 0.97);
+    p->findParameterByID({ C15::PID::FB_Mix_FX, src }, false)->setValue(transaction, 0.18);
+    p->findParameterByID({ C15::PID::FB_Mix_FX_Src, src }, false)->setValue(transaction, 0.28);
+    p->findParameterByID({ C15::PID::Out_Mix_Lvl, src }, false)->setValue(transaction, 0.38);
+    p->findParameterByID({ C15::PID::Out_Mix_To_FX, src }, false)->setValue(transaction, 0.1);
   };
 
-  auto quantizeApprox = [](Parameter* p, double cp) {
-    return p->getValue().getQuantizedValue(cp, true);
-  };
-
+  auto quantizeApprox = [](Parameter* p, double cp) { return p->getValue().getQuantizedValue(cp, true); };
 
   WHEN("layer sound is loaded")
   {
@@ -71,8 +67,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load-to-part cross-fx-reset ne
 
     auto loadTarget = GENERATE(VoiceGroup::I, VoiceGroup::II);
 
-    auto out_mix_lvl = eb.findParameterByID({C15::PID::Out_Mix_Lvl, loadTarget});
-    auto out_mix_to_fx = eb.findParameterByID({C15::PID::Out_Mix_To_FX, loadTarget});
+    auto out_mix_lvl = eb.findParameterByID({ C15::PID::Out_Mix_Lvl, loadTarget });
+    auto out_mix_to_fx = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, loadTarget });
 
     auto fb_mix_fx = eb.findParameterByID({ C15::PID::FB_Mix_FX, loadTarget });
     auto fb_mix_fx_src = eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, loadTarget });
@@ -198,8 +194,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load-to-part cross-fx-reset ne
 
     auto loadTarget = GENERATE(VoiceGroup::I, VoiceGroup::II);
 
-    auto out_mix_lvl = eb.findParameterByID({C15::PID::Out_Mix_Lvl, loadTarget});
-    auto out_mix_to_fx = eb.findParameterByID({C15::PID::Out_Mix_To_FX, loadTarget});
+    auto out_mix_lvl = eb.findParameterByID({ C15::PID::Out_Mix_Lvl, loadTarget });
+    auto out_mix_to_fx = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, loadTarget });
 
     auto fb_mix_fx = eb.findParameterByID({ C15::PID::FB_Mix_FX, loadTarget });
     auto fb_mix_fx_src = eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, loadTarget });

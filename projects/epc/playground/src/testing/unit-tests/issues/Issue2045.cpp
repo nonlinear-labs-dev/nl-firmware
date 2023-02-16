@@ -19,14 +19,14 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "HWUI - Part Selection not visi
   TestHelper::initDualEditBuffer<SoundType::Split>(vgManager->getCurrentVoiceGroup());
 
   INFO("Selecting Parameter " << parameterToSelect);
-  ebUseCases.selectParameter({parameterToSelect, VoiceGroup::I});
+  ebUseCases.selectParameter({ parameterToSelect, VoiceGroup::I });
 
-  auto isInParameterLayout = [hwui](){
+  auto isInParameterLayout = [hwui]() {
     auto layout = hwui->getPanelUnit().getEditPanel().getBoled().getLayout().get();
     return dynamic_cast<ParameterLayout2*>(layout) != nullptr;
   };
 
-  auto getVoiceGroupIndicator = [hwui](){
+  auto getVoiceGroupIndicator = [hwui]() {
     auto layout = hwui->getPanelUnit().getEditPanel().getBoled().getLayout().get();
     return layout->findControlOfType<VoiceGroupIndicator>();
   };

@@ -14,4 +14,3 @@ class RecorderManager : public sigc::trackable
  private:
   Signal<void> m_signal;
 };
-

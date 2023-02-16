@@ -28,4 +28,3 @@ class FineBipolar24STScaleConverter : public LinearScaleConverter
   FineBipolar24STScaleConverter(const FineBipolar24STScaleConverter& other);
   FineBipolar24STScaleConverter& operator=(const FineBipolar24STScaleConverter&);
 };
-

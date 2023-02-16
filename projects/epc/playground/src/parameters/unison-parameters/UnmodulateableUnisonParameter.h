@@ -22,10 +22,10 @@ class ModulateableUnisonParameter : public ModulateableParameter
 {
  public:
   template <typename... tArgs>
-   explicit ModulateableUnisonParameter(tArgs... args)
-    : ModulateableParameter(args...)
-   {
-   }
+  explicit ModulateableUnisonParameter(tArgs... args)
+      : ModulateableParameter(args...)
+  {
+  }
 
-   Layout *createLayout(FocusAndMode focusAndMode) const override;
+  Layout *createLayout(FocusAndMode focusAndMode) const override;
 };

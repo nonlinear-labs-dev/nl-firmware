@@ -5,8 +5,9 @@
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "all ids of monophonic")
 {
   auto& eb = *TestHelper::getEditBuffer();
-  auto all = eb.findAllParametersOfType({C15::Descriptors::ParameterType::Monophonic_Unmodulateable, C15::Descriptors::ParameterType::Monophonic_Modulateable});
-  for(const auto& p: all)
+  auto all = eb.findAllParametersOfType({ C15::Descriptors::ParameterType::Monophonic_Unmodulateable,
+                                          C15::Descriptors::ParameterType::Monophonic_Modulateable });
+  for(const auto& p : all)
   {
     auto param = eb.findParameterByID(p);
     CHECK(param->isMonophonic());
@@ -16,8 +17,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "all ids of monophonic")
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "all ids of polyphonic")
 {
   auto& eb = *TestHelper::getEditBuffer();
-  auto all = eb.findAllParametersOfType({C15::Descriptors::ParameterType::Polyphonic_Unmodulateable, C15::Descriptors::ParameterType::Polyphonic_Modulateable});
-  for(const auto& p: all)
+  auto all = eb.findAllParametersOfType({ C15::Descriptors::ParameterType::Polyphonic_Unmodulateable,
+                                          C15::Descriptors::ParameterType::Polyphonic_Modulateable });
+  for(const auto& p : all)
   {
     auto param = eb.findParameterByID(p);
     CHECK(param->isPolyphonic());
@@ -156,10 +158,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
 
     WHEN("convert II to single")
     {
-      auto to_fx = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
-      auto to_fx_II = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
-      auto fx_from = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-      auto fx_from_II = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+      auto to_fx = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+      auto to_fx_II = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
+      auto fx_from = eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+      auto fx_from_II = eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
 
       {
         auto testScope = TestHelper::createTestScope();
@@ -210,10 +212,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
 
     WHEN("convert II to single")
     {
-      auto to_fx = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
-      auto to_fx_II = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
-      auto fx_from = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-      auto fx_from_II = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+      auto to_fx = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+      auto to_fx_II = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
+      auto fx_from = eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+      auto fx_from_II = eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
 
       {
         auto testScope = TestHelper::createTestScope();
@@ -571,26 +573,21 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
                                                        C15::Descriptors::ParameterType::Polyphonic_Modulateable }),
                           eb);
 
-      polyParams = copyIf(polyParams,
-                          [](Parameter* p)
-                          {
-                            using namespace C15::PID;
-                            auto id = p->getID();
-                            auto pid = id.getNumber();
-                            return pid != Voice_Grp_Fade_From && pid != Voice_Grp_Fade_Range && pid != Unison_Voices
-                                && pid != Split_Split_Point && pid != Unison_Detune && pid != Unison_Phase
-                                && pid != Unison_Pan && pid != Mono_Grp_Glide && pid != Mono_Grp_Enable
-                                && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato;
-                          });
+      polyParams = copyIf(polyParams, [](Parameter* p) {
+        using namespace C15::PID;
+        auto id = p->getID();
+        auto pid = id.getNumber();
+        return pid != Voice_Grp_Fade_From && pid != Voice_Grp_Fade_Range && pid != Unison_Voices
+            && pid != Split_Split_Point && pid != Unison_Detune && pid != Unison_Phase && pid != Unison_Pan
+            && pid != Mono_Grp_Glide && pid != Mono_Grp_Enable && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato;
+      });
 
-      polyParams = copyIf(polyParams,
-                          [](Parameter* p)
-                          {
-                            using namespace C15::PID;
-                            auto id = p->getID();
-                            auto pid = id.getNumber();
-                            return pid != FB_Mix_Comb_Src && pid != FB_Mix_SVF_Src;
-                          });
+      polyParams = copyIf(polyParams, [](Parameter* p) {
+        using namespace C15::PID;
+        auto id = p->getID();
+        auto pid = id.getNumber();
+        return pid != FB_Mix_Comb_Src && pid != FB_Mix_SVF_Src;
+      });
 
       auto valueHashOfPolyParams = ELP::createValueHash(polyParams);
       auto monophonicParam
@@ -665,26 +662,21 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
                                                        C15::Descriptors::ParameterType::Polyphonic_Modulateable }),
                           eb);
 
-      polyParams = copyIf(polyParams,
-                          [](Parameter* p)
-                          {
-                            using namespace C15::PID;
-                            auto id = p->getID();
-                            auto pid = id.getNumber();
-                            return pid != Voice_Grp_Fade_From && pid != Voice_Grp_Fade_Range && pid != Unison_Voices
-                                && pid != Split_Split_Point && pid != Unison_Detune && pid != Unison_Phase
-                                && pid != Unison_Pan && pid != Mono_Grp_Glide && pid != Mono_Grp_Enable
-                                && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato;
-                          });
+      polyParams = copyIf(polyParams, [](Parameter* p) {
+        using namespace C15::PID;
+        auto id = p->getID();
+        auto pid = id.getNumber();
+        return pid != Voice_Grp_Fade_From && pid != Voice_Grp_Fade_Range && pid != Unison_Voices
+            && pid != Split_Split_Point && pid != Unison_Detune && pid != Unison_Phase && pid != Unison_Pan
+            && pid != Mono_Grp_Glide && pid != Mono_Grp_Enable && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato;
+      });
 
-      polyParams = copyIf(polyParams,
-                          [](Parameter* p)
-                          {
-                            using namespace C15::PID;
-                            auto id = p->getID();
-                            auto pid = id.getNumber();
-                            return pid != FB_Mix_Comb_Src && pid != FB_Mix_SVF_Src;
-                          });
+      polyParams = copyIf(polyParams, [](Parameter* p) {
+        using namespace C15::PID;
+        auto id = p->getID();
+        auto pid = id.getNumber();
+        return pid != FB_Mix_Comb_Src && pid != FB_Mix_SVF_Src;
+      });
 
       auto hashMapOfValuesOfPolyParams = getHashMap(polyParams);
 
@@ -768,8 +760,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
     ebUseCases.load(layer);
     ebUseCases.randomize(0.1);
 
-    auto disallowedIDs = [](Parameter* p)
-    {
+    auto disallowedIDs = [](Parameter* p) {
       using namespace C15::PID;
       auto id = p->getID();
       auto pid = id.getNumber();
@@ -783,7 +774,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
     WHEN("convert I to single")
     {
       auto polysOfSource = copyIf(allPolys, [](Parameter* p) { return p->getVoiceGroup() == VoiceGroup::I; });
-
 
       polysOfSource = copyIf(polysOfSource, disallowedIDs);
 
@@ -832,7 +822,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
 
       THEN("Polys were copied to I")
       {
-        for(auto p: polysTarget)
+        for(auto p : polysTarget)
         {
           CHECK(polyHashMap[p->getID().getNumber()] == p->getHash());
         }
@@ -853,12 +843,15 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
 //TODO continue with layer to split!
 
 //not very smart to use the same algorithm as in the editbuffer?
-namespace {
-  double parabolicFadeCpToAmplitude(const double cp) {
+namespace
+{
+  double parabolicFadeCpToAmplitude(const double cp)
+  {
     return 1.0 - (cp * cp);
   }
 
-  double amplitudeToParabolicGainCp(const double af) {
+  double amplitudeToParabolicGainCp(const double af)
+  {
     return std::sqrt(af) * 0.5;
   }
 }
@@ -866,10 +859,10 @@ namespace {
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new parameters -> explicit")
 {
   auto& eb = *TestHelper::getEditBuffer();
-  auto masterParameter = eb.findParameterByID({C15::PID::Master_Volume, VoiceGroup::Global});
-  auto fx_mixParameter = eb.findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global});
-  auto partVolI = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::I});
-  auto partVolII = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::II});
+  auto masterParameter = eb.findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
+  auto fx_mixParameter = eb.findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global });
+  auto partVolI = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
+  auto partVolII = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
 
   MockPresetStorage presets;
   EditBufferUseCases ebUseCases(eb);
@@ -925,10 +918,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new paramete
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new parameters -> explicit 2")
 {
   auto& eb = *TestHelper::getEditBuffer();
-  auto masterParameter = eb.findParameterByID({C15::PID::Master_Volume, VoiceGroup::Global});
-  auto fx_mixParameter = eb.findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global});
-  auto partVolI = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::I});
-  auto partVolII = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::II});
+  auto masterParameter = eb.findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
+  auto fx_mixParameter = eb.findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global });
+  auto partVolI = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
+  auto partVolII = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
 
   MockPresetStorage presets;
   EditBufferUseCases ebUseCases(eb);
@@ -974,14 +967,13 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new paramete
   }
 }
 
-
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new parameters -> explicit 3")
 {
   auto& eb = *TestHelper::getEditBuffer();
-  auto masterParameter = eb.findParameterByID({C15::PID::Master_Volume, VoiceGroup::Global});
-  auto fx_mixParameter = eb.findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global});
-  auto partVolI = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::I});
-  auto partVolII = eb.findParameterByID({C15::PID::Voice_Grp_Volume, VoiceGroup::II});
+  auto masterParameter = eb.findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
+  auto fx_mixParameter = eb.findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global });
+  auto partVolI = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
+  auto partVolII = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
 
   MockPresetStorage presets;
   EditBufferUseCases ebUseCases(eb);
@@ -1021,7 +1013,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new paramete
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert split to single: in poly landet part I selbst bei selektion von II")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "convert split to single: in poly landet part I selbst bei selektion von II")
 {
   MockPresetStorage presets;
   presets.getSplitPreset();
@@ -1034,8 +1027,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert split to single: in po
 
   WHEN("parameter " << num << " changed")
   {
-    auto some_poly_param_I = eb.findParameterByID({num, VoiceGroup::I});
-    auto some_poly_param_II = eb.findParameterByID({num, VoiceGroup::II});
+    auto some_poly_param_I = eb.findParameterByID({ num, VoiceGroup::I });
+    auto some_poly_param_II = eb.findParameterByID({ num, VoiceGroup::II });
 
     ParameterUseCases pI(some_poly_param_I);
     ParameterUseCases pII(some_poly_param_II);
@@ -1062,8 +1055,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert Single to dual: FB Mix
   MockPresetStorage presets;
   auto& eb = *TestHelper::getEditBuffer();
 
-  auto parameterI = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-  auto parameterII = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+  auto parameterI = eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+  auto parameterII = eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
 
   TestHelper::initSingleEditBuffer();
 
@@ -1112,10 +1105,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert Single to dual with fx
   MockPresetStorage presets;
   auto& eb = *TestHelper::getEditBuffer();
 
-  auto parameterI = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-  auto parameterII = eb.findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
-  auto to_fx_I = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
-  auto to_fx_II = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+  auto parameterI = eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+  auto parameterII = eb.findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
+  auto to_fx_I = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+  auto to_fx_II = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
 
   TestHelper::initSingleEditBuffer();
 
@@ -1155,8 +1148,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert Single to dual: Out Mi
   MockPresetStorage presets;
   auto& eb = *TestHelper::getEditBuffer();
 
-  auto parameterI = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
-  auto parameterII = eb.findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+  auto parameterI = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+  auto parameterII = eb.findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
 
   TestHelper::initSingleEditBuffer();
 
@@ -1200,7 +1193,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert Single to dual: Out Mi
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to Split/Layer should not reset Master Serial FX and FX Pan")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "Converting a Single Sound to Split/Layer should not reset Master Serial FX and FX Pan")
 {
   auto eb = TestHelper::getEditBuffer();
 
@@ -1211,7 +1205,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to S
   WHEN("master serial fx is set to non default")
   {
     auto id = C15::PID::Master_Serial_FX;
-    auto p = eb->findParameterByID({id, VoiceGroup::Global});
+    auto p = eb->findParameterByID({ id, VoiceGroup::Global });
     ParameterUseCases pUseCases(p);
     pUseCases.setControlPosition(0.187);
     REQUIRE_FALSE(p->isDefaultLoaded());
@@ -1232,7 +1226,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to S
   WHEN("master fx pan is set to non default")
   {
     auto id = C15::PID::Master_Pan;
-    auto p = eb->findParameterByID({id, VoiceGroup::Global});
+    auto p = eb->findParameterByID({ id, VoiceGroup::Global });
     ParameterUseCases pUseCases(p);
     pUseCases.setControlPosition(0.187);
     REQUIRE_FALSE(p->isDefaultLoaded());
@@ -1251,7 +1245,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to S
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to Split/Layer with FX-I only should reset Master Serial FX and FX Pan")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "Converting a Single Sound to Split/Layer with FX-I only should reset Master Serial FX and FX Pan")
 {
   auto eb = TestHelper::getEditBuffer();
 
@@ -1262,7 +1257,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to S
   WHEN("master serial fx is set to non default")
   {
     auto id = C15::PID::Master_Serial_FX;
-    auto p = eb->findParameterByID({id, VoiceGroup::Global});
+    auto p = eb->findParameterByID({ id, VoiceGroup::Global });
     ParameterUseCases pUseCases(p);
     pUseCases.setControlPosition(0.187);
     REQUIRE_FALSE(p->isDefaultLoaded());
@@ -1283,7 +1278,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to S
   WHEN("master fx pan is set to non default")
   {
     auto id = C15::PID::Master_Pan;
-    auto p = eb->findParameterByID({id, VoiceGroup::Global});
+    auto p = eb->findParameterByID({ id, VoiceGroup::Global });
     ParameterUseCases pUseCases(p);
     pUseCases.setControlPosition(0.187);
     REQUIRE_FALSE(p->isDefaultLoaded());
@@ -1302,7 +1297,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Single Sound to S
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Dual Sound to Single should not reset Master Serial FX and FX Pan")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "Converting a Dual Sound to Single should not reset Master Serial FX and FX Pan")
 {
   auto eb = TestHelper::getEditBuffer();
 
@@ -1314,12 +1310,12 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Dual Sound to Sin
   WHEN("master serial fx is set to non default")
   {
     auto id = C15::PID::Master_Serial_FX;
-    auto p = eb->findParameterByID({id, VoiceGroup::Global});
+    auto p = eb->findParameterByID({ id, VoiceGroup::Global });
     ParameterUseCases pUseCases(p);
     pUseCases.setControlPosition(0.187);
     REQUIRE_FALSE(p->isDefaultLoaded());
 
-    THEN("converted " << toString(fromType) << " - " << toString(useVG) <<" to single")
+    THEN("converted " << toString(fromType) << " - " << toString(useVG) << " to single")
     {
       ebUseCases.convertToSingle(VoiceGroup::I);
       REQUIRE(p->getControlPositionValue() == Approx(0.187));
@@ -1329,12 +1325,12 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Converting a Dual Sound to Sin
   WHEN("master fx pan is set to non default")
   {
     auto id = C15::PID::Master_Pan;
-    auto p = eb->findParameterByID({id, VoiceGroup::Global});
+    auto p = eb->findParameterByID({ id, VoiceGroup::Global });
     ParameterUseCases pUseCases(p);
     pUseCases.setControlPosition(0.187);
     REQUIRE_FALSE(p->isDefaultLoaded());
 
-    THEN("converted " << toString(fromType) << " - " << toString(useVG) <<" to single")
+    THEN("converted " << toString(fromType) << " - " << toString(useVG) << " to single")
     {
       ebUseCases.convertToSingle(VoiceGroup::I);
       REQUIRE(p->getControlPositionValue() == Approx(0.187));

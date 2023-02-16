@@ -18,7 +18,7 @@ class PresetListContent : public ControlWithChildren
   ~PresetListContent() override;
 
   void setup(const Bank *bank, size_t focussedPresetPos);
-  bool animateSomePreset(const Preset* preset, std::function<void()> cb);
+  bool animateSomePreset(const Preset *preset, std::function<void()> cb);
 
  protected:
   bool isTransparent() const override;

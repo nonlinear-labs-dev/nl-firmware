@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <presets/ParameterGroupSet.h>
 
 class TestGroupSet : public ParameterGroupSet

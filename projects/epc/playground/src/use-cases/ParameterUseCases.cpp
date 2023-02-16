@@ -30,7 +30,8 @@ void ParameterUseCases::toggleLoadDefault()
 void ParameterUseCases::undoRecallParameterFromPreset(tControlPositionValue cp)
 {
   auto& scope = m_parameter->getUndoScope();
-  auto transactionScope = scope.startTransaction("Recall %0 value from Editbuffer", m_parameter->getGroupAndParameterName());
+  auto transactionScope
+      = scope.startTransaction("Recall %0 value from Editbuffer", m_parameter->getGroupAndParameterName());
   auto transaction = transactionScope->getTransaction();
   m_parameter->setCPFromHwui(transaction, cp);
 }

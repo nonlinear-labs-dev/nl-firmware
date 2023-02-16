@@ -56,7 +56,7 @@ class PhysicalControlParameter : public Parameter
 
   virtual void onLocalEnableChanged(bool b) = 0;
 
-  MacroControlParameter* getMCAssignedToThisHW() const;
+  MacroControlParameter *getMCAssignedToThisHW() const;
   void resetChangedFromHWUIPosition();
 
  protected:

@@ -22,7 +22,7 @@ class RenameLayout : public Layout
   void init() override;
 
  protected:
-  virtual void commit(const Glib::ustring &newName) = 0;
+  virtual void commit(const Glib::ustring& newName) = 0;
   virtual Glib::ustring getInitialText() const = 0;
   virtual bool isTextApplicable(const Glib::ustring& text) const;
   virtual void cancel();
@@ -31,7 +31,7 @@ class RenameLayout : public Layout
   Button* m_applyButton = nullptr;
 
  private:
-  virtual void onTextChanged(const Glib::ustring &text);
+  virtual void onTextChanged(const Glib::ustring& text);
   void replaceUsageMode();
   void addLetters();
   void addControlKeys();

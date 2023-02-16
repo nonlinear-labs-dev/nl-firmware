@@ -16,7 +16,8 @@ class ModulationRoutingParameter : public Parameter, public IntrusiveListItem<Mo
   tSrcParameterPtr m_srcParameter;
 
  public:
-  ModulationRoutingParameter(ParameterGroup *group, const ParameterId& id, tSrcParameterPtr srcParam, tMCParameterPtr tgtParam);
+  ModulationRoutingParameter(ParameterGroup *group, const ParameterId &id, tSrcParameterPtr srcParam,
+                             tMCParameterPtr tgtParam);
   ~ModulationRoutingParameter() override;
 
   void applyPlaycontrollerPhysicalControl(tControlPositionValue diff);
@@ -33,7 +34,7 @@ class ModulationRoutingParameter : public Parameter, public IntrusiveListItem<Mo
   Layout *createLayout(FocusAndMode focusAndMode) const override;
 
   void onExclusiveRoutingLost();
-  void onExclusiveRoutingLost(UNDO::Transaction* transaction);
+  void onExclusiveRoutingLost(UNDO::Transaction *transaction);
 
  protected:
   void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,

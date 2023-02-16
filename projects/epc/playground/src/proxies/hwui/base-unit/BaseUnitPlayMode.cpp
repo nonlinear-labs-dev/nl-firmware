@@ -27,15 +27,13 @@ void BaseUnitPlayMode::setup()
   setupBaseUnitMinusButton();
   setupBaseUnitPlusButton();
 
-  setupButtonConnection(Buttons::BUTTON_FUNCTION,
-                        [=](auto, auto, auto state)
-                        {
-                          if(checkPanicAffenGriff(Buttons::BUTTON_FUNCTION, state))
-                            return true;
+  setupButtonConnection(Buttons::BUTTON_FUNCTION, [=](auto, auto, auto state) {
+    if(checkPanicAffenGriff(Buttons::BUTTON_FUNCTION, state))
+      return true;
 
-                          m_funcButtonHandler.onButtonEvent(state);
-                          return true;
-                        });
+    m_funcButtonHandler.onButtonEvent(state);
+    return true;
+  });
 }
 
 void BaseUnitPlayMode::toggleTouchBehaviour()
@@ -85,15 +83,13 @@ void BaseUnitPlayMode::toggleRibbonMode()
 
 void BaseUnitPlayMode::setupBaseUnitUIModeButton()
 {
-  setupButtonConnection(Buttons::BUTTON_MODE,
-                        [=](auto, auto, auto state)
-                        {
-                          if(checkPanicAffenGriff(Buttons::BUTTON_MODE, state))
-                            return true;
+  setupButtonConnection(Buttons::BUTTON_MODE, [=](auto, auto, auto state) {
+    if(checkPanicAffenGriff(Buttons::BUTTON_MODE, state))
+      return true;
 
-                          m_modeButtonHandler.onButtonEvent(state);
-                          return true;
-                        });
+    m_modeButtonHandler.onButtonEvent(state);
+    return true;
+  });
 }
 
 void BaseUnitPlayMode::modeButtonShortPress()
@@ -113,36 +109,32 @@ void BaseUnitPlayMode::modeButtonLongPress()
 
 void BaseUnitPlayMode::setupBaseUnitMinusButton()
 {
-  setupButtonConnection(Buttons::BUTTON_MINUS,
-                        [=](auto, auto, auto state)
-                        {
-                          if(checkPanicAffenGriff(Buttons::BUTTON_MINUS, state))
-                            return true;
+  setupButtonConnection(Buttons::BUTTON_MINUS, [=](auto, auto, auto state) {
+    if(checkPanicAffenGriff(Buttons::BUTTON_MINUS, state))
+      return true;
 
-                          if(state)
-                            m_noteShiftState.traverse(NoteShiftEvents::NOTE_SHIFT_EVENT_MINUS_PRESSED);
-                          else
-                            m_noteShiftState.traverse(NoteShiftEvents::NOTE_SHIFT_EVENT_MINUS_RELEASED);
+    if(state)
+      m_noteShiftState.traverse(NoteShiftEvents::NOTE_SHIFT_EVENT_MINUS_PRESSED);
+    else
+      m_noteShiftState.traverse(NoteShiftEvents::NOTE_SHIFT_EVENT_MINUS_RELEASED);
 
-                          return true;
-                        });
+    return true;
+  });
 }
 
 void BaseUnitPlayMode::setupBaseUnitPlusButton()
 {
-  setupButtonConnection(Buttons::BUTTON_PLUS,
-                        [=](auto, auto, auto state)
-                        {
-                          if(checkPanicAffenGriff(Buttons::BUTTON_PLUS, state))
-                            return true;
+  setupButtonConnection(Buttons::BUTTON_PLUS, [=](auto, auto, auto state) {
+    if(checkPanicAffenGriff(Buttons::BUTTON_PLUS, state))
+      return true;
 
-                          if(state)
-                            m_noteShiftState.traverse(NoteShiftEvents::NOTE_SHIFT_EVENT_PLUS_PRESSED);
-                          else
-                            m_noteShiftState.traverse(NoteShiftEvents::NOTE_SHIFT_EVENT_PLUS_RELEASED);
+    if(state)
+      m_noteShiftState.traverse(NoteShiftEvents::NOTE_SHIFT_EVENT_PLUS_PRESSED);
+    else
+      m_noteShiftState.traverse(NoteShiftEvents::NOTE_SHIFT_EVENT_PLUS_RELEASED);
 
-                          return true;
-                        });
+    return true;
+  });
 }
 
 bool BaseUnitPlayMode::checkPanicAffenGriff(Buttons b, bool state)

@@ -31,7 +31,8 @@ class InputEventStage
   void onMIDIMessage(const MidiEvent& midiEvent);
 
   // new ParameterChanged protocol
-  void onParameterChangedMessage(const nltools::msg::HardwareSourceParameterChangedMessage& message, bool didBehaviourChange);
+  void onParameterChangedMessage(const nltools::msg::HardwareSourceParameterChangedMessage& message,
+                                 bool didBehaviourChange);
   void onParameterChangedMessage(const nltools::msg::HardwareSourceSendParameterChangedMessage& message);
 
   void setNoteShift(int i);

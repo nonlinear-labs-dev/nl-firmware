@@ -447,8 +447,7 @@ void DescriptiveLayouts::LayerToFXPath::onChange(const EditBuffer *eb)
   const auto I_OutMixer_Level = outmixer_lvl_I->getControlPositionValue();
   const auto II_OutMixer_Level = outmixer_lvl_II->getControlPositionValue();
 
-  auto setResult = [this](const std::string &c)
-  {
+  auto setResult = [this](const std::string &c) {
     if(c == "ERROR")
     {
       setValue(c);
@@ -528,7 +527,6 @@ void DescriptiveLayouts::Serial_FX_Imagestate::onChange(const EditBuffer *eb)
     setValue("Layer_To_FX_Empty.png");
 }
 
-
 void DescriptiveLayouts::Layer_FX_TO_OUT_Visibility::onChange(const EditBuffer *eb)
 {
   auto partVolumeI = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
@@ -547,11 +545,9 @@ void DescriptiveLayouts::Layer_FX_TO_OUT_Visibility::onChange(const EditBuffer *
     setValue(true);
 }
 
-
 void DescriptiveLayouts::Layer_FX_TO_OUT_Imagestate::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string base_string = "Layer_FX_To_Out_";
     const std::string base_suffix = ".png";
     if(s == "empty")
@@ -584,8 +580,7 @@ void DescriptiveLayouts::Layer_FX_TO_OUT_Imagestate::onChange(const EditBuffer *
 
 void DescriptiveLayouts::Split_FX_TO_OUT_Imagestate::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string base_string = "Layer_FX_To_Out_";
     const std::string base_suffix = ".png";
     if(s == "empty")
@@ -612,8 +607,7 @@ void DescriptiveLayouts::Split_FX_TO_OUT_Imagestate::onChange(const EditBuffer *
 
 void DescriptiveLayouts::Split_FX_TO_OUT_Imagestate_flipped::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string base_string = "Layer_FX_To_Out_";
     const std::string base_suffix = "_flipped.png";
     if(s == "empty")
@@ -640,8 +634,7 @@ void DescriptiveLayouts::Split_FX_TO_OUT_Imagestate_flipped::onChange(const Edit
 
 void DescriptiveLayouts::Split_Arrows_To_FX_L_TO_R_I::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string texture = "Split_FX_FB_L_TO_R.png";
     if(s == "empty")
       setValue("Split_FX_FB_Empty.png");
@@ -679,8 +672,7 @@ void DescriptiveLayouts::Split_Arrows_To_FX_L_TO_R_I::onChange(const EditBuffer 
 
 void DescriptiveLayouts::Split_Arrows_To_FX_L_TO_R_II::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string texture = "Split_FX_FB_L_TO_R.png";
     if(s == "empty")
       setValue("Split_FX_FB_Empty.png");
@@ -718,8 +710,7 @@ void DescriptiveLayouts::Split_Arrows_To_FX_L_TO_R_II::onChange(const EditBuffer
 
 void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_I::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string texture = "Split_FX_FB_R_TO_L.png";
     if(s == "empty")
       setValue("Split_FX_FB_Empty.png");
@@ -757,8 +748,7 @@ void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_I::onChange(const EditBuffer 
 
 void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_II::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string texture = "Split_FX_FB_R_TO_L.png";
     if(s == "empty")
       setValue("Split_FX_FB_Empty.png");
@@ -797,5 +787,5 @@ void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_II::onChange(const EditBuffer
 void DescriptiveLayouts::InitCurrentVoiceText::onChange(VoiceGroup newSelection)
 {
   auto str = nltools::string::concat("Part ", toString(newSelection));
-  setValue({str, 0});
+  setValue({ str, 0 });
 }

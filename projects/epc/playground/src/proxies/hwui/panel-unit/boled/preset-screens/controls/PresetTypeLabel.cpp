@@ -223,9 +223,9 @@ bool DualPresetTypeLabel::drawSplit(FrameBuffer &buffer)
 
 bool DualPresetTypeLabel::drawSingle(FrameBuffer &buffer)
 {
-  Rect polyRect = {getPosition().getX() + 2, getPosition().getY() + 5, 6, 6};
-  Rect monoI = {getPosition().getX() + 8, getPosition().getY() + 3, 4, 4};
-  Rect monoII = {getPosition().getX() + 8, getPosition().getY() + 9, 4, 4};
+  Rect polyRect = { getPosition().getX() + 2, getPosition().getY() + 5, 6, 6 };
+  Rect monoI = { getPosition().getX() + 8, getPosition().getY() + 3, 4, 4 };
+  Rect monoII = { getPosition().getX() + 8, getPosition().getY() + 9, 4, 4 };
 
   buffer.setColor(defaultColor);
   buffer.fillRect(monoI);

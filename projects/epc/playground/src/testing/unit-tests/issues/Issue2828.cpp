@@ -5,7 +5,8 @@
 #include <parameter_declarations.h>
 #include <use-cases/PresetUseCases.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Preset will change EditBuffer Origin and 'mark saved Preset as loaded'")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "Store Preset will change EditBuffer Origin and 'mark saved Preset as loaded'")
 {
   auto eb = TestHelper::getEditBuffer();
   auto pm = TestHelper::getPresetManager();
@@ -13,7 +14,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Preset will change EditBu
 
   PresetManagerUseCases pmUseCases(*pm, *settings);
   EditBufferUseCases ebUseCases(*eb);
-
 
   WHEN("New Bank created")
   {
@@ -30,7 +30,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Preset will change EditBu
       REQUIRE(!eb->isModified());
       REQUIRE(!eb->findAnyParameterChanged());
       REQUIRE(!eb->hasLocks());
-      ebUseCases.setParameter({C15::PID::Env_A_Att, VoiceGroup::I}, 0.187);
+      ebUseCases.setParameter({ C15::PID::Env_A_Att, VoiceGroup::I }, 0.187);
       TestHelper::doMainLoopFor(150ms);
       REQUIRE(eb->findAnyParameterChanged());
 
@@ -56,7 +56,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store Preset will change EditBu
 
         WHEN("EB is Changed again")
         {
-          ebUseCases.setParameter({C15::PID::Voice_Grp_Tune, VoiceGroup::I}, 0.267);
+          ebUseCases.setParameter({ C15::PID::Voice_Grp_Tune, VoiceGroup::I }, 0.267);
           TestHelper::doMainLoopFor(150ms);
           CHECK(eb->findAnyParameterChanged());
 

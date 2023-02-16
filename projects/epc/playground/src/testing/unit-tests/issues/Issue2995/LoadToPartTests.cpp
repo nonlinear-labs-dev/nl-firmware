@@ -22,11 +22,11 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
   auto from_fx_preset_CP = 0.69;
   auto to_fx_preset_CP = 0.21;
 
-  auto to_FX_I = eb->findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I});
-  auto to_FX_II = eb->findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II});
+  auto to_FX_I = eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I });
+  auto to_FX_II = eb->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II });
 
-  auto from_fx_I = eb->findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-  auto from_fx_II = eb->findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+  auto from_fx_I = eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+  auto from_fx_II = eb->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
 
   {
     ParameterUseCases puI(polyI);
@@ -56,14 +56,19 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "load to part of single sounds"
     PresetUseCases puc(*single, eb->getSettings());
     puc.overwriteWithEditBuffer(*eb);
 
-    CHECK(single->findParameterByID({ C15::PID::Env_A_BP, VoiceGroup::I }, true)->getValue() == Approx(poly_I_preset_CP));
+    CHECK(single->findParameterByID({ C15::PID::Env_A_BP, VoiceGroup::I }, true)->getValue()
+          == Approx(poly_I_preset_CP));
     CHECK(single->findParameterByID({ C15::PID::Env_A_BP, VoiceGroup::II }, true)->getValue() == Approx(0.31));
     CHECK(single->findParameterByID({ C15::PID::Reverb_Chorus, VoiceGroup::I }, true)->getValue() == Approx(0.75));
     CHECK(single->findParameterByID({ C15::PID::Reverb_Chorus, VoiceGroup::II }, true)->getValue() == Approx(0.31));
-    CHECK(single->findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::I}, true)->getValue() == Approx(to_fx_preset_CP));
-    CHECK(single->findParameterByID({C15::PID::Out_Mix_To_FX, VoiceGroup::II}, true)->getValue() == Approx(to_fx_preset_CP));
-    CHECK(single->findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::I}, true)->getValue() == Approx(from_fx_preset_CP));
-    CHECK(single->findParameterByID({C15::PID::FB_Mix_FX_Src, VoiceGroup::II}, true)->getValue() == Approx(from_fx_preset_CP));
+    CHECK(single->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::I }, true)->getValue()
+          == Approx(to_fx_preset_CP));
+    CHECK(single->findParameterByID({ C15::PID::Out_Mix_To_FX, VoiceGroup::II }, true)->getValue()
+          == Approx(to_fx_preset_CP));
+    CHECK(single->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I }, true)->getValue()
+          == Approx(from_fx_preset_CP));
+    CHECK(single->findParameterByID({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II }, true)->getValue()
+          == Approx(from_fx_preset_CP));
   }
 
   WHEN("single preset is loaded into layer")
@@ -251,11 +256,11 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load to Part Load Single-Part 
   EditBufferUseCases ebUseCases(eb);
   PresetManagerUseCases pmUseCases(pm, settings);
 
-  auto polyI = eb.findParameterByID({C15::PID::FB_Mix_Asym, VoiceGroup::I});
-  auto polyII = eb.findParameterByID({C15::PID::FB_Mix_Asym, VoiceGroup::II});
+  auto polyI = eb.findParameterByID({ C15::PID::FB_Mix_Asym, VoiceGroup::I });
+  auto polyII = eb.findParameterByID({ C15::PID::FB_Mix_Asym, VoiceGroup::II });
 
-  auto monoI = eb.findParameterByID({C15::PID::Reverb_Mix, VoiceGroup::I});
-  auto monoII = eb.findParameterByID({C15::PID::Reverb_Mix, VoiceGroup::II});
+  auto monoI = eb.findParameterByID({ C15::PID::Reverb_Mix, VoiceGroup::I });
+  auto monoII = eb.findParameterByID({ C15::PID::Reverb_Mix, VoiceGroup::II });
 
   WHEN("Prepared Single Preset!")
   {
@@ -278,7 +283,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load to Part Load Single-Part 
       REQUIRE(polyII->getControlPositionValue() != Approx(0.7));
 
       ebUseCases.loadToPart(preparedSinglePreset, VoiceGroup::II, VoiceGroup::I);
-      REQUIRE(polyI->getControlPositionValue() == Approx(0.2)); // has value from Poly I
+      REQUIRE(polyI->getControlPositionValue() == Approx(0.2));  // has value from Poly I
     }
 
     THEN("load layer")
@@ -288,7 +293,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load to Part Load Single-Part 
       REQUIRE(polyII->getControlPositionValue() != Approx(0.7));
 
       ebUseCases.loadToPart(preparedSinglePreset, VoiceGroup::II, VoiceGroup::I);
-      REQUIRE(polyI->getControlPositionValue() == Approx(0.2)); // has value from Poly I
+      REQUIRE(polyI->getControlPositionValue() == Approx(0.2));  // has value from Poly I
     }
   }
 }

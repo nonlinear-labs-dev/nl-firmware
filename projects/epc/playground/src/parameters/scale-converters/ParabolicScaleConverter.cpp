@@ -16,7 +16,7 @@ bool ParabolicScaleConverter::isBiPolar() const
   return false;
 }
 
-tDisplayValue ParabolicScaleConverter::controlPositionToDisplay(const tControlPositionValue &cpValue) const
+tDisplayValue ParabolicScaleConverter::controlPositionToDisplay(const tControlPositionValue& cpValue) const
 {
   tControlPositionValue in = getControlPositionRange().clip(cpValue);
   return (in * in) * m_displayRange.getRangeWidth() + m_displayRange.getMin();

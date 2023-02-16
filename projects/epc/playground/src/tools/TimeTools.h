@@ -9,7 +9,7 @@ class TimeTools
 {
  public:
   static Glib::ustring getAdjustedIso(DateTimeAdjustment *adj);
-  static time_t getAdjustedTimestamp(DateTimeAdjustment* adj);
+  static time_t getAdjustedTimestamp(DateTimeAdjustment *adj);
 
   static Glib::ustring getDisplayStringFromIso(const Glib::ustring &iso);
   static Glib::ustring getDisplayStringFromStamp(time_t stamp);

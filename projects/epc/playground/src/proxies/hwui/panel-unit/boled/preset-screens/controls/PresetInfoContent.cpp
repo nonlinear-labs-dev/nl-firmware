@@ -72,8 +72,9 @@ void PresetInfoContent::fillContents()
   fillFromPreset(getCurrentPreset());
 }
 
-namespace {
-  auto prettyPrintPresetColor(const Preset* preset)
+namespace
+{
+  auto prettyPrintPresetColor(const Preset *preset)
   {
     std::string presetColor = preset->getAttribute("color", "---");
 

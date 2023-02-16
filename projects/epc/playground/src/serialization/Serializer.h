@@ -16,7 +16,7 @@ class Serializer
 {
  public:
   using Progress = std::function<void(const std::string &)>;
-  static void MockProgress(const std::string & unused) {};
+  static void MockProgress(const std::string &unused) {};
 
   explicit Serializer(const Glib::ustring &tag, Progress progressCB = {});
   virtual ~Serializer();

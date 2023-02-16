@@ -8,7 +8,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split to Single With Split-Poi
   WHEN("is Split")
   {
     TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
-    ebUseCases.selectParameter({C15::PID::Split_Split_Point, VoiceGroup::I}, false);
+    ebUseCases.selectParameter({ C15::PID::Split_Split_Point, VoiceGroup::I }, false);
     CHECK(eb->getSelectedParameterNumber() == C15::PID::Split_Split_Point);
     CHECK(Application::get().getVGManager()->getCurrentVoiceGroup() == VoiceGroup::I);
 

@@ -97,7 +97,7 @@ void XMLPresetLoader::loadTestPresetFromBank(C15Synth* synth, const std::string&
 
   EditBufferUseCases ebUseCase(*pm.getEditBuffer());
   ebUseCase.load(preset);
-  
+
   auto& eb = *pm.getEditBuffer();
   auto p = eb.findParameterByID({ C15::PID::Out_Mix_A_Lvl, VoiceGroup::I });
   auto pp = preset->findParameterByID({ C15::PID::Out_Mix_A_Lvl, VoiceGroup::I }, true);

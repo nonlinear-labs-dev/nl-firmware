@@ -18,7 +18,7 @@ class Options
   [[nodiscard]] const Glib::ustring &getMidiBridge() const;
   [[nodiscard]] bool sendBBBBTurnaroundTimestamps() const;
 
-  void setPresetManagerPath(const std::string& path);
+  void setPresetManagerPath(const std::string &path);
 
  private:
   void setDefaults();

@@ -12,7 +12,7 @@
 
 using EBL = EditBufferLogicalParts;
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Layer Part I")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load Single into Layer Part I")
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);
@@ -131,7 +131,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Layer Part I")
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single into Layer Part II")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load Single into Layer Part II")
 {
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases ebUseCases(*eb);

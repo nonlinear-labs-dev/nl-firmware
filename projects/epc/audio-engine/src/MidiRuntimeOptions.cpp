@@ -118,7 +118,6 @@ bool MidiRuntimeOptions::shouldReceiveLocalNotes() const
   return m_isSecondSetOfRibbonsEnabled;
 }
 
-
 std::optional<int> MidiRuntimeOptions::decodeEnumMSB(PedalCC cc)
 {
   switch(cc)

@@ -3,7 +3,7 @@
 #include <device-info/DeviceInformation.h>
 #include <device-info/UniqueHardwareID.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"UHID formatting test")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "UHID formatting test")
 {
   auto info = Application::get().getDeviceInformation()->getItem<::UniqueHardwareID>();
 

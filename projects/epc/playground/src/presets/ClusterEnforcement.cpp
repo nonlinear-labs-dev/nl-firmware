@@ -1,7 +1,8 @@
 #include <presets/ClusterEnforcement.h>
 #include <tools/PerformanceTimer.h>
 
-ClusterEnforcement::ClusterEnforcement(PresetManager& pm) : m_presetManager{pm}
+ClusterEnforcement::ClusterEnforcement(PresetManager& pm)
+    : m_presetManager { pm }
 {
 }
 

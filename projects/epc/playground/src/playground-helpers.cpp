@@ -106,7 +106,7 @@ namespace Environment
     else if(auto ret2 = setlocale(LC_ALL, fallbackLocale); ret2 && !g_strcmp0(ret2, fallbackLocale))
     {
       nltools::Log::info("Could not set locale to", preferedLocale, "but installed fallback", fallbackLocale,
-                        "- strings containing NL special chars will not be sortable, some tests will fail!");
+                         "- strings containing NL special chars will not be sortable, some tests will fail!");
     }
     else
     {

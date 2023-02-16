@@ -109,9 +109,9 @@ class PresetManager : public UpdateDocumentContributor, public SyncedItem
   sigc::connection onBankSelection(sigc::slot<void, Uuid> cb);
   sigc::connection onNumBanksChanged(sigc::slot<void, size_t> cb);
   sigc::connection onRestoreHappened(sigc::slot<void> cb);
-  sigc::connection onPresetStoreHappened(const sigc::slot<void>& cb);
+  sigc::connection onPresetStoreHappened(const sigc::slot<void> &cb);
   sigc::connection onMidiBankSelectionHappened(sigc::slot<void, Uuid> cb);
-  sigc::connection onLoadHappened(const sigc::slot<void>& cb);
+  sigc::connection onLoadHappened(const sigc::slot<void> &cb);
 
   const Preset *getSelectedPreset() const;
   Preset *getSelectedPreset();
@@ -168,6 +168,6 @@ class PresetManager : public UpdateDocumentContributor, public SyncedItem
   friend class PresetManagerSerializer;
   friend class PresetManagerUseCases;
 
-  const Options& m_options;
+  const Options &m_options;
   std::function<void(const std::string &)> getProgressDecorator();
 };

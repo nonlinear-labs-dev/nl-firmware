@@ -4,7 +4,8 @@
 #include <parameter_declarations.h>
 #include <use-cases/RibbonParameterUseCases.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Setting Ribbon to Return to center leads to HW-Amt to be 100% if boolean was on")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "Setting Ribbon to Return to center leads to HW-Amt to be 100% if boolean was on")
 {
   TestHelper::initSingleEditBuffer();
 
@@ -60,14 +61,15 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Setting Ribbon to Return to cen
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Setting Ribbon to Return to center leads to unchanged HW-Amt if boolean was off")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "Setting Ribbon to Return to center leads to unchanged HW-Amt if boolean was off")
 {
   TestHelper::initSingleEditBuffer();
 
   auto eb = TestHelper::getEditBuffer();
   auto ribbonParam = eb->findAndCastParameterByID<RibbonParameter>({ C15::PID::Ribbon_1, VoiceGroup::Global });
   auto router
-  = eb->findAndCastParameterByID<ModulationRoutingParameter>({ C15::PID::Ribbon_1_to_MC_A, VoiceGroup::Global });
+      = eb->findAndCastParameterByID<ModulationRoutingParameter>({ C15::PID::Ribbon_1_to_MC_A, VoiceGroup::Global });
 
   RibbonParameterUseCases useCases(ribbonParam);
   ParameterUseCases routerUseCases(router);

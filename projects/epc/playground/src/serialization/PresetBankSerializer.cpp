@@ -18,17 +18,17 @@ void PresetBankSerializer::writeTagContent(Writer &writer) const
 {
   addStatus("Writing bank " + m_bank->getName(true));
 
-  auto pm  = m_bank->getPresetManager();
+  auto pm = m_bank->getPresetManager();
   if(pm)
   {
-    auto& settings = pm->getEditBuffer()->getSettings();
-    writer.writeTextElement("bank-serialize-date", TimeTools::getAdjustedIso(settings.getSetting<DateTimeAdjustment>()));
+    auto &settings = pm->getEditBuffer()->getSettings();
+    writer.writeTextElement("bank-serialize-date",
+                            TimeTools::getAdjustedIso(settings.getSetting<DateTimeAdjustment>()));
   }
   else
   {
     writer.writeTextElement("bank-serialize-date", TimeTools::getRealIso());
   }
-
 
   super::writeTagContent(writer);
 

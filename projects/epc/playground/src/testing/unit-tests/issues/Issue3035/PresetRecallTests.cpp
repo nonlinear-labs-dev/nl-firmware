@@ -12,7 +12,8 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Loading Preset with held bender leads to wrong values", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 3035, Loading Preset with held bender leads to wrong values",
+                 "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
 
@@ -128,7 +129,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Loading Preset with
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Preset with differing Return Types", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load Preset with differing Return Types", "[3035]")
 {
   auto pm = TestHelper::getPresetManager();
   {
@@ -139,18 +140,23 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Preset with differing Retu
   auto settings = TestHelper::getSettings();
   PresetManagerUseCases uc(*pm, *settings);
 
-  auto MC_ID = ParameterId{C15::PID::MC_A, VoiceGroup::Global};
-  auto MC4_ID = ParameterId{C15::PID::MC_D, VoiceGroup::Global};
+  auto MC_ID = ParameterId { C15::PID::MC_A, VoiceGroup::Global };
+  auto MC4_ID = ParameterId { C15::PID::MC_D, VoiceGroup::Global };
   auto mc1 = pm->getEditBuffer()->findAndCastParameterByID<MacroControlParameter>(MC_ID);
   auto mc4 = pm->getEditBuffer()->findAndCastParameterByID<MacroControlParameter>(MC4_ID);
-  auto ribbon1 = pm->getEditBuffer()->findAndCastParameterByID<RibbonParameter>({C15::PID::Ribbon_1, VoiceGroup::Global});
-  auto pedal1 = pm->getEditBuffer()->findAndCastParameterByID<PedalParameter>({C15::PID::Pedal_1, VoiceGroup::Global});
-  auto pedal4 = pm->getEditBuffer()->findAndCastParameterByID<PedalParameter>({C15::PID::Pedal_4, VoiceGroup::Global});
+  auto ribbon1
+      = pm->getEditBuffer()->findAndCastParameterByID<RibbonParameter>({ C15::PID::Ribbon_1, VoiceGroup::Global });
+  auto pedal1
+      = pm->getEditBuffer()->findAndCastParameterByID<PedalParameter>({ C15::PID::Pedal_1, VoiceGroup::Global });
+  auto pedal4
+      = pm->getEditBuffer()->findAndCastParameterByID<PedalParameter>({ C15::PID::Pedal_4, VoiceGroup::Global });
   PedalParameterUseCases pedalUseCase(pedal1);
   PedalParameterUseCases pedal4UseCase(pedal4);
   RibbonParameterUseCases ribbonUseCase(ribbon1);
 
-  auto bank = uc.importBankFromPath(std::filesystem::directory_entry{getSourceDir() + "/projects/epc/playground/test-resources/3035-5.xml"}, [](auto){});
+  auto bank = uc.importBankFromPath(
+      std::filesystem::directory_entry { getSourceDir() + "/projects/epc/playground/test-resources/3035-5.xml" },
+      [](auto) {});
   auto init = bank->getPresetAt(0);
   auto ped1_0 = bank->getPresetAt(1);
   auto PB_AT = bank->getPresetAt(2);
@@ -289,7 +295,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Preset with differing Retu
 
   WHEN("Ribbon Load Stay after Return to Center")
   {
-    auto ribToA = TestHelper::getEditBuffer()->findParameterByID({C15::PID::Ribbon_1_to_MC_A, VoiceGroup::Global});
+    auto ribToA = TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Ribbon_1_to_MC_A, VoiceGroup::Global });
     ribbonUseCase.changeFromAudioEngine(0, HWChangeSource::TCD);
 
     ebUseCases.load(rib1_retcenter);
@@ -298,7 +304,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Preset with differing Retu
     CHECK(Approx(ribbon1->getControlPositionValue()) == 0);
     ebUseCases.load(rib1_stay);
     TestHelper::doMainLoopIteration();
-    CHECK(ribToA->getControlPositionValue() > 0); //as the router is not set the mc pos is not bound to ribbon ! this failure is expected!!
+    CHECK(ribToA->getControlPositionValue()
+          > 0);  //as the router is not set the mc pos is not bound to ribbon ! this failure is expected!!
     CHECK(Approx(mc1->getControlPositionValue()) == rib1_stay->findParameterByID(MC_ID, true)->getValue());
     CHECK(Approx(ribbon1->getControlPositionValue()) == rib1_stay->findParameterByID(MC_ID, true)->getValue());
   }

@@ -53,10 +53,10 @@ class RibbonParameter : public PhysicalControlParameter
   void sendToAudioEngine() const override;
 
  private:
-  void ensureExclusiveRoutingIfNeeded(UNDO::Transaction* transaction);
+  void ensureExclusiveRoutingIfNeeded(UNDO::Transaction *transaction);
   const ScaleConverter *createScaleConverter() const;
   void setupScalingAndDefaultValue(bool defaultValue);
-  std::list<ModulationRoutingParameter*> getRoutingParameters() const;
+  std::list<ModulationRoutingParameter *> getRoutingParameters() const;
   void undoableSetHWAmountsForReturnToCenterMode(UNDO::Transaction *transaction, const RibbonReturnMode &mode) const;
 
   RibbonTouchBehaviour m_touchBehaviour = RibbonTouchBehaviour::ABSOLUTE;

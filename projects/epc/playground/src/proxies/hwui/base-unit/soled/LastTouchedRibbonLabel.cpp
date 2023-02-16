@@ -7,12 +7,14 @@
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 
 LastTouchedRibbonLabel::LastTouchedRibbonLabel(const ParameterId& id, const Rect& pos)
-: Label(pos)
+    : Label(pos)
 {
-  setText({"<", 0});
+  setText({ "<", 0 });
   m_param = Application::get().getPresetManager()->getEditBuffer()->findAndCastParameterByID<RibbonParameter>(id);
-  Application::get().getPlaycontrollerProxy()->onRibbonTouched(sigc::mem_fun(this, &LastTouchedRibbonLabel::onRibbonTouched));
-  Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(sigc::mem_fun(this, &LastTouchedRibbonLabel::onBaseUnitModeChanged));
+  Application::get().getPlaycontrollerProxy()->onRibbonTouched(
+      sigc::mem_fun(this, &LastTouchedRibbonLabel::onRibbonTouched));
+  Application::get().getSettings()->getSetting<BaseUnitUIMode>()->onChange(
+      sigc::mem_fun(this, &LastTouchedRibbonLabel::onBaseUnitModeChanged));
 }
 
 void LastTouchedRibbonLabel::onRibbonTouched(int ribbon)

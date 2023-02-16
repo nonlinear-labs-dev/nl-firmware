@@ -34,16 +34,14 @@ void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroup(UNDO::Transaction *t, 
     return;
 
   auto swap = UNDO::createSwapData(v);
-  t->addSimpleCommand(
-      [this, swap, shouldSendParameterSelectionSignal](auto)
-      {
-        auto oldVG = m_currentVoiceGroup;
-        swap->swapWith(m_currentVoiceGroup);
-        m_voiceGroupSignal.send(m_currentVoiceGroup);
-        if(shouldSendParameterSelectionSignal)
-          m_editBuffer.fakeParameterSelectionSignal(oldVG, m_currentVoiceGroup);
-        m_editBuffer.onChange(UpdateDocumentContributor::ChangeFlags::Generic);
-      });
+  t->addSimpleCommand([this, swap, shouldSendParameterSelectionSignal](auto) {
+    auto oldVG = m_currentVoiceGroup;
+    swap->swapWith(m_currentVoiceGroup);
+    m_voiceGroupSignal.send(m_currentVoiceGroup);
+    if(shouldSendParameterSelectionSignal)
+      m_editBuffer.fakeParameterSelectionSignal(oldVG, m_currentVoiceGroup);
+    m_editBuffer.onChange(UpdateDocumentContributor::ChangeFlags::Generic);
+  });
 }
 
 void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroupAndUpdateParameterSelection(UNDO::Transaction *transaction,
@@ -55,7 +53,8 @@ void VoiceGroupAndLoadToPartManager::setCurrentVoiceGroupAndUpdateParameterSelec
 
   if(m_editBuffer.getType() == SoundType::Single)
   {
-    auto isMonoPhonic = selected->getType() == C15::Descriptors::ParameterType::Monophonic_Unmodulateable || selected->getType() == C15::Descriptors::ParameterType::Monophonic_Modulateable;
+    auto isMonoPhonic = selected->getType() == C15::Descriptors::ParameterType::Monophonic_Unmodulateable
+        || selected->getType() == C15::Descriptors::ParameterType::Monophonic_Modulateable;
     if(isMonoPhonic)
       m_editBuffer.undoableSelectParameter(transaction, { id.getNumber(), m_currentVoiceGroup }, false);
     return;

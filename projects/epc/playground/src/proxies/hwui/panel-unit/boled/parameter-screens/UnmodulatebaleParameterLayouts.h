@@ -40,6 +40,6 @@ class UnmodulateableParameterEditLayout2 : public ParameterEditLayout2, public U
   void init() override;
 
  protected:
-  ButtonMenu *createMenu(const Rect &rect) override;
+  ButtonMenu* createMenu(const Rect& rect) override;
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
 };

@@ -44,7 +44,8 @@ class DspHostDualTester
 
   void applyMalformedSinglePreset(const MalformedPresetDescriptor& _preset);
   void applyMalformedSplitPreset(const MalformedPresetDescriptor& _partI, const MalformedPresetDescriptor& _partII);
-  void applyMalformedSplitPreset(const MalformedPresetDescriptor& _partI, const MalformedPresetDescriptor& _partII, float split);
+  void applyMalformedSplitPreset(const MalformedPresetDescriptor& _partI, const MalformedPresetDescriptor& _partII,
+                                 float split);
   void applyMalformedLayerPreset(const MalformedPresetDescriptor& _preset);
   void setSplit(VoiceGroup, float position);
 

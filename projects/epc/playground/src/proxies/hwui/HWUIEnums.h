@@ -112,9 +112,9 @@ struct FocusAndMode
     return "UIFocus: " + ::toString(focus) + " UIMode: " + ::toString(mode) + " UIDetail: " + ::toString(detail);
   }
 
-  static FocusAndMode decode(const std::string& s)
+  static FocusAndMode decode(const std::string &s)
   {
-    FocusAndMode ret{};
+    FocusAndMode ret {};
     auto parts = StringTools::splitStringOnAnyDelimiter(s, '-');
 
     if(!parts.empty())
@@ -127,7 +127,8 @@ struct FocusAndMode
     return ret;
   }
 
-  [[nodiscard]] std::string encode() const {
+  [[nodiscard]] std::string encode() const
+  {
     return ::toString(focus) + "-" + ::toString(mode) + "-" + ::toString(detail);
   }
 };

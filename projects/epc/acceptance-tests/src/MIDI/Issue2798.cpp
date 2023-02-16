@@ -3,15 +3,17 @@
 #include <mock/MockDSPHosts.h>
 #include <nltools/messaging/Message.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"When Notes Local is turned off All Notes off gets send", "[MIDI][TCD]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "When Notes Local is turned off All Notes off gets send",
+                 "[MIDI][TCD]")
 {
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidi;
   std::vector<MidiChannelModeMessages> messages;
   MockDSPHost host;
   MidiRuntimeOptions options;
-  InputEventStage eventStage(&host, &options, {}, [&](auto m){ sendMidi.emplace_back(m); }, [&](auto c){ messages.emplace_back(c); });
+  InputEventStage eventStage(
+      &host, &options, {}, [&](auto m) { sendMidi.emplace_back(m); }, [&](auto c) { messages.emplace_back(c); });
 
-  auto msg = nltools::msg::Setting::MidiSettingsMessage{};
+  auto msg = nltools::msg::Setting::MidiSettingsMessage {};
   msg.routings = TestHelper::createFullMappings(true);
   msg.sendChannel = MidiSendChannel::CH_1;
   msg.sendSplitChannel = MidiSendChannelSplit::CH_2;
@@ -21,8 +23,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"When Notes Local is turned off 
   WHEN("Previous Notes Enable is disabled")
   {
     msg.routings = TestHelper::createFullMappings(true);
-    TestHelper::updateMappings(msg.routings, nltools::msg::Setting::MidiSettingsMessage::RoutingAspect::SEND_PRIMARY, false);
-    TestHelper::updateMappings(msg.routings, nltools::msg::Setting::MidiSettingsMessage::RoutingAspect::SEND_SPLIT, false);
+    TestHelper::updateMappings(msg.routings, nltools::msg::Setting::MidiSettingsMessage::RoutingAspect::SEND_PRIMARY,
+                               false);
+    TestHelper::updateMappings(msg.routings, nltools::msg::Setting::MidiSettingsMessage::RoutingAspect::SEND_SPLIT,
+                               false);
     options.update(msg);
 
     WHEN("DSPHost is Single")
@@ -61,15 +65,17 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"When Notes Local is turned off 
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"When Send Channels change Note off gets send on previous Channels", "[MIDI][TCD]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "When Send Channels change Note off gets send on previous Channels",
+                 "[MIDI][TCD]")
 {
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidi;
   std::vector<MidiChannelModeMessages> messages;
   MockDSPHost host;
   MidiRuntimeOptions options;
-  InputEventStage eventStage(&host, &options, {}, [&](auto m){ sendMidi.emplace_back(m); }, [&](auto c){ messages.emplace_back(c); });
+  InputEventStage eventStage(
+      &host, &options, {}, [&](auto m) { sendMidi.emplace_back(m); }, [&](auto c) { messages.emplace_back(c); });
 
-  auto msg = nltools::msg::Setting::MidiSettingsMessage{};
+  auto msg = nltools::msg::Setting::MidiSettingsMessage {};
   msg.routings = TestHelper::createFullMappings(true);
   msg.sendChannel = MidiSendChannel::CH_1;
   msg.sendSplitChannel = MidiSendChannelSplit::CH_2;

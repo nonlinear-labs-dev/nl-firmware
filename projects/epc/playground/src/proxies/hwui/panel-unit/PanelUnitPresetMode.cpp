@@ -40,33 +40,27 @@ PanelUnitPresetMode::~PanelUnitPresetMode()
 
 void PanelUnitPresetMode::bruteForceUpdateLeds()
 {
-  m_bruteForceLedThrottler.doTask(
-      [this]()
-      {
-        if(Application::get().getHWUI()->getPanelUnit().getUsageMode().get() != this)
-          return;
+  m_bruteForceLedThrottler.doTask([this]() {
+    if(Application::get().getHWUI()->getPanelUnit().getUsageMode().get() != this)
+      return;
 
-        std::array<TwoStateLED::LedState, numLeds> states { TwoStateLED::OFF };
+    std::array<TwoStateLED::LedState, numLeds> states { TwoStateLED::OFF };
 
-        if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
-          getMappings().forEachButton(
-              [&](Buttons buttonId, const std::list<int>& parameters)
-              {
-                Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
-                    BooleanSetting::tEnum::BOOLEAN_SETTING_TRUE);
-                letChangedButtonsBlink(buttonId, parameters, states);
-              });
-        else
-          getMappings().forEachButton(
-              [&](Buttons buttonId, const std::list<int>& parameters)
-              {
-                Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
-                    BooleanSetting::tEnum::BOOLEAN_SETTING_FALSE);
-                setStateForButton(buttonId, parameters, states);
-              });
-
-        applyStateToLeds(states);
+    if(Application::get().getHWUI()->getButtonModifiers()[SHIFT] == true)
+      getMappings().forEachButton([&](Buttons buttonId, const std::list<int>& parameters) {
+        Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
+            BooleanSetting::tEnum::BOOLEAN_SETTING_TRUE);
+        letChangedButtonsBlink(buttonId, parameters, states);
       });
+    else
+      getMappings().forEachButton([&](Buttons buttonId, const std::list<int>& parameters) {
+        Application::get().getSettings()->getSetting<ForceHighlightChangedParametersSetting>()->set(
+            BooleanSetting::tEnum::BOOLEAN_SETTING_FALSE);
+        setStateForButton(buttonId, parameters, states);
+      });
+
+    applyStateToLeds(states);
+  });
 }
 
 void PanelUnitPresetMode::letChangedButtonsBlink(Buttons buttonId, const std::list<int>& parameters,
@@ -215,8 +209,10 @@ std::pair<bool, bool> PanelUnitPresetMode::trySpecialCaseParameter(const Paramet
   return { false, false };
 }
 
-namespace {
-  bool isDefaultScreenForbiddenFromCurrentFocus(FocusAndMode fam) {
+namespace
+{
+  bool isDefaultScreenForbiddenFromCurrentFocus(FocusAndMode fam)
+  {
     return fam.focus == UIFocus::Sound && fam.mode == UIMode::Select && fam.detail == UIDetail::Voices;
   }
 }
@@ -224,23 +220,21 @@ namespace {
 void PanelUnitPresetMode::setup()
 {
   PanelUnitParameterEditMode::setup();
-  setupButtonConnection(Buttons::BUTTON_DEFAULT,
-                        [&](Buttons button, ButtonModifiers modifiers, bool state)
-                        {
-                          auto& settings = *Application::get().getSettings();
-                          SettingsUseCases useCases(settings);
-                          auto& famSetting = *settings.getSetting<FocusAndModeSetting>();
-                          auto focusAndMode = famSetting.getState();
-                          if(state && !isDefaultScreenForbiddenFromCurrentFocus(focusAndMode))
-                          {
-                            useCases.setFocusAndMode({ focusAndMode.focus, UIMode::Select, UIDetail::InitSound });
-                          }
-                          else if(focusAndMode.detail == UIDetail::InitSound)
-                          {
-                            useCases.setFocusAndMode(famSetting.getOldState());
-                          }
-                          return true;
-                        });
+  setupButtonConnection(Buttons::BUTTON_DEFAULT, [&](Buttons button, ButtonModifiers modifiers, bool state) {
+    auto& settings = *Application::get().getSettings();
+    SettingsUseCases useCases(settings);
+    auto& famSetting = *settings.getSetting<FocusAndModeSetting>();
+    auto focusAndMode = famSetting.getState();
+    if(state && !isDefaultScreenForbiddenFromCurrentFocus(focusAndMode))
+    {
+      useCases.setFocusAndMode({ focusAndMode.focus, UIMode::Select, UIDetail::InitSound });
+    }
+    else if(focusAndMode.detail == UIDetail::InitSound)
+    {
+      useCases.setFocusAndMode(famSetting.getOldState());
+    }
+    return true;
+  });
 }
 
 PanelUnitSoundMode::PanelUnitSoundMode()
@@ -253,25 +247,23 @@ void PanelUnitSoundMode::setup()
 
   removeButtonConnection(Buttons::BUTTON_SOUND);
 
-  setupButtonConnection(Buttons::BUTTON_SOUND,
-                        [&](Buttons button, ButtonModifiers modifiers, bool state)
-                        {
-                          if(state)
-                          {
-                            auto& settings = *Application::get().getSettings();
-                            SettingsUseCases useCases(settings);
-                            auto& famSetting = *settings.getSetting<FocusAndModeSetting>();
+  setupButtonConnection(Buttons::BUTTON_SOUND, [&](Buttons button, ButtonModifiers modifiers, bool state) {
+    if(state)
+    {
+      auto& settings = *Application::get().getSettings();
+      SettingsUseCases useCases(settings);
+      auto& famSetting = *settings.getSetting<FocusAndModeSetting>();
 
-                            auto focusAndMode = famSetting.getState();
-                            if(focusAndMode.focus == UIFocus::Sound)
-                              if(focusAndMode.mode == UIMode::Edit || focusAndMode.detail == UIDetail::Voices)
-                                useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-                              else
-                                useCases.setFocusAndMode(famSetting.getOldState());
-                            else
-                              useCases.setFocusAndMode(FocusAndMode { UIFocus::Sound });
-                          }
+      auto focusAndMode = famSetting.getState();
+      if(focusAndMode.focus == UIFocus::Sound)
+        if(focusAndMode.mode == UIMode::Edit || focusAndMode.detail == UIDetail::Voices)
+          useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+        else
+          useCases.setFocusAndMode(famSetting.getOldState());
+      else
+        useCases.setFocusAndMode(FocusAndMode { UIFocus::Sound });
+    }
 
-                          return true;
-                        });
+    return true;
+  });
 }

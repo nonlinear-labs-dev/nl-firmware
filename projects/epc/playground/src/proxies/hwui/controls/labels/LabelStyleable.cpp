@@ -58,7 +58,7 @@ std::shared_ptr<Font> LabelStyleable::getFont() const
     fontStream << "Emphase-";
 
     auto fontHeight = static_cast<int>(m_styleSheet.size);
-    if(fontHeight < 8) //FIXME either remove size7 or request Emphase-7-Style.ttf s
+    if(fontHeight < 8)  //FIXME either remove size7 or request Emphase-7-Style.ttf s
       fontStream << 8;
     else
       fontStream << fontHeight;

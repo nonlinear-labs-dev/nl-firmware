@@ -5,7 +5,6 @@ class HWUI;
 class Settings;
 class SplashLayout;
 
-
 class SplashScreenUseCases
 {
  public:
@@ -14,6 +13,7 @@ class SplashScreenUseCases
   void addSplashScreenMessage(const Glib::ustring& string);
   void setSplashScreenMessage(const Glib::ustring& string);
   void finishSplashScreen();
+
  private:
   SplashLayout* getSplashScreenOverlay();
   HWUI& m_hwui;

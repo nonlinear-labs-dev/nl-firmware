@@ -181,11 +181,11 @@ void PhysicalControlValueLabel::onSendChanged(const Parameter *p)
     auto shorter = nltools::string::removeCharacters(str, { '%', ' ' });
     if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
     {
-       m_localDisabledLabelSnd->setText({ shorter, " F"});
+      m_localDisabledLabelSnd->setText({ shorter, " F" });
     }
     else
     {
-        m_localDisabledLabelSnd->setText({ shorter });
+      m_localDisabledLabelSnd->setText({ shorter });
     }
     ControlWithChildren::setDirty();
   }
@@ -200,9 +200,9 @@ void PhysicalControlValueLabel::onHWChanged(const Parameter *p)
     auto shorter = nltools::string::removeCharacters(str, { '%', ' ' });
     if(Application::get().getHWUI()->isModifierSet(ButtonModifier::FINE))
     {
-        StringAndSuffix temp{ str, " F"};
-        m_localEnabledLabel->setText(temp);
-        m_localDisabledLabelRcv->setText({ shorter, " F"});
+      StringAndSuffix temp { str, " F" };
+      m_localEnabledLabel->setText(temp);
+      m_localDisabledLabelRcv->setText({ shorter, " F" });
     }
     else
     {

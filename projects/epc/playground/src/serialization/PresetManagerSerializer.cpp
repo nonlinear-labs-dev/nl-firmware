@@ -46,7 +46,7 @@ void PresetManagerSerializer::readTagContent(Reader &reader) const
     m_pm->selectBank(reader.getTransaction(), Uuid { text });
   });
 
-  reader.onTextElement("selected-midi-bank-uuid", [&](const auto &text, const auto&) {
+  reader.onTextElement("selected-midi-bank-uuid", [&](const auto &text, const auto &) {
     m_pm->selectMidiBank(reader.getTransaction(), Uuid { text });
   });
 

@@ -16,6 +16,6 @@ void SectionAndActionManager::handleHTTPRequest(std::shared_ptr<NetworkRequest> 
   RPCActionManager::handleRequest(request);
 }
 
-void SectionAndActionManager::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
+void SectionAndActionManager::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
 }

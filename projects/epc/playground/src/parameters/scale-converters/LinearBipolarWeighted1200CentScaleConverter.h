@@ -14,4 +14,3 @@ class LinearBipolarWeighted1200CentScaleConverter : public ScaleConverter
  private:
   tDisplayRange m_displayRange;
 };
-

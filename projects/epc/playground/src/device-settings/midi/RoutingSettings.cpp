@@ -74,8 +74,7 @@ Glib::ustring RoutingSettings::getDisplayString() const
 void RoutingSettings::setState(RoutingSettings::tRoutingIndex hwIdx, RoutingSettings::tAspectIndex settingIdx,
                                bool state)
 {
-  auto updatePair = [](bool& toSet, bool& other, bool value)
-  {
+  auto updatePair = [](bool& toSet, bool& other, bool value) {
     if(value)
       other = false;
     toSet = value;

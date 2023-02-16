@@ -22,7 +22,6 @@ UpperRibbon::UpperRibbon()
       sigc::mem_fun(this, &UpperRibbon::onSettingChanged));
   m_ribbonSelectionSignal = Application::get().getSettings()->getSetting<SelectedRibbonsSetting>()->onChange(
       sigc::mem_fun(this, &UpperRibbon::onRibbonSelectionChanged));
-
 }
 
 UpperRibbon::~UpperRibbon()

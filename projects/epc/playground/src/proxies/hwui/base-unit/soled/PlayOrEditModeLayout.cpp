@@ -170,7 +170,8 @@ void PlayOrEditModeLayout::createRightSideControls()
   remove(std::exchange(m_selectedRibbonsIndication, nullptr));
 
   auto isRibbonSelect = getBaseUnitUIDetails()->get() == BaseUnitUIDetails::RibbonSelect;
-  auto isEditMode = Application::get().getSettings()->getSetting<BaseUnitUIMode>()->get() == BaseUnitUIModes::ParameterEdit;
+  auto isEditMode
+      = Application::get().getSettings()->getSetting<BaseUnitUIMode>()->get() == BaseUnitUIModes::ParameterEdit;
   if(isRibbonSelect && !isEditMode)
     m_selectedRibbonsIndication = addControl(new SelectedRibbonsIndication(Rect(115, 10, 15, 20)));
   m_dottedLine = addControl(new DottedLine(getDottedLineRect(isRibbonSelect)));

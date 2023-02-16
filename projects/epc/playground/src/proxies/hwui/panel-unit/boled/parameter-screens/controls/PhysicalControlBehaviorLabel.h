@@ -12,14 +12,14 @@ class PhysicalControlBehaviorLabel : public Label
   typedef Label super;
 
  public:
-  explicit PhysicalControlBehaviorLabel(const Rect &pos);
+  explicit PhysicalControlBehaviorLabel(const Rect& pos);
 
  protected:
-  void setBackgroundColor(FrameBuffer &fb) const override;
+  void setBackgroundColor(FrameBuffer& fb) const override;
 
  private:
-  void setParameter(Parameter *param);
-  void onParamValueChanged(const Parameter *param);
+  void setParameter(Parameter* param);
+  void onParamValueChanged(const Parameter* param);
 
   sigc::connection m_paramConnection;
 };

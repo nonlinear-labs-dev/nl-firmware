@@ -14,7 +14,7 @@ class FileInStream : public InStream
   Glib::ustring read() override;
   std::vector<uint8_t> readAll() override;
   [[nodiscard]] bool eof() const override;
-  const Glib::ustring& getFileName() const;
+  const Glib::ustring &getFileName() const;
 
  private:
   Glib::ustring m_fileName;

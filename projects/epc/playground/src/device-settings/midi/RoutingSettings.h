@@ -23,6 +23,7 @@ class RoutingSettings : public Setting
   void setAllAspectsForIndex(tRoutingIndex hwIdx, bool state);
   const tData& getRaw() const;
   void setAllValues(bool value);
+
  private:
   tData m_data;
   bool sanitizeReceiveHWSourcesAndPC();

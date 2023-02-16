@@ -11,7 +11,7 @@
 
 using EBL = EditBufferLogicalParts;
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Split (II) to Layer")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Convert Split (II) to Layer")
 {
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();
@@ -158,7 +158,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Split (II) to Layer")
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Layer I to Split")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Convert Layer I to Split")
 {
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto monoI = EBL::getMonoEnable<VoiceGroup::I>();
@@ -210,7 +210,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Layer I to Split")
   {
     auto eb = TestHelper::getEditBuffer();
     EditBufferUseCases ebUseCases(*eb);
-    ebUseCases.selectParameter({C15::PID::FB_Mix_FX_Src, VoiceGroup::I}, true);
+    ebUseCases.selectParameter({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I }, true);
 
     WHEN("Layer converted to Split")
     {
@@ -236,8 +236,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Layer I to Split")
   WHEN("Layer to Split Cross FX is not reset")
   {
     auto eb = TestHelper::getEditBuffer();
-    auto fxI = eb->findAndCastParameterByID<ModulateableParameter>({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-    auto fxII = eb->findAndCastParameterByID<ModulateableParameter>({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+    auto fxI = eb->findAndCastParameterByID<ModulateableParameter>({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+    auto fxII = eb->findAndCastParameterByID<ModulateableParameter>({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
 
     ModParameterUseCases fxIUsecase(fxI);
     ModParameterUseCases fxIIUsecase(fxII);
@@ -268,8 +268,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Layer I to Split")
   {
     TestHelper::initDualEditBuffer<SoundType::Split>(VoiceGroup::I);
     auto eb = TestHelper::getEditBuffer();
-    auto fxI = eb->findAndCastParameterByID<ModulateableParameter>({C15::PID::FB_Mix_FX_Src, VoiceGroup::I});
-    auto fxII = eb->findAndCastParameterByID<ModulateableParameter>({C15::PID::FB_Mix_FX_Src, VoiceGroup::II});
+    auto fxI = eb->findAndCastParameterByID<ModulateableParameter>({ C15::PID::FB_Mix_FX_Src, VoiceGroup::I });
+    auto fxII = eb->findAndCastParameterByID<ModulateableParameter>({ C15::PID::FB_Mix_FX_Src, VoiceGroup::II });
 
     ModParameterUseCases fxIUsecase(fxI);
     ModParameterUseCases fxIIUsecase(fxII);
@@ -334,8 +334,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Layer I to Split")
 
     THEN("CrossFB Params (except From FX I/II) are default")
     {
-      auto withoutCrossFX_I = EBL::removeElements(EBL::getCrossFB<VoiceGroup::I>(), {C15::PID::FB_Mix_FX_Src});
-      auto withoutCrossFX_II = EBL::removeElements(EBL::getCrossFB<VoiceGroup::II>(), {C15::PID::FB_Mix_FX_Src});
+      auto withoutCrossFX_I = EBL::removeElements(EBL::getCrossFB<VoiceGroup::I>(), { C15::PID::FB_Mix_FX_Src });
+      auto withoutCrossFX_II = EBL::removeElements(EBL::getCrossFB<VoiceGroup::II>(), { C15::PID::FB_Mix_FX_Src });
       CHECK(EBL::isFactoryDefaultLoaded(withoutCrossFX_I));
       CHECK(EBL::isFactoryDefaultLoaded(withoutCrossFX_II));
     }

@@ -9,7 +9,7 @@
 #include <presets/PresetParameter.h>
 #include <parameters/SplitPointParameter.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Import Preset with ModAspects on Split")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Import Preset with ModAspects on Split")
 {
   auto settings = TestHelper::getSettings();
   auto pm = TestHelper::getPresetManager();
@@ -33,8 +33,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Import Preset with ModAspects o
   auto oldParam = firstPreset->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::Global }, false);
   CHECK(oldParam == nullptr);
 
-  auto splitIDI = ParameterId{ C15::PID::Split_Split_Point, VoiceGroup::I };
-  auto splitIDII = ParameterId{ C15::PID::Split_Split_Point, VoiceGroup::II };
+  auto splitIDI = ParameterId { C15::PID::Split_Split_Point, VoiceGroup::I };
+  auto splitIDII = ParameterId { C15::PID::Split_Split_Point, VoiceGroup::II };
   auto splitPntI = firstPreset->findParameterByID(splitIDI, false);
   auto splitPntII = firstPreset->findParameterByID(splitIDII, false);
   CHECK(splitPntI != nullptr);
@@ -66,7 +66,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Import Preset with ModAspects o
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Import Conversion for Bank with Version 7 Checks out")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Import Conversion for Bank with Version 7 Checks out")
 {
   auto pm = TestHelper::getPresetManager();
 
@@ -90,8 +90,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Import Conversion for Bank with
   auto oldParam = newPreset->findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::Global }, false);
   CHECK(oldParam == nullptr);
 
-  auto splitIDI = ParameterId{ C15::PID::Split_Split_Point, VoiceGroup::I };
-  auto splitIDII = ParameterId{ C15::PID::Split_Split_Point, VoiceGroup::II };
+  auto splitIDI = ParameterId { C15::PID::Split_Split_Point, VoiceGroup::I };
+  auto splitIDII = ParameterId { C15::PID::Split_Split_Point, VoiceGroup::II };
   auto splitPntI = newPreset->findParameterByID(splitIDI, false);
   auto splitPntII = newPreset->findParameterByID(splitIDII, false);
   CHECK(splitPntI != nullptr);

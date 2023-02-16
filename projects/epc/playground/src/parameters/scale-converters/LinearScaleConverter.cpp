@@ -15,7 +15,7 @@ bool LinearScaleConverter::isBiPolar() const
   return m_displayRange.isBiPolar();
 }
 
-tDisplayValue LinearScaleConverter::controlPositionToDisplay(const tControlPositionValue &cpValue) const
+tDisplayValue LinearScaleConverter::controlPositionToDisplay(const tControlPositionValue& cpValue) const
 {
   return m_displayRange.scaleValueToRange(cpValue, getControlPositionRange(), true);
 }

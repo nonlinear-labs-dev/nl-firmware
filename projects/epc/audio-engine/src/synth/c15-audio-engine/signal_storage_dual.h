@@ -18,160 +18,161 @@
 
 #include "engine.h"
 
-namespace Engine {
-
-struct LayerSignalCollection
+namespace Engine
 {
-  PolyValue m_osc_a = {}, m_osc_b = {}, m_comb = {}, m_svf = {};
-  float m_fx_dry = 0.0f, m_fx_wet = 0.0f, m_fx_to_other_l = 0.0f, m_fx_to_other_r = 0.0f;
-  inline void reset()
-  {
-    m_osc_a = m_osc_b = m_comb = m_svf = 0.0f;
-    m_fx_dry = m_fx_wet = 0.0f, m_fx_to_other_l = 0.0f, m_fx_to_other_r = 0.0f;
-  }
-};
 
-// global and mono sections require mono signals
-template <class M> class MonoSignalStorage
-{
- public:
-  // numeric and enum-class-based getters
-  inline float& get(const uint32_t _id)
+  struct LayerSignalCollection
   {
-    return m_data[_id];
-  }
-  inline const float& get(const uint32_t _id) const
-  {
-    return m_data[_id];
-  }
-  inline float& get(const M _id)
-  {
-    return m_data[static_cast<uint32_t>(_id)];
-  }
-  inline const float& get(const M _id) const
-  {
-    return m_data[static_cast<uint32_t>(_id)];
-  }
-  // numeric and enum-class-based setters
-  inline void set(const uint32_t _id, const float _value)
-  {
-    m_data[_id] = _value;
-  }
-  inline void set(const M _id, const float _value)
-  {
-    m_data[static_cast<uint32_t>(_id)] = _value;
-  }
-  // reset (if needed)
-  inline void reset()
-  {
-    for(uint32_t i = 0; i < static_cast<uint32_t>(M::_LENGTH_); i++)
+    PolyValue m_osc_a = {}, m_osc_b = {}, m_comb = {}, m_svf = {};
+    float m_fx_dry = 0.0f, m_fx_wet = 0.0f, m_fx_to_other_l = 0.0f, m_fx_to_other_r = 0.0f;
+    inline void reset()
     {
-      m_data[i] = 0.0f;
+      m_osc_a = m_osc_b = m_comb = m_svf = 0.0f;
+      m_fx_dry = m_fx_wet = 0.0f, m_fx_to_other_l = 0.0f, m_fx_to_other_r = 0.0f;
     }
-  }
+  };
 
- private:
-  float m_data[static_cast<uint32_t>(M::_LENGTH_)] = {};
-};
-
-// poly sections require poly and mono signals
-template <class P, class M> class PolySignalStorage
-{
- public:
-  // numeric and enum-class-based getters (mono, poly)
-  inline float& get_mono(const uint32_t _id)
+  // global and mono sections require mono signals
+  template <class M> class MonoSignalStorage
   {
-    return m_mono[_id];
-  }
-  inline const float& get_mono(const uint32_t _id) const
-  {
-    return m_mono[_id];
-  }
-  inline float& get(const M _id)
-  {
-    return m_mono[static_cast<uint32_t>(_id)];
-  }
-  inline const float& get(const M _id) const
-  {
-    return m_mono[static_cast<uint32_t>(_id)];
-  }
-  inline float& get_poly(const uint32_t _id, const uint32_t _voiceId)
-  {
-    return m_poly[_id][_voiceId];
-  }
-  inline const float& get_poly(const uint32_t _id, const uint32_t _voiceId) const
-  {
-    return m_poly[_id][_voiceId];
-  }
-  inline float& get(const P _id, const uint32_t _voiceId)
-  {
-    return m_poly[static_cast<uint32_t>(_id)][_voiceId];
-  }
-  inline const float& get(const P _id, const uint32_t _voiceId) const
-  {
-    return m_poly[static_cast<uint32_t>(_id)][_voiceId];
-  }
-  inline PolyValue& get_poly(const uint32_t _id)
-  {
-    return m_poly[_id];
-  }
-  inline const PolyValue& get_poly(const uint32_t _id) const
-  {
-    return m_poly[_id];
-  }
-  inline PolyValue& get(const P _id)
-  {
-    return m_poly[static_cast<uint32_t>(_id)];
-  }
-  inline const PolyValue& get(const P _id) const
-  {
-    return m_poly[static_cast<uint32_t>(_id)];
-  }
-  // numeric and enum-class-based setters (mono, poly)
-  inline void set_mono(const uint32_t _id, const float _value)
-  {
-    m_mono[_id] = _value;
-  }
-  inline void set(const M _id, const float _value)
-  {
-    m_mono[static_cast<uint32_t>(_id)] = _value;
-  }
-  inline void set_poly(const uint32_t _id, const uint32_t _voiceId, const float _value)
-  {
-    m_poly[_id][_voiceId] = _value;
-  }
-  inline void set_poly(const P _id, const uint32_t _voiceId, const float _value)
-  {
-    m_poly[static_cast<uint32_t>(_id)][_voiceId] = _value;
-  }
-  inline void set(const P _id, const uint32_t _voiceId, const float _value)
-  {
-    m_poly[static_cast<uint32_t>(_id)][_voiceId] = _value;
-  }
-  inline void set_poly(const uint32_t _id, const PolyValue& _value)
-  {
-    m_poly[_id] = _value;
-  }
-  inline void set(const P _id, const PolyValue& _value)
-  {
-    m_poly[static_cast<uint32_t>(_id)] = _value;
-  }
-  // reset (if needed)
-  inline void reset()
-  {
-    for(uint32_t i = 0; i < static_cast<uint32_t>(M::_LENGTH_); i++)
+   public:
+    // numeric and enum-class-based getters
+    inline float& get(const uint32_t _id)
     {
-      m_mono[i] = 0.0f;
+      return m_data[_id];
     }
-    for(uint32_t i = 0; i < static_cast<uint32_t>(P::_LENGTH_); i++)
+    inline const float& get(const uint32_t _id) const
     {
-      m_poly[i] = 0.0f;
+      return m_data[_id];
     }
-  }
+    inline float& get(const M _id)
+    {
+      return m_data[static_cast<uint32_t>(_id)];
+    }
+    inline const float& get(const M _id) const
+    {
+      return m_data[static_cast<uint32_t>(_id)];
+    }
+    // numeric and enum-class-based setters
+    inline void set(const uint32_t _id, const float _value)
+    {
+      m_data[_id] = _value;
+    }
+    inline void set(const M _id, const float _value)
+    {
+      m_data[static_cast<uint32_t>(_id)] = _value;
+    }
+    // reset (if needed)
+    inline void reset()
+    {
+      for(uint32_t i = 0; i < static_cast<uint32_t>(M::_LENGTH_); i++)
+      {
+        m_data[i] = 0.0f;
+      }
+    }
 
- private:
-  PolyValue m_poly[static_cast<uint32_t>(P::_LENGTH_)] = {};
-  float m_mono[static_cast<uint32_t>(M::_LENGTH_)] = {};
-};
+   private:
+    float m_data[static_cast<uint32_t>(M::_LENGTH_)] = {};
+  };
 
-} // namespace Engine
+  // poly sections require poly and mono signals
+  template <class P, class M> class PolySignalStorage
+  {
+   public:
+    // numeric and enum-class-based getters (mono, poly)
+    inline float& get_mono(const uint32_t _id)
+    {
+      return m_mono[_id];
+    }
+    inline const float& get_mono(const uint32_t _id) const
+    {
+      return m_mono[_id];
+    }
+    inline float& get(const M _id)
+    {
+      return m_mono[static_cast<uint32_t>(_id)];
+    }
+    inline const float& get(const M _id) const
+    {
+      return m_mono[static_cast<uint32_t>(_id)];
+    }
+    inline float& get_poly(const uint32_t _id, const uint32_t _voiceId)
+    {
+      return m_poly[_id][_voiceId];
+    }
+    inline const float& get_poly(const uint32_t _id, const uint32_t _voiceId) const
+    {
+      return m_poly[_id][_voiceId];
+    }
+    inline float& get(const P _id, const uint32_t _voiceId)
+    {
+      return m_poly[static_cast<uint32_t>(_id)][_voiceId];
+    }
+    inline const float& get(const P _id, const uint32_t _voiceId) const
+    {
+      return m_poly[static_cast<uint32_t>(_id)][_voiceId];
+    }
+    inline PolyValue& get_poly(const uint32_t _id)
+    {
+      return m_poly[_id];
+    }
+    inline const PolyValue& get_poly(const uint32_t _id) const
+    {
+      return m_poly[_id];
+    }
+    inline PolyValue& get(const P _id)
+    {
+      return m_poly[static_cast<uint32_t>(_id)];
+    }
+    inline const PolyValue& get(const P _id) const
+    {
+      return m_poly[static_cast<uint32_t>(_id)];
+    }
+    // numeric and enum-class-based setters (mono, poly)
+    inline void set_mono(const uint32_t _id, const float _value)
+    {
+      m_mono[_id] = _value;
+    }
+    inline void set(const M _id, const float _value)
+    {
+      m_mono[static_cast<uint32_t>(_id)] = _value;
+    }
+    inline void set_poly(const uint32_t _id, const uint32_t _voiceId, const float _value)
+    {
+      m_poly[_id][_voiceId] = _value;
+    }
+    inline void set_poly(const P _id, const uint32_t _voiceId, const float _value)
+    {
+      m_poly[static_cast<uint32_t>(_id)][_voiceId] = _value;
+    }
+    inline void set(const P _id, const uint32_t _voiceId, const float _value)
+    {
+      m_poly[static_cast<uint32_t>(_id)][_voiceId] = _value;
+    }
+    inline void set_poly(const uint32_t _id, const PolyValue& _value)
+    {
+      m_poly[_id] = _value;
+    }
+    inline void set(const P _id, const PolyValue& _value)
+    {
+      m_poly[static_cast<uint32_t>(_id)] = _value;
+    }
+    // reset (if needed)
+    inline void reset()
+    {
+      for(uint32_t i = 0; i < static_cast<uint32_t>(M::_LENGTH_); i++)
+      {
+        m_mono[i] = 0.0f;
+      }
+      for(uint32_t i = 0; i < static_cast<uint32_t>(P::_LENGTH_); i++)
+      {
+        m_poly[i] = 0.0f;
+      }
+    }
+
+   private:
+    PolyValue m_poly[static_cast<uint32_t>(P::_LENGTH_)] = {};
+    float m_mono[static_cast<uint32_t>(M::_LENGTH_)] = {};
+  };
+
+}  // namespace Engine

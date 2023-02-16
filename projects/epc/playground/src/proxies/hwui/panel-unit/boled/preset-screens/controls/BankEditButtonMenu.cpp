@@ -149,13 +149,13 @@ void BankEditButtonMenu::importBankFromPath(const std::filesystem::directory_ent
   {
     splashUseCase.startSplashScreen();
     useCase.importBankFromPath(file, [hwui, settings](const std::string& name) {
-                                 SplashScreenUseCases uc(*hwui, *settings);
-                                 uc.addSplashScreenMessage("Importing " + name);
-                               });
+      SplashScreenUseCases uc(*hwui, *settings);
+      uc.addSplashScreenMessage("Importing " + name);
+    });
   }
 
   splashUseCase.finishSplashScreen();
-  settingsUseCases.setFocusAndMode(FocusAndMode{ UIFocus::Presets, UIMode::Select });
+  settingsUseCases.setFocusAndMode(FocusAndMode { UIFocus::Presets, UIMode::Select });
 }
 
 void BankEditButtonMenu::importBank()

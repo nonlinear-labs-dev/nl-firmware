@@ -16,7 +16,7 @@ class RoutingsView : public SetupLabel
   void onSettingChanged(const Setting* s);
 
   constexpr static auto size = static_cast<int>(RoutingSettings::tAspectIndex::LENGTH);
-  std::array<bool, size> m_data {false};
+  std::array<bool, size> m_data { false };
   const tID m_id;
   const tAspectList m_aspectList;
 };

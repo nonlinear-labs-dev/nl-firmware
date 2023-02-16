@@ -203,12 +203,10 @@ void MacroControlParameter::undoableSetGivenName(UNDO::Transaction *transaction,
   if(m_givenName != newName)
   {
     auto swapData = UNDO::createSwapData(newName);
-    transaction->addSimpleCommand(
-        [=](UNDO::Command::State) mutable
-        {
-          swapData->swapWith(m_givenName);
-          invalidate();
-        });
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      swapData->swapWith(m_givenName);
+      invalidate();
+    });
   }
 }
 
@@ -218,12 +216,10 @@ void MacroControlParameter::undoableSetInfo(UNDO::Transaction *transaction, cons
   {
     auto swapData = UNDO::createSwapData(info);
 
-    transaction->addSimpleCommand(
-        [=](UNDO::Command::State) mutable
-        {
-          swapData->swapWith(m_info);
-          invalidate();
-        });
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      swapData->swapWith(m_info);
+      invalidate();
+    });
   }
 }
 
@@ -281,8 +277,7 @@ Glib::ustring MacroControlParameter::getLongName() const
 
   auto replace = [](auto s, auto p, auto r) { return StringTools::replaceAll(s, p, r); };
 
-  auto invertLabel = [replace](auto str)
-  {
+  auto invertLabel = [replace](auto str) {
     auto mcA = replace(str, "\uE000", "\uE400");
     auto mcB = replace(mcA, "\uE001", "\uE401");
     auto mcC = replace(mcB, "\uE002", "\uE402");
@@ -420,7 +415,7 @@ bool MacroControlParameter::hasRelativeRibbonAsSource() const
   {
     for(auto router : mcm->getModulationRoutingParametersFor(this))
     {
-      if(auto ribbon = dynamic_cast<RibbonParameter*>(router->getSourceParameter()))
+      if(auto ribbon = dynamic_cast<RibbonParameter *>(router->getSourceParameter()))
       {
         if(std::abs(router->getControlPositionValue()) > 0)
         {

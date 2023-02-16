@@ -277,8 +277,7 @@ int RoutingsEditor::getSelectedIndex() const
 
 bool RoutingsEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
-  auto doIfDownAndSwallowAll = [isDown = down, pressed = i](Buttons b, auto cb)
-  {
+  auto doIfDownAndSwallowAll = [isDown = down, pressed = i](Buttons b, auto cb) {
     if(pressed == b)
     {
       if(isDown)

@@ -15,45 +15,37 @@ void BaseUnitPresetsMode::setup()
 {
   super::setup();
 
-  setupButtonConnection(Buttons::BUTTON_MINUS,
-                        [=](auto, auto, auto state)
-                        {
-                          if(BaseUnitPresetsAndBanksMode::checkPanicAffenGriff(Buttons::BUTTON_MINUS, state))
-                            return true;
+  setupButtonConnection(Buttons::BUTTON_MINUS, [=](auto, auto, auto state) {
+    if(BaseUnitPresetsAndBanksMode::checkPanicAffenGriff(Buttons::BUTTON_MINUS, state))
+      return true;
 
-                          if(state)
-                            installButtonRepeat(
-                                []()
-                                {
-                                  auto pm = Application::get().getPresetManager();
-                                  PresetManagerUseCases useCase(*pm, *Application::get().getSettings());
-                                  useCase.selectPreviousPreset();
-                                });
-                          else
-                            removeButtonRepeat();
+    if(state)
+      installButtonRepeat([]() {
+        auto pm = Application::get().getPresetManager();
+        PresetManagerUseCases useCase(*pm, *Application::get().getSettings());
+        useCase.selectPreviousPreset();
+      });
+    else
+      removeButtonRepeat();
 
-                          return true;
-                        });
+    return true;
+  });
 
-  setupButtonConnection(Buttons::BUTTON_PLUS,
-                        [=](auto, auto, auto state)
-                        {
-                          if(BaseUnitPresetsAndBanksMode::checkPanicAffenGriff(Buttons::BUTTON_MINUS, state))
-                            return true;
+  setupButtonConnection(Buttons::BUTTON_PLUS, [=](auto, auto, auto state) {
+    if(BaseUnitPresetsAndBanksMode::checkPanicAffenGriff(Buttons::BUTTON_MINUS, state))
+      return true;
 
-                          if(state)
-                            installButtonRepeat(
-                                []()
-                                {
-                                  auto pm = Application::get().getPresetManager();
-                                  PresetManagerUseCases useCase(*pm, *Application::get().getSettings());
-                                  useCase.selectNextPreset();
-                                });
-                          else
-                            removeButtonRepeat();
+    if(state)
+      installButtonRepeat([]() {
+        auto pm = Application::get().getPresetManager();
+        PresetManagerUseCases useCase(*pm, *Application::get().getSettings());
+        useCase.selectNextPreset();
+      });
+    else
+      removeButtonRepeat();
 
-                          return true;
-                        });
+    return true;
+  });
 }
 
 void BaseUnitPresetsMode::onFuncButtonDown()

@@ -97,7 +97,7 @@ SelectedModRouterMacroControlValue::SelectedModRouterMacroControlValue(const Rec
     : Label(rect)
     , m_mcId(ParameterId::invalid())
 {
-  auto& app = Application::get();
+  auto &app = Application::get();
   auto vg = app.getVGManager()->getCurrentVoiceGroup();
   app.getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::hide<0>(sigc::mem_fun(this, &SelectedModRouterMacroControlValue::onParameterSelected)), vg);

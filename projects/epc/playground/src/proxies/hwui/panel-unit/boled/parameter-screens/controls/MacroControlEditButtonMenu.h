@@ -10,7 +10,7 @@ class MacroControlEditButtonMenu : public ButtonMenu
   typedef ButtonMenu super;
 
  public:
-  explicit MacroControlEditButtonMenu(const Rect &rect);
+  explicit MacroControlEditButtonMenu(const Rect& rect);
   ~MacroControlEditButtonMenu() override;
 
   void selectButton(size_t i) override;
@@ -32,7 +32,6 @@ class MacroControlEditButtonMenu : public ButtonMenu
 
   static int s_lastAction;
 };
-
 
 class ModulationRouterMacroControlEditButtonMenu : public MacroControlEditButtonMenu
 {
