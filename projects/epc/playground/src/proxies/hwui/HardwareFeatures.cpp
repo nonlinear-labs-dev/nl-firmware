@@ -22,7 +22,7 @@ HardwareFeatures::HardwareFeatures()
   {
     if(StringTools::contains(line, "model name"))
     {
-        matchAndSetEnum({ { "i3-5010", EPC_MODEL::i3_5 },
+      matchAndSetEnum({ { "i3-5010", EPC_MODEL::i3_5 },
                         { "i3-7100", EPC_MODEL::i3_7 },
                         { "i5-7260", EPC_MODEL::i5_7 },
                         { "i3-1011", EPC_MODEL::i3_10 },

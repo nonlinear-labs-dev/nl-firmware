@@ -65,28 +65,34 @@ void PanelUnitParameterEditMode::setup()
 
   using namespace C15::PID;
 
-  setupButtonConnection(Buttons::BUTTON_75,
-                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_A); });
+  setupButtonConnection(Buttons::BUTTON_75, [this](auto &&, auto &&, auto &&PH3) {
+    return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_A);
+  });
   FOR_TESTS(assignedAudioIDs.insert(MC_A));
 
-  setupButtonConnection(Buttons::BUTTON_79,
-                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_B); });
+  setupButtonConnection(Buttons::BUTTON_79, [this](auto &&, auto &&, auto &&PH3) {
+    return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_B);
+  });
   FOR_TESTS(assignedAudioIDs.insert(MC_B));
 
-  setupButtonConnection(Buttons::BUTTON_83,
-                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_C); });
+  setupButtonConnection(Buttons::BUTTON_83, [this](auto &&, auto &&, auto &&PH3) {
+    return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_C);
+  });
   FOR_TESTS(assignedAudioIDs.insert(MC_C));
 
-  setupButtonConnection(Buttons::BUTTON_87,
-                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_D); });
+  setupButtonConnection(Buttons::BUTTON_87, [this](auto &&, auto &&, auto &&PH3) {
+    return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_D);
+  });
   FOR_TESTS(assignedAudioIDs.insert(MC_D));
 
-  setupButtonConnection(Buttons::BUTTON_91,
-                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_E); });
+  setupButtonConnection(Buttons::BUTTON_91, [this](auto &&, auto &&, auto &&PH3) {
+    return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_E);
+  });
   FOR_TESTS(assignedAudioIDs.insert(MC_E));
 
-  setupButtonConnection(Buttons::BUTTON_95,
-                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_F); });
+  setupButtonConnection(Buttons::BUTTON_95, [this](auto &&, auto &&, auto &&PH3) {
+    return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_F);
+  });
   FOR_TESTS(assignedAudioIDs.insert(MC_F));
 
   setupButtonConnection(Buttons::BUTTON_UNDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
@@ -213,7 +219,7 @@ std::list<int> PanelUnitParameterEditMode::getButtonAssignments(Buttons button, 
   return ret;
 }
 
-UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(const std::vector<gint32>& toggleAudioIDs)
+UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(const std::vector<gint32> &toggleAudioIDs)
 {
   return std::bind(&PanelUnitParameterEditMode::toggleParameterSelection, this, toggleAudioIDs, std::placeholders::_3);
 }
@@ -237,7 +243,7 @@ OutContainer cleanParameterIDSForType(const InContainer &ids, SoundType type)
   return ret;
 }
 
-bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint32>& ids, bool state)
+bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint32> &ids, bool state)
 {
   if(ids.empty())
     return true;
@@ -291,7 +297,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
           if(next == cleanedParameterIdForType.end())
             next = cleanedParameterIdForType.begin();
 
-          if(auto newP = editBuffer->findParameterByID({*next, selParamID.getVoiceGroup()}))
+          if(auto newP = editBuffer->findParameterByID({ *next, selParamID.getVoiceGroup() }))
           {
             if(!newP->isDisabled())
               setParameterSelection({ *next, selParamID.getVoiceGroup() }, state);
@@ -344,7 +350,7 @@ bool PanelUnitParameterEditMode::switchToNormalModeInCurrentParameterLayout()
   return false;
 }
 
-bool PanelUnitParameterEditMode::tryParameterToggleOnMacroControl(const std::vector<gint32>& ids, Parameter *selParam)
+bool PanelUnitParameterEditMode::tryParameterToggleOnMacroControl(const std::vector<gint32> &ids, Parameter *selParam)
 {
   if(auto mc = dynamic_cast<MacroControlParameter *>(selParam))
   {
@@ -352,12 +358,12 @@ bool PanelUnitParameterEditMode::tryParameterToggleOnMacroControl(const std::vec
     for(auto x : ids)
     {
       auto mcVg = mc->getVoiceGroup();
-      a.emplace_back( x, mcVg );
+      a.emplace_back(x, mcVg);
     }
 
     if(mc->isSourceOfTargetIn(a))
     {
-      for(const auto& targetId : a)
+      for(const auto &targetId : a)
       {
         if(mc->isSourceOf(targetId))
         {
@@ -482,16 +488,19 @@ void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam, tLedStates
   else if(groupName == "Env C")
   {
     letOtherTargetsBlink({ Osc_A_Pitch_Env_C, Osc_A_Fluct_Env_C, Osc_A_PM_FB_Env_C, Shp_A_FB_Env_C, Osc_B_Pitch_Env_C,
-                           Osc_B_Fluct_Env_C, Osc_B_PM_FB_Env_C, Shp_B_FB_Env_C, Comb_Flt_Pitch_Env_C, Comb_Flt_AP_Env_C,
-                           Comb_Flt_LP_Env_C, SV_Flt_Cut_Env_C, SV_Flt_Res_Env_C }, states);
+                           Osc_B_Fluct_Env_C, Osc_B_PM_FB_Env_C, Shp_B_FB_Env_C, Comb_Flt_Pitch_Env_C,
+                           Comb_Flt_AP_Env_C, Comb_Flt_LP_Env_C, SV_Flt_Cut_Env_C, SV_Flt_Res_Env_C },
+                         states);
   }
   else if(groupName == "Osc A" || groupName == "Sh A")
   {
-    letOscAShaperABlink({ Osc_B_PM_A, Shp_B_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_A_Lvl }, states);
+    letOscAShaperABlink(
+        { Osc_B_PM_A, Shp_B_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_A_Lvl }, states);
   }
   else if(groupName == "Osc B" || groupName == "Sh B")
   {
-    letOscBShaperBBlink({ Osc_A_PM_B, Shp_A_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_B_Lvl }, states);
+    letOscBShaperBBlink(
+        { Osc_A_PM_B, Shp_A_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_B_Lvl }, states);
   }
   else if(groupName == "Comb")
   {
@@ -576,7 +585,8 @@ void PanelUnitParameterEditMode::letMacroControlTargetsBlink(tLedStates &states)
     {
       auto shouldHighlightDual = t->getID().getVoiceGroup() == currentVG;
       auto shouldHighlightSingle = t->isPolyphonic() || (t->isMonophonic() && t->getID().getVoiceGroup() == currentVG);
-      if((editBuffer->isDual() && shouldHighlightDual) || (editBuffer->getType() == SoundType::Single && shouldHighlightSingle))
+      if((editBuffer->isDual() && shouldHighlightDual)
+         || (editBuffer->getType() == SoundType::Single && shouldHighlightSingle))
       {
         auto buttonID = m_mappings.findButton(t->getID().getNumber());
         if(buttonID != Buttons::INVALID)
@@ -601,12 +611,13 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
 
     if(editBuffer->getType() == SoundType::Single)
     {
-      auto param = editBuffer->findParameterByID({targetID, vg});
+      auto param = editBuffer->findParameterByID({ targetID, vg });
       if(!param)
       {
-        param = editBuffer->findParameterByID({targetID, VoiceGroup::Global});
+        param = editBuffer->findParameterByID({ targetID, VoiceGroup::Global });
       }
-      isPolyphonic = param->getType() == C15::Descriptors::ParameterType::Polyphonic_Modulateable || param->getType() == C15::Descriptors::ParameterType::Polyphonic_Unmodulateable;
+      isPolyphonic = param->getType() == C15::Descriptors::ParameterType::Polyphonic_Modulateable
+          || param->getType() == C15::Descriptors::ParameterType::Polyphonic_Unmodulateable;
 
       if(isPolyphonic)
         vg = VoiceGroup::I;
@@ -616,8 +627,7 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
 
     if(isSignalFlowingThrough(currentParam))
     {
-      auto state = editBuffer->getSelected(vg) == currentParam ? TwoStateLED::ON
-                                                                                         : TwoStateLED::BLINK;
+      auto state = editBuffer->getSelected(vg) == currentParam ? TwoStateLED::ON : TwoStateLED::BLINK;
       auto button = m_mappings.findButton(currentParam->getID().getNumber());
       states[static_cast<size_t>(button)] = state;
     }

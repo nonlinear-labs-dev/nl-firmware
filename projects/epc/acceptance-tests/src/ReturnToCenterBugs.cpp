@@ -32,7 +32,7 @@ MidiRuntimeOptions createTCDSettings2()
 constexpr static uint8_t BASE_TCD = 0b11100000;
 constexpr static uint8_t Ribbon1 = 0b00000110;
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Ribbon 1 Return to Center")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Ribbon 1 Return to Center")
 {
   class MyTestHost : public PassOnHWReceived
   {
@@ -49,14 +49,14 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Ribbon 1 Return to Center")
 
   dsp.setType(SoundType::Single);
   auto settings = createTCDSettings2();
-  InputEventStage eventStage { &dsp, &settings, [] {}, [](auto) {}, [](auto) {}};
+  InputEventStage eventStage { &dsp, &settings, [] {}, [](auto) {}, [](auto) {} };
   const auto zero = 0;
 
   CHECK_FALSE(dsp.didReceiveHW());
 
   WHEN("Ribbon 1 is Return to Center and TCD 0 was send")
   {
-    eventStage.onTCDMessage({ BASE_TCD | Ribbon1, (uint8_t) (zero >> 7), (uint8_t) (zero & 127) });
+    eventStage.onTCDMessage({ BASE_TCD | Ribbon1, (uint8_t)(zero >> 7), (uint8_t)(zero & 127) });
 
     CHECK(dsp.didReceiveHW());
   }

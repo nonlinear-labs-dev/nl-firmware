@@ -39,7 +39,6 @@ void PresetBankMetadataSerializer::writeTagContent(Writer &writer) const
 void PresetBankMetadataSerializer::readTagContent(Reader &reader) const
 {
   reader.onTextElement("name", [&](const Glib::ustring &text, const Attributes &) {
-
     m_bank->setName(reader.getTransaction(), text);
 
     if(!text.empty())
@@ -49,22 +48,18 @@ void PresetBankMetadataSerializer::readTagContent(Reader &reader) const
   if(!m_ignoreUUIDs)
   {
     reader.onTextElement("uuid", [&](const Glib::ustring &text, const Attributes &) {
-                           m_bank->setUuid(reader.getTransaction(), Uuid { text });
+      m_bank->setUuid(reader.getTransaction(), Uuid { text });
     });
   }
 
   reader.onTextElement(
-      "x", [&](const Glib::ustring &text, const Attributes &) {
-        m_bank->setX(reader.getTransaction(), text);
-      });
+      "x", [&](const Glib::ustring &text, const Attributes &) { m_bank->setX(reader.getTransaction(), text); });
 
   reader.onTextElement(
-      "y", [&](const Glib::ustring &text, const Attributes &) {
-        m_bank->setY(reader.getTransaction(), text);
-      });
+      "y", [&](const Glib::ustring &text, const Attributes &) { m_bank->setY(reader.getTransaction(), text); });
 
   reader.onTextElement("selected-preset", [&](const Glib::ustring &text, const Attributes &) {
-                         m_bank->selectPreset(reader.getTransaction(), Uuid { text });
+    m_bank->selectPreset(reader.getTransaction(), Uuid { text });
   });
 
   reader.onTextElement("attached-to-bank", [&](const Glib::ustring &text, const Attributes &) {
@@ -73,7 +68,7 @@ void PresetBankMetadataSerializer::readTagContent(Reader &reader) const
 
   reader.onTextElement("attach-direction", [&](const Glib::ustring &text, const Attributes &) {
     m_bank->setAttachedDirection(reader.getTransaction(), text);
- });
+  });
 
   reader.onTag(PresetOrderSerializer::getTagName(),
                [&](const Attributes &) mutable { return new PresetOrderSerializer(m_bank, m_ignoreUUIDs); });

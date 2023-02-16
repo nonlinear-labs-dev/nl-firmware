@@ -16,7 +16,8 @@ class EditBufferActions : public SectionAndActionManager
 
  public:
   typedef Parameter* tParameterPtr;
-  explicit EditBufferActions(UpdateDocumentContributor* parent, EditBuffer& editBuffer, AudioEngineProxy& aeProxy, Settings& settings);
+  explicit EditBufferActions(UpdateDocumentContributor* parent, EditBuffer& editBuffer, AudioEngineProxy& aeProxy,
+                             Settings& settings);
   ~EditBufferActions() override = default;
   EditBufferActions(const EditBufferActions& other) = delete;
   EditBufferActions& operator=(const EditBufferActions&) = delete;

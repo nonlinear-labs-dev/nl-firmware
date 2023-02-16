@@ -13,7 +13,7 @@ EditModeLayout::EditModeLayout()
     : super()
 {
   addControl(new SelectedParamValueWithFrame(Rect(29, 2, 83, 13)));
-  addControl(new ParamEditModeRibbonBehaviourLabel(Rect{ 114, 2, 15, 13 }));
+  addControl(new ParamEditModeRibbonBehaviourLabel(Rect { 114, 2, 15, 13 }));
   addControl(new DottedLine(Rect(111, 16, 17, 1)));
 }
 

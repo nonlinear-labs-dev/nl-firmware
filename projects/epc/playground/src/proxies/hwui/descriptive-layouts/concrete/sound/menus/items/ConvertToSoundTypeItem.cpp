@@ -25,75 +25,67 @@ namespace
 
 ConvertToSoundTypeItem::ConvertToSoundTypeItem(const Rect& rect, SoundType toType)
     : AnimatedGenericItem(nltools::string::concat("Convert to ", toString(toType), getSuffix(toType)), rect,
-                          OneShotTypes::StartCB(
-                              [=]
-                              {
-                                m_lock = ConditionRegistry::createLock();
-                                EditBufferUseCases useCases(*Application::get().getPresetManager()->getEditBuffer());
-                                auto selectedVG = Application::get().getVGManager()->getCurrentVoiceGroup();
+                          OneShotTypes::StartCB([=] {
+                            m_lock = ConditionRegistry::createLock();
+                            EditBufferUseCases useCases(*Application::get().getPresetManager()->getEditBuffer());
+                            auto selectedVG = Application::get().getVGManager()->getCurrentVoiceGroup();
 
-                                switch(toType)
-                                {
-                                  case SoundType::Single:
-                                  {
-                                    useCases.convertToSingle(selectedVG);
-                                    break;
-                                  }
-                                  case SoundType::Split:
-                                  {
-                                    useCases.convertToSplit(selectedVG);
-                                    break;
-                                  }
-                                  case SoundType::Layer:
-                                  {
-                                    useCases.convertToLayer(selectedVG);
-                                    break;
-                                  }
-                                  default:
-                                    break;
-                                }
-                              }),
-                          OneShotTypes::FinishCB(
-                              [=]()
+                            switch(toType)
+                            {
+                              case SoundType::Single:
                               {
-                                m_lock.reset();
-                                SettingsUseCases sUseCases(*Application::get().getSettings());
-                                sUseCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-                              }))
+                                useCases.convertToSingle(selectedVG);
+                                break;
+                              }
+                              case SoundType::Split:
+                              {
+                                useCases.convertToSplit(selectedVG);
+                                break;
+                              }
+                              case SoundType::Layer:
+                              {
+                                useCases.convertToLayer(selectedVG);
+                                break;
+                              }
+                              default:
+                                break;
+                            }
+                          }),
+                          OneShotTypes::FinishCB([=]() {
+                            m_lock.reset();
+                            SettingsUseCases sUseCases(*Application::get().getSettings());
+                            sUseCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+                          }))
 {
 }
 
 ConvertToSoundTypeItemWithFX::ConvertToSoundTypeItemWithFX(const Rect& rect, SoundType convertTo)
 
     : AnimatedGenericItem(nltools::string::concat("Convert to ", toString(convertTo), " (FX I only)"), rect,
-                          OneShotTypes::StartCB(
-                              [=]
-                              {
-                                m_lock = ConditionRegistry::createLock();
-                                EditBufferUseCases useCases(*Application::get().getPresetManager()->getEditBuffer());
+                          OneShotTypes::StartCB([=] {
+                            m_lock = ConditionRegistry::createLock();
+                            EditBufferUseCases useCases(*Application::get().getPresetManager()->getEditBuffer());
 
-                                switch(convertTo)
-                                {
-                                  case SoundType::Layer:
-                                  {
-                                    useCases.convertSingleToLayerFXIOnly();
-                                    break;
-                                  }
-                                  case SoundType::Split:
-                                  {
-                                    useCases.convertSingleToSplitFXIOnly();
-                                    break;
-                                  }
-                                  default:
-                                    break;
-                                }
-                              }),
-                          OneShotTypes::FinishCB(
-                              [=]
+                            switch(convertTo)
+                            {
+                              case SoundType::Layer:
                               {
-                                m_lock.reset();
-                                SettingsUseCases sUseCases(*Application::get().getSettings());
-                                sUseCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-                              }))
+                                useCases.convertSingleToLayerFXIOnly();
+                                break;
+                              }
+                              case SoundType::Split:
+                              {
+                                useCases.convertSingleToSplitFXIOnly();
+                                break;
+                              }
+                              default:
+                                break;
+                            }
+                          }),
+                          OneShotTypes::FinishCB([=] {
+                            m_lock.reset();
+                            SettingsUseCases sUseCases(*Application::get().getSettings());
+                            sUseCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+                          }))
 {
 }

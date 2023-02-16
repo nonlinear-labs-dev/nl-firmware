@@ -8,12 +8,15 @@
 class ConditionRegistry : public sigc::trackable
 {
  public:
-  class ConditionRegistryScopedLock {
+  class ConditionRegistryScopedLock
+  {
    public:
-    ConditionRegistryScopedLock() {
+    ConditionRegistryScopedLock()
+    {
       ConditionRegistry::get().lock();
     }
-    ~ConditionRegistryScopedLock() {
+    ~ConditionRegistryScopedLock()
+    {
       ConditionRegistry::get().unlock();
     }
   };

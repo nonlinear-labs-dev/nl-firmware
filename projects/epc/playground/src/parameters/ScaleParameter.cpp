@@ -6,7 +6,7 @@
 #include "parameter_declarations.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 
-ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId& id)
+ScaleParameter::ScaleParameter(ParameterGroup *group, const ParameterId &id)
     : super(group, id)
 {
 }
@@ -47,7 +47,7 @@ Glib::ustring ScaleParameter::getLongName() const
 }
 
 BaseScaleParameter::BaseScaleParameter(ParameterGroup *group, const ParameterId &id)
-: super(group, id)
+    : super(group, id)
 {
 }
 

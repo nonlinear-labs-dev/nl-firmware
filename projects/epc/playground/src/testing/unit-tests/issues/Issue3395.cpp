@@ -46,4 +46,3 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "issue 3395")
     }
   }
 }
-

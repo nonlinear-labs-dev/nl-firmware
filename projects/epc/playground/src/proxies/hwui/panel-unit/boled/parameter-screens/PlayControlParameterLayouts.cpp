@@ -35,7 +35,7 @@ PlayControlParameterLayout2::PlayControlParameterLayout2()
     : super()
 {
   addControl(new PhysicalControlSlider(Rect(BIG_SLIDER_X, 24, BIG_SLIDER_WIDTH, 6)));
-  addControl(new HardwareSourceCCLabel(Rect{10, 33, 45, 12}));
+  addControl(new HardwareSourceCCLabel(Rect { 10, 33, 45, 12 }));
 
   if(s_instanceCount == 0)
   {

@@ -1080,7 +1080,7 @@ namespace Engine
         * m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Decay2];
     m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Decay2, 1.0f / (time + 1.0f));
     time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_A_Rel);
-    inf = (PolyValue) (-1 * PolyInt(time <= env_highest_finite_time));
+    inf = (PolyValue)(-1 * PolyInt(time <= env_highest_finite_time));
     time *= m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Release];
     m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Release, inf / (time + 1.0f));
     m_env_a.setElevation(m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_Elevate));
@@ -1094,7 +1094,7 @@ namespace Engine
         * m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Decay2];
     m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Decay2, 1.0f / (time + 1.0f));
     time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_B_Rel);
-    inf = (PolyValue) (-1 * PolyInt(time <= env_highest_finite_time));
+    inf = (PolyValue)(-1 * PolyInt(time <= env_highest_finite_time));
     time *= m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Release];
     m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Release, inf / (time + 1.0f));
     m_env_b.setElevation(m_smoothers.get(C15::Smoothers::Poly_Fast::Env_B_Elevate));
@@ -1108,7 +1108,7 @@ namespace Engine
         = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Dec_2) * m_env_c.mTimeFactor[LoopableEnv::SegmentId::Decay2];
     m_env_c.setSegmentDx(LoopableEnv::SegmentId::Decay2, 1.0f / (time + 1.0f));
     time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Rel);
-    inf = (PolyValue) (-1 * PolyInt(time <= env_highest_finite_time));
+    inf = (PolyValue)(-1 * PolyInt(time <= env_highest_finite_time));
     time *= m_env_c.mTimeFactor[LoopableEnv::SegmentId::Release];
     m_env_c.setSegmentDx(LoopableEnv::SegmentId::Release, inf / (time + 1.0f));
   }

@@ -133,8 +133,7 @@ size_t PhysicalControlParameter::getHash() const
 Glib::ustring PhysicalControlParameter::generateName() const
 {
   auto it = std::max_element(m_targets.begin(), m_targets.end(),
-                             [](const ModulationRoutingParameter *a, const ModulationRoutingParameter *b)
-                             {
+                             [](const ModulationRoutingParameter *a, const ModulationRoutingParameter *b) {
                                auto fa = fabs(a->getControlPositionValue());
                                auto fb = fabs(b->getControlPositionValue());
 
@@ -286,8 +285,7 @@ bool PhysicalControlParameter::lockingEnabled() const
 
 HardwareSourceSendParameter *PhysicalControlParameter::getSendParameter() const
 {
-  auto idToSendID = [](auto id)
-  {
+  auto idToSendID = [](auto id) {
     switch(id.getNumber())
     {
       case C15::PID::Pedal_1:

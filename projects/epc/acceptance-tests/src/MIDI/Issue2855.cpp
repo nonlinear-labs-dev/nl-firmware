@@ -3,7 +3,7 @@
 #include <mock/MockDSPHosts.h>
 #include <mock/TCDHelpers.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 2855")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 2855")
 {
   ConfigureableDSPHost host;
   MidiRuntimeOptions options;
@@ -13,8 +13,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 2855")
       &host, &options, []() {}, [&](auto midi) { sendMidi.emplace_back(midi); },
       [&](auto specialFunc) { sendSpecialFuncs.emplace_back(specialFunc); });
 
-  auto onSettingsReceived = [&](auto msg)
-  {
+  auto onSettingsReceived = [&](auto msg) {
     auto old = options.getLastReceivedMessage();
     options.update(msg);
     eventStage.onMidiSettingsMessageWasReceived(msg, old);

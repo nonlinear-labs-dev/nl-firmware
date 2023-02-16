@@ -62,7 +62,8 @@ void ConditionRegistry::lock()
 void ConditionRegistry::unlock()
 {
   locks--;
-  if(locks == 0) {
+  if(locks == 0)
+  {
     onConditionChanged();
   }
 }

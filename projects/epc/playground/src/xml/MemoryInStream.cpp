@@ -31,7 +31,8 @@ MemoryInStream::MemoryInStream(SoupBuffer *buffer, bool zipped)
 MemoryInStream::MemoryInStream(std::vector<uint8_t> buffer, bool zipped)
     : m_buffer(std::move(buffer))
 {
-  if(GInputStream *memStream = g_memory_input_stream_new_from_data(m_buffer.data(), static_cast<long>(m_buffer.size()), nullptr))
+  if(GInputStream *memStream
+     = g_memory_input_stream_new_from_data(m_buffer.data(), static_cast<long>(m_buffer.size()), nullptr))
   {
     if(zipped)
     {

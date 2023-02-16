@@ -11,7 +11,8 @@
 
 //debugging this Test-Case will pass, just running it w/o gdb will crash...
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "toggle VG from non Parameter-Layout does not lead to Parameter-Layout", "[!mayfail]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "toggle VG from non Parameter-Layout does not lead to Parameter-Layout", "[!mayfail]")
 {
   using namespace std::chrono_literals;
   auto hwui = Application::get().getHWUI();
@@ -29,7 +30,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "toggle VG from non Parameter-L
 
     WHEN("Env A selected")
     {
-      ebUC.selectParameter({C15::PID::Env_A_BP, VoiceGroup::I}, true);
+      ebUC.selectParameter({ C15::PID::Env_A_BP, VoiceGroup::I }, true);
       TestHelper::doMainLoopFor(50ms);
 
       CHECK(dynamic_cast<ParameterLayout2*>(boled.getLayout().get()) != nullptr);

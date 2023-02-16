@@ -26,7 +26,7 @@
 BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& presetManager, Settings& settings)
     : SectionAndActionManager(parent, "/banks/")
     , m_presetManager(presetManager)
-    , m_settings{settings}
+    , m_settings { settings }
 {
   addAction("drop-presets-above", [&](const std::shared_ptr<NetworkRequest>& request) {
     Glib::ustring csv = request->get("presets");
@@ -143,7 +143,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
   addAction("overwrite-preset-with-editbuffer", [&](const std::shared_ptr<NetworkRequest>& request) {
     auto presetToOverwrite = request->get("presetToOverwrite");
-    PresetUseCases useCase(*m_presetManager.findPreset(Uuid{ presetToOverwrite }), m_settings);
+    PresetUseCases useCase(*m_presetManager.findPreset(Uuid { presetToOverwrite }), m_settings);
     useCase.overwriteWithEditBuffer(*m_presetManager.getEditBuffer());
   });
 
@@ -292,9 +292,11 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
     }
   });
 
-  addAction("insert-bank-above", [&](const std::shared_ptr<NetworkRequest>& request) mutable { insertBank(request, 0); });
+  addAction("insert-bank-above",
+            [&](const std::shared_ptr<NetworkRequest>& request) mutable { insertBank(request, 0); });
 
-  addAction("insert-bank-below", [&](const std::shared_ptr<NetworkRequest>& request) mutable { insertBank(request, 1); });
+  addAction("insert-bank-below",
+            [&](const std::shared_ptr<NetworkRequest>& request) mutable { insertBank(request, 1); });
 
   addAction("overwrite-preset-with-bank", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto anchorUuid = request->get("anchor");
@@ -318,7 +320,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
 
     //TODO inject proper Progress CB
     PresetManagerUseCases useCases(m_presetManager, m_settings);
-    useCases.importBankFromStream(stream, std::stoi(x), std::stoi(y), fileName, [](auto){});
+    useCases.importBankFromStream(stream, std::stoi(x), std::stoi(y), fileName, [](auto) {});
   });
 
   addAction("set-preset-attribute", [&](const std::shared_ptr<NetworkRequest>& request) mutable {
@@ -461,8 +463,7 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
   });
 }
 
-BankActions::~BankActions()
-= default;
+BankActions::~BankActions() = default;
 
 bool BankActions::handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request)
 {

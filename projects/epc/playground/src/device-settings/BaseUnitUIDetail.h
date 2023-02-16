@@ -1,7 +1,8 @@
 #pragma once
 #include <device-settings/EnumSetting.h>
 
-enum class BaseUnitUIDetails {
+enum class BaseUnitUIDetails
+{
   RibbonSelect,
   RibbonMode
 };
@@ -12,9 +13,9 @@ class BaseUnitUIDetail : public EnumSetting<BaseUnitUIDetails>
   typedef EnumSetting<BaseUnitUIDetails> super;
 
  public:
-  explicit BaseUnitUIDetail(Settings& settings);
-  BaseUnitUIDetail(const BaseUnitUIDetail& other) = delete;
-  BaseUnitUIDetail &operator=(const BaseUnitUIDetail&) = delete;
+  explicit BaseUnitUIDetail(Settings &settings);
+  BaseUnitUIDetail(const BaseUnitUIDetail &other) = delete;
+  BaseUnitUIDetail &operator=(const BaseUnitUIDetail &) = delete;
   ~BaseUnitUIDetail() override = default;
 
  private:

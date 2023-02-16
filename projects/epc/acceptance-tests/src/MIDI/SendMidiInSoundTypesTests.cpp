@@ -6,14 +6,14 @@
 #include <AudioEngineOptions.h>
 #include <mock/DspHostDualTester.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send HW-Change only in Split Sound on Split Channel")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Send HW-Change only in Split Sound on Split Channel")
 {
   constexpr static uint8_t BASE_TCD = 0b11100000;
   constexpr static uint8_t Aftertouch = 0b00000101;
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEvent
-      = { { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) } };
+      = { { BASE_TCD | Aftertouch, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) } };
 
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
@@ -46,8 +46,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send HW-Change only in Split So
 
   auto sendTCDHWChange = [&]() { eventStage.onTCDMessage(fullPressureTCDEvent); };
 
-  auto doTests = [&](const std::map<SoundType, int>& expected)
-  {
+  auto doTests = [&](const std::map<SoundType, int>& expected) {
     WHEN("Sound is Single")
     {
       host.setType(SoundType::Single);
@@ -119,7 +118,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send HW-Change only in Split So
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send Note Off with real Synth when local is off")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Send Note Off with real Synth when local is off")
 {
   using namespace std::chrono_literals;
 
@@ -207,7 +206,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send Note Off with real Synth w
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send Note Off when local is off Split")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Send Note Off when local is off Split")
 {
   auto config = nltools::msg::getConfig();
   config.useEndpoints
@@ -292,7 +291,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send Note Off when local is off
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send Note Off when local is off Layer")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Send Note Off when local is off Layer")
 {
   auto config = nltools::msg::getConfig();
   config.useEndpoints
@@ -359,8 +358,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send Note Off when local is off
   }
 }
 
-
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Send Note Off when local is off Single")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Send Note Off when local is off Single")
 {
   auto config = nltools::msg::getConfig();
   config.useEndpoints

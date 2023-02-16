@@ -17,7 +17,7 @@ class PhysicalControlSlider : public SelectedParameterDotSlider
 
  protected:
   void onParameterSelectionChanged(Parameter* p);
-  void drawSliderBackground(FrameBuffer &fb) override;
+  void drawSliderBackground(FrameBuffer& fb) override;
   bool isLocalDisabledForThisParameter();
   bool redrawLocalDisabled(FrameBuffer& buffer);
 

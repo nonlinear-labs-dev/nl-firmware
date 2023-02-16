@@ -17,7 +17,7 @@
 
 int MacroControlEditButtonMenu::s_lastAction = 0;
 
-MacroControlEditButtonMenu::MacroControlEditButtonMenu(const Rect &rect)
+MacroControlEditButtonMenu::MacroControlEditButtonMenu(const Rect& rect)
     : super(rect)
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();

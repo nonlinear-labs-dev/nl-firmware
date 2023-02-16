@@ -11,8 +11,8 @@ class DirectLoadSetting : public BooleanSetting
   DirectLoadSetting& operator=(const DirectLoadSetting&) = delete;
 
  private:
-  using BooleanSetting::toggle;
   using BooleanSetting::set;
+  using BooleanSetting::toggle;
 
   friend class DirectLoadUseCases;
 };

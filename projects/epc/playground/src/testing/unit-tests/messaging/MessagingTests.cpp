@@ -31,10 +31,9 @@ TEST_CASE_METHOD(TestHelper::MainContextFixture, "Send Receive", "[Messaging][nl
 
   int numMessages = 0;
 
-  SplitPresetMessage msgToSend{};
+  SplitPresetMessage msgToSend {};
   CHECK(waitForConnection(EndPoint::TestEndPoint));
-  auto c
-      = receive<SplitPresetMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numMessages++; });
+  auto c = receive<SplitPresetMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numMessages++; });
   send(EndPoint::TestEndPoint, msgToSend);
   TestHelper::doMainLoop(
       10ms, 1s, [&] { return numMessages == 1; }, m_context);
@@ -53,8 +52,7 @@ TEST_CASE_METHOD(TestHelper::MainContextFixture, "No packet lost if bombed", "[M
 
   SplitPresetMessage msgToSend {};
   CHECK(waitForConnection(EndPoint::TestEndPoint));
-  auto c = receive<SplitPresetMessage>(EndPoint::TestEndPoint,
-                                                          [&](const auto &msg) { numRecMessages++; });
+  auto c = receive<SplitPresetMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numRecMessages++; });
 
   for(int i = 0; i < numSendMessages; i++)
     send(EndPoint::TestEndPoint, msgToSend);
@@ -74,10 +72,9 @@ TEST_CASE_METHOD(TestHelper::MainContextFixture, "No packet doubles", "[Messagin
   int numRecMessages = 0;
   int numSendMessages = 100;
 
-  SplitPresetMessage msgToSend { };
+  SplitPresetMessage msgToSend {};
   CHECK(waitForConnection(EndPoint::TestEndPoint));
-  auto c = receive<SplitPresetMessage>(EndPoint::TestEndPoint,
-                                                          [&](const auto &msg) { numRecMessages++; });
+  auto c = receive<SplitPresetMessage>(EndPoint::TestEndPoint, [&](const auto &msg) { numRecMessages++; });
 
   for(int i = 0; i < numSendMessages; i++)
     send(EndPoint::TestEndPoint, msgToSend);
@@ -106,11 +103,11 @@ TEST_CASE("ContextBoundMessageQueue - no send after destruction")
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Send all Parameter Messages")
 {
   int testedParams = 0;
-  for(auto vg: {VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II})
+  for(auto vg : { VoiceGroup::Global, VoiceGroup::I, VoiceGroup::II })
   {
-    for(auto g: app->getPresetManager()->getEditBuffer()->getParameterGroups(vg))
+    for(auto g : app->getPresetManager()->getEditBuffer()->getParameterGroups(vg))
     {
-      for(auto& p: g->getParameters())
+      for(auto &p : g->getParameters())
       {
         testedParams++;
         REQUIRE_NOTHROW(p->sendParameterMessage());

@@ -5,7 +5,7 @@
 #include <sync/SyncMasterMockRoot.h>
 #include <proxies/hwui/HardwareFeatures.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"MockSettingsObject onChange is called when Setting calls notify")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "MockSettingsObject onChange is called when Setting calls notify")
 {
   HardwareFeatures hw;
   MockSettingsObject settings("", &SyncMasterMockRoot::get(), hw);

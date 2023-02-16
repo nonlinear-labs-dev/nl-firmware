@@ -4,7 +4,7 @@
 #include <presets/PresetParameter.h>
 #include <catch.hpp>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Init sound stored as single but used in dual")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Init sound stored as single but used in dual")
 {
   auto pm = TestHelper::getPresetManager();
   auto eb = TestHelper::getEditBuffer();
@@ -33,7 +33,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Init sound stored as single but
   CHECK(pII->getControlPositionValue() == 0.25);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Init sound stored as single but used in part II")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Init sound stored as single but used in part II")
 {
   auto pm = TestHelper::getPresetManager();
   auto eb = TestHelper::getEditBuffer();
@@ -60,7 +60,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Init sound stored as single but
   CHECK(pII->getControlPositionValue() == 0.25);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Special init sound value stored in layer mode is not overriden by storing in single mode")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "Special init sound value stored in layer mode is not overriden by storing in single mode")
 {
   auto pm = TestHelper::getPresetManager();
   auto eb = TestHelper::getEditBuffer();
@@ -87,7 +88,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Special init sound value stored
   CHECK(p->getControlPositionValue() == 0.5);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Special init sound value stored in layer mode is copied to part II so it is proper in split mode")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "Special init sound value stored in layer mode is copied to part II so it is proper in split mode")
 {
   auto pm = TestHelper::getPresetManager();
   auto eb = TestHelper::getEditBuffer();

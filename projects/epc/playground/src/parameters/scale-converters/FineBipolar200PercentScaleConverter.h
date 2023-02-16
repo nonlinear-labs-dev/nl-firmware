@@ -4,7 +4,7 @@
 
 class FineBipolar200PercentScaleConverter : public LinearScaleConverter
 {
-public:
-    FineBipolar200PercentScaleConverter();
-    ~FineBipolar200PercentScaleConverter() override;
+ public:
+  FineBipolar200PercentScaleConverter();
+  ~FineBipolar200PercentScaleConverter() override;
 };

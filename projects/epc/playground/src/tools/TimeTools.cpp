@@ -15,7 +15,7 @@ time_t TimeTools::getRealTimestamp()
   return time(nullptr);
 }
 
-time_t TimeTools::getAdjustedTimestamp(DateTimeAdjustment* adj)
+time_t TimeTools::getAdjustedTimestamp(DateTimeAdjustment *adj)
 {
   if(adj)
   {

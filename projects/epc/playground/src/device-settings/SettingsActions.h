@@ -14,6 +14,7 @@ class SettingsActions : public SectionAndActionManager
   void writeDocument(Writer& writer, tUpdateID knownRevision) const override;
   SettingsActions(const SettingsActions& other) = delete;
   SettingsActions& operator=(const SettingsActions&) = delete;
+
  private:
   Settings& m_settings;
 };

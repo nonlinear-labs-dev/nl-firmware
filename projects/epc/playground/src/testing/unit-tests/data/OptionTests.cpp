@@ -4,7 +4,7 @@
 #include <device-settings/Settings.h>
 #include <proxies/hwui/HardwareFeatures.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Edit Smoothing Time - Scales")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Edit Smoothing Time - Scales")
 {
   HardwareFeatures hw;
   Settings settings("", nullptr, hw);
@@ -12,7 +12,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Edit Smoothing Time - Scales")
   REQUIRE(time.getParent() != nullptr);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Edit Smoothing Time - To String")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Edit Smoothing Time - To String")
 {
   HardwareFeatures hw;
   Settings settings("", nullptr, hw);

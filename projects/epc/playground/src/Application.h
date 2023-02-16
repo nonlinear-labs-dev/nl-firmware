@@ -57,9 +57,9 @@ class Application
   DeviceInformation *getDeviceInformation();
   Clipboard *getClipboard();
   WebUISupport *getWebUISupport();
-  VoiceGroupAndLoadToPartManager* getVGManager();
-  RecorderManager* getRecorderManager();
-  HardwareFeatures* getHardwareFeatures();
+  VoiceGroupAndLoadToPartManager *getVGManager();
+  RecorderManager *getRecorderManager();
+  HardwareFeatures *getHardwareFeatures();
 
   void quit();
   void runWatchDog();

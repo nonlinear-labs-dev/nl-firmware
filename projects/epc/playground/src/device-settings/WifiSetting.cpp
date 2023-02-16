@@ -10,12 +10,10 @@
 WifiSetting::WifiSetting(UpdateDocumentContributor& settings)
     : super(settings, WifiSettings::Enabled)
 {
-  nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::BeagleBone,
-                                        [this]()
-                                        {
-                                          m_connectionToBBBEstablished = true;
-                                          setupBBBWifiIfBBBConnectedAndSettingLoaded();
-                                        });
+  nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::BeagleBone, [this]() {
+    m_connectionToBBBEstablished = true;
+    setupBBBWifiIfBBBConnectedAndSettingLoaded();
+  });
 }
 
 bool WifiSetting::set(tEnum m)

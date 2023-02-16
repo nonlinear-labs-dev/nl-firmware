@@ -30,7 +30,8 @@ ENUM(RibbonCC, int8_t, None, CC01, CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC0
 
 ENUM(PedalCC, int8_t, None, CC01, CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC09, CC10, CC11, CC12, CC13, CC14, CC15,
      CC16, CC17, CC18, CC19, CC20, CC21, CC22, CC23, CC24, CC25, CC26, CC27, CC28, CC29, CC30, CC31, CC64, CC65, CC66,
-     CC67, CC68, CC69, CC64_Continuous, CC65_Continuous, CC66_Continuous, CC67_Continuous, CC68_Continuous, CC69_Continuous);
+     CC67, CC68, CC69, CC64_Continuous, CC65_Continuous, CC66_Continuous, CC67_Continuous, CC68_Continuous,
+     CC69_Continuous);
 
 ENUM(BenderCC, int8_t, None, Pitchbend, CC01, CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC09, CC10, CC11, CC12, CC13,
      CC14, CC15, CC16, CC17, CC18, CC19, CC20, CC21, CC22, CC23, CC24, CC25, CC26, CC27, CC28, CC29, CC30, CC31);

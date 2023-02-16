@@ -52,12 +52,10 @@ class EditBufferLogicalParts
   std::vector<Parameter*> filter(const std::vector<Parameter*>& in, const std::vector<ParameterId>& exclude)
   {
     std::vector<Parameter*> ret;
-    std::copy_if(in.begin(), in.end(), std::back_inserter(ret),
-                 [&](Parameter* p)
-                 {
-                   auto it = std::find(exclude.begin(), exclude.end(), p->getID());
-                   return it == exclude.end();
-                 });
+    std::copy_if(in.begin(), in.end(), std::back_inserter(ret), [&](Parameter* p) {
+      auto it = std::find(exclude.begin(), exclude.end(), p->getID());
+      return it == exclude.end();
+    });
     return ret;
   }
 

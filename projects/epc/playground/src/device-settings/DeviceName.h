@@ -25,6 +25,6 @@ class DeviceName : public Setting
   const Glib::ustring &get() const;
 
  private:
-  Settings& m_settings;
+  Settings &m_settings;
   Glib::ustring m_name;
 };

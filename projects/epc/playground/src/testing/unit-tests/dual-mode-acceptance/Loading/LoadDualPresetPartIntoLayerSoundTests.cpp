@@ -13,7 +13,7 @@
 
 using EBL = EditBufferLogicalParts;
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Layer Part I")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load Part I of Split into Layer Part I")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;
@@ -152,7 +152,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Layer
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Layer Part II")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load Part I of Split into Layer Part II")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;
@@ -297,7 +297,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Split into Layer
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Layer into Layer Part I")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load Part I of Layer into Layer Part I")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;
@@ -437,7 +437,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Layer into Layer
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Part I of Layer into Layer Part II")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load Part I of Layer into Layer Part II")
 {
   auto eb = TestHelper::getEditBuffer();
   MockPresetStorage presets;

@@ -12,23 +12,21 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Pedal Mappings", "[MIDI][TCD]"
   constexpr static auto fourThousand = static_cast<int>(sixteenThousand * 0.25f);
 
   constexpr MidiEvent fullPressureTCDEvent
-      = { { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) } };
+      = { { BASE_TCD | Pedal1, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) } };
   constexpr MidiEvent threeQuarterPressureTCDEvent
-      = { { BASE_TCD | Pedal1, (uint8_t) (twelveThousand >> 7), (uint8_t) (twelveThousand & 127) } };
+      = { { BASE_TCD | Pedal1, (uint8_t)(twelveThousand >> 7), (uint8_t)(twelveThousand & 127) } };
   constexpr MidiEvent quarterPressureTCDEvent
-      = { { BASE_TCD | Pedal1, (uint8_t) (fourThousand >> 7), (uint8_t) (fourThousand & 127) } };
+      = { { BASE_TCD | Pedal1, (uint8_t)(fourThousand >> 7), (uint8_t)(fourThousand & 127) } };
   constexpr MidiEvent noPressureTCDEvent = { { BASE_TCD | Pedal1, 0, 0 } };
 
   bool receivedHW = false;
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
-  host.setOnHWChangedCB(
-      [&](auto hwID, float hwPos, bool)
-      {
-        CHECK(hwID == HardwareSource::PEDAL1);
-        CHECK(hwPos == 1.0f);
-        receivedHW = true;
-      });
+  host.setOnHWChangedCB([&](auto hwID, float hwPos, bool) {
+    CHECK(hwID == HardwareSource::PEDAL1);
+    CHECK(hwPos == 1.0f);
+    receivedHW = true;
+  });
 
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   MidiRuntimeOptions settings;
@@ -55,55 +53,51 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Pedal Mappings", "[MIDI][TCD]"
     settings.update(msg);
   }
 
-    WHEN("Mapped to Normal CC")
-    {
-      settings.setPedal1(PedalCC::CC01);
+  WHEN("Mapped to Normal CC")
+  {
+    settings.setPedal1(PedalCC::CC01);
 
-      WHEN("Send CC01, 1.0")
-      {
-        eventStage.onMIDIMessage({ { 0xB0, 0x01, 127 } });
-        CHECK(receivedHW);
-      }
+    WHEN("Send CC01, 1.0")
+    {
+      eventStage.onMIDIMessage({ { 0xB0, 0x01, 127 } });
+      CHECK(receivedHW);
+    }
+  }
+
+  WHEN("Mapped to CC69, Switching")
+  {
+    settings.setPedal1(PedalCC::CC69);
+
+    WHEN("Send CC01 < 0.5")
+    {
+      host.setOnHWChangedCB([&](auto hwID, float hwPos, bool) {
+        CHECK(hwID == HardwareSource::PEDAL1);
+        CHECK(hwPos == 0.0f);
+        receivedHW = true;
+      });
+
+      eventStage.onMIDIMessage({ { 0xB0, 69, 50 } });
+      CHECK(receivedHW);
     }
 
-    WHEN("Mapped to CC69, Switching")
+    WHEN("Send CC01 > 0.5")
     {
-      settings.setPedal1(PedalCC::CC69);
+      host.setOnHWChangedCB([&](auto hwID, float hwPos, bool) {
+        CHECK(hwID == HardwareSource::PEDAL1);
+        CHECK(hwPos == 1.0f);
+        receivedHW = true;
+      });
 
-      WHEN("Send CC01 < 0.5")
-      {
-        host.setOnHWChangedCB(
-            [&](auto hwID, float hwPos, bool)
-            {
-              CHECK(hwID == HardwareSource::PEDAL1);
-              CHECK(hwPos == 0.0f);
-              receivedHW = true;
-            });
-
-        eventStage.onMIDIMessage({ { 0xB0, 69, 50 } });
-        CHECK(receivedHW);
-      }
-
-      WHEN("Send CC01 > 0.5")
-      {
-        host.setOnHWChangedCB(
-            [&](auto hwID, float hwPos, bool)
-            {
-              CHECK(hwID == HardwareSource::PEDAL1);
-              CHECK(hwPos == 1.0f);
-              receivedHW = true;
-            });
-
-        eventStage.onMIDIMessage({ { 0xB0, 69, 80 } });
-        CHECK(receivedHW);
-      }
-
-      WHEN("Send CC01")
-      {
-        eventStage.onMIDIMessage({ { 0xB0, 1, 127 } });
-        CHECK_FALSE(receivedHW);
-      }
+      eventStage.onMIDIMessage({ { 0xB0, 69, 80 } });
+      CHECK(receivedHW);
     }
+
+    WHEN("Send CC01")
+    {
+      eventStage.onMIDIMessage({ { 0xB0, 1, 127 } });
+      CHECK_FALSE(receivedHW);
+    }
+  }
 
   WHEN("Pedal 1 And Pedal 2 are mapped to same CC")
   {
@@ -115,18 +109,16 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Pedal Mappings", "[MIDI][TCD]"
       bool received0 = false;
       bool received1 = false;
 
-      host.setOnHWChangedCB(
-          [&](auto hwID, float hwPos, bool)
-          {
-            if(hwID == HardwareSource::PEDAL1)
-              ;
-            received0 = true;
-            if(hwID == HardwareSource::PEDAL2)
-              received1 = true;
+      host.setOnHWChangedCB([&](auto hwID, float hwPos, bool) {
+        if(hwID == HardwareSource::PEDAL1)
+          ;
+        received0 = true;
+        if(hwID == HardwareSource::PEDAL2)
+          received1 = true;
 
-            CHECK(hwPos == 1.0f);
-            receivedHW = true;
-          });
+        CHECK(hwPos == 1.0f);
+        receivedHW = true;
+      });
 
       eventStage.onMIDIMessage({ { 0xB0, 1, 127 } });
 
@@ -203,7 +195,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Pedal Mappings", "[MIDI][TCD]"
       CHECK(sendMidiMessages[0].rawBytes[1] == 69);
       CHECK(sendMidiMessages[0].rawBytes[2] == 0);
     }
-
 
     WHEN("send 3/4 pressure")
     {

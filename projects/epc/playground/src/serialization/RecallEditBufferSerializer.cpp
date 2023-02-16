@@ -23,11 +23,13 @@ void RecallEditBufferSerializer::writeTagContent(Writer &writer) const
   {
     auto parameter = param.second.get();
 
-    writer.writeTextElement("recall-param-v2", to_string(parameter->getRecallValue()),
-                            { Attribute("id", parameter->getID().toString()),
-                              Attribute("mod-amt", to_string(parameter->getRecallModulationAmount())),
-                              Attribute("mod-src", to_string(parameter->getRecallModSource())),
-                              Attribute("name", parameter->getGivenName()), Attribute("info", parameter->getInfo()), Attribute("ribbon-touch-behaviour", to_string(static_cast<int>(parameter->m_ribbonTouchBehaviour))) });
+    writer.writeTextElement(
+        "recall-param-v2", to_string(parameter->getRecallValue()),
+        { Attribute("id", parameter->getID().toString()),
+          Attribute("mod-amt", to_string(parameter->getRecallModulationAmount())),
+          Attribute("mod-src", to_string(parameter->getRecallModSource())),
+          Attribute("name", parameter->getGivenName()), Attribute("info", parameter->getInfo()),
+          Attribute("ribbon-touch-behaviour", to_string(static_cast<int>(parameter->m_ribbonTouchBehaviour))) });
   }
 }
 
@@ -44,9 +46,13 @@ void RecallEditBufferSerializer::readTagContent(Reader &reader) const
       param->m_recallModSource = static_cast<MacroControls>(std::stoi(attr.get("mod-src")));
       param->m_givenName = attr.get("name");
       param->m_info = attr.get("info");
-      try {
-        param->m_ribbonTouchBehaviour = static_cast<RibbonTouchBehaviour>(std::stoi(attr.get("ribbon-touch-behaviour")));
-      } catch (...) {
+      try
+      {
+        param->m_ribbonTouchBehaviour
+            = static_cast<RibbonTouchBehaviour>(std::stoi(attr.get("ribbon-touch-behaviour")));
+      }
+      catch(...)
+      {
         param->m_ribbonTouchBehaviour = RibbonTouchBehaviour::ABSOLUTE;
       }
     }
@@ -62,9 +68,13 @@ void RecallEditBufferSerializer::readTagContent(Reader &reader) const
           split->m_recallModSource = static_cast<MacroControls>(std::stoi(attr.get("mod-amt")));
           split->m_givenName = attr.get("name");
           split->m_info = attr.get("info");
-          try {
-            split->m_ribbonTouchBehaviour = static_cast<RibbonTouchBehaviour>(std::stoi(attr.get("ribbon-touch-behaviour")));
-          } catch(...) {
+          try
+          {
+            split->m_ribbonTouchBehaviour
+                = static_cast<RibbonTouchBehaviour>(std::stoi(attr.get("ribbon-touch-behaviour")));
+          }
+          catch(...)
+          {
             split->m_ribbonTouchBehaviour = RibbonTouchBehaviour::ABSOLUTE;
           }
         }

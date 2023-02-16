@@ -48,7 +48,7 @@ bool FileDialogInfoLayout::onButton(Buttons i, bool down, ButtonModifiers modifi
       case Buttons::BUTTON_PRESET:
       {
         SettingsUseCases useCases(*Application::get().getSettings());
-        useCases.setFocusAndMode({UIFocus::Presets, UIMode::Select});
+        useCases.setFocusAndMode({ UIFocus::Presets, UIMode::Select });
         return true;
       }
 

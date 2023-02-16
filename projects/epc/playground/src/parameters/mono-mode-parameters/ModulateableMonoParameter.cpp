@@ -8,7 +8,7 @@ ModulateableMonoParameter::ModulateableMonoParameter(ParameterGroup* group, cons
 {
 }
 
-Layout *ModulateableMonoParameter::createLayout(FocusAndMode focusAndMode) const
+Layout* ModulateableMonoParameter::createLayout(FocusAndMode focusAndMode) const
 {
   switch(focusAndMode.mode)
   {

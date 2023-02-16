@@ -13,10 +13,11 @@
 #include <parameter_declarations.h>
 #include "ae_potential_improvements.h"
 
-namespace Engine {
+namespace Engine
+{
 
-using GlobalSignals = MonoSignalStorage<C15::Signals::Global_Signals>;
-using PolySignals = PolySignalStorage<C15::Signals::Truepoly_Signals, C15::Signals::Quasipoly_Signals>;
-using MonoSignals = MonoSignalStorage<C15::Signals::Mono_Signals>;
+  using GlobalSignals = MonoSignalStorage<C15::Signals::Global_Signals>;
+  using PolySignals = PolySignalStorage<C15::Signals::Truepoly_Signals, C15::Signals::Quasipoly_Signals>;
+  using MonoSignals = MonoSignalStorage<C15::Signals::Mono_Signals>;
 
-} // namespace Engine
+}  // namespace Engine

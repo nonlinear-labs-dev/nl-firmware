@@ -32,5 +32,5 @@
 #define env_highest_finite_time 16000.f  // highest allowed finite time
 
 // loop factor
-#define env_loop_factor_from 0 // from
-#define env_loop_factor_range 100 // range
+#define env_loop_factor_from 0     // from
+#define env_loop_factor_range 100  // range

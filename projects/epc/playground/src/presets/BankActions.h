@@ -13,14 +13,15 @@ class Settings;
 class BankActions : public SectionAndActionManager
 {
  public:
-  explicit BankActions(UpdateDocumentContributor* parent, PresetManager &presetManager, Settings &settings);
+  explicit BankActions(UpdateDocumentContributor *parent, PresetManager &presetManager, Settings &settings);
   ~BankActions() override;
 
   bool handleRequest(const Glib::ustring &path, std::shared_ptr<NetworkRequest> request) override;
+
  private:
   typedef Preset *tPresetPtr;
 
-  void insertBank(const std::shared_ptr<NetworkRequest>& request, size_t offset);
+  void insertBank(const std::shared_ptr<NetworkRequest> &request, size_t offset);
   PresetManager &m_presetManager;
-  Settings& m_settings;
+  Settings &m_settings;
 };

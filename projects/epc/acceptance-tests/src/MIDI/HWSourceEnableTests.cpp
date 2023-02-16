@@ -2,7 +2,7 @@
 #include <mock/MockDSPHosts.h>
 #include <mock/InputEventStageTester.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"HW Source Enable Tests")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "HW Source Enable Tests")
 {
   //Setup
   ConfigureableDSPHost dsp {};
@@ -11,7 +11,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"HW Source Enable Tests")
   MidiRuntimeOptions options {};
 
   std::vector<InputEventStage::MIDIOutType> sendMidiMessages;
-  InputEventStage eS(&dsp, &options, [](){}, [&](auto m) { sendMidiMessages.emplace_back(m); }, [](auto){});
+  InputEventStage eS(
+      &dsp, &options, []() {}, [&](auto m) { sendMidiMessages.emplace_back(m); }, [](auto) {});
 
   InputEventStageTester eventStage(&eS);
 
@@ -20,8 +21,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"HW Source Enable Tests")
 
   //prepare default settings
 
-  auto initSettings = [&](const std::vector<nltools::msg::Setting::MidiSettingsMessage::RoutingAspect>& aspects)
-  {
+  auto initSettings = [&](const std::vector<nltools::msg::Setting::MidiSettingsMessage::RoutingAspect>& aspects) {
     nltools::msg::Setting::MidiSettingsMessage msg;
     msg.pedal1cc = PedalCC::CC01;
     msg.pedal2cc = PedalCC::CC02;
@@ -55,7 +55,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"HW Source Enable Tests")
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEvent
-      = { { BASE_TCD | Pedal1, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) } };
+      = { { BASE_TCD | Pedal1, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) } };
 
   constexpr MidiEvent pedal1PressureMIDIEvent = { { 0xB0, 1, 69 } };
   constexpr MidiEvent pedal1PressureMIDIEvent_split = { { 0xB1, 1, 69 } };
@@ -67,9 +67,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"HW Source Enable Tests")
     initSettings({});
 
     bool didReceive = false;
-    dsp.setOnHWChangedCB([&didReceive](auto id, auto, auto) {
-                           didReceive = true;
-                         });
+    dsp.setOnHWChangedCB([&didReceive](auto id, auto, auto) { didReceive = true; });
 
     eventStage.onTCDMessage(fullPressureTCDEvent);
     eventStage.onMIDIMessage(pedal1PressureMIDIEvent);
@@ -95,12 +93,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"HW Source Enable Tests")
     initSettings({ tMAPPING_INDEX::RECEIVE_PRIMARY });
 
     bool didReceive = false;
-    dsp.setOnHWChangedCB(
-        [&didReceive](auto hwID, auto, auto)
-        {
-          didReceive = true;
-          CHECK(hwID == HardwareSource::PEDAL1);
-        });
+    dsp.setOnHWChangedCB([&didReceive](auto hwID, auto, auto) {
+      didReceive = true;
+      CHECK(hwID == HardwareSource::PEDAL1);
+    });
 
     eventStage.onMIDIMessage(pedal1PressureMIDIEvent);
 
@@ -113,12 +109,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"HW Source Enable Tests")
     initSettings({ tMAPPING_INDEX::LOCAL, tMAPPING_INDEX::SEND_PRIMARY });
 
     bool didReceive = false;
-    dsp.setOnHWChangedCB(
-        [&didReceive](auto hwID, auto, auto)
-        {
-          didReceive = true;
-          CHECK(hwID == HardwareSource::PEDAL1);
-        });
+    dsp.setOnHWChangedCB([&didReceive](auto hwID, auto, auto) {
+      didReceive = true;
+      CHECK(hwID == HardwareSource::PEDAL1);
+    });
 
     eventStage.onTCDMessage(fullPressureTCDEvent);
 
@@ -131,12 +125,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"HW Source Enable Tests")
     initSettings({ tMAPPING_INDEX::LOCAL, tMAPPING_INDEX::SEND_SPLIT });
 
     bool didReceive = false;
-    dsp.setOnHWChangedCB(
-        [&didReceive](auto hwID, auto, auto)
-        {
-          didReceive = true;
-          CHECK(hwID == HardwareSource::PEDAL1);
-        });
+    dsp.setOnHWChangedCB([&didReceive](auto hwID, auto, auto) {
+      didReceive = true;
+      CHECK(hwID == HardwareSource::PEDAL1);
+    });
 
     WHEN("is Split")
     {
@@ -165,12 +157,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"HW Source Enable Tests")
     initSettings({ tMAPPING_INDEX::RECEIVE_SPLIT });
 
     bool didReceive = false;
-    dsp.setOnHWChangedCB(
-        [&didReceive](auto hwID, auto, auto)
-        {
-          didReceive = true;
-          CHECK(hwID == HardwareSource::PEDAL1);
-        });
+    dsp.setOnHWChangedCB([&didReceive](auto hwID, auto, auto) {
+      didReceive = true;
+      CHECK(hwID == HardwareSource::PEDAL1);
+    });
 
     WHEN("is Split")
     {
@@ -192,7 +182,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"HW Source Enable Tests")
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Aftertouch & Bender Enable/Disable Tests")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Aftertouch & Bender Enable/Disable Tests")
 {
   //Setup
   ConfigureableDSPHost dsp {};
@@ -201,7 +191,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Aftertouch & Bender Enable/Disa
   MidiRuntimeOptions options {};
 
   std::vector<InputEventStage::MIDIOutType> sendMidiMessages;
-  InputEventStage eS(&dsp, &options, [](){}, [&](auto m) { sendMidiMessages.emplace_back(m); }, [](auto){});
+  InputEventStage eS(
+      &dsp, &options, []() {}, [&](auto m) { sendMidiMessages.emplace_back(m); }, [](auto) {});
 
   InputEventStageTester eventStage(&eS);
 
@@ -211,8 +202,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Aftertouch & Bender Enable/Disa
   //prepare default settings
 
   auto initSettings = [&](const std::vector<nltools::msg::Setting::MidiSettingsMessage::RoutingIndex>& idx,
-                          const std::vector<nltools::msg::Setting::MidiSettingsMessage::RoutingAspect>& aspects)
-  {
+                          const std::vector<nltools::msg::Setting::MidiSettingsMessage::RoutingAspect>& aspects) {
     nltools::msg::Setting::MidiSettingsMessage msg;
     msg.pedal1cc = PedalCC::CC01;
     msg.pedal2cc = PedalCC::CC02;
@@ -252,10 +242,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Aftertouch & Bender Enable/Disa
   constexpr static auto sixteenThousand = 0b11111010000000;
 
   constexpr MidiEvent fullPressureTCDEventAftertouch
-      = { { BASE_TCD | Aftertouch, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) } };
+      = { { BASE_TCD | Aftertouch, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) } };
 
   constexpr MidiEvent fullPressureTCDEventBender
-      = { { BASE_TCD | Bender, (uint8_t) (sixteenThousand >> 7), (uint8_t) (sixteenThousand & 127) } };
+      = { { BASE_TCD | Bender, (uint8_t)(sixteenThousand >> 7), (uint8_t)(sixteenThousand & 127) } };
 
   typedef nltools::msg::Setting::MidiSettingsMessage::RoutingAspect tMAPPING_INDEX;
   typedef nltools::msg::Setting::MidiSettingsMessage::RoutingIndex tHW_INDEX;
@@ -265,12 +255,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Aftertouch & Bender Enable/Disa
     bool didReceive = false;
     dsp.setType(SoundType::Split);
 
-    dsp.setOnHWChangedCB(
-        [&didReceive](auto hwID, auto, auto)
-        {
-          didReceive = true;
-          CHECK(hwID == HardwareSource::AFTERTOUCH);
-        });
+    dsp.setOnHWChangedCB([&didReceive](auto hwID, auto, auto) {
+      didReceive = true;
+      CHECK(hwID == HardwareSource::AFTERTOUCH);
+    });
 
     THEN("TCD gets send on Prim")
     {
@@ -298,12 +286,10 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Aftertouch & Bender Enable/Disa
     bool didReceive = false;
     dsp.setType(SoundType::Split);
 
-    dsp.setOnHWChangedCB(
-        [&didReceive](auto hwID, auto, auto)
-        {
-            didReceive = true;
-            CHECK(hwID == HardwareSource::BENDER);
-        });
+    dsp.setOnHWChangedCB([&didReceive](auto hwID, auto, auto) {
+      didReceive = true;
+      CHECK(hwID == HardwareSource::BENDER);
+    });
 
     THEN("TCD gets send on Prim")
     {

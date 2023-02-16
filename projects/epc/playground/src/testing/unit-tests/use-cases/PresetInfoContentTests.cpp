@@ -35,7 +35,7 @@ namespace detail
   }
 };
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Single Preset Type String", "[Preset]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Single Preset Type String", "[Preset]")
 {
   MockPresetStorage presets;
   auto preset = presets.getSinglePreset();
@@ -64,7 +64,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Single Preset Type String", "[P
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Layer Preset Type String", "[Preset]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Layer Preset Type String", "[Preset]")
 {
   MockPresetStorage presets;
   auto preset = presets.getLayerPreset();
@@ -94,7 +94,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Layer Preset Type String", "[Pr
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Split Preset Type String", "[Preset]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[Preset]")
 {
   MockPresetStorage presets;
   auto preset = presets.getSplitPreset();

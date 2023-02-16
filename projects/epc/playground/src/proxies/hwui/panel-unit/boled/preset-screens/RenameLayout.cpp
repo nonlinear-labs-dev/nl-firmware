@@ -62,7 +62,7 @@ void RenameLayout::addLetters()
 
     for(int row = 0; row < c_numRows - 1; row++)
     {
-      Buttons buttonID = (Buttons) (col * c_numRows + row);
+      Buttons buttonID = (Buttons)(col * c_numRows + row);
       Glib::ustring label = m_textUsageMode->getKeyLabel(buttonID);
       addControl(new RenameLetter(m_textUsageMode, buttonID, Rect(x, y, c_letterWidth, c_letterHeight)));
       y += c_letterHeight;
@@ -83,7 +83,7 @@ void RenameLayout::addControlKeys()
     if(col == c_numCols / 4)
       x += 2;
 
-    Buttons buttonID = (Buttons) (2 * col * c_numRows + 3);
+    Buttons buttonID = (Buttons)(2 * col * c_numRows + 3);
     Glib::ustring label = m_textUsageMode->getKeyLabel(buttonID);
     addControl(new RenameLetter(m_textUsageMode, buttonID, Rect(x, y, twiceLetterWidth, c_letterHeight)));
     x += twiceLetterWidth;

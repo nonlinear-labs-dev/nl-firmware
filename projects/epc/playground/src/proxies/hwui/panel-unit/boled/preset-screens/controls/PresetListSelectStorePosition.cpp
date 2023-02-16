@@ -63,7 +63,7 @@ std::pair<size_t, size_t> PresetListSelectStorePosition::getSelectedPosition() c
 
 bool PresetListSelectStorePosition::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
-  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+  auto &famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
   auto focusAndMode = famSetting.getState();
 
   if(down)
@@ -98,7 +98,7 @@ bool PresetListSelectStorePosition::onButton(Buttons i, bool down, ButtonModifie
 
 void PresetListSelectStorePosition::onRotary(int inc, ButtonModifiers modifiers)
 {
-  auto& famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+  auto &famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
   auto focusAndMode = famSetting.getState();
 
   if(focusAndMode.focus == UIFocus::Presets)

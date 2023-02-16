@@ -10,7 +10,7 @@ using SamplePosition = uint64_t;
 
 struct MidiEvent
 {
-  uint8_t raw[3]{ 0x0 };
+  uint8_t raw[3] { 0x0 };
   std::chrono::high_resolution_clock::time_point timestamp;
 };
 
@@ -72,8 +72,8 @@ inline std::string toString(HardwareSource s)
 }
 
 static auto sHardwareSources
-    = { HardwareSource::PEDAL1, HardwareSource::PEDAL2,     HardwareSource::PEDAL3,  HardwareSource::PEDAL4,
-        HardwareSource::BENDER, HardwareSource::AFTERTOUCH, HardwareSource::RIBBON1, HardwareSource::RIBBON2,
+    = { HardwareSource::PEDAL1,  HardwareSource::PEDAL2,     HardwareSource::PEDAL3,  HardwareSource::PEDAL4,
+        HardwareSource::BENDER,  HardwareSource::AFTERTOUCH, HardwareSource::RIBBON1, HardwareSource::RIBBON2,
         HardwareSource::RIBBON3, HardwareSource::RIBBON4 };
 
 struct SampleFrame

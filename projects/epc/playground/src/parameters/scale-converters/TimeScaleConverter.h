@@ -10,7 +10,7 @@ class TimeScaleConverter : public ScaleConverter
   TimeScaleConverter(const tDisplayRange& displayRange);
   ~TimeScaleConverter() override;
 
-  [[nodiscard]] tDisplayValue controlPositionToDisplay(const tControlPositionValue &cpValue) const override;
+  [[nodiscard]] tDisplayValue controlPositionToDisplay(const tControlPositionValue& cpValue) const override;
   [[nodiscard]] Glib::ustring controlPositionToDisplayJS() const override;
   [[nodiscard]] bool isBiPolar() const override;
 

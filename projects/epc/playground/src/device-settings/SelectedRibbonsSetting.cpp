@@ -2,7 +2,7 @@
 #include <tools/StringTools.h>
 
 SelectedRibbonsSetting::SelectedRibbonsSetting(UpdateDocumentContributor& parent)
-: EnumSetting<SelectedRibbons>(parent, SelectedRibbons::Ribbon1_2)
+    : EnumSetting<SelectedRibbons>(parent, SelectedRibbons::Ribbon1_2)
 {
 }
 

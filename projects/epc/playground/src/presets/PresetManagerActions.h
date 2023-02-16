@@ -20,7 +20,8 @@ class Settings;
 class PresetManagerActions : public SectionAndActionManager
 {
  public:
-  explicit PresetManagerActions(UpdateDocumentContributor* parent, PresetManager& presetManager, AudioEngineProxy& aeProxy, Settings& settings);
+  explicit PresetManagerActions(UpdateDocumentContributor* parent, PresetManager& presetManager,
+                                AudioEngineProxy& aeProxy, Settings& settings);
   bool handleRequest(const Glib::ustring& path, std::shared_ptr<NetworkRequest> request) override;
   void writeDocument(Writer& writer, tUpdateID knownRevision) const override;
 

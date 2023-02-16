@@ -35,7 +35,7 @@ MacroControlParameter *RenameMCLayout::getMacroControl() const
 {
   auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
-  if(auto modRouter = dynamic_cast<ModulationRoutingParameter*>(selected))
+  if(auto modRouter = dynamic_cast<ModulationRoutingParameter *>(selected))
   {
     return modRouter->getTargetParameter();
   }

@@ -101,7 +101,7 @@ Bank* PresetManagerUseCases::newBank(const Glib::ustring& x, const Glib::ustring
 
   if(modified)
     preset->guessName(transaction);
-  
+
   bank->selectPreset(transaction, preset->getUuid());
   m_presetManager.selectBank(transaction, bank->getUuid());
   m_presetManager.getEditBuffer()->undoableLoad(transaction, preset, false);
@@ -674,7 +674,8 @@ PresetManagerUseCases::ImportExitCode
   return ImportExitCode::PresetManagerLocked;
 }
 
-PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(SoupBuffer* buffer, ProgressIndication progress, AudioEngineProxy& ae)
+PresetManagerUseCases::ImportExitCode
+    PresetManagerUseCases::importBackupFile(SoupBuffer* buffer, ProgressIndication progress, AudioEngineProxy& ae)
 {
   if(auto lock = m_presetManager.getLoadingLock())
   {
@@ -685,12 +686,14 @@ PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(So
   return ImportExitCode::PresetManagerLocked;
 }
 
-PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction, InStream& in,
-                                             const ProgressIndication& progress, AudioEngineProxy& aeProxy)
+PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(UNDO::Transaction* transaction,
+                                                                              InStream& in,
+                                                                              const ProgressIndication& progress,
+                                                                              AudioEngineProxy& aeProxy)
 {
   auto swap = UNDO::createSwapData(std::vector<uint8_t> {});
 
-  transaction->addSimpleCommand([& pm = m_presetManager, pg = progress, &ae = aeProxy, swap](auto) {
+  transaction->addSimpleCommand([&pm = m_presetManager, pg = progress, &ae = aeProxy, swap](auto) {
     pg.start();
     ZippedMemoryOutStream stream;
     XmlWriter writer(stream);
@@ -991,17 +994,19 @@ void PresetManagerUseCases::clear()
 
 Glib::ustring PresetManagerUseCases::exitCodeToErrorMessage(PresetManagerUseCases::ImportExitCode code)
 {
-    switch(code) {
-        case ImportExitCode::PresetManagerLocked:
-            return "C15 is currently busy. Please try again. Contact support if you need assistance.";
-        case ImportExitCode::InvalidFile:
-            return "Invalid file! Please select a correct xml.tar.gz backup file. Contact support if you need assistance.";
-        case ImportExitCode::UnsupportedVersion:
-            return "Invalid version! Unsupported file version in uploaded backup file. Backup was created with a newer firmware. Please update the C15 to the latest software version.";
-        default:
-        case ImportExitCode::OK:
-            return "";
-    }
+  switch(code)
+  {
+    case ImportExitCode::PresetManagerLocked:
+      return "C15 is currently busy. Please try again. Contact support if you need assistance.";
+    case ImportExitCode::InvalidFile:
+      return "Invalid file! Please select a correct xml.tar.gz backup file. Contact support if you need assistance.";
+    case ImportExitCode::UnsupportedVersion:
+      return "Invalid version! Unsupported file version in uploaded backup file. Backup was created with a newer "
+             "firmware. Please update the C15 to the latest software version.";
+    default:
+    case ImportExitCode::OK:
+      return "";
+  }
 }
 
 std::string guessNameBasedOnEditBuffer(EditBuffer* eb)

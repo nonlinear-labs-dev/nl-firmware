@@ -5,11 +5,7 @@
 RecorderManager::RecorderManager()
 {
   using tMsg = nltools::msg::Setting::NotifyNoRecorderClients;
-  nltools::msg::receive<tMsg>(nltools::msg::EndPoint::Playground,
-                              [this](tMsg msg)
-                              {
-                                m_signal.deferedSend();
-                              });
+  nltools::msg::receive<tMsg>(nltools::msg::EndPoint::Playground, [this](tMsg msg) { m_signal.deferedSend(); });
 }
 
 sigc::connection RecorderManager::subscribeToNotifyNoRecorderUIsLeftAndStillPlaying(sigc::slot<void(void)> s)

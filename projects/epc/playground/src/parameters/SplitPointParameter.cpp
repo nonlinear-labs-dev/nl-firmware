@@ -196,8 +196,7 @@ void SplitPointParameter::applyMacroControl(tDisplayValue mcValue, Initiator ini
 
 void SplitPointParameter::updateModulationBase()
 {
-  auto calcModulationBase = [this]
-  {
+  auto calcModulationBase = [this] {
     if(auto macroParam = getMacroControl())
     {
       auto _mod = (float) macroParam->getControlPositionValue();

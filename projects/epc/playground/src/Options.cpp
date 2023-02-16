@@ -101,7 +101,8 @@ void Options::setDefaultsForTests()
 
   auto settingsName = std::string("/tmp/settings") + std::to_string(fine) + std::string(".xml");
   auto settingsFile = std::filesystem::path(settingsName);
-  auto pmName = std::string("/tmp/preset-manager-") + std::to_string(timestamp) + "-" + std::to_string(fine) + std::string("/");
+  auto pmName
+      = std::string("/tmp/preset-manager-") + std::to_string(timestamp) + "-" + std::to_string(fine) + std::string("/");
   auto pmDirectory = std::filesystem::path(pmName);
 
   if(is_directory(persistencePath))
@@ -200,7 +201,7 @@ bool Options::sendBBBBTurnaroundTimestamps() const
   return m_sendBBBTurnaroundTimes;
 }
 
-void Options::setPresetManagerPath(const std::string& path)
+void Options::setPresetManagerPath(const std::string &path)
 {
   m_pmPath = path;
 }

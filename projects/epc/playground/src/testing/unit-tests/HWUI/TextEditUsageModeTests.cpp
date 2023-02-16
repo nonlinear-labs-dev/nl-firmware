@@ -1,7 +1,7 @@
 #include <testing/TestHelper.h>
 #include <proxies/hwui/TextEditUsageMode.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"TextEditUsageMode", "[HWUI")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "TextEditUsageMode", "[HWUI")
 {
   TextEditUsageMode mode("");
   CHECK(mode.getLayout() == TextEditUsageMode::Layout::Normal);

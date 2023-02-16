@@ -6,7 +6,8 @@
 #include <xml/VersionAttribute.h>
 #include <presets/BankActions.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Export/Import Presets With Part Names", "[Preset][Store][Export][Import]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Export/Import Presets With Part Names",
+                 "[Preset][Store][Export][Import]")
 {
   auto pm = TestHelper::getPresetManager();
 
@@ -55,7 +56,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Export/Import Presets With Part
       auto settings = TestHelper::getSettings();
       FileInStream stream("/tmp/testbank.xml", false);
       PresetManagerUseCases useCase(*TestHelper::getPresetManager(), *settings);
-      return useCase.importBankFromStream(stream, 0, 0, "/tmp/testbank.xml", [](auto){});
+      return useCase.importBankFromStream(stream, 0, 0, "/tmp/testbank.xml", [](auto) {});
     }();
 
     CHECK_LABELS_PRESENT(newBank->getPresetAt(0));

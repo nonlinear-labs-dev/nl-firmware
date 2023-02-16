@@ -129,9 +129,9 @@ FocusAndMode FocusAndModeSetting::removeInvalidStatesFromOldMode(FocusAndMode in
   if(in.detail == UIDetail::InitSound)
   {
     if(m_focusAndMode.focus == UIFocus::Presets)
-      in = FocusAndMode{UIFocus::Sound, UIMode::Select, UIDetail::Init};
+      in = FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init };
     else
-      in = FocusAndMode{UIFocus::Presets, UIMode::Select, UIDetail::Init};
+      in = FocusAndMode { UIFocus::Presets, UIMode::Select, UIDetail::Init };
   }
 
   if(in.focus == UIFocus::Presets)
@@ -139,9 +139,9 @@ FocusAndMode FocusAndModeSetting::removeInvalidStatesFromOldMode(FocusAndMode in
     if(in.mode == UIMode::Edit || in.mode == UIMode::Store || in.mode == UIMode::Info)
     {
       if(m_focusAndMode.focus == UIFocus::Presets)
-        in = FocusAndMode{UIFocus::Sound, UIMode::Select, UIDetail::Init};
+        in = FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init };
       else
-        in = FocusAndMode{UIFocus::Presets, UIMode::Select, UIDetail::Init};
+        in = FocusAndMode { UIFocus::Presets, UIMode::Select, UIDetail::Init };
     }
   }
 
@@ -150,18 +150,18 @@ FocusAndMode FocusAndModeSetting::removeInvalidStatesFromOldMode(FocusAndMode in
     if(in.mode == UIMode::Edit || in.mode == UIMode::Info)
     {
       if(in.mode == UIMode::Edit && !(m_focusAndMode.focus == UIFocus::Sound && m_focusAndMode.mode == UIMode::Select))
-        in = FocusAndMode{UIFocus::Sound, UIMode::Select, UIDetail::Init};
+        in = FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init };
       else
-        in = FocusAndMode{UIFocus::Presets, UIMode::Select, UIDetail::Init};
+        in = FocusAndMode { UIFocus::Presets, UIMode::Select, UIDetail::Init };
     }
   }
 
   if(in.focus == UIFocus::Setup)
   {
     if(m_focusAndMode.focus == UIFocus::Presets)
-      in = FocusAndMode{UIFocus::Sound, UIMode::Select, UIDetail::Init};
+      in = FocusAndMode { UIFocus::Sound, UIMode::Select, UIDetail::Init };
     else
-      in = FocusAndMode{UIFocus::Presets, UIMode::Select, UIDetail::Init};
+      in = FocusAndMode { UIFocus::Presets, UIMode::Select, UIDetail::Init };
   }
 
   return in;

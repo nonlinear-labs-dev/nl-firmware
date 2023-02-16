@@ -7,11 +7,13 @@ namespace OneShotTypes
   using CB = std::function<void()>;
   struct StartCB
   {
-    StartCB() {
+    StartCB()
+    {
       cb = std::nullopt;
     }
 
-    StartCB(const CB& c) {
+    StartCB(const CB& c)
+    {
       cb = c;
     }
     std::optional<CB> cb;
@@ -19,11 +21,13 @@ namespace OneShotTypes
 
   struct FinishCB
   {
-    FinishCB() {
+    FinishCB()
+    {
       cb = std::nullopt;
     }
 
-    FinishCB(const CB& c) {
+    FinishCB(const CB& c)
+    {
       cb = c;
     }
     std::optional<CB> cb;
@@ -31,11 +35,13 @@ namespace OneShotTypes
 
   struct CatchAllCB
   {
-    CatchAllCB() {
+    CatchAllCB()
+    {
       cb = std::nullopt;
     }
 
-    CatchAllCB(const CB& c) {
+    CatchAllCB(const CB& c)
+    {
       cb = c;
     }
     std::optional<CB> cb;

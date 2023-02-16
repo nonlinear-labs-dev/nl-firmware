@@ -14,7 +14,7 @@
 
 PresetUseCases::PresetUseCases(Preset& p, Settings& settings)
     : m_preset { p }
-    , m_settings{ settings }
+    , m_settings { settings }
 {
   if(auto bank = dynamic_cast<Bank*>(m_preset.getParent()))
   {
@@ -77,7 +77,8 @@ void PresetUseCases::overwriteWithPreset(Preset* source)
     return;
   }
 
-  auto scope = m_preset.getUndoScope().startTransaction("Overwrite preset '%0' with '%1'", m_preset.getName(),source->getName());
+  auto scope = m_preset.getUndoScope().startTransaction("Overwrite preset '%0' with '%1'", m_preset.getName(),
+                                                        source->getName());
   auto transaction = scope->getTransaction();
   m_preset.copyFrom(transaction, source);
   m_bank->selectPreset(transaction, m_preset.getUuid());

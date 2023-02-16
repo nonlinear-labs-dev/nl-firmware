@@ -54,13 +54,11 @@ void ModulationRoutingParameter::onExclusiveRoutingLost(UNDO::Transaction *trans
 {
   setIndirect(transaction, 0);
 
-  transaction->addSimpleCommand(
-      [=](auto s)
-      {
-        onChange();
-        invalidate();
-        sendToAudioEngine();
-      });
+  transaction->addSimpleCommand([=](auto s) {
+    onChange();
+    invalidate();
+    sendToAudioEngine();
+  });
 }
 
 void ModulationRoutingParameter::applyPlaycontrollerPhysicalControl(tControlPositionValue diff)

@@ -34,9 +34,9 @@ class Recorder
   nlohmann::json api(const nlohmann::json& msg);
 
   void notifyStateChange();
-  
-private:
- void checkAndSendNoClientsStatus();
+
+ private:
+  void checkAndSendNoClientsStatus();
 
   nlohmann::json generateInfo() const;
   nlohmann::json prepareDownload(FrameId begin, FrameId end) const;

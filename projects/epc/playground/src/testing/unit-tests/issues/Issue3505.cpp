@@ -1,6 +1,7 @@
 #include <testing/TestHelper.h>
 
-namespace {
+namespace
+{
   VoiceGroup invert(VoiceGroup vg)
   {
     return vg == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I;
@@ -21,8 +22,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert dual to single keeps F
   {
     auto other = invert(srcGroup);
 
-    auto testParameterMy = eb.findParameterByID({C15::PID::Reverb_Mix, srcGroup});
-    auto testParameterOther = eb.findParameterByID({C15::PID::Reverb_Mix, other});
+    auto testParameterMy = eb.findParameterByID({ C15::PID::Reverb_Mix, srcGroup });
+    auto testParameterOther = eb.findParameterByID({ C15::PID::Reverb_Mix, other });
     ParameterUseCases ucMy(testParameterMy);
     ParameterUseCases ucOther(testParameterOther);
 

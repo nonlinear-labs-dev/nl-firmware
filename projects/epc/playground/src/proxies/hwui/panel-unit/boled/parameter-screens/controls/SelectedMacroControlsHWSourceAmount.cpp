@@ -29,11 +29,11 @@ SelectedMacroControlsHWSourceAmount::~SelectedMacroControlsHWSourceAmount()
 void SelectedMacroControlsHWSourceAmount::onParameterSelected(Parameter *newOne)
 {
   m_mcChanged.disconnect();
-  if(auto mc = dynamic_cast<MacroControlParameter*>(newOne))
+  if(auto mc = dynamic_cast<MacroControlParameter *>(newOne))
   {
     m_mcChanged = mc->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceAmount::onMCChanged));
   }
-  else if(auto modRouter = dynamic_cast<ModulationRoutingParameter*>(newOne))
+  else if(auto modRouter = dynamic_cast<ModulationRoutingParameter *>(newOne))
   {
     auto mc = modRouter->getTargetParameter();
     m_mcChanged = mc->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceAmount::onMCChanged));

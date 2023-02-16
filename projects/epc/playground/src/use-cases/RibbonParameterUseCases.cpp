@@ -4,7 +4,7 @@
 #include <libundo/undo/Scope.h>
 
 RibbonParameterUseCases::RibbonParameterUseCases(RibbonParameter* p)
-    : PhysicalControlParameterUseCases{p}
+    : PhysicalControlParameterUseCases { p }
     , m_param { p }
 {
   nltools_assertAlways(m_param != nullptr);

@@ -10,7 +10,6 @@ class WebUISupport : public SectionAndActionManager
  public:
   explicit WebUISupport(UpdateDocumentContributor *master);
 
-
  private:
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 };

@@ -35,22 +35,20 @@ void PresetParameterGroupSerializer::writeTagContent(Writer &writer) const
 void PresetParameterGroupSerializer::readTagContent(Reader &reader) const
 {
 
-  reader.onTag(PresetParameterSerializer::getTagName(),
-               [&](const Attributes &attr) mutable
-               {
-                 ParameterId id(attr.get("id"));
+  reader.onTag(PresetParameterSerializer::getTagName(), [&](const Attributes &attr) mutable {
+    ParameterId id(attr.get("id"));
 
-                 std::vector<PresetParameter *> targetParams {};
-                 for(auto &g : m_paramGroups)
-                   for(auto &p : g->m_parameters)
-                     if(p->getID().getNumber() == id.getNumber())
-                       targetParams.emplace_back(p.get());
+    std::vector<PresetParameter *> targetParams {};
+    for(auto &g : m_paramGroups)
+      for(auto &p : g->m_parameters)
+        if(p->getID().getNumber() == id.getNumber())
+          targetParams.emplace_back(p.get());
 
-                 if(targetParams.empty())
-                   nltools::Log::debug("PresetParameterSerializer was created without targets! Affected ID:", id);
-                 else if(targetParams.size() > 1)
-                   nltools::Log::debug("PresetParameterSerializer for id", id, "has multiple targets!");
+    if(targetParams.empty())
+      nltools::Log::debug("PresetParameterSerializer was created without targets! Affected ID:", id);
+    else if(targetParams.size() > 1)
+      nltools::Log::debug("PresetParameterSerializer for id", id, "has multiple targets!");
 
-                 return new PresetParameterSerializer(targetParams, m_type);
-               });
+    return new PresetParameterSerializer(targetParams, m_type);
+  });
 }

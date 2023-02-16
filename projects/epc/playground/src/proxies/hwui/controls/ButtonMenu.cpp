@@ -24,7 +24,7 @@ void ButtonMenu::setHighlight(bool isHighlight)
 {
   if(isHighlight)
   {
-    forEach([](const tControlPtr& c) {
+    forEach([](const tControlPtr &c) {
       if(!std::dynamic_pointer_cast<ButtonMenuButton>(c))
         c->setHighlight(true);
     });

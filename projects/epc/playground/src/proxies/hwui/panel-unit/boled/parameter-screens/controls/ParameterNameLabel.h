@@ -38,11 +38,11 @@ class ParameterNameLabel : public Label
   void onPresetLoaded();
 };
 
-
 class ParameterNameLabelForMCOfModulationRouter : public ParameterNameLabel
 {
  public:
   using ParameterNameLabel::ParameterNameLabel;
+
  protected:
   void onParameterSelected(Parameter *param) override;
 };

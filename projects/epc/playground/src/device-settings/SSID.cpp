@@ -8,19 +8,17 @@ SSID::SSID(Settings &parent, const HardwareFeatures &hwFeatures)
     : Setting(parent)
     , m_hasEPCWifi(hwFeatures.hasEPCWiFi())
 {
-  parent.getSetting<DeviceName>()->onChange(
-      [=](const Setting *s)
-      {
-        static const std::string dict = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-_";
+  parent.getSetting<DeviceName>()->onChange([=](const Setting *s) {
+    static const std::string dict = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-_";
 
-        std::string ssid = "NL-C15-" + s->save();
+    std::string ssid = "NL-C15-" + s->save();
 
-        for(char &it : ssid)
-          if(dict.find(it) == std::string::npos)
-            it = '_';
+    for(char &it : ssid)
+      if(dict.find(it) == std::string::npos)
+        it = '_';
 
-        updateSSID(ssid);
-      });
+    updateSSID(ssid);
+  });
 }
 
 SSID::~SSID() = default;

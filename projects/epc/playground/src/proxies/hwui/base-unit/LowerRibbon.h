@@ -20,7 +20,7 @@ class LowerRibbon : public Ribbon, public sigc::trackable
  private:
   void onParamSelectionChanged(const Parameter* old, const Parameter* newP);
   void onParamValueChanged(const Parameter* param);
-  void onSendValueChanged(const Parameter *param);
+  void onSendValueChanged(const Parameter* param);
   void onRibbonSelectionChanged(const Setting* setting);
   void reconnect();
 

@@ -30,8 +30,7 @@ bool FreeDiscSpaceInformation::refresh()
   auto scriptPath = path(getResourcesDir()).concat("/free-diskspace-information.sh");
   SpawnAsyncCommandLine::spawn(
       Application::get().getMainContext(), { "sh", scriptPath.string() },
-      [&](const std::string& success)
-      {
+      [&](const std::string& success) {
         if(success.empty())
           m_value = "N/A";
         else

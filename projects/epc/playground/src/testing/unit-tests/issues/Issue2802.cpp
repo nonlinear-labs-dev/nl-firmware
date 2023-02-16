@@ -4,7 +4,7 @@
 #include "use-cases/PresetUseCases.h"
 #include <parameter_declarations.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Ticket 2802")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Ticket 2802")
 {
   auto& eb = *TestHelper::getEditBuffer();
   auto& pm = *TestHelper::getPresetManager();
@@ -18,7 +18,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Ticket 2802")
   BankUseCases bankUseCases(tmpBank, settings);
   PresetUseCases presetUseCases(*tmpPreset, settings);
 
-  ParameterUseCases parameterUseCases(eb.findParameterByID(ParameterId{C15::PID::Env_A_Att, VoiceGroup::I}));
+  ParameterUseCases parameterUseCases(eb.findParameterByID(ParameterId { C15::PID::Env_A_Att, VoiceGroup::I }));
 
   WHEN("Simple Test as described in the Ticket")
   {

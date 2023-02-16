@@ -11,7 +11,7 @@
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Zero] Local Off to Local On", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 3035, Pedal [Returning Zero] Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -19,7 +19,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Ze
   ParameterId srcID = { C15::PID::Pedal_1, VoiceGroup::Global };
   auto pedal1 = eb->findAndCastParameterByID<PedalParameter>(srcID);
   auto pedal1Send
-      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({C15::PID::Pedal_1_Send, VoiceGroup::Global});
+      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({ C15::PID::Pedal_1_Send, VoiceGroup::Global });
 
   PedalParameterUseCases pedalUseCases(pedal1);
   TestHelper::initSingleEditBuffer();
@@ -27,7 +27,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Ze
   //Local Off
   auto settings = TestHelper::getSettings();
   settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
-  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1, RoutingSettings::tAspectIndex::LOCAL, false);
+  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1,
+                                                    RoutingSettings::tAspectIndex::LOCAL, false);
   TestHelper::doMainLoopIteration();
 
   //Send Parameter useCase
@@ -47,7 +48,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Ze
   WHEN("Local is set to On")
   {
     settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
-    settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1, RoutingSettings::tAspectIndex::LOCAL, true);
+    settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1,
+                                                      RoutingSettings::tAspectIndex::LOCAL, true);
     TestHelper::doMainLoopIteration();
 
     THEN("Pedal Parameter RVC -> current pos, send stays")
@@ -58,7 +60,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Ze
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Center] Local Off to Local On", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 3035, Pedal [Returning Center] Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -66,7 +68,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Ce
   ParameterId srcID = { C15::PID::Pedal_1, VoiceGroup::Global };
   auto pedal1 = eb->findAndCastParameterByID<PedalParameter>(srcID);
   auto pedal1Send
-      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({C15::PID::Pedal_1_Send, VoiceGroup::Global});
+      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({ C15::PID::Pedal_1_Send, VoiceGroup::Global });
 
   PedalParameterUseCases pedalUseCases(pedal1);
   TestHelper::initSingleEditBuffer();
@@ -74,7 +76,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Ce
   //Local Off
   auto settings = TestHelper::getSettings();
   settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
-  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1, RoutingSettings::tAspectIndex::LOCAL, false);
+  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1,
+                                                    RoutingSettings::tAspectIndex::LOCAL, false);
   TestHelper::doMainLoopIteration();
 
   //Send Parameter useCase
@@ -91,7 +94,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Ce
   WHEN("Local is set to On")
   {
     settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
-    settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1, RoutingSettings::tAspectIndex::LOCAL, true);
+    settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1,
+                                                      RoutingSettings::tAspectIndex::LOCAL, true);
     TestHelper::doMainLoopIteration();
 
     THEN("Pedal Parameter RVC -> current pos, send stays")
@@ -102,7 +106,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Returning Ce
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Nonreturn] Local Off to Local On", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 3035, Pedal [Nonreturn] Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -110,7 +114,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Nonreturn] L
   ParameterId srcID = { C15::PID::Pedal_1, VoiceGroup::Global };
   auto pedal1 = eb->findAndCastParameterByID<PedalParameter>(srcID);
   auto pedal1Send
-      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({C15::PID::Pedal_1_Send, VoiceGroup::Global});
+      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({ C15::PID::Pedal_1_Send, VoiceGroup::Global });
 
   PedalParameterUseCases pedalUseCases(pedal1);
   TestHelper::initSingleEditBuffer();
@@ -118,7 +122,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Nonreturn] L
   //Local Off
   auto settings = TestHelper::getSettings();
   settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
-  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1, RoutingSettings::tAspectIndex::LOCAL, false);
+  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1,
+                                                    RoutingSettings::tAspectIndex::LOCAL, false);
   TestHelper::doMainLoopIteration();
 
   //Send Parameter useCase
@@ -135,7 +140,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Nonreturn] L
   WHEN("Local is set to On")
   {
     settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
-    settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1, RoutingSettings::tAspectIndex::LOCAL, true);
+    settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Pedal1,
+                                                      RoutingSettings::tAspectIndex::LOCAL, true);
     TestHelper::doMainLoopIteration();
 
     THEN("Pedal Parameter RVC -> current pos, send to returnPos")
@@ -146,14 +152,15 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Pedal [Nonreturn] L
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Ribbon [Returning] Local Off to Local On", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 3035, Ribbon [Returning] Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
 
   ParameterId srcID = { C15::PID::Ribbon_1, VoiceGroup::Global };
   auto ribbon1 = eb->findAndCastParameterByID<RibbonParameter>(srcID);
-  auto ribbon1Send = eb->findAndCastParameterByID<HardwareSourceSendParameter>({C15::PID::Ribbon_1_Send, VoiceGroup::Global});
+  auto ribbon1Send
+      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({ C15::PID::Ribbon_1_Send, VoiceGroup::Global });
 
   RibbonParameterUseCases ribbonUseCase(ribbon1);
   TestHelper::initSingleEditBuffer();
@@ -161,7 +168,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Ribbon [Returning] 
   //Local Off
   auto settings = TestHelper::getSettings();
   settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
-  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Ribbon1, RoutingSettings::tAspectIndex::LOCAL, false);
+  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Ribbon1,
+                                                    RoutingSettings::tAspectIndex::LOCAL, false);
   TestHelper::doMainLoopIteration();
 
   //Send Parameter useCase
@@ -181,7 +189,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Ribbon [Returning] 
   WHEN("Local is set to On")
   {
     settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
-    settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Ribbon1, RoutingSettings::tAspectIndex::LOCAL, true);
+    settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Ribbon1,
+                                                      RoutingSettings::tAspectIndex::LOCAL, true);
     TestHelper::doMainLoopIteration();
 
     THEN("Ribbon Parameter RVC -> current pos, send to returnPos")
@@ -192,14 +201,16 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Ribbon [Returning] 
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Ribbon [Stay] Local Off to Local On -> Set Ribbon Pos to mapped MC position", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture,
+                 "Issue 3035, Ribbon [Stay] Local Off to Local On -> Set Ribbon Pos to mapped MC position", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
 
   ParameterId srcID = { C15::PID::Ribbon_1, VoiceGroup::Global };
   auto ribbon1 = eb->findAndCastParameterByID<RibbonParameter>(srcID);
-  auto ribbon1Send = eb->findAndCastParameterByID<HardwareSourceSendParameter>({C15::PID::Ribbon_1_Send, VoiceGroup::Global});
+  auto ribbon1Send
+      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({ C15::PID::Ribbon_1_Send, VoiceGroup::Global });
   auto mcA = eb->findAndCastParameterByID<MacroControlParameter>({ C15::PID::MC_A, VoiceGroup::Global });
   auto connectionParam
       = eb->findAndCastParameterByID<ModulationRoutingParameter>({ C15::PID::Ribbon_1_to_MC_A, VoiceGroup::Global });
@@ -215,7 +226,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Ribbon [Stay] Local
   //Local Off
   auto settings = TestHelper::getSettings();
   settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_FALSE);
-  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Ribbon1, RoutingSettings::tAspectIndex::LOCAL, false);
+  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Ribbon1,
+                                                    RoutingSettings::tAspectIndex::LOCAL, false);
   TestHelper::doMainLoopIteration();
 
   //Macro Initial
@@ -255,7 +267,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Ribbon [Stay] Local
     WHEN("Local is set to On")
     {
       settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
-      settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Ribbon1, RoutingSettings::tAspectIndex::LOCAL, true);
+      settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Ribbon1,
+                                                        RoutingSettings::tAspectIndex::LOCAL, true);
       TestHelper::doMainLoopIteration();
 
       CHECK(ribbon1->getControlPositionValue() == mcA->getControlPositionValue());
@@ -263,7 +276,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Ribbon [Stay] Local
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Bender Local Off to Local On", "[3035]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Issue 3035, Bender Local Off to Local On", "[3035]")
 {
   auto eb = TestHelper::getEditBuffer();
   TestHelper::initSingleEditBuffer();
@@ -271,7 +284,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Bender Local Off to
   ParameterId srcID = { C15::PID::Bender, VoiceGroup::Global };
   auto bender = eb->findAndCastParameterByID<PitchbendParameter>(srcID);
   auto benderSend
-      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({C15::PID::Bender_Send, VoiceGroup::Global});
+      = eb->findAndCastParameterByID<HardwareSourceSendParameter>({ C15::PID::Bender_Send, VoiceGroup::Global });
 
   ParameterUseCases benderUseCases(bender);
 
@@ -279,7 +292,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Bender Local Off to
 
   auto settings = TestHelper::getSettings();
   settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
-  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Bender, RoutingSettings::tAspectIndex::LOCAL, false);
+  settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Bender,
+                                                    RoutingSettings::tAspectIndex::LOCAL, false);
   TestHelper::doMainLoopIteration();
 
   ParameterUseCases sendUseCase(benderSend);
@@ -293,7 +307,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Issue 3035, Bender Local Off to
   WHEN("Local is set to On")
   {
     settings->getSetting<GlobalLocalEnableSetting>()->set(BooleanSettings::BOOLEAN_SETTING_TRUE);
-    settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Bender, RoutingSettings::tAspectIndex::LOCAL, true);
+    settings->getSetting<RoutingSettings>()->setState(RoutingSettings::tRoutingIndex::Bender,
+                                                      RoutingSettings::tAspectIndex::LOCAL, true);
     TestHelper::doMainLoopFor(std::chrono::milliseconds(15));
 
     THEN("Bender has current position and send is reset to return value")

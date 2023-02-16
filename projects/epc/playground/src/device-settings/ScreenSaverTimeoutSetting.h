@@ -28,7 +28,6 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
   void onLayoutInstalled(Layout* l);
 
  private:
-
   Expiration m_expiration;
   Signal<void, bool> m_screenSaverSignal;
 

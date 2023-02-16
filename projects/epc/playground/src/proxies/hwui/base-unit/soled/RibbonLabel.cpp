@@ -151,8 +151,7 @@ std::shared_ptr<Font> RibbonLabel::getFont() const
 
 Glib::ustring RibbonLabel::crop(const Glib::ustring &text) const
 {
-  auto removeLastChar = [](const auto& s)
-  {
+  auto removeLastChar = [](const auto &s) {
     if(!s.empty())
       return s.substr(0, s.size() - 1);
     return s;

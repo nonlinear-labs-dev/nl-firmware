@@ -130,5 +130,5 @@ Scrollable *SplashLayout::createScrollableContent()
 
 Rect SplashLayout::getScrollableAreaRect() const
 {
-  return {0, 16, 256, 64 - 16};
+  return { 0, 16, 256, 64 - 16 };
 }

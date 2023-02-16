@@ -122,12 +122,10 @@ Application::Application(int numArgs, char **argv)
   m_settings->init();
   m_hwui->init();
   m_http->init();
-  m_presetManager->init(m_audioEngineProxy.get(), *m_settings,
-                        [this](auto str)
-                        {
-                          SplashScreenUseCases ssuc(*m_hwui, *m_settings);
-                          ssuc.addSplashScreenMessage(str);
-                        });
+  m_presetManager->init(m_audioEngineProxy.get(), *m_settings, [this](auto str) {
+    SplashScreenUseCases ssuc(*m_hwui, *m_settings);
+    ssuc.addSplashScreenMessage(str);
+  });
 
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
   m_voiceGroupManager->init();
@@ -235,24 +233,21 @@ void Application::runWatchDog()
 
   if(m_aggroWatchDog)
   {
-    m_aggroWatchDog->run(std::chrono::milliseconds(250),
-                         [=](int numWarning, int inactiveFoMS)
-                         {
-                           DebugLevel::warning("Aggro WatchDog was inactive for ", inactiveFoMS, "ms. Warning #",
-                                               numWarning);
+    m_aggroWatchDog->run(std::chrono::milliseconds(250), [=](int numWarning, int inactiveFoMS) {
+      DebugLevel::warning("Aggro WatchDog was inactive for ", inactiveFoMS, "ms. Warning #", numWarning);
 
 #ifdef _PROFILING
-                           Profiler::get().printAllCallstacks();
+      Profiler::get().printAllCallstacks();
 #endif
 
-                           if(auto h = getHWUI())
-                           {
-                             if(getSettings()->getSetting<BlockingMainThreadIndication>()->get())
-                             {
-                               h->indicateBlockingMainThread();
-                             }
-                           }
-                         });
+      if(auto h = getHWUI())
+      {
+        if(getSettings()->getSetting<BlockingMainThreadIndication>()->get())
+        {
+          h->indicateBlockingMainThread();
+        }
+      }
+    });
   }
 }
 

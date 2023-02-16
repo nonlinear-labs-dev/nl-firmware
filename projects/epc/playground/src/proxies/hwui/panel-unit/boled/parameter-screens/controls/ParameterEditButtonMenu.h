@@ -20,7 +20,7 @@ class ParameterEditButtonMenu : public ButtonMenu
  protected:
   void setup();
   virtual void addActions();
-  virtual Parameter* getSelectedParameter();
+  virtual Parameter *getSelectedParameter();
 
  private:
   void toggleGroupLock();

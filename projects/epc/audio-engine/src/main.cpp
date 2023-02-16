@@ -86,19 +86,18 @@ static std::unique_ptr<Recorder> createRecorder(int sampleRate)
 
 static std::unique_ptr<AudioOutput> createAudioOut(const std::string &name, Synth *synth, Recorder *recorder)
 {
-  return name.empty() ? nullptr
-                      : std::make_unique<AlsaAudioOutput>(theOptions.get(), name,
-                                                          [synth, recorder](auto buf, auto length)
-                                                          {
-                                                            synth->process(buf, length);
-                                                            recorder->process(buf, length);
+  return name.empty()
+      ? nullptr
+      : std::make_unique<AlsaAudioOutput>(theOptions.get(), name, [synth, recorder](auto buf, auto length) {
+          synth->process(buf, length);
+          recorder->process(buf, length);
 
-                                                            for(auto i = 0; i < length; i++)
-                                                            {
-                                                              buf[i].left = std::clamp(buf[i].left, -1.0f, 1.0f);
-                                                              buf[i].right = std::clamp(buf[i].right, -1.0f, 1.0f);
-                                                            }
-                                                          });
+          for(auto i = 0; i < length; i++)
+          {
+            buf[i].left = std::clamp(buf[i].left, -1.0f, 1.0f);
+            buf[i].right = std::clamp(buf[i].right, -1.0f, 1.0f);
+          }
+        });
 }
 
 static std::unique_ptr<MidiInput> createMidiIn(const std::string &name, Synth *synth)
@@ -116,9 +115,11 @@ static std::unique_ptr<MidiInput> createTCDIn(const std::string &name, Synth *sy
 static bool checkBufferUnderruns(AudioOutput *out)
 {
   using namespace nltools::msg;
-  BufferUnderrunsChangedMessage msg { out->getNumUnderruns(), theOptions->getFramesPerPeriod(), theOptions->getNumPeriods() };
+  BufferUnderrunsChangedMessage msg { out->getNumUnderruns(), theOptions->getFramesPerPeriod(),
+                                      theOptions->getNumPeriods() };
 
-  if(lastSent.numUnderruns != msg.numUnderruns || lastSent.framesPerPeriod != msg.framesPerPeriod || lastSent.numPeriods != msg.numPeriods)
+  if(lastSent.numUnderruns != msg.numUnderruns || lastSent.framesPerPeriod != msg.framesPerPeriod
+     || lastSent.numPeriods != msg.numPeriods)
   {
     send<BufferUnderrunsChangedMessage>(EndPoint::Playground, msg);
     lastSent = msg;
@@ -130,8 +131,7 @@ sigc::connection connectFramesPerPeriodMessage(AlsaAudioOutput *out)
 {
   return nltools::msg::receive<nltools::msg::SetFramesPerPeriod>(
       nltools::msg::EndPoint::AudioEngine,
-      [out = out, defaultFramesPerPeriod = theOptions->getFramesPerPeriod()](const auto &msg)
-      {
+      [out = out, defaultFramesPerPeriod = theOptions->getFramesPerPeriod()](const auto &msg) {
         auto desiredFPP = msg.framesPerPeriod ? msg.framesPerPeriod : defaultFramesPerPeriod;
 
         if(theOptions->getFramesPerPeriod() != desiredFPP)
@@ -145,20 +145,18 @@ sigc::connection connectFramesPerPeriodMessage(AlsaAudioOutput *out)
       });
 }
 
-template <typename... A> static void start(A &...a)
+template <typename... A> static void start(A &... a)
 {
-  auto start = [](auto &p)
-  {
+  auto start = [](auto &p) {
     if(p)
       p->start();
   };
   (start(a), ...);
 }
 
-template <typename... A> static void stop(A &...a)
+template <typename... A> static void stop(A &... a)
 {
-  auto stop = [](auto &p)
-  {
+  auto stop = [](auto &p) {
     if(p)
       p->stop();
   };
@@ -197,11 +195,10 @@ int main(int args, char *argv[])
     auto checkForXRunTimer = theMainLoop->get_context()->signal_timeout().connect_seconds(
         sigc::bind(sigc::ptr_fun(&checkBufferUnderruns), audioOut.get()), 1);
 
-    auto pgConnected = nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playground,
-                                                             [&]() {
-                                                               lastSent = { 0, 0 };
-                                                             });
-    
+    auto pgConnected = nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::Playground, [&]() {
+      lastSent = { 0, 0 };
+    });
+
     theMainLoop->run();
   }
   stop(audioOut, midiIn, tcdIn);
