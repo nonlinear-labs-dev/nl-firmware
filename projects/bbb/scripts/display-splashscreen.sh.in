@@ -1,8 +1,3 @@
 #!/bin/sh
 
-# if an (arbitrary) argument is given and the UHID (unique hardware ID) file exists, then display the UHID in the splash screen
-if [[ ! -z $1 && -f /tmp/UHID ]] ; then
-  @C15_INSTALL_PATH@/text2soled/text2soled multitext "Starting the C15...@SC0" "#`/bin/cat /tmp/UHID`@SC2" "Welcome,@BC2" "those who love to play keys!@BC4"
-else
-  @C15_INSTALL_PATH@/text2soled/text2soled multitext "Starting the C15...@SC1"                             "Welcome,@BC2" "those who love to play keys!@BC4"
-fi
+@C15_INSTALL_PATH@/text2soled/text2soled multitext "Starting the C15...@SC1" "Welcome,@BC2" "those who love to play keys!@BC4"
