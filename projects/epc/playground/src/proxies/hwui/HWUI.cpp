@@ -106,7 +106,7 @@ void HWUI::init()
 
 void HWUI::onRotaryChanged()
 {
-  m_inputSignal.send();
+  m_rotaryTurned.deferedSend();
 }
 
 void HWUI::indicateBlockingMainThread()
@@ -361,6 +361,7 @@ void HWUI::onButtonPressed(Buttons buttonID, bool state)
   m_buttonStates[(int) buttonID] = state;
 
   setModifiers(buttonID, state);
+  m_buttonPressed.deferedSend(buttonID, state);
 
   if(!detectAffengriff(buttonID, state))
   {
@@ -383,8 +384,6 @@ void HWUI::onButtonPressed(Buttons buttonID, bool state)
       }
     }
   }
-
-  m_inputSignal.send();
 }
 
 void HWUI::setModifiers(Buttons buttonID, bool state)
@@ -417,8 +416,6 @@ void HWUI::setModifiers(Buttons buttonID, bool state)
   {
     removeModifier(ButtonModifier::FINE);
   }
-
-  m_inputSignal.send();
 }
 
 bool HWUI::isFineAllowed()
@@ -613,4 +610,14 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
 Oleds &HWUI::getOleds()
 {
   return m_oleds;
+}
+
+sigc::connection HWUI::onButtonPressed(const sigc::slot<void, Buttons, bool> &cb)
+{
+  return m_buttonPressed.connect(cb);
+}
+
+sigc::connection HWUI::onRotaryTurned(const sigc::slot<void> &cb)
+{
+  return m_rotaryTurned.connect(cb);
 }

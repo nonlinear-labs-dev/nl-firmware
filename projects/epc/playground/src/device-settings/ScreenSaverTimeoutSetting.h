@@ -23,10 +23,11 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
   void incDec(int inc, ButtonModifiers m);
   void incDec(int inc);
   void sendState(bool state);
+
   void endAndReschedule();
+  void onLayoutInstalled(Layout* l);
 
  private:
-  void onLayoutInstalled(Layout* l);
 
   Expiration m_expiration;
   Signal<void, bool> m_screenSaverSignal;

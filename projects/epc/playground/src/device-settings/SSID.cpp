@@ -4,10 +4,9 @@
 #include <proxies/hwui/HardwareFeatures.h>
 #include <utility>
 
-SSID::SSID(Settings &parent, std::shared_ptr<EpcWifi> localWifi, const HardwareFeatures &hwFeatures)
+SSID::SSID(Settings &parent, const HardwareFeatures &hwFeatures)
     : Setting(parent)
     , m_hasEPCWifi(hwFeatures.hasEPCWiFi())
-    , m_localWifi(std::move(localWifi))
 {
   parent.getSetting<DeviceName>()->onChange(
       [=](const Setting *s)
@@ -52,6 +51,5 @@ void SSID::updateSSID(const Glib::ustring &str)
   auto suffix = (m_hasEPCWifi ? "_BBB" : "");
   auto ssidMsg = nltools::msg::WiFi::SetWiFiSSIDMessage(m_ssid + suffix);
   nltools::msg::send(nltools::msg::EndPoint::BeagleBone, ssidMsg);
-  m_localWifi->setNewSSID(m_ssid);
   notify();
 }

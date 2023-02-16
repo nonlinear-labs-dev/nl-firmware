@@ -913,7 +913,6 @@ void EditBuffer::cleanupParameterSelectionOnSoundTypeChange(UNDO::Transaction *t
 
   if(Application::exists())
   {
-    auto hwui = Application::get().getHWUI();
     auto vgManager = Application::get().getVGManager();
     auto currentVg = vgManager->getCurrentVoiceGroup();
 
