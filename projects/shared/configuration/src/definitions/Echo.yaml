@@ -3,7 +3,6 @@
 --- !definitions
 
 group: Echo
-group_id: Echo
 
 signals:
   Mono_Signal: [ Time_L, Time_R, FB_Local, FB_Cross, LPF, Dry, Wet ]

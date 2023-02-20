@@ -3,7 +3,6 @@
 --- !definitions
 
 group: Voice_Grp
-group_id: Part
 
 static: [
   &NO_SINGLE {

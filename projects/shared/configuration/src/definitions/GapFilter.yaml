@@ -3,7 +3,6 @@
 --- !definitions
 
 group: Gap_Flt
-group_id: Gap Filt
 
 signals:
   Mono_Signal: [ LF_L, HF_L, LF_R, HF_R, HP_LP, In_LP, HP_Out, LP_Out, In_Out ]

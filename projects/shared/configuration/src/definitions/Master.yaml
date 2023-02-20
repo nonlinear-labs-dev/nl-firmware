@@ -3,7 +3,6 @@
 --- !definitions
 
 group: Master
-group_id: Master
 
 signals:
   Global_Signal: [ FX_I_to_II, FX_II_to_I ]

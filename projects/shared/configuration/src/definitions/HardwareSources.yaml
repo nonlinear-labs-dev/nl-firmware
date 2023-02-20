@@ -3,7 +3,6 @@
 --- !definitions
 
 group: Mod_HW
-group_id: CS
 
 static: [
   &ALL_EXPOSED {

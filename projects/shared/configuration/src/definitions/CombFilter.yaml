@@ -3,7 +3,6 @@
 --- !definitions
 
 group: Comb_Flt
-group_id: Comb
 
 signals:
   Truepoly_Signal: [ Freq, Bypass, Freq_Env_C, Decay, AP_Freq, LP_Freq ]

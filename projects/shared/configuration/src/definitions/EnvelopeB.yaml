@@ -3,7 +3,6 @@
 --- !definitions
 
 group: Env_B
-group_id: Env B
 
 signals:
   Truepoly_Signal: [ Mag, Tmb ]

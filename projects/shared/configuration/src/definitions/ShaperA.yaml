@@ -3,7 +3,6 @@
 --- !definitions
 
 group: Shp_A
-group_id: Sh A
 
 signals:
   Truepoly_Signal: [ Drive_Env_A, FB_Env_C ]

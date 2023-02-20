@@ -3,7 +3,6 @@
 --- !definitions
 
 group: Split
-group_id: Split
 
 parameters:
   - availability: {

@@ -3,7 +3,6 @@
 --- !definitions
 
 group: Scale
-group_id: Scale
 
 signals:
   Global_Signal: [ Base_Key_Pos, Base_Key_Start, Base_Key_Dest ]

@@ -3,7 +3,6 @@
 --- !definitions
 
 group: FB_Mix
-group_id: FB
 
 signals:
   Truepoly_Signal: [ Lvl, HPF ]
