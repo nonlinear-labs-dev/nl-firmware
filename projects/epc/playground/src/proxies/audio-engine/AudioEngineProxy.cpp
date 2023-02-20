@@ -10,7 +10,6 @@
 #include <parameters/MacroControlParameter.h>
 #include <parameters/ModulateableParameter.h>
 #include <parameters/PhysicalControlParameter.h>
-#include <groups/MacroControlsGroup.h>
 #include <groups/ScaleGroup.h>
 #include <device-settings/Settings.h>
 #include <parameter_declarations.h>

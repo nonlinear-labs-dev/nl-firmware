@@ -4,7 +4,7 @@
 #include "parameters/ModulateableParameter.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
-#include "groups/MacroControlsGroup.h"
+#include "parameters/ParameterFactory.h"
 #include <proxies/hwui/FrameBuffer.h>
 #include <sigc++/sigc++.h>
 
@@ -39,7 +39,7 @@ void MCPositionLabel::updateTarget(const Parameter *parameter)
   if(const auto *modP = dynamic_cast<const ModulateableParameter *>(parameter))
   {
     auto src = modP->getModulationSource();
-    auto srcParamID = MacroControlsGroup::modSrcToParamId(src);
+    auto srcParamID = ParameterFactory::modSrcToParamId(src);
 
     if(auto pa = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID))
     {

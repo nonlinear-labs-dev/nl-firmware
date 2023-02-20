@@ -4,7 +4,6 @@
 #include <presets/PresetManager.h>
 #include <presets/PresetParameter.h>
 #include <presets/EditBuffer.h>
-#include <groups/MacroControlsGroup.h>
 #include <presets/recall/RecallParameter.h>
 #include <proxies/hwui/HWUI.h>
 

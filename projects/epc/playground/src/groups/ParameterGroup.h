@@ -7,6 +7,7 @@
 #include "sync/SyncedItem.h"
 #include "tools/Signal.h"
 #include "ParameterId.h"
+#include "parameter_descriptor.h"
 
 namespace UNDO
 {
@@ -23,8 +24,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   typedef UpdateDocumentContributor super;
 
  public:
-  ParameterGroup(ParameterGroupSet *parent, GroupId id, const char *shortName, const char *longName,
-                 const char *webUIName);
+  ParameterGroup(ParameterGroupSet *parent, C15::ParameterGroupDescriptor desc, VoiceGroup vg);
   ~ParameterGroup() override;
 
   virtual void init();

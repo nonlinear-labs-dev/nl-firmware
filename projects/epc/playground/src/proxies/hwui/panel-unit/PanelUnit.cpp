@@ -15,10 +15,11 @@
 #include <parameters/ModulationRoutingParameter.h>
 #include <parameters/PhysicalControlParameter.h>
 #include <parameters/MacroControlParameter.h>
-#include <groups/MacroControlsGroup.h>
 #include <http/UndoScope.h>
 #include <nltools/messaging/Message.h>
-#include "use-cases/EditBufferUseCases.h"
+#include <use-cases/EditBufferUseCases.h>
+#include <parameters/ParameterFactory.h>
+#include <parameters/ModulateableParameter.h>
 
 PanelUnit::PanelUnit(Settings &settings, Oleds &oleds, LayoutFolderMonitor *mon)
     : super(settings)
@@ -50,7 +51,7 @@ PanelUnit::PanelUnit(Settings &settings, Oleds &oleds, LayoutFolderMonitor *mon)
   m_macroControlAssignmentStateMachine.registerHandler(MacroControlAssignmentStates::Assign, [=]() {
     auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
     auto selParam = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
-    auto mc = MacroControlsGroup::paramIDToModSrc(selParam->getID());
+    auto mc = ParameterFactory::paramIDToModSrc(selParam->getID());
 
     //select other parameter as we could be on MacroControl but VG II focus, we only want to assign to non-monophonics in part II
     auto targetId = m_macroControlAssignmentStateMachine.getCurrentModulateableParameter();

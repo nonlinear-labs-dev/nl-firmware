@@ -21,7 +21,6 @@ class MacroControlMappingGroup : public ParameterGroup
 
   typedef PhysicalControlParameter *tPhysicalControlParameter;
   typedef std::list<tPhysicalControlParameter> tPhysicalControlParameters;
-  tPhysicalControlParameters getPhysicalControlParameters();
 
   void init() override;
 

@@ -12,7 +12,7 @@ class ParameterFactory
 {
  public:
   static std::vector<C15::ParameterGroupDescriptor> getParameterGroupsPerVoiceGroup();
-  static std::vector<int> getParameterIDs(const std::string& longName);
+  static std::vector<int> getParameterIDs(const std::string& shortName);
 
   static bool isModulateable(int id);
   static Parameter* createParameterByType(ParameterGroup* parent, const ParameterId& id);
@@ -28,4 +28,11 @@ class ParameterFactory
   static bool isScaleParameter(const ParameterId& id);
   static bool isScaleOffsetParameter(const ParameterId& id);
   static bool isScaleParameter(const Parameter* parameter);
+  static bool isMacroTime(const ParameterId& id);
+  static bool isMacroControl(const ParameterId& paramNumber);
+
+  //Macro Helpers
+  static ParameterId smoothingIdToMCId(const ParameterId& smoothingId);
+  static ParameterId modSrcToParamId(MacroControls src);
+  static MacroControls paramIDToModSrc(const ParameterId& pid);
 };

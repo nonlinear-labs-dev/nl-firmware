@@ -1,7 +1,6 @@
 #include "ParameterPresenterRules.h"
 #include "parameter_declarations.h"
 #include "nltools/Types.h"
-#include "groups/MacroControlsGroup.h"
 #include "parameters/ParameterFactory.h"
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
@@ -121,7 +120,7 @@ bool ParameterPresenterRules::allowToggling(const Parameter *selected, const Edi
 
   if(selected->getVoiceGroup() == VoiceGroup::Global)
   {
-    return MacroControlsGroup::isMacroControl(selected->getID().getNumber());
+    return ParameterFactory::isMacroControl(selected->getID());
   }
 
   if(editBuffer->getType() == SoundType::Single)

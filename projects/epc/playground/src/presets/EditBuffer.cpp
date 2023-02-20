@@ -10,7 +10,6 @@
 #include "proxies/playcontroller/PlaycontrollerProxy.h"
 #include "proxies/hwui/HWUI.h"
 #include <proxies/audio-engine/AudioEngineProxy.h>
-#include "parameters/ModulateableParameter.h"
 #include "device-info/DeviceInformation.h"
 #include "parameters/MacroControlParameter.h"
 #include <libundo/undo/Transaction.h>
@@ -23,7 +22,6 @@
 #include <presets/PresetParameter.h>
 #include <tools/PerformanceTimer.h>
 #include <device-settings/Settings.h>
-#include <parameters/ScopedLock.h>
 #include <tools/StringTools.h>
 #include <parameter_declarations.h>
 #include <presets/SendEditBufferScopeGuard.h>
@@ -31,12 +29,10 @@
 #include <device-settings/SyncSplitSettingUseCases.h>
 #include <libundo/undo/ContinuousTransaction.h>
 #include "LoadedPresetLog.h"
-#include "parameters/ScopedLockByParameterTypes.h"
 #include "use-cases/SettingsUseCases.h"
 #include "parameters/ParameterFactory.h"
 #include <sync/JsonAdlSerializers.h>
 #include <use-cases/EditBufferUseCases.h>
-#include <groups/MacroControlsGroup.h>
 #include <presets/EditBufferConverter.h>
 #include <presets/EditBufferToPartLoader.h>
 
@@ -356,8 +352,7 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
   if(m_lastSelectedParameter != p->getID())
   {
     auto swapData = UNDO::createSwapData(p->getID());
-    ParameterId newMCID
-        = MacroControlsGroup::isMacroControl(p->getID().getNumber()) ? p->getID() : m_lastSelectedMacroControl;
+    ParameterId newMCID = ParameterFactory::isMacroControl(p->getID()) ? p->getID() : m_lastSelectedMacroControl;
     auto incomingMCSwapData = UNDO::createSwapData(newMCID);
 
     p->resetWasDefaulted(transaction);
@@ -679,14 +674,6 @@ void EditBuffer::setMacroControlValueFromMCView(const ParameterId &id, double va
     auto scope = UNDO::Scope::startTrashTransaction();
     mc->setCPFromMCView(scope->getTransaction(), value);
     mc->setLastMCViewUUID(uuid);
-  }
-}
-
-namespace
-{
-  VoiceGroup invert(VoiceGroup vg)
-  {
-    return vg == VoiceGroup::I ? VoiceGroup::II : VoiceGroup::I;
   }
 }
 

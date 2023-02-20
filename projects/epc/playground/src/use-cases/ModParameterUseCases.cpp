@@ -8,8 +8,6 @@
 #include <Application.h>
 #include <parameters/scale-converters/ScaleConverter.h>
 #include <presets/PresetManager.h>
-#include <groups/MacroControlsGroup.h>
-
 #include <cmath>
 
 ModParameterUseCases::ModParameterUseCases(ModulateableParameter* parameter)

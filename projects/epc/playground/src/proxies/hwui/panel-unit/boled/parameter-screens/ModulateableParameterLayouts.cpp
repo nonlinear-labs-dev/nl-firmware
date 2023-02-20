@@ -1,7 +1,6 @@
 #include <Application.h>
 #include <glibconfig.h>
 #include <glibmm/ustring.h>
-#include <groups/MacroControlsGroup.h>
 #include <libundo/undo/Scope.h>
 #include <libundo/undo/Transaction.h>
 #include <libundo/undo/TransactionCreationScope.h>
@@ -32,19 +31,12 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallButton.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallModulationSourceLabel.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCPositionLabel.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCAmountLabel.h>
-#include <proxies/hwui/HWUI.h>
-#include <parameters/MacroControlParameter.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
-#include "ModulateableParameterLayouts.h"
 #include "ModAspectRecallOverlay.h"
 #include "use-cases/ModParameterUseCases.h"
 #include "groups/ScaleGroup.h"
 #include "use-cases/EditBufferUseCases.h"
-#include "groups/MasterGroup.h"
 #include "parameter_declarations.h"
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/VoiceGroupUseCases.h"
@@ -316,7 +308,7 @@ Parameter *ModulateableParameterSelectLayout2::getCurrentEditParameter() const
     if(auto p = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
     {
       auto src = p->getModulationSource();
-      auto srcParamID = MacroControlsGroup::modSrcToParamId(src);
+      auto srcParamID = ParameterFactory::modSrcToParamId(src);
       return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID);
     }
   }
