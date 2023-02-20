@@ -3,6 +3,7 @@
 --- !definitions
 
 group: Mono_Grp
+group_id: Mono
 
 static: [
   &ALL_EXPOSED {

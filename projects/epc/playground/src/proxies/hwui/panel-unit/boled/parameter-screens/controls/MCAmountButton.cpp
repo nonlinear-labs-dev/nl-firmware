@@ -1,7 +1,6 @@
 #include "MCAmountButton.h"
 #include "parameters/ModulateableParameter.h"
 #include "groups/MasterGroup.h"
-#include "groups/VoiceGroupMasterGroup.h"
 #include "parameters/unison-parameters/UnmodulateableUnisonParameter.h"
 #include <proxies/hwui/buttons.h>
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>

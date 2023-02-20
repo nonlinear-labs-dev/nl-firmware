@@ -3,6 +3,7 @@
 --- !definitions
 
 group: Unison
+group_id: Unison
 
 signals:
   Truepoly_Signal: [ PolyPhase ]

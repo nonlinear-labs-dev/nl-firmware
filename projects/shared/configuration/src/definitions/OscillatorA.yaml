@@ -3,6 +3,7 @@
 --- !definitions
 
 group: Osc_A
+group_id: Osc A
 
 signals:
   Truepoly_Signal: [ Freq, Fluct_Env_C, PM_Self_Env_A, PM_B_Env_B, PM_FB_Env_C ]

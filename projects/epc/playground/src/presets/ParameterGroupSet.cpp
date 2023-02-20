@@ -10,11 +10,11 @@
 
 #include "xml/Writer.h"
 #include "xml/Attribute.h"
+#include "parameters/ParameterFactory.h"
 
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
-#include <groups/VoiceGroupMasterGroup.h>
 #include <parameter_declarations.h>
 
 ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent)
@@ -48,10 +48,14 @@ void ParameterGroupSet::init(Settings *settings)
     appendParameterGroup(new ParameterGroup(this, { "Echo", vg }, "Echo", "Echo", "Echo"));
     appendParameterGroup(new ParameterGroup(this, { "Reverb", vg }, "Reverb", "Reverb", "Reverb"));
     appendParameterGroup(new ParameterGroup(this, { "Unison", vg }, "Unison", "Unison", "Unison"));
-
     appendParameterGroup(new ParameterGroup(this, { "Split", vg }, "Split", "Split", "Split"));
     appendParameterGroup(new ParameterGroup(this, { "Mono", vg }, "Mono", "Mono", "Mono"));
-    appendParameterGroup(new VoiceGroupMasterGroup(this, vg));
+    auto part = appendParameterGroup(new ParameterGroup(this, { "Part", vg }, "Part", "Part", "Part"));
+
+    //init parameters
+    auto fadeFromInitial = vg == VoiceGroup::I ? 1 : 0;
+    auto fadeFrom = part->findParameterByID({ C15::PID::Voice_Grp_Fade_From, vg });
+    fadeFrom->getValue().setFactoryDefault(fadeFromInitial);
 
     m_idToParameterMap[static_cast<size_t>(vg)] = getParametersSortedByNumber(vg);
   }

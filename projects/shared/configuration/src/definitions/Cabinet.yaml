@@ -3,6 +3,7 @@
 --- !definitions
 
 group: Cabinet
+group_id: Cab
 
 signals:
   Mono_Signal: [ Pre_Sat, Sat, Tilt, LPF, HPF, Dry, Wet ]

@@ -7,7 +7,6 @@
 #include "groups/ScaleGroup.h"
 #include "ScaleParameter.h"
 #include "parameters/voice-group-master-group/VoiceGroupMasterModulateableParameter.h"
-#include "groups/VoiceGroupMasterGroup.h"
 #include "parameters/mono-mode-parameters/ModulateableMonoParameter.h"
 #include "parameters/mono-mode-parameters/UnmodulateableMonoParameter.h"
 
@@ -193,4 +192,17 @@ bool ParameterFactory::isScaleParameter(const Parameter* parameter)
   if(parameter)
     return isScaleParameter(parameter->getID());
   return false;
+}
+
+std::vector<C15::ParameterGroupDescriptor> ParameterFactory::getParameterGroupsPerVoiceGroup()
+{
+  std::vector<C15::ParameterGroupDescriptor> groups;
+  for(const auto& group : C15::ParameterGroups)
+  {
+    if(group.m_global_group == false)
+    {
+      groups.push_back(group);
+    }
+  }
+  return groups;
 }

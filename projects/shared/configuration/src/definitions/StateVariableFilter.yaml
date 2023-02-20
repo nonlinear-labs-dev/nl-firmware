@@ -3,6 +3,7 @@
 --- !definitions
 
 group: SV_Flt
+group_id: SVF
 
 signals:
   Truepoly_Signal: [ F1_Cut, F2_Cut, F1_FM, F2_FM, Res_Damp, Res_FMax ]

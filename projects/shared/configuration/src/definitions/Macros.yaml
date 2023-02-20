@@ -3,6 +3,7 @@
 --- !definitions
 
 group: Macro
+group_id: MCs
 
 static: [
   &ALL_EXPOSED {

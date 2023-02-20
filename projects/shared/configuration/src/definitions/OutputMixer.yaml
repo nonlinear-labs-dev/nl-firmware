@@ -3,6 +3,7 @@
 --- !definitions
 
 group: Out_Mix
+group_id: Mixer
 
 signals:
   Truepoly_Signal: [ A_Left, A_Right, B_Left, B_Right, Comb_Left, Comb_Right, SVF_Left, SVF_Right ]

@@ -3,6 +3,7 @@
 --- !definitions
 
 group: Mod_HA
+group_id: MCM
 
 static: [
   &HARDWARE_AMOUNT {

@@ -3,6 +3,7 @@
 --- !definitions
 
 group: Reverb
+group_id: Reverb
 
 signals:
   Mono_Signal: [ Size, Feedback, Bal, Pre, HPF, LPF, Dry, Wet ]
