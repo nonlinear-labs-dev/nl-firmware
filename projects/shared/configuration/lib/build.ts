@@ -358,7 +358,7 @@ function processDefinitions(result: Result) {
                 `{${props.color.join(", ")}}`,
                 `"${props.label_long}"`,
                 `"${props.label_short}"`,
-                `"${props.token_java}"`,
+                `"${props.identifier}"`,
                 (props.global_group || false).toString()
             ].join(`,\n${indent}`)}\n}`);
         }
