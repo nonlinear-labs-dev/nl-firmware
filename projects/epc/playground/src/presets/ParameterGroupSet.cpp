@@ -48,7 +48,6 @@ void ParameterGroupSet::init(Settings *settings)
     appendParameterGroup(new ParameterGroup(this, { "Echo", vg }, "Echo", "Echo", "Echo"));
     appendParameterGroup(new ParameterGroup(this, { "Reverb", vg }, "Reverb", "Reverb", "Reverb"));
     appendParameterGroup(new ParameterGroup(this, { "Unison", vg }, "Unison", "Unison", "Unison"));
-
     appendParameterGroup(new ParameterGroup(this, { "Split", vg }, "Split", "Split", "Split"));
     appendParameterGroup(new ParameterGroup(this, { "Mono", vg }, "Mono", "Mono", "Mono"));
     appendParameterGroup(new VoiceGroupMasterGroup(this, vg));
