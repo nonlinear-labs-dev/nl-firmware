@@ -1829,7 +1829,7 @@ button {
   border-bottom: 1px solid rgb(99, 99, 99);
 }
 
-.preset-info-dialog .dialogContent tr:nth-child(4) td:nth-child(2) {
+.preset-info-dialog .dialogContent tr:nth-child(5) td:nth-child(2) {
   display: table-cell;
   padding-left: 0.5em;
   padding-right: 0.5em;

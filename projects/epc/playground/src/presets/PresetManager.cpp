@@ -592,6 +592,7 @@ Glib::ustring PresetManager::createPresetNameBasedOn(const Glib::ustring &basedO
   return base + " " + to_string(highestPostfix + 1);
 }
 
+//TODO delete this branches!!!!
 void PresetManager::searchPresets(Writer &writer, const Glib::ustring &q, const Glib::ustring &mode,
                                   std::vector<SearchQuery::Fields> &&fieldsToSearch) const
 {

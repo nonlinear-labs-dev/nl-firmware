@@ -53,6 +53,7 @@ class Preset : public PresetDualParameterGroups, public SyncedItem
   const Uuid &getUuid() const;
   bool isDual() const;
   Glib::ustring getDisplayNameWithSuffixes(bool addSpace) const;
+  Glib::ustring getHashtags() const;
 
   // transactions
   void setUuid(UNDO::Transaction *transaction, const Uuid &uuid);
@@ -113,4 +114,6 @@ class Preset : public PresetDualParameterGroups, public SyncedItem
   friend class PresetUseCases;
 
   friend class RecallParameterGroups;
+
+    void createHashtags(UNDO::Transaction *transaction);
 };

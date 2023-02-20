@@ -18,7 +18,8 @@ class SearchQuery
   {
     Name,
     Comment,
-    DeviceName
+    DeviceName,
+    Hashtags
   };
 
   SearchQuery(const Glib::ustring &query, Mode mode, std::vector<Fields> &&searchFields);
