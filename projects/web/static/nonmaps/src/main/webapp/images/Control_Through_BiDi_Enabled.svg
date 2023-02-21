@@ -1,15 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="45" height="30" viewBox="0 0 45 30">
-  <defs>
-    <style>
-      .a {
-        fill: #ccc;
-      }
-    </style>
-  </defs>
-  <title>Control_Through_BiDi_Enabled</title>
-  <g>
-    <polygon class="a" points="1.9 8.5 13 15 13 2 1.9 8.5"/>
-    <polygon class="a" points="34.5 28.2 42 20 27 20 34.5 28.2"/>
-    <polygon class="a" points="36 22 33 22 33 10 12 10 12 7 36 7 36 22"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="45" height="30" viewBox="0 0 45 30"><title>Control_Through_BiDi_Enabled</title><polygon points="1.9 8.5 13 15 13 2 1.9 8.5" fill="#ccc"/><polygon points="34.5 28.2 42 20 27 20 34.5 28.2" fill="#ccc"/><polygon points="36 22 33 22 33 10 12 10 12 7 36 7 36 22" fill="#ccc"/></svg>
