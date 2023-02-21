@@ -4,6 +4,7 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.nonlinearlabs.client.Millimeter;
+import com.nonlinearlabs.client.dataModel.editBuffer.ModulateableParameterModel.ModSource;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.presenters.ParameterPresenter;
@@ -561,8 +562,28 @@ public class BeltParameterLayout extends OverlayLayout {
 	@Override
 	public Control doubleClick(Position pos) {
 		final ParameterPresenter p = EditBufferPresenterProvider.getPresenter().selectedParameter;
-		EditBufferUseCases.get().setToDefault(p.id);
-		return this;
+		final ModSource selectedMC = p.modulation.modulationSource;
+		final boolean isValidMacro = selectedMC != ModSource.None;
+
+		switch(mode)
+		{
+			case mcAmount:
+			case mcLower:
+			case mcUpper:
+				EditBufferUseCases.get().setModulationAmount(p.id, 0, true);
+				return this;
+			case mcValue:
+				if(isValidMacro)
+					EditBufferUseCases.get().setToDefault(selectedMC.toParameterId());
+				return this;
+			case mcSource:
+			case modulateableParameter:
+			case paramValue:
+			case unmodulateableParameter:
+			default:
+				EditBufferUseCases.get().setToDefault(p.id);
+				return this;
+		}
 	}
 
 	@Override
