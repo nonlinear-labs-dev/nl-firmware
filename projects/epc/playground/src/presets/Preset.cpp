@@ -146,8 +146,8 @@ void Preset::undoableSetVoiceGroupName(UNDO::Transaction *transaction, VoiceGrou
 
 Glib::ustring Preset::getDisplayNameWithSuffixes(bool addSpace) const
 {
-  auto mono = isMonoActive();
-  auto unison = isUnisonActive();
+  auto mono = PresetPresenter::isMonoActive(this);
+  auto unison = PresetPresenter::isUnisonActive(this);
   return getName() + (addSpace ? "\u202F" : "") + (mono ? "\uE040" : "") + (unison ? "\uE041" : "");
 }
 
@@ -346,46 +346,6 @@ void Preset::writeDiff(Writer &writer, const Preset *other, VoiceGroup vgOfThis,
     writeGroups(writer, other, vgOfThis, vgOfOther);
     writeGroups(writer, other, VoiceGroup::Global, VoiceGroup::Global);
   });
-}
-
-bool Preset::isMonoActive() const
-{
-  auto monoEnabledI = findParameterByID({ 364, VoiceGroup::I }, false);
-  auto monoEnabledII = findParameterByID({ 364, VoiceGroup::II }, false);
-
-  if(monoEnabledI && monoEnabledII)
-  {
-    if(getType() == SoundType::Split)
-    {
-      return monoEnabledI->getValue() > 0 || monoEnabledII->getValue() > 0;
-    }
-    else
-    {
-      return monoEnabledI->getValue() > 0;
-    }
-  }
-
-  return false;
-}
-
-bool Preset::isUnisonActive() const
-{
-  auto unisonVoicesI = findParameterByID({ 249, VoiceGroup::I }, false);
-  auto unisonVoicesII = findParameterByID({ 249, VoiceGroup::II }, false);
-
-  if(unisonVoicesI)
-  {
-    if(getType() == SoundType::Split && unisonVoicesII)
-    {
-      return unisonVoicesI->getValue() > 0 || unisonVoicesII->getValue() > 0;
-    }
-    else
-    {
-      return unisonVoicesI->getValue() > 0;
-    }
-  }
-
-  return false;
 }
 
 bool Preset::isDual() const

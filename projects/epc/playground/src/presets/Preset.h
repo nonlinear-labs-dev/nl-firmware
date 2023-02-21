@@ -49,10 +49,10 @@ class Preset : public PresetDualParameterGroups, public SyncedItem
 
   // accessors
   Glib::ustring getName() const;
+  Glib::ustring getHashtags() const;
   const Uuid &getUuid() const;
   bool isDual() const;
   Glib::ustring getDisplayNameWithSuffixes(bool addSpace) const;
-  Glib::ustring getHashtags() const;
 
   // transactions
   void setUuid(UNDO::Transaction *transaction, const Uuid &uuid);
@@ -87,9 +87,6 @@ class Preset : public PresetDualParameterGroups, public SyncedItem
   EditBuffer *getEditBuffer() const;
   size_t getHash() const = delete;
   void updateBanksLastModifiedTimestamp(UNDO::Transaction *transaction);
-
-  bool isMonoActive() const;
-  bool isUnisonActive() const;
 
   Glib::ustring m_name;
   std::array<Glib::ustring, 2> m_voiceGroupLabels;
