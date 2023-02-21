@@ -99,11 +99,11 @@ bool ModulationRoutingParameter::routes(const PhysicalControlParameter *p) const
   return m_srcParameter == p;
 }
 
-Glib::ustring ModulationRoutingParameter::getDisplayString() const
+Glib::ustring ModulationRoutingParameter::getDisplayString(tControlPositionValue val) const
 {
   if(getSourceParameter()->getReturnMode() == ReturnMode::None)
   {
-    if(getValue().getDisplayValue() != 0.0)
+    if(val != 0.0)
     {
       return "On";
     }
@@ -113,7 +113,12 @@ Glib::ustring ModulationRoutingParameter::getDisplayString() const
     }
   }
 
-  return super::getDisplayString();
+  return super::getDisplayString(val);
+}
+
+Glib::ustring ModulationRoutingParameter::getDisplayString() const
+{
+  return getDisplayString(getControlPositionValue());
 }
 
 tControlPositionValue ModulationRoutingParameter::getControlPositionValue() const

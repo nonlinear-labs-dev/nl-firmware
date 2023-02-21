@@ -30,6 +30,7 @@ class ModulationRoutingParameter : public Parameter, public IntrusiveListItem<Mo
 
   bool routes(const PhysicalControlParameter *p) const;
   Glib::ustring getDisplayString() const override;
+  Glib::ustring getDisplayString(tControlPositionValue val) const override;
   tControlPositionValue getControlPositionValue() const override;
   Layout *createLayout(FocusAndMode focusAndMode) const override;
 
