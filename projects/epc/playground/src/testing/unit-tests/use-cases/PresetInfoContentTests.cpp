@@ -52,14 +52,14 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Single Preset Type String", "[
   {
     detail::enableMono<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Single (Mono)");
-    CHECK(preset->getHashtags() == "#Single, #Mono");
+    CHECK(preset->getHashtags() == "#Single, #Mono, #1-voice, #12-TET");
   }
 
   SECTION("Unison Enabled")
   {
     detail::enableUnison<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Single (Unison)");
-    CHECK(preset->getHashtags() == "#Single, #Unison");
+    CHECK(preset->getHashtags() == "#Single, #Poly, #Unison, #12-TET");
   }
 
   SECTION("Unison and Mono Enabled")
@@ -67,7 +67,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Single Preset Type String", "[
     detail::enableUnison<VoiceGroup::I>(preset);
     detail::enableMono<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Single (Mono, Unison)");
-    CHECK(preset->getHashtags() == "#Single, #Mono, #Unison");
+    CHECK(preset->getHashtags() == "#Single, #Mono, #Unison, #12-TET");
   }
 }
 
@@ -85,7 +85,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Layer Preset Type String", "[P
   {
     detail::enableMono<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Layer (Mono)");
-    CHECK(preset->getHashtags() == "#Layer, #Mono");
+    CHECK(preset->getHashtags() == "#Layer, #Mono, #1-voice, #12-TET");
     CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
@@ -93,7 +93,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Layer Preset Type String", "[P
   {
     detail::enableUnison<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Layer (Unison)");
-    CHECK(preset->getHashtags() == "#Layer, #Unison");
+    CHECK(preset->getHashtags() == "#Layer, #Poly, #Unison, #12-TET");
     CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
@@ -102,7 +102,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Layer Preset Type String", "[P
     detail::enableUnison<VoiceGroup::I>(preset);
     detail::enableMono<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Layer (Mono, Unison)");
-    CHECK(preset->getHashtags() == "#Layer, #Mono, #Unison");
+    CHECK(preset->getHashtags() == "#Layer, #Mono, #Unison, #12-TET");
     CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 }
@@ -127,7 +127,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
   {
     detail::enableMono<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Mono I)");
-    CHECK(preset->getHashtags() == "#Split, #Mono");
+    CHECK(preset->getHashtags() == "#Split, #Mono, #1-voice, #12-TET");
     CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
@@ -135,7 +135,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
   {
     detail::enableMono<VoiceGroup::II>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Mono II)");
-    CHECK(preset->getHashtags() == "#Split, #Mono");
+    CHECK(preset->getHashtags() == "#Split, #Mono, #1-voice, #12-TET");
     CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
@@ -144,7 +144,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
     detail::enableMono<VoiceGroup::I>(preset);
     detail::enableMono<VoiceGroup::II>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Mono I/II)");
-    CHECK(preset->getHashtags() == "#Split, #Mono");
+    CHECK(preset->getHashtags() == "#Split, #Mono, #1-voice, #12-TET");
     CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
@@ -152,7 +152,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
   {
     detail::enableUnison<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Unison I)");
-    CHECK(preset->getHashtags() == "#Split, #Unison");
+    CHECK(preset->getHashtags() == "#Split, #Poly, #Unison, #12-TET");
     CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
@@ -160,7 +160,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
   {
     detail::enableUnison<VoiceGroup::II>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Unison II)");
-    CHECK(preset->getHashtags() == "#Split, #Unison");
+    CHECK(preset->getHashtags() == "#Split, #Poly, #Unison, #12-TET");
     CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
@@ -169,7 +169,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
     detail::enableUnison<VoiceGroup::I>(preset);
     detail::enableUnison<VoiceGroup::II>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Unison I/II)");
-    CHECK(preset->getHashtags() == "#Split, #Unison");
+    CHECK(preset->getHashtags() == "#Split, #Poly, #Unison, #12-TET");
     CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
@@ -178,7 +178,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
     detail::enableUnison<VoiceGroup::II>(preset);
     detail::enableMono<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Mono I, Unison II)");
-    CHECK(preset->getHashtags() == "#Split, #Mono, #Unison");
+    CHECK(preset->getHashtags() == "#Split, #Mono, #Unison, #12-TET");
     CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
@@ -188,7 +188,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
     detail::enableUnison<VoiceGroup::I>(preset);
     detail::enableMono<VoiceGroup::II>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Mono II, Unison I/II)");
-    CHECK(preset->getHashtags() == "#Split, #Mono, #Unison");
+    CHECK(preset->getHashtags() == "#Split, #Mono, #Unison, #12-TET");
     CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 }
