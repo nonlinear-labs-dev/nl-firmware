@@ -18,7 +18,7 @@ PresetPropertyDisplay::PresetPropertyDisplay()
 void PresetPropertyDisplay::setPosition(const Rect &rect)
 {
   Control::setPosition(rect);
-  auto totalWidth = rect.getWidth();
+  auto totalWidth = rect.getWidth() - 5;
   auto oneQuarter = totalWidth / 4;
   m_type->setPosition({ 0, 0, oneQuarter, rect.getHeight() });
   m_unison->setPosition({ 0 + oneQuarter, 0, oneQuarter, rect.getHeight() });

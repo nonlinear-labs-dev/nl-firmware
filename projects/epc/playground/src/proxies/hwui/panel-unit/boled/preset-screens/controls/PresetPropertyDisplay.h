@@ -8,7 +8,7 @@ class PresetPropertyDisplay : public ControlWithChildren
 {
  public:
   PresetPropertyDisplay();
-  void updateFrom(const Glib::ustring &text);
+  void updateFrom(const Glib::ustring& text);
   void setPosition(const Rect& rect) override;
 
  private:

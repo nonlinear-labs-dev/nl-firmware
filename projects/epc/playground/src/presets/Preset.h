@@ -75,9 +75,9 @@ class Preset : public PresetDualParameterGroups, public SyncedItem
 
   nlohmann::json serialize() const override;
 
-    static Glib::ustring getDefaultProperties();
+  static Glib::ustring getDefaultProperties();
 
-private:
+ private:
   void copyFrom(UNDO::Transaction *transaction, const Preset *other);
   void copyFrom(UNDO::Transaction *transaction, EditBuffer *edit);
 

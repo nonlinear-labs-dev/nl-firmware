@@ -25,7 +25,7 @@ import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 public class PresetInfoWidget {
 
 	private static PresetInfoWidget instance;
-	private Label hashTags;
+	private PresetPropertiesLabels hashTags = new PresetPropertiesLabels();
 	private TextArea comment;
 	private Label deviceName;
 	private Label softwareVersion;
@@ -72,7 +72,7 @@ public class PresetInfoWidget {
 		if (preset != null) {
 			String presetName = preset.getCurrentName();
 			deviceName.setText(preset.getAttribute("DeviceName"));
-			hashTags.setText(preset.getAttribute("Hashtags"));
+			hashTags.updateFromPreset(preset.getAttribute("Hashtags"));
 			softwareVersion.setText(preset.getAttribute("SoftwareVersion"));
 			storeTime.setText(localizeTime(preset.getAttribute("StoreTime")));
 			String commentText = preset.getAttribute("Comment");
@@ -110,7 +110,7 @@ public class PresetInfoWidget {
 		FlexTable panel = new FlexTable();
 		addRow(panel, "Bank", bankName = new Label());
 		addRow(panel, "Position/Name", presetNameAndPositionBox);
-		addRow(panel, "Properties", hashTags = new Label());
+		addRow(panel, "Properties", hashTags.getHTML());
 		addRow(panel, "Comment", comment = new TextArea());
 		addRow(panel, "Color Tag", colorBox.getHTML());
 		addRow(panel, "Last Change", storeTime = new Label(""));

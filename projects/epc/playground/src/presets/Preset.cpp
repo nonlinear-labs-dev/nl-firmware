@@ -451,7 +451,7 @@ Glib::ustring Preset::getHashtags() const
   }
   else
   {
-    parts.emplace_back("#Simple");  //Or Plain, Alone, ??Lonely??
+    parts.emplace_back("#1-voice");
   }
 
   if(PresetPresenter::isScaleActive(this))
@@ -460,7 +460,7 @@ Glib::ustring Preset::getHashtags() const
   }
   else
   {
-    parts.emplace_back("#Equal");
+    parts.emplace_back("#12-TET");
   }
 
   Glib::ustring ret;
@@ -477,5 +477,5 @@ Glib::ustring Preset::getHashtags() const
 
 Glib::ustring Preset::getDefaultProperties()
 {
-  return "#Single, #Poly, #Simple, #Equal";
+  return "#Single, #Poly, #1-voice, #12-TET";
 }
