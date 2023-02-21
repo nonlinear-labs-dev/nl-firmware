@@ -13,6 +13,7 @@ class InfoField
 
   void setInfo(const Glib::ustring& text);
   void setInfo(const Glib::ustring& text, FrameBufferColors c);
+  Control* getInfoControl();
 
   void setPosition(int y);
   int format(int y);

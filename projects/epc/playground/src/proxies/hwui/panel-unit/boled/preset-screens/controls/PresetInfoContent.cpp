@@ -10,12 +10,12 @@
 #include <proxies/hwui/panel-unit/boled/info/InfoField.h>
 #include <presets/PresetParameter.h>
 #include "parameter_declarations.h"
+#include "PresetPropertyDisplay.h"
 
 PresetInfoContent::PresetInfoContent()
 {
-    //todo rename to properties
   addInfoField("name", "Name", new MultiLineInfoContent());
-  addInfoField("hashtag", "Properties", new MultiLineInfoContent());
+  addInfoField("properties", "Properties", new PresetPropertyDisplay());
   addInfoField("comment", "Comment", new MultiLineInfoContent());
   addInfoField("color", "Color Tag");
   addInfoField("lastchange", "Last Change");
@@ -41,8 +41,9 @@ void PresetInfoContent::onPresetSelectionChanged()
   {
     connectToPreset(preset);
   }
-  else if(fillDefaults())
+  else
   {
+    fillDefaults();
     fixLayout();
   }
 }
@@ -91,7 +92,8 @@ namespace
 void PresetInfoContent::fillFromPreset(const Preset *preset)
 {
   infoFields["name"]->setInfo(preset->getName(), FrameBufferColors::C128);
-  infoFields["hashtag"]->setInfo(preset->getAttribute("Hashtags", "---"), FrameBufferColors::C128);
+  auto propertyControl = dynamic_cast<PresetPropertyDisplay *>(infoFields["properties"]->getInfoControl());
+  propertyControl->updateFrom(preset->getAttribute("Hashtags", ""));
   infoFields["comment"]->setInfo(preset->getAttribute("Comment", "---"), FrameBufferColors::C128);
   infoFields["color"]->setInfo(prettyPrintPresetColor(preset));
   infoFields["lastchange"]->setInfo(TimeTools::getDisplayStringFromIso(preset->getAttribute("StoreTime", "---")));
@@ -102,7 +104,8 @@ void PresetInfoContent::fillFromPreset(const Preset *preset)
 bool PresetInfoContent::fillDefaults()
 {
   infoFields["name"]->setInfo("---", FrameBufferColors::C128);
-  infoFields["hashtag"]->setInfo("---", FrameBufferColors::C128);
+  auto propertyControl = dynamic_cast<PresetPropertyDisplay *>(infoFields["properties"]->getInfoControl());
+  propertyControl->updateFrom(nullptr);
   infoFields["comment"]->setInfo("---", FrameBufferColors::C128);
   infoFields["color"]->setInfo("---");
   infoFields["lastchange"]->setInfo("---");

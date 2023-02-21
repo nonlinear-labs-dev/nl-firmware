@@ -16,7 +16,6 @@ class EditBuffer;
 class Bank;
 class PresetSerializer;
 class ParameterGroupsSerializer;
-class SearchQuery;
 
 class PresetParameterGroup;
 class PresetParameter;
@@ -65,7 +64,6 @@ class Preset : public PresetDualParameterGroups, public SyncedItem
   // algorithms
   Glib::ustring buildUndoTransactionTitle(const Glib::ustring &prefix) const;
   Glib::ustring getTypeUnicode() const;
-  bool matchesQuery(const SearchQuery &query) const;
 
   void writeDiff(Writer &writer, const Preset *other, VoiceGroup vgOfThis, VoiceGroup vgOfOther) const;
 
@@ -77,7 +75,9 @@ class Preset : public PresetDualParameterGroups, public SyncedItem
 
   nlohmann::json serialize() const override;
 
- private:
+    static Glib::ustring getDefaultProperties();
+
+private:
   void copyFrom(UNDO::Transaction *transaction, const Preset *other);
   void copyFrom(UNDO::Transaction *transaction, EditBuffer *edit);
 
@@ -115,5 +115,5 @@ class Preset : public PresetDualParameterGroups, public SyncedItem
 
   friend class RecallParameterGroups;
 
-    void createHashtags(UNDO::Transaction *transaction);
+  void createHashtags(UNDO::Transaction *transaction);
 };

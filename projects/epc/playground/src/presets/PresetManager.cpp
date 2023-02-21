@@ -592,17 +592,6 @@ Glib::ustring PresetManager::createPresetNameBasedOn(const Glib::ustring &basedO
   return base + " " + to_string(highestPostfix + 1);
 }
 
-//TODO delete this branches!!!!
-void PresetManager::searchPresets(Writer &writer, const Glib::ustring &q, const Glib::ustring &mode,
-                                  std::vector<SearchQuery::Fields> &&fieldsToSearch) const
-{
-  SearchQuery query(q, mode, std::move(fieldsToSearch));
-
-  writer.writeTag("preset-manager", [&]() {
-    writer.writeTag("banks", [&]() { m_banks.forEach([&](auto b) { b->searchPresets(writer, query); }); });
-  });
-}
-
 Glib::ustring PresetManager::getBaseName(const Glib::ustring &basedOn) const
 {
   auto regex = Glib::Regex::create("^(.*)\\s([0-9]+)$");
