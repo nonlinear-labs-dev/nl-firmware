@@ -1009,7 +1009,8 @@ void dsp_host_dual::reset()
 
 dsp_host_dual::HWSourceValues dsp_host_dual::getHWSourceValues() const
 {
-  dsp_host_dual::HWSourceValues ret;
+  dsp_host_dual::HWSourceValues ret {};
+  nltools_assertAlways(ret.size() == m_parameters.m_global.m_hardwareSources.size());
   std::transform(m_parameters.m_global.m_hardwareSources.begin(), m_parameters.m_global.m_hardwareSources.end(),
                  ret.begin(), [](const auto &a) { return a.m_position; });
   return ret;

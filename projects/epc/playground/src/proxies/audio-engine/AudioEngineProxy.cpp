@@ -455,7 +455,7 @@ void AudioEngineProxy::sendSelectedMidiPresetAsProgramChange()
           m_lastMIDIKnownProgramNumber = presetPos;
           nltools::msg::Midi::ProgramChangeMessage msg {};
           msg.program = presetPos;
-          msg.programType = selectedPreset->getType();
+          selectedPreset->getType();
           nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
         }
       }
