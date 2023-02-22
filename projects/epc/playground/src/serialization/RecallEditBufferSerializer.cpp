@@ -2,8 +2,10 @@
 #include <nltools/logging/Log.h>
 #include "RecallEditBufferSerializer.h"
 #include "PresetParameterGroupSerializer.h"
+#include "parameters/ParameterImportConversions.h"
 #include <presets/recall/RecallParameter.h>
 #include <parameter_declarations.h>
+#include <xml/Reader.h>
 
 RecallEditBufferSerializer::RecallEditBufferSerializer(EditBuffer *edit)
     : Serializer(getTagName())
@@ -35,14 +37,18 @@ void RecallEditBufferSerializer::writeTagContent(Writer &writer) const
 
 void RecallEditBufferSerializer::readTagContent(Reader &reader) const
 {
-  auto lambda = [=](const Glib::ustring &text, const Attributes &attr) {
+  auto lambda = [&](const Glib::ustring &text, const Attributes &attr) {
     auto id = ParameterId(attr.get("id"));
     auto &rps = m_editBuffer->getRecallParameterSet();
 
     if(auto param = rps.findParameterByID(id))
     {
-      param->m_recallValue = std::stod(text);
-      param->m_recallModAmount = std::stod(attr.get("mod-amt"));
+      auto &conversion = ParameterImportConversions::get();
+      auto converted = conversion.convert(id, std::stod(text), reader.getFileVersion(), m_editBuffer->getType());
+      auto convertedModAmount = conversion.convertMCAmount(id, std::stod(attr.get("mod-amt")), reader.getFileVersion());
+
+      param->m_recallValue = converted;
+      param->m_recallModAmount = convertedModAmount;
       param->m_recallModSource = static_cast<MacroControls>(std::stoi(attr.get("mod-src")));
       param->m_givenName = attr.get("name");
       param->m_info = attr.get("info");
@@ -63,8 +69,13 @@ void RecallEditBufferSerializer::readTagContent(Reader &reader) const
       {
         if(auto split = rps.findParameterByID({ id.getNumber(), vg }))
         {
-          split->m_recallValue = std::stod(text);
-          split->m_recallModAmount = std::stod(attr.get("mod-amt"));
+          auto &conversion = ParameterImportConversions::get();
+          auto converted = conversion.convert(id, std::stod(text), reader.getFileVersion(), m_editBuffer->getType());
+          auto convertedModAmount
+              = conversion.convertMCAmount(id, std::stod(attr.get("mod-amt")), reader.getFileVersion());
+
+          split->m_recallValue = converted;
+          split->m_recallModAmount = convertedModAmount;
           split->m_recallModSource = static_cast<MacroControls>(std::stoi(attr.get("mod-amt")));
           split->m_givenName = attr.get("name");
           split->m_info = attr.get("info");

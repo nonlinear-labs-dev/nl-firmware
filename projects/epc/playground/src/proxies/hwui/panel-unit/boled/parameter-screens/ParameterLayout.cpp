@@ -355,11 +355,12 @@ ParameterRecallLayout2::ParameterRecallLayout2()
         break;
     }
 
-    m_leftValue = addControl(new Label(StringAndSuffix { p->getDisplayString() }, Rect(67, 35, 58, 11)));
+    auto currentValue = p->getControlPositionValue();
+    auto leftText = p->getDisplayString(currentValue);
+    m_leftValue = addControl(new Label(StringAndSuffix { leftText }, Rect(67, 35, 58, 11)));
 
-    auto displayString = p->getDisplayString(originalValue);
-
-    m_rightValue = addControl(new Label(StringAndSuffix { displayString }, Rect(131, 35, 58, 11)));
+    auto rightText = p->getDisplayString(originalValue);
+    m_rightValue = addControl(new Label(StringAndSuffix { rightText }, Rect(131, 35, 58, 11)));
   }
 
   m_recallValue = getCurrentParameter()->getControlPositionValue();
@@ -478,10 +479,11 @@ void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
     {
       auto originalParam = p->getOriginalParameter();
       auto originalValue = originalParam ? originalParam->getRecallValue() : p->getDefaultValue();
-      auto displayString = p->getDisplayString(originalValue);
+      auto displayStringRecall = p->getDisplayString(originalValue);
+      auto currentDisplayString = p->getDisplayString(p->getControlPositionValue());
 
-      m_leftValue->setText(StringAndSuffix { displayString });
-      m_rightValue->setText(StringAndSuffix { p->getDisplayString() });
+      m_leftValue->setText(StringAndSuffix { displayStringRecall });
+      m_rightValue->setText(StringAndSuffix { currentDisplayString });
       m_slider->setValue(m_recallValue, p->isBiPolar());
       m_leftValue->setHighlight(false);
       m_rightValue->setHighlight(true);

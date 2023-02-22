@@ -19,6 +19,7 @@ class SplitPointParameter;
 class LoadedPresetLog;
 class Settings;
 class AudioEngineProxy;
+class Setting;
 
 class EditBuffer : public ParameterGroupSet, public SyncedItem
 {
@@ -202,6 +203,9 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void setHWSourcesToLoadRulePositionsAndModulate(UNDO::Transaction *transaction);
 
   void sendPresetLoadSignal();
+
+  void connectToFocusAndMode();
+  void resetReturningParametersOnFocusAndModeChange(const Setting *s);
 
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
   Signal<void, Parameter *> m_signalReselectParameter;

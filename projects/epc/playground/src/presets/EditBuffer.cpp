@@ -57,6 +57,30 @@ void EditBuffer::init(Settings *settings)
 {
   ParameterGroupSet::init(settings);
   m_recallSet.init();
+  connectToFocusAndMode();
+}
+
+void EditBuffer::connectToFocusAndMode()
+{
+  m_settings.getSetting<FocusAndModeSetting>()->onChange(
+      sigc::mem_fun(this, &EditBuffer::resetReturningParametersOnFocusAndModeChange));
+}
+
+void EditBuffer::resetReturningParametersOnFocusAndModeChange(const Setting *s)
+{
+  if(auto famSetting = dynamic_cast<const FocusAndModeSetting *>(s))
+  {
+    auto state = famSetting->getState();
+    if(state.focus != UIFocus::Parameters)
+    {
+      getParameterGroupByID({ "CS", VoiceGroup::Global })->forEachParameter([](auto parameter) {
+        if(auto hw = dynamic_cast<PhysicalControlParameter *>(parameter))
+        {
+          hw->resetChangedFromHWUIPosition();
+        }
+      });
+    }
+  }
 }
 
 EditBuffer::~EditBuffer()
