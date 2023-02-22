@@ -21,7 +21,7 @@ namespace
 {
   GroupId createId(const C15::ParameterGroupDescriptor &desc, VoiceGroup vg)
   {
-    return { desc.m_label_java, vg };
+    return { desc.m_identifier, vg };
   }
 }
 

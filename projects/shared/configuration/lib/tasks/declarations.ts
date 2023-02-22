@@ -35,7 +35,7 @@ export type DeclarationsType = {
                 label_long: string;
                 label_short: string;
                 color: Array<number>;
-                token_java: string;
+                identifier: string;
                 global_group: boolean;
                 index: number;
             }
