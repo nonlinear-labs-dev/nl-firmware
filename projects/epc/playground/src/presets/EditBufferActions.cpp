@@ -342,4 +342,11 @@ EditBufferActions::EditBufferActions(UpdateDocumentContributor* parent, EditBuff
       useCase.toggleLoadDefault();
     }
   });
+
+  addAction("copy-fx", [&editBuffer](auto request) {
+    auto from = to<VoiceGroup>(request->get("from"));
+    auto VGTo = to<VoiceGroup>(request->get("to"));
+    EditBufferUseCases ebUseCases(editBuffer);
+    ebUseCases.copyFX(from, VGTo);
+  });
 }

@@ -1338,4 +1338,12 @@ public class ServerProxy {
 			}
 		});
 	}
+
+    public void copyFX(VoiceGroup from, VoiceGroup to) {
+		StaticURI.Path path = new StaticURI.Path("param-editor", "copy-fx");
+		StaticURI.KeyValue fromKV = new StaticURI.KeyValue("from", from.name());
+		StaticURI.KeyValue toKV = new StaticURI.KeyValue("to", to.name());
+		StaticURI uri = new StaticURI(path, fromKV, toKV);
+		queueJob(uri, false);
+    }
 }
