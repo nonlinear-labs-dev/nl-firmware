@@ -48,8 +48,7 @@ class MappedSvgImage<E> extends SVGImage {
 
 		if(phase != selectedPhase) {
 			selectedPhase = phase;
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
-			requestLayout(); //needed as we call getPictureHeight on this object in doLayout on this arrow
+			requestLayout();
 		}
 	}
 
