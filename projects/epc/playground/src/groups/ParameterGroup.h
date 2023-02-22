@@ -94,6 +94,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   const char *m_shortName;
   const char *m_longName;
   const char *m_webUIName;
+  const C15::ParameterGroupDescriptor m_groupDescriptor;
   IntrusiveList<tParameterPtr> m_parameters;
   Signal<void> m_signalGroupChanged;
 };

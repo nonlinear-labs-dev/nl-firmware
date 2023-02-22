@@ -32,6 +32,7 @@ ParameterGroup::ParameterGroup(ParameterGroupSet *parent, C15::ParameterGroupDes
     , m_shortName(desc.m_label_short)
     , m_longName(desc.m_label_long)
     , m_webUIName(desc.m_label_long)
+    , m_groupDescriptor(desc)
 {
 }
 
@@ -258,7 +259,7 @@ bool ParameterGroup::isPolyphonic() const
 
 void ParameterGroup::init()
 {
-  for(auto id : ParameterFactory::getParameterIDs(getShortName()))
+  for(auto id : ParameterFactory::getParameterIDs(m_groupDescriptor.m_group))
   {
     appendParameter(ParameterFactory::createParameterByType(this, { id, getVoiceGroup() }));
   }

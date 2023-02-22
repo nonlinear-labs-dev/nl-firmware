@@ -189,7 +189,7 @@ tControlPositionValue ParameterDB::getFineModulationDenominator(const ParameterI
 double ParameterDB::getDefaultValue(const ParameterId &id)
 {
   auto parameterNumber = id.getNumber();
-  if(parameterNumber == C15::PID::Voice_Grp_Fade_From)
+  if(parameterNumber == C15::PID::Part_Fade_From)
   {
     if(id.getVoiceGroup() == VoiceGroup::I)
       return 1;

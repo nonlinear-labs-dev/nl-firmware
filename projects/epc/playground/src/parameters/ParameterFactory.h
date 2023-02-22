@@ -12,7 +12,7 @@ class ParameterFactory
 {
  public:
   static std::vector<C15::ParameterGroupDescriptor> getParameterGroupsPerVoiceGroup();
-  static std::vector<int> getParameterIDs(const std::string& shortName);
+  static std::vector<int> getParameterIDs(const C15::Descriptors::ParameterGroup& group);
 
   static bool isModulateable(int id);
   static Parameter* createParameterByType(ParameterGroup* parent, const ParameterId& id);

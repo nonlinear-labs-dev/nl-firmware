@@ -38,7 +38,7 @@ void ParameterGroupSet::init(Settings *settings)
     //init parameters
     auto part = getParameterGroupByID({ "Part", vg });
     auto fadeFromInitial = vg == VoiceGroup::I ? 1 : 0;
-    auto fadeFrom = part->findParameterByID({ C15::PID::Voice_Grp_Fade_From, vg });
+    auto fadeFrom = part->findParameterByID({ C15::PID::Part_Fade_From, vg });
     fadeFrom->getValue().setFactoryDefault(fadeFromInitial);
 
     m_idToParameterMap[static_cast<size_t>(vg)] = getParametersSortedByNumber(vg);
