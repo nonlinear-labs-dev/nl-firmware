@@ -18,11 +18,6 @@ namespace C15
     constexpr ParameterGroupDescriptor ParameterGroups[] = {
         ${parameter_groups}
     };
-    // elements of individual parameter groups - todo: remove
-    template<Descriptors::ParameterGroup G>
-    struct ParameterGroupElementList;
-    // template specializations - todo: remove
-    ${group_map}
     // elements of individual parameter groups
     ${get_parameter_ids}
 } // namespace C15

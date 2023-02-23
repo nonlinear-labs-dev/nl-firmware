@@ -12,22 +12,6 @@
 #include "MacroControlSmoothingParameter.h"
 #include "MacroControlParameter.h"
 
-namespace
-{
-  template <C15::Descriptors::ParameterGroup tGroup> std::vector<int> fromArray()
-  {
-    const auto& elements = C15::ParameterGroupElementList<tGroup>::sElements;
-    const auto& size = C15::ParameterGroupElementList<tGroup>::sSize;
-    std::vector<int> result;
-    result.reserve(size);
-    for(int i = 0; i < size; i++)
-    {
-      result.push_back(elements[i]);
-    }
-    return result;
-  }
-}
-
 std::vector<C15::PID::ParameterID> ParameterFactory::getParameterIDs(const C15::Descriptors::ParameterGroup& group)
 {
   const auto ret = C15::getParameterIds(group);
@@ -36,63 +20,6 @@ std::vector<C15::PID::ParameterID> ParameterFactory::getParameterIDs(const C15::
     return ret;
   // empty results fail
   nltools_detailedAssertAlways(false, ("Unknown parameter group with id: " + group));
-  //  switch(group)
-  //  {
-  //    case C15::Descriptors::ParameterGroup::Mod_HW:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Mod_HW>();
-  //    case C15::Descriptors::ParameterGroup::Mod_HA:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Mod_HA>();
-  //    case C15::Descriptors::ParameterGroup::Macro:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Macro>();
-  //    case C15::Descriptors::ParameterGroup::Split:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Split>();
-  //    case C15::Descriptors::ParameterGroup::Master:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Master>();
-  //    case C15::Descriptors::ParameterGroup::Scale:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Scale>();
-  //    case C15::Descriptors::ParameterGroup::Unison:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Unison>();
-  //    case C15::Descriptors::ParameterGroup::Part:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Part>();
-  //    case C15::Descriptors::ParameterGroup::Mono_Grp:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Mono_Grp>();
-  //    case C15::Descriptors::ParameterGroup::Env_A:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Env_A>();
-  //    case C15::Descriptors::ParameterGroup::Env_B:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Env_B>();
-  //    case C15::Descriptors::ParameterGroup::Env_C:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Env_C>();
-  //    case C15::Descriptors::ParameterGroup::Osc_A:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Osc_A>();
-  //    case C15::Descriptors::ParameterGroup::Shp_A:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Shp_A>();
-  //    case C15::Descriptors::ParameterGroup::Osc_B:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Osc_B>();
-  //    case C15::Descriptors::ParameterGroup::Shp_B:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Shp_B>();
-  //    case C15::Descriptors::ParameterGroup::Comb_Flt:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Comb_Flt>();
-  //    case C15::Descriptors::ParameterGroup::SV_Flt:
-  //      return fromArray<C15::Descriptors::ParameterGroup::SV_Flt>();
-  //    case C15::Descriptors::ParameterGroup::FB_Mix:
-  //      return fromArray<C15::Descriptors::ParameterGroup::FB_Mix>();
-  //    case C15::Descriptors::ParameterGroup::Out_Mix:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Out_Mix>();
-  //    case C15::Descriptors::ParameterGroup::Flanger:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Flanger>();
-  //    case C15::Descriptors::ParameterGroup::Cabinet:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Cabinet>();
-  //    case C15::Descriptors::ParameterGroup::Gap_Flt:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Gap_Flt>();
-  //    case C15::Descriptors::ParameterGroup::Echo:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Echo>();
-  //    case C15::Descriptors::ParameterGroup::Reverb:
-  //      return fromArray<C15::Descriptors::ParameterGroup::Reverb>();
-  //    default:
-  //    case C15::Descriptors::ParameterGroup::Env_G:
-  //    case C15::Descriptors::ParameterGroup::None:
-  //      nltools_detailedAssertAlways(false, ("Unknown parameter group with id: " + group));
-  //  }
 }
 
 bool ParameterFactory::isModulateable(int id)
@@ -143,8 +70,7 @@ std::vector<C15::ParameterGroupDescriptor> ParameterFactory::getParameterGroupsP
   std::vector<C15::ParameterGroupDescriptor> groups;
   for(const auto& group : C15::ParameterGroups)
   {
-    if(group.m_group == C15::Descriptors::ParameterGroup::None
-       || group.m_group == C15::Descriptors::ParameterGroup::Env_G)
+    if(group.m_group == C15::Descriptors::ParameterGroup::None)
       continue;
 
     if(group.m_global_group == false)
