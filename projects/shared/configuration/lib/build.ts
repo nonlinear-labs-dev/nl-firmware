@@ -19,7 +19,8 @@ type Result = ConfigType & DeclarationsType & {
     parameter_units: string;
     display_scaling_types: string;
     parameter_groups: string;
-    group_map: string;
+    get_parameter_ids: string;
+    group_map: string; // todo: remove
     storage: string;
 };
 
@@ -94,7 +95,8 @@ function processDefinitions(result: Result) {
     const
         processedGroups: Array<string> = [],
         parameterList: Array<string> = new Array<string>(result.config.params).fill("{None}"),
-        groupMap: GroupElementMap = {};
+        groupMap: GroupElementMap = {}, // todo: remove
+        getParameterIds: GroupElementMap = {};
     // for every yaml resource of ./src/definitions, providing a parameter group
     result.definitions.sort((...defs) => {
         return defs.reduce((out, {filename, group}, index) => {
@@ -123,7 +125,8 @@ function processDefinitions(result: Result) {
             throw new Error(`${err}: group "${group.name}" is already defined`);
         }
         processedGroups.push(group.name);
-        groupMap[group.name] = new Array<string>();
+        groupMap[group.name] = new Array<string>(); // todo: remove
+        getParameterIds[group.name] = new Array<string>();
         // for every parameter of the group
         definition.parameters.forEach((parameter, index) => {
             const
@@ -181,7 +184,8 @@ function processDefinitions(result: Result) {
             pid[id] = `${tokenStr} = ${id}`;
             parameterType[typeStr].push(tokenStr);
             // feed group map
-            groupMap[group.name].push(tokenStr);
+            groupMap[group.name].push(tokenStr); // todo: remove
+            getParameterIds[group.name].push(tokenStr);
             // controlPosition properties
             const
                 { coarse, fine, scale, initial, inactive } = control_position,
@@ -383,6 +387,7 @@ function processDefinitions(result: Result) {
         return out;
     }, []).join("\n");
     result.enums.pid = ["None = -1", ...pid.filter((id) => id !== undefined)].join(",\n");
+    // todo: remove
     result.group_map = Object.entries(groupMap).reduce((out: Array<string>, [key, entries]) => {
         if(entries.length > 0)
             out.push([
@@ -397,6 +402,24 @@ function processDefinitions(result: Result) {
             ].join("\n"));
         return out;
     }, []).join("\n");
+    result.get_parameter_ids = [
+        "inline std::vector<PID::ParameterID> getParameterIds(const Descriptors::ParameterGroup &_group) {",
+        `${indent}switch(_group) {`,
+        Object.entries(groupMap).reduce((out: Array<string>, [key, entries]) => {
+            if(entries.length > 0)
+                out.push(
+                [
+                    `${indent}case Descriptors::ParameterGroup::${key}:\n${indent.repeat(2)}return {`,
+                    entries.map((entry) => `${indent.repeat(3)}PID::${entry}`).join(",\n"),
+                    `${indent.repeat(2)}};`
+                ].join("\n")
+                );
+            return out;
+        }, []).join("\n"),
+        `${indent}default:\n${indent.repeat(2)}return {};`,
+        `${indent}}`,
+        "}"
+    ].join("\n");
     result.storage = Object.entries(result.declarations.parameter_type).filter(([key]) => key !== "None").map(([key, props]) => {
         return [
             "template<typename T>",
@@ -486,7 +509,8 @@ function main(outDir: string, sourceDir: string) {
         result: Result = {
             timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "",
             parameter_list: "", parameter_units: "", display_scaling_types: "", parameter_groups: "",
-            group_map: "", storage: "",
+            group_map: "", // todo remove
+            get_parameter_ids: "", storage: "",
             ...ConfigParser.parse(sourceDir + "/src/c15_config.yaml"),
             ...DeclarationsParser.parse(sourceDir + "/src/parameter_declarations.yaml"),
             definitions: DefinitionsParser.parseAll(...definitions).map((definition, index) => {
