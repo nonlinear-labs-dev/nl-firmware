@@ -35,6 +35,8 @@ public class Overlay extends OverlayLayout {
 		private boolean isMuted = false;
 		private boolean inLayer = false;
 
+		//TODO cont here: rename to PartMuteLayerDisplay
+		//TODO move all subscriptions into EditBufferPresenter
 		public PartMuteDisplay(OverlayLayout parent, VoiceGroup vg) {
 			super(parent, "mute-part-a.svg");
 
