@@ -5,7 +5,6 @@
 #include <Toolbox.h>
 #include <mock/DspHostDualTester.h>
 #include <sync/SyncMasterMockRoot.h>
-#include <mock/MockSettingsObject.h>
 #include <mock/XMLPresetLoader.h>
 #include <mock/TCDHelpers.h>
 #include "CompileTimeOptions.h"
@@ -38,30 +37,11 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
   synth->onMidiSettingsMessage(msg);
   auto eb = app->getPresetManager()->getEditBuffer();
 
-  auto sendToAE = [&]() {
-    switch(eb->getType())
-    {
-      case SoundType::Single:
-        synth->onSinglePresetMessage(AudioEngineProxy::createSingleEditBufferMessage(*eb));
-        break;
-      case SoundType::Split:
-        synth->onSplitPresetMessage(AudioEngineProxy::createSplitEditBufferMessage(*eb));
-        break;
-      case SoundType::Layer:
-        synth->onLayerPresetMessage(AudioEngineProxy::createLayerEditBufferMessage(*eb));
-        break;
-    }
-  };
+  EditBufferUseCases ebUseCases(*eb);
 
   WHEN("Split is Loaded")
   {
-    EditBufferUseCases ebUseCases(*eb);
-    PresetManagerUseCases pmUseCases(*app->getPresetManager(), *app->getSettings());
-    auto presetData = getSourceDir() + "/projects/epc/acceptance-tests/test-data";
-    auto bank = pmUseCases.importBankFromPath(
-        std::filesystem::directory_entry { presetData + "/xml-banks/SplitPlateau.xml" }, [](auto) {});
-    ebUseCases.load(bank->getPresetAt(0));
-    sendToAE();
+    XMLPresetLoader::loadFirstPresetOfBank(app.get(), "SplitPlateau.xml", synth.get());
     synth->measurePerformance(std::chrono::milliseconds(10));
 
     THEN("Notes are held")
@@ -76,7 +56,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
       CHECK(tester.getActiveVoices(VoiceGroup::Global) == NumberOfNotes);
 
       ebUseCases.convertToSingle(VoiceGroup::I);
-      sendToAE();
+      XMLPresetLoader::sendToAE(eb, synth.get());
 
       WHEN("Sound was converted")
       {
@@ -89,13 +69,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
 
   WHEN("Single is Loaded")
   {
-    EditBufferUseCases ebUseCases(*eb);
-    PresetManagerUseCases pmUseCases(*app->getPresetManager(), *app->getSettings());
-    auto presetData = getSourceDir() + "/projects/epc/acceptance-tests/test-data";
-    auto bank = pmUseCases.importBankFromPath(
-        std::filesystem::directory_entry { presetData + "/xml-banks/InitWithAMix.xml" }, [](auto) {});
-    ebUseCases.load(bank->getPresetAt(0));
-    sendToAE();
+    XMLPresetLoader::loadFirstPresetOfBank(app.get(), "InitWithAMix.xml", synth.get());
     synth->measurePerformance(std::chrono::milliseconds(10));
 
     THEN("Notes are held")
@@ -109,7 +83,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
       synth->measurePerformance(std::chrono::milliseconds(10));
       CHECK(tester.getActiveVoices(VoiceGroup::Global) == NumberOfNotes);
       ebUseCases.convertToSplit(VoiceGroup::I);
-      sendToAE();
+      XMLPresetLoader::sendToAE(eb, synth.get());
 
       WHEN("Sound was converted")
       {
