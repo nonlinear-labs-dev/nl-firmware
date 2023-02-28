@@ -15,10 +15,10 @@
 std::vector<C15::PID::ParameterID> ParameterFactory::getParameterIDs(const C15::Descriptors::ParameterGroup& group)
 {
   const auto ret = C15::getParameterIds(group);
-  // non-empty results are valid
-  if(ret.size() > 0)
+
+  if(!ret.empty())
     return ret;
-  // empty results fail
+
   nltools_detailedAssertAlways(false, ("Unknown parameter group with id: " + group));
 }
 
