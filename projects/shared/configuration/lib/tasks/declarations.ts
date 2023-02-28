@@ -90,7 +90,11 @@ export const DeclarationsParser = new Parser<DeclarationsType>(
                 parameter_unit: Object.keys(declarations.parameter_unit).join(",\n"),
                 parameter_rounding: Object.keys(declarations.parameter_rounding).join(",\n"),
                 parameter_infinity: Object.keys(declarations.parameter_infinity).join(",\n"),
-                parameter_group: Object.keys(declarations.parameter_group).join(",\n"),
+                parameter_group: Object.entries(declarations.parameter_group).reduce((out, [key, props]) => {
+                    if((key === "None") || (props !== null))
+                        out.push(key);
+                    return out;
+                }, []).join(",\n"),
                 smoother_section: Object.keys(declarations.smoother_section).join(",\n"),
                 smoother_clock: Object.keys(declarations.smoother_clock).join(",\n"),
                 smoother_scale: Object.keys(declarations.smoother_scale).join(",\n"),

@@ -19,7 +19,7 @@ type Result = ConfigType & DeclarationsType & {
     parameter_units: string;
     display_scaling_types: string;
     parameter_groups: string;
-    group_map: string;
+    get_parameter_ids: string;
     storage: string;
 };
 
@@ -94,7 +94,7 @@ function processDefinitions(result: Result) {
     const
         processedGroups: Array<string> = [],
         parameterList: Array<string> = new Array<string>(result.config.params).fill("{None}"),
-        groupMap: GroupElementMap = {};
+        getParameterIds: GroupElementMap = {};
     // for every yaml resource of ./src/definitions, providing a parameter group
     result.definitions.sort((...defs) => {
         return defs.reduce((out, {filename, group}, index) => {
@@ -123,7 +123,7 @@ function processDefinitions(result: Result) {
             throw new Error(`${err}: group "${group.name}" is already defined`);
         }
         processedGroups.push(group.name);
-        groupMap[group.name] = new Array<string>();
+        getParameterIds[group.name] = new Array<string>();
         // for every parameter of the group
         definition.parameters.forEach((parameter, index) => {
             const
@@ -180,8 +180,8 @@ function processDefinitions(result: Result) {
             params.push(id, tokenStr);
             pid[id] = `${tokenStr} = ${id}`;
             parameterType[typeStr].push(tokenStr);
-            // feed group map
-            groupMap[group.name].push(tokenStr);
+            // feed getParameterIds
+            getParameterIds[group.name].push(tokenStr);
             // controlPosition properties
             const
                 { coarse, fine, scale, initial, inactive } = control_position,
@@ -350,9 +350,9 @@ function processDefinitions(result: Result) {
         return out;
     }, new Array<string>()).join(",\n");
     result.parameter_groups = Object.entries(result.declarations.parameter_group).reduce((out, [key, props]) => {
-        if(props === null) {
+        if(key === "None") {
             out.push(`{\n${indent}Descriptors::ParameterGroup::${key}\n}`)
-        } else {
+        } else if(props !== null) {
             out.push(`{\n${indent}${[
                 `Descriptors::ParameterGroup::${key}`,
                 `{${props.color.join(", ")}}`,
@@ -383,20 +383,24 @@ function processDefinitions(result: Result) {
         return out;
     }, []).join("\n");
     result.enums.pid = ["None = -1", ...pid.filter((id) => id !== undefined)].join(",\n");
-    result.group_map = Object.entries(groupMap).reduce((out: Array<string>, [key, entries]) => {
-        if(entries.length > 0)
-            out.push([
-                "template<>",
-                `struct ParameterGroupElementList<Descriptors::ParameterGroup::${key}>`,
-                "{",
-                `${indent}static constexpr uint32_t sSize = ${entries.length};`,
-                `${indent}static constexpr PID::ParameterID sElements[sSize] = {`,
-                `${indent.repeat(2)}${entries.map((entry) => `PID::${entry}`).join(`,\n${indent.repeat(2)}`)}`,
-                `${indent}};`,
-                "};"
-            ].join("\n"));
-        return out;
-    }, []).join("\n");
+    result.get_parameter_ids = [
+        "inline std::vector<PID::ParameterID> getParameterIds(const Descriptors::ParameterGroup &_group) {",
+        `${indent}switch(_group) {`,
+        Object.entries(getParameterIds).reduce((out: Array<string>, [key, entries]) => {
+            if(entries.length > 0)
+                out.push(
+                [
+                    `${indent}case Descriptors::ParameterGroup::${key}:\n${indent.repeat(2)}return {`,
+                    entries.map((entry) => `${indent.repeat(3)}PID::${entry}`).join(",\n"),
+                    `${indent.repeat(2)}};`
+                ].join("\n")
+                );
+            return out;
+        }, [`${indent}case Descriptors::ParameterGroup::None:\n${indent.repeat(2)}return {};`]).join("\n"),
+        `${indent}}`,
+        `${indent}return {};`,
+        "}"
+    ].join("\n");
     result.storage = Object.entries(result.declarations.parameter_type).filter(([key]) => key !== "None").map(([key, props]) => {
         return [
             "template<typename T>",
@@ -486,7 +490,7 @@ function main(outDir: string, sourceDir: string) {
         result: Result = {
             timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "",
             parameter_list: "", parameter_units: "", display_scaling_types: "", parameter_groups: "",
-            group_map: "", storage: "",
+            get_parameter_ids: "", storage: "",
             ...ConfigParser.parse(sourceDir + "/src/c15_config.yaml"),
             ...DeclarationsParser.parse(sourceDir + "/src/parameter_declarations.yaml"),
             definitions: DefinitionsParser.parseAll(...definitions).map((definition, index) => {
