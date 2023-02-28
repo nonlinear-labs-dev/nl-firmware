@@ -68,12 +68,6 @@ void Preset::load(UNDO::Transaction *transaction, const Glib::RefPtr<Gio::File> 
   auto strUUID = getUuid();
   Serializer::read<PresetSerializer>(transaction, presetPath, strUUID.raw(), this);
   m_lastSavedUpdateID = getUpdateIDOfLastChange();
-  createHashtags(transaction);
-}
-
-void Preset::createHashtags(UNDO::Transaction *transaction)
-{
-  setAttribute(transaction, "Hashtags", getHashtags());
 }
 
 bool Preset::save(const Glib::RefPtr<Gio::File> &bankPath)
@@ -273,15 +267,11 @@ void Preset::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID 
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("preset",
-                  {
-                      Attribute("uuid", getUuid().raw()),
-                      Attribute("name", m_name),
-                      Attribute("name-suffixed", getDisplayNameWithSuffixes(true)),
-                      Attribute("changed", changed),
-                      Attribute("type", toString(getType())),
-                      Attribute("part-I-name", getVoiceGroupName(VoiceGroup::I)),
-                      Attribute("part-II-name", getVoiceGroupName(VoiceGroup::II)),
-                  },
+                  { Attribute("uuid", getUuid().raw()), Attribute("name", m_name),
+                    Attribute("name-suffixed", getDisplayNameWithSuffixes(true)), Attribute("changed", changed),
+                    Attribute("type", toString(getType())), Attribute("part-I-name", getVoiceGroupName(VoiceGroup::I)),
+                    Attribute("part-II-name", getVoiceGroupName(VoiceGroup::II)),
+                    Attribute("Hashtags", getHashtags()) },
                   [&]() {
                     if(changed)
                     {
@@ -377,7 +367,8 @@ nlohmann::json Preset::serialize() const
            { "type", toString(getType()) },
            { "part-I-name", getVoiceGroupName(VoiceGroup::I) },
            { "part-II-name", getVoiceGroupName(VoiceGroup::II) },
-           { "attributes", AttributesOwner::toJson() } };
+           { "attributes", AttributesOwner::toJson() },
+           { "Hashtags", getHashtags() } };
 }
 
 Glib::ustring Preset::getTypeUnicode() const

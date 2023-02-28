@@ -93,7 +93,7 @@ void PresetInfoContent::fillFromPreset(const Preset *preset)
 {
   infoFields["name"]->setInfo(preset->getName(), FrameBufferColors::C128);
   auto propertyControl = dynamic_cast<PresetPropertyDisplay *>(infoFields["properties"]->getInfoControl());
-  propertyControl->updateFrom(preset->getAttribute("Hashtags", ""));
+  propertyControl->updateFrom(preset->getHashtags());
   infoFields["comment"]->setInfo(preset->getAttribute("Comment", "---"), FrameBufferColors::C128);
   infoFields["color"]->setInfo(prettyPrintPresetColor(preset));
   infoFields["lastchange"]->setInfo(TimeTools::getDisplayStringFromIso(preset->getAttribute("StoreTime", "---")));
