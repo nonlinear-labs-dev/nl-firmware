@@ -8,6 +8,8 @@
 #include <mock/MockSettingsObject.h>
 #include <mock/XMLPresetLoader.h>
 #include <mock/TCDHelpers.h>
+#include "CompileTimeOptions.h"
+#include <presets/Bank.h>
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
 {
@@ -23,7 +25,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
 
   //Prepare Midi Settings
   DspHostDualTester tester { synth->getDsp() };
-  MockSettingsObject settings("", &SyncMasterMockRoot::get());
 
   // prepare Scenario
   constexpr int NumberOfNotes = 3;
@@ -35,13 +36,32 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
   TestHelper::updateMappingForHW(msg.routings, tMSG::RoutingIndex::Notes, tMSG::RoutingAspect::LOCAL, true);
   msg.localEnable = true;
   synth->onMidiSettingsMessage(msg);
+  auto eb = app->getPresetManager()->getEditBuffer();
 
-  // Prepare Preset
-  auto settingBasePtr = static_cast<Settings*>(&settings);
+  auto sendToAE = [&]() {
+    switch(eb->getType())
+    {
+      case SoundType::Single:
+        synth->onSinglePresetMessage(AudioEngineProxy::createSingleEditBufferMessage(*eb));
+        break;
+      case SoundType::Split:
+        synth->onSplitPresetMessage(AudioEngineProxy::createSplitEditBufferMessage(*eb));
+        break;
+      case SoundType::Layer:
+        synth->onLayerPresetMessage(AudioEngineProxy::createLayerEditBufferMessage(*eb));
+        break;
+    }
+  };
 
   WHEN("Split is Loaded")
   {
-    XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "SplitPlateau", *settingBasePtr);
+    EditBufferUseCases ebUseCases(*eb);
+    PresetManagerUseCases pmUseCases(*app->getPresetManager(), *app->getSettings());
+    auto presetData = getSourceDir() + "/projects/epc/acceptance-tests/test-data";
+    auto bank = pmUseCases.importBankFromPath(
+        std::filesystem::directory_entry { presetData + "/xml-banks/SplitPlateau.xml" }, [](auto) {});
+    ebUseCases.load(bank->getPresetAt(0));
+    sendToAE();
     synth->measurePerformance(std::chrono::milliseconds(10));
 
     THEN("Notes are held")
@@ -54,7 +74,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
 
       synth->measurePerformance(std::chrono::milliseconds(10));
       CHECK(tester.getActiveVoices(VoiceGroup::Global) == NumberOfNotes);
-      XMLPresetLoader::convertSoundTo(synth.get(), settingBasePtr, SoundType::Single);
+
+      ebUseCases.convertToSingle(VoiceGroup::I);
+      sendToAE();
 
       WHEN("Sound was converted")
       {
@@ -67,7 +89,13 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
 
   WHEN("Single is Loaded")
   {
-    XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "InitWithAMix", *settingBasePtr);
+    EditBufferUseCases ebUseCases(*eb);
+    PresetManagerUseCases pmUseCases(*app->getPresetManager(), *app->getSettings());
+    auto presetData = getSourceDir() + "/projects/epc/acceptance-tests/test-data";
+    auto bank = pmUseCases.importBankFromPath(
+        std::filesystem::directory_entry { presetData + "/xml-banks/InitWithAMix.xml" }, [](auto) {});
+    ebUseCases.load(bank->getPresetAt(0));
+    sendToAE();
     synth->measurePerformance(std::chrono::milliseconds(10));
 
     THEN("Notes are held")
@@ -80,7 +108,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
 
       synth->measurePerformance(std::chrono::milliseconds(10));
       CHECK(tester.getActiveVoices(VoiceGroup::Global) == NumberOfNotes);
-      XMLPresetLoader::convertSoundTo(synth.get(), settingBasePtr, SoundType::Split);
+      ebUseCases.convertToSplit(VoiceGroup::I);
+      sendToAE();
 
       WHEN("Sound was converted")
       {
