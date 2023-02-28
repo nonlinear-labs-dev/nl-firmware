@@ -48,7 +48,7 @@ class MappedSvgImage<E> extends SVGImage {
 
 		if(phase != selectedPhase) {
 			selectedPhase = phase;
-			invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			requestLayout();
 		}
 	}
 
