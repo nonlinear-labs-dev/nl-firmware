@@ -71,6 +71,9 @@ public class EditBufferPresenter {
     public String currentPartName;
     public SoundType soundType;
 
+    public boolean partIMuted = false;
+    public boolean partIIMuted = false;
+
     //arrow states
     //general
     public SerialFX serialFX = SerialFX.None;
@@ -150,6 +153,10 @@ public class EditBufferPresenter {
         sum.eat(polyToFX.ordinal());
         sum.eat(fxToOut.ordinal());
         sum.eat(voiceGroup);
+
+        sum.eat(partIIMuted);
+        sum.eat(partIMuted);
+        
         return (int) sum.getHash();
     }
 }

@@ -198,11 +198,22 @@ public class EditBufferPresenterProvider extends Notifier<EditBufferPresenter> {
         bruteForceSoundBeltArrowStates();
         calculateSerialFx();
         calculateFXUnused();
+        calculatePartUnused();
 
         if(oldPresenterHash != presenter.hashCode())
         {
             notifyChanges();
         }
+    }
+
+    private void calculatePartUnused() {
+        var muteI = model.getParameter(new ParameterId(395, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var muteII = model.getParameter(new ParameterId(395, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+        var volI = model.getParameter(new ParameterId(358, VoiceGroup.I)).value.getQuantizedAndClipped(true);
+        var volII = model.getParameter(new ParameterId(358, VoiceGroup.II)).value.getQuantizedAndClipped(true);
+
+        presenter.partIMuted = muteI > 0 || volI == 0;
+        presenter.partIIMuted = muteII > 0 || volII == 0;
     }
 
     private void calculateSerialFx() {
