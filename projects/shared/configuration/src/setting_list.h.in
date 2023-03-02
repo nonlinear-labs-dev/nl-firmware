@@ -27,7 +27,11 @@ namespace C15
                 const unsigned m_fine;
             };
             using ValueType = std::variant<
-                bool, float, const char * const, MidiReceiveChannel
+                bool, float, const char * const,
+                MidiReceiveChannel, MidiReceiveChannelSplit,
+                MidiSendChannel, MidiSendChannelSplit,
+                PedalCC, BenderCC, AftertouchCC, RibbonCC,
+                AftertouchCurves, VelocityCurves
             >;
             const char * const m_key;
             const std::optional<ValueType> m_default_value;

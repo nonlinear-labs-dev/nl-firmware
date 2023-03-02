@@ -485,6 +485,17 @@ display_scaling_type: {
 
   # - - - - - - - - - - - - - - - - Unit::MS - - - - - - - - - - - - - - - - #
 
+  LINEAR_200_MS: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_MS,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: [ "0.0", "50.0", "100.0", "150.0", "200.0" ],
+    min: 0.0f,
+    max: 200.0f,
+    bipolar: false
+  },
+
   COMB_DECAY_BIPOLAR_MS: {
     round: *ROUNDING_THREE_SIGNIFICANT_DIGITS,
     unit: *UNIT_MS,

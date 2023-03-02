@@ -11,12 +11,123 @@ SendPresetAsLPCWriteFallback:
 NoteShift:
     default: 0
 
-TuneReference:
-    default: 0.5
-    display: { scale: LINEAR_400_480_HZ, coarse: 100, fine: 1000 }
+VelocityCurve:
+    default: VelocityCurves::VELOCITY_CURVE_NORMAL
+
+PresetDragDropEnabled:
+    default: true
+
+TransitionTime:
+    default: 0.0
+    display: { scale: ENVELOPE_TIME_MS, coarse: 100, fine: 1000 }
+
+AftertouchCurve:
+    default: AftertouchCurves::AFTERTOUCH_CURVE_NORMAL
+
+EditSmoothingTime:
+    default: 0.0
+    display: { scale: LINEAR_200_MS, coarse: 100, fine: 1000 }
+
+SSID:
+    default: ""
 
 Passphrase:
     default: "88888888"
 
+PresetGlitchSuppression:
+    default: true
+
+DateTimeAdjustment:
+    default: 0
+
+SignalFlowIndication:
+    default: true
+
+RandomizeAmount:
+    default: 0.1
+    display: { scale: LINEAR_100_PERCENT, coarse: 100, fine: 1000 }
+
+IndicateBlockedUI:
+    default: false
+
+HighlightChangedParameters:
+    default: true
+
+ForceHighlightChangedParameters:
+    default: false
+
+CrashOnError:
+    default: false
+
+TuneReference:
+    default: 0.5
+    display: { scale: LINEAR_400_480_HZ, coarse: 100, fine: 1000 }
+
+SyncVoiceGroups:
+    default: true
+
 ReceiveChannel:
     default: MidiReceiveChannel::Omni
+
+ReceiveChannelSplit:
+    default: MidiReceiveChannelSplit::Common
+
+SendChannel:
+    default: MidiSendChannel::CH_1
+
+SendChannelSplit:
+    default: MidiSendChannelSplit::CH_2
+
+ReceiveAftertouchCurve:
+    default: AftertouchCurves::AFTERTOUCH_CURVE_NORMAL
+
+ReceiveVelocityCurve:
+    default: VelocityCurves::VELOCITY_CURVE_NORMAL
+
+HighResCC:
+    default: true
+
+Pedal1Mapping:
+    default: PedalCC::CC20
+
+Pedal2Mapping:
+    default: PedalCC::CC21
+
+Pedal3Mapping:
+    default: PedalCC::CC22
+
+Pedal4Mapping:
+    default: PedalCC::CC23
+
+Ribbon1Mapping:
+    default: RibbonCC::CC24
+
+Ribbon2Mapping:
+    default: RibbonCC::CC25
+
+Ribbon3Mapping:
+    default: RibbonCC::CC26
+
+Ribbon4Mapping:
+    default: RibbonCC::CC27
+
+BenderMapping:
+    default: BenderCC::Pitchbend
+
+AftertouchMapping:
+    default: AftertouchCC::ChannelPressure
+
+HighVeloCC:
+    default: true
+
+AutoStartRecorder:
+    default: true
+
+GlobalLocalEnable:
+    default: true
+
+FlacRecorderVirgin:
+    default: true
+
+AftertouchLegacyMode:
+    default: true
