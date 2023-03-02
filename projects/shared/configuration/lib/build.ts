@@ -425,7 +425,7 @@ function processSettings(result: Result) {
                     else ret.push(str + "f");
                     break;
                 case "String":
-                    if(str.includes("::") || /^-?\d*\.\d+f/.test(str)) {
+                    if(str.includes("::")) {
                         ret.push(str);
                     } else {
                         ret.push(`"${props.default.toString()}"`);
