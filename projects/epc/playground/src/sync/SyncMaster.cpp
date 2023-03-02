@@ -58,6 +58,8 @@ nlohmann::json SyncMaster::api(const ClientPtr &client, const nlohmann::json &in
         std::string topic = args;
         m_subscribers[topic].push_back(client);
 
+#warning("We should optimize the m_items => maybe a map  or a set, ordered by the topic?")
+
         auto it = std::find_if(m_items.begin(), m_items.end(), [&](auto &a) { return a->getTopic() == topic; });
         if(it != m_items.end())
           return *it;
@@ -72,8 +74,13 @@ nlohmann::json SyncMaster::api(const ClientPtr &client, const nlohmann::json &in
 
 void SyncMaster::add(SyncedItem *item)
 {
-  m_items.push_back(item);
-  item->setDirty();
+  auto it = std::find(m_items.begin(), m_items.end(), item);
+
+  if(it == m_items.end())
+  {
+    m_items.push_back(item);
+    item->setDirty();
+  }
 }
 
 void SyncMaster::remove(SyncedItem *i)
@@ -81,9 +88,9 @@ void SyncMaster::remove(SyncedItem *i)
   m_items.erase(std::remove(m_items.begin(), m_items.end(), i), m_items.end());
 
   i->resetDirty();
-  nlohmann::json r;
+
   auto topic = i->getTopic();
-  r.push_back({ { "topic", topic }, { "state", nullptr } });
+  nlohmann::json r = { { "topic", topic }, { "state", nullptr } };
 
   if(auto it = m_subscribers.find(topic); it != m_subscribers.end())
   {

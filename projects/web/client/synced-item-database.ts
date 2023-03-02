@@ -7,6 +7,11 @@ interface SyncedItem {
     state: any
 }
 
+enum SyncedDataState {
+    Pending,
+    Unsubscribed
+}
+
 type SyncedData = {};
 type Topic = string;
 
@@ -17,18 +22,29 @@ export class SyncedItemDatabase {
     }
 
     public queryItem(topic: Topic): SyncedData | null {
-        return this.queryVar(topic).get();
+        var v = this.queryVar(topic).get();
+
+        if(v == SyncedDataState.Pending || v == SyncedDataState.Unsubscribed)
+            return null;
+
+        return v;
     }
 
-    public queryVar(topic: Topic): ReactiveVar<SyncedData | null> {
+    private queryVar(topic: Topic): ReactiveVar<SyncedData | SyncedDataState> {
         if (!this.database.has(topic)) {
-            this.database.set(topic, new ReactiveVar<SyncedData>({}));
+            this.database.set(topic, new ReactiveVar<SyncedData | SyncedDataState>(SyncedDataState.Pending));
 
             if (this.socket.readyState != WebSocket.OPEN)
                 this.pendingSubs.add(topic);
             else
                 this.socket.send(JSON.stringify({ 'sub': topic }));
         }
+
+        if(this.database.get(topic)!.get() == SyncedDataState.Unsubscribed) {
+            this.socket.send(JSON.stringify({ 'sub': topic }));
+            this.database.set(topic, new ReactiveVar<SyncedData | SyncedDataState>(SyncedDataState.Pending));
+        }
+
         return this.database.get(topic)!;
     }
 
@@ -53,7 +69,7 @@ export class SyncedItemDatabase {
     private onOpen() {
         this.pendingSubs.forEach((t) => this.socket.send(JSON.stringify({ 'sub': t })));
         this.pendingSubs.clear();
-        this.database.forEach((v, k) => v.set(null));
+        this.database.forEach((v, k) => v.set(SyncedDataState.Pending));
         this.database.clear();
     }
 
@@ -88,13 +104,15 @@ export class SyncedItemDatabase {
     }
 
     private onMessage(data: any) {
+        
         var reader = new FileReader()
         reader.onload = () => {
             var c: SyncedItem = JSON.parse(reader.result as string);
+            console.log("onMessage: " + reader.result as string);
 
             if (c) {
                 if (!c.state || Object.keys(c.state).length == 0) {
-                    this.queryVar(c.topic).set(null);
+                    this.queryVar(c.topic).set(SyncedDataState.Unsubscribed);
                 }
                 else {
                     var k = this.queryVar(c.topic);
@@ -108,7 +126,7 @@ export class SyncedItemDatabase {
     }
 
     private socket!: WebSocket;
-    private database = new Map<Topic, ReactiveVar<SyncedData | null>>();
+    private database = new Map<Topic, ReactiveVar<SyncedData | SyncedDataState>>();
     private reconnectTimeout = -1;
     private pendingSubs = new Set<Topic>();
 }

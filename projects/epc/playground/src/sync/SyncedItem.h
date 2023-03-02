@@ -23,6 +23,9 @@ class SyncedItem
   void setDirty();
   void resetDirty();
 
+  void suspend();
+  void resume();
+
  protected:
   virtual nlohmann::json serialize() const = 0;
 
