@@ -70,9 +70,10 @@ public class PresetInfoWidget {
 		}
 
 		if (preset != null) {
+
 			String presetName = preset.getCurrentName();
 			deviceName.setText(preset.getAttribute("DeviceName"));
-			hashTags.updateFromPreset(preset.getAttribute("Hashtags"));
+			hashTags.updateFromPreset(preset.getHashtags());
 			softwareVersion.setText(preset.getAttribute("SoftwareVersion"));
 			storeTime.setText(localizeTime(preset.getAttribute("StoreTime")));
 			String commentText = preset.getAttribute("Comment");

@@ -1,5 +1,6 @@
 package com.nonlinearlabs.client.world.overlay.InfoDialog;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 
@@ -30,6 +31,7 @@ public class PresetPropertiesLabels {
 
     public void updateFromPreset(String hashtagString)
     {
+        GWT.log("updateFromPreset: <begin>" + hashtagString + "<end>");
         if(hashtagString.length() > 0)
         {
             var splits = hashtagString.split(",", 0);
