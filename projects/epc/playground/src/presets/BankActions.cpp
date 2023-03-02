@@ -7,6 +7,7 @@
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <presets/PresetManager.h>
+#include <presets/EditBuffer.h>
 
 #include <http/NetworkRequest.h>
 #include <http/HTTPRequest.h>
@@ -106,6 +107,11 @@ BankActions::BankActions(UpdateDocumentContributor* parent, PresetManager& prese
       {
         targetUseCases.overwriteWithEditBuffer(*m_presetManager.getEditBuffer());
       }
+    }
+    else if(auto selBank = m_presetManager.getSelectedBank(); selBank->getNumPresets() == 0)
+    {
+      BankUseCases bankUseCases(selBank, m_presetManager.getEditBuffer()->getSettings());
+      bankUseCases.saveEditBufferIntoBank();
     }
     else
     {
