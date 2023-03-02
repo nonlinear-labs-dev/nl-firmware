@@ -4,6 +4,7 @@ import { generateOutputFile } from "./yaml";
 import { ConfigType, ConfigParser } from "./tasks/config";
 import { DeclarationsType, DeclarationsParser } from "./tasks/declarations";
 import { DefinitionsType, SignalType, ParameterType, DefinitionsParser } from "./tasks/definitions";
+import { Settings, SettingType, SettingParser } from "./tasks/settings";
 
 // yaml parsing result type
 type Result = ConfigType & DeclarationsType & {
@@ -21,6 +22,8 @@ type Result = ConfigType & DeclarationsType & {
     parameter_groups: string;
     group_map: string;
     storage: string;
+    settings: Settings;
+    setting_list: string;
 };
 
 type ParamType = {
@@ -486,9 +489,10 @@ function main(outDir: string, sourceDir: string) {
         result: Result = {
             timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "",
             parameter_list: "", parameter_units: "", display_scaling_types: "", parameter_groups: "",
-            group_map: "", storage: "",
+            group_map: "", storage: "", setting_list: "",
             ...ConfigParser.parse(sourceDir + "/src/c15_config.yaml"),
             ...DeclarationsParser.parse(sourceDir + "/src/parameter_declarations.yaml"),
+            settings: SettingParser.parse(sourceDir + "/src/settings.yaml"),
             definitions: DefinitionsParser.parseAll(...definitions).map((definition, index) => {
                 return { ...definition, filename: definitions[index] }
             })
@@ -524,6 +528,7 @@ function main(outDir: string, sourceDir: string) {
         sourceDir + "/src/parameter_descriptor.h.in",
         sourceDir + "/src/display_scaling_type.h.in",
         sourceDir + "/src/parameter_group.h.in",
+        sourceDir + "/src/setting_list.h.in",
         sourceDir + "/src/main.cpp.in",
         // transformations not covered by g++ and therefore unsafe
         sourceDir + "/src/placeholder.h.in",
@@ -547,8 +552,8 @@ function createDirectorys(dir) {
 try {
     const myArgs = process.argv.slice(1)
     const sourceDirectoryParts = myArgs[0].split("/");
-    sourceDirectoryParts.pop()
-    sourceDirectoryParts.pop()
+    sourceDirectoryParts.pop();
+    sourceDirectoryParts.pop();
     const sourceDirectoryPath = "/" + sourceDirectoryParts.join("/");
     const outDirectory = myArgs[1]
     createDirectorys(outDirectory);
