@@ -71,7 +71,8 @@ void RecallEditBufferSerializer::readTagContent(Reader &reader) const
         {
           auto &conversion = ParameterImportConversions::get();
           auto converted = conversion.convert(id, std::stod(text), reader.getFileVersion(), m_editBuffer->getType());
-          auto convertedModAmount = conversion.convertMCAmount(id, std::stod(attr.get("mod-amt")), reader.getFileVersion());
+          auto convertedModAmount
+              = conversion.convertMCAmount(id, std::stod(attr.get("mod-amt")), reader.getFileVersion());
 
           split->m_recallValue = converted;
           split->m_recallModAmount = convertedModAmount;

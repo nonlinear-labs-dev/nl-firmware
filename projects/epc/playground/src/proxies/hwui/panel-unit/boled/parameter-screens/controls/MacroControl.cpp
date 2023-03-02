@@ -3,11 +3,11 @@
 #include "proxies/hwui/controls/Slider.h"
 #include "parameters/MacroControlParameter.h"
 #include "parameters/ModulateableParameter.h"
-#include "groups/MacroControlsGroup.h"
 #include "Application.h"
 #include <proxies/hwui/HWUI.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
+#include "parameters/ParameterFactory.h"
 #include <sigc++/sigc++.h>
 
 MacroControl::MacroControl(const Rect &pos)
@@ -38,7 +38,7 @@ void MacroControl::onTargetChanged(const Parameter *modulatedParameter)
   if(const auto *p = dynamic_cast<const ModulateableParameter *>(modulatedParameter))
   {
     auto src = p->getModulationSource();
-    auto srcParamID = MacroControlsGroup::modSrcToParamId(src);
+    auto srcParamID = ParameterFactory::modSrcToParamId(src);
     auto vg = p->getVoiceGroup();
 
     if(auto pa = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID))

@@ -468,14 +468,14 @@ void PresetManager::sortBanks(UNDO::Transaction *transaction, const std::vector<
 const std::set<int> &getUnavailableParametersBySoundType(SoundType t)
 {
   static std::set<int> unavailableInSingleSound {
-    C15::PID::FB_Mix_Comb_Src,     C15::PID::FB_Mix_Osc_Src,       C15::PID::Split_Split_Point,
-    C15::PID::Voice_Grp_Fade_From, C15::PID::Voice_Grp_Tune,       C15::PID::FB_Mix_Osc,
-    C15::PID::FB_Mix_SVF_Src,      C15::PID::Voice_Grp_Fade_Range, C15::PID::Voice_Grp_Volume,
+    C15::PID::FB_Mix_Comb_Src, C15::PID::FB_Mix_Osc_Src,  C15::PID::Split_Split_Point,
+    C15::PID::Part_Fade_From,  C15::PID::Part_Tune,       C15::PID::FB_Mix_Osc,
+    C15::PID::FB_Mix_SVF_Src,  C15::PID::Part_Fade_Range, C15::PID::Part_Volume,
   };
 
   static std::set<int> unavailableInSplitSounds {
-    C15::PID::FB_Mix_Comb_Src,     C15::PID::FB_Mix_Osc_Src,       C15::PID::FB_Mix_SVF_Src,
-    C15::PID::Voice_Grp_Fade_From, C15::PID::Voice_Grp_Fade_Range, C15::PID::FB_Mix_Osc,
+    C15::PID::FB_Mix_Comb_Src, C15::PID::FB_Mix_Osc_Src,  C15::PID::FB_Mix_SVF_Src,
+    C15::PID::Part_Fade_From,  C15::PID::Part_Fade_Range, C15::PID::FB_Mix_Osc,
   };
 
   static std::set<int> unavailableInLayerSounds { C15::PID::Split_Split_Point };

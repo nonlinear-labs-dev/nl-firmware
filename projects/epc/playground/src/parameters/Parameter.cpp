@@ -556,7 +556,7 @@ Parameter::VisualizationStyle Parameter::getVisualizationStyle() const
     case C15::PID::Out_Mix_To_FX:
     case C15::PID::Master_FX_Mix:
       return VisualizationStyle::Dot;
-    case C15::PID::Voice_Grp_Fade_From:
+    case C15::PID::Part_Fade_From:
     case C15::PID::Split_Split_Point:
       return isVG_II ? VisualizationStyle::BarFromRight : VisualizationStyle::Bar;
   }

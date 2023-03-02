@@ -522,9 +522,9 @@ void randomizeRequireChangedAndInitSoundTest(const Preset *preset)
 
   for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    auto vgVolume = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, vg });
+    auto vgVolume = eb->findParameterByID({ C15::PID::Part_Volume, vg });
     REQUIRE(!vgVolume->isValueDifferentFrom(vgVolume->getFactoryDefaultValue()));
-    auto vgTune = eb->findParameterByID({ C15::PID::Voice_Grp_Tune, vg });
+    auto vgTune = eb->findParameterByID({ C15::PID::Part_Tune, vg });
     REQUIRE(!vgTune->isValueDifferentFrom(vgTune->getFactoryDefaultValue()));
   }
 }

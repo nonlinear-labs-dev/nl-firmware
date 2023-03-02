@@ -56,7 +56,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,
 
         WHEN("EB is Changed again")
         {
-          ebUseCases.setParameter({ C15::PID::Voice_Grp_Tune, VoiceGroup::I }, 0.267);
+          ebUseCases.setParameter({ C15::PID::Part_Tune, VoiceGroup::I }, 0.267);
           TestHelper::doMainLoopFor(150ms);
           CHECK(eb->findAnyParameterChanged());
 

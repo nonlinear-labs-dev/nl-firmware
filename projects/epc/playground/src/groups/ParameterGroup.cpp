@@ -17,14 +17,22 @@
 #include <http/UpdateDocumentMaster.h>
 #include <sync/JsonAdlSerializers.h>
 
-ParameterGroup::ParameterGroup(ParameterGroupSet *parent, GroupId id, const char *shortName, const char *longName,
-                               const char *webUIName)
+namespace
+{
+  GroupId createId(const C15::ParameterGroupDescriptor &desc, VoiceGroup vg)
+  {
+    return { desc.m_identifier, vg };
+  }
+}
+
+ParameterGroup::ParameterGroup(ParameterGroupSet *parent, C15::ParameterGroupDescriptor desc, VoiceGroup vg)
     : UpdateDocumentContributor(parent)
-    , SyncedItem(parent->getRoot()->getSyncMaster(), "/parametergroup/" + id.toString())
-    , m_id(id)
-    , m_shortName(shortName)
-    , m_longName(longName)
-    , m_webUIName(webUIName ? webUIName : m_longName)
+    , SyncedItem(parent->getRoot()->getSyncMaster(), "/parametergroup/" + createId(desc, vg).toString())
+    , m_id(createId(desc, vg))
+    , m_shortName(desc.m_label_short)
+    , m_longName(desc.m_label_long)
+    , m_webUIName(desc.m_label_long)
+    , m_groupDescriptor(desc)
 {
 }
 
@@ -251,7 +259,7 @@ bool ParameterGroup::isPolyphonic() const
 
 void ParameterGroup::init()
 {
-  for(auto id : ParameterFactory::getParameterIDs(getShortName()))
+  for(auto id : ParameterFactory::getParameterIDs(m_groupDescriptor.m_group))
   {
     appendParameter(ParameterFactory::createParameterByType(this, { id, getVoiceGroup() }));
   }

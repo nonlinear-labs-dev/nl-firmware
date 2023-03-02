@@ -154,7 +154,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "FROM Layer")
 
   WHEN("Part: Volume selected")
   {
-    ebUseCases.selectParameter({ Voice_Grp_Volume, VoiceGroup::II });
+    ebUseCases.selectParameter({ Part_Volume, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
@@ -171,7 +171,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "FROM Layer")
 
   WHEN("Part: Tune selected")
   {
-    ebUseCases.selectParameter({ Voice_Grp_Tune, VoiceGroup::II });
+    ebUseCases.selectParameter({ Part_Tune, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
@@ -188,12 +188,12 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "FROM Layer")
 
   WHEN("Part: Fade From selected")
   {
-    ebUseCases.selectParameter({ Voice_Grp_Fade_From, VoiceGroup::II });
+    ebUseCases.selectParameter({ Part_Fade_From, VoiceGroup::II });
 
     THEN("Split Preset Loaded")
     {
       ebUseCases.load(presets.getSplitPreset());
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ Voice_Grp_Volume, VoiceGroup::II }));
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ Part_Volume, VoiceGroup::II }));
     }
 
     THEN("Single Preset Loaded")
@@ -205,7 +205,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "FROM Layer")
     THEN("Split converted")
     {
       ebUseCases.convertToSplit(VoiceGroup::I);
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ Voice_Grp_Volume, VoiceGroup::II }));
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ Part_Volume, VoiceGroup::II }));
     }
 
     THEN("Single converted")
@@ -217,12 +217,12 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "FROM Layer")
 
   WHEN("Part: Fade Range selected")
   {
-    ebUseCases.selectParameter({ Voice_Grp_Fade_Range, VoiceGroup::II });
+    ebUseCases.selectParameter({ Part_Fade_Range, VoiceGroup::II });
 
     THEN("Split Preset Loaded")
     {
       ebUseCases.load(presets.getSplitPreset());
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ Voice_Grp_Volume, VoiceGroup::II }));
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ Part_Volume, VoiceGroup::II }));
     }
 
     THEN("Single Preset Loaded")
@@ -234,7 +234,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "FROM Layer")
     THEN("Split Convert")
     {
       ebUseCases.convertToSplit(VoiceGroup::I);
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ Voice_Grp_Volume, VoiceGroup::II }));
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId({ Part_Volume, VoiceGroup::II }));
     }
 
     THEN("Single Convert")
@@ -264,7 +264,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Loaded")
 
   WHEN("Part: Volume selected")
   {
-    ebUseCases.selectParameter({ Voice_Grp_Volume, VoiceGroup::II });
+    ebUseCases.selectParameter({ Part_Volume, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
@@ -281,7 +281,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Loaded")
 
   WHEN("Part: Tune selected")
   {
-    ebUseCases.selectParameter({ Voice_Grp_Tune, VoiceGroup::II });
+    ebUseCases.selectParameter({ Part_Tune, VoiceGroup::II });
 
     THEN("Single Preset Loaded")
     {
@@ -309,13 +309,13 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Loaded")
     THEN("Layer Preset Loaded")
     {
       ebUseCases.load(presets.getLayerPreset());
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { Voice_Grp_Volume, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { Part_Volume, VoiceGroup::II });
     }
 
     THEN("Layer Convert")
     {
       ebUseCases.convertToLayer(VoiceGroup::II);
-      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { Voice_Grp_Volume, VoiceGroup::II });
+      CHECK(eb->getSelected(VoiceGroup::II)->getID() == ParameterId { Part_Volume, VoiceGroup::II });
     }
 
     THEN("Single Convert")

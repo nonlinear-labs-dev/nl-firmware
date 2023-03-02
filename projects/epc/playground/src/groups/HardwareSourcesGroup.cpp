@@ -1,4 +1,5 @@
 #include "HardwareSourcesGroup.h"
+#include "parameter_group.h"
 #include <parameters/RibbonParameter.h>
 #include <parameters/PedalParameter.h>
 #include <parameters/PitchbendParameter.h>
@@ -6,8 +7,16 @@
 #include <parameters/HardwareSourceSendParameter.h>
 #include <device-settings/Settings.h>
 
+namespace
+{
+  auto getDesc()
+  {
+    return C15::ParameterGroups[static_cast<int>(C15::Descriptors::ParameterGroup::Mod_HW)];
+  }
+}
+
 HardwareSourcesGroup::HardwareSourcesGroup(ParameterGroupSet* parent, Settings* settings)
-    : ParameterGroup(parent, { "CS", VoiceGroup::Global }, "HW Source", "Hardware Source", "Hardware Source")
+    : ParameterGroup(parent, getDesc(), VoiceGroup::Global)
     , m_settings(settings)
 {
 }

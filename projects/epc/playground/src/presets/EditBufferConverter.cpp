@@ -134,8 +134,8 @@ void EditBufferConverter::undoableInvertToFXII(UNDO::Transaction *transaction) c
 
 void EditBufferConverter::undoableUnmuteLayers(UNDO::Transaction *transaction)
 {
-  m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I })->setCPFromHwui(transaction, 0);
-  m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->setCPFromHwui(transaction, 0);
+  m_editBuffer.findParameterByID({ C15::PID::Part_Mute, VoiceGroup::I })->setCPFromHwui(transaction, 0);
+  m_editBuffer.findParameterByID({ C15::PID::Part_Mute, VoiceGroup::II })->setCPFromHwui(transaction, 0);
 }
 
 std::vector<Parameter *> EditBufferConverter::getParametersToLock(SoundType newType) const
@@ -199,8 +199,8 @@ void EditBufferConverter::copyGlobalMasterAndFXMixToPartVolumesForConvertSingleT
   auto partVolumeCpVgI = VolumeConversionRules::getPartVolumeForConvertSingleToDual(masterCP, fxMixCP, VoiceGroup::I);
   auto partVolumeCpVgII = VolumeConversionRules::getPartVolumeForConvertSingleToDual(masterCP, fxMixCP, VoiceGroup::II);
 
-  auto partVolI = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
-  auto partVolII = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
+  auto partVolI = m_editBuffer.findParameterByID({ C15::PID::Part_Volume, VoiceGroup::I });
+  auto partVolII = m_editBuffer.findParameterByID({ C15::PID::Part_Volume, VoiceGroup::II });
 
   partVolI->setCPFromHwui(transaction, partVolumeCpVgI);
   partVolII->setCPFromHwui(transaction, partVolumeCpVgII);
@@ -208,8 +208,8 @@ void EditBufferConverter::copyGlobalMasterAndFXMixToPartVolumesForConvertSingleT
 
 void EditBufferConverter::initVoiceGroupMasterAndTune(UNDO::Transaction *transaction, VoiceGroup voiceGroup) const
 {
-  auto vgVolume = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Volume, voiceGroup });
-  auto vgTune = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Tune, voiceGroup });
+  auto vgVolume = m_editBuffer.findParameterByID({ C15::PID::Part_Volume, voiceGroup });
+  auto vgTune = m_editBuffer.findParameterByID({ C15::PID::Part_Tune, voiceGroup });
   vgVolume->loadDefault(transaction, Defaults::FactoryDefault);
   vgTune->loadDefault(transaction, Defaults::FactoryDefault);
 }
@@ -302,10 +302,10 @@ void EditBufferConverter::copyPartVolumesToGlobalMasterAndFXMixForConvertDualToS
 {
   const auto masterVolume = m_editBuffer.findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
   const auto masterFX_MIX = m_editBuffer.findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global });
-  const auto partVolI = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
-  const auto partVolII = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
+  const auto partVolI = m_editBuffer.findParameterByID({ C15::PID::Part_Volume, VoiceGroup::I });
+  const auto partVolII = m_editBuffer.findParameterByID({ C15::PID::Part_Volume, VoiceGroup::II });
 
-  const auto partVolumeSelf = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Volume, copyFrom });
+  const auto partVolumeSelf = m_editBuffer.findParameterByID({ C15::PID::Part_Volume, copyFrom });
 
   // handle edge cases without ratio
   if(partVolII->getControlPositionValue() == 0.0)
@@ -386,7 +386,7 @@ void EditBufferConverter::copyPartTuneFromMasterTuneAndDefaultMasterGroup(UNDO::
   auto partII = m_editBuffer.getParameterGroupByID({ "Part", VoiceGroup::II });
 
   //Copy Tune
-  for(auto &ids : std::vector<std::pair<int, int>> { { C15::PID::Voice_Grp_Tune, C15::PID::Master_Tune } })
+  for(auto &ids : std::vector<std::pair<int, int>> { { C15::PID::Part_Tune, C15::PID::Master_Tune } })
   {
     auto pI = partI->findParameterByID({ ids.first, VoiceGroup::I });
     auto pII = partII->findParameterByID({ ids.first, VoiceGroup::II });
@@ -475,8 +475,8 @@ void EditBufferConverter::applyConversionRuleForFBMixFXFromSingleToDual(UNDO::Tr
 
 void EditBufferConverter::calculateSplitPointFromFadeParams(UNDO::Transaction *transaction)
 {
-  auto idFromI = ParameterId { C15::PID::Voice_Grp_Fade_From, VoiceGroup::I };
-  auto idFromII = ParameterId { C15::PID::Voice_Grp_Fade_From, VoiceGroup::II };
+  auto idFromI = ParameterId { C15::PID::Part_Fade_From, VoiceGroup::I };
+  auto idFromII = ParameterId { C15::PID::Part_Fade_From, VoiceGroup::II };
   const auto fadeFromICP = m_editBuffer.findParameterByID(idFromI)->getControlPositionValue();
   const auto fadeFromIICP = m_editBuffer.findParameterByID(idFromII)->getControlPositionValue();
 
@@ -493,9 +493,9 @@ void EditBufferConverter::defaultFadeParameters(UNDO::Transaction *transaction)
 {
   for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Fade_From, vg })
+    m_editBuffer.findParameterByID({ C15::PID::Part_Fade_From, vg })
         ->loadDefault(transaction, Defaults::FactoryDefault);
-    m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Fade_Range, vg })
+    m_editBuffer.findParameterByID({ C15::PID::Part_Fade_Range, vg })
         ->loadDefault(transaction, Defaults::FactoryDefault);
   }
 }
@@ -504,10 +504,8 @@ void EditBufferConverter::combineSplitPartGlobalMaster(UNDO::Transaction *transa
 {
   auto masterGroup = m_editBuffer.getParameterGroupByID({ "Master", VoiceGroup::Global });
 
-  auto originVolume
-      = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Voice_Grp_Volume, copyFrom });
-  auto originTune
-      = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Voice_Grp_Tune, copyFrom });
+  auto originVolume = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Part_Volume, copyFrom });
+  auto originTune = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Part_Tune, copyFrom });
 
   auto masterVolumeParameter
       = masterGroup->findAndCastParameterByID<ModulateableParameter>({ C15::PID::Master_Volume, VoiceGroup::Global });
@@ -529,10 +527,8 @@ void EditBufferConverter::combineLayerPartGlobalMaster(UNDO::Transaction *transa
 {
   auto masterGroup = m_editBuffer.getParameterGroupByID({ "Master", VoiceGroup::Global });
 
-  auto originVolume
-      = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Voice_Grp_Volume, copyFrom });
-  auto originTune
-      = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Voice_Grp_Tune, copyFrom });
+  auto originVolume = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Part_Volume, copyFrom });
+  auto originTune = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Part_Tune, copyFrom });
 
   auto masterVolumeParameter
       = masterGroup->findAndCastParameterByID<ModulateableParameter>({ C15::PID::Master_Volume, VoiceGroup::Global });

@@ -1,6 +1,4 @@
 #include "AudioEngineProxy.h"
-#include "parameters/PedalParameter.h"
-#include "parameters/RibbonParameter.h"
 #include "parameters/MacroControlSmoothingParameter.h"
 #include <presets/PresetManager.h>
 #include <presets/Bank.h>
@@ -10,8 +8,6 @@
 #include <parameters/MacroControlParameter.h>
 #include <parameters/ModulateableParameter.h>
 #include <parameters/PhysicalControlParameter.h>
-#include <groups/MacroControlsGroup.h>
-#include <groups/ScaleGroup.h>
 #include <device-settings/Settings.h>
 #include <parameter_declarations.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
@@ -456,7 +452,6 @@ void AudioEngineProxy::sendSelectedMidiPresetAsProgramChange()
           m_lastMIDIKnownProgramNumber = presetPos;
           nltools::msg::Midi::ProgramChangeMessage msg {};
           msg.program = presetPos;
-          msg.programType = selectedPreset->getType();
           nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
         }
       }
@@ -496,11 +491,13 @@ void AudioEngineProxy::connectSettingsToAudioEngineMessage()
                           RoutingSettings, GlobalLocalEnableSetting, SelectedRibbonsSetting>(&m_settings);
 
   m_settingConnections.push_back(m_settings.getSetting<AutoStartRecorderSetting>()->onChange([](const Setting *s) {
-    auto as = static_cast<const AutoStartRecorderSetting *>(s);
-    const auto shouldAutoStart = as->get();
-    auto msg = nltools::msg::Setting::FlacRecorderAutoStart {};
-    msg.enabled = shouldAutoStart;
-    nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+    if(auto as = dynamic_cast<const AutoStartRecorderSetting *>(s))
+    {
+      const auto shouldAutoStart = as->get();
+      auto msg = nltools::msg::Setting::FlacRecorderAutoStart {};
+      msg.enabled = shouldAutoStart;
+      nltools::msg::send(nltools::msg::EndPoint::AudioEngine, msg);
+    }
   }));
 }
 
@@ -546,7 +543,7 @@ void AudioEngineProxy::setLastKnownMIDIProgramChangeNumber(int pc)
 
 Parameter *AudioEngineProxy::findPhysicalControlParameterFromAudioEngineHWSourceID(int index)
 {
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
+  auto eb = m_presetManager.getEditBuffer();
   auto i = [](auto s) { return static_cast<int>(s); };
 
   switch(index)

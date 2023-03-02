@@ -11,6 +11,7 @@
 class MidiRuntimeOptions
 {
  public:
+  MidiRuntimeOptions();
   typedef nltools::msg::Setting::MidiSettingsMessage tMidiSettingMessage;
   typedef tMidiSettingMessage::tEntry tRoutingEntry;
   typedef tMidiSettingMessage::RoutingAspect tRoutingAspect;

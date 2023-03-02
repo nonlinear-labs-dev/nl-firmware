@@ -1,4 +1,5 @@
 #include "testing/TestHelper.h"
+#include "parameter_group.h"
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
@@ -153,7 +154,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "PresetParameterGroup")
     struct PGroup : public ParameterGroup
     {
       PGroup()
-          : ParameterGroup(TestHelper::getEditBuffer(), { "A", VoiceGroup::I }, "Foo", "Bar", "Baz")
+          : ParameterGroup(TestHelper::getEditBuffer(), C15::ParameterGroups[(int) 2], VoiceGroup::I)
       {
       }
 

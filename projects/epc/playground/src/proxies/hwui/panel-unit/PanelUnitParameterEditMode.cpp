@@ -1,5 +1,4 @@
 #include <Application.h>
-#include <device-settings/DebugLevel.h>
 #include <groups/MacroControlMappingGroup.h>
 #include <groups/ScaleGroup.h>
 #include <parameters/MacroControlParameter.h>
@@ -8,7 +7,6 @@
 #include <parameters/PhysicalControlParameter.h>
 #include <parameters/ScaleParameter.h>
 #include <presets/EditBuffer.h>
-#include <presets/PresetManager.h>
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
@@ -18,11 +16,10 @@
 #include "PanelUnitParameterEditMode.h"
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
+#include "parameters/ParameterFactory.h"
 #include <device-settings/LayoutMode.h>
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <sigc++/sigc++.h>
-#include <glibmm/main.h>
-#include <groups/MacroControlsGroup.h>
 #include <parameters/MacroControlSmoothingParameter.h>
 
 class ParameterInfoLayout;
@@ -458,7 +455,7 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
         collectLedStates(states, tgt->getID());
     }
 
-    if(selParam->getParentGroup()->getID().getName() == "MCs" || MacroControlsGroup::isMacroTime(selParam->getID()))
+    if(selParam->getParentGroup()->getID().getName() == "MCs" || ParameterFactory::isMacroTime(selParam->getID()))
     {
       letMacroControlTargetsBlink(states);
     }
@@ -539,9 +536,9 @@ void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, ParameterI
     selectedParameterID = ParameterId(ScaleGroup::getScaleBaseParameterNumber(), selectedParameterID.getVoiceGroup());
   }
 
-  if(MacroControlsGroup::isMacroTime(selectedParameterID))
+  if(ParameterFactory::isMacroTime(selectedParameterID))
   {
-    selectedParameterID = MacroControlsGroup::smoothingIdToMCId(selectedParameterID);
+    selectedParameterID = ParameterFactory::smoothingIdToMCId(selectedParameterID);
   }
 
   auto button = m_mappings.findButton(selectedParameterID.getNumber());

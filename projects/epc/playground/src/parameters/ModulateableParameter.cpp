@@ -1,12 +1,10 @@
 #include "ModulateableParameter.h"
 #include "MacroControlParameter.h"
-#include "groups/MacroControlsGroup.h"
-#include "proxies/playcontroller/MessageComposer.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
 #include "parameters/scale-converters/Linear100PercentScaleConverter.h"
-#include "scale-converters/LinearBipolar100PercentScaleConverter.h"
 #include "use-cases/ModParameterUseCases.h"
+#include "ParameterFactory.h"
 #include <libundo/undo/Transaction.h>
 #include <device-settings/DebugLevel.h>
 #include <xml/Writer.h>
@@ -19,7 +17,6 @@
 #include <parameters/messaging/ParameterMessageFactory.h>
 #include <presets/recall/RecallParameter.h>
 #include <proxies/hwui/HWUI.h>
-#include <Application.h>
 #include <presets/PresetManager.h>
 #include <http/UndoScope.h>
 
@@ -117,7 +114,7 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
         if(m_modSource != MacroControls::NONE)
         {
           auto modSrc = dynamic_cast<MacroControlParameter *>(
-              groups->findParameterByID(MacroControlsGroup::modSrcToParamId(m_modSource)));
+              groups->findParameterByID(ParameterFactory::modSrcToParamId(m_modSource)));
           modSrc->unregisterTarget(this);
         }
 
@@ -126,7 +123,7 @@ void ModulateableParameter::setModulationSource(UNDO::Transaction *transaction, 
         if(m_modSource != MacroControls::NONE)
         {
           auto modSrc = dynamic_cast<MacroControlParameter *>(
-              groups->findParameterByID(MacroControlsGroup::modSrcToParamId(m_modSource)));
+              groups->findParameterByID(ParameterFactory::modSrcToParamId(m_modSource)));
           modSrc->registerTarget(this);
         }
 
@@ -355,7 +352,7 @@ MacroControlParameter *ModulateableParameter::getMacroControl() const
   auto src = getModulationSource();
   if(src != MacroControls::NONE)
   {
-    auto myMCID = MacroControlsGroup::modSrcToParamId(src);
+    auto myMCID = ParameterFactory::modSrcToParamId(src);
     return dynamic_cast<MacroControlParameter *>(
         Application::get().getPresetManager()->getEditBuffer()->findParameterByID(myMCID));
   }
