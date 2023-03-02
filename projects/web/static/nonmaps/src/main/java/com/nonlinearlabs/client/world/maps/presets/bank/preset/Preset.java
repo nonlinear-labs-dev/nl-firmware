@@ -49,6 +49,7 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 	private ColorTag tag = null;
 	private TypeLabel typeLabel = null;
 	private Name name = null;
+	private String hashtags = "";
 	private Number number = null;
 	private HashMap<String, String> attributes = new HashMap<String, String>();
 
@@ -68,6 +69,11 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		number = addChild(new Number(this, ""));
 		name = addChild(new Name(this, ""));
 		typeLabel = addChild(new TypeLabel(this, ""));
+	}
+
+	public String getHashtags()
+	{
+		return hashtags;
 	}
 
 	@Override
@@ -116,8 +122,10 @@ public class Preset extends LayoutResizingHorizontal implements Renameable, IPre
 		this.uuid = preset.getAttributes().getNamedItem("uuid").getNodeValue();
 		this.realName = preset.getAttributes().getNamedItem("name").getNodeValue();
 		String suffixedName = preset.getAttributes().getNamedItem("name-suffixed").getNodeValue();
+		String hashtags = preset.getAttributes().getNamedItem("Hashtags").getNodeValue();
 		this.number.setText(NumberFormat.getFormat("#000").format(i));
 		this.name.setText(suffixedName);
+		this.hashtags = hashtags;
 
 		String typeStr = preset.getAttributes().getNamedItem("type").getNodeValue();
 
