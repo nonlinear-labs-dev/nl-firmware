@@ -14,19 +14,14 @@
 #include <proxies/hwui/controls/Button.h>
 #include <proxies/hwui/HWUI.h>
 #include <Application.h>
-#include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/ParameterAlgorithm.h>
 #include <parameters/PhysicalControlParameter.h>
 #include <parameters/ModulationRoutingParameter.h>
-#include <parameters/MacroControlParameter.h>
 #include <parameters/RibbonParameter.h>
 #include <groups/HardwareSourcesGroup.h>
-#include <groups/MacroControlMappingGroup.h>
 #include <device-settings/RibbonRelativeFactor.h>
-#include <device-settings/Settings.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
-#include <libundo/undo/Scope.h>
 
 uint8_t PlayControlParameterLayout2::s_mode = PlayControlParameterLayout2::Mode::ValueEdit;
 int PlayControlParameterLayout2::s_instanceCount = 0;
@@ -52,8 +47,8 @@ PlayControlParameterLayout2::PlayControlParameterLayout2()
   auto behaviourButton = addControl(new Button("Behaviour", Buttons::BUTTON_C));
   behaviourButton->setHighlight(s_mode == Mode::Behaviour);
 
-  auto modeButton = addControl(new Button("Mode", Buttons::BUTTON_D));
-  modeButton->setHighlight(s_mode == Mode::Mode);
+  auto modeButton = addControl(new Button("Touch", Buttons::BUTTON_D));
+  modeButton->setHighlight(s_mode == Mode::Touch);
 
   if(!supportsMode())
     modeButton->setText("");
@@ -74,7 +69,7 @@ Control *PlayControlParameterLayout2::createParameterValueControl()
       return new PhysicalControlValueLabel(Rect(70, 33, 116, 12));
     case Mode::Behaviour:
       return new PhysicalControlBehaviorLabel(Rect(64 * 2, 33, 64, 12));
-    case Mode::Mode:
+    case Mode::Touch:
       return new PhysicalControlModeLabel(Rect(64 * 3, 33, 64, 12));
   }
 }
@@ -110,7 +105,7 @@ bool PlayControlParameterLayout2::onButton(Buttons i, bool down, ButtonModifiers
 
   if(down && Buttons::BUTTON_D == i)
   {
-    toggleMode(Mode::Mode);
+    toggleMode(Mode::Touch);
   }
 
   if(down && Buttons::BUTTON_EDIT == i)
@@ -169,7 +164,7 @@ bool PlayControlParameterLayout2::onRotary(int i, ButtonModifiers modifiers)
     return true;
   }
 
-  if(s_mode == Mode::Mode)
+  if(s_mode == Mode::Touch)
   {
     if(auto ribbonHW = dynamic_cast<RibbonParameter *>(getCurrentParameter()))
     {
@@ -206,7 +201,7 @@ bool PlayControlParameterLayout2::isModeSupported(uint8_t desiredMode) const
   if(desiredMode == Mode::Behaviour)
     return supportsBehaviour();
 
-  if(desiredMode == Mode::Mode)
+  if(desiredMode == Mode::Touch)
     return supportsMode();
 
   return desiredMode == Mode::ValueEdit || desiredMode == Mode::Select;
@@ -254,8 +249,8 @@ void PlayControlParameterLayout2::setMode(uint8_t desiredMode)
       highlight<PhysicalControlBehaviorLabel>();
       break;
 
-    case Mode::Mode:
-      highlightButtonWithCaption("Mode");
+    case Mode::Touch:
+      highlightButtonWithCaption("Touch");
       highlight<PhysicalControlModeLabel>();
   }
 }
@@ -285,9 +280,7 @@ bool PlayControlParameterLayout2::supportsMode() const
 
 //edit mode!
 
-PlayControlParameterEditLayout2::PlayControlParameterEditLayout2()
-{
-}
+PlayControlParameterEditLayout2::PlayControlParameterEditLayout2() = default;
 
 void PlayControlParameterEditLayout2::init()
 {
