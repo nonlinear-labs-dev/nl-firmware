@@ -410,6 +410,44 @@ function processDefinitions(result: Result) {
     }).join("\n");
 }
 
+function processSettings(result: Result) {
+    const err = "processSettings error:";
+    result.setting_list = Object.entries(result.settings).reduce((out, [key, props]) => {
+        const ret = [`"${key}"`];
+        if(props.default !== undefined) {
+            const str = props.default.toString();
+            switch(props.default.constructor.name) {
+                case "Boolean":
+                    ret.push(str);
+                    break;
+                case "Number":
+                    if(Number.isSafeInteger(props.default)) ret.push((props.default as number).toFixed(1) + "f");
+                    else ret.push(str + "f");
+                    break;
+                case "String":
+                    if(str.includes("::") || /^-?\d*\.\d+f/.test(str)) {
+                        ret.push(str);
+                    } else {
+                        ret.push(`"${props.default.toString()}"`);
+                    }
+                    break;
+                default: throw new Error(`${err} unknown DefaultValue type in Setting "${key}"`);
+            }
+            // a scaled setting should have a default value
+            if(props.display !== undefined) {
+                const { scale, coarse, fine } = props.display;
+                if(result.declarations.display_scaling_type[scale] === undefined)
+                    throw new Error(`${err} unknown DisplayScalingType "${scale}"`);
+                if(!ret[1].endsWith("f"))
+                    throw new Error(`${err} invalid default value type (${props.default.constructor.name}) for DisplayScalingType`);
+                ret.push(`{ Properties::DisplayScalingType::${scale}, ${coarse}, ${fine} }`);
+            }
+        }
+        out.push(`{ ${ret.join(", ")} }`);
+        return out;
+    }, []).join(",\n");
+}
+
 function generateOverview(result: Result, sourceDir: string, outDir: string) {
     const
         { timestamp, config } = result,
@@ -514,8 +552,10 @@ function main(outDir: string, sourceDir: string) {
             Object.assign(result.declarations.parameter_group[groupName], {index});
         }
     });
-    // processing of parsed yaml (sanity checks, enum sorting/filtering, providing strings for replacements)
+    // processing of parsed yaml, parameters (sanity checks, enum sorting/filtering, providing strings for replacements)
     processDefinitions(result);
+    // processing of parsed yaml, settings
+    processSettings(result);
     // transformations of ./src/*.in.* files into usable resources in ./generated via string replacements
     replaceResultInFiles(
         result,

@@ -1,8 +1,12 @@
 import { Type, Parser } from "../yaml";
 
 export type SettingType = {
-    default?: any;
-    scale?: string;
+    default?: boolean | number | string;
+    display?: {
+        scale: string;
+        coarse: number;
+        fine: number;
+    };
 };
 
 export type Settings = Record<string, SettingType>;

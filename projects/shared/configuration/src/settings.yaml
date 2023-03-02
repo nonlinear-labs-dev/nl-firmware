@@ -1,4 +1,22 @@
 %YAML 1.2
 %TAG ! tag:nonlinear-labs.de,2022:js-yaml:
 --- !settings
-{}
+
+DirectLoad:
+    default: false
+
+SendPresetAsLPCWriteFallback:
+    default: true
+
+NoteShift:
+    default: 0
+
+TuneReference:
+    default: 0.5
+    display: { scale: LINEAR_400_480_HZ, coarse: 100, fine: 1000 }
+
+Passphrase:
+    default: "88888888"
+
+ReceiveChannel:
+    default: MidiReceiveChannel::Omni

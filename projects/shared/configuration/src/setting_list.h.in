@@ -20,30 +20,36 @@ namespace C15
     {
         struct SettingDescriptor
         {
+            struct DisplayDescriptor
+            {
+                const Properties::DisplayScalingType m_display_scaling_type;
+                const unsigned m_coarse;
+                const unsigned m_fine;
+            };
             using ValueType = std::variant<
-                bool, float, MidiReceiveChannel
+                bool, float, const char * const, MidiReceiveChannel
             >;
             const char * const m_key;
             const std::optional<ValueType> m_default_value;
-            const std::optional<Properties::DisplayScalingType> m_display_scaling_type;
+            const std::optional<DisplayDescriptor> m_display;
             constexpr SettingDescriptor(
                 const char * const _key
             )   : m_key{ _key }
                 , m_default_value{ std::nullopt }
-                , m_display_scaling_type{ std::nullopt }
+                , m_display{ std::nullopt }
             {}
             constexpr SettingDescriptor(
                 const char * const _key, const ValueType &_default_value
             )   : m_key{ _key }
                 , m_default_value{ _default_value }
-                , m_display_scaling_type{ std::nullopt }
+                , m_display{ std::nullopt }
             {}
             constexpr SettingDescriptor(
                 const char * const _key, const ValueType &_default_value,
-                const Properties::DisplayScalingType &_display_scaling_type
+                const DisplayDescriptor &_display
             )   : m_key{ _key }
                 , m_default_value{ _default_value }
-                , m_display_scaling_type{ _display_scaling_type }
+                , m_display{ _display }
             {}
         };
     } // namespace C15::Settings
