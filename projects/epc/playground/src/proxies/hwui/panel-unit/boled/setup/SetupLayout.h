@@ -6,7 +6,7 @@
 
 namespace NavTree
 {
-  class Setup;
+  struct Setup;
 }
 
 class SetupEditor;

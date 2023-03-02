@@ -249,6 +249,11 @@ bool ParameterGroup::isPolyphonic() const
   return m_parameters.begin()->isPolyphonic();
 }
 
+bool ParameterGroup::isMonophonic() const
+{
+  return m_parameters.begin()->isMonophonic();
+}
+
 void ParameterGroup::init()
 {
   for(auto id : ParameterFactory::getParameterIDs(getShortName()))

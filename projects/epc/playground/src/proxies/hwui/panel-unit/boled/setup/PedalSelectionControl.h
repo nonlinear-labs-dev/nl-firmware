@@ -2,14 +2,14 @@
 
 #include <proxies/hwui/controls/ControlWithChildren.h>
 
-class Parameter;
+class PedalParameter;
 
 class PedalSelectionControl : public ControlWithChildren
 {
   typedef ControlWithChildren super;
 
  public:
-  explicit PedalSelectionControl(Parameter *param);
+  explicit PedalSelectionControl(PedalParameter *param);
   ~PedalSelectionControl() override;
 
   void setPosition(const Rect &rect) override;

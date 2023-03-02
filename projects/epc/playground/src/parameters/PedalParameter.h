@@ -26,6 +26,8 @@ class PedalParameter : public PhysicalControlParameter
   PedalType *getAssociatedPedalTypeSetting() const;
   Glib::ustring getLongName() const override;
   Glib::ustring getShortName() const override;
+  Glib::ustring getLongNameWithoutSuffix() const;
+  Glib::ustring getShortNameWithoutSuffix() const;
 
  protected:
   void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;

@@ -313,6 +313,16 @@ Glib::ustring PedalParameter::getShortName() const
   return Parameter::getShortName();
 }
 
+Glib::ustring PedalParameter::getLongNameWithoutSuffix() const
+{
+  return Parameter::getLongName();
+}
+
+Glib::ustring PedalParameter::getShortNameWithoutSuffix() const
+{
+  return Parameter::getShortName();
+}
+
 void PedalParameter::onPedalTypeChanged(const Setting *s)
 {
   if(auto pedalType = dynamic_cast<const PedalType *>(s))
