@@ -4,12 +4,12 @@
 #include <proxies/hwui/HWUI.h>
 #include "VoiceGroupIndicator.h"
 #include "parameters/presenter-rules/ParameterPresenterRules.h"
+#include "parameters/ParameterFactory.h"
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
-#include <groups/MacroControlsGroup.h>
 #include <parameter_declarations.h>
-#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
+#include <parameters/Parameter.h>
 
 VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r, bool allowLoadToPart, bool alwaysDraw)
     : Control(r)
@@ -220,7 +220,7 @@ void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
 {
   const auto paramNum = parameter->getID().getNumber();
 
-  if(paramNum == C15::PID::Split_Split_Point || MacroControlsGroup::isMacroControl(paramNum))
+  if(paramNum == C15::PID::Split_Split_Point || ParameterFactory::isMacroControl(parameter->getID()))
     m_selectedVoiceGroup = Application::get().getVGManager()->getCurrentVoiceGroup();
 
   setDirty();
@@ -269,7 +269,7 @@ bool VoiceGroupIndicator::shouldDraw()
     auto num = id.getNumber();
 
     auto ret = ParameterPresenterRules::allowToggling(m_param, Application::get().getPresetManager()->getEditBuffer());
-    ret |= MacroControlsGroup::isMacroControl(num);
+    ret |= ParameterFactory::isMacroControl({ num, VoiceGroup::Global });
     ret |= num == C15::PID::Split_Split_Point;
 
     return ret;

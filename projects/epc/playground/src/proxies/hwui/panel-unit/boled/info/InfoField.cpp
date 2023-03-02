@@ -4,6 +4,7 @@
 #include "InfoField.h"
 #include "SingleLineInfoContent.h"
 #include "MultiLineInfoContent.h"
+#include "proxies/hwui/panel-unit/boled/preset-screens/controls/PresetPropertyDisplay.h"
 
 InfoField::InfoField(SingleLineInfoContent* l, Control* c)
     : m_label(l)
@@ -21,6 +22,10 @@ void InfoField::setInfo(const Glib::ustring& text, FrameBufferColors c)
   else if(auto multiLineLabel = dynamic_cast<MultiLineInfoContent*>(m_content))
   {
     multiLineLabel->setText(text, c);
+  }
+  else if(auto propertyDisplay = dynamic_cast<PresetPropertyDisplay*>(m_content))
+  {
+    propertyDisplay->updateFrom(text);
   }
   else
   {
@@ -52,8 +57,17 @@ void InfoField::setPosition(int y)
   {
     multiLineLabel->setPosition(Rect(64, y, 256 - 64, height));
   }
+  else if(auto propertyDisplay = dynamic_cast<PresetPropertyDisplay*>(m_content))
+  {
+    propertyDisplay->setPosition(Rect(64, y, 256 - 64, height));
+  }
   else
   {
     nltools_assertAlways(false);
   }
+}
+
+Control* InfoField::getInfoControl()
+{
+  return m_content;
 }

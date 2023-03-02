@@ -324,8 +324,8 @@ namespace Engine
 
   float PolySection::getVoiceGroupVolume()
   {
-    return m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Volume)
-        * m_smoothers.get(C15::Smoothers::Poly_Fast::Voice_Grp_Mute);
+    return m_smoothers.get(C15::Smoothers::Poly_Fast::Part_Volume)
+        * m_smoothers.get(C15::Smoothers::Poly_Fast::Part_Mute);
   }
 
   void PolySection::evalVoiceFade(const float _from, const float _range)
@@ -1121,7 +1121,7 @@ namespace Engine
     m_note_pitch[_voiceId] = m_base_pitch[_voiceId]
         + (m_smoothers.get(C15::Smoothers::Poly_Slow::Unison_Detune)
            * m_spread.m_detune[m_uVoice][m_unison_index[_voiceId]])
-        + m_smoothers.get(C15::Smoothers::Poly_Slow::Voice_Grp_Tune)
+        + m_smoothers.get(C15::Smoothers::Poly_Slow::Part_Tune)
         + m_globalsignals->get(C15::Signals::Global_Signals::Master_Tune);
   }
 

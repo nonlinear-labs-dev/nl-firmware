@@ -1,5 +1,4 @@
 #include <Application.h>
-#include <groups/MacroControlsGroup.h>
 #include <tools/StringTools.h>
 #include <parameters/MacroControlParameter.h>
 #include <presets/EditBuffer.h>
@@ -8,6 +7,7 @@
 #include <proxies/hwui/HWUIEnums.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationBoundLabel.h>
 #include <proxies/hwui/FrameBuffer.h>
+#include "parameters/ParameterFactory.h"
 
 ModulationBoundLabel::ModulationBoundLabel(const Rect &r)
     : super(r)
@@ -48,7 +48,7 @@ void ModulationBoundLabel::onParameterChanged(const Parameter *param)
       m_mc = m->getModulationSource();
       m_mcConnection.disconnect();
 
-      auto mcID = MacroControlsGroup::modSrcToParamId(m_mc);
+      auto mcID = ParameterFactory::modSrcToParamId(m_mc);
       auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
 
       if((m_mcParam = dynamic_cast<MacroControlParameter *>(editBuffer->findParameterByID(mcID))))

@@ -72,7 +72,7 @@ class C15Synth : public Synth, public sigc::trackable
   void doChannelModeMessageFunctions();
 
   std::unique_ptr<dsp_host_dual> m_dsp;
-  AudioEngineOptions* m_options;
+  AudioEngineOptions* m_options = nullptr;
   MidiRuntimeOptions m_midiOptions;
 
   //Latch-Filters, Queues

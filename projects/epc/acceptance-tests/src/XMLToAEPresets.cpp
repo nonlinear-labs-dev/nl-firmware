@@ -37,7 +37,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load XML Preset into AE")
 
   WHEN("Init Preset is Loaded")
   {
-    CHECK_NOTHROW(XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "Init", *settingBasePtr));
+    XMLPresetLoader::loadFirstPresetOfBank(app.get(), "Init.xml", synth.get());
     THEN("Note Played produces no Sound")
     {
       synth->doMidi({ { 0x90, 127, 127 } });
@@ -48,7 +48,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load XML Preset into AE")
 
   WHEN("Init Preset with Mixer A up, is Loaded")
   {
-    CHECK_NOTHROW(XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "InitWithAMix", *settingBasePtr));
+    XMLPresetLoader::loadFirstPresetOfBank(app.get(), "InitWithAMix.xml", synth.get());
     THEN("Note Played produces Sound")
     {
       synth->doMidi({ { 0x90, 127, 127 } });

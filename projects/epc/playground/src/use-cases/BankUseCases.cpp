@@ -377,3 +377,16 @@ void BankUseCases::selectFirstOrLastPreset(int inc)
     }
   }
 }
+
+void BankUseCases::saveEditBufferIntoBank()
+{
+  auto presetManager = m_bank->getPresetManager();
+  EditBufferStorePreparation ebsp(*presetManager->getEditBuffer());
+  auto scope = m_bank->getUndoScope().startTransaction("Store Editbuffer into Bank '%0'", m_bank->getName(true));
+  auto transaction = scope->getTransaction();
+  auto preset = m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *presetManager->getEditBuffer()));
+  presetManager->selectBank(transaction, m_bank->getUuid());
+  m_bank->selectPreset(transaction, preset->getUuid());
+  presetManager->getEditBuffer()->undoableLoad(transaction, preset, false);
+  StoreUseCaseHelper::onStore(transaction, *preset, *presetManager, m_settings);
+}

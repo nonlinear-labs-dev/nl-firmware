@@ -59,6 +59,7 @@ class PanelUnitParameterEditMode : public UsageMode
   void letTargetsBlink(Parameter *selParam, tLedStates &states);
   void letMacroControlTargetsBlink(tLedStates &states);
   void letOscAShaperABlink(const std::vector<int> &targets, tLedStates &states);
+  void letEnvCTargetsBlink(const std::vector<int> &targets, tLedStates &states);
   void letOscBShaperBBlink(const std::vector<int> &targets, tLedStates &states);
   void letOtherTargetsBlink(const std::vector<int> &targets, tLedStates &states);
   void letReverbBlink(const std::vector<int> &targets, tLedStates &states);

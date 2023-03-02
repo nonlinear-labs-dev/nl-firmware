@@ -153,7 +153,7 @@ class DSPInterface
   }
 
  private:
-  std::array<HWChangeSource, C15::Parameters::num_of_Hardware_Sources> m_hwSourceLastChangeSources;
+  std::array<HWChangeSource, C15::Parameters::num_of_Hardware_Sources> m_hwSourceLastChangeSources {};
 };
 
 class dsp_host_dual : public DSPInterface

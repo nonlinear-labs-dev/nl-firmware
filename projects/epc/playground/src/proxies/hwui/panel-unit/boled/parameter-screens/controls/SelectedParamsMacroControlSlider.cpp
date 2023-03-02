@@ -3,7 +3,7 @@
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/ModulateableParameter.h"
-#include "groups/MacroControlsGroup.h"
+#include "parameters/ParameterFactory.h"
 #include <sigc++/sigc++.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>
 #include <proxies/hwui/HWUI.h>
@@ -44,7 +44,7 @@ void SelectedParamsMacroControlSlider::onTargetParamValueChanged(const Parameter
   if(const auto *modP = dynamic_cast<const ModulateableParameter *>(param))
   {
     auto src = modP->getModulationSource();
-    auto srcParamID = MacroControlsGroup::modSrcToParamId(src);
+    auto srcParamID = ParameterFactory::modSrcToParamId(src);
     setParameter(Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID));
   }
   else

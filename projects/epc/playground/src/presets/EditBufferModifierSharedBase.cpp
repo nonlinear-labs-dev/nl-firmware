@@ -30,9 +30,9 @@ std::vector<Parameter *> EditBufferModifierSharedBase::getCrossFBParameters(cons
 
 void EditBufferModifierSharedBase::initFadeParameters(UNDO::Transaction *transaction, VoiceGroup group)
 {
-  auto f1 = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Fade_From, group });
+  auto f1 = m_editBuffer.findParameterByID({ C15::PID::Part_Fade_From, group });
   f1->loadDefault(transaction, Defaults::FactoryDefault);
 
-  auto f2 = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Fade_Range, group });
+  auto f2 = m_editBuffer.findParameterByID({ C15::PID::Part_Fade_Range, group });
   f2->loadDefault(transaction, Defaults::FactoryDefault);
 }

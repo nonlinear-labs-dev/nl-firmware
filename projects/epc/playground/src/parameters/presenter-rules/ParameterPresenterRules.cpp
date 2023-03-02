@@ -1,7 +1,6 @@
 #include "ParameterPresenterRules.h"
 #include "parameter_declarations.h"
 #include "nltools/Types.h"
-#include "groups/MacroControlsGroup.h"
 #include "parameters/ParameterFactory.h"
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
@@ -121,7 +120,7 @@ bool ParameterPresenterRules::allowToggling(const Parameter *selected, const Edi
 
   if(selected->getVoiceGroup() == VoiceGroup::Global)
   {
-    return MacroControlsGroup::isMacroControl(selected->getID().getNumber());
+    return ParameterFactory::isMacroControl(selected->getID());
   }
 
   if(editBuffer->getType() == SoundType::Single)
@@ -148,9 +147,9 @@ bool ParameterPresenterRules::allowToggling(const Parameter *selected, const Edi
 
 bool ParameterPresenterRules::isDualPartMuted(VoiceGroup vg, const EditBuffer *eb)
 {
-  auto mute = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, vg });
+  auto mute = eb->findParameterByID({ C15::PID::Part_Mute, vg });
   auto muted = mute->getControlPositionValue() > 0;
-  auto partVolume = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, vg });
+  auto partVolume = eb->findParameterByID({ C15::PID::Part_Volume, vg });
   auto volumeMoreThanZero = partVolume->getControlPositionValue() > 0;
   return (muted || !volumeMoreThanZero);
 }

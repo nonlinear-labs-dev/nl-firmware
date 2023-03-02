@@ -57,7 +57,7 @@ void FadeIndicator::drawBackground(FrameBuffer& fb)
 
 void FadeIndicator::onEditBufferChanged(const EditBuffer* eb)
 {
-  auto fadeActive = !eb->findParameterByID({ C15::PID::Voice_Grp_Fade_From, m_voiceGroup })->isFactoryDefaultLoaded();
-  auto muteActive = !eb->findParameterByID({ C15::PID::Voice_Grp_Mute, m_voiceGroup })->isFactoryDefaultLoaded();
+  auto fadeActive = !eb->findParameterByID({ C15::PID::Part_Fade_From, m_voiceGroup })->isFactoryDefaultLoaded();
+  auto muteActive = !eb->findParameterByID({ C15::PID::Part_Mute, m_voiceGroup })->isFactoryDefaultLoaded();
   setVisible(fadeActive && !muteActive);
 }
