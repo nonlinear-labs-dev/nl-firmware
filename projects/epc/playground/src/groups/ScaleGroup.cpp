@@ -1,10 +1,19 @@
 #include <groups/ScaleGroup.h>
 #include <parameters/ScaleParameter.h>
 #include "parameter_declarations.h"
+#include "parameter_group.h"
 #include <Application.h>
 
+namespace
+{
+  auto getDesc()
+  {
+    return C15::ParameterGroups[static_cast<int>(C15::Descriptors::ParameterGroup::Scale)];
+  }
+}
+
 ScaleGroup::ScaleGroup(ParameterGroupSet* parent)
-    : ParameterGroup(parent, { "Scale", VoiceGroup::Global }, "Scale", "Scale", "Scale")
+    : ParameterGroup(parent, getDesc(), VoiceGroup::Global)
     , m_updateNames(Application::get().getMainContext(), std::chrono::milliseconds(200))
 {
 }

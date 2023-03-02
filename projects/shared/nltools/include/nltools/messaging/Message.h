@@ -19,9 +19,7 @@ namespace nltools
           return MessageType::MidiSimpleMessage;
         }
 
-        SimpleMessage()
-        {
-        }
+        SimpleMessage() = default;
 
         SimpleMessage(uint8_t status, uint8_t data)
         {
@@ -38,7 +36,7 @@ namespace nltools
           numBytesUsed = 3;
         }
 
-        std::array<uint8_t, 3> rawBytes;
+        std::array<uint8_t, 3> rawBytes = {};
         uint8_t numBytesUsed = 0;
       };
 
@@ -49,8 +47,7 @@ namespace nltools
           return MessageType::MidiProgramChange;
         }
 
-        uint8_t program;
-        SoundType programType = SoundType::Invalid;
+        uint8_t program = 0;
       };
     }
 
@@ -160,16 +157,14 @@ namespace nltools
           return MessageType::WiFiSetSSID;
         }
 
-        SetWiFiSSIDMessage()
-        {
-        }
+        SetWiFiSSIDMessage() = default;
 
-        template <typename T> SetWiFiSSIDMessage(const T& ssid)
+        template <typename T> explicit SetWiFiSSIDMessage(const T& ssid)
         {
           m_ssid.set(ssid);
         }
 
-        Helper::StringWrapper<128> m_ssid;
+        Helper::StringWrapper<128> m_ssid = {};
       };
 
       struct SetWiFiPasswordMessage
@@ -350,29 +345,29 @@ namespace nltools
         typedef std::array<bool, static_cast<size_t>(RoutingAspect::LENGTH)> tEntry;
         typedef std::array<tEntry, static_cast<size_t>(RoutingIndex::LENGTH)> tRoutingMappings;
 
-        MidiReceiveChannel receiveChannel;
-        MidiReceiveChannelSplit receiveSplitChannel;
+        MidiReceiveChannel receiveChannel = MidiReceiveChannel::None;
+        MidiReceiveChannelSplit receiveSplitChannel = MidiReceiveChannelSplit::None;
 
-        MidiSendChannel sendChannel;
-        MidiSendChannelSplit sendSplitChannel;
+        MidiSendChannel sendChannel = MidiSendChannel::None;
+        MidiSendChannelSplit sendSplitChannel = MidiSendChannelSplit::None;
 
         bool highVeloCCEnabled = true;
         bool highResCCEnabled = true;
 
-        PedalCC pedal1cc;
-        PedalCC pedal2cc;
-        PedalCC pedal3cc;
-        PedalCC pedal4cc;
-        RibbonCC ribbon1cc;
-        RibbonCC ribbon2cc;
-        RibbonCC ribbon3cc;
-        RibbonCC ribbon4cc;
-        AftertouchCC aftertouchcc;
-        BenderCC bendercc;
+        PedalCC pedal1cc = PedalCC::None;
+        PedalCC pedal2cc = PedalCC::None;
+        PedalCC pedal3cc = PedalCC::None;
+        PedalCC pedal4cc = PedalCC::None;
+        RibbonCC ribbon1cc = RibbonCC::None;
+        RibbonCC ribbon2cc = RibbonCC::None;
+        RibbonCC ribbon3cc = RibbonCC::None;
+        RibbonCC ribbon4cc = RibbonCC::None;
+        AftertouchCC aftertouchcc = AftertouchCC::None;
+        BenderCC bendercc = BenderCC::None;
 
         bool localEnable = true;
         bool isSecondSetOfRibbonsEnabled = false;
-        tRoutingMappings routings {};
+        tRoutingMappings routings = {};
       };
 
       struct EnableBBBWifiFromDevSettings
@@ -527,7 +522,7 @@ namespace nltools
 
       size_t hwSource = 0;  // 0...9
       double position = 0;  // -1...1
-      HWChangeSource source;
+      HWChangeSource source = HWChangeSource::UI;
     };
 
     struct HardwareSourcePollEnd

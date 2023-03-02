@@ -22,11 +22,11 @@ static constexpr auto IndexOfUnisonPhase = C15::ParameterList[C15::PID::Unison_P
 static constexpr auto IndexOfUnisonPan = C15::ParameterList[C15::PID::Unison_Pan].m_param.m_index;
 static constexpr auto IndexOfMonoEnable = C15::ParameterList[C15::PID::Mono_Grp_Enable].m_param.m_index;
 static constexpr auto IndexOfMonoGlide = C15::ParameterList[C15::PID::Mono_Grp_Glide].m_param.m_index;
-static constexpr auto IndexOfVoiceGrpVolume = C15::ParameterList[C15::PID::Voice_Grp_Volume].m_param.m_index;
-static constexpr auto IndexOfVoiceGrpTune = C15::ParameterList[C15::PID::Voice_Grp_Tune].m_param.m_index;
-static constexpr auto IndexOfVoiceGrpMute = C15::ParameterList[C15::PID::Voice_Grp_Mute].m_param.m_index;
-static constexpr auto IndexOfVoiceGrpFadeFrom = C15::ParameterList[C15::PID::Voice_Grp_Fade_From].m_param.m_index;
-static constexpr auto IndexOfVoiceGrpFadeRange = C15::ParameterList[C15::PID::Voice_Grp_Fade_Range].m_param.m_index;
+static constexpr auto IndexOfVoiceGrpVolume = C15::ParameterList[C15::PID::Part_Volume].m_param.m_index;
+static constexpr auto IndexOfVoiceGrpTune = C15::ParameterList[C15::PID::Part_Tune].m_param.m_index;
+static constexpr auto IndexOfVoiceGrpMute = C15::ParameterList[C15::PID::Part_Mute].m_param.m_index;
+static constexpr auto IndexOfVoiceGrpFadeFrom = C15::ParameterList[C15::PID::Part_Fade_From].m_param.m_index;
+static constexpr auto IndexOfVoiceGrpFadeRange = C15::ParameterList[C15::PID::Part_Fade_Range].m_param.m_index;
 static constexpr auto IndexOfSplitPoint = C15::ParameterList[C15::PID::Split_Split_Point].m_param.m_index;
 static constexpr auto IndexOfMixEffectsFrom = C15::ParameterList[C15::PID::FB_Mix_FX_Src].m_param.m_index;
 static constexpr auto IndexOfMixToEffects = C15::ParameterList[C15::PID::Out_Mix_To_FX].m_param.m_index;
@@ -569,8 +569,8 @@ void dsp_host_dual::onParameterChangedMessage(const nltools::msg::PolyphonicModu
         if(m_layer_mode == LayerMode::Split)
           m_alloc.setSplitPoint(static_cast<uint32_t>(param.m_scaled) + C15::Config::physical_key_from, layerId);
         break;
-      case C15::PID::Voice_Grp_Volume:
-      case C15::PID::Voice_Grp_Tune:
+      case C15::PID::Part_Volume:
+      case C15::PID::Part_Tune:
         // single: ignore, dual: pass
         if(m_layer_mode != LayerMode::Single)
           localTransition(layerId, param.m_rendering, m_editTime.m_time, param.m_scaled);
@@ -616,12 +616,12 @@ DSPInterface::OutputResetEventSource
       param.log(layerId, __PRETTY_FUNCTION__, descriptor);
     switch(_msg.m_id)
     {
-      case C15::PID::Voice_Grp_Mute:
+      case C15::PID::Part_Mute:
         if(m_layer_mode == LayerMode::Layer)
           localTransition(layerId, param.m_rendering, m_editTime.m_time, param.m_scaled);
         break;
-      case C15::PID::Voice_Grp_Fade_From:
-      case C15::PID::Voice_Grp_Fade_Range:
+      case C15::PID::Part_Fade_From:
+      case C15::PID::Part_Fade_Range:
         if(m_layer_mode == LayerMode::Layer)
           evalVoiceFadeChg(layerId);
         break;
@@ -1009,7 +1009,8 @@ void dsp_host_dual::reset()
 
 dsp_host_dual::HWSourceValues dsp_host_dual::getHWSourceValues() const
 {
-  dsp_host_dual::HWSourceValues ret;
+  dsp_host_dual::HWSourceValues ret {};
+  nltools_assertAlways(ret.size() == m_parameters.m_global.m_hardwareSources.size());
   std::transform(m_parameters.m_global.m_hardwareSources.begin(), m_parameters.m_global.m_hardwareSources.end(),
                  ret.begin(), [](const auto &a) { return a.m_position; });
   return ret;

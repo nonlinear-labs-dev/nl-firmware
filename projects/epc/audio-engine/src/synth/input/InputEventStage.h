@@ -110,17 +110,17 @@ class InputEventStage
 
   TCDDecoder m_tcdDecoder;
   MIDIDecoder m_midiDecoder;
-  DSPInterface* m_dspHost;
-  MidiRuntimeOptions* m_options;
+  DSPInterface* m_dspHost = nullptr;
+  MidiRuntimeOptions* m_options = nullptr;
   HWChangedNotification m_hwChangedCB;
   ChannelModeMessageCB m_channelModeMessageCB;
 
   MIDIOut m_midiOut;
   KeyShift m_shifteable_keys;
-  std::array<std::array<uint16_t, 2>, NUM_HW> m_latchedHWPositions {};
+  std::array<std::array<uint16_t, 2>, NUM_HW> m_latchedHWPositions = {};
 
   using tHWPosEntry = std::tuple<float, HWChangeSource>;
-  std::array<tHWPosEntry, NUM_HW> m_localDisabledPositions;
+  std::array<tHWPosEntry, NUM_HW> m_localDisabledPositions = {};
 
   bool m_notifyKeyBedActionStatus = false;
 
@@ -146,5 +146,5 @@ class InputEventStage
   template <typename tChannelEnum> void doSendAllNotesOff(tChannelEnum tEnum);
 
   bool m_isPolling = false;
-  std::array<float, NUM_HW> m_polledHWPositions;
+  std::array<float, NUM_HW> m_polledHWPositions = {};
 };

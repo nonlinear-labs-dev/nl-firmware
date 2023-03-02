@@ -17,6 +17,8 @@ class SearchOptions {
     searchInComment: boolean = true;
     searchInDeviceName: boolean = false;
 
+    searchInHashtags: boolean = false;
+
     sorting = [
         { by: SortBy.Number, direction: SortDirection.Asc },
         { by: SortBy.Name, direction: SortDirection.Asc },
@@ -75,6 +77,8 @@ function doesPresetMatch(preset: any, searchOptions: SearchOptions, subquery: St
     if (searchOptions.searchInDeviceName && preset['attributes']['DeviceName'] && preset['attributes']['DeviceName'].toLowerCase().includes(subquery))
         return true;
 
+    if (searchOptions.searchInHashtags && preset['attributes']['Hashtags'] && preset['attributes']['Hashtags'].toLowerCase().includes(subquery))
+        return true;
     return false;
 }
 
@@ -424,6 +428,7 @@ glue("searchSettings",
             searchInName: searchOptions.get().searchInName,
             searchInComment: searchOptions.get().searchInComment,
             searchInDeviceName: searchOptions.get().searchInDeviceName,
+            searchInHastags: searchOptions.get().searchInHashtags
         }
     }, null, null, {
     "change #op-and"() {
@@ -449,6 +454,11 @@ glue("searchSettings",
     "change #search-in-devicename"(event) {
         var op = searchOptions.get();
         op.searchInDeviceName = (event as JQuery.ClickEvent).target.checked;
+        searchOptions.set(op);
+    },
+    "change #search-in-hashtags"(event) {
+        var op = searchOptions.get();
+        op.searchInHashtags = (event as JQuery.ClickEvent).target.checked;
         searchOptions.set(op);
     }
 });

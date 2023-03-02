@@ -14,7 +14,6 @@
 
 class Preset;
 class PresetManager;
-class SearchQuery;
 
 using PresetPtr = std::unique_ptr<Preset>;
 
@@ -100,14 +99,12 @@ class Bank : public AttributesOwner, public SyncedItem
 
   // algorithm
   int getHighestIncrementForBaseName(const Glib::ustring &baseName) const;
-  void searchPresets(Writer &writer, const SearchQuery &query) const;
+
   const Glib::ustring calcStateString() const;
   Bank *getClusterMaster();
 
   // signals
   sigc::connection onBankChanged(sigc::slot<void> cb);
-
-  const Preset *getFirstPreset() const;
 
   PresetManager *getPresetManager() const;
 

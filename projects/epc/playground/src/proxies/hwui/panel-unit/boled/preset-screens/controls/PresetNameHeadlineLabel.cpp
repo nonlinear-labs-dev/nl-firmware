@@ -59,19 +59,8 @@ void PresetNameHeadlineLabel::onPresetSelectionChanged()
   }
 
   auto selectedPreset = m_currentBank->getSelectedPreset();
-  switch(selectedPreset->getType())
-  {
-    case SoundType::Single:
-      setText("Preset (Single)");
-      break;
-    case SoundType::Layer:
-      setText("Preset (Layer)");
-      break;
-    case SoundType::Split:
-      setText("Preset (Split)");
-      break;
-    default:
-      setText("");
-      break;
-  }
+  if(selectedPreset)
+    setText(selectedPreset->getName());
+  else
+    setText("");
 }

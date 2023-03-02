@@ -98,8 +98,8 @@ void EditBufferToPartLoader::loadDualPartIntoLayerSound(UNDO::Transaction *trans
     locks.addLock({ C15::PID::FB_Mix_FX_Src, copyTo });
     locks.addLock({ C15::PID::Out_Mix_To_FX, copyTo });
     locks.addLock({ C15::PID::FB_Mix_FX, copyTo });
-    locks.addLock({ C15::PID::Voice_Grp_Fade_From, copyTo });
-    locks.addLock({ C15::PID::Voice_Grp_Fade_Range, copyTo });
+    locks.addLock({ C15::PID::Part_Fade_From, copyTo });
+    locks.addLock({ C15::PID::Part_Fade_Range, copyTo });
     locks.addLock({ C15::PID::FB_Mix_Osc, copyTo });
     locks.addLock({ C15::PID::FB_Mix_Comb, copyTo });
     locks.addLock({ C15::PID::FB_Mix_Comb_Src, copyTo });
@@ -189,8 +189,8 @@ void EditBufferToPartLoader::loadSingleIntoLayerPart(UNDO::Transaction *transact
                                                      VoiceGroup from, VoiceGroup loadTo)
 {
   auto toFxParam = m_editBuffer.findParameterByID({ C15::PID::Out_Mix_To_FX, loadTo });
-  auto fadeFromParams = { m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Fade_From, loadTo }),
-                          m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Fade_Range, loadTo }) };
+  auto fadeFromParams = { m_editBuffer.findParameterByID({ C15::PID::Part_Fade_From, loadTo }),
+                          m_editBuffer.findParameterByID({ C15::PID::Part_Fade_Range, loadTo }) };
 
   {
     auto allNonLoadIntoMonophonics
@@ -244,9 +244,8 @@ void EditBufferToPartLoader::copySinglePresetMasterToPartMaster(UNDO::Transactio
   auto ebGlobalTune = m_editBuffer.findParameterByID({ C15::PID::Master_Tune, VoiceGroup::Global });
 
   auto partVolume
-      = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Voice_Grp_Volume, targetGroup });
-  auto partTune
-      = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Voice_Grp_Tune, targetGroup });
+      = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Part_Volume, targetGroup });
+  auto partTune = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Part_Tune, targetGroup });
 
   if(presetGlobalTune && presetGlobalVolume)
   {
@@ -303,14 +302,14 @@ void EditBufferToPartLoader::copySumOfPartMasterToPartMaster(UNDO::Transaction *
   auto presetGlobalVolume = preset->findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global }, false);
   auto presetGlobalTune = preset->findParameterByID({ C15::PID::Master_Tune, VoiceGroup::Global }, false);
 
-  auto presetPartVolume = preset->findParameterByID({ C15::PID::Voice_Grp_Volume, from }, false);
-  auto presetPartTune = preset->findParameterByID({ C15::PID::Voice_Grp_Tune, from }, false);
+  auto presetPartVolume = preset->findParameterByID({ C15::PID::Part_Volume, from }, false);
+  auto presetPartTune = preset->findParameterByID({ C15::PID::Part_Tune, from }, false);
 
   auto globalVolume = m_editBuffer.findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
   auto globalTune = m_editBuffer.findParameterByID({ C15::PID::Master_Tune, VoiceGroup::Global });
 
-  auto partVolume = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Voice_Grp_Volume, to });
-  auto partTune = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Voice_Grp_Tune, to });
+  auto partVolume = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Part_Volume, to });
+  auto partTune = m_editBuffer.findAndCastParameterByID<ModulateableParameter>({ C15::PID::Part_Tune, to });
 
   if(presetGlobalVolume && presetGlobalTune && partVolume && partTune)
   {
@@ -399,8 +398,8 @@ void EditBufferToPartLoader::copyPolyParametersFromI(UNDO::Transaction *transact
 
   lock.addLock(m_editBuffer.findParameterByID({ C15::PID::Out_Mix_To_FX, group }));
 
-  lock.addLock(m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Fade_From, group }));
-  lock.addLock(m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Fade_Range, group }));
+  lock.addLock(m_editBuffer.findParameterByID({ C15::PID::Part_Fade_From, group }));
+  lock.addLock(m_editBuffer.findParameterByID({ C15::PID::Part_Fade_Range, group }));
 
   lock.addLock(m_editBuffer.findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I }));
   lock.addLock(m_editBuffer.findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II }));
@@ -422,10 +421,8 @@ void EditBufferToPartLoader::copyPolyParametersFromI(UNDO::Transaction *transact
 
 void EditBufferToPartLoader::initFadeFrom(UNDO::Transaction *transaction, VoiceGroup vg)
 {
-  m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Fade_From, vg })
-      ->loadDefault(transaction, Defaults::FactoryDefault);
-  m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Fade_Range, vg })
-      ->loadDefault(transaction, Defaults::FactoryDefault);
+  m_editBuffer.findParameterByID({ C15::PID::Part_Fade_From, vg })->loadDefault(transaction, Defaults::FactoryDefault);
+  m_editBuffer.findParameterByID({ C15::PID::Part_Fade_Range, vg })->loadDefault(transaction, Defaults::FactoryDefault);
 }
 
 void EditBufferToPartLoader::loadPartFromSingleIntoDual(UNDO::Transaction *transaction, VoiceGroup from, VoiceGroup to,

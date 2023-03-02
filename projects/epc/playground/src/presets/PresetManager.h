@@ -9,7 +9,6 @@
 #include <tools/ScopedGuard.h>
 #include <nltools/threading/Throttler.h>
 #include <tools/Uuid.h>
-#include <presets/SearchQuery.h>
 #include <tools/RecursionGuard.h>
 #include <http/ContentSection.h>
 #include <tools/Signal.h>
@@ -102,8 +101,6 @@ class PresetManager : public UpdateDocumentContributor, public SyncedItem
 
   // algorithms
   Glib::ustring createPresetNameBasedOn(const Glib::ustring &basedOn) const;
-  void searchPresets(Writer &writer, const Glib::ustring &q, const Glib::ustring &mode,
-                     std::vector<SearchQuery::Fields> &&fieldsToSearch) const;
 
   // signals
   sigc::connection onBankSelection(sigc::slot<void, Uuid> cb);

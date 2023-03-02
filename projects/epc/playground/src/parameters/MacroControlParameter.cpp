@@ -1,5 +1,4 @@
 #include <utility>
-
 #include "MacroControlParameter.h"
 #include "ModulateableParameter.h"
 #include "PhysicalControlParameter.h"
@@ -7,7 +6,6 @@
 #include "presets/ParameterGroupSet.h"
 #include "groups/HardwareSourcesGroup.h"
 #include <groups/MacroControlMappingGroup.h>
-#include <groups/MacroControlsGroup.h>
 #include "xml/Writer.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterInfoLayout.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/RenameMCLayout.h>
@@ -19,6 +17,7 @@
 #include <Application.h>
 #include <nltools/threading/Throttler.h>
 #include "http/HTTPServer.h"
+#include "ParameterFactory.h"
 #include <libundo/undo/Transaction.h>
 #include <presets/PresetParameter.h>
 #include <tools/StringTools.h>
@@ -27,7 +26,7 @@
 #include <xml/Attribute.h>
 #include <presets/recall/RecallParameter.h>
 
-static ParameterId lastSelectedMacroControl = MacroControlsGroup::modSrcToParamId(MacroControls::MC1);
+static ParameterId lastSelectedMacroControl = ParameterFactory::modSrcToParamId(MacroControls::MC1);
 
 MacroControlParameter::MacroControlParameter(ParameterGroup *group, const ParameterId &id)
     : Parameter(group, id)

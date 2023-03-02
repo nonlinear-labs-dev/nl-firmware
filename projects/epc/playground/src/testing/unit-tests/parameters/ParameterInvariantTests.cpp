@@ -1,6 +1,5 @@
 #include <groups/HardwareSourcesGroup.h>
 #include <groups/MacroControlMappingGroup.h>
-#include <groups/MacroControlsGroup.h>
 #include <groups/ScaleGroup.h>
 #include <groups/MasterGroup.h>
 #include <catch.hpp>
@@ -13,9 +12,10 @@ namespace GroupAffiliation
   inline bool isRealGlobal(const Parameter* parameter)
   {
     auto parent = parameter->getParent();
-    return dynamic_cast<HardwareSourcesGroup*>(parent) || dynamic_cast<MacroControlMappingGroup*>(parent)
-        || dynamic_cast<MacroControlsGroup*>(parent) || dynamic_cast<ScaleGroup*>(parent)
-        || dynamic_cast<MasterGroup*>(parent);
+    auto isMacro = ParameterFactory::isMacroControl(parameter->getID());
+    auto isMacroTime = ParameterFactory::isMacroTime(parameter->getID());
+    return dynamic_cast<HardwareSourcesGroup*>(parent) || dynamic_cast<MacroControlMappingGroup*>(parent) || isMacro
+        || isMacroTime || dynamic_cast<ScaleGroup*>(parent) || dynamic_cast<MasterGroup*>(parent);
   }
 }
 

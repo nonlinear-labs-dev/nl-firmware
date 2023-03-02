@@ -1,5 +1,4 @@
 #include <Application.h>
-#include <device-settings/DebugLevel.h>
 #include <groups/MacroControlMappingGroup.h>
 #include <groups/ScaleGroup.h>
 #include <parameters/MacroControlParameter.h>
@@ -8,7 +7,6 @@
 #include <parameters/PhysicalControlParameter.h>
 #include <parameters/ScaleParameter.h>
 #include <presets/EditBuffer.h>
-#include <presets/PresetManager.h>
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
@@ -18,11 +16,10 @@
 #include "PanelUnitParameterEditMode.h"
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
+#include "parameters/ParameterFactory.h"
 #include <device-settings/LayoutMode.h>
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <sigc++/sigc++.h>
-#include <glibmm/main.h>
-#include <groups/MacroControlsGroup.h>
 #include <parameters/MacroControlSmoothingParameter.h>
 
 class ParameterInfoLayout;
@@ -458,7 +455,7 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
         collectLedStates(states, tgt->getID());
     }
 
-    if(selParam->getParentGroup()->getID().getName() == "MCs" || MacroControlsGroup::isMacroTime(selParam->getID()))
+    if(selParam->getParentGroup()->getID().getName() == "MCs" || ParameterFactory::isMacroTime(selParam->getID()))
     {
       letMacroControlTargetsBlink(states);
     }
@@ -487,10 +484,10 @@ void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam, tLedStates
   }
   else if(groupName == "Env C")
   {
-    letOtherTargetsBlink({ Osc_A_Pitch_Env_C, Osc_A_Fluct_Env_C, Osc_A_PM_FB_Env_C, Shp_A_FB_Env_C, Osc_B_Pitch_Env_C,
-                           Osc_B_Fluct_Env_C, Osc_B_PM_FB_Env_C, Shp_B_FB_Env_C, Comb_Flt_Pitch_Env_C,
-                           Comb_Flt_AP_Env_C, Comb_Flt_LP_Env_C, SV_Flt_Cut_Env_C, SV_Flt_Res_Env_C },
-                         states);
+    letEnvCTargetsBlink({ Osc_A_Pitch_Env_C, Osc_A_Fluct_Env_C, Osc_A_PM_FB_Env_C, Shp_A_FB_Env_C, Osc_B_Pitch_Env_C,
+                          Osc_B_Fluct_Env_C, Osc_B_PM_FB_Env_C, Shp_B_FB_Env_C, Comb_Flt_Pitch_Env_C, Comb_Flt_AP_Env_C,
+                          Comb_Flt_LP_Env_C, SV_Flt_Cut_Env_C, SV_Flt_Res_Env_C },
+                        states);
   }
   else if(groupName == "Osc A" || groupName == "Sh A")
   {
@@ -539,9 +536,9 @@ void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, ParameterI
     selectedParameterID = ParameterId(ScaleGroup::getScaleBaseParameterNumber(), selectedParameterID.getVoiceGroup());
   }
 
-  if(MacroControlsGroup::isMacroTime(selectedParameterID))
+  if(ParameterFactory::isMacroTime(selectedParameterID))
   {
-    selectedParameterID = MacroControlsGroup::smoothingIdToMCId(selectedParameterID);
+    selectedParameterID = ParameterFactory::smoothingIdToMCId(selectedParameterID);
   }
 
   auto button = m_mappings.findButton(selectedParameterID.getNumber());
@@ -671,6 +668,30 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
         break;
       case C15::PID::SV_Flt_FM:
         if(isSignalFlowingThrough(currentParam) && stateVariableFilterFMAB->getControlPositionValue() < 1)
+          states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
+        break;
+      default:
+        if(isSignalFlowingThrough(currentParam))
+          states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
+        break;
+    }
+  }
+}
+
+void PanelUnitParameterEditMode::letEnvCTargetsBlink(const std::vector<int> &targets, tLedStates &states)
+{
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+
+  for(auto targetID : targets)
+  {
+    auto currentParam = editBuffer->findParameterByID({ targetID, vg });
+    auto button = m_mappings.findButton(currentParam->getID().getNumber());
+    switch(targetID)
+    {
+      case C15::PID::Shp_A_FB_Env_C:
+      case C15::PID::Shp_B_FB_Env_C:
+        if(currentParam->getControlPositionValue() > 0)
           states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
         break;
       default:

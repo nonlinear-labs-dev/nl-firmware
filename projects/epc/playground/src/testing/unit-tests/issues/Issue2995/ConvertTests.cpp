@@ -132,11 +132,11 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
   auto split_I = eb.findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::I });
   auto split_II = eb.findParameterByID({ C15::PID::Split_Split_Point, VoiceGroup::II });
 
-  auto fade_rng_I = eb.findParameterByID({ C15::PID::Voice_Grp_Fade_Range, VoiceGroup::I });
-  auto fade_rng_II = eb.findParameterByID({ C15::PID::Voice_Grp_Fade_Range, VoiceGroup::II });
+  auto fade_rng_I = eb.findParameterByID({ C15::PID::Part_Fade_Range, VoiceGroup::I });
+  auto fade_rng_II = eb.findParameterByID({ C15::PID::Part_Fade_Range, VoiceGroup::II });
 
-  auto fade_from_I = eb.findParameterByID({ C15::PID::Voice_Grp_Fade_From, VoiceGroup::I });
-  auto fade_from_II = eb.findParameterByID({ C15::PID::Voice_Grp_Fade_From, VoiceGroup::II });
+  auto fade_from_I = eb.findParameterByID({ C15::PID::Part_Fade_From, VoiceGroup::I });
+  auto fade_from_II = eb.findParameterByID({ C15::PID::Part_Fade_From, VoiceGroup::II });
 
   auto unison_voices_I = eb.findParameterByID({ C15::PID::Unison_Voices, VoiceGroup::I });
   auto unison_detune_I = eb.findParameterByID({ C15::PID::Unison_Detune, VoiceGroup::I });
@@ -149,8 +149,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
   auto mono_legato_I = eb.findParameterByID({ C15::PID::Mono_Grp_Legato, VoiceGroup::I });
   auto mono_prio_I = eb.findParameterByID({ C15::PID::Mono_Grp_Prio, VoiceGroup::I });
 
-  auto part_vol_I = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
-  auto part_tune_I = eb.findParameterByID({ C15::PID::Voice_Grp_Tune, VoiceGroup::I });
+  auto part_vol_I = eb.findParameterByID({ C15::PID::Part_Volume, VoiceGroup::I });
+  auto part_tune_I = eb.findParameterByID({ C15::PID::Part_Tune, VoiceGroup::I });
 
   WHEN("split is loaded")
   {
@@ -299,8 +299,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
 
       THEN("part.tune was transferred from master.tune")
       {
-        CHECK(eb.findParameterByID({ C15::PID::Voice_Grp_Tune, VoiceGroup::I })->getDisplayString() == oldMasterTune);
-        CHECK(eb.findParameterByID({ C15::PID::Voice_Grp_Tune, VoiceGroup::II })->getDisplayString() == oldMasterTune);
+        CHECK(eb.findParameterByID({ C15::PID::Part_Tune, VoiceGroup::I })->getDisplayString() == oldMasterTune);
+        CHECK(eb.findParameterByID({ C15::PID::Part_Tune, VoiceGroup::II })->getDisplayString() == oldMasterTune);
       }
 
       THEN("voices are half each")
@@ -369,8 +369,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
 
       THEN("part.tune was transferred from master.tune")
       {
-        CHECK(eb.findParameterByID({ C15::PID::Voice_Grp_Tune, VoiceGroup::I })->getDisplayString() == oldMasterTune);
-        CHECK(eb.findParameterByID({ C15::PID::Voice_Grp_Tune, VoiceGroup::II })->getDisplayString() == oldMasterTune);
+        CHECK(eb.findParameterByID({ C15::PID::Part_Tune, VoiceGroup::I })->getDisplayString() == oldMasterTune);
+        CHECK(eb.findParameterByID({ C15::PID::Part_Tune, VoiceGroup::II })->getDisplayString() == oldMasterTune);
       }
 
       THEN("voices are halfed")
@@ -577,9 +577,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
         using namespace C15::PID;
         auto id = p->getID();
         auto pid = id.getNumber();
-        return pid != Voice_Grp_Fade_From && pid != Voice_Grp_Fade_Range && pid != Unison_Voices
-            && pid != Split_Split_Point && pid != Unison_Detune && pid != Unison_Phase && pid != Unison_Pan
-            && pid != Mono_Grp_Glide && pid != Mono_Grp_Enable && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato;
+        return pid != Part_Fade_From && pid != Part_Fade_Range && pid != Unison_Voices && pid != Split_Split_Point
+            && pid != Unison_Detune && pid != Unison_Phase && pid != Unison_Pan && pid != Mono_Grp_Glide
+            && pid != Mono_Grp_Enable && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato;
       });
 
       polyParams = copyIf(polyParams, [](Parameter* p) {
@@ -666,9 +666,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
         using namespace C15::PID;
         auto id = p->getID();
         auto pid = id.getNumber();
-        return pid != Voice_Grp_Fade_From && pid != Voice_Grp_Fade_Range && pid != Unison_Voices
-            && pid != Split_Split_Point && pid != Unison_Detune && pid != Unison_Phase && pid != Unison_Pan
-            && pid != Mono_Grp_Glide && pid != Mono_Grp_Enable && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato;
+        return pid != Part_Fade_From && pid != Part_Fade_Range && pid != Unison_Voices && pid != Split_Split_Point
+            && pid != Unison_Detune && pid != Unison_Phase && pid != Unison_Pan && pid != Mono_Grp_Glide
+            && pid != Mono_Grp_Enable && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato;
       });
 
       polyParams = copyIf(polyParams, [](Parameter* p) {
@@ -764,11 +764,11 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> general part
       using namespace C15::PID;
       auto id = p->getID();
       auto pid = id.getNumber();
-      return pid != Voice_Grp_Fade_From && pid != Voice_Grp_Fade_Range && pid != Unison_Voices
-          && pid != Split_Split_Point && pid != Unison_Detune && pid != Unison_Phase && pid != Unison_Pan
-          && pid != Mono_Grp_Glide && pid != Mono_Grp_Enable && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato
-          && pid != FB_Mix_Comb_Src && pid != FB_Mix_SVF_Src && pid != FB_Mix_Osc_Src && pid != FB_Mix_FX_Src
-          && pid != FB_Mix_Osc && pid != Out_Mix_To_FX && pid != Voice_Grp_Volume && pid != Voice_Grp_Tune;
+      return pid != Part_Fade_From && pid != Part_Fade_Range && pid != Unison_Voices && pid != Split_Split_Point
+          && pid != Unison_Detune && pid != Unison_Phase && pid != Unison_Pan && pid != Mono_Grp_Glide
+          && pid != Mono_Grp_Enable && pid != Mono_Grp_Prio && pid != Mono_Grp_Legato && pid != FB_Mix_Comb_Src
+          && pid != FB_Mix_SVF_Src && pid != FB_Mix_Osc_Src && pid != FB_Mix_FX_Src && pid != FB_Mix_Osc
+          && pid != Out_Mix_To_FX && pid != Part_Volume && pid != Part_Tune;
     };
 
     WHEN("convert I to single")
@@ -861,8 +861,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new paramete
   auto& eb = *TestHelper::getEditBuffer();
   auto masterParameter = eb.findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
   auto fx_mixParameter = eb.findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global });
-  auto partVolI = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
-  auto partVolII = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
+  auto partVolI = eb.findParameterByID({ C15::PID::Part_Volume, VoiceGroup::I });
+  auto partVolII = eb.findParameterByID({ C15::PID::Part_Volume, VoiceGroup::II });
 
   MockPresetStorage presets;
   EditBufferUseCases ebUseCases(eb);
@@ -920,8 +920,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new paramete
   auto& eb = *TestHelper::getEditBuffer();
   auto masterParameter = eb.findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
   auto fx_mixParameter = eb.findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global });
-  auto partVolI = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
-  auto partVolII = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
+  auto partVolI = eb.findParameterByID({ C15::PID::Part_Volume, VoiceGroup::I });
+  auto partVolII = eb.findParameterByID({ C15::PID::Part_Volume, VoiceGroup::II });
 
   MockPresetStorage presets;
   EditBufferUseCases ebUseCases(eb);
@@ -972,8 +972,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "convert sounds -> new paramete
   auto& eb = *TestHelper::getEditBuffer();
   auto masterParameter = eb.findParameterByID({ C15::PID::Master_Volume, VoiceGroup::Global });
   auto fx_mixParameter = eb.findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global });
-  auto partVolI = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
-  auto partVolII = eb.findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
+  auto partVolI = eb.findParameterByID({ C15::PID::Part_Volume, VoiceGroup::I });
+  auto partVolII = eb.findParameterByID({ C15::PID::Part_Volume, VoiceGroup::II });
 
   MockPresetStorage presets;
   EditBufferUseCases ebUseCases(eb);

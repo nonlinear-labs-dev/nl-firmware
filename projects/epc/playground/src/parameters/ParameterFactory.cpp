@@ -7,74 +7,19 @@
 #include "groups/ScaleGroup.h"
 #include "ScaleParameter.h"
 #include "parameters/voice-group-master-group/VoiceGroupMasterModulateableParameter.h"
-#include "groups/VoiceGroupMasterGroup.h"
 #include "parameters/mono-mode-parameters/ModulateableMonoParameter.h"
 #include "parameters/mono-mode-parameters/UnmodulateableMonoParameter.h"
+#include "MacroControlSmoothingParameter.h"
+#include "MacroControlParameter.h"
 
-namespace
+std::vector<C15::PID::ParameterID> ParameterFactory::getParameterIDs(const C15::Descriptors::ParameterGroup& group)
 {
-  template <C15::Descriptors::ParameterGroup tGroup> std::vector<int> fromArray()
-  {
-    const auto& elements = C15::ParameterGroupElementList<tGroup>::sElements;
-    const auto& size = C15::ParameterGroupElementList<tGroup>::sSize;
-    std::vector<int> result;
-    result.reserve(size);
-    for(int i = 0; i < size; i++)
-    {
-      result.push_back(elements[i]);
-    }
-    return result;
-  }
-}
+  const auto ret = C15::getParameterIds(group);
 
-std::vector<int> ParameterFactory::getParameterIDs(const std::string& longName)
-{
-  if(longName == "Oscillator A")
-    return fromArray<C15::Descriptors::ParameterGroup::Osc_A>();
-  if(longName == "Oscillator B")
-    return fromArray<C15::Descriptors::ParameterGroup::Osc_B>();
-  if(longName == "Envelope A")
-    return fromArray<C15::Descriptors::ParameterGroup::Env_A>();
-  if(longName == "Envelope B")
-    return fromArray<C15::Descriptors::ParameterGroup::Env_B>();
-  if(longName == "Envelope C")
-    return fromArray<C15::Descriptors::ParameterGroup::Env_C>();
-  if(longName == "Shaper A")
-    return fromArray<C15::Descriptors::ParameterGroup::Shp_A>();
-  if(longName == "Shaper B")
-    return fromArray<C15::Descriptors::ParameterGroup::Shp_B>();
-  if(longName == "FB Mixer")
-    return fromArray<C15::Descriptors::ParameterGroup::FB_Mix>();
-  if(longName == "Comb Filter")
-    return fromArray<C15::Descriptors::ParameterGroup::Comb_Flt>();
-  if(longName == "SV Filter")
-    return fromArray<C15::Descriptors::ParameterGroup::SV_Flt>();
-  if(longName == "Output Mixer")
-    return fromArray<C15::Descriptors::ParameterGroup::Out_Mix>();
-  if(longName == "Flanger")
-    return fromArray<C15::Descriptors::ParameterGroup::Flanger>();
-  if(longName == "Cabinet")
-    return fromArray<C15::Descriptors::ParameterGroup::Cabinet>();
-  if(longName == "Gap Filter")
-    return fromArray<C15::Descriptors::ParameterGroup::Gap_Flt>();
-  if(longName == "Echo")
-    return fromArray<C15::Descriptors::ParameterGroup::Echo>();
-  if(longName == "Reverb")
-    return fromArray<C15::Descriptors::ParameterGroup::Reverb>();
-  if(longName == "Unison")
-    return fromArray<C15::Descriptors::ParameterGroup::Unison>();
-  if(longName == "Split")
-    return fromArray<C15::Descriptors::ParameterGroup::Split>();
-  if(longName == "Mono")
-    return fromArray<C15::Descriptors::ParameterGroup::Mono_Grp>();
-  if(longName == "Part")
-    return fromArray<C15::Descriptors::ParameterGroup::Voice_Grp>();
-  if(longName == "Master")
-    return fromArray<C15::Descriptors::ParameterGroup::Master>();
-  if(longName == "Scale")
-    return fromArray<C15::Descriptors::ParameterGroup::Scale>();
+  if(!ret.empty())
+    return ret;
 
-  nltools_detailedAssertAlways(false, "Unknown parameter group: " + longName);
+  nltools_detailedAssertAlways(false, ("Unknown parameter group with id: " + group));
 }
 
 bool ParameterFactory::isModulateable(int id)
@@ -96,6 +41,10 @@ Parameter* ParameterFactory::createParameterByType(ParameterGroup* parent, const
     return new BaseScaleParameter(parent, id);
   else if(isScaleOffsetParameter(id))
     return new ScaleParameter(parent, id);
+  else if(isMacroControl(id))
+    return new MacroControlParameter(parent, id);
+  else if(isMacroTime(id))
+    return new MacroControlSmoothingParameter(parent, id);
   else if(isVoiceGroupMasterParameter(id))
   {
     if(isModulateable(id.getNumber()))
@@ -114,6 +63,22 @@ Parameter* ParameterFactory::createParameterByType(ParameterGroup* parent, const
     return new ModulateableParameter(parent, id);
   else
     return new Parameter(parent, id);
+}
+
+std::vector<C15::ParameterGroupDescriptor> ParameterFactory::getParameterGroupsPerVoiceGroup()
+{
+  std::vector<C15::ParameterGroupDescriptor> groups;
+  for(const auto& group : C15::ParameterGroups)
+  {
+    if(group.m_group == C15::Descriptors::ParameterGroup::None)
+      continue;
+
+    if(group.m_global_group == false)
+    {
+      groups.push_back(group);
+    }
+  }
+  return groups;
 }
 
 bool ParameterFactory::isUnisonParameter(const ParameterId& id)
@@ -159,8 +124,8 @@ bool ParameterFactory::isMonoParameter(const Parameter* parameter)
 bool ParameterFactory::isVoiceGroupMasterParameter(const ParameterId& parameterId)
 {
   const auto id = parameterId.getNumber();
-  return id == C15::PID::Voice_Grp_Volume || id == C15::PID::Voice_Grp_Tune || id == C15::PID::Voice_Grp_Mute
-      || id == C15::PID::Voice_Grp_Fade_From || id == C15::PID::Voice_Grp_Fade_Range;
+  return id == C15::PID::Part_Volume || id == C15::PID::Part_Tune || id == C15::PID::Part_Mute
+      || id == C15::PID::Part_Fade_From || id == C15::PID::Part_Fade_Range;
 }
 
 bool ParameterFactory::isMasterParameter(const Parameter* p)
@@ -193,4 +158,93 @@ bool ParameterFactory::isScaleParameter(const Parameter* parameter)
   if(parameter)
     return isScaleParameter(parameter->getID());
   return false;
+}
+
+ParameterId ParameterFactory::modSrcToParamId(MacroControls src)
+{
+  switch(src)
+  {
+    case MacroControls::MC1:
+      return { C15::PID::MC_A, VoiceGroup::Global };
+
+    case MacroControls::MC2:
+      return { C15::PID::MC_B, VoiceGroup::Global };
+
+    case MacroControls::MC3:
+      return { C15::PID::MC_C, VoiceGroup::Global };
+
+    case MacroControls::MC4:
+      return { C15::PID::MC_D, VoiceGroup::Global };
+
+    case MacroControls::MC5:
+      return { C15::PID::MC_E, VoiceGroup::Global };
+
+    case MacroControls::MC6:
+      return { C15::PID::MC_F, VoiceGroup::Global };
+    default:
+      break;
+  }
+
+  return ParameterId::invalid();
+}
+
+MacroControls ParameterFactory::paramIDToModSrc(const ParameterId& pid)
+{
+  switch(pid.getNumber())
+  {
+    case C15::PID::MC_A:
+      return MacroControls::MC1;
+
+    case C15::PID::MC_B:
+      return MacroControls::MC2;
+
+    case C15::PID::MC_C:
+      return MacroControls::MC3;
+
+    case C15::PID::MC_D:
+      return MacroControls::MC4;
+
+    case C15::PID::MC_E:
+      return MacroControls::MC5;
+
+    case C15::PID::MC_F:
+      return MacroControls::MC6;
+
+    default:
+      return MacroControls::NONE;
+  }
+}
+
+bool ParameterFactory::isMacroTime(const ParameterId& id)
+{
+  return (id.getNumber() >= C15::PID::MC_Time_A && id.getNumber() <= C15::PID::MC_Time_D)
+      || (id.getNumber() == C15::PID::MC_Time_E || id.getNumber() == C15::PID::MC_Time_F);
+}
+
+bool ParameterFactory::isMacroControl(const ParameterId& id)
+{
+  auto paramNumber = id.getNumber();
+  return paramNumber == C15::PID::MC_A || paramNumber == C15::PID::MC_B || paramNumber == C15::PID::MC_C
+      || paramNumber == C15::PID::MC_D || paramNumber == C15::PID::MC_E || paramNumber == C15::PID::MC_F;
+}
+
+ParameterId ParameterFactory::smoothingIdToMCId(const ParameterId& smoothingId)
+{
+  switch(smoothingId.getNumber())
+  {
+    case C15::PID::MC_Time_A:
+      return { C15::PID::MC_A, VoiceGroup::Global };
+    case C15::PID::MC_Time_B:
+      return { C15::PID::MC_B, VoiceGroup::Global };
+    case C15::PID::MC_Time_C:
+      return { C15::PID::MC_C, VoiceGroup::Global };
+    case C15::PID::MC_Time_D:
+      return { C15::PID::MC_D, VoiceGroup::Global };
+    case C15::PID::MC_Time_E:
+      return { C15::PID::MC_E, VoiceGroup::Global };
+    case C15::PID::MC_Time_F:
+      return { C15::PID::MC_F, VoiceGroup::Global };
+    default:
+      return ParameterId::invalid();
+  }
 }

@@ -1,7 +1,5 @@
 #include "SwitchVoiceGroupButton.h"
 #include "groups/MasterGroup.h"
-#include "groups/ScaleGroup.h"
-#include "groups/MacroControlsGroup.h"
 #include "parameters/ParameterFactory.h"
 #include "parameters/presenter-rules/ParameterPresenterRules.h"
 #include <Application.h>
@@ -9,10 +7,6 @@
 #include <presets/EditBuffer.h>
 #include <proxies/hwui/HWUI.h>
 #include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
-#include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
-#include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
-#include <parameters/SplitPointParameter.h>
-#include <proxies/hwui/HWUI.h>
 #include <nltools/Types.h>
 #include <libundo/undo/Scope.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ParameterLayout.h>

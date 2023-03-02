@@ -67,7 +67,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,
   auto eb = TestHelper::getEditBuffer();
   EditBufferUseCases useCase(*eb);
   SoundUseCases soundUseCases(eb, pm);
-  auto p = eb->findParameterByID({ C15::PID::Voice_Grp_Fade_From, VoiceGroup::I });
+  auto p = eb->findParameterByID({ C15::PID::Part_Fade_From, VoiceGroup::I });
 
   TestHelper::initDualEditBuffer<SoundType::Layer>(VoiceGroup::I);
 

@@ -35,18 +35,17 @@ void VoiceGroupMasterParameterCarousel::setup(Parameter *selectedParameter)
   {
     default:
     case SoundType::Single:
-      setupMasterParameters({ { C15::PID::Voice_Grp_Volume, vg }, { C15::PID::Voice_Grp_Tune, vg } });
+      setupMasterParameters({ { C15::PID::Part_Volume, vg }, { C15::PID::Part_Tune, vg } });
       break;
     case SoundType::Split:
-      setupMasterParameters({ { C15::PID::Voice_Grp_Volume, vg },
-                              { C15::PID::Voice_Grp_Tune, vg },
-                              { C15::PID::Split_Split_Point, vg } });
+      setupMasterParameters(
+          { { C15::PID::Part_Volume, vg }, { C15::PID::Part_Tune, vg }, { C15::PID::Split_Split_Point, vg } });
       break;
     case SoundType::Layer:
-      setupMasterParameters({ { C15::PID::Voice_Grp_Volume, vg },
-                              { C15::PID::Voice_Grp_Tune, vg },
-                              { C15::PID::Voice_Grp_Fade_From, vg },
-                              { C15::PID::Voice_Grp_Fade_Range, vg } });
+      setupMasterParameters({ { C15::PID::Part_Volume, vg },
+                              { C15::PID::Part_Tune, vg },
+                              { C15::PID::Part_Fade_From, vg },
+                              { C15::PID::Part_Fade_Range, vg } });
       break;
   }
 

@@ -509,7 +509,7 @@ void ParameterRecallLayout2::onParameterChanged(const Parameter *)
 PartMasterRecallLayout2::PartMasterRecallLayout2()
     : ParameterRecallLayout2()
     , m_muteParameter { Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-          { C15::PID::Voice_Grp_Mute, Application::get().getVGManager()->getCurrentVoiceGroup() }) }
+          { C15::PID::Part_Mute, Application::get().getVGManager()->getCurrentVoiceGroup() }) }
 {
   m_muteParameterConnection
       = m_muteParameter->onParameterChanged(sigc::hide(sigc::mem_fun(this, &PartMasterRecallLayout2::onMuteChanged)));

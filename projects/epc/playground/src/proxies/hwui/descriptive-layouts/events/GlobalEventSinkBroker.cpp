@@ -366,8 +366,8 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::LayerMuteInc, [eb]() {
-      auto muteI = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I });
-      auto muteII = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II });
+      auto muteI = eb->findParameterByID({ C15::PID::Part_Mute, VoiceGroup::I });
+      auto muteII = eb->findParameterByID({ C15::PID::Part_Mute, VoiceGroup::II });
       const auto vgIMuted = muteI->getControlPositionValue() > 0.5;
       const auto vgIIMuted = muteII->getControlPositionValue() > 0.5;
       EditBufferUseCases useCases(*eb);
@@ -383,8 +383,8 @@ namespace DescriptiveLayouts
     });
 
     registerEvent(EventSinks::LayerMuteDec, [eb]() {
-      auto muteI = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I });
-      auto muteII = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II });
+      auto muteI = eb->findParameterByID({ C15::PID::Part_Mute, VoiceGroup::I });
+      auto muteII = eb->findParameterByID({ C15::PID::Part_Mute, VoiceGroup::II });
       const auto vgIMuted = muteI->getControlPositionValue() > 0.5;
       const auto vgIIMuted = muteII->getControlPositionValue() > 0.5;
       EditBufferUseCases useCases(*eb);

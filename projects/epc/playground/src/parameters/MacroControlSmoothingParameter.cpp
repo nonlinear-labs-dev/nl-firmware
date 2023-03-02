@@ -1,6 +1,6 @@
 #include "MacroControlSmoothingParameter.h"
+#include "ParameterFactory.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/MacroControlSmoothingParameterLayout.h>
-#include <groups/MacroControlsGroup.h>
 
 Layout* MacroControlSmoothingParameter::createLayout(FocusAndMode focusAndMode) const
 {
@@ -13,5 +13,5 @@ Layout* MacroControlSmoothingParameter::createLayout(FocusAndMode focusAndMode) 
 
 ParameterId MacroControlSmoothingParameter::getMC() const
 {
-  return MacroControlsGroup::smoothingIdToMCId(getID());
+  return ParameterFactory::smoothingIdToMCId(getID());
 }

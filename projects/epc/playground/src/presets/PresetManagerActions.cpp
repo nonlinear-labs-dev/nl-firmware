@@ -172,33 +172,6 @@ bool PresetManagerActions::handleRequest(const Glib::ustring& path, std::shared_
   if(RPCActionManager::handleRequest(path, request))
     return true;
 
-  if(path.find("/presets/search-preset") == 0)
-  {
-    if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))
-    {
-      Glib::ustring query = request->get("query");
-      Glib::ustring mode = request->get("combine");
-      Glib::ustring field = request->get("fields");
-
-      std::vector<SearchQuery::Fields> fields;
-
-      auto splitFieldStrings = StringTools::splitStringOnAnyDelimiter(field, ',');
-      std::for_each(splitFieldStrings.begin(), splitFieldStrings.end(), [&](const std::string& t) {
-        if(t == "name")
-          fields.push_back(SearchQuery::Fields::Name);
-        else if(t == "comment")
-          fields.push_back(SearchQuery::Fields::Comment);
-        else if(t == "devicename")
-          fields.push_back(SearchQuery::Fields::DeviceName);
-      });
-
-      auto stream = request->createStream("text/xml", false);
-      XmlWriter writer(*stream);
-      m_presetManager.searchPresets(writer, query, mode, std::move(fields));
-      return true;
-    }
-  }
-
   if(path.find("/presets/download-banks") == 0)
   {
     if(auto httpRequest = std::dynamic_pointer_cast<HTTPRequest>(request))

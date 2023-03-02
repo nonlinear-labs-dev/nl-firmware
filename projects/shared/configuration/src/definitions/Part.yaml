@@ -2,7 +2,7 @@
 %TAG ! tag:nonlinear-labs.de,2022:js-yaml:
 --- !definitions
 
-group: Voice_Grp
+group: Part
 
 static: [
   &NO_SINGLE {

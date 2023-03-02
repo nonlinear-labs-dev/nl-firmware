@@ -563,20 +563,6 @@ int Bank::getHighestIncrementForBaseName(const Glib::ustring &baseName) const
   return 0;
 }
 
-void Bank::searchPresets(Writer &writer, const SearchQuery &query) const
-{
-  auto pm = dynamic_cast<const PresetManager *>(getParent());
-  auto pos = pm->getBankPosition(getUuid());
-
-  writer.writeTag("preset-bank", Attribute("uuid", m_uuid.raw()), Attribute("name", m_name),
-                  Attribute("order-number", pos), [&]() {
-                    m_presets.forEach([&](auto p) {
-                      if(p->matchesQuery(query))
-                        p->writeDocument(writer, 0);
-                    });
-                  });
-}
-
 time_t Bank::getLastChangedTimestamp() const
 {
   return m_lastChangedTimestamp;
@@ -662,13 +648,6 @@ bool Bank::resolveCyclicAttachments(UNDO::Transaction *transaction, std::vector<
   }
   stackedBanks.pop_back();
   return true;
-}
-
-const Preset *Bank::getFirstPreset() const
-{
-  if(m_presets.empty())
-    return nullptr;
-  return m_presets.at(0);
 }
 
 Glib::ustring Bank::getComment()
