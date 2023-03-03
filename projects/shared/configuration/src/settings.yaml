@@ -126,6 +126,9 @@ AutoStartRecorder:
 GlobalLocalEnable:
     default: true
 
+AlsaFramesPerPeriod:
+    default: 0
+
 FlacRecorderVirgin:
     default: true
 
