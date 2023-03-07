@@ -49,3 +49,13 @@ void Setting::setSetting(Initiator initiator, const Glib::ustring &text)
 {
   load(text, initiator);
 }
+
+Glib::ustring Setting::getKey() const
+{
+  return m_key;
+}
+
+void Setting::setKey(const Glib::ustring &key)
+{
+  m_key = key;
+}
