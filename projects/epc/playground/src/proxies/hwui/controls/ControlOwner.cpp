@@ -2,7 +2,6 @@
 #include "Control.h"
 #include "Button.h"
 #include <Application.h>
-#include <device-settings/LayoutMode.h>
 
 ControlOwner::ControlOwner() = default;
 
@@ -118,20 +117,24 @@ void ControlOwner::noHighlight()
 
 void ControlOwner::highlightButtonWithCaption(const Glib::ustring &caption)
 {
-  forEach([&caption](tControlPtr ctrl) {
-    if(auto b = std::dynamic_pointer_cast<Button>(ctrl))
-    {
-      b->setHighlight(b->getText().text == caption);
-    }
-  });
+  forEach(
+      [&caption](tControlPtr ctrl)
+      {
+        if(auto b = std::dynamic_pointer_cast<Button>(ctrl))
+        {
+          b->setHighlight(b->getText().text == caption);
+        }
+      });
 }
 void ControlOwner::highlightButtonWithCaption(const Glib::ustring &caption, bool desiredHighlight)
 {
-  forEach([&caption, &desiredHighlight](tControlPtr ctrl) {
-    if(auto b = std::dynamic_pointer_cast<Button>(ctrl))
-    {
-      if(b->getText().text == caption)
-        b->setHighlight(desiredHighlight);
-    }
-  });
+  forEach(
+      [&caption, &desiredHighlight](tControlPtr ctrl)
+      {
+        if(auto b = std::dynamic_pointer_cast<Button>(ctrl))
+        {
+          if(b->getText().text == caption)
+            b->setHighlight(desiredHighlight);
+        }
+      });
 }

@@ -2,16 +2,7 @@
 
 #include "EnumSetting.h"
 #include <nltools/logging/Log.h>
-
-enum class DebugLevels
-{
-  DEBUG_LEVEL_SILENT,
-  DEBUG_LEVEL_ERROR,
-  DEBUG_LEVEL_WARNING,
-  DEBUG_LEVEL_INFO,
-  DEBUG_LEVEL_DEBUG,
-  DEBUG_LEVEL_GASSY
-};
+#include <nltools/Types.h>
 
 inline std::ostream& operator<<(std::ostream& out, const DebugLevels& level)
 {

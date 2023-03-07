@@ -1,12 +1,7 @@
 #pragma once
 
 #include "EnumSetting.h"
-
-enum class ParameterEditModeRibbonBehaviours
-{
-  PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR_RELATIVE = 0,
-  PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR_ABSOLUTE = 1
-};
+#include <nltools/Types.h>
 
 class ParameterEditModeRibbonBehaviour : public EnumSetting<ParameterEditModeRibbonBehaviours>
 {

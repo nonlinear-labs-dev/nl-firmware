@@ -27,6 +27,7 @@
 #include <device-settings/Settings.h>
 #include <filesystem>
 #include <use-cases/IncrementalChangerUseCases.h>
+#include <playcontroller/EHC-pedal-presets.h>
 
 PlaycontrollerProxy::PlaycontrollerProxy()
     : m_lastTouchedRibbon(HardwareSourcesGroup::getLowerRibbon2ParameterID().getNumber())
@@ -229,33 +230,37 @@ void PlaycontrollerProxy::onRelativeEditControlMessageReceived(Parameter *p, gin
 {
   m_throttledRelativeParameterAccumulator += value;
 
-  m_throttledRelativeParameterChange.doTask([this, p]() {
-    if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
-      m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
+  m_throttledRelativeParameterChange.doTask(
+      [this, p]()
+      {
+        if(!m_relativeEditControlMessageChanger || !m_relativeEditControlMessageChanger->isManaging(p->getValue()))
+          m_relativeEditControlMessageChanger = p->getValue().startUserEdit(Initiator::EXPLICIT_PLAYCONTROLLER);
 
-    auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
-    IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
-    useCase.changeBy(amount, false);
-    m_throttledRelativeParameterAccumulator = 0;
-  });
+        auto amount = m_throttledRelativeParameterAccumulator / (p->isBiPolar() ? 8000.0 : 16000.0);
+        IncrementalChangerUseCases useCase(m_relativeEditControlMessageChanger.get());
+        useCase.changeBy(amount, false);
+        m_throttledRelativeParameterAccumulator = 0;
+      });
 }
 
 void PlaycontrollerProxy::onAbsoluteEditControlMessageReceived(Parameter *p, gint16 value)
 {
   m_throttledAbsoluteParameterValue = value;
 
-  m_throttledAbsoluteParameterChange.doTask([this, p]() {
-    ParameterUseCases useCase(p);
+  m_throttledAbsoluteParameterChange.doTask(
+      [this, p]()
+      {
+        ParameterUseCases useCase(p);
 
-    if(p->isBiPolar())
-    {
-      useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
-    }
-    else
-    {
-      useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
-    }
-  });
+        if(p->isBiPolar())
+        {
+          useCase.setControlPosition((m_throttledAbsoluteParameterValue - 8000.0) / 8000.0);
+        }
+        else
+        {
+          useCase.setControlPosition(m_throttledAbsoluteParameterValue / 16000.0);
+        }
+      });
 }
 
 void PlaycontrollerProxy::notifyRibbonTouch(int ribbonsParameterID)

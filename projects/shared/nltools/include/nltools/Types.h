@@ -12,6 +12,22 @@ ENUM(RibbonTouchBehaviour, int8_t, ABSOLUTE, RELATIVE, NUM_TOUCH_BEHAVIOURS);
 ENUM(RibbonReturnMode, int8_t, STAY = 0, RETURN = 1, NUM_RETURN_MODES = 2);
 ENUM(PedalModes, int8_t, STAY = 0, RETURN_TO_ZERO = 1, RETURN_TO_CENTER = 2, NUM_PEDAL_MODES = 3);
 ENUM(ReturnMode, int8_t, None, Center, Zero);
+ENUM(PresetStoreModeSettings, int8_t, PRESET_STORE_MODE_APPEND, PRESET_STORE_MODE_OVERWRITE, PRESET_STORE_MODE_INSERT);
+ENUM(BaseUnitUIModes, int8_t, Play = 0, ParameterEdit = 1, Banks = 2, Presets = 3);
+ENUM(BaseUnitUIDetails, int8_t, RibbonSelect, RibbonMode);
+ENUM(ParameterEditModeRibbonBehaviours, int8_t, PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR_RELATIVE = 0,
+     PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR_ABSOLUTE = 1);
+ENUM(DebugLevels, int8_t, DEBUG_LEVEL_SILENT, DEBUG_LEVEL_ERROR, DEBUG_LEVEL_WARNING, DEBUG_LEVEL_INFO,
+     DEBUG_LEVEL_DEBUG, DEBUG_LEVEL_GASSY);
+
+ENUM(PedalTypes, int, PotTipActive = 1, PotRingActive = 2, PotTipActiveReverse = 3, PotRingActiveReverse = 4,
+     Resistor = 5, ResistorReversed = 6, SwitchClosing = 7, SwitchOpening = 8, CV0to5V = 9, CV0To5VAutoRange = 10,
+     OFF = 11, BossEV30 = 12, BossFV500L = 13, DoepferFP5 = 14, FractalEV2 = 15, KorgDS1H = 16, KorgEXP2 = 17,
+     LeadFootLFX1 = 18, MAudioEXP = 19, MoogEP3 = 20, RolandDP10 = 21, RolandEV5 = 22, YamahaFC3A = 23, YamahaFC7 = 24);
+
+ENUM(BenderCurves, int8_t, Soft = 0, Normal = 1, Hard = 2);
+ENUM(WifiSettings, int8_t, Disabled, Enabled);
+ENUM(SelectedRibbons, int8_t, Ribbon1_2, Ribbon3_4);
 
 ENUM(MidiReceiveChannel, int8_t, None, Omni, CH_1, CH_2, CH_3, CH_4, CH_5, CH_6, CH_7, CH_8, CH_9, CH_10, CH_11, CH_12,
      CH_13, CH_14, CH_15, CH_16)

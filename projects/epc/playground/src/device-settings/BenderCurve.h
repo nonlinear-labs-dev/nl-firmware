@@ -1,13 +1,7 @@
 #pragma once
 
 #include "EnumSetting.h"
-
-enum class BenderCurves
-{
-  Soft = 0,
-  Normal = 1,
-  Hard = 2
-};
+#include <nltools/Types.h>
 
 class BenderCurve : public EnumSetting<BenderCurves>
 {

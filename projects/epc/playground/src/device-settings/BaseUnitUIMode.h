@@ -1,14 +1,7 @@
 #pragma once
 
 #include "EnumSetting.h"
-
-enum class BaseUnitUIModes
-{
-  Play = 0,
-  ParameterEdit = 1,
-  Banks = 2,
-  Presets = 3,
-};
+#include <nltools/Types.h>
 
 class BaseUnitUIMode : public EnumSetting<BaseUnitUIModes>
 {
