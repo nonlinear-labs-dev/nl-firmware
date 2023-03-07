@@ -108,7 +108,6 @@ export class SyncedItemDatabase {
         var reader = new FileReader()
         reader.onload = () => {
             var c: SyncedItem = JSON.parse(reader.result as string);
-            console.log("onMessage: " + reader.result as string);
 
             if (c) {
                 if (!c.state || Object.keys(c.state).length == 0) {

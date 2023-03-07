@@ -5,6 +5,7 @@
 #include <memory>
 #include <nltools/threading/Throttler.h>
 #include <nltools/messaging/API.h>
+#include <unordered_set>
 
 namespace nltools::msg
 {
@@ -34,7 +35,7 @@ class SyncMaster
   std::unique_ptr<tAPI> createAPI(tAPI::Backend api);
 
   std::unique_ptr<tAPI> m_api;
-  std::vector<SyncedItem *> m_items;
+  std::unordered_set<SyncedItem *> m_items;
   std::vector<SyncedItem *> m_dirty;
   Throttler m_throttler;
 
