@@ -28,9 +28,6 @@ EditSmoothingTime:
     default: 0.0
     display: { scale: LINEAR_200_MS, coarse: 100, fine: 1000 }
 
-SSID:
-    default: ""
-
 Passphrase:
     default: "88888888"
 
