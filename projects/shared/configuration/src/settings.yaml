@@ -8,8 +8,27 @@ DirectLoad:
 SendPresetAsLPCWriteFallback:
     default: true
 
+PresetStoreModeSetting:
+    default: PresetStoreModeSettings::PRESET_STORE_MODE_INSERT
+
+BaseUnitUIMode:
+    default: BaseUnitUIModes::Play
+
+BaseUnitUIDetail:
+    default: BaseUnitUIDetails::RibbonSelect
+
+PanelUnitFocusAndMode: {}
+
 NoteShift:
     default: 0
+
+ParameterEditModeRibbonBehaviour:
+    default: ParameterEditModeRibbonBehaviours::PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR_RELATIVE
+
+DebugLevel:
+    default: DebugLevels::DEBUG_LEVEL_WARNING
+
+DeviceName: {}
 
 VelocityCurve:
     default: VelocityCurves::VELOCITY_CURVE_NORMAL

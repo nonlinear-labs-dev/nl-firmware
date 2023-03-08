@@ -31,7 +31,10 @@ namespace C15
                 MidiReceiveChannel, MidiReceiveChannelSplit,
                 MidiSendChannel, MidiSendChannelSplit,
                 PedalCC, BenderCC, AftertouchCC, RibbonCC,
-                AftertouchCurves, VelocityCurves
+                BenderCurves, AftertouchCurves, VelocityCurves,
+                PresetStoreModeSettings, BaseUnitUIModes, BaseUnitUIDetails,
+                ParameterEditModeRibbonBehaviours, DebugLevels,
+                PedalTypes, WifiSettings, SelectedRibbons
             >;
             const char * const m_key;
             const std::optional<ValueType> m_default_value;
