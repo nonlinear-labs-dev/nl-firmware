@@ -190,7 +190,7 @@ GlobalLocalEnable:
     default: true
 
 AlsaFramesPerPeriod:
-    default: 0
+    default: 16
 
 FlacRecorderVirgin:
     default: true
