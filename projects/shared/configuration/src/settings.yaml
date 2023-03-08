@@ -48,8 +48,27 @@ RibbonRelFactor:
     default: 0.5
     display: { scale: RIBBON_RELATIVE_FACTOR, coarse: 90, fine: 90 }
 
+Pedal1Type:
+    default: PedalTypes::PotTipActive
+
+Pedal2Type:
+    default: PedalTypes::PotTipActive
+
+Pedal3Type:
+    default: PedalTypes::PotTipActive
+
+Pedal4Type:
+    default: PedalTypes::PotTipActive
+
+EncoderAcceleration:
+    default: 0.55
+    display: { scale: LINEAR_100_PERCENT, coarse: 100, fine: 1000 }
+
 AftertouchCurve:
     default: AftertouchCurves::AFTERTOUCH_CURVE_NORMAL
+
+BenderCurve:
+    default: BenderCurves::Normal
 
 EditSmoothingTime:
     default: 0.0
@@ -57,6 +76,9 @@ EditSmoothingTime:
 
 Passphrase:
     default: "88888888"
+
+WifiSetting:
+    default: WifiSettings::Enabled
 
 PresetGlitchSuppression:
     default: true
@@ -84,6 +106,12 @@ TuneReference:
     display: { scale: LINEAR_400_480_HZ, coarse: 100, fine: 1000 }
 
 SyncVoiceGroups:
+    default: true
+
+ScreenSaverTimeout:
+    default: 5
+
+SyncSplit:
     default: true
 
 ReceiveChannel:
@@ -142,6 +170,21 @@ HighVeloCC:
 
 AutoStartRecorder:
     default: true
+
+RoutingSettings:
+    default: >
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1
 
 GlobalLocalEnable:
     default: true

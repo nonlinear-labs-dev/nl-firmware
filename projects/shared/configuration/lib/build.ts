@@ -434,7 +434,7 @@ function processSettings(result: Result) {
                         ret.push(str);
                     } else {
                         // real quoted strings
-                        ret.push(`"${props.default.toString()}"`);
+                        ret.push(`"${str.trim()}"`);
                     }
                     break;
                 default: throw new Error(`${err} unknown DefaultValue type in Setting "${key}"`);
