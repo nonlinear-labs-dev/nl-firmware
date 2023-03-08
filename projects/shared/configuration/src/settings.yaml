@@ -3,7 +3,7 @@
 --- !settings
 
 DirectLoad:
-    default: false
+    default: true
 
 SendPresetAsLPCWriteFallback:
     default: true
@@ -166,7 +166,7 @@ AftertouchMapping:
     default: AftertouchCC::ChannelPressure
 
 HighVeloCC:
-    default: true
+    default: false
 
 AutoStartRecorder:
     default: true
@@ -196,4 +196,4 @@ FlacRecorderVirgin:
     default: true
 
 AftertouchLegacyMode:
-    default: true
+    default: false
