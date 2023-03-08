@@ -28,10 +28,10 @@ ParameterEditModeRibbonBehaviour:
 DebugLevel:
     default: DebugLevels::DEBUG_LEVEL_WARNING
 
-DeviceName: {}
-
 VelocityCurve:
     default: VelocityCurves::VELOCITY_CURVE_NORMAL
+
+DeviceName: {}
 
 PresetDragDropEnabled:
     default: true
@@ -39,6 +39,14 @@ PresetDragDropEnabled:
 TransitionTime:
     default: 0.0
     display: { scale: ENVELOPE_TIME_MS, coarse: 100, fine: 1000 }
+
+RandomizeAmount:
+    default: 0.1
+    display: { scale: LINEAR_100_PERCENT, coarse: 100, fine: 1000 }
+
+RibbonRelFactor:
+    default: 0.5
+    display: { scale: RIBBON_RELATIVE_FACTOR, coarse: 90, fine: 90 }
 
 AftertouchCurve:
     default: AftertouchCurves::AFTERTOUCH_CURVE_NORMAL
@@ -58,10 +66,6 @@ DateTimeAdjustment:
 
 SignalFlowIndication:
     default: true
-
-RandomizeAmount:
-    default: 0.1
-    display: { scale: LINEAR_100_PERCENT, coarse: 100, fine: 1000 }
 
 IndicateBlockedUI:
     default: false

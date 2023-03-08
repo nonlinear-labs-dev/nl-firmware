@@ -429,9 +429,11 @@ function processSettings(result: Result) {
                     else ret.push(str + "f");
                     break;
                 case "String":
-                    if(str.includes("::")) {
+                    if(str.includes("::") || str.includes("/")) {
+                        // unquoted variants: enums or float divisions
                         ret.push(str);
                     } else {
+                        // real quoted strings
                         ret.push(`"${props.default.toString()}"`);
                     }
                     break;

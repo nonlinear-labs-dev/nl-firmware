@@ -238,6 +238,16 @@ display_scaling_type: {
     max: 3.0f,
     bipolar: false
   },
+  RIBBON_RELATIVE_FACTOR: {
+    round: *ROUNDING_ONE_DECIMAL,
+    unit: *UNIT_NONE,
+    reference: *REFERENCE_LINEAR,
+    inf: *INF_FINITE,
+    values: ["1.0", "5.5", "10.0"],
+    min: 1.0f,
+    max: 10.0f,
+    bipolar: false
+  },
 
   # - - - - - - - - - - - - - - - - Unit::CT - - - - - - - - - - - - - - - - #
 
