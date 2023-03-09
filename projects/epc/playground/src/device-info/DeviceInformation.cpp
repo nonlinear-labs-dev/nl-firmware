@@ -10,6 +10,8 @@
 #include "RTSoftwareVersion.h"
 #include "UniqueHardwareID.h"
 #include "AftertouchCalibratedStatus.h"
+#include "device-settings/TotalRAM.h"
+#include "device-settings/UsedRAM.h"
 #include <Application.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 #include <http/NetworkRequest.h>
@@ -29,6 +31,8 @@ DeviceInformation::DeviceInformation(UpdateDocumentContributor *parent, Playcont
   m_items.emplace_back(new UniqueHardwareID(this));
   m_items.emplace_back(new AftertouchCalibratedStatus(this, pcp));
   m_items.emplace_back(new SSID(this, hwFeatures));
+  m_items.emplace_back(new TotalRAM(this));
+  m_items.emplace_back(new UsedRAM(this));
 }
 
 DeviceInformation::~DeviceInformation() = default;

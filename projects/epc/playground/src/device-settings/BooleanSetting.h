@@ -23,6 +23,5 @@ class BooleanSetting : public EnumSetting<BooleanSettings>
   BooleanSetting &operator=(const BooleanSetting &) = delete;
 
  private:
-  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   const std::vector<Glib::ustring> &enumToString() const override;
 };

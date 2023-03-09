@@ -112,8 +112,7 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, cons
   addSetting("ForceHighlightChangedParameters", new ForceHighlightChangedParametersSetting(*this));
   addSetting("CrashOnError", new CrashOnError(*this));
   addSetting("TuneReference", new TuneReference(*this));
-  addSetting("TotalRAM", new TotalRAM(*this));
-  addSetting("UsedRAM", new UsedRAM(*this));
+
   addSetting("SyncVoiceGroups", new SyncVoiceGroupsAcrossUIS(*this));
   addSetting("ScreenSaverTimeout", new ScreenSaverTimeoutSetting(*this));
   addSetting("SyncSplit", new SplitPointSyncParameters(*this));

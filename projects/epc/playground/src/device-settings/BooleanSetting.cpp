@@ -5,11 +5,6 @@ BooleanSetting::BooleanSetting(UpdateDocumentContributor &settings, bool def)
 {
 }
 
-void BooleanSetting::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
-{
-  set(std::get<bool>(val) ? BooleanSettings::BOOLEAN_SETTING_TRUE : BooleanSettings::BOOLEAN_SETTING_FALSE);
-}
-
 BooleanSetting::~BooleanSetting() = default;
 
 bool BooleanSetting::get() const
