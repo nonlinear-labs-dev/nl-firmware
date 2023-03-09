@@ -15,11 +15,11 @@ class SSID : public DeviceInformationItem
 
   Glib::ustring getDisplayString() const override;
 
-    Glib::ustring get() const override;
+  Glib::ustring get() const override;
 
-    void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
+  void writeDocument(Writer& writer, tUpdateID knownRevision) const override;
 
-private:
+ private:
   const bool m_hasEPCWifi = false;
   void updateSSID(const Glib::ustring& str);
   Glib::ustring m_ssid;

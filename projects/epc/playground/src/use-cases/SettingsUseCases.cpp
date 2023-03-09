@@ -202,3 +202,11 @@ void SettingsUseCases::refreshScreenSaverTimeout()
 {
   m_settings.getSetting<ScreenSaverTimeoutSetting>()->endAndReschedule();
 }
+
+void SettingsUseCases::factoryDefault()
+{
+  for(auto& [key, s] : m_settings.getSettings())
+  {
+    s->loadDefault();
+  }
+}

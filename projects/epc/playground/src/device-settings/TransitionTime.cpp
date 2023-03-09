@@ -15,6 +15,12 @@ TransitionTime::TransitionTime(Settings &parent)
 {
 }
 
+void TransitionTime::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto f = std::get<float>(val);
+  set(static_cast<double>(f));
+}
+
 TransitionTime::~TransitionTime()
 {
 }

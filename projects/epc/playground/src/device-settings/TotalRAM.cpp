@@ -2,6 +2,7 @@
 #include <tools/StringTools.h>
 #include "TotalRAM.h"
 #include "Settings.h"
+#include "nltools/Assert.h"
 
 void TotalRAM::load(const Glib::ustring& text, Initiator initiator)
 {
@@ -34,4 +35,9 @@ TotalRAM::TotalRAM(Settings& s)
   auto total = memoryStats[1];
 
   load(total, Initiator::EXPLICIT_LOAD);
+}
+
+void TotalRAM::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  nltools_detailedAssertAlways(false, "this setting is not defaultable");
 }

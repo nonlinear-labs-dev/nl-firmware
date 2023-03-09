@@ -28,9 +28,12 @@ class ScreenSaverTimeoutSetting : public Setting, public sigc::trackable
   void onLayoutInstalled(Layout* l);
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   Expiration m_expiration;
   Signal<void, bool> m_screenSaverSignal;
 
   int m_selectedIndex = 2;
   std::chrono::minutes m_timeout = std::chrono::minutes::zero();
+
+  void setFromValueInt(int timeoutValue);
 };

@@ -30,5 +30,6 @@ class NoteShift : public Setting
   NoteShift& operator=(const NoteShift&) = delete;
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   int m_shift;
 };

@@ -18,6 +18,12 @@ void Passphrase::load(const Glib::ustring& password, Initiator initiator)
   }
 }
 
+void Passphrase::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto c_str = std::get<const char* const>(val);
+  updatePassword(c_str);
+}
+
 Glib::ustring Passphrase::save() const
 {
   return m_password;

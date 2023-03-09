@@ -28,6 +28,7 @@ public class DeveloperSettings extends LayoutResizingVertical {
 		addChild(new StartBBBWiFiForEPC2(this));
 		addChild(new AlertOnBufferUnderruns(this));
 		addChild(new AlsaFramesPerPeriod(this));
+		addChild(new FactoryDefaultSettings(this));
 
 		SetupModel.get().localSettings.showDeveloperOptions.onChange(v -> {
 			invalidate(INVALIDATION_FLAG_UI_CHANGED);

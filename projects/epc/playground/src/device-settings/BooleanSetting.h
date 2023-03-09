@@ -1,12 +1,7 @@
 #pragma once
 
 #include "EnumSetting.h"
-
-enum class BooleanSettings
-{
-  BOOLEAN_SETTING_TRUE = 0,
-  BOOLEAN_SETTING_FALSE = 1
-};
+#include <nltools/Types.h>
 
 class BooleanSetting : public EnumSetting<BooleanSettings>
 {
@@ -28,5 +23,6 @@ class BooleanSetting : public EnumSetting<BooleanSettings>
   BooleanSetting &operator=(const BooleanSetting &) = delete;
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   const std::vector<Glib::ustring> &enumToString() const override;
 };

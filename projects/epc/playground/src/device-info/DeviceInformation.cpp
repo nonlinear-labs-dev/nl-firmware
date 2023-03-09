@@ -15,7 +15,8 @@
 #include <http/NetworkRequest.h>
 #include <device-settings/SSID.h>
 
-DeviceInformation::DeviceInformation(UpdateDocumentContributor *parent, PlaycontrollerProxy &pcp, const HardwareFeatures& hwFeatures)
+DeviceInformation::DeviceInformation(UpdateDocumentContributor *parent, PlaycontrollerProxy &pcp,
+                                     const HardwareFeatures &hwFeatures)
     : ContentSection(parent)
     , m_actions("/device-info/")
 {
@@ -61,9 +62,11 @@ void DeviceInformation::writeDocument(Writer &writer, UpdateDocumentContributor:
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("device-information", Attribute("changed", changed), [&] {
-    if(changed)
-      for(const auto &info : m_items)
-        info->writeDocument(writer, knownRevision);
-  });
+  writer.writeTag("device-information", Attribute("changed", changed),
+                  [&]
+                  {
+                    if(changed)
+                      for(const auto &info : m_items)
+                        info->writeDocument(writer, knownRevision);
+                  });
 }

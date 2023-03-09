@@ -34,7 +34,7 @@ namespace C15
                 BenderCurves, AftertouchCurves, VelocityCurves,
                 PresetStoreModeSettings, BaseUnitUIModes, BaseUnitUIDetails,
                 ParameterEditModeRibbonBehaviours, DebugLevels,
-                PedalTypes, WifiSettings, SelectedRibbons
+                PedalTypes, WifiSettings, SelectedRibbons, BooleanSettings
             >;
             const char * const m_key;
             const std::optional<ValueType> m_default_value;

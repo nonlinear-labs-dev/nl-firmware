@@ -1,4 +1,5 @@
 #include "FocusAndModeSetting.h"
+#include "nltools/Assert.h"
 
 void FocusAndModeSetting::load(const Glib::ustring& text, Initiator initiator)
 {
@@ -165,4 +166,9 @@ FocusAndMode FocusAndModeSetting::removeInvalidStatesFromOldMode(FocusAndMode in
   }
 
   return in;
+}
+
+void FocusAndModeSetting::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  nltools_detailedAssertAlways(false, "this setting is not defaultable");
 }

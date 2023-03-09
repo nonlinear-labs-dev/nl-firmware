@@ -130,6 +130,11 @@ template <typename TEnum> class EnumSetting : public Setting
   EnumSetting &operator=(const EnumSetting &) = delete;
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override
+  {
+    set(std::get<tEnum>(val));
+  }
+
   tEnum m_mode;
   std::weak_ptr<tEnum> m_overlay;
 };

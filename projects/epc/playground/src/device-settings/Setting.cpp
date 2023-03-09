@@ -2,6 +2,7 @@
 #include "Settings.h"
 #include <xml/Writer.h>
 #include <xml/Attribute.h>
+#include <setting_list.h>
 
 Setting::Setting(UpdateDocumentContributor &parent)
     : super(&parent)
@@ -58,4 +59,25 @@ Glib::ustring Setting::getKey() const
 void Setting::setKey(const Glib::ustring &key)
 {
   m_key = key;
+}
+
+void Setting::loadDefault()
+{
+  for(const auto &entry : C15::SettingList)
+  {
+    if(entry.m_key == m_key)
+    {
+      if(entry.m_default_value.has_value())
+      {
+        try
+        {
+          loadDefaultValue(entry.m_default_value.value());
+        }
+        catch(const std::bad_variant_access &ex)
+        {
+          nltools::Log::error(ex.what());
+        }
+      }
+    }
+  }
 }

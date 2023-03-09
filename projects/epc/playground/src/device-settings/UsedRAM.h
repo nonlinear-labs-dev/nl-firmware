@@ -14,6 +14,7 @@ class UsedRAM : public Setting, public sigc::trackable
   void init() override;
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   Glib::ustring m_displayString;
   void scheduleReload();
 

@@ -29,6 +29,12 @@ RibbonRelativeFactor::~RibbonRelativeFactor()
 {
 }
 
+void RibbonRelativeFactor::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto f = std::get<float>(val);
+  set(static_cast<double>(f));
+}
+
 void RibbonRelativeFactor::load(const Glib::ustring &text, Initiator initiator)
 {
   try

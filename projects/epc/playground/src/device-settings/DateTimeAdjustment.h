@@ -25,5 +25,6 @@ class DateTimeAdjustment : public Setting
   DateTimeAdjustment& operator=(const DateTimeAdjustment&) = delete;
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   int64_t m_adjustment = 0;
 };

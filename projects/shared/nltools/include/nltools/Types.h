@@ -19,6 +19,7 @@ ENUM(ParameterEditModeRibbonBehaviours, int8_t, PARAMETER_EDIT_MODE_RIBBON_BEHAV
      PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR_ABSOLUTE = 1);
 ENUM(DebugLevels, int8_t, DEBUG_LEVEL_SILENT, DEBUG_LEVEL_ERROR, DEBUG_LEVEL_WARNING, DEBUG_LEVEL_INFO,
      DEBUG_LEVEL_DEBUG, DEBUG_LEVEL_GASSY);
+ENUM(BooleanSettings, int8_t, BOOLEAN_SETTING_TRUE = 0, BOOLEAN_SETTING_FALSE = 1);
 
 ENUM(PedalTypes, int, PotTipActive = 1, PotRingActive = 2, PotTipActiveReverse = 3, PotRingActiveReverse = 4,
      Resistor = 5, ResistorReversed = 6, SwitchClosing = 7, SwitchOpening = 8, CV0to5V = 9, CV0To5VAutoRange = 10,

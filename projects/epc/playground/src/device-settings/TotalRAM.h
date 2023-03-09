@@ -11,5 +11,7 @@ class TotalRAM : public Setting
   Glib::ustring getDisplayString() const override;
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
+
   Glib::ustring m_display;
 };

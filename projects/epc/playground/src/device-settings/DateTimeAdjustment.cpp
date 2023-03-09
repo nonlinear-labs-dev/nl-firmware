@@ -12,6 +12,12 @@ DateTimeAdjustment::DateTimeAdjustment(Settings &parent)
 {
 }
 
+void DateTimeAdjustment::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto f = std::get<float>(val);
+  set(static_cast<int64_t>(f));
+}
+
 DateTimeAdjustment::~DateTimeAdjustment()
 {
 }

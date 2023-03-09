@@ -24,5 +24,6 @@ class RandomizeAmount : public Setting
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   QuantizedValue m_amount;
 };

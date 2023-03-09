@@ -11,6 +11,15 @@ TuneReference::TuneReference(UpdateDocumentContributor& parent)
 {
 }
 
+void TuneReference::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto f = std::get<float>(val);
+  if(m_value.setRawValue(Initiator::EXPLICIT_USECASE, static_cast<double>(f)))
+  {
+    notify();
+  }
+}
+
 void TuneReference::load(const Glib::ustring& text, Initiator initiator)
 {
   if(m_value.setRawValue(initiator, std::stod(text)))

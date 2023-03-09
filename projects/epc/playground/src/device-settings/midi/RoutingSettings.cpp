@@ -14,6 +14,12 @@ RoutingSettings::RoutingSettings(Settings& s)
   }
 }
 
+void RoutingSettings::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto c_str = std::get<const char* const>(val);
+  load(c_str, Initiator::EXPLICIT_USECASE);
+}
+
 bool RoutingSettings::getState(RoutingSettings::tRoutingIndex hwIdx, RoutingSettings::tAspectIndex settingIdx) const
 {
   return m_data[static_cast<size_t>(hwIdx)][static_cast<size_t>(settingIdx)];
@@ -74,7 +80,8 @@ Glib::ustring RoutingSettings::getDisplayString() const
 void RoutingSettings::setState(RoutingSettings::tRoutingIndex hwIdx, RoutingSettings::tAspectIndex settingIdx,
                                bool state)
 {
-  auto updatePair = [](bool& toSet, bool& other, bool value) {
+  auto updatePair = [](bool& toSet, bool& other, bool value)
+  {
     if(value)
       other = false;
     toSet = value;

@@ -4,6 +4,7 @@
 #include <http/UpdateDocumentContributor.h>
 #include <tools/Signal.h>
 #include "SendReason.h"
+#include <setting_list.h>
 
 class Settings;
 
@@ -22,6 +23,7 @@ class Setting : public UpdateDocumentContributor
   virtual Glib::ustring save() const = 0;
   Glib::ustring getKey() const;
   void setKey(const Glib::ustring &key);
+  void loadDefault();
 
   sigc::connection onChange(sigc::slot<void, const Setting *> slot);
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
@@ -35,6 +37,8 @@ class Setting : public UpdateDocumentContributor
   void notify();
 
  private:
+  virtual void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) = 0;
+
   Glib::ustring m_key = "";
   Signal<void, const Setting *> m_signal;
 };

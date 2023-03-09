@@ -25,5 +25,6 @@ class Passphrase : public Setting
   constexpr static auto getMinPasswordLength();
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   Glib::ustring m_password = "88888888";
 };

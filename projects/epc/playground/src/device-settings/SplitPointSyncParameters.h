@@ -23,6 +23,7 @@ class SplitPointSyncParameters : public Setting, public sigc::trackable
   void undoableSet(UNDO::Transaction* transaction, bool newState);
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   void onSoundConverted(SoundType type);
   bool m_state = true;
 };

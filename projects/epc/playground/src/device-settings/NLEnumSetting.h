@@ -102,6 +102,11 @@ template <typename TEnum> class NLEnumSetting : public Setting
   NLEnumSetting &operator=(const NLEnumSetting &) = delete;
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override
+  {
+    set(std::get<tEnum>(val));
+  }
+
   std::vector<Glib::ustring> m_displayStrings;
 
   tEnum m_mode;
