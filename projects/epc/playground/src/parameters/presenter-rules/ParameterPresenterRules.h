@@ -16,5 +16,5 @@ class ParameterPresenterRules
 
   static bool allowToggling(const Parameter* selected, const EditBuffer* editBuffer);
 
-  static bool isLayerPartMuted(VoiceGroup vg, const EditBuffer* eb);
+  static bool isDualPartMuted(VoiceGroup vg, const EditBuffer* eb);
 };

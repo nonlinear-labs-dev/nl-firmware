@@ -145,11 +145,11 @@ bool ParameterPresenterRules::allowToggling(const Parameter *selected, const Edi
     return false;
 }
 
-bool ParameterPresenterRules::isLayerPartMuted(VoiceGroup vg, const EditBuffer *eb)
+bool ParameterPresenterRules::isDualPartMuted(VoiceGroup vg, const EditBuffer *eb)
 {
-  if(auto mute = eb->findParameterByID({ C15::PID::Part_Mute, vg }))
-  {
-    return mute->getControlPositionValue() > 0 && eb->getType() == SoundType::Layer;
-  }
-  return false;
+  auto mute = eb->findParameterByID({ C15::PID::Part_Mute, vg });
+  auto muted = mute->getControlPositionValue() > 0;
+  auto partVolume = eb->findParameterByID({ C15::PID::Part_Volume, vg });
+  auto volumeMoreThanZero = partVolume->getControlPositionValue() > 0;
+  return (muted || !volumeMoreThanZero);
 }

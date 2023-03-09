@@ -73,7 +73,7 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
     fb.drawHorizontalLine(startX + 2, startY + 2, 1);
   }
 
-  if(ParameterPresenterRules::isLayerPartMuted(VoiceGroup::I, eb))
+  if(ParameterPresenterRules::isDualPartMuted(VoiceGroup::I, eb))
   {
     fb.setColor(FrameBufferColors::C43);
 
@@ -82,7 +82,7 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
     drawCrossForLayer(fb, centerX, centerY);
   }
 
-  if(ParameterPresenterRules::isLayerPartMuted(VoiceGroup::II, eb))
+  if(ParameterPresenterRules::isDualPartMuted(VoiceGroup::II, eb))
   {
     fb.setColor(FrameBufferColors::C43);
 
@@ -106,6 +106,22 @@ void VoiceGroupIndicator::drawCrossForLayer(FrameBuffer& fb, int centerX, int ce
   fb.setPixel(centerX + 3, centerY + 2);
   fb.setPixel(centerX + 2, centerY - 1);
   fb.setPixel(centerX + 2, centerY + 1);
+}
+
+namespace
+{
+  void drawCrossForSplit(FrameBuffer& fb, int centerX, int centerY)
+  {
+    fb.setPixel(centerX - 2, centerY - 2);
+    fb.setPixel(centerX - 2, centerY + 2);
+    fb.setPixel(centerX - 1, centerY - 1);
+    fb.setPixel(centerX - 1, centerY + 1);
+    fb.setPixel(centerX, centerY);
+    fb.setPixel(centerX + 2, centerY - 2);
+    fb.setPixel(centerX + 2, centerY + 2);
+    fb.setPixel(centerX + 1, centerY - 1);
+    fb.setPixel(centerX + 1, centerY + 1);
+  }
 }
 
 void VoiceGroupIndicator::drawCrossForSingle(FrameBuffer& fb, int centerX, int centerY)
@@ -160,6 +176,7 @@ bool VoiceGroupIndicator::drawSingle(FrameBuffer& fb)
 
 bool VoiceGroupIndicator::drawSplit(FrameBuffer& fb)
 {
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto absPos = getPosition();
   fb.setColor(m_selectedVoiceGroup == VoiceGroup::I ? FrameBufferColors::C255 : FrameBufferColors::C128);
   fb.fillRect(Rect(absPos.getLeft(), absPos.getTop(), 5, 12));
@@ -176,6 +193,18 @@ bool VoiceGroupIndicator::drawSplit(FrameBuffer& fb)
     fb.drawVerticalLine(startX, startY, 3);
     fb.drawVerticalLine(startX + 1, startY + 1, 2);
     fb.drawVerticalLine(startX + 2, startY + 2, 1);
+  }
+
+  if(ParameterPresenterRules::isDualPartMuted(VoiceGroup::I, eb))
+  {
+    fb.setColor(FrameBufferColors::C43);
+    drawCrossForSplit(fb, absPos.getLeft() + 2, absPos.getTop() + 6);
+  }
+
+  if(ParameterPresenterRules::isDualPartMuted(VoiceGroup::II, eb))
+  {
+    fb.setColor(FrameBufferColors::C43);
+    drawCrossForSplit(fb, absPos.getLeft() + 9, absPos.getTop() + 6);
   }
 
   return true;
