@@ -72,11 +72,8 @@ nlohmann::json SyncMaster::api(const ClientPtr &client, const nlohmann::json &in
 
 void SyncMaster::add(SyncedItem *item)
 {
-  auto [_, emplaced] = m_items.insert(item);
-  if(emplaced)
-  {
-    item->setDirty();
-  }
+  m_items.insert(item);
+  item->setDirty();
 }
 
 void SyncMaster::remove(SyncedItem *i)
