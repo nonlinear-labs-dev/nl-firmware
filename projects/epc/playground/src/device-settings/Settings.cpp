@@ -101,7 +101,6 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, cons
   addSetting("BenderCurve", new BenderCurve(*this));
   addSetting("EditSmoothingTime", new EditSmoothingTime(*this));
 
-  addSetting("SSID", new SSID(*this, hwFeatures));
   addSetting("Passphrase", new Passphrase(*this));
   addSetting("WifiSetting", new WifiSetting(*this));
 

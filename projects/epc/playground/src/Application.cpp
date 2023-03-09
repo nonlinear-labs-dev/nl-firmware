@@ -103,11 +103,11 @@ Application::Application(int numArgs, char **argv)
     , m_voiceGroupManager(std::make_unique<VoiceGroupAndLoadToPartManager>(*m_presetManager->getEditBuffer()))
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
-    , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster(), *m_playcontrollerProxy))
+    , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster(), *m_playcontrollerProxy, *m_hwFeatures))
     , m_clipboard(new Clipboard(m_http->getUpdateDocumentMaster()))
     , m_usbChangeListener(std::make_unique<USBChangeListener>())
     , m_webUISupport(std::make_unique<WebUISupport>(m_http->getUpdateDocumentMaster()))
-    , m_epcWifiManager(new EpcWifi(*m_hwFeatures, *m_settings->getSetting<SSID>(),
+    , m_epcWifiManager(new EpcWifi(*m_hwFeatures, *m_deviceInformation->getItem<SSID>(),
                                    *m_settings->getSetting<Passphrase>(), *m_settings->getSetting<WifiSetting>()))
     , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui, *m_settings,
                        *m_voiceGroupManager)

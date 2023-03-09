@@ -139,7 +139,7 @@ void EpcWifi::onPassphraseChanged(const Setting* s)
   }
 }
 
-void EpcWifi::onSSIDChanged(const Setting* s)
+void EpcWifi::onSSIDChanged(const DeviceInformationItem* s)
 {
   if(auto ssid = dynamic_cast<const SSID*>(s))
   {
