@@ -207,6 +207,8 @@ class EditBuffer : public ParameterGroupSet, public SyncedItem
   void connectToFocusAndMode();
   void resetReturningParametersOnFocusAndModeChange(const Setting *s);
 
+  void updateRibbonsFromBoundMacros();
+
   Signal<void, Parameter *, Parameter *> m_signalSelectedParameter;
   Signal<void, Parameter *> m_signalReselectParameter;
   SignalWithCache<void, bool> m_signalModificationState;
