@@ -185,14 +185,17 @@ template <typename Owner, typename Element> class UndoableVector : private Undoa
         [=](auto) {
           Checker checker(this);
           auto it = std::next(m_elements.begin(), pos);
+          swapData->template get<0>()->resume();
           it = m_elements.insert(it, ElementPtr());
           swapData->swapWith(*it);
+
           invalidateAllChildren();
         },
         [=](auto) {
           Checker checker(this);
           auto it = std::next(m_elements.begin(), pos);
           swapData->swapWith(*it);
+          swapData->template get<0>()->suspend();
           m_elements.erase(it);
           invalidateAllChildren();
         });
@@ -239,12 +242,14 @@ template <typename Owner, typename Element> class UndoableVector : private Undoa
               e->invalidate();
 
             swapData->swapWith(e);
+            swapData->template get<0>()->suspend();
             invalidateAllChildren();
           },
           [=](auto) {
             Checker checker(this);
             ElementPtr e;
             swapData->swapWith(e);
+            swapData->template get<0>()->resume();
             auto it = std::next(m_elements.begin(), pos);
             m_elements.insert(it, std::move(e));
             invalidateAllChildren();
