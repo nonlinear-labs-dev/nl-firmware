@@ -112,7 +112,7 @@ ScreenSaverTimeout:
     default: 5
 
 SyncSplit:
-    default: true
+    default: on
 
 ReceiveChannel:
     default: MidiReceiveChannel::Omni
@@ -172,7 +172,7 @@ AutoStartRecorder:
     default: true
 
 RoutingSettings:
-    default: >
+    default: |
         1,1,1,1,1,
         1,1,1,1,1,
         1,1,1,1,1,

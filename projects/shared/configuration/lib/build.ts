@@ -434,7 +434,7 @@ function processSettings(result: Result) {
                         ret.push(str);
                     } else {
                         // real quoted strings
-                        ret.push(`"${str.trim()}"`);
+                        ret.push(`"${str.trim().replace(/\n/g, "\\n")}"`);
                     }
                     break;
                 default: throw new Error(`${err} unknown DefaultValue type in Setting "${key}"`);
