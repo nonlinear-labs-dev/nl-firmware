@@ -72,21 +72,16 @@ nlohmann::json SyncMaster::api(const ClientPtr &client, const nlohmann::json &in
 
 void SyncMaster::add(SyncedItem *item)
 {
-  auto it = std::find(m_items.begin(), m_items.end(), item);
-
-  if(it == m_items.end())
+  auto [_, emplaced] = m_items.insert(item);
+  if(emplaced)
   {
-    m_items.emplace(item);
     item->setDirty();
   }
 }
 
 void SyncMaster::remove(SyncedItem *i)
 {
-  auto existingIt = m_items.find(i);
-  if(existingIt != m_items.end())
-    m_items.erase(existingIt);
-
+  m_items.erase(i);
   i->resetDirty();
 
   auto topic = i->getTopic();
