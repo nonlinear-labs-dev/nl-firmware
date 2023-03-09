@@ -144,7 +144,9 @@ void ParameterGroup::writeDocument(Writer &writer, tUpdateID knownRevision) cons
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("parameter-group", Attribute("id", getID()), Attribute("short-name", getShortName()),
-                  Attribute("long-name", m_webUIName), Attribute("changed", changed), [&]() {
+                  Attribute("long-name", m_webUIName), Attribute("changed", changed),
+                  [&]()
+                  {
                     if(changed)
                       for(const auto p : m_parameters)
                         p->writeDocument(writer, knownRevision);
@@ -254,7 +256,14 @@ nlohmann::json ParameterGroup::serialize() const
 
 bool ParameterGroup::isPolyphonic() const
 {
+  nltools_detailedAssertAlways(m_parameters.begin() != m_parameters.end(), "group is empty");
   return m_parameters.begin()->isPolyphonic();
+}
+
+bool ParameterGroup::isMonophonic() const
+{
+  nltools_detailedAssertAlways(m_parameters.begin() != m_parameters.end(), "group is empty");
+  return m_parameters.begin()->isMonophonic();
 }
 
 void ParameterGroup::init()

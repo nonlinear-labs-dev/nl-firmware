@@ -5,7 +5,6 @@
 #include "use-cases/ParameterUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
 #include "groups/ScaleGroup.h"
-#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAmountButton.h"
 #include "parameters/ParameterFactory.h"
 #include "parameters/presenter-rules/ParameterPresenterRules.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
@@ -16,24 +15,19 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/ButtonMenu.h>
 #include <Application.h>
-#include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <presets/PresetParameter.h>
 #include <proxies/hwui/panel-unit/boled/undo/UndoIndicator.h>
 #include <proxies/hwui/controls/Button.h>
 #include <device-settings/HighlightChangedParametersSetting.h>
 #include <parameters/ModulateableParameter.h>
-#include <parameters/MacroControlParameter.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 #include <presets/recall/RecallParameter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
-#include <libundo/undo/Scope.h>
 #include <device-settings/Settings.h>
 #include <sigc++/adaptors/hide.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNotAvailableInSoundInfo.h>
-#include <glibmm/main.h>
-#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/SelectedParameterValue.h>
 #include <parameter_declarations.h>
 

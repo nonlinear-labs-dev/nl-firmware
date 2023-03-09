@@ -46,7 +46,7 @@ void ModuleCaption::updateText(Parameter *newOne)
   {
     auto group = newOne->getParentGroup();
     auto groupName = group->getShortName();
-    if(!group->isPolyphonic() && Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Single)
+    if(group->isMonophonic() && Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Single)
       setText(StringAndSuffix { groupName + " " + toString(group->getVoiceGroup()) });
     else
       setText(StringAndSuffix { groupName });

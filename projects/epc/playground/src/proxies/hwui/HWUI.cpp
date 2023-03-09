@@ -421,7 +421,8 @@ void HWUI::setModifiers(Buttons buttonID, bool state)
 bool HWUI::isFineAllowed()
 {
   auto uiFocus = m_famSetting.getState().focus;
-  return (uiFocus == UIFocus::Parameters || uiFocus == UIFocus::Sound) && m_currentParameterIsFineAllowed;
+  return ((uiFocus == UIFocus::Parameters || uiFocus == UIFocus::Sound) && m_currentParameterIsFineAllowed)
+      || uiFocus == UIFocus::Setup;
 }
 
 bool HWUI::detectAffengriff(Buttons buttonID, bool state)
@@ -620,4 +621,16 @@ sigc::connection HWUI::onButtonPressed(const sigc::slot<void, Buttons, bool> &cb
 sigc::connection HWUI::onRotaryTurned(const sigc::slot<void> &cb)
 {
   return m_rotaryTurned.connect(cb);
+}
+
+void HWUI::toggleFine()
+{
+  if(getButtonModifiers()[ButtonModifier::FINE])
+  {
+    removeModifier(ButtonModifier::FINE);
+  }
+  else
+  {
+    addModifier(ButtonModifier::FINE);
+  }
 }

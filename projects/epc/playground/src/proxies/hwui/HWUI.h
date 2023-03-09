@@ -52,6 +52,7 @@ class HWUI : public sigc::trackable
   bool isResolutionFine() const;
   void unsetFineMode();
   bool isModifierSet(ButtonModifier m) const;
+  void toggleFine();
 
   sigc::connection onButtonPressed(const sigc::slot<void, Buttons, bool> &cb);
   sigc::connection onRotaryTurned(const sigc::slot<void> &cb);

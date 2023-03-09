@@ -5,6 +5,7 @@
 #include <Application.h>
 #include <device-settings/Settings.h>
 #include <proxies/hwui/FrameBuffer.h>
+#include <proxies/hwui/HWUI.h>
 
 template <typename tSetting> class NumericSettingEditor : public SetupLabel, public SetupEditor
 {
@@ -14,6 +15,24 @@ template <typename tSetting> class NumericSettingEditor : public SetupLabel, pub
   {
     auto setting = Application::get().getSettings()->getSetting<tSetting>();
     setting->onChange(mem_fun(this, &NumericSettingEditor<tSetting>::onSettingChanged));
+    auto hwui = Application::get().getHWUI();
+    hwui->onModifiersChanged(mem_fun(this, &NumericSettingEditor<tSetting>::onModifiersChanged));
+  }
+
+  void onModifiersChanged(ButtonModifiers mod)
+  {
+    m_modifiers = mod;
+    updateLabelText();
+  }
+
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override
+  {
+    if(down && i == Buttons::BUTTON_FINE)
+    {
+      Application::get().getHWUI()->toggleFine();
+      return true;
+    }
+    return SetupEditor::onButton(i, down, modifiers);
   }
 
   bool onRotary(int inc, ButtonModifiers modifiers) override
@@ -24,8 +43,29 @@ template <typename tSetting> class NumericSettingEditor : public SetupLabel, pub
 
   void onSettingChanged(const Setting *s)
   {
-    auto setting = dynamic_cast<const tSetting *>(s);
-    setText({ setting->getDisplayString(), 0 });
+    if(auto setting = dynamic_cast<const tSetting *>(s))
+    {
+      m_lastDisplayValue = setting->getDisplayString();
+      updateLabelText();
+    }
+  }
+
+ protected:
+  void updateLabelText()
+  {
+    if(m_modifiers[ButtonModifier::FINE])
+    {
+      setText({ m_lastDisplayValue + " F", 1 });
+    }
+    else
+    {
+      setText({ m_lastDisplayValue, 0 });
+    }
+  }
+
+  void setSuffixFontColor(FrameBuffer &fb) const override
+  {
+    fb.setColor(FrameBufferColors::C179);
   }
 
  private:
@@ -52,6 +92,9 @@ template <typename tSetting> class NumericSettingEditor : public SetupLabel, pub
   {
     fb.setColor(FrameBufferColors::C255);
   }
+
+  ButtonModifiers m_modifiers;
+  Glib::ustring m_lastDisplayValue;
 };
 
 template <typename tSetting> class BooleanSettingEditor : public SetupLabel, public SetupEditor
