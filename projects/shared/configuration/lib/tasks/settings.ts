@@ -1,7 +1,7 @@
 import { Type, Parser } from "../yaml";
 
 export type SettingType = {
-    default?: boolean | number | string;
+    default?: number | string;
     display?: {
         scale: string;
         coarse: number;

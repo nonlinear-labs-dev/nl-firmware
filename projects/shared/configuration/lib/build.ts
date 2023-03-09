@@ -421,9 +421,6 @@ function processSettings(result: Result) {
         if(props.default !== undefined) {
             const str = props.default.toString();
             switch(props.default.constructor.name) {
-                case "Boolean":
-                    ret.push(str);
-                    break;
                 case "Number":
                     if(Number.isSafeInteger(props.default)) ret.push((props.default as number).toFixed(1) + "f");
                     else ret.push(str + "f");

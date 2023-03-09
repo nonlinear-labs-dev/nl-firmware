@@ -3,10 +3,10 @@
 --- !settings
 
 DirectLoad:
-    default: true
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
 
 SendPresetAsLPCWriteFallback:
-    default: true
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
 
 PresetStoreModeSetting:
     default: PresetStoreModeSettings::PRESET_STORE_MODE_INSERT
@@ -34,7 +34,7 @@ VelocityCurve:
 DeviceName: {}
 
 PresetDragDropEnabled:
-    default: true
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
 
 TransitionTime:
     default: 0.0
@@ -81,32 +81,32 @@ WifiSetting:
     default: WifiSettings::Enabled
 
 PresetGlitchSuppression:
-    default: true
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
 
 DateTimeAdjustment:
     default: 0
 
 SignalFlowIndication:
-    default: true
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
 
 IndicateBlockedUI:
-    default: false
+    default: BooleanSettings::BOOLEAN_SETTING_FALSE
 
 HighlightChangedParameters:
-    default: true
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
 
 ForceHighlightChangedParameters:
-    default: false
+    default: BooleanSettings::BOOLEAN_SETTING_FALSE
 
 CrashOnError:
-    default: false
+    default: BooleanSettings::BOOLEAN_SETTING_FALSE
 
 TuneReference:
     default: 0.5
     display: { scale: LINEAR_400_480_HZ, coarse: 100, fine: 1000 }
 
 SyncVoiceGroups:
-    default: true
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
 
 ScreenSaverTimeout:
     default: 5
@@ -133,7 +133,7 @@ ReceiveVelocityCurve:
     default: VelocityCurves::VELOCITY_CURVE_NORMAL
 
 HighResCC:
-    default: true
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
 
 Pedal1Mapping:
     default: PedalCC::CC20
@@ -166,10 +166,10 @@ AftertouchMapping:
     default: AftertouchCC::ChannelPressure
 
 HighVeloCC:
-    default: false
+    default: BooleanSettings::BOOLEAN_SETTING_FALSE
 
 AutoStartRecorder:
-    default: true
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
 
 RoutingSettings:
     default: |
@@ -187,13 +187,13 @@ RoutingSettings:
         1,1,1,1,1
 
 GlobalLocalEnable:
-    default: true
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
 
 AlsaFramesPerPeriod:
     default: 16
 
 FlacRecorderVirgin:
-    default: true
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
 
 AftertouchLegacyMode:
-    default: false
+    default: BooleanSettings::BOOLEAN_SETTING_FALSE
