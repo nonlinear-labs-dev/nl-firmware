@@ -47,6 +47,8 @@ class SettingsUseCases
   //General
   void setSettingFromWebUI(const Glib::ustring& key, const Glib::ustring& value, PresetManager& pm);
 
+  void factoryDefault();
+
  private:
   Settings& m_settings;
   FocusAndModeSetting& m_focusAndModeSetting;

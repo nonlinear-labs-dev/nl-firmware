@@ -1,11 +1,6 @@
 #pragma once
 #include <device-settings/EnumSetting.h>
-
-enum class BaseUnitUIDetails
-{
-  RibbonSelect,
-  RibbonMode
-};
+#include <nltools/Types.h>
 
 class BaseUnitUIDetail : public EnumSetting<BaseUnitUIDetails>
 {

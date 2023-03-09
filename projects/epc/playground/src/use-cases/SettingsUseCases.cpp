@@ -202,3 +202,24 @@ void SettingsUseCases::refreshScreenSaverTimeout()
 {
   m_settings.getSetting<ScreenSaverTimeoutSetting>()->endAndReschedule();
 }
+
+void SettingsUseCases::factoryDefault()
+{
+  for(const auto& entry : C15::SettingList)
+  {
+    if(auto setting = m_settings.getSetting(entry.m_key))
+    {
+      if(entry.m_default_value.has_value())
+      {
+        try
+        {
+          setting->loadDefaultValue(entry.m_default_value.value());
+        }
+        catch(const std::bad_variant_access& ex)
+        {
+          nltools::Log::error(ex.what());
+        }
+      }
+    }
+  }
+}

@@ -35,5 +35,6 @@ class TransitionTime : public Setting
   void syncExternals(SendReason reason) const override;
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   QuantizedValue m_time;
 };

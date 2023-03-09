@@ -22,6 +22,8 @@ class FocusAndModeSetting : public Setting
   void setFocusAndModeFreeze(bool state);
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
+
   static FocusAndMode fixFocusAndModeWithAnys(FocusAndMode in);
   static FocusAndMode removeInvalidsFromSound(FocusAndMode in);
 

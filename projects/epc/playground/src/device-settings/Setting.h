@@ -4,6 +4,7 @@
 #include <http/UpdateDocumentContributor.h>
 #include <tools/Signal.h>
 #include "SendReason.h"
+#include <setting_list.h>
 
 class Settings;
 
@@ -28,6 +29,8 @@ class Setting : public UpdateDocumentContributor
   virtual bool persistent() const;
 
   virtual Glib::ustring getDisplayString() const = 0;
+
+  virtual void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) = 0;
 
  protected:
   void notify();

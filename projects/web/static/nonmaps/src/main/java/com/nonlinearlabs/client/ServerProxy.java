@@ -542,6 +542,12 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
+	public void factoryDefaults() {
+		StaticURI.Path path = new StaticURI.Path("settings", "factory-default");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+
 	public static Node getChild(Node node, String... path) {
 		return getChild(node, 0, path);
 	}

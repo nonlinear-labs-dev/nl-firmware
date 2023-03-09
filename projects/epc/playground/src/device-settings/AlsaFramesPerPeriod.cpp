@@ -24,6 +24,12 @@ void AlsaFramesPerPeriod::load(const Glib::ustring &text, Initiator initiator)
   }
 }
 
+void AlsaFramesPerPeriod::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto f = std::get<float>(val);
+  set(static_cast<int>(f));
+}
+
 Glib::ustring AlsaFramesPerPeriod::save() const
 {
   return to_string(m_framesPerPeriod);

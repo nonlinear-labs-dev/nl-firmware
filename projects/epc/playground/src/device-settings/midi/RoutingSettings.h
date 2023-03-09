@@ -25,6 +25,8 @@ class RoutingSettings : public Setting
   void setAllValues(bool value);
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
+
   tData m_data;
   bool sanitizeReceiveHWSourcesAndPC();
 };

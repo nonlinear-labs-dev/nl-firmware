@@ -86,25 +86,30 @@ void EpcWifi::spawn(const std::vector<std::string>& command, std::function<void(
 {
   if constexpr(!isDevelopmentPC)
   {
-    SpawnAsyncCommandLine::spawn(Application::get().getMainContext(), command, onSuccess, [this](const std::string& e) {
-      nltools::Log::error(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
-      m_busy = false;
-    });
+    SpawnAsyncCommandLine::spawn(Application::get().getMainContext(), command, onSuccess,
+                                 [this](const std::string& e)
+                                 {
+                                   nltools::Log::error(__FILE__, __LINE__, __PRETTY_FUNCTION__, e);
+                                   m_busy = false;
+                                 });
   }
 }
 
 void EpcWifi::updateSSID()
 {
-  spawn({ "nmcli", "con", "modify", "C15", "wifi.ssid", m_newSSID }, [this, p = m_newSSID](auto) {
-    m_currentSSID = p;
-    updateCredentials(true);
-  });
+  spawn({ "nmcli", "con", "modify", "C15", "wifi.ssid", m_newSSID },
+        [this, p = m_newSSID](auto)
+        {
+          m_currentSSID = p;
+          updateCredentials(true);
+        });
 }
 
 void EpcWifi::updatePassphrase()
 {
   spawn({ "nmcli", "con", "modify", "C15", "802-11-wireless-security.psk", m_newPassphrase },
-        [this, p = m_newPassphrase](auto) {
+        [this, p = m_newPassphrase](auto)
+        {
           m_currentPassphrase = p;
           updateCredentials(true);
         });
@@ -117,18 +122,22 @@ void EpcWifi::reloadConnection()
 
 void EpcWifi::enableConnection()
 {
-  spawn({ "nmcli", "con", "up", "C15" }, [this](auto) {
-    m_currentEpcWifiState = true;
-    m_busy = false;
-  });
+  spawn({ "nmcli", "con", "up", "C15" },
+        [this](auto)
+        {
+          m_currentEpcWifiState = true;
+          m_busy = false;
+        });
 }
 
 void EpcWifi::disableConnection()
 {
-  spawn({ "nmcli", "con", "down", "C15" }, [this](auto) {
-    m_currentEpcWifiState = false;
-    m_busy = false;
-  });
+  spawn({ "nmcli", "con", "down", "C15" },
+        [this](auto)
+        {
+          m_currentEpcWifiState = false;
+          m_busy = false;
+        });
 }
 
 void EpcWifi::onPassphraseChanged(const Setting* s)
@@ -139,7 +148,7 @@ void EpcWifi::onPassphraseChanged(const Setting* s)
   }
 }
 
-void EpcWifi::onSSIDChanged(const Setting* s)
+void EpcWifi::onSSIDChanged(const DeviceInformationItem* s)
 {
   if(auto ssid = dynamic_cast<const SSID*>(s))
   {

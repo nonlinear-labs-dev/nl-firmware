@@ -4,6 +4,7 @@
 #include <set>
 #include <tools/TimeTools.h>
 #include <glibmm.h>
+#include "nltools/Assert.h"
 
 DeviceName::DeviceName(Settings &parent)
     : super(parent)
@@ -13,6 +14,11 @@ DeviceName::DeviceName(Settings &parent)
 
 DeviceName::~DeviceName()
 {
+}
+
+void DeviceName::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  nltools_detailedAssertAlways(false, "this setting is not defaultable");
 }
 
 void DeviceName::load(const Glib::ustring &text, Initiator initiator)

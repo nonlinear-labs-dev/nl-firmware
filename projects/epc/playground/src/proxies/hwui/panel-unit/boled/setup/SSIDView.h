@@ -12,5 +12,5 @@ class SSIDView : public SetupLabel
   ~SSIDView() override;
 
  private:
-  void onSettingChanged(const Setting *s);
+  void onSettingChanged(const DeviceInformationItem *s);
 };

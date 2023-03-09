@@ -25,7 +25,6 @@
 #include <tools/PerformanceTimer.h>
 #include <proxies/hwui/descriptive-layouts/LayoutFolderMonitor.h>
 #include <nltools/messaging/Message.h>
-#include <device-settings/LayoutMode.h>
 #include <xml/StandardOutStream.h>
 #include <serialization/EditBufferSerializer.h>
 #include <iostream>

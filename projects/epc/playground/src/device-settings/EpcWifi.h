@@ -9,6 +9,7 @@ class SSID;
 class Passphrase;
 class WifiSetting;
 class Setting;
+class DeviceInformationItem;
 
 class EpcWifi : public sigc::trackable
 {
@@ -35,7 +36,7 @@ class EpcWifi : public sigc::trackable
   void updateCredentials(bool _reload);
 
   void onPassphraseChanged(const Setting* s);
-  void onSSIDChanged(const Setting* s);
+  void onSSIDChanged(const DeviceInformationItem* s);
   void onWifiEnabledChanged(const Setting* s);
 
   Glib::ustring m_currentPassphrase, m_newPassphrase;

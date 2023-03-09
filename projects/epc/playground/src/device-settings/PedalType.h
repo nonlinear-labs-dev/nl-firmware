@@ -1,7 +1,6 @@
 #pragma once
 
 #include <nltools/enums/EnumTools.h>
-#include "PedalTypes.h"
 #include "NLEnumSetting.h"
 
 class PedalType : public NLEnumSetting<PedalTypes>

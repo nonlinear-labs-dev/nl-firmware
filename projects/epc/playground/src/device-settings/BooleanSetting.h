@@ -1,12 +1,7 @@
 #pragma once
 
 #include "EnumSetting.h"
-
-enum class BooleanSettings
-{
-  BOOLEAN_SETTING_TRUE = 0,
-  BOOLEAN_SETTING_FALSE = 1
-};
+#include <nltools/Types.h>
 
 class BooleanSetting : public EnumSetting<BooleanSettings>
 {

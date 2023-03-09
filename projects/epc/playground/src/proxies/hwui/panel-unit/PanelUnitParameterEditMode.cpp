@@ -17,7 +17,6 @@
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
 #include "parameters/ParameterFactory.h"
-#include <device-settings/LayoutMode.h>
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <sigc++/sigc++.h>
 #include <parameters/MacroControlSmoothingParameter.h>
@@ -52,88 +51,99 @@ void PanelUnitParameterEditMode::setupFocusAndMode(FocusAndMode focusAndMode)
 
 void PanelUnitParameterEditMode::setup()
 {
-  m_mappings.forEachButton([=](Buttons buttonID, std::list<int> parameterIDs) {
-    std::vector<int> para { parameterIDs.begin(), parameterIDs.end() };
+  m_mappings.forEachButton(
+      [=](Buttons buttonID, std::list<int> parameterIDs)
+      {
+        std::vector<int> para { parameterIDs.begin(), parameterIDs.end() };
 
-    if(buttonID != Buttons::BUTTON_75 && buttonID != Buttons::BUTTON_79 && buttonID != Buttons::BUTTON_83
-       && buttonID != Buttons::BUTTON_87 && buttonID != Buttons::BUTTON_91 && buttonID != Buttons::BUTTON_95)
-      setupButtonConnection(buttonID, createParameterSelectAction(para));
-  });
+        if(buttonID != Buttons::BUTTON_75 && buttonID != Buttons::BUTTON_79 && buttonID != Buttons::BUTTON_83
+           && buttonID != Buttons::BUTTON_87 && buttonID != Buttons::BUTTON_91 && buttonID != Buttons::BUTTON_95)
+          setupButtonConnection(buttonID, createParameterSelectAction(para));
+      });
 
   using namespace C15::PID;
 
-  setupButtonConnection(Buttons::BUTTON_75, [this](auto &&, auto &&, auto &&PH3) {
-    return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_A);
-  });
+  setupButtonConnection(Buttons::BUTTON_75,
+                        [this](auto &&, auto &&, auto &&PH3)
+                        { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_A); });
   FOR_TESTS(assignedAudioIDs.insert(MC_A));
 
-  setupButtonConnection(Buttons::BUTTON_79, [this](auto &&, auto &&, auto &&PH3) {
-    return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_B);
-  });
+  setupButtonConnection(Buttons::BUTTON_79,
+                        [this](auto &&, auto &&, auto &&PH3)
+                        { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_B); });
   FOR_TESTS(assignedAudioIDs.insert(MC_B));
 
-  setupButtonConnection(Buttons::BUTTON_83, [this](auto &&, auto &&, auto &&PH3) {
-    return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_C);
-  });
+  setupButtonConnection(Buttons::BUTTON_83,
+                        [this](auto &&, auto &&, auto &&PH3)
+                        { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_C); });
   FOR_TESTS(assignedAudioIDs.insert(MC_C));
 
-  setupButtonConnection(Buttons::BUTTON_87, [this](auto &&, auto &&, auto &&PH3) {
-    return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_D);
-  });
+  setupButtonConnection(Buttons::BUTTON_87,
+                        [this](auto &&, auto &&, auto &&PH3)
+                        { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_D); });
   FOR_TESTS(assignedAudioIDs.insert(MC_D));
 
-  setupButtonConnection(Buttons::BUTTON_91, [this](auto &&, auto &&, auto &&PH3) {
-    return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_E);
-  });
+  setupButtonConnection(Buttons::BUTTON_91,
+                        [this](auto &&, auto &&, auto &&PH3)
+                        { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_E); });
   FOR_TESTS(assignedAudioIDs.insert(MC_E));
 
-  setupButtonConnection(Buttons::BUTTON_95, [this](auto &&, auto &&, auto &&PH3) {
-    return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_F);
-  });
+  setupButtonConnection(Buttons::BUTTON_95,
+                        [this](auto &&, auto &&, auto &&PH3)
+                        { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_F); });
   FOR_TESTS(assignedAudioIDs.insert(MC_F));
 
-  setupButtonConnection(Buttons::BUTTON_UNDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
-    m_undoStateMachine.traverse(state ? UNDO_PRESSED : UNDO_RELEASED);
-    return false;
-  });
+  setupButtonConnection(Buttons::BUTTON_UNDO,
+                        [&](Buttons button, ButtonModifiers modifiers, bool state)
+                        {
+                          m_undoStateMachine.traverse(state ? UNDO_PRESSED : UNDO_RELEASED);
+                          return false;
+                        });
 
-  setupButtonConnection(Buttons::BUTTON_REDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
-    m_undoStateMachine.traverse(state ? REDO_PRESSED : REDO_RELEASED);
-    return false;
-  });
+  setupButtonConnection(Buttons::BUTTON_REDO,
+                        [&](Buttons button, ButtonModifiers modifiers, bool state)
+                        {
+                          m_undoStateMachine.traverse(state ? REDO_PRESSED : REDO_RELEASED);
+                          return false;
+                        });
 
-  setupButtonConnection(Buttons::BUTTON_SOUND, [&](Buttons button, ButtonModifiers modifiers, bool state) {
-    if(state)
-    {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      auto focusAndMode = Application::get().getSettings()->getSetting<FocusAndModeSetting>()->getState();
-      if(focusAndMode.focus == UIFocus::Sound)
-        if(focusAndMode.mode == UIMode::Edit)
-          useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-        else
-          useCases.setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
-      else
-        useCases.setFocusAndMode(FocusAndMode { UIFocus::Sound });
-    }
+  setupButtonConnection(Buttons::BUTTON_SOUND,
+                        [&](Buttons button, ButtonModifiers modifiers, bool state)
+                        {
+                          if(state)
+                          {
+                            SettingsUseCases useCases(*Application::get().getSettings());
+                            auto focusAndMode
+                                = Application::get().getSettings()->getSetting<FocusAndModeSetting>()->getState();
+                            if(focusAndMode.focus == UIFocus::Sound)
+                              if(focusAndMode.mode == UIMode::Edit)
+                                useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+                              else
+                                useCases.setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
+                            else
+                              useCases.setFocusAndMode(FocusAndMode { UIFocus::Sound });
+                          }
 
-    return true;
-  });
+                          return true;
+                        });
 
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::mem_fun(this, &PanelUnitParameterEditMode::onParamSelectionChanged),
       Application::get().getVGManager()->getCurrentVoiceGroup());
 
-  Application::get().getMainContext()->signal_idle().connect_once([=]() {
-    auto hwui = Application::get().getHWUI();
-    auto &panelUnit = hwui->getPanelUnit();
-    auto &famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+  Application::get().getMainContext()->signal_idle().connect_once(
+      [=]()
+      {
+        auto hwui = Application::get().getHWUI();
+        auto &panelUnit = hwui->getPanelUnit();
+        auto &famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
 
-    if(panelUnit.getUsageMode().get() == this)
-    {
-      panelUnit.getEditPanel().getBoled().setupFocusAndMode(famSetting.getState());
-      bruteForceUpdateLeds();
-    }
-  });
+        if(panelUnit.getUsageMode().get() == this)
+        {
+          panelUnit.getEditPanel().getBoled().setupFocusAndMode(famSetting.getState());
+          bruteForceUpdateLeds();
+        }
+      });
 }
 
 bool PanelUnitParameterEditMode::handleMacroControlButton(bool state, int mcParamId)
@@ -391,35 +401,23 @@ bool PanelUnitParameterEditMode::setParameterSelection(const ParameterId &audioI
 
 bool PanelUnitParameterEditMode::isShowingParameterScreen() const
 {
-  auto settingValue = Application::get().getSettings()->getSetting<LayoutMode>()->get();
   auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout().get();
 
-  if(settingValue == LayoutVersionMode::Old)
+  if(auto genericLayout = dynamic_cast<DescriptiveLayouts::GenericLayout *>(currentLayout))
+  {
+    auto &prototype = genericLayout->getPrototype();
+    if(prototype.getDesiredFocusAndMode().focus == UIFocus::Parameters)
+    {
+      return prototype.getDesiredFocusAndMode().mode == UIMode::Select;
+    }
+  }
+  else
   {
     if(dynamic_cast<ParameterLayout2 *>(currentLayout))
       return true;
 
     if(dynamic_cast<ParameterInfoLayout *>(currentLayout))
       return true;
-  }
-  else if(settingValue == LayoutVersionMode::New || settingValue == LayoutVersionMode::Mixed)
-  {
-    if(auto genericLayout = dynamic_cast<DescriptiveLayouts::GenericLayout *>(currentLayout))
-    {
-      auto &prototype = genericLayout->getPrototype();
-      if(prototype.getDesiredFocusAndMode().focus == UIFocus::Parameters)
-      {
-        return prototype.getDesiredFocusAndMode().mode == UIMode::Select;
-      }
-    }
-    else
-    {
-      if(dynamic_cast<ParameterLayout2 *>(currentLayout))
-        return true;
-
-      if(dynamic_cast<ParameterInfoLayout *>(currentLayout))
-        return true;
-    }
   }
   return false;
 }

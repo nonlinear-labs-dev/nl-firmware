@@ -2,6 +2,7 @@
 #include "Settings.h"
 #include <xml/Writer.h>
 #include <xml/Attribute.h>
+#include <setting_list.h>
 
 Setting::Setting(UpdateDocumentContributor &parent)
     : super(&parent)

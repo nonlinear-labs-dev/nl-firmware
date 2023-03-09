@@ -7,11 +7,13 @@
 
 class DeviceInformationItem;
 class PlaycontrollerProxy;
+class HardwareFeatures;
 
 class DeviceInformation : public ContentSection
 {
  public:
-  explicit DeviceInformation(UpdateDocumentContributor *parent, PlaycontrollerProxy &pcp);
+  explicit DeviceInformation(UpdateDocumentContributor *parent, PlaycontrollerProxy &pcp,
+                             const HardwareFeatures &hwFeatures);
   virtual ~DeviceInformation();
 
   virtual void handleHTTPRequest(std::shared_ptr<NetworkRequest> request, const Glib::ustring &path) override;

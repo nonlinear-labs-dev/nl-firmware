@@ -1,17 +1,19 @@
 #pragma once
 #include <thread>
-#include "Setting.h"
 #include <nltools/threading/Throttler.h>
+#include <device-info/DeviceInformationItem.h>
 
-class UsedRAM : public Setting, public sigc::trackable
+class DeviceInformation;
+
+class UsedRAM : public DeviceInformationItem, public sigc::trackable
 {
  public:
-  explicit UsedRAM(UpdateDocumentContributor& parent);
-  void load(const Glib::ustring& text, Initiator initiator) override;
-  Glib::ustring save() const override;
+  explicit UsedRAM(DeviceInformation* parent);
+  void load(const Glib::ustring& text);
+
   Glib::ustring getDisplayString() const override;
-  bool persistent() const override;
-  void init() override;
+  Glib::ustring get() const override;
+  void writeDocument(Writer& writer, tUpdateID knownRevision) const override;
 
  private:
   Glib::ustring m_displayString;

@@ -25,6 +25,7 @@ class DeviceName : public Setting
   const Glib::ustring &get() const;
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   Settings &m_settings;
   Glib::ustring m_name;
 };

@@ -18,6 +18,7 @@ class TuneReference : public Setting
   Glib::ustring getName() const;
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   void writeDocument(Writer& writer, tUpdateID knownRevision) const override;
 
   QuantizedValue m_value;

@@ -4,6 +4,7 @@ import { generateOutputFile } from "./yaml";
 import { ConfigType, ConfigParser } from "./tasks/config";
 import { DeclarationsType, DeclarationsParser } from "./tasks/declarations";
 import { DefinitionsType, SignalType, ParameterType, DefinitionsParser } from "./tasks/definitions";
+import { Settings, SettingType, SettingParser } from "./tasks/settings";
 
 // yaml parsing result type
 type Result = ConfigType & DeclarationsType & {
@@ -21,6 +22,8 @@ type Result = ConfigType & DeclarationsType & {
     parameter_groups: string;
     get_parameter_ids: string;
     storage: string;
+    settings: Settings;
+    setting_list: string;
 };
 
 type ParamType = {
@@ -411,6 +414,43 @@ function processDefinitions(result: Result) {
     }).join("\n");
 }
 
+function processSettings(result: Result) {
+    const err = "processSettings error:";
+    result.setting_list = Object.entries(result.settings).reduce((out, [key, props]) => {
+        const ret = [`"${key}"`];
+        if(props.default !== undefined) {
+            const str = props.default.toString();
+            switch(props.default.constructor.name) {
+                case "Number":
+                    if(Number.isSafeInteger(props.default)) ret.push((props.default as number).toFixed(1) + "f");
+                    else ret.push(str + "f");
+                    break;
+                case "String":
+                    if(str.includes("::") || str.includes("/")) {
+                        // unquoted variants: enums or float divisions
+                        ret.push(str);
+                    } else {
+                        // real quoted strings
+                        ret.push(`"${str.trim().replace(/\n/g, "\\n")}"`);
+                    }
+                    break;
+                default: throw new Error(`${err} unknown DefaultValue type in Setting "${key}"`);
+            }
+            // a scaled setting should have a default value
+            if(props.display !== undefined) {
+                const { scale, coarse, fine } = props.display;
+                if(result.declarations.display_scaling_type[scale] === undefined)
+                    throw new Error(`${err} unknown DisplayScalingType "${scale}"`);
+                if(!ret[1].endsWith("f"))
+                    throw new Error(`${err} invalid default value type (${props.default.constructor.name}) for DisplayScalingType`);
+                ret.push(`{ Properties::DisplayScalingType::${scale}, ${coarse}, ${fine} }`);
+            }
+        }
+        out.push(`{ ${ret.join(", ")} }`);
+        return out;
+    }, []).join(",\n");
+}
+
 function generateOverview(result: Result, sourceDir: string, outDir: string) {
     const
         { timestamp, config } = result,
@@ -490,9 +530,10 @@ function main(outDir: string, sourceDir: string) {
         result: Result = {
             timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "",
             parameter_list: "", parameter_units: "", display_scaling_types: "", parameter_groups: "",
-            get_parameter_ids: "", storage: "",
+            get_parameter_ids: "", storage: "", setting_list: "",
             ...ConfigParser.parse(sourceDir + "/src/c15_config.yaml"),
             ...DeclarationsParser.parse(sourceDir + "/src/parameter_declarations.yaml"),
+            settings: SettingParser.parse(sourceDir + "/src/settings.yaml"),
             definitions: DefinitionsParser.parseAll(...definitions).map((definition, index) => {
                 return { ...definition, filename: definitions[index] }
             })
@@ -514,8 +555,10 @@ function main(outDir: string, sourceDir: string) {
             Object.assign(result.declarations.parameter_group[groupName], {index});
         }
     });
-    // processing of parsed yaml (sanity checks, enum sorting/filtering, providing strings for replacements)
+    // processing of parsed yaml, parameters (sanity checks, enum sorting/filtering, providing strings for replacements)
     processDefinitions(result);
+    // processing of parsed yaml, settings
+    processSettings(result);
     // transformations of ./src/*.in.* files into usable resources in ./generated via string replacements
     replaceResultInFiles(
         result,
@@ -528,6 +571,7 @@ function main(outDir: string, sourceDir: string) {
         sourceDir + "/src/parameter_descriptor.h.in",
         sourceDir + "/src/display_scaling_type.h.in",
         sourceDir + "/src/parameter_group.h.in",
+        sourceDir + "/src/setting_list.h.in",
         sourceDir + "/src/main.cpp.in",
         // transformations not covered by g++ and therefore unsafe
         sourceDir + "/src/placeholder.h.in",
@@ -551,8 +595,8 @@ function createDirectorys(dir) {
 try {
     const myArgs = process.argv.slice(1)
     const sourceDirectoryParts = myArgs[0].split("/");
-    sourceDirectoryParts.pop()
-    sourceDirectoryParts.pop()
+    sourceDirectoryParts.pop();
+    sourceDirectoryParts.pop();
     const sourceDirectoryPath = "/" + sourceDirectoryParts.join("/");
     const outDirectory = myArgs[1]
     createDirectorys(outDirectory);

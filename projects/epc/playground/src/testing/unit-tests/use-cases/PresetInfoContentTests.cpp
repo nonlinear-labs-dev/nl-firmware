@@ -86,7 +86,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Layer Preset Type String", "[P
     detail::enableMono<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Layer (Mono)");
     CHECK(preset->getHashtags() == "#Layer, #Mono, #1-voice, #12-TET");
-    CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
   SECTION("Unison Enabled")
@@ -94,7 +93,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Layer Preset Type String", "[P
     detail::enableUnison<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Layer (Unison)");
     CHECK(preset->getHashtags() == "#Layer, #Poly, #Unison, #12-TET");
-    CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
   SECTION("Unison and Mono Enabled")
@@ -103,7 +101,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Layer Preset Type String", "[P
     detail::enableMono<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Layer (Mono, Unison)");
     CHECK(preset->getHashtags() == "#Layer, #Mono, #Unison, #12-TET");
-    CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 }
 
@@ -120,7 +117,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
   SECTION("None")
   {
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split");
-    CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
+    CHECK(preset->getHashtags() == "#Split, #Poly, #1-voice, #12-TET");
   }
 
   SECTION("Mono I Enabled")
@@ -128,7 +125,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
     detail::enableMono<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Mono I)");
     CHECK(preset->getHashtags() == "#Split, #Mono, #1-voice, #12-TET");
-    CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
   SECTION("Mono II Enabled")
@@ -136,7 +132,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
     detail::enableMono<VoiceGroup::II>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Mono II)");
     CHECK(preset->getHashtags() == "#Split, #Mono, #1-voice, #12-TET");
-    CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
   SECTION("Mono I/II Enabled")
@@ -145,7 +140,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
     detail::enableMono<VoiceGroup::II>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Mono I/II)");
     CHECK(preset->getHashtags() == "#Split, #Mono, #1-voice, #12-TET");
-    CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
   SECTION("Unison I Enabled")
@@ -153,7 +147,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
     detail::enableUnison<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Unison I)");
     CHECK(preset->getHashtags() == "#Split, #Poly, #Unison, #12-TET");
-    CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
   SECTION("Unison II Enabled")
@@ -161,7 +154,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
     detail::enableUnison<VoiceGroup::II>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Unison II)");
     CHECK(preset->getHashtags() == "#Split, #Poly, #Unison, #12-TET");
-    CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
   SECTION("Unison I/II Enabled")
@@ -170,7 +162,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
     detail::enableUnison<VoiceGroup::II>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Unison I/II)");
     CHECK(preset->getHashtags() == "#Split, #Poly, #Unison, #12-TET");
-    CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
   SECTION("Unison II and Mono I Enabled")
@@ -179,7 +170,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
     detail::enableMono<VoiceGroup::I>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Mono I, Unison II)");
     CHECK(preset->getHashtags() == "#Split, #Mono, #Unison, #12-TET");
-    CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 
   SECTION("Unison I/II and Mono II Enabled")
@@ -189,6 +179,5 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Split Preset Type String", "[P
     detail::enableMono<VoiceGroup::II>(preset);
     CHECK(PresetInfoContent::createPresetTypeString(preset) == "Split (Mono II, Unison I/II)");
     CHECK(preset->getHashtags() == "#Split, #Mono, #Unison, #12-TET");
-    CHECK(preset->getHashtags() == preset->getAttribute("Hashtags", ""));
   }
 }

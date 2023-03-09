@@ -103,11 +103,12 @@ Application::Application(int numArgs, char **argv)
     , m_voiceGroupManager(std::make_unique<VoiceGroupAndLoadToPartManager>(*m_presetManager->getEditBuffer()))
     , m_watchDog(new WatchDog)
     , m_aggroWatchDog(new WatchDog)
-    , m_deviceInformation(new DeviceInformation(m_http->getUpdateDocumentMaster(), *m_playcontrollerProxy))
+    , m_deviceInformation(
+          new DeviceInformation(m_http->getUpdateDocumentMaster(), *m_playcontrollerProxy, *m_hwFeatures))
     , m_clipboard(new Clipboard(m_http->getUpdateDocumentMaster()))
     , m_usbChangeListener(std::make_unique<USBChangeListener>())
     , m_webUISupport(std::make_unique<WebUISupport>(m_http->getUpdateDocumentMaster()))
-    , m_epcWifiManager(new EpcWifi(*m_hwFeatures, *m_settings->getSetting<SSID>(),
+    , m_epcWifiManager(new EpcWifi(*m_hwFeatures, *m_deviceInformation->getItem<SSID>(),
                                    *m_settings->getSetting<Passphrase>(), *m_settings->getSetting<WifiSetting>()))
     , m_actionManagers(m_http->getUpdateDocumentMaster(), *m_presetManager, *m_audioEngineProxy, *m_hwui, *m_settings,
                        *m_voiceGroupManager)
@@ -122,10 +123,12 @@ Application::Application(int numArgs, char **argv)
   m_settings->init();
   m_hwui->init();
   m_http->init();
-  m_presetManager->init(m_audioEngineProxy.get(), *m_settings, [this](auto str) {
-    SplashScreenUseCases ssuc(*m_hwui, *m_settings);
-    ssuc.addSplashScreenMessage(str);
-  });
+  m_presetManager->init(m_audioEngineProxy.get(), *m_settings,
+                        [this](auto str)
+                        {
+                          SplashScreenUseCases ssuc(*m_hwui, *m_settings);
+                          ssuc.addSplashScreenMessage(str);
+                        });
 
   m_hwui->getBaseUnit().getPlayPanel().getSOLED().resetSplash();
   m_voiceGroupManager->init();
@@ -233,21 +236,24 @@ void Application::runWatchDog()
 
   if(m_aggroWatchDog)
   {
-    m_aggroWatchDog->run(std::chrono::milliseconds(250), [=](int numWarning, int inactiveFoMS) {
-      DebugLevel::warning("Aggro WatchDog was inactive for ", inactiveFoMS, "ms. Warning #", numWarning);
+    m_aggroWatchDog->run(std::chrono::milliseconds(250),
+                         [=](int numWarning, int inactiveFoMS)
+                         {
+                           DebugLevel::warning("Aggro WatchDog was inactive for ", inactiveFoMS, "ms. Warning #",
+                                               numWarning);
 
 #ifdef _PROFILING
-      Profiler::get().printAllCallstacks();
+                           Profiler::get().printAllCallstacks();
 #endif
 
-      if(auto h = getHWUI())
-      {
-        if(getSettings()->getSetting<BlockingMainThreadIndication>()->get())
-        {
-          h->indicateBlockingMainThread();
-        }
-      }
-    });
+                           if(auto h = getHWUI())
+                           {
+                             if(getSettings()->getSetting<BlockingMainThreadIndication>()->get())
+                             {
+                               h->indicateBlockingMainThread();
+                             }
+                           }
+                         });
   }
 }
 

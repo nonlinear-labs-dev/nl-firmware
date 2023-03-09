@@ -14,11 +14,17 @@ RandomizeAmount::~RandomizeAmount()
 {
 }
 
+void RandomizeAmount::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto f = std::get<float>(val);
+  set(static_cast<double>(f));
+}
+
 void RandomizeAmount::load(const Glib::ustring &text, Initiator initiator)
 {
   try
   {
-    set(std::stof(text));
+    set(std::stod(text));
   }
   catch(...)
   {

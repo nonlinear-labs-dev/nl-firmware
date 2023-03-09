@@ -2,8 +2,7 @@
 #include <nltools/enums/EnumTools.h>
 #include "EpcWifi.h"
 #include "NLEnumSetting.h"
-
-ENUM(WifiSettings, int, Disabled, Enabled)
+#include <nltools/Types.h>
 
 class WifiSetting : public NLEnumSetting<WifiSettings>, public sigc::trackable
 {

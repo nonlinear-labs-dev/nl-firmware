@@ -1,0 +1,199 @@
+%YAML 1.2
+%TAG ! tag:nonlinear-labs.de,2022:js-yaml:
+--- !settings
+
+DirectLoad:
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
+
+SendPresetAsLPCWriteFallback:
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
+
+PresetStoreModeSetting:
+    default: PresetStoreModeSettings::PRESET_STORE_MODE_INSERT
+
+BaseUnitUIMode:
+    default: BaseUnitUIModes::Play
+
+BaseUnitUIDetail:
+    default: BaseUnitUIDetails::RibbonSelect
+
+PanelUnitFocusAndMode: {}
+
+NoteShift:
+    default: 0
+
+ParameterEditModeRibbonBehaviour:
+    default: ParameterEditModeRibbonBehaviours::PARAMETER_EDIT_MODE_RIBBON_BEHAVIOUR_RELATIVE
+
+DebugLevel:
+    default: DebugLevels::DEBUG_LEVEL_WARNING
+
+VelocityCurve:
+    default: VelocityCurves::VELOCITY_CURVE_NORMAL
+
+DeviceName: {}
+
+PresetDragDropEnabled:
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
+
+TransitionTime:
+    default: 0.0
+    display: { scale: ENVELOPE_TIME_MS, coarse: 100, fine: 1000 }
+
+RandomizeAmount:
+    default: 0.1
+    display: { scale: LINEAR_100_PERCENT, coarse: 100, fine: 1000 }
+
+RibbonRelFactor:
+    default: 0.5
+    display: { scale: RIBBON_RELATIVE_FACTOR, coarse: 90, fine: 90 }
+
+Pedal1Type:
+    default: PedalTypes::PotTipActive
+
+Pedal2Type:
+    default: PedalTypes::PotTipActive
+
+Pedal3Type:
+    default: PedalTypes::PotTipActive
+
+Pedal4Type:
+    default: PedalTypes::PotTipActive
+
+EncoderAcceleration:
+    default: 0.55
+    display: { scale: LINEAR_100_PERCENT, coarse: 100, fine: 1000 }
+
+AftertouchCurve:
+    default: AftertouchCurves::AFTERTOUCH_CURVE_NORMAL
+
+BenderCurve:
+    default: BenderCurves::Normal
+
+EditSmoothingTime:
+    default: 0.0
+    display: { scale: LINEAR_200_MS, coarse: 100, fine: 1000 }
+
+Passphrase:
+    default: "88888888"
+
+WifiSetting:
+    default: WifiSettings::Enabled
+
+PresetGlitchSuppression:
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
+
+DateTimeAdjustment:
+    default: 0
+
+SignalFlowIndication:
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
+
+IndicateBlockedUI:
+    default: BooleanSettings::BOOLEAN_SETTING_FALSE
+
+HighlightChangedParameters:
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
+
+ForceHighlightChangedParameters:
+    default: BooleanSettings::BOOLEAN_SETTING_FALSE
+
+CrashOnError:
+    default: BooleanSettings::BOOLEAN_SETTING_FALSE
+
+TuneReference:
+    default: 0.5
+    display: { scale: LINEAR_400_480_HZ, coarse: 100, fine: 1000 }
+
+SyncVoiceGroups:
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
+
+ScreenSaverTimeout:
+    default: 5
+
+SyncSplit:
+    default: on
+
+ReceiveChannel:
+    default: MidiReceiveChannel::Omni
+
+ReceiveChannelSplit:
+    default: MidiReceiveChannelSplit::Common
+
+SendChannel:
+    default: MidiSendChannel::CH_1
+
+SendChannelSplit:
+    default: MidiSendChannelSplit::CH_2
+
+ReceiveAftertouchCurve:
+    default: AftertouchCurves::AFTERTOUCH_CURVE_NORMAL
+
+ReceiveVelocityCurve:
+    default: VelocityCurves::VELOCITY_CURVE_NORMAL
+
+HighResCC:
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
+
+Pedal1Mapping:
+    default: PedalCC::CC20
+
+Pedal2Mapping:
+    default: PedalCC::CC21
+
+Pedal3Mapping:
+    default: PedalCC::CC22
+
+Pedal4Mapping:
+    default: PedalCC::CC23
+
+Ribbon1Mapping:
+    default: RibbonCC::CC24
+
+Ribbon2Mapping:
+    default: RibbonCC::CC25
+
+Ribbon3Mapping:
+    default: RibbonCC::CC26
+
+Ribbon4Mapping:
+    default: RibbonCC::CC27
+
+BenderMapping:
+    default: BenderCC::Pitchbend
+
+AftertouchMapping:
+    default: AftertouchCC::ChannelPressure
+
+HighVeloCC:
+    default: BooleanSettings::BOOLEAN_SETTING_FALSE
+
+AutoStartRecorder:
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
+
+RoutingSettings:
+    default: |
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1,
+        1,1,1,1,1
+
+GlobalLocalEnable:
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
+
+AlsaFramesPerPeriod:
+    default: 16
+
+FlacRecorderVirgin:
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
+
+AftertouchLegacyMode:
+    default: BooleanSettings::BOOLEAN_SETTING_FALSE
