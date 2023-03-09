@@ -334,10 +334,6 @@ public class Overlay extends OverlayLayout {
 			partMuteDisplayII.doLayout(soundTypeDisplayPos.getCenterPoint().getX() - 1,
 					soundTypeDisplayPos.getCenterPoint().getY() - muteYMargin, muteHeight, muteHeight);			
 		}
-		else
-		{
-
-		}
 
 
 		Rect monoI = soundTypeDisplay.getSingleSoundFXRect(VoiceGroup.I);
