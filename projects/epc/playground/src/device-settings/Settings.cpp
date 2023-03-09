@@ -234,7 +234,6 @@ void Settings::sanitize()
 
 void Settings::addSetting(const Glib::ustring &key, Setting *s)
 {
-  s->setKey(key);
   m_settings[key] = tSettingPtr(s);
 }
 

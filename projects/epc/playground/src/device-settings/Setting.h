@@ -21,9 +21,6 @@ class Setting : public UpdateDocumentContributor
   virtual void setSetting(Initiator initiator, const Glib::ustring &text);
   virtual void load(const Glib::ustring &text, Initiator initiator) = 0;
   virtual Glib::ustring save() const = 0;
-  Glib::ustring getKey() const;
-  void setKey(const Glib::ustring &key);
-  void loadDefault();
 
   sigc::connection onChange(sigc::slot<void, const Setting *> slot);
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
@@ -33,12 +30,11 @@ class Setting : public UpdateDocumentContributor
 
   virtual Glib::ustring getDisplayString() const = 0;
 
+  virtual void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) = 0;
+
  protected:
   void notify();
 
  private:
-  virtual void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) = 0;
-
-  Glib::ustring m_key = "";
   Signal<void, const Setting *> m_signal;
 };

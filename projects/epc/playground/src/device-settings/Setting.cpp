@@ -50,34 +50,3 @@ void Setting::setSetting(Initiator initiator, const Glib::ustring &text)
 {
   load(text, initiator);
 }
-
-Glib::ustring Setting::getKey() const
-{
-  return m_key;
-}
-
-void Setting::setKey(const Glib::ustring &key)
-{
-  m_key = key;
-}
-
-void Setting::loadDefault()
-{
-  for(const auto &entry : C15::SettingList)
-  {
-    if(entry.m_key == m_key)
-    {
-      if(entry.m_default_value.has_value())
-      {
-        try
-        {
-          loadDefaultValue(entry.m_default_value.value());
-        }
-        catch(const std::bad_variant_access &ex)
-        {
-          nltools::Log::error(ex.what());
-        }
-      }
-    }
-  }
-}
