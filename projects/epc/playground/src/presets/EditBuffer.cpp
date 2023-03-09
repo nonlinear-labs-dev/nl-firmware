@@ -53,6 +53,17 @@ EditBuffer::EditBuffer(PresetManager *parent, Settings &settings, std::unique_pt
   m_hashOnStore = getHash();
 }
 
+void EditBuffer::updateRibbonsFromBoundMacros()
+{
+  for(auto param : getParameterGroupByID({ "MCs", VoiceGroup::Global })->getParameters())
+  {
+    if(auto mcParam = dynamic_cast<MacroControlParameter *>(param))
+    {
+      mcParam->updateBoundRibbon();
+    }
+  }
+}
+
 void EditBuffer::init(Settings *settings)
 {
   ParameterGroupSet::init(settings);
@@ -73,12 +84,15 @@ void EditBuffer::resetReturningParametersOnFocusAndModeChange(const Setting *s)
     auto state = famSetting->getState();
     if(state.focus != UIFocus::Parameters)
     {
-      getParameterGroupByID({ "CS", VoiceGroup::Global })->forEachParameter([](auto parameter) {
-        if(auto hw = dynamic_cast<PhysicalControlParameter *>(parameter))
-        {
-          hw->resetChangedFromHWUIPosition();
-        }
-      });
+      getParameterGroupByID({ "CS", VoiceGroup::Global })
+          ->forEachParameter(
+              [](auto parameter)
+              {
+                if(auto hw = dynamic_cast<PhysicalControlParameter *>(parameter))
+                {
+                  hw->resetChangedFromHWUIPosition();
+                }
+              });
     }
   }
 }
@@ -147,15 +161,17 @@ void EditBuffer::resetModifiedIndicator(UNDO::Transaction *transaction, size_t h
 {
   auto swap = UNDO::createSwapData(false, hash);
 
-  transaction->addSimpleCommand([=](UNDO::Command::State) {
-    auto oldState = m_isModified;
+  transaction->addSimpleCommand(
+      [=](UNDO::Command::State)
+      {
+        auto oldState = m_isModified;
 
-    swap->swapWith<0>(m_isModified);
-    swap->swapWith<1>(m_hashOnStore);
+        swap->swapWith<0>(m_isModified);
+        swap->swapWith<1>(m_hashOnStore);
 
-    if(oldState != m_isModified)
-      m_signalModificationState.send(m_isModified);
-  });
+        if(oldState != m_isModified)
+          m_signalModificationState.send(m_isModified);
+      });
 }
 
 bool EditBuffer::isModified() const
@@ -381,25 +397,27 @@ void EditBuffer::undoableSelectParameter(UNDO::Transaction *transaction, Paramet
 
     p->resetWasDefaulted(transaction);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      auto oldSelection = m_lastSelectedParameter;
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          auto oldSelection = m_lastSelectedParameter;
 
-      swapData->swapWith(m_lastSelectedParameter);
-      incomingMCSwapData->swapWith(m_lastSelectedMacroControl);
+          swapData->swapWith(m_lastSelectedParameter);
+          incomingMCSwapData->swapWith(m_lastSelectedMacroControl);
 
-      auto oldP = findParameterByID(oldSelection);
-      auto newP = findParameterByID(m_lastSelectedParameter);
+          auto oldP = findParameterByID(oldSelection);
+          auto newP = findParameterByID(m_lastSelectedParameter);
 
-      m_signalSelectedParameter.send(oldP, newP);
+          m_signalSelectedParameter.send(oldP, newP);
 
-      if(oldP)
-        oldP->onUnselected();
+          if(oldP)
+            oldP->onUnselected();
 
-      if(newP)
-        newP->onSelected();
+          if(newP)
+            newP->onSelected();
 
-      onChange();
-    });
+          onChange();
+        });
   }
   else if(sendReselectionSignal)
   {
@@ -484,7 +502,8 @@ void EditBuffer::writeDocument(Writer &writer, tUpdateID knownRevision) const
         Attribute("origin-I", getAttribute("origin-I", "")), Attribute("origin-II", getAttribute("origin-II", "")),
         Attribute("origin-I-vg", getAttribute("origin-I-vg", "")),
         Attribute("origin-II-vg", getAttribute("origin-II-vg", "")) },
-      [&]() {
+      [&]()
+      {
         if(changed)
           super::writeDocument(writer, knownRevision);
         m_recallSet.writeDocument(writer, knownRevision);
@@ -576,12 +595,14 @@ void EditBuffer::undoableSetLoadedPresetInfo(UNDO::Transaction *transaction, con
 
   auto swap = UNDO::createSwapData(std::move(newId), std::move(presetOriginDescription));
 
-  transaction->addSimpleCommand([=](auto) {
-    swap->swapWith<0>(m_lastLoadedPreset);
-    swap->swapWith<1>(m_presetOriginDescription);
-    sendPresetLoadSignal();
-    onChange();
-  });
+  transaction->addSimpleCommand(
+      [=](auto)
+      {
+        swap->swapWith<0>(m_lastLoadedPreset);
+        swap->swapWith<1>(m_presetOriginDescription);
+        sendPresetLoadSignal();
+        onChange();
+      });
 
   if(resetRecall)
     initRecallValues(transaction);
@@ -619,11 +640,13 @@ void EditBuffer::undoableInitSound(UNDO::Transaction *transaction, Defaults mode
     undoableInitPart(transaction, vg, mode);
 
   auto swap = UNDO::createSwapData(Uuid::init());
-  transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-    swap->swapWith(m_lastLoadedPreset);
-    sendPresetLoadSignal();
-    onChange();
-  });
+  transaction->addSimpleCommand(
+      [=](UNDO::Command::State) mutable
+      {
+        swap->swapWith(m_lastLoadedPreset);
+        sendPresetLoadSignal();
+        onChange();
+      });
 
   resetModifiedIndicator(transaction);
 
@@ -724,12 +747,14 @@ void EditBuffer::undoableSetType(UNDO::Transaction *transaction, SoundType type)
 
     cleanupParameterSelectionOnSoundTypeChange(transaction, m_type, type);
 
-    transaction->addSimpleCommand([=](auto state) {
-      swap->swapWith(m_type);
-      initUnisonVoicesScaling(m_type);
-      m_signalTypeChanged.send(m_type);
-      onChange();
-    });
+    transaction->addSimpleCommand(
+        [=](auto state)
+        {
+          swap->swapWith(m_type);
+          initUnisonVoicesScaling(m_type);
+          m_signalTypeChanged.send(m_type);
+          onChange();
+        });
   }
 }
 
@@ -1019,13 +1044,15 @@ void EditBuffer::undoableSetTypeFromConvert(UNDO::Transaction *transaction, Soun
 
     cleanupParameterSelectionOnSoundTypeChange(transaction, m_type, type);
 
-    transaction->addSimpleCommand([=](auto state) {
-      swap->swapWith(m_type);
-      initUnisonVoicesScaling(m_type);
-      m_signalTypeChanged.send(m_type);
-      m_signalConversionHappened.send(m_type);
-      onChange();
-    });
+    transaction->addSimpleCommand(
+        [=](auto state)
+        {
+          swap->swapWith(m_type);
+          initUnisonVoicesScaling(m_type);
+          m_signalTypeChanged.send(m_type);
+          m_signalConversionHappened.send(m_type);
+          onChange();
+        });
   }
 }
 

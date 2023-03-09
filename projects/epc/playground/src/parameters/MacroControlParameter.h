@@ -67,11 +67,11 @@ class MacroControlParameter : public Parameter
   void updateMCViewsFromMCChange(const Initiator &initiator);
   bool isChangedFromLoaded() const override;
   bool hasRelativeRibbonAsSource() const;
+  void updateBoundRibbon();
 
  private:
   friend class MacroControlParameterUseCases;
 
-  void updateBoundRibbon();
   void onValueFineQuantizedChanged(Initiator initiator, tControlPositionValue oldValue,
                                    tControlPositionValue newValue) override;
 
