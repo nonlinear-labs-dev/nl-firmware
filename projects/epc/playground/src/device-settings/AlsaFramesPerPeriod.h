@@ -22,6 +22,6 @@ class AlsaFramesPerPeriod : public Setting
  private:
   void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
 
-  constexpr static int c_defaultFramesPerPeriod = 0;
+  constexpr static int c_defaultFramesPerPeriod = 16;
   int m_framesPerPeriod = c_defaultFramesPerPeriod;
 };

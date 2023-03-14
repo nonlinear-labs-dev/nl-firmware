@@ -38,7 +38,7 @@ void RoutingSettings::load(const Glib::ustring& text, Initiator initiator)
       {
         try
         {
-          m_data.at(idx).at(settingIdx) = map.at(settingIdx) == "1";
+          setState(static_cast<tRoutingIndex>(idx), static_cast<tAspectIndex>(settingIdx), map.at(settingIdx) == "1");
         }
         catch(...)
         {
@@ -52,7 +52,7 @@ void RoutingSettings::load(const Glib::ustring& text, Initiator initiator)
     }
   }
 
-  if(initiator == Initiator::EXPLICIT_LOAD)
+  if(initiator == Initiator::EXPLICIT_LOAD || initiator == Initiator::EXPLICIT_USECASE)
   {
     sanitizeReceiveHWSourcesAndPC();
   }

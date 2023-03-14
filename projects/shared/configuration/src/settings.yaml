@@ -71,7 +71,7 @@ BenderCurve:
     default: BenderCurves::Normal
 
 EditSmoothingTime:
-    default: 0.0
+    default: 0.1
     display: { scale: LINEAR_200_MS, coarse: 100, fine: 1000 }
 
 Passphrase:
@@ -172,19 +172,24 @@ AutoStartRecorder:
     default: BooleanSettings::BOOLEAN_SETTING_TRUE
 
 RoutingSettings:
+    # Program Changes and HW Sources can exclusively either receive primary or secondary (but not both)
+    # comma-and line-separated table of values
+        # column structure: Send_Primary, Receive_Primary, Send_Secondary, Receive_Secondary, Local
+        # row structure: Pedal1, Pedal2, Pedal3, Pedal4, Bender, Aftertouch, Ribbon1, Ribbon2, ProgramChange, Notes, Ribbon3, Ribbon4
+        # values: 0 - off, 1 - on
     default: |
+        1,1,1,0,1,
+        1,1,1,0,1,
+        1,1,1,0,1,
+        1,1,1,0,1,
+        1,1,1,0,1,
+        1,1,1,0,1,
+        1,1,1,0,1,
+        1,1,1,0,1,
+        1,1,1,0,1,
         1,1,1,1,1,
-        1,1,1,1,1,
-        1,1,1,1,1,
-        1,1,1,1,1,
-        1,1,1,1,1,
-        1,1,1,1,1,
-        1,1,1,1,1,
-        1,1,1,1,1,
-        1,1,1,1,1,
-        1,1,1,1,1,
-        1,1,1,1,1,
-        1,1,1,1,1
+        1,1,1,0,1,
+        1,1,1,0,1
 
 GlobalLocalEnable:
     default: BooleanSettings::BOOLEAN_SETTING_TRUE
