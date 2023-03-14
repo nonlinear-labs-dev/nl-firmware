@@ -37,7 +37,7 @@ Glib::ustring AlsaFramesPerPeriod::save() const
 
 void AlsaFramesPerPeriod::set(int fpp)
 {
-  fpp = std::clamp(fpp, 0, 512);
+  fpp = std::clamp(fpp, 1, 512);
 
   if(std::exchange(m_framesPerPeriod, fpp) != fpp)
     notify();
