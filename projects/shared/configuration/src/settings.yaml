@@ -72,7 +72,7 @@ BenderCurve:
 
 EditSmoothingTime:
     default: 0.1
-    display: { scale: LINEAR_200_MS, coarse: 100, fine: 1000 }
+    display: { scale: LINEAR_2000_MS, coarse: 100, fine: 1000 }
 
 Passphrase:
     default: "88888888"
