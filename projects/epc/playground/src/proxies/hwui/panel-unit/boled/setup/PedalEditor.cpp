@@ -4,6 +4,7 @@
 #include <proxies/hwui/panel-unit/boled/setup/MenuEditorEntry.h>
 #include <proxies/hwui/panel-unit/boled/setup/PedalEditor.h>
 #include <utility>
+#include "use-cases/SettingsUseCases.h"
 
 PedalEditor::PedalEditor(PedalType* m)
     : m_mode(m)
@@ -16,6 +17,17 @@ PedalEditor::~PedalEditor() = default;
 void PedalEditor::incSetting(int inc)
 {
   m_mode->incDec(inc, false);
+}
+
+bool PedalEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
+{
+  if(down && i == Buttons::BUTTON_DEFAULT)
+  {
+    SettingsUseCases settingsUseCases(*Application::get().getSettings());
+    settingsUseCases.factoryDefaultSetting(m_mode);
+    return true;
+  }
+  return MenuEditor::onButton(i, down, modifiers);
 }
 
 const std::vector<Glib::ustring>& PedalEditor::getDisplayStrings() const

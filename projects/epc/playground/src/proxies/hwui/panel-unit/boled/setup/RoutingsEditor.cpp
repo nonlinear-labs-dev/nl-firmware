@@ -277,7 +277,15 @@ int RoutingsEditor::getSelectedIndex() const
 
 bool RoutingsEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
-  auto doIfDownAndSwallowAll = [isDown = down, pressed = i](Buttons b, auto cb) {
+  if(down && i == Buttons::BUTTON_DEFAULT)
+  {
+    SettingsUseCases settingsUseCases(*Application::get().getSettings());
+    settingsUseCases.factoryDefaultSetting(Application::get().getSettings()->getSetting<RoutingSettings>());
+    return true;
+  }
+
+  auto doIfDownAndSwallowAll = [isDown = down, pressed = i](Buttons b, auto cb)
+  {
     if(pressed == b)
     {
       if(isDown)

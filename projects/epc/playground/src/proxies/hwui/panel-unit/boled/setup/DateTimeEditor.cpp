@@ -9,6 +9,7 @@
 #include <proxies/hwui/panel-unit/boled/setup/DateTimeEditor.h>
 #include <cstdio>
 #include <ctime>
+#include "use-cases/SettingsUseCases.h"
 
 DateTimeEditor::DateTimeEditor()
     : ControlWithChildren(Rect(0, 0, 0, 0))
@@ -61,6 +62,13 @@ void DateTimeEditor::setPosition(const Rect &)
 
 bool DateTimeEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(down && i == Buttons::BUTTON_DEFAULT)
+  {
+    SettingsUseCases settingsUseCases(*Application::get().getSettings());
+    settingsUseCases.factoryDefaultSetting(Application::get().getSettings()->getSetting<DateTimeAdjustment>());
+    return true;
+  }
+
   if(down)
   {
     m_labels[m_selection]->setHighlight(false);

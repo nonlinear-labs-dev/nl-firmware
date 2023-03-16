@@ -3,6 +3,7 @@
 #include "MenuEditor.h"
 #include "device-settings/Settings.h"
 #include "device-settings/Setting.h"
+#include "use-cases/SettingsUseCases.h"
 #include <Application.h>
 #include <device-settings/BooleanSetting.h>
 
@@ -37,6 +38,17 @@ template <typename tSetting> class EnumSettingEditor : public MenuEditor
 
     return nullptr;
   }
+
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override
+  {
+    if(down && i == Buttons::BUTTON_DEFAULT)
+    {
+      SettingsUseCases settingsUseCases(*Application::get().getSettings());
+      settingsUseCases.factoryDefaultSetting(Application::get().getSettings()->getSetting<tSetting>());
+      return true;
+    }
+    return MenuEditor::onButton(i, down, modifiers);
+  }
 };
 
 template <typename tSetting> class OnOffOrderChangedEnumSettingEditor : public EnumSettingEditor<tSetting>
@@ -45,7 +57,8 @@ template <typename tSetting> class OnOffOrderChangedEnumSettingEditor : public E
 
   [[nodiscard]] const std::vector<Glib::ustring>& getDisplayStrings() const override
   {
-    static auto displays = [this] {
+    static auto displays = [this]
+    {
       auto raw = super::getSetting()->getDisplayStrings();
       std::reverse(raw.begin(), raw.end());
       return raw;
@@ -60,6 +73,19 @@ template <typename tSetting> class OnOffOrderChangedEnumSettingEditor : public E
     super::getSetting()->incDec(reversedInc, false);
   }
 
+ public:
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override
+  {
+    if(down && i == Buttons::BUTTON_DEFAULT)
+    {
+      SettingsUseCases settingsUseCases(*Application::get().getSettings());
+      settingsUseCases.factoryDefaultSetting(Application::get().getSettings()->getSetting<tSetting>());
+      return true;
+    }
+    return MenuEditor::onButton(i, down, modifiers);
+  }
+
+ private:
   [[nodiscard]] int getSelectedIndex() const override
   {
     static auto numItems = getDisplayStrings().size();
