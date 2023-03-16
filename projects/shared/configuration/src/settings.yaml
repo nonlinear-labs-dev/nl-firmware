@@ -37,7 +37,7 @@ PresetDragDropEnabled:
     default: BooleanSettings::BOOLEAN_SETTING_TRUE
 
 TransitionTime:
-    default: 0.0
+    default: 0.009
     display: { scale: ENVELOPE_TIME_MS, coarse: 100, fine: 1000 }
 
 RandomizeAmount:
@@ -71,7 +71,7 @@ BenderCurve:
     default: BenderCurves::Normal
 
 EditSmoothingTime:
-    default: 0.1
+    default: 0.01
     display: { scale: LINEAR_2000_MS, coarse: 100, fine: 1000 }
 
 Passphrase:
