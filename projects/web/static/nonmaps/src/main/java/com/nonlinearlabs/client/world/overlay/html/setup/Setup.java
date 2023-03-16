@@ -15,6 +15,8 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
@@ -355,6 +357,13 @@ public class Setup extends Composite {
 		editSmoothingTimeRange = Range.wrap(editSmoothingTimeSlider);
 		editSmoothingTimeRange.addValueChangeHandler(
 				e -> settings.setEditSmoothingTime(editSmoothingTimeRange.getValue().doubleValue()));
+		editSmoothingTimeRange.addDomHandler(new DoubleClickHandler() {
+			@Override
+			public void onDoubleClick(DoubleClickEvent event)
+			{
+				EditBufferUseCases.get().defaultSetting("EditSmoothingTime");
+			}
+		}, DoubleClickEvent.getType());
 
 		syncPartsOn.addClickHandler(e -> settings.setSyncParts(BooleanValues.on));
 		syncPartsOff.addClickHandler(e -> settings.setSyncParts(BooleanValues.off));
@@ -396,8 +405,21 @@ public class Setup extends Composite {
 		highlightChangedOff.addValueChangeHandler(e -> settings.setHighlightChangedParameters(BooleanValues.off));
 
 		transitionTimeSliderRange.addValueChangeHandler(v -> settings.setTransitionTime(v.getValue().doubleValue()));
+		transitionTimeSliderRange.addDomHandler(new DoubleClickHandler() {
+			@Override
+			public void onDoubleClick(DoubleClickEvent event)
+			{
+				EditBufferUseCases.get().defaultSetting("TransitionTime");
+			}
+		}, DoubleClickEvent.getType());
 		tuneReferenceSliderRange.addValueChangeHandler(v -> settings.setTuneReference(v.getValue().doubleValue()));
-
+		tuneReferenceSliderRange.addDomHandler(new DoubleClickHandler() {
+			@Override
+			public void onDoubleClick(DoubleClickEvent event)
+			{
+				EditBufferUseCases.get().defaultSetting("TuneReference");
+			}
+		}, DoubleClickEvent.getType());
 		resetInitSound.addClickHandler(e -> settings.resetInitSound());
 		storeInitSound.addClickHandler(e -> settings.storeInitSound());
 

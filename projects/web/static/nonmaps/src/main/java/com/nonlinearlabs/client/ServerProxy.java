@@ -1352,4 +1352,10 @@ public class ServerProxy {
 		StaticURI uri = new StaticURI(path, fromKV, toKV);
 		queueJob(uri, false);
     }
+
+    public void defaultSetting(String settingID) {
+		StaticURI.Path path = new StaticURI.Path("settings", "default-setting");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("key", settingID));
+		queueJob(uri, false);
+    }
 }

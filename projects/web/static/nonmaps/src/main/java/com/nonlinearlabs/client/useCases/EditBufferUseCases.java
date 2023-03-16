@@ -581,6 +581,11 @@ public class EditBufferUseCases {
 		}
 	}
 
+	public void defaultSetting(String key)
+	{
+		NonMaps.theMaps.getServerProxy().defaultSetting(key);
+	}
+
 	public void loadPreset(String uuid) {
 		NonMaps.theMaps.getServerProxy().loadPreset(uuid);
 	}
