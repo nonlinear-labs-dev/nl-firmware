@@ -19,7 +19,12 @@ public class FineButton extends SVGImage {
         super(parent, "Fine_Active_B.svg", "Fine_Disabled_B.svg", "Fine_Enabled_B.svg");
         
         NonMaps.get().getNonLinearWorld().onShiftStateChanged(state -> {
+            var wasShiftPressed = isShiftPressed;
             isShiftPressed = state == BooleanValues.on;
+            if(wasShiftPressed && !isShiftPressed)
+            {
+                SetupModel.get().localSettings.localFineEnabled.setValue(false);
+            }
             invalidate(INVALIDATION_FLAG_UI_CHANGED);
             return true;
         });
