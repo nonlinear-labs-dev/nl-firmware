@@ -38,7 +38,7 @@
     <section>
         <h2 class="heading secondary"><span class="sw-version">23-12</span> Spring Update Improvements</h2>
         <div data-highlight="note">
-            <p>This update addresses the recently introduced features and provides bug fixes, refinements and further enhancements.</p>
+            <p>This update addresses recently introduced features and provides bug fixes, refinements and further enhancements.</p>
         </div>
     </section>
     <section>
@@ -46,20 +46,17 @@
         <h3>User Interface Enhancements</h3>
         <div class="section">
             <h4>New: Preset Info - Properties</h4>
-            <i>auto-generated (searchable) hashtags, depending on parameters, sound-type + mono/poly, unison/1-voice, scale/12-tet</i>
+            <p>Preset metadata now includes a <q>Properties</q> field which provides automatically generated hashtags, depending on specific parameters of the preset. Similar to custom hashtags <i>(usable in the Comment section)</i>, searching for presets by using hashtags can be much more convenient.</p>
+            <p>Depending on the preset's <span data-keyword="Sound">Type</span>, a <code>#Single</code>/<code>#Split</code>/<code>#Layer</code> hashtag is provided. A <code>#Poly</code>/<code>#Mono</code> hashtag is provided, depending on the <q>Mono Enable</q> parameter.</p>
+            <p>A <code>#Unison</code>/<code>#1-voice</code> hashtag is provided, depending on the <q>Unison Voices</q> parameter. A <code>#Scale</code>/<code>#12-TET</code> <i>(12-Tone-Equal-Temperament)</i> hashtag is provided, depending on whether <q>Offset</q> parameters are used in the Scale group.</p>
         </div>
         <div class="section">
             <h4>New: Preset Scale Indicator</h4>
-            <i>sc as a new indicator (like m and u), indicating presets not in equal temperament</i>
+            <p>According to the <code>#Scale</code> hashtag, an &#xE042; indicator is shown next to the preset <i>(similar to &#xE041; - <code>#Unison</code> and &#xE040; - <code>#Mono</code>)</i>.</p>
         </div>
         <div class="section">
             <h4 data-detail="Panel Unit">Setup Menu - Fine Mode support</h4>
-            <i>fine mode available for numeric settings</i>
-        </div>
-        <!-- potential features -->
-        <div class="section">
-            <h4>Setup Menu - Single Setting Default</h4>
-            <i>default button in hwui or double-click in webui</i>
+            <p>Numeric settings <i>(Edit Smoothing Time, Tune Reference, Transition Time, Encoder Acceleration, Ribbon Relative Factor)</i> can now also be fine-tuned by using the <span data-keyword="Fine">Button</span>.</p>
         </div>
     </section>
     <section>
@@ -114,7 +111,7 @@
             <li>
                 <header>Bidirectional Ribbons - MIDI issues</header>
                 <p>When a non-returning <span data-keyword="Ribbon"></span> is bidirectionally associated to a <span data-keyword="Macro">Control</span>, MIDI will now only be sent if the Ribbon was changed directly <i>(by using the Touchstrip or changing the corresponding slider)</i>. If the Macro was changed directly or by a <span data-keyword="Pedal"></span>, the slider of the Ribbon will change as well, but no MIDI will be sent.</p>
-                <p>With Local enabled and using MIDI Loopback <i>(having the C15 connected to a DAW for example, receiving and sending MIDI at the same time)</i>, using Ribbons will now cause less traffic and glitchy behavior (see <q>Known Issues</q> below).</p>
+                <p>With Local enabled and using MIDI Loopback <i>(having the C15 connected to a DAW for example, receiving and sending MIDI at the same time)</i>, using Ribbons will now cause less traffic and glitchy behavior <i>(see <q>Known Issues</q> below)</i>.</p>
             </li>
         </ul>
     </section>
