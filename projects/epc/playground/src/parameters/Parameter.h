@@ -146,12 +146,12 @@ class Parameter : public UpdateDocumentContributor,
   [[nodiscard]] C15::Descriptors::ParameterType getType() const;
   bool isMonophonic() const;
   bool isPolyphonic() const;
-  void sendParameterMessage() const;
+  void sendParameterMessage(bool sendAsMidi = true) const;
 
   bool isScale() const;
 
  protected:
-  virtual void sendToAudioEngine() const;
+  virtual void sendToAudioEngine(bool sendAsMidi = true) const;
   virtual void setCpValue(UNDO::Transaction *transaction, Initiator initiator, tControlPositionValue value,
                           bool notifyAudioEngine);
   virtual void writeDocProperties(Writer &writer, tUpdateID knownRevision) const;
