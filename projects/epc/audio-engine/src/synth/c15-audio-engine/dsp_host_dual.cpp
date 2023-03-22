@@ -464,10 +464,8 @@ void dsp_host_dual::onParameterChangedMessage(const nltools::msg::HardwareAmount
 
 void dsp_host_dual::onParameterChangedMessage(const nltools::msg::MacroControlParameterChangedMessage &_msg)
 {
-
   const auto &descriptor = getParameter(_msg.m_id);
   auto &param = m_parameters.m_global.m_macroControls[descriptor.m_param.m_index];
-  nltools::Log::error("onMacroControlParameterChangedMessage!", _msg.m_id, "value", _msg.m_controlPosition);
   if(param.update_position((float) _msg.m_controlPosition))
   {
     if constexpr(LOG_EDITS)

@@ -891,12 +891,7 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
         sendHardwareChangeAsMidi(hwID, pos);
       }
     }
-    if(source == HWChangeSource::UI_MODULATION)
-    {
-      nltools::Log::info("we do not send the hw-source (" + toString(source)
-                         + ") as midi as the hw-change-source is ui_modulation");
-    }
-    else
+    else if(source != HWChangeSource::UI_MODULATION)
     {
       sendHardwareChangeAsMidi(hwID, pos);
     }
