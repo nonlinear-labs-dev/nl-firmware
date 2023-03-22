@@ -869,6 +869,12 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
     m_localDisabledPositions[static_cast<unsigned int>(hwID)] = { pedalPos, source };
     m_hwChangedCB();
   }
+  else if(source == HWChangeSource::UI_MODULATION)
+  {
+    m_dspHost->setHardwareSourceLastChangeSource(hwID, source);
+    m_localDisabledPositions[static_cast<unsigned int>(hwID)] = { pos, source };
+    m_hwChangedCB();
+  }
 
   if(source != HWChangeSource::MIDI)
   {

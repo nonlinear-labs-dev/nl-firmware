@@ -288,13 +288,10 @@ void RibbonParameter::copyTo(UNDO::Transaction *transaction, PresetParameter *ot
 
 void RibbonParameter::boundToMacroControl(tControlPositionValue v)
 {
-  if(getValue().getFineQuantizedClippedValue(v) != getValue().getQuantizedClippedValue(true))
-  {
-    getValue().setRawValue(Initiator::INDIRECT, v);
-    onChange();
-    invalidate();
-    sendToAudioEngine(false);
-  }
+  getValue().setRawValue(Initiator::INDIRECT, v);
+  onChange();
+  invalidate();
+  sendToAudioEngine(false);
 }
 
 RoutingSettings::tRoutingIndex indexFromID(const ParameterId &id)
