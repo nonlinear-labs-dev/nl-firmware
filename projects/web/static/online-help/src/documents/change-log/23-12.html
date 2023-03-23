@@ -60,7 +60,7 @@
         <div class="section" style="page-break-before: always;">
             <h4>New: Preset Scale Indicator</h4>
             <div data-columns="2">
-                <figure class="border maximize" data-label="Preset Info - Properties">
+                <figure class="border maximize" data-label="Scale Indicator">
                     <picture class="content" data-src="./images/hardware-ui/boled/preset/boled-pre-scale-ind.png"></picture>
                 </figure>
                 <div class="section">
@@ -71,7 +71,7 @@
         <div class="section">
             <h4 data-detail="Panel Unit">Setup Menu - Fine Mode support</h4>
             <div data-columns="2">
-                <figure class="border maximize" data-label="Preset Info - Properties">
+                <figure class="border maximize" data-label="Setup - Fine Mode">
                     <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-fine.png"></picture>
                 </figure>
                 <div class="section">
@@ -101,7 +101,7 @@
             </li>
             <li>
                 <header data-detail="Graphical UI">Single Sounds - Copy FX</header>
-                <p>In the <span data-keyword="Sound">Tab</span>, options for copying the FX chain into the other is now available as well.</p>
+                <p>In the <span data-keyword="Sound">Tab</span>, options for copying the FX chain into the other are now available as well.</p>
             </li>
             <li style="page-break-before: always;">
                 <header data-detail="Graphical UI">Parameter Tab - defaultable Modulation Aspects</header>
@@ -119,10 +119,13 @@
             <li>
                 <header>Bidirectional Ribbons - MIDI issues</header>
                 <p>When a non-returning <span data-keyword="Ribbon"></span> is bidirectionally associated to a <span data-keyword="Macro">Control</span>, MIDI will now only be sent if the Ribbon was changed directly <i>(by using the Touchstrip or changing the corresponding slider)</i>. If the Macro was changed directly or by a <span data-keyword="Pedal"></span>, the slider of the Ribbon will change as well, but no MIDI will be sent.</p>
-                <p>With Local enabled and using MIDI Loopback <i>(having the C15 connected to a DAW for example, receiving and sending MIDI at the same time)</i>, using Ribbons will now cause less traffic and no more glitchy behavior <i>(see <q>Known Issues</q> below)</i>.</p>
+                <p>With Local enabled and using MIDI Loopback <i>(having the C15 connected to a DAW for example, receiving and sending MIDI at the same time)</i>, using Ribbons will now cause less traffic and no more glitchy behavior <i>(see below)</i>.</p>
             </li>
         </ul>
-        <h4>Further Improvements</h4>
+        <div data-highlight="warn">
+            <p>MIDI Loopback is only recommended when having Local disabled for Notes and <span data-keyword="Hardware">Sources</span>. When having Local enabled, MIDI Loopback will lead to a Note being played twice <i>(internally and in addition from MIDI In)</i>.</p>
+        </div>
+        <h4 style="page-break-before: always;">Further Improvements</h4>
         <div data-columns="2">
             <ul>
                 <li>after booting, LEDs of a <span data-keyword="Ribbon">Touchstrip</span> will correspond to the associated <span data-keyword="Macro">Control</span>, if the linking is bidirectional</li>
@@ -132,18 +135,12 @@
                 <li>in a <span data-keyword="Dual">Sound</span>, unused <span data-keyword="Parts"></span> (having no influence on the sound) will be indicated as a cross in the sound symbol, similar to muted Parts or unused FX in <span data-keyword="Single">Sounds</span></li>
             </ul>
             <ul>
-                <li>when updating the C15 via the <span data-keyword="Graphical">UI</span>, the update will now be installed once</li>
+                <li>when updating the C15 via the <span data-keyword="USB">Stick</span>, the update will now be installed once <i>(instead of starting the update again after successful installation)</i>.</li>
                 <li>when a new software version requires the conversion of certain parameters, the currently loaded sound will be marked as changed</li>
                 <li>when a returning <span data-keyword="Hardware">Source</span> was changed on the <span data-keyword="Panel">Unit</span>, the control will automatically and now more consistently reset to zero when loosing focus (for example storing a Preset or invoking the Setup Menu will reset the source)</li>
                 <!-- potential bugfixes/improvements -->
                 <li>in the <span data-keyword="Parameter">Tab</span>, the <span data-keyword="Fine">Indicator</span> is now better integrated with the <span data-keyword="Shift">Key</span></li>
             </ul>
-        </div>
-    </section>
-    <section>
-        <h3>Known Issues</h3>
-        <div data-highlight="warn">
-            <p>MIDI Loopback is only recommended when having Local disabled for Notes and <span data-keyword="Hardware">Sources</span>. When having Local enabled, MIDI Loopback will lead to a Note being played twice <i>(internally and in addition from MIDI In)</i>.</p>
         </div>
     </section>
 </main>
