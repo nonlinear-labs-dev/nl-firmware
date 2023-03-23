@@ -871,7 +871,6 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
   }
   else if(source == HWChangeSource::UI_MODULATION)
   {
-    m_dspHost->setHardwareSourceLastChangeSource(hwID, source);
     m_localDisabledPositions[static_cast<unsigned int>(hwID)] = { pos, source };
     m_hwChangedCB();
   }
