@@ -157,6 +157,14 @@ SettingsActions::SettingsActions(UpdateDocumentContributor* parent, Settings& se
               SettingsUseCases useCases(settings);
               useCases.factoryDefault();
             });
+
+  addAction("default-setting",
+            [&](const std::shared_ptr<NetworkRequest>& request)
+            {
+              Glib::ustring key = request->get("key");
+              SettingsUseCases useCases(settings);
+              useCases.factoryDefaultSetting(settings.getSetting(key));
+            });
 }
 
 void SettingsActions::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const

@@ -20,6 +20,8 @@ class ScreenSaverTimeEditor : public MenuEditor
   ScreenSaverTimeEditor();
   ~ScreenSaverTimeEditor() override;
 
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
+
  protected:
   void incSetting(int inc) override;
   const std::vector<Glib::ustring> &getDisplayStrings() const override;

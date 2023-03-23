@@ -9,6 +9,7 @@
 #include <proxies/hwui/panel-unit/boled/setup/DateTimeEditor.h>
 #include <cstdio>
 #include <ctime>
+#include "use-cases/SettingsUseCases.h"
 
 DateTimeEditor::DateTimeEditor()
     : ControlWithChildren(Rect(0, 0, 0, 0))
@@ -47,7 +48,8 @@ DateTimeEditor::DateTimeEditor()
   m_labels[m_selection]->setHighlight(true);
   m_controls[m_selection]->setHighlight(true);
 
-  m_diff = Application::get().getSettings()->getSetting<DateTimeAdjustment>()->get();
+  Application::get().getSettings()->getSetting<DateTimeAdjustment>()->onChange(
+      sigc::mem_fun(this, &DateTimeEditor::onAdjustmentChanged));
 
   setTimeValues();
 }
@@ -59,8 +61,25 @@ void DateTimeEditor::setPosition(const Rect &)
   ControlWithChildren::setPosition(c_fullRightSidePosition);
 }
 
+void DateTimeEditor::onAdjustmentChanged(const Setting *offset)
+{
+  if(auto dateTimeAdjustment = dynamic_cast<const DateTimeAdjustment *>(offset))
+  {
+    m_diff = dateTimeAdjustment->get();
+    setTimeValues();
+  }
+}
+
 bool DateTimeEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(down && i == Buttons::BUTTON_DEFAULT)
+  {
+    SettingsUseCases settingsUseCases(*Application::get().getSettings());
+    settingsUseCases.factoryDefaultSetting(Application::get().getSettings()->getSetting<DateTimeAdjustment>());
+    setTimeValues();
+    return true;
+  }
+
   if(down)
   {
     m_labels[m_selection]->setHighlight(false);
@@ -140,8 +159,9 @@ void DateTimeEditor::setTimeValues()
   m_controls[Selection::Month]->setText(format(tm->tm_mon + 1, 2));
   m_controls[Selection::Day]->setText(format(tm->tm_mday, 2));
   m_controls[Selection::Year]->setText(format(tm->tm_year + 1900, 4));
-  m_controls[Selection::Hour]->setText(format(tm->tm_hour, 2));
+  m_controls[Selection::Hour]->setText(format(std::max(tm->tm_hour - 1, 0), 2));
   m_controls[Selection::Minute]->setText(format(tm->tm_min, 2));
+  ControlWithChildren::setDirty();
 }
 
 const DateTimeEditor::Selection DateTimeEditor::step(Selection s, int inc) const
