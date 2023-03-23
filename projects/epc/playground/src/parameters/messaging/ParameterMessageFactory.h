@@ -9,19 +9,19 @@
 namespace ParameterMessageFactory
 {
 
-  template <C15::Descriptors::ParameterType, typename T> auto createParameterChangedMessage(const T *);
-
+  template <C15::Descriptors::ParameterType, typename T> auto createParameterChangedMessage(const T *, bool sendAsMidi);
 };
 
 template <>
 inline auto ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Hardware_Source>(
-    const PhysicalControlParameter *param)
+    const PhysicalControlParameter *param, bool sendAsMidi)
 {
   auto ret = nltools::msg::HardwareSourceParameterChangedMessage {};
   ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
   ret.m_controlPosition = param->getControlPositionValue();
   ret.m_returnMode = param->getReturnMode();
   ret.m_isLocalEnabled = param->isLocalEnabled();
+  ret.m_shouldSendMidi = sendAsMidi;
   // safety proposal: id pointing to non hw-source descriptor will fail
   nltools_assertAlways(ret.validateParameterType());
   return ret;
@@ -29,7 +29,7 @@ inline auto ParameterMessageFactory::createParameterChangedMessage<C15::Descript
 
 template <>
 inline auto ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Display_Parameter>(
-    const HardwareSourceSendParameter *param)
+    const HardwareSourceSendParameter *param, bool sendAsMidi)
 {
   auto ret = nltools::msg::HardwareSourceSendParameterChangedMessage {};
   ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
@@ -44,7 +44,7 @@ inline auto ParameterMessageFactory::createParameterChangedMessage<C15::Descript
 
 template <>
 inline auto ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Hardware_Amount>(
-    const ModulationRoutingParameter *param)
+    const ModulationRoutingParameter *param, bool sendAsMidi)
 {
   auto ret = nltools::msg::HardwareAmountParameterChangedMessage {};
   ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
@@ -56,7 +56,7 @@ inline auto ParameterMessageFactory::createParameterChangedMessage<C15::Descript
 
 template <>
 inline auto ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Macro_Control>(
-    const MacroControlParameter *param)
+    const MacroControlParameter *param, bool sendAsMidi)
 {
   auto ret = nltools::msg::MacroControlParameterChangedMessage {};
   ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
@@ -68,7 +68,7 @@ inline auto ParameterMessageFactory::createParameterChangedMessage<C15::Descript
 
 template <>
 inline auto ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Macro_Time>(
-    const Parameter *param)
+    const Parameter *param, bool sendAsMidi)
 {
   auto ret = nltools::msg::MacroTimeParameterChangedMessage {};
   ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
@@ -81,7 +81,7 @@ inline auto ParameterMessageFactory::createParameterChangedMessage<C15::Descript
 template <>
 inline auto
     ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Global_Modulateable>(
-        const ModulateableParameter *param)
+        const ModulateableParameter *param, bool sendAsMidi)
 {
   const auto range = param->getModulationRange(false);
   auto ret = nltools::msg::GlobalModulateableParameterChangedMessage {};
@@ -100,7 +100,7 @@ inline auto
 template <>
 inline auto
     ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Global_Unmodulateable>(
-        const Parameter *param)
+        const Parameter *param, bool sendAsMidi)
 {
   auto ret = nltools::msg::GlobalUnmodulateableParameterChangedMessage {};
   ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
@@ -114,7 +114,7 @@ inline auto
 template <>
 inline auto
     ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Polyphonic_Modulateable>(
-        const ModulateableParameter *param)
+        const ModulateableParameter *param, bool sendAsMidi)
 {
   const auto range = param->getModulationRange(false);
   auto ret = nltools::msg::PolyphonicModulateableParameterChangedMessage {};
@@ -133,7 +133,7 @@ inline auto
 template <>
 inline auto
     ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Polyphonic_Unmodulateable>(
-        const Parameter *param)
+        const Parameter *param, bool sendAsMidi)
 {
   auto ret = nltools::msg::PolyphonicUnmodulateableParameterChangedMessage {};
   ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();
@@ -147,7 +147,7 @@ inline auto
 template <>
 inline auto
     ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Monophonic_Modulateable>(
-        const ModulateableParameter *param)
+        const ModulateableParameter *param, bool sendAsMidi)
 {
   const auto range = param->getModulationRange(false);
   auto ret = nltools::msg::MonophonicModulateableParameterChangedMessage {};
@@ -166,7 +166,7 @@ inline auto
 template <>
 inline auto
     ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Monophonic_Unmodulateable>(
-        const Parameter *param)
+        const Parameter *param, bool sendAsMidi)
 {
   auto ret = nltools::msg::MonophonicUnmodulateableParameterChangedMessage {};
   ret.m_id = (C15::PID::ParameterID) param->getID().getNumber();

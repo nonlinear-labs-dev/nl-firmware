@@ -37,10 +37,12 @@ void RibbonParameter::undoableSetRibbonTouchBehaviour(UNDO::Transaction *transac
   {
     auto swapData = UNDO::createSwapData(mode);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      swapData->swapWith(m_touchBehaviour);
-      setupScalingAndDefaultValue(false);
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          swapData->swapWith(m_touchBehaviour);
+          setupScalingAndDefaultValue(false);
+        });
   }
   else
   {
@@ -142,25 +144,27 @@ void RibbonParameter::undoableSetRibbonReturnMode(UNDO::Transaction *transaction
 
     undoableSetHWAmountsForReturnToCenterMode(transaction, mode);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      auto oldMode = m_returnMode;
-      swapData->swapWith(m_returnMode);
-      auto oldPos = getControlPositionValue();
-      setupScalingAndDefaultValue(initiator == Initiator::EXPLICIT_USECASE
-                                  && getRibbonReturnMode() == RibbonReturnMode::RETURN);
-      if(initiator == Initiator::EXPLICIT_USECASE && oldMode == RibbonReturnMode::RETURN
-         && getRibbonReturnMode() == RibbonReturnMode::STAY)
-      {
-        auto newPos = (oldPos * 0.5) + 0.5;
-        getValue().setRawValue(initiator, newPos);
-      }
-      else if(initiator == Initiator::EXPLICIT_LOAD && oldMode == RibbonReturnMode::STAY
-              && getRibbonReturnMode() == RibbonReturnMode::RETURN)
-      {
-        setupScalingAndDefaultValue(true);
-      }
-      onChange();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          auto oldMode = m_returnMode;
+          swapData->swapWith(m_returnMode);
+          auto oldPos = getControlPositionValue();
+          setupScalingAndDefaultValue(initiator == Initiator::EXPLICIT_USECASE
+                                      && getRibbonReturnMode() == RibbonReturnMode::RETURN);
+          if(initiator == Initiator::EXPLICIT_USECASE && oldMode == RibbonReturnMode::RETURN
+             && getRibbonReturnMode() == RibbonReturnMode::STAY)
+          {
+            auto newPos = (oldPos * 0.5) + 0.5;
+            getValue().setRawValue(initiator, newPos);
+          }
+          else if(initiator == Initiator::EXPLICIT_LOAD && oldMode == RibbonReturnMode::STAY
+                  && getRibbonReturnMode() == RibbonReturnMode::RETURN)
+          {
+            setupScalingAndDefaultValue(true);
+          }
+          onChange();
+        });
   }
   else
   {
@@ -287,7 +291,7 @@ void RibbonParameter::boundToMacroControl(tControlPositionValue v)
   getValue().setRawValue(Initiator::INDIRECT, v);
   onChange();
   invalidate();
-  sendToAudioEngine();
+  sendToAudioEngine(false);
 }
 
 RoutingSettings::tRoutingIndex indexFromID(const ParameterId &id)
@@ -373,9 +377,9 @@ size_t RibbonParameter::getHash() const
   return hash;
 }
 
-void RibbonParameter::sendToAudioEngine() const
+void RibbonParameter::sendToAudioEngine(bool shouldSendMidi) const
 {
-  PhysicalControlParameter::sendToAudioEngine();
+  PhysicalControlParameter::sendToAudioEngine(shouldSendMidi);
 
   auto proxy = Application::get().getPlaycontrollerProxy();
   const auto id = getID().getNumber();

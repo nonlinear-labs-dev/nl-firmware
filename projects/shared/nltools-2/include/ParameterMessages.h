@@ -54,6 +54,7 @@ namespace nltools
           public controls::HardwareSourceParameter
     {
       bool m_isLocalEnabled = {};
+      bool m_shouldSendMidi = true;
     };
 
     struct HardwareSourceSendParameterChangedMessage

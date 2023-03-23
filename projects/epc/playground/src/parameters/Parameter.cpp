@@ -171,11 +171,13 @@ void Parameter::setIndirect(UNDO::Transaction *transaction, const tControlPositi
   {
     auto swapData = UNDO::createSwapData(value);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      tDisplayValue newVal = m_value.getRawValue();
-      swapData->swapWith(newVal);
-      m_value.setRawValue(Initiator::INDIRECT, newVal);
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          tDisplayValue newVal = m_value.getRawValue();
+          swapData->swapWith(newVal);
+          m_value.setRawValue(Initiator::INDIRECT, newVal);
+        });
   }
 }
 
@@ -235,15 +237,17 @@ void Parameter::setCpValue(UNDO::Transaction *transaction, Initiator initiator, 
     {
       auto swapData = UNDO::createSwapData(value);
 
-      transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-        tDisplayValue newVal = m_value.getRawValue();
-        swapData->swapWith(newVal);
+      transaction->addSimpleCommand(
+          [=](UNDO::Command::State) mutable
+          {
+            tDisplayValue newVal = m_value.getRawValue();
+            swapData->swapWith(newVal);
 
-        m_value.setRawValue(initiator, newVal);
+            m_value.setRawValue(initiator, newVal);
 
-        if(notifyAudioEngine)
-          sendToAudioEngine();
-      });
+            if(notifyAudioEngine)
+              sendToAudioEngine();
+          });
     }
   }
 }
@@ -276,18 +280,20 @@ void Parameter::undoableSetDefaultValue(UNDO::Transaction *transaction, tControl
   {
     auto swapData = UNDO::createSwapData(value);
 
-    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
-      tDisplayValue newVal = m_value.getDefaultValue();
-      swapData->swapWith(newVal);
-      m_value.setDefaultValue(newVal);
-      invalidate();
-    });
+    transaction->addSimpleCommand(
+        [=](UNDO::Command::State) mutable
+        {
+          tDisplayValue newVal = m_value.getDefaultValue();
+          swapData->swapWith(newVal);
+          m_value.setDefaultValue(newVal);
+          invalidate();
+        });
   }
 }
 
-void Parameter::sendToAudioEngine() const
+void Parameter::sendToAudioEngine(bool sendAsMidi) const
 {
-  sendParameterMessage();
+  sendParameterMessage(sendAsMidi);
 }
 
 tControlPositionValue Parameter::getNextStepValue(int incs, ButtonModifiers modifiers) const
@@ -445,7 +451,8 @@ void Parameter::writeDocument(Writer &writer, tUpdateID knownRevision) const
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("parameter", Attribute("id", getID()), Attribute("changed", changed), Attribute("locked", isLocked()),
-                  [&]() {
+                  [&]()
+                  {
                     if(changed)
                     {
                       writeDocProperties(writer, knownRevision);
@@ -574,10 +581,12 @@ void Parameter::undoableLock(UNDO::Transaction *transaction)
   {
     auto swapData = UNDO::createSwapData(true);
 
-    transaction->addSimpleCommand([=](auto) mutable {
-      swapData->swapWith(m_isLocked);
-      onChange(ChangeFlags::LockState);
-    });
+    transaction->addSimpleCommand(
+        [=](auto) mutable
+        {
+          swapData->swapWith(m_isLocked);
+          onChange(ChangeFlags::LockState);
+        });
   }
 }
 
@@ -587,10 +596,12 @@ void Parameter::undoableUnlock(UNDO::Transaction *transaction)
   {
     auto swapData = UNDO::createSwapData(false);
 
-    transaction->addSimpleCommand([=](auto) mutable {
-      swapData->swapWith(m_isLocked);
-      onChange(ChangeFlags::LockState);
-    });
+    transaction->addSimpleCommand(
+        [=](auto) mutable
+        {
+          swapData->swapWith(m_isLocked);
+          onChange(ChangeFlags::LockState);
+        });
   }
 }
 
@@ -614,7 +625,7 @@ void Parameter::copyFrom(UNDO::Transaction *transaction, const Parameter *other)
   }
 }
 
-void Parameter::sendParameterMessage() const
+void Parameter::sendParameterMessage(bool sendAsMidi) const
 {
   if(auto eb = getParentEditBuffer())
     switch(getType())
@@ -623,15 +634,15 @@ void Parameter::sendParameterMessage() const
       {
         auto ret
             = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Hardware_Source>(
-                dynamic_cast<const PhysicalControlParameter *>(this));
+                dynamic_cast<const PhysicalControlParameter *>(this), sendAsMidi);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Display_Parameter:
       {
         auto ret = ParameterMessageFactory::createParameterChangedMessage<
-            C15::Descriptors::ParameterType::Display_Parameter>(
-            dynamic_cast<const HardwareSourceSendParameter *>(this));
+            C15::Descriptors::ParameterType::Display_Parameter>(dynamic_cast<const HardwareSourceSendParameter *>(this),
+                                                                sendAsMidi);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
@@ -639,7 +650,7 @@ void Parameter::sendParameterMessage() const
       {
         auto ret
             = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Hardware_Amount>(
-                dynamic_cast<const ModulationRoutingParameter *>(this));
+                dynamic_cast<const ModulationRoutingParameter *>(this), sendAsMidi);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
@@ -647,58 +658,59 @@ void Parameter::sendParameterMessage() const
       {
         auto ret
             = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Macro_Control>(
-                dynamic_cast<const MacroControlParameter *>(this));
+                dynamic_cast<const MacroControlParameter *>(this), sendAsMidi);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Macro_Time:
       {
-        auto ret
-            = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Macro_Time>(this);
+        auto ret = ParameterMessageFactory::createParameterChangedMessage<C15::Descriptors::ParameterType::Macro_Time>(
+            this, sendAsMidi);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Global_Modulateable:
       {
         auto ret = ParameterMessageFactory::createParameterChangedMessage<
-            C15::Descriptors::ParameterType::Global_Modulateable>(dynamic_cast<const ModulateableParameter *>(this));
+            C15::Descriptors::ParameterType::Global_Modulateable>(dynamic_cast<const ModulateableParameter *>(this),
+                                                                  sendAsMidi);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Global_Unmodulateable:
       {
         auto ret = ParameterMessageFactory::createParameterChangedMessage<
-            C15::Descriptors::ParameterType::Global_Unmodulateable>(this);
+            C15::Descriptors::ParameterType::Global_Unmodulateable>(this, sendAsMidi);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Polyphonic_Modulateable:
       {
         auto ret = ParameterMessageFactory::createParameterChangedMessage<
-            C15::Descriptors::ParameterType::Polyphonic_Modulateable>(
-            dynamic_cast<const ModulateableParameter *>(this));
+            C15::Descriptors::ParameterType::Polyphonic_Modulateable>(dynamic_cast<const ModulateableParameter *>(this),
+                                                                      sendAsMidi);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Polyphonic_Unmodulateable:
       {
         auto ret = ParameterMessageFactory::createParameterChangedMessage<
-            C15::Descriptors::ParameterType::Polyphonic_Unmodulateable>(this);
+            C15::Descriptors::ParameterType::Polyphonic_Unmodulateable>(this, sendAsMidi);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Monophonic_Modulateable:
       {
         auto ret = ParameterMessageFactory::createParameterChangedMessage<
-            C15::Descriptors::ParameterType::Monophonic_Modulateable>(
-            dynamic_cast<const ModulateableParameter *>(this));
+            C15::Descriptors::ParameterType::Monophonic_Modulateable>(dynamic_cast<const ModulateableParameter *>(this),
+                                                                      sendAsMidi);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }
       case C15::Descriptors::ParameterType::Monophonic_Unmodulateable:
       {
         auto ret = ParameterMessageFactory::createParameterChangedMessage<
-            C15::Descriptors::ParameterType::Monophonic_Unmodulateable>(this);
+            C15::Descriptors::ParameterType::Monophonic_Unmodulateable>(this, sendAsMidi);
         eb->getAudioEngineProxy().sendParameterMessage(ret);
         break;
       }

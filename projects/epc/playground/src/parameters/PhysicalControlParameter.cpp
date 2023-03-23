@@ -48,9 +48,13 @@ ReturnMode PhysicalControlParameter::getLastReturnModeBeforePresetLoad() const
 void PhysicalControlParameter::onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source)
 {
   if(source == HWChangeSource::MIDI)
+  {
     getValue().setRawValue(Initiator::EXPLICIT_MIDI, getValue().getFineQuantizedClippedValue(newValue));
+  }
   else
+  {
     getValue().setRawValue(Initiator::EXPLICIT_PLAYCONTROLLER, getValue().getFineQuantizedClippedValue(newValue));
+  }
 }
 
 void PhysicalControlParameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)
@@ -133,7 +137,8 @@ size_t PhysicalControlParameter::getHash() const
 Glib::ustring PhysicalControlParameter::generateName() const
 {
   auto it = std::max_element(m_targets.begin(), m_targets.end(),
-                             [](const ModulationRoutingParameter *a, const ModulationRoutingParameter *b) {
+                             [](const ModulationRoutingParameter *a, const ModulationRoutingParameter *b)
+                             {
                                auto fa = fabs(a->getControlPositionValue());
                                auto fb = fabs(b->getControlPositionValue());
 
@@ -285,7 +290,8 @@ bool PhysicalControlParameter::lockingEnabled() const
 
 HardwareSourceSendParameter *PhysicalControlParameter::getSendParameter() const
 {
-  auto idToSendID = [](auto id) {
+  auto idToSendID = [](auto id)
+  {
     switch(id.getNumber())
     {
       case C15::PID::Pedal_1:

@@ -363,14 +363,16 @@ DSPInterface::OutputResetEventSource dsp_host_dual::onPresetMessage(const nltool
   {
     OutputResetEventSource result;
     // glitch suppression: start outputMute fade
-    m_fade.muteAndDo([&] {
-      // global flush
-      m_poly[0].flushDSP();
-      m_poly[1].flushDSP();
-      m_mono[0].flushDSP();
-      m_mono[1].flushDSP();
-      result = recallSingle(_msg);
-    });
+    m_fade.muteAndDo(
+        [&]
+        {
+          // global flush
+          m_poly[0].flushDSP();
+          m_poly[1].flushDSP();
+          m_mono[0].flushDSP();
+          m_mono[1].flushDSP();
+          result = recallSingle(_msg);
+        });
 
     if constexpr(LOG_RECALL)
     {
@@ -395,14 +397,16 @@ DSPInterface::OutputResetEventSource dsp_host_dual::onPresetMessage(const nltool
   {
     OutputResetEventSource result;
     // glitch suppression: start outputMute fade
-    m_fade.muteAndDo([&] {
-      // global flush
-      m_poly[0].flushDSP();
-      m_poly[1].flushDSP();
-      m_mono[0].flushDSP();
-      m_mono[1].flushDSP();
-      result = recallSplit(_msg);
-    });
+    m_fade.muteAndDo(
+        [&]
+        {
+          // global flush
+          m_poly[0].flushDSP();
+          m_poly[1].flushDSP();
+          m_mono[0].flushDSP();
+          m_mono[1].flushDSP();
+          result = recallSplit(_msg);
+        });
 
     if constexpr(LOG_RECALL)
     {
@@ -426,14 +430,16 @@ DSPInterface::OutputResetEventSource dsp_host_dual::onPresetMessage(const nltool
   {
     OutputResetEventSource result;
     // glitch suppression: start outputMute fade
-    m_fade.muteAndDo([&] {
-      // global flush
-      m_poly[0].flushDSP();
-      m_poly[1].flushDSP();
-      m_mono[0].flushDSP();
-      m_mono[1].flushDSP();
-      result = recallLayer(_msg);
-    });
+    m_fade.muteAndDo(
+        [&]
+        {
+          // global flush
+          m_poly[0].flushDSP();
+          m_poly[1].flushDSP();
+          m_mono[0].flushDSP();
+          m_mono[1].flushDSP();
+          result = recallLayer(_msg);
+        });
 
     if constexpr(LOG_RECALL)
     {
@@ -695,27 +701,29 @@ inline DSPInterface::OutputResetEventSource dsp_host_dual::onUnisonVoicesChanged
   const OutputResetEventSource outputEvent
       = determineOutputEventSource(areKeysPressed(fromType(m_layer_mode)), m_layer_mode);
   // application now via fade point
-  m_fade.muteAndDo([&] {
-    // apply (preloaded) unison change
-    m_alloc.setUnison(_layer, _pos, m_layer_mode, m_layer_mode);
-    // apply reset to affected poly compoments
-    m_poly[_layer].resetEnvelopes();
-    m_poly[_layer].m_uVoice = m_alloc.m_unison - 1;
-    m_poly[_layer].m_key_active = 0;
-    if(m_layer_mode != LayerMode::Split)
-    {
-      m_alloc.m_internal_keys.m_global = 0;
-      // apply reset to other poly components (when not in split mode)
-      const uint32_t layer = 1 - _layer;
-      m_poly[layer].resetEnvelopes();
-      m_poly[layer].m_uVoice = m_alloc.m_unison - 1;
-      m_poly[layer].m_key_active = 0;
-    }
-    else
-    {
-      m_alloc.m_internal_keys.m_local[_layer] = 0;
-    }
-  });
+  m_fade.muteAndDo(
+      [&]
+      {
+        // apply (preloaded) unison change
+        m_alloc.setUnison(_layer, _pos, m_layer_mode, m_layer_mode);
+        // apply reset to affected poly compoments
+        m_poly[_layer].resetEnvelopes();
+        m_poly[_layer].m_uVoice = m_alloc.m_unison - 1;
+        m_poly[_layer].m_key_active = 0;
+        if(m_layer_mode != LayerMode::Split)
+        {
+          m_alloc.m_internal_keys.m_global = 0;
+          // apply reset to other poly components (when not in split mode)
+          const uint32_t layer = 1 - _layer;
+          m_poly[layer].resetEnvelopes();
+          m_poly[layer].m_uVoice = m_alloc.m_unison - 1;
+          m_poly[layer].m_key_active = 0;
+        }
+        else
+        {
+          m_alloc.m_internal_keys.m_local[_layer] = 0;
+        }
+      });
   // return detected reset event
   if(m_layer_mode != LayerMode::Split)
   {
@@ -744,25 +752,27 @@ inline DSPInterface::OutputResetEventSource dsp_host_dual::onMonoEnableChanged(c
   const OutputResetEventSource outputEvent
       = determineOutputEventSource(areKeysPressed(fromType(m_layer_mode)), m_layer_mode);
   // application now via fade point
-  m_fade.muteAndDo([&] {
-    // apply (preloaded) mono change
-    m_alloc.setMonoEnable(_layer, _pos, m_layer_mode);
-    // apply reset to affected poly compoments
-    m_poly[_layer].resetEnvelopes();
-    m_poly[_layer].m_key_active = 0;
-    if(m_layer_mode != LayerMode::Split)
-    {
-      m_alloc.m_internal_keys.m_global = 0;
-      // apply reset to other poly components (when not in split mode)
-      const uint32_t lId = 1 - _layer;
-      m_poly[lId].resetEnvelopes();
-      m_poly[lId].m_key_active = 0;
-    }
-    else
-    {
-      m_alloc.m_internal_keys.m_local[_layer] = 0;
-    }
-  });
+  m_fade.muteAndDo(
+      [&]
+      {
+        // apply (preloaded) mono change
+        m_alloc.setMonoEnable(_layer, _pos, m_layer_mode);
+        // apply reset to affected poly compoments
+        m_poly[_layer].resetEnvelopes();
+        m_poly[_layer].m_key_active = 0;
+        if(m_layer_mode != LayerMode::Split)
+        {
+          m_alloc.m_internal_keys.m_global = 0;
+          // apply reset to other poly components (when not in split mode)
+          const uint32_t lId = 1 - _layer;
+          m_poly[lId].resetEnvelopes();
+          m_poly[lId].m_key_active = 0;
+        }
+        else
+        {
+          m_alloc.m_internal_keys.m_local[_layer] = 0;
+        }
+      });
   // return detected reset event
   if(m_layer_mode != LayerMode::Split)
   {
@@ -990,21 +1000,23 @@ void dsp_host_dual::render()
 
 void dsp_host_dual::reset()
 {
-  m_fade.muteAndDo([&] {
-    for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
-    {
-      m_z_layers[layerId].reset();
-      m_poly[layerId].resetDSP();
-      m_mono[layerId].resetDSP();
-    }
-    m_alloc.reset();
-    m_global.resetDSP();
-    m_mainOut_L = m_mainOut_R = 0.0f;
-    if constexpr(LOG_RESET)
-    {
-      nltools::Log::info("DSP has been reset.");
-    }
-  });
+  m_fade.muteAndDo(
+      [&]
+      {
+        for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
+        {
+          m_z_layers[layerId].reset();
+          m_poly[layerId].resetDSP();
+          m_mono[layerId].resetDSP();
+        }
+        m_alloc.reset();
+        m_global.resetDSP();
+        m_mainOut_L = m_mainOut_R = 0.0f;
+        if constexpr(LOG_RESET)
+        {
+          nltools::Log::info("DSP has been reset.");
+        }
+      });
 }
 
 dsp_host_dual::HWSourceValues dsp_host_dual::getHWSourceValues() const
@@ -2251,14 +2263,16 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
 
 void dsp_host_dual::fadeOutResetVoiceAllocAndEnvelopes()
 {
-  m_fade.muteAndDo([&] {
-    m_alloc.reset();
-    for(auto &layerId : m_poly)
-    {
-      layerId.resetEnvelopes();
-      layerId.m_key_active = 0;
-    }
-  });
+  m_fade.muteAndDo(
+      [&]
+      {
+        m_alloc.reset();
+        for(auto &layerId : m_poly)
+        {
+          layerId.resetEnvelopes();
+          layerId.m_key_active = 0;
+        }
+      });
 }
 
 bool dsp_host_dual::updateBehaviour(C15::ParameterDescriptor &element, ReturnMode mode)
