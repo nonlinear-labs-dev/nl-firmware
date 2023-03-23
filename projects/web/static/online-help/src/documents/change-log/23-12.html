@@ -35,7 +35,7 @@
 <!-- document content -->
 <div id="content-wrapper">
 <main>
-    <section style="page-break-after: always;">
+    <section>
         <h2 class="heading secondary"><span class="sw-version">23-12</span> Spring Update Improvements</h2>
         <div data-highlight="note">
             <p>This update addresses recently introduced features and provides bug fixes, refinements and further enhancements.</p>
@@ -46,59 +46,92 @@
         <h3>User Interface Enhancements</h3>
         <div class="section">
             <h4>New: Preset Info - Properties</h4>
-            <p>Preset metadata now includes a <q>Properties</q> field which provides automatically generated hashtags, depending on specific parameters of the preset. Similar to custom hashtags <i>(usable in the Comment section)</i>, searching for presets by using hashtags can be much more convenient.</p>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Preset Info - Properties">
+                    <picture class="content" data-src="./images/hardware-ui/boled/preset/boled-pre-info-properties.png"></picture>
+                </figure>
+                <div class="section">
+                    <p>Preset metadata now includes a <q>Properties</q> field which provides automatically generated hashtags, depending on specific parameters of the preset. Similar to custom hashtags <i>(usable in the Comment section)</i>, searching for presets by using hashtags can be much more convenient.</p>
+                </div>
+            </div>
             <p>Depending on the preset's <span data-keyword="Sound">Type</span>, a <code>#Single</code>/<code>#Split</code>/<code>#Layer</code> hashtag is provided. A <code>#Poly</code>/<code>#Mono</code> hashtag is provided, depending on the <q>Mono Enable</q> parameter.</p>
             <p>A <code>#Unison</code>/<code>#1-voice</code> hashtag is provided, depending on the <q>Unison Voices</q> parameter. A <code>#Scale</code>/<code>#12-TET</code> <i>(12-Tone-Equal-Temperament)</i> hashtag is provided, depending on whether <q>Offset</q> parameters are used in the Scale group.</p>
         </div>
-        <div class="section">
+        <div class="section" style="page-break-before: always;">
             <h4>New: Preset Scale Indicator</h4>
-            <p>According to the <code>#Scale</code> hashtag, an &#xE042; indicator is shown next to the preset <i>(similar to &#xE041; - <code>#Unison</code> and &#xE040; - <code>#Mono</code>)</i>.</p>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Preset Info - Properties">
+                    <picture class="content" data-src="./images/hardware-ui/boled/preset/boled-pre-scale-ind.png"></picture>
+                </figure>
+                <div class="section">
+                    <p>According to the <code>#Scale</code> hashtag, an &#xE042; indicator is shown next to the preset <i>(similar to &#xE041; - <code>#Unison</code> and &#xE040; - <code>#Mono</code>)</i>.</p>
+                </div>
+            </div>
         </div>
         <div class="section">
             <h4 data-detail="Panel Unit">Setup Menu - Fine Mode support</h4>
-            <p>Numeric settings <i>(Edit Smoothing Time, Tune Reference, Transition Time, Encoder Acceleration, Ribbon Relative Factor)</i> can now also be fine-tuned by using the <span data-keyword="Fine">Button</span>.</p>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Preset Info - Properties">
+                    <picture class="content" data-src="./images/hardware-ui/boled/setup/boled-setup-fine.png"></picture>
+                </figure>
+                <div class="section">
+                    <p>Numeric settings <i>(Edit Smoothing Time, Tune Reference, Transition Time, Encoder Acceleration, Ribbon Relative Factor)</i> can now also be fine-tuned by using the <span data-keyword="Fine">Button</span>.</p>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h4>Setup Menu - Single Setting default</h4>
+            <p>The <span data-keyword="Default">Button</span> is now usable for most settings in the <span data-keyword="Setup">Menu</span>. In the <span data-keyword="Graphical">UI</span>, settings represented as sliders can be set to default by double-clicking.</p>
         </div>
     </section>
     <section>
         <h3>Bugfixes and Improvements</h3>
-        <div data-columns="2" style="page-break-after: always;">
-            <ul>
-                <li>
-                    <header>Signal Flow Indication - Feedback</header>
-                    <p>The <q>FB Mix</q> <span data-keyword="Parameter">LED</span> of a Shaper will only blink if the corresponding "FB - Gate - Env C" parameter is greater than zero.</p>
-                </li>
-                <li>
-                    <header>Preset Store - Overwrite</header>
-                    <p>When the associated Bank is empty, overwriting a Preset will now store the Preset within the Bank, instead of creating a new Bank.</p>
-                </li>
-                <li>
-                    <header>Ribbon Touch Behavior</header>
-                    <p>When a <span data-keyword="Ribbon"></span> is selected in the <span data-keyword="Parameter">Screen</span>, <span data-keyword="Soft Button">4</span> will now show <code>Touch</code> instead of <code>Mode</code>.</p>
-                </li>
-                <li>
-                    <header data-detail="Graphical UI">Single Sounds - Copy FX</header>
-                    <p>In the <span data-keyword="Sound">Tab</span>, options for copying the FX chain into the other is now available as well.</p>
-                </li>
-                <li>
-                    <header data-detail="Graphical UI">Parameter Tab - defaultable Modulation Aspects</header>
-                    <p>When a Modulation Aspect (Amount, Upper/Lower Limit) of a modulateable parameter is in focus, a double click will now set the modulation amount to its default value <i>(instead of defaulting the control position)</i>.</p>
-                </li>
-                <li>
-                    <header data-detail="Panel Unit">FX Parameter Groups</header>
-                    <p>Similar to the <span data-keyword="Graphical">UI</span>, the group labels now have an indicator corresponding to the selected Part.</p>
-                </li>
-                <!-- potential bugfixes/improvements -->
-                <li>
-                    <header>Numerical Settings - Precision and Ranges</header>
-                    <p>The <span data-keyword="Tune">Reference</span>, the <span data-keyword="Edit Smoothing">Time</span> and the <span data-keyword="Transition">Time</span> now show their values with consistent precision between both UIs. Both times can now be set to zero ms.</p>
-                </li>
-            </ul>
+        <ul>
+            <li>
+                <header>Signal Flow Indication - Feedback</header>
+                <p>When any parameter of <q>Envelope C</q> is currently selected, the <q>FB Mix</q> <span data-keyword="Parameter">LED</span> of a particular Shaper will only blink if the corresponding "FB - Gate - Env C" parameter is greater than zero <i>(as otherwise, there is no influence of the Envelope on the Shaper mix)</i>.</p>
+            </li>
+            <li>
+                <header>Preset Store - Overwrite</header>
+                <p>When the associated Bank is empty, overwriting a Preset will now store the Preset within the Bank, instead of creating a new Bank.</p>
+            </li>
+            <li>
+                <header>Ribbon Touch Behavior</header>
+                <p>When a <span data-keyword="Ribbon"></span> is selected in the <span data-keyword="Parameter">Screen</span>, <span data-keyword="Soft Button">4</span> will now show <code>Touch</code> instead of <code>Mode</code>.</p>
+            </li>
+            <li>
+                <header data-detail="Graphical UI">Single Sounds - Copy FX</header>
+                <p>In the <span data-keyword="Sound">Tab</span>, options for copying the FX chain into the other is now available as well.</p>
+            </li>
+            <li style="page-break-before: always;">
+                <header data-detail="Graphical UI">Parameter Tab - defaultable Modulation Aspects</header>
+                <p>When a Modulation Aspect (Amount, Upper/Lower Limit) of a modulateable parameter is in focus, a double click will now set the modulation amount to its default value <i>(instead of defaulting the control position)</i>.</p>
+            </li>
+            <li>
+                <header data-detail="Panel Unit">FX Parameter Groups</header>
+                <p>Similar to the <span data-keyword="Graphical">UI</span>, the group labels now have an indicator corresponding to the selected Part.</p>
+            </li>
+            <!-- potential bugfixes/improvements -->
+            <li>
+                <header>Numerical Settings - Precision and Ranges</header>
+                <p>The <span data-keyword="Tune">Reference</span>, the <span data-keyword="Edit Smoothing">Time</span> and the <span data-keyword="Transition">Time</span> now show their values with consistent precision between both UIs. Both times can now be set to 0.0 ms.</p>
+            </li>
+            <li>
+                <header>Bidirectional Ribbons - MIDI issues</header>
+                <p>When a non-returning <span data-keyword="Ribbon"></span> is bidirectionally associated to a <span data-keyword="Macro">Control</span>, MIDI will now only be sent if the Ribbon was changed directly <i>(by using the Touchstrip or changing the corresponding slider)</i>. If the Macro was changed directly or by a <span data-keyword="Pedal"></span>, the slider of the Ribbon will change as well, but no MIDI will be sent.</p>
+                <p>With Local enabled and using MIDI Loopback <i>(having the C15 connected to a DAW for example, receiving and sending MIDI at the same time)</i>, using Ribbons will now cause less traffic and no more glitchy behavior <i>(see <q>Known Issues</q> below)</i>.</p>
+            </li>
+        </ul>
+        <h4>Further Improvements</h4>
+        <div data-columns="2">
             <ul>
                 <li>after booting, LEDs of a <span data-keyword="Ribbon">Touchstrip</span> will correspond to the associated <span data-keyword="Macro">Control</span>, if the linking is bidirectional</li>
                 <li>the brightness of pixels of the <span data-keyword="Base Unit">Display</span> has been increased, providing better contrast</li>
                 <li>in the <span data-keyword="Sound">Screen</span>/<span data-keyword="">Tab</span>, the indication of feedback signal flow by displaying arrows is now more consistent</li>
                 <li>the <span data-keyword="Preset">Search</span> window in the <span data-keyword="Graphical">UI</span> will refresh after restoring a backup</li>
                 <li>in a <span data-keyword="Dual">Sound</span>, unused <span data-keyword="Parts"></span> (having no influence on the sound) will be indicated as a cross in the sound symbol, similar to muted Parts or unused FX in <span data-keyword="Single">Sounds</span></li>
+            </ul>
+            <ul>
                 <li>when updating the C15 via the <span data-keyword="Graphical">UI</span>, the update will now be installed once</li>
                 <li>when a new software version requires the conversion of certain parameters, the currently loaded sound will be marked as changed</li>
                 <li>when a returning <span data-keyword="Hardware">Source</span> was changed on the <span data-keyword="Panel">Unit</span>, the control will automatically and now more consistently reset to zero when loosing focus (for example storing a Preset or invoking the Setup Menu will reset the source)</li>
@@ -106,19 +139,11 @@
                 <li>in the <span data-keyword="Parameter">Tab</span>, the <span data-keyword="Fine">Indicator</span> is now better integrated with the <span data-keyword="Shift">Key</span></li>
             </ul>
         </div>
-        <!-- potential bugfixes/improvements -->
-        <ul>
-            <li>
-                <header>Bidirectional Ribbons - MIDI issues</header>
-                <p>When a non-returning <span data-keyword="Ribbon"></span> is bidirectionally associated to a <span data-keyword="Macro">Control</span>, MIDI will now only be sent if the Ribbon was changed directly <i>(by using the Touchstrip or changing the corresponding slider)</i>. If the Macro was changed directly or by a <span data-keyword="Pedal"></span>, the slider of the Ribbon will change as well, but no MIDI will be sent.</p>
-                <p>With Local enabled and using MIDI Loopback <i>(having the C15 connected to a DAW for example, receiving and sending MIDI at the same time)</i>, using Ribbons will now cause less traffic and glitchy behavior <i>(see <q>Known Issues</q> below)</i>.</p>
-            </li>
-        </ul>
     </section>
     <section>
         <h3>Known Issues</h3>
         <div data-highlight="warn">
-            <p>MIDI Loopback is only recommended when having Local disabled for Notes and <span data-keyword="Hardware">Sources</span>. When having Local enabled, MIDI Loopback will lead to a Note being played twice <i>(internally and in addition from MIDI In)</i>. Similarly, MIDI messages from Hardware Sources will interfere and can lead to glitchy behavior.</p>
+            <p>MIDI Loopback is only recommended when having Local disabled for Notes and <span data-keyword="Hardware">Sources</span>. When having Local enabled, MIDI Loopback will lead to a Note being played twice <i>(internally and in addition from MIDI In)</i>.</p>
         </div>
     </section>
 </main>
