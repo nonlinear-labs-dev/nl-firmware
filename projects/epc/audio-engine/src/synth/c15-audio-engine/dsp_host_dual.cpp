@@ -60,10 +60,13 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_time.init(upsampleIndex);
   m_fade.init(samplerate);
   // proper time init
-  m_editTime.init(C15::Properties::SmootherScale::Linear, 200.0f, 0.0f, 0.1f);
+  // note: in audio-engine, settings unfortunately are still hard-coded, due to SettingDescriptors:
+  // - Descriptors lack SmootherScale enum and Factor/Offset parameters
+  // - DescriptorList lacks (enum) index (can only be searched)
+  m_editTime.init(C15::Properties::SmootherScale::Linear, 2000.0f, 0.0f, 0.01f);
   m_editTime.m_scaled = scale(m_editTime.m_scaling, m_editTime.m_position);
   updateTime(m_editTime.m_time, m_editTime.m_scaled);
-  m_transitionTime.init(C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, 0.0f);
+  m_transitionTime.init(C15::Properties::SmootherScale::Expon_Env_Time, 1.0f, -20.0f, 0.009f);
   m_transitionTime.m_scaled = scale(m_transitionTime.m_scaling, m_transitionTime.m_position);
   updateTime(m_transitionTime.m_time, m_transitionTime.m_scaled);
   // note: time and reference setting params are currently hard-coded but could
