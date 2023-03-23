@@ -47,10 +47,13 @@ void ScreenSaverTimeoutSetting::load(const Glib::ustring& text, Initiator initia
 
 void ScreenSaverTimeoutSetting::setFromValueInt(int timeoutValue)
 {
+  const auto oldIndex = m_selectedIndex;
   if(auto pos = std::find(s_logTimeOuts.begin(), s_logTimeOuts.end(), timeoutValue); pos != s_logTimeOuts.end())
     m_selectedIndex = std::distance(s_logTimeOuts.begin(), pos);
 
   m_timeout = std::chrono::minutes(s_logTimeOuts[m_selectedIndex]);
+  if(oldIndex != m_selectedIndex)
+    notify();
 }
 
 Glib::ustring ScreenSaverTimeoutSetting::save() const

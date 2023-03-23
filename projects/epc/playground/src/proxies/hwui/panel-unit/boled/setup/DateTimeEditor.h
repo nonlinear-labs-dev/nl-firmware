@@ -15,6 +15,7 @@ class DateTimeEditor : public ControlWithChildren, public SetupEditor
   void setPosition(const Rect &) override;
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
   bool onRotary(int inc, ButtonModifiers modifiers) override;
+  void onAdjustmentChanged(const Setting *offset);
 
  private:
   void setTimeValues();
