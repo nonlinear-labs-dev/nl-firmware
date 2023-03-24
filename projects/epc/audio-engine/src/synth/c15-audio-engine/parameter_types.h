@@ -2,6 +2,7 @@
 
 #include <Parameters.h>
 #include <parameter_group.h>
+#include <setting_list.h>
 #include <SplitPointRounding.h>
 
 namespace Engine
@@ -184,6 +185,13 @@ namespace Engine
         m_scaling.m_scaleId = _id;
         m_scaling.m_scaleFactor = _factor;
         m_scaling.m_scaleOffset = _offset;
+      }
+      inline void init(const C15::Settings::SettingDescriptor &_desc)
+      {
+        const float initial_value
+            = _desc.m_default_value.has_value() ? std::get<float>(_desc.m_default_value.value()) : 0.0f;
+        init(_desc.m_render_scaling.m_scaleId, _desc.m_render_scaling.m_scaleFactor,
+             _desc.m_render_scaling.m_scaleOffset, initial_value);
       }
     };
 

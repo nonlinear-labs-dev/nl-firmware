@@ -39,6 +39,7 @@ PresetDragDropEnabled:
 TransitionTime:
     default: 0.009
     display: { scale: ENVELOPE_TIME_MS, coarse: 100, fine: 1000 }
+    renderScaling: { scaling: Expon_Env_Time, factor: 1.0f, offset: -20.0f }
 
 RandomizeAmount:
     default: 0.1
@@ -73,6 +74,7 @@ BenderCurve:
 EditSmoothingTime:
     default: 0.01
     display: { scale: LINEAR_2000_MS, coarse: 100, fine: 1000 }
+    renderScaling: { scaling: Linear, factor: 2000.0f, offset: 0.0f }
 
 Passphrase:
     default: "88888888"
@@ -104,6 +106,7 @@ CrashOnError:
 TuneReference:
     default: 0.5
     display: { scale: LINEAR_400_480_HZ, coarse: 100, fine: 1000 }
+    renderScaling: { scaling: Linear, factor: 80.0f, offset: 400.0f }
 
 SyncVoiceGroups:
     default: BooleanSettings::BOOLEAN_SETTING_TRUE

@@ -18,6 +18,10 @@ namespace C15
 {
     namespace Settings
     {
+        enum SettingId : unsigned {
+            ${setting_id}
+        };
+
         struct SettingDescriptor
         {
             struct DisplayDescriptor
@@ -26,6 +30,13 @@ namespace C15
                 const unsigned m_coarse;
                 const unsigned m_fine;
             };
+            struct RenderScaling
+            {
+                const Properties::SmootherScale m_scaleId;
+                const float m_scaleFactor;
+                const float m_scaleOffset;
+            };
+            static constexpr RenderScaling s_no_render_scaling = { Properties::SmootherScale::None, 0.0f, 0.0f };
             using ValueType = std::variant<
                 float, const char * const,
                 MidiReceiveChannel, MidiReceiveChannelSplit,
@@ -36,27 +47,48 @@ namespace C15
                 ParameterEditModeRibbonBehaviours, DebugLevels,
                 PedalTypes, WifiSettings, SelectedRibbons, BooleanSettings
             >;
+            const SettingId m_id;
             const char * const m_key;
             const std::optional<ValueType> m_default_value;
             const std::optional<DisplayDescriptor> m_display;
+            const RenderScaling m_render_scaling;
             constexpr SettingDescriptor(
-                const char * const _key
-            )   : m_key{ _key }
+                const SettingId &_id, const char * const _key
+            )   : m_id{ _id }
+                , m_key{ _key }
                 , m_default_value{ std::nullopt }
                 , m_display{ std::nullopt }
+                , m_render_scaling{ s_no_render_scaling }
             {}
             constexpr SettingDescriptor(
-                const char * const _key, const ValueType &_default_value
-            )   : m_key{ _key }
+                const SettingId &_id, const char * const _key,
+                const ValueType &_default_value
+            )   : m_id{ _id }
+                , m_key{ _key }
                 , m_default_value{ _default_value }
                 , m_display{ std::nullopt }
+                , m_render_scaling{ s_no_render_scaling }
             {}
             constexpr SettingDescriptor(
-                const char * const _key, const ValueType &_default_value,
+                const SettingId &_id, const char * const _key,
+                const ValueType &_default_value,
                 const DisplayDescriptor &_display
-            )   : m_key{ _key }
+            )   : m_id{ _id }
+                , m_key{ _key }
                 , m_default_value{ _default_value }
                 , m_display{ _display }
+                , m_render_scaling{ s_no_render_scaling }
+            {}
+            constexpr SettingDescriptor(
+                const SettingId &_id, const char * const _key,
+                const ValueType &_default_value,
+                const DisplayDescriptor &_display,
+                const RenderScaling &_render_scaling
+            )   : m_id{ _id }
+                , m_key{ _key }
+                , m_default_value{ _default_value }
+                , m_display{ _display }
+                , m_render_scaling{ _render_scaling }
             {}
         };
     } // namespace C15::Settings
