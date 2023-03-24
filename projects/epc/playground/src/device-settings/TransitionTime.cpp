@@ -2,17 +2,23 @@
 #include <device-settings/DebugLevel.h>
 #include <device-settings/Settings.h>
 #include <device-settings/TransitionTime.h>
-#include <parameters/scale-converters/TransitionTimeMSScaleConverter.h>
 #include <parameters/value/RawValue.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 #include <xml/Writer.h>
 #include <nltools/messaging/Message.h>
 #include <proxies/audio-engine/AudioEngineProxy.h>
+#include "parameters/scale-converters/EnvelopeAttackDecayTimeMSScaleConverter.h"
 
 TransitionTime::TransitionTime(Settings &parent)
     : super(parent)
-    , m_time(nullptr, ScaleConverter::get<TransitionTimeMSScaleConverter>(), 0, 100, 1000)
+    , m_time(nullptr, ScaleConverter::get<EnvelopeAttackDecayTimeMSScaleConverter>(), 0, 100, 1000)
 {
+}
+
+void TransitionTime::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto f = std::get<float>(val);
+  set(static_cast<double>(f));
 }
 
 TransitionTime::~TransitionTime()

@@ -7,7 +7,7 @@
 #include "parameters/MacroControlParameter.h"
 #include "parameters/ModulateableParameter.h"
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single Preset Without MacroControl E and F defaults MC E and F")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Load Single Preset Without MacroControl E and F defaults MC E and F")
 {
   auto mockPreset = PreDualModePresetBank::createMockPreset();
 
@@ -19,9 +19,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Load Single Preset Without Macr
   auto mcF = dynamic_cast<MacroControlParameter*>(eb->findParameterByID({ C15::PID::MC_F, VoiceGroup::Global }));
 
   auto partVolume
-      = dynamic_cast<ModulateableParameter*>(eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I }));
-  auto partTune
-      = dynamic_cast<ModulateableParameter*>(eb->findParameterByID({ C15::PID::Voice_Grp_Tune, VoiceGroup::I }));
+      = dynamic_cast<ModulateableParameter*>(eb->findParameterByID({ C15::PID::Part_Volume, VoiceGroup::I }));
+  auto partTune = dynamic_cast<ModulateableParameter*>(eb->findParameterByID({ C15::PID::Part_Tune, VoiceGroup::I }));
 
   {
     auto scope = TestHelper::createTestScope();

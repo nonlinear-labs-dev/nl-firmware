@@ -10,14 +10,13 @@
 #include <proxies/hwui/panel-unit/EditPanel.h>
 #include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <http/UndoScope.h>
-#include <groups/MacroControlsGroup.h>
 #include <groups/ParameterGroup.h>
 #include "use-cases/EditBufferUseCases.h"
 #include "parameters/ModulationRoutingParameter.h"
 
 int MacroControlEditButtonMenu::s_lastAction = 0;
 
-MacroControlEditButtonMenu::MacroControlEditButtonMenu(const Rect &rect)
+MacroControlEditButtonMenu::MacroControlEditButtonMenu(const Rect& rect)
     : super(rect)
 {
   auto eb = Application::get().getPresetManager()->getEditBuffer();

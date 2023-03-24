@@ -10,6 +10,7 @@
 *******************************************************************************/
 
 #include "parameter_descriptor.h"
+#include <vector>
 
 namespace C15
 {
@@ -18,8 +19,5 @@ namespace C15
         ${parameter_groups}
     };
     // elements of individual parameter groups
-    template<Descriptors::ParameterGroup G>
-    struct ParameterGroupElementList;
-    // template specializations
-    ${group_map}
+    ${get_parameter_ids}
 } // namespace C15

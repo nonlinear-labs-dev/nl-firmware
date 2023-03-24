@@ -52,12 +52,10 @@ class EditBufferLogicalParts
   std::vector<Parameter*> filter(const std::vector<Parameter*>& in, const std::vector<ParameterId>& exclude)
   {
     std::vector<Parameter*> ret;
-    std::copy_if(in.begin(), in.end(), std::back_inserter(ret),
-                 [&](Parameter* p)
-                 {
-                   auto it = std::find(exclude.begin(), exclude.end(), p->getID());
-                   return it == exclude.end();
-                 });
+    std::copy_if(in.begin(), in.end(), std::back_inserter(ret), [&](Parameter* p) {
+      auto it = std::find(exclude.begin(), exclude.end(), p->getID());
+      return it == exclude.end();
+    });
     return ret;
   }
 
@@ -136,13 +134,13 @@ class EditBufferLogicalParts
   template <VoiceGroup vg> static ModulateableParameter* getPartVolume()
   {
     return dynamic_cast<ModulateableParameter*>(
-        TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Voice_Grp_Volume, vg }));
+        TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Part_Volume, vg }));
   }
 
   template <VoiceGroup vg> static ModulateableParameter* getPartTune()
   {
     return dynamic_cast<ModulateableParameter*>(
-        TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Voice_Grp_Tune, vg }));
+        TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Part_Tune, vg }));
   }
 
   template <VoiceGroup vg> static std::vector<Parameter*> getPartMaster()
@@ -160,12 +158,12 @@ class EditBufferLogicalParts
 
   template <VoiceGroup vg> static Parameter* getFadeFrom()
   {
-    return TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Voice_Grp_Fade_From, vg });
+    return TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Part_Fade_From, vg });
   }
 
   template <VoiceGroup vg> static Parameter* getFadeRange()
   {
-    return TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Voice_Grp_Fade_Range, vg });
+    return TestHelper::getEditBuffer()->findParameterByID({ C15::PID::Part_Fade_Range, vg });
   }
 
   template <VoiceGroup vg> static Parameter* getSplitPoint()

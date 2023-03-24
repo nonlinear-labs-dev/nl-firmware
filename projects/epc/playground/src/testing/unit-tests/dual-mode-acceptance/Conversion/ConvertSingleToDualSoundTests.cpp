@@ -11,7 +11,7 @@
 
 using EBL = EditBufferLogicalParts;
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single Sound to Split")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Convert Single Sound to Split")
 {
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();
@@ -47,7 +47,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single Sound to Split")
     const auto mcmHash = EBL::createHashOfVector(EBL::getModMatrix());
     const auto scaleHash = EBL::createHashOfVector(EBL::getScale());
 
-    const auto globalMasterHash = EBL::createValueHash(std::vector<Parameter*>{EBL::getMasterTune()});
+    const auto globalMasterHash = EBL::createValueHash(std::vector<Parameter*> { EBL::getMasterTune() });
 
     auto eb = TestHelper::getEditBuffer();
     EditBufferUseCases useCase(*eb);
@@ -100,8 +100,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single Sound to Split")
     THEN("Part Master have Preset Global Master Values")
     {
       using tVec = std::vector<Parameter*>;
-      CHECK(EBL::createValueHash(tVec{EBL::getPartTune<VoiceGroup::I>()}) == globalMasterHash);
-      CHECK(EBL::createValueHash(tVec{EBL::getPartTune<VoiceGroup::II>()}) == globalMasterHash);
+      CHECK(EBL::createValueHash(tVec { EBL::getPartTune<VoiceGroup::I>() }) == globalMasterHash);
+      CHECK(EBL::createValueHash(tVec { EBL::getPartTune<VoiceGroup::II>() }) == globalMasterHash);
     }
 
     THEN("Macro Mappings are same")
@@ -121,7 +121,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single Sound to Split")
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single Sound to Layer")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Convert Single Sound to Layer")
 {
   auto voicesI = EBL::getUnisonVoice<VoiceGroup::I>();
   auto voicesII = EBL::getUnisonVoice<VoiceGroup::II>();
@@ -156,7 +156,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single Sound to Layer")
     const auto mcmHash = EBL::createHashOfVector(EBL::getModMatrix());
     const auto scaleHash = EBL::createHashOfVector(EBL::getScale());
 
-    const auto oldMasterTuneHash = EBL::createValueHash(tVec{EBL::getMasterTune()});
+    const auto oldMasterTuneHash = EBL::createValueHash(tVec { EBL::getMasterTune() });
 
     auto eb = TestHelper::getEditBuffer();
     EditBufferUseCases useCase(*eb);
@@ -194,8 +194,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Convert Single Sound to Layer")
 
     THEN("Part Master Tune I/II was Copied from Global Master Tune")
     {
-      CHECK(EBL::createValueHash(tVec{EBL::getPartTune<VoiceGroup::I>()}) == oldMasterTuneHash);
-      CHECK(EBL::createValueHash(tVec{EBL::getPartTune<VoiceGroup::II>()}) == oldMasterTuneHash);
+      CHECK(EBL::createValueHash(tVec { EBL::getPartTune<VoiceGroup::I>() }) == oldMasterTuneHash);
+      CHECK(EBL::createValueHash(tVec { EBL::getPartTune<VoiceGroup::II>() }) == oldMasterTuneHash);
     }
 
     THEN("Split is default")

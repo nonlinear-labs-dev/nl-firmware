@@ -14,6 +14,12 @@ EncoderAcceleration::EncoderAcceleration(Settings &parent)
 {
 }
 
+void EncoderAcceleration::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto f = std::get<float>(val);
+  set(static_cast<double>(f));
+}
+
 EncoderAcceleration::~EncoderAcceleration()
 {
 }

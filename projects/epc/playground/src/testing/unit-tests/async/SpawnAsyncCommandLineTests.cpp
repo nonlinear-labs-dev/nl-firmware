@@ -20,8 +20,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Async Command Line does not bl
 
   AsyncCommandLine cmd(
       app->getMainContext(), { "sleep", "1" },
-      [&](auto o)
-      {
+      [&](auto o) {
         CHECK_FALSE(blocked);
         done = true;
       },

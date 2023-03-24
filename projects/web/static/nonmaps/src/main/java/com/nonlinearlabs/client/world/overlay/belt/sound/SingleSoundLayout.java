@@ -61,9 +61,11 @@ public class SingleSoundLayout extends SoundLayout {
 			//voicegroup indicators
 			double yOffset = Millimeter.toPixels(2);			
 			double vgHeight = vgI.getPictureHeight();
-			double vgWidth = vgI.getPictureWidth();
+			double vgWidth = vgI.getPictureWidth();			
+			double vgHeightII = vgII.getPictureHeight();
+			double vgWidthII = vgII.getPictureWidth();
 			vgI.doLayout(fbWidth, (h / 2) - (vgHeight * 2) + yOffset, vgWidth, vgHeight);
-			vgII.doLayout(fbWidth, (h / 2) + (vgHeight) - yOffset, vgWidth, vgHeight);
+			vgII.doLayout(fbWidth, (h / 2) + (vgHeightII) - yOffset, vgWidthII, vgHeightII);
 
 			//serial arrow
 			double serialArrowHeight = serialArrow.getPictureHeight();

@@ -8,6 +8,7 @@
 #include <proxies/hwui/panel-unit/boled/BOLED.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/RenameLayout.h>
 #include "PassphraseRenameLayout.h"
+#include "use-cases/SettingsUseCases.h"
 
 int PassphraseEditor::sLastSelection = 0;
 
@@ -28,7 +29,7 @@ void PassphraseEditor::incSetting(int inc)
   updateOnSettingChanged();
 }
 
-const std::vector<Glib::ustring> &PassphraseEditor::getDisplayStrings() const
+const std::vector<Glib::ustring>& PassphraseEditor::getDisplayStrings() const
 {
   static std::vector<Glib::ustring> r = { "Cancel", "Edit", "Randomize", "Default" };
   return r;
@@ -41,6 +42,13 @@ int PassphraseEditor::getSelectedIndex() const
 
 bool PassphraseEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 {
+  if(down && i == Buttons::BUTTON_DEFAULT)
+  {
+    SettingsUseCases settingsUseCases(*Application::get().getSettings());
+    settingsUseCases.factoryDefaultSetting(Application::get().getSettings()->getSetting<Passphrase>());
+    return true;
+  }
+
   if(MenuEditor::onButton(i, down, modifiers))
     return true;
 

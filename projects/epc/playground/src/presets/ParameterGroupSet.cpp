@@ -1,40 +1,19 @@
 #include "ParameterGroupSet.h"
 #include <presets/Preset.h>
 
-#include "../groups/GapFilterGroup.h"
 #include "parameters/Parameter.h"
-
-#include "groups/EnvelopeAGroup.h"
-#include "groups/EnvelopeBGroup.h"
-#include "groups/EnvelopeCGroup.h"
-#include "groups/OscillatorAGroup.h"
-#include "groups/ShaperAGroup.h"
-#include "groups/OscillatorBGroup.h"
-#include "groups/ShaperBGroup.h"
-#include "groups/FBMixerGroup.h"
-#include "groups/CombFilterGroup.h"
-#include "groups/SVFilterGroup.h"
-#include "groups/OutputMixerGroup.h"
-#include "groups/CabinetGroup.h"
-#include "groups/FlangerGroup.h"
-#include "groups/EchoGroup.h"
-#include "groups/ReverbGroup.h"
-#include "groups/MacroControlsGroup.h"
 #include "groups/MasterGroup.h"
-#include "groups/UnisonGroup.h"
 #include "groups/HardwareSourcesGroup.h"
 #include <groups/MacroControlMappingGroup.h>
 #include <groups/ScaleGroup.h>
 
 #include "xml/Writer.h"
 #include "xml/Attribute.h"
+#include "parameters/ParameterFactory.h"
 
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
-#include <groups/MonoGroup.h>
-#include <groups/SplitParameterGroups.h>
-#include <groups/VoiceGroupMasterGroup.h>
 #include <parameter_declarations.h>
 
 ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent)
@@ -42,35 +21,25 @@ ParameterGroupSet::ParameterGroupSet(UpdateDocumentContributor *parent)
 {
 }
 
-void ParameterGroupSet::init(Settings* settings)
+void ParameterGroupSet::init(Settings *settings)
 {
   auto hwSources = appendParameterGroup(new HardwareSourcesGroup(this, settings));
-  auto macroControls = appendParameterGroup(new MacroControlsGroup(this));
+  const auto &macroDescriptor = C15::ParameterGroups[static_cast<int>(C15::Descriptors::ParameterGroup::Macro)];
+  auto macroControls = appendParameterGroup(new ParameterGroup(this, macroDescriptor, VoiceGroup::Global));
   appendParameterGroup(new MacroControlMappingGroup(this, hwSources, macroControls));
 
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    appendParameterGroup(new EnvelopeAGroup(this, vg));
-    appendParameterGroup(new EnvelopeBGroup(this, vg));
-    appendParameterGroup(new EnvelopeCGroup(this, vg));
-    appendParameterGroup(new OscillatorAGroup(this, vg));
-    appendParameterGroup(new ShaperAGroup(this, vg));
-    appendParameterGroup(new OscillatorBGroup(this, vg));
-    appendParameterGroup(new ShaperBGroup(this, vg));
-    appendParameterGroup(new FBMixerGroup(this, vg));
-    appendParameterGroup(new CombFilterGroup(this, vg));
-    appendParameterGroup(new SVFilterGroup(this, vg));
-    appendParameterGroup(new OutputMixerGroup(this, vg));
-    appendParameterGroup(new FlangerGroup(this, vg));
-    appendParameterGroup(new CabinetGroup(this, vg));
-    appendParameterGroup(new GapFilterGroup(this, vg));
-    appendParameterGroup(new EchoGroup(this, vg));
-    appendParameterGroup(new ReverbGroup(this, vg));
-    appendParameterGroup(new UnisonGroup(this, vg));
+    for(auto g : ParameterFactory::getParameterGroupsPerVoiceGroup())
+    {
+      appendParameterGroup(new ParameterGroup(this, g, vg));
+    }
 
-    appendParameterGroup(new SplitParameterGroups(this, vg));
-    appendParameterGroup(new MonoGroup(this, vg));
-    appendParameterGroup(new VoiceGroupMasterGroup(this, vg));
+    //init parameters
+    auto part = getParameterGroupByID({ "Part", vg });
+    auto fadeFromInitial = vg == VoiceGroup::I ? 1 : 0;
+    auto fadeFrom = part->findParameterByID({ C15::PID::Part_Fade_From, vg });
+    fadeFrom->getValue().setFactoryDefault(fadeFromInitial);
 
     m_idToParameterMap[static_cast<size_t>(vg)] = getParametersSortedByNumber(vg);
   }
@@ -203,21 +172,18 @@ void ParameterGroupSet::writeDocument(Writer &writer, UpdateDocumentContributor:
 {
   super::writeDocument(writer, knownRevision);
 
-  auto writePerVoiceGroup = [&](auto id, auto tag)
-  {
+  auto writePerVoiceGroup = [&](auto id, auto tag) {
     auto &groups = getParameterGroups(id);
     auto anyGroupChanged = false;
 
     for(auto &p : groups)
       anyGroupChanged |= p->didChangeSince(knownRevision);
 
-    writer.writeTag(tag, Attribute("changed", anyGroupChanged),
-                    [&]
-                    {
-                      if(anyGroupChanged)
-                        for(auto &p : groups)
-                          p->writeDocument(writer, knownRevision);
-                    });
+    writer.writeTag(tag, Attribute("changed", anyGroupChanged), [&] {
+      if(anyGroupChanged)
+        for(auto &p : groups)
+          p->writeDocument(writer, knownRevision);
+    });
   };
 
   writePerVoiceGroup(VoiceGroup::Global, "global-parameters");

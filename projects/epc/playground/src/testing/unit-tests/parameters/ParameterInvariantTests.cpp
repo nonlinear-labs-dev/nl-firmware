@@ -1,26 +1,25 @@
 #include <groups/HardwareSourcesGroup.h>
 #include <groups/MacroControlMappingGroup.h>
-#include <groups/MacroControlsGroup.h>
 #include <groups/ScaleGroup.h>
 #include <groups/MasterGroup.h>
-#include <groups/MonoGroup.h>
-#include <groups/UnisonGroup.h>
 #include <catch.hpp>
 #include "testing/TestHelper.h"
 #include "presets/EditBuffer.h"
+#include "parameters/ParameterFactory.h"
 
 namespace GroupAffiliation
 {
   inline bool isRealGlobal(const Parameter* parameter)
   {
     auto parent = parameter->getParent();
-    return dynamic_cast<HardwareSourcesGroup*>(parent) || dynamic_cast<MacroControlMappingGroup*>(parent)
-        || dynamic_cast<MacroControlsGroup*>(parent) || dynamic_cast<ScaleGroup*>(parent)
-        || dynamic_cast<MasterGroup*>(parent);
+    auto isMacro = ParameterFactory::isMacroControl(parameter->getID());
+    auto isMacroTime = ParameterFactory::isMacroTime(parameter->getID());
+    return dynamic_cast<HardwareSourcesGroup*>(parent) || dynamic_cast<MacroControlMappingGroup*>(parent) || isMacro
+        || isMacroTime || dynamic_cast<ScaleGroup*>(parent) || dynamic_cast<MasterGroup*>(parent);
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Parameter Dual/Global affiliation - Single-Sound")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Dual/Global affiliation - Single-Sound")
 {
   TestHelper::forEachParameter(
       [](const Parameter* parameter) {
@@ -29,7 +28,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Parameter Dual/Global affiliati
       TestHelper::getEditBuffer());
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Parameter Dual/Global affiliation - Split Sound")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Dual/Global affiliation - Split Sound")
 {
   TestHelper::forEachParameter(
       [](const Parameter* parameter) {
@@ -43,7 +42,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Parameter Dual/Global affiliati
       TestHelper::getEditBuffer());
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Parameter Dual/Global affiliation - Layer Sound")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Parameter Dual/Global affiliation - Layer Sound")
 {
   TestHelper::forEachParameter(
       [](const Parameter* parameter) {
@@ -55,11 +54,11 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Parameter Dual/Global affiliati
         }
         else
         {
-          if(MonoGroup::isMonoParameter(parameter))
+          if(ParameterFactory::isMonoParameter(parameter))
           {
             CHECK_FALSE(isDual);
           }
-          else if(UnisonGroup::isUnisonParameter(parameter))
+          else if(ParameterFactory::isUnisonParameter(parameter))
           {
             CHECK_FALSE(isDual);
           }

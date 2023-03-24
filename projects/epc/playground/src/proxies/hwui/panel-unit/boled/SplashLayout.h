@@ -26,5 +26,5 @@ class SplashLayout : public InfoLayout
 
   MultiLineLabel *m_message = nullptr;
   std::string m_text;
-  HWUI* m_hwui;
+  HWUI *m_hwui;
 };

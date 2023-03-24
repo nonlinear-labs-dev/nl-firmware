@@ -10,7 +10,8 @@ MacroControlSliderForCurrentModulationRouter::MacroControlSliderForCurrentModula
 {
   auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
-      sigc::hide<0>(sigc::mem_fun(this, &MacroControlSliderForCurrentModulationRouter::subscribeToMacroFromSelected)), vg);
+      sigc::hide<0>(sigc::mem_fun(this, &MacroControlSliderForCurrentModulationRouter::subscribeToMacroFromSelected)),
+      vg);
 }
 
 void MacroControlSliderForCurrentModulationRouter::subscribeToMacroFromSelected(Parameter* p)

@@ -18,116 +18,153 @@ SettingsActions::SettingsActions(UpdateDocumentContributor* parent, Settings& se
     : SectionAndActionManager(parent, "/settings/")
     , m_settings { settings }
 {
-  addAction("set-setting", [&](const std::shared_ptr<NetworkRequest>& request) {
-    Glib::ustring key = request->get("key");
-    Glib::ustring value = request->get("value");
-    SettingsUseCases useCases(settings);
-    useCases.setSettingFromWebUI(key, value, pm);
-  });
+  addAction("set-setting",
+            [&](const std::shared_ptr<NetworkRequest>& request)
+            {
+              Glib::ustring key = request->get("key");
+              Glib::ustring value = request->get("value");
+              SettingsUseCases useCases(settings);
+              useCases.setSettingFromWebUI(key, value, pm);
+            });
 
-  addAction("set-direct-load-with-load-to-part", [&](const std::shared_ptr<NetworkRequest>& request) {
-    auto pm = Application::get().getPresetManager();
-    auto state = request->get("state");
-    auto presetIfInLoadToPart = request->get("preset");
-    auto fromIfInLoadToPart = request->get("from");
-    auto totIfInLoadToPart = request->get("to");
+  addAction("set-direct-load-with-load-to-part",
+            [&](const std::shared_ptr<NetworkRequest>& request)
+            {
+              auto pm = Application::get().getPresetManager();
+              auto state = request->get("state");
+              auto presetIfInLoadToPart = request->get("preset");
+              auto fromIfInLoadToPart = request->get("from");
+              auto totIfInLoadToPart = request->get("to");
 
-    DirectLoadUseCases useCase(settings.getSetting<DirectLoadSetting>());
+              DirectLoadUseCases useCase(settings.getSetting<DirectLoadSetting>());
 
-    try
-    {
-      if(state == "on")
-      {
-        if(auto preset = pm->findPreset(Uuid { presetIfInLoadToPart }))
-        {
-          useCase.enableDirectLoadFromWebUI(preset, to<VoiceGroup>(fromIfInLoadToPart),
-                                            to<VoiceGroup>(totIfInLoadToPart));
-        }
-        else
-        {
-          useCase.enableDirectLoadWithoutPreset();
-        }
-      }
-      else if(state == "off")
-      {
-        useCase.disableDirectLoad();
-      }
-    }
-    catch(const std::runtime_error& e)
-    {
-      nltools::Log::error("Catched Error in \"set-direct-load-with-load-to-part\":", e.what());
-    }
-  });
+              try
+              {
+                if(state == "on")
+                {
+                  if(auto preset = pm->findPreset(Uuid { presetIfInLoadToPart }))
+                  {
+                    useCase.enableDirectLoadFromWebUI(preset, to<VoiceGroup>(fromIfInLoadToPart),
+                                                      to<VoiceGroup>(totIfInLoadToPart));
+                  }
+                  else
+                  {
+                    useCase.enableDirectLoadWithoutPreset();
+                  }
+                }
+                else if(state == "off")
+                {
+                  useCase.disableDirectLoad();
+                }
+              }
+              catch(const std::runtime_error& e)
+              {
+                nltools::Log::error("Catched Error in \"set-direct-load-with-load-to-part\":", e.what());
+              }
+            });
 
-  addAction("set-direct-load-without-load-to-part", [&](const std::shared_ptr<NetworkRequest>& request) {
-    DirectLoadUseCases useCase(settings.getSetting<DirectLoadSetting>());
-    auto state = request->get("state") == "on";
-    useCase.setDirectLoad(state);
-  });
+  addAction("set-direct-load-without-load-to-part",
+            [&](const std::shared_ptr<NetworkRequest>& request)
+            {
+              DirectLoadUseCases useCase(settings.getSetting<DirectLoadSetting>());
+              auto state = request->get("state") == "on";
+              useCase.setDirectLoad(state);
+            });
 
-  addAction("default-high-res", [&](auto request) {
-    SettingsUseCases useCase(settings);
-    useCase.setMappingsToHighRes();
-  });
+  addAction("default-high-res",
+            [&](auto request)
+            {
+              SettingsUseCases useCase(settings);
+              useCase.setMappingsToHighRes();
+            });
 
-  addAction("default-classic-midi", [&](auto request) {
-    SettingsUseCases useCase(settings);
-    useCase.setMappingsToClassicMidi();
-  });
+  addAction("default-classic-midi",
+            [&](auto request)
+            {
+              SettingsUseCases useCase(settings);
+              useCase.setMappingsToClassicMidi();
+            });
 
-  addAction("set-routing-aspect", [&](auto request) {
-    try
-    {
-      auto hw = std::stoi(request->get("routing-entry"));
-      auto aspect = std::stoi(request->get("aspect"));
-      auto value = request->get("value") == "1";
+  addAction("set-routing-aspect",
+            [&](auto request)
+            {
+              try
+              {
+                auto hw = std::stoi(request->get("routing-entry"));
+                auto aspect = std::stoi(request->get("aspect"));
+                auto value = request->get("value") == "1";
 
-      SettingsUseCases useCase(settings);
-      useCase.updateRoutingAspect(hw, aspect, value);
-    }
-    catch(...)
-    {
-      ExceptionTools::errorLogCurrentException();
-    }
-  });
+                SettingsUseCases useCase(settings);
+                useCase.updateRoutingAspect(hw, aspect, value);
+              }
+              catch(...)
+              {
+                ExceptionTools::errorLogCurrentException();
+              }
+            });
 
   addAction("panic-audio-engine", [](auto request) { SettingsUseCases::panicAudioEngine(); });
   addAction("stop-recorder-playback", [](auto) { RecorderManager::stopRecorderPlayback(); });
 
-  addAction("set-all-routings-to-value", [&](auto request) {
-    auto requestedState = request->get("state") == "1";
-    SettingsUseCases useCase(settings);
-    useCase.setAllRoutingEntries(requestedState);
-  });
+  addAction("set-all-routings-to-value",
+            [&](auto request)
+            {
+              auto requestedState = request->get("state") == "1";
+              SettingsUseCases useCase(settings);
+              useCase.setAllRoutingEntries(requestedState);
+            });
 
-  addAction("enable-bbb-wifi-for-epc2", [](auto) {
-    nltools::msg::Setting::EnableBBBWifiFromDevSettings msg {};
-    nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
-  });
+  addAction("enable-bbb-wifi-for-epc2",
+            [](auto)
+            {
+              nltools::msg::Setting::EnableBBBWifiFromDevSettings msg {};
+              nltools::msg::send(nltools::msg::EndPoint::BeagleBone, msg);
+            });
 
-  addAction("is-valid-passphrase", [](auto request) {
-    if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
-    {
-      auto passphrase = http->get("text");
-      if(!passphrase.empty())
-      {
-        auto val = Passphrase::isValidPassword(passphrase);
-        http->setStatusOK();
-        http->respond(val ? "1" : "0");
-        http->okAndComplete();
-      }
-    }
-  });
+  addAction("is-valid-passphrase",
+            [](auto request)
+            {
+              if(auto http = std::dynamic_pointer_cast<HTTPRequest>(request))
+              {
+                auto passphrase = http->get("text");
+                if(!passphrase.empty())
+                {
+                  auto val = Passphrase::isValidPassword(passphrase);
+                  http->setStatusOK();
+                  http->respond(val ? "1" : "0");
+                  http->okAndComplete();
+                }
+              }
+            });
 
-  addAction("dice-passphrase", [&](auto) {
-    SettingsUseCases useCases(settings);
-    useCases.dicePassphrase();
-  });
+  addAction("dice-passphrase",
+            [&](auto)
+            {
+              SettingsUseCases useCases(settings);
+              useCases.dicePassphrase();
+            });
 
-  addAction("default-passphrase", [&](auto) {
-    SettingsUseCases useCases(settings);
-    useCases.defaultPassphrase();
-  });
+  addAction("default-passphrase",
+            [&](auto)
+            {
+              SettingsUseCases useCases(settings);
+              useCases.defaultPassphrase();
+            });
+
+  addAction("factory-default",
+            [&](auto)
+            {
+              SettingsUseCases useCases(settings);
+              useCases.factoryDefault();
+            });
+
+  addAction("default-setting",
+            [&](const std::shared_ptr<NetworkRequest>& request)
+            {
+              Glib::ustring key = request->get("key");
+              SettingsUseCases useCases(settings);
+              useCases.factoryDefaultSetting(settings.getSetting(key));
+            });
 }
 
 void SettingsActions::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const

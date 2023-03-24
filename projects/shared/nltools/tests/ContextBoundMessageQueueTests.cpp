@@ -4,7 +4,6 @@
 #include <future>
 #include <thread>
 
-
 TEST_CASE("ContextBoundMessageQueue - happy path")
 {
   bool received = false;

@@ -48,9 +48,13 @@ ReturnMode PhysicalControlParameter::getLastReturnModeBeforePresetLoad() const
 void PhysicalControlParameter::onChangeFromExternalSource(tControlPositionValue newValue, HWChangeSource source)
 {
   if(source == HWChangeSource::MIDI)
+  {
     getValue().setRawValue(Initiator::EXPLICIT_MIDI, getValue().getFineQuantizedClippedValue(newValue));
+  }
   else
+  {
     getValue().setRawValue(Initiator::EXPLICIT_PLAYCONTROLLER, getValue().getFineQuantizedClippedValue(newValue));
+  }
 }
 
 void PhysicalControlParameter::setCPFromHwui(UNDO::Transaction *transaction, const tControlPositionValue &cpValue)

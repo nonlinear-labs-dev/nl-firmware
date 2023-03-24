@@ -50,13 +50,13 @@ class RibbonParameter : public PhysicalControlParameter
   Glib::ustring getCurrentBehavior() const override;
   void undoableStepBehavior(UNDO::Transaction *transaction, int direction) override;
   size_t getHash() const override;
-  void sendToAudioEngine() const override;
+  void sendToAudioEngine(bool shouldSendMidi = true) const override;
 
  private:
-  void ensureExclusiveRoutingIfNeeded(UNDO::Transaction* transaction);
+  void ensureExclusiveRoutingIfNeeded(UNDO::Transaction *transaction);
   const ScaleConverter *createScaleConverter() const;
   void setupScalingAndDefaultValue(bool defaultValue);
-  std::list<ModulationRoutingParameter*> getRoutingParameters() const;
+  std::list<ModulationRoutingParameter *> getRoutingParameters() const;
   void undoableSetHWAmountsForReturnToCenterMode(UNDO::Transaction *transaction, const RibbonReturnMode &mode) const;
 
   RibbonTouchBehaviour m_touchBehaviour = RibbonTouchBehaviour::ABSOLUTE;

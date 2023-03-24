@@ -22,7 +22,7 @@ ModulationRoutersCarousel::~ModulationRoutersCarousel() = default;
 
 void ModulationRoutersCarousel::setup(Parameter *newOne)
 {
-  if(auto sendParameter = dynamic_cast<HardwareSourceSendParameter*>(newOne))
+  if(auto sendParameter = dynamic_cast<HardwareSourceSendParameter *>(newOne))
     newOne = sendParameter->getSiblingParameter();
 
   clear();
@@ -85,7 +85,7 @@ void ModulationRoutersCarousel::turnInDirection(int inc)
 {
   auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
   auto selected = Application::get().getPresetManager()->getEditBuffer()->getSelected(vg);
-  if(auto s = dynamic_cast<HardwareSourceSendParameter*>(selected))
+  if(auto s = dynamic_cast<HardwareSourceSendParameter *>(selected))
   {
     if(auto sibling = s->getSiblingParameter())
       sibling->toggleUiSelectedModulationRouter(inc);

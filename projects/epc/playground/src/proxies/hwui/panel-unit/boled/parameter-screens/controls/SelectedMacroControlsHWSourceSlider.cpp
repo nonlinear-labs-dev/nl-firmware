@@ -22,11 +22,11 @@ void SelectedMacroControlsHWSourceSlider::onParameterSelected(Parameter *newOne)
 {
   m_mcChanged.disconnect();
 
-  if(auto mc = dynamic_cast<MacroControlParameter*>(newOne))
+  if(auto mc = dynamic_cast<MacroControlParameter *>(newOne))
   {
     m_mcChanged = mc->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceSlider::onMCChanged));
   }
-  else if(auto modulationRouter = dynamic_cast<ModulationRoutingParameter*>(newOne))
+  else if(auto modulationRouter = dynamic_cast<ModulationRoutingParameter *>(newOne))
   {
     auto tgt = modulationRouter->getTargetParameter();
     m_mcChanged = tgt->onParameterChanged(sigc::mem_fun(this, &SelectedMacroControlsHWSourceSlider::onMCChanged));

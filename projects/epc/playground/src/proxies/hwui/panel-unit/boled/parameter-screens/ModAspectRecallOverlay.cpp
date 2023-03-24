@@ -2,16 +2,10 @@
 #include <proxies/hwui/controls/Button.h>
 #include <parameters/MacroControlParameter.h>
 #include <presets/recall/RecallParameter.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCPositionLabel.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MCPositionLabel.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCAmountLabel.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAmountLabel.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulationSourceLabel.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallModulationSourceLabel.h>
 #include "ModAspectRecallOverlay.h"
 #include "use-cases/ModParameterUseCases.h"
+#include "parameters/ParameterFactory.h"
 #include <proxies/hwui/FrameBuffer.h>
-#include <groups/MacroControlsGroup.h>
 #include <Application.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
@@ -51,8 +45,8 @@ bool ModAspectRecallOverlay::onButton(Buttons i, bool down, ButtonModifiers mod)
 
 ModAspectRecallOverlay::ModAspectRecallOverlay(const Rect& r, ModulateableParameter* modP, Mode openMode)
     : Overlay { r }
-    , m_modParam { modP }
     , m_mode { openMode }
+    , m_modParam { modP }
 {
   constexpr static int BIG_SLIDER_X = 77;
   constexpr static int BIG_SLIDER_WIDTH = 102;
@@ -260,7 +254,7 @@ void ModAspectRecallOverlay::updateUI()
 
 std::string ModAspectRecallOverlay::mcSelectionToDisplay(MacroControls src) const
 {
-  auto id = MacroControlsGroup::modSrcToParamId(src);
+  auto id = ParameterFactory::modSrcToParamId(src);
   if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
   {
     return mc->getShortName();
@@ -270,7 +264,7 @@ std::string ModAspectRecallOverlay::mcSelectionToDisplay(MacroControls src) cons
 
 std::string ModAspectRecallOverlay::stringizeMCPos(tDisplayValue src) const
 {
-  auto id = MacroControlsGroup::modSrcToParamId(MacroControls::MC1);
+  auto id = ParameterFactory::modSrcToParamId(MacroControls::MC1);
   if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
   {
     return mc->getDisplayString(src);

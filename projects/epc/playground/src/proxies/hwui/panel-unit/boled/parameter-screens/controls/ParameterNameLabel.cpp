@@ -151,7 +151,7 @@ void ParameterNameLabel::onPresetLoaded()
 
 void ParameterNameLabelForMCOfModulationRouter::onParameterSelected(Parameter *param)
 {
-  if(auto modRouter = dynamic_cast<ModulationRoutingParameter*>(param))
+  if(auto modRouter = dynamic_cast<ModulationRoutingParameter *>(param))
   {
     ParameterNameLabel::onParameterSelected(modRouter->getTargetParameter());
   }

@@ -61,7 +61,7 @@ class SoundTypeOverlayDisplay extends OverlayLayout {
     public Rect getSingleSoundFXRect(VoiceGroup vg) {
         final double margin = Millimeter.toPixels(0.5);
         final double partWidth = Millimeter.toPixels(2.5);
-        final Rect pix = getPixRect().copy();
+        final Rect pix = getRelativePosition().copy();
         final double centerY = pix.getCenterPoint().getY();
         final double centerX = pix.getCenterPoint().getX();
         final double halfPartWidth = partWidth / 2; 

@@ -25,22 +25,35 @@ ScreenSaverTimeoutSetting::ScreenSaverTimeoutSetting(UpdateDocumentContributor& 
   nltools_assertOnDevPC(s_logTimeOuts.size() == s_displayStrings.size());
 }
 
+void ScreenSaverTimeoutSetting::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto f = std::get<float>(val);
+  setFromValueInt(static_cast<int>(f));
+}
+
 void ScreenSaverTimeoutSetting::load(const Glib::ustring& text, Initiator initiator)
 {
   try
   {
     auto loadedValue = std::stoi(text);
-
-    if(auto pos = std::find(s_logTimeOuts.begin(), s_logTimeOuts.end(), loadedValue); pos != s_logTimeOuts.end())
-      m_selectedIndex = std::distance(s_logTimeOuts.begin(), pos);
-
-    m_timeout = std::chrono::minutes(s_logTimeOuts[m_selectedIndex]);
+    setFromValueInt(loadedValue);
   }
   catch(...)
   {
     m_timeout = c_disabled;
     m_selectedIndex = 0;
   }
+}
+
+void ScreenSaverTimeoutSetting::setFromValueInt(int timeoutValue)
+{
+  const auto oldIndex = m_selectedIndex;
+  if(auto pos = std::find(s_logTimeOuts.begin(), s_logTimeOuts.end(), timeoutValue); pos != s_logTimeOuts.end())
+    m_selectedIndex = std::distance(s_logTimeOuts.begin(), pos);
+
+  m_timeout = std::chrono::minutes(s_logTimeOuts[m_selectedIndex]);
+  if(oldIndex != m_selectedIndex)
+    notify();
 }
 
 Glib::ustring ScreenSaverTimeoutSetting::save() const
@@ -67,20 +80,6 @@ void ScreenSaverTimeoutSetting::init()
 {
   if(m_timeout != c_disabled)
     m_expiration.refresh(m_timeout);
-
-  if(Application::exists())
-  {
-    auto& app = Application::get();
-    auto editBuffer = app.getPresetManager()->getEditBuffer();
-    auto reschedule = sigc::mem_fun(this, &ScreenSaverTimeoutSetting::endAndReschedule);
-
-    editBuffer->onSelectionChanged(sigc::hide(sigc::hide(reschedule)), std::nullopt);
-    editBuffer->onChange(reschedule, false);
-    app.getPlaycontrollerProxy()->onLastKeyChanged(reschedule);
-    app.getSettings()->onSettingsChanged(reschedule);
-    app.getHWUI()->getPanelUnit().getEditPanel().getBoled().onLayoutInstalled(
-        sigc::mem_fun(this, &ScreenSaverTimeoutSetting::onLayoutInstalled));
-  }
 }
 
 void ScreenSaverTimeoutSetting::sendState(bool state)

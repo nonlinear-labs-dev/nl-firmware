@@ -19,8 +19,7 @@
         },
         "VoiceGroupHeader": {
           "Class": "WideInvertedLabel",
-          "Position": "64, 0",
-          "Events": "CurrentVoiceGroupText => Text[Text]"
+          "Position": "64, 0"
         },
         "EditTextHeader": {
           "Class": "InvertedLabel",

@@ -77,22 +77,23 @@ void SingleSoundPolyToFXIndicator::bruteForce()
     serial = addControl(new PNGControl({ 24, 7, 7, 9 }, "ArrowUp.png"));
   }
 
-  auto master_fx_mix_cp = eb.findParameterByID({C15::PID::Master_FX_Mix, VoiceGroup::Global})->getControlPositionValue();
+  auto master_fx_mix_cp
+      = eb.findParameterByID({ C15::PID::Master_FX_Mix, VoiceGroup::Global })->getControlPositionValue();
 
   if(master_fx_mix_cp > 0 && master_fx_mix_cp < 1)
   {
-    fxToOut = addControl(new PNGControl({36, 2, 20, 19}, "Single_2_Arrows_Right_To_Left.png"));
+    fxToOut = addControl(new PNGControl({ 36, 2, 20, 19 }, "Single_2_Arrows_Right_To_Left.png"));
   }
   else if(master_fx_mix_cp == 0)
   {
-    fxToOut = addControl(new PNGControl({36, 2, 20, 19}, "Single_Upper_Arrow_Right_To_Left.png"));
+    fxToOut = addControl(new PNGControl({ 36, 2, 20, 19 }, "Single_Upper_Arrow_Right_To_Left.png"));
   }
   else if(master_fx_mix_cp == 1)
   {
-    fxToOut = addControl(new PNGControl({36, 2, 20, 19}, "Single_Lower_Arrow_Right_To_Left.png"));
+    fxToOut = addControl(new PNGControl({ 36, 2, 20, 19 }, "Single_Lower_Arrow_Right_To_Left.png"));
   }
 
-  for(const auto& c: getControls<PNGControl>())
+  for(const auto& c : getControls<PNGControl>())
   {
     c->useImageColors(false);
     c->setColor(FrameBufferColors::C255);
@@ -178,7 +179,7 @@ void SingleSoundFBFXIndicator::bruteForce()
     label1 = addControl(new PNGControl({ getWidth() - 9, 0, 8, 5 }, "FB_Label.png"));
   }
 
-  for(const auto& c: getControls<PNGControl>())
+  for(const auto& c : getControls<PNGControl>())
   {
     c->useImageColors(false);
     c->setTransparent(true);

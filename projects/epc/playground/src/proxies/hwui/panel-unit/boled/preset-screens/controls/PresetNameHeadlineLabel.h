@@ -15,9 +15,9 @@ class PresetNameHeadlineLabel : public Label
   std::shared_ptr<Font> getFont() const override;
   int getFontHeight() const override;
 
-  void onBankChanged(const Uuid& newBankUuid);
+  void onBankChanged(const Uuid &newBankUuid);
   void onPresetSelectionChanged();
 
  private:
-  Bank* m_currentBank = nullptr;
+  Bank *m_currentBank = nullptr;
 };

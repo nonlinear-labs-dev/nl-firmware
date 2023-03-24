@@ -9,11 +9,8 @@ import com.google.gwt.xml.client.Node;
 import com.nonlinearlabs.client.ColorTable;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.dataModel.editBuffer.BasicParameterModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
-import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.world.Control;
 import com.nonlinearlabs.client.world.Gray;
@@ -31,31 +28,17 @@ import com.nonlinearlabs.client.world.pointer.Gesture;
 public class Overlay extends OverlayLayout {
 
 	private class PartMuteDisplay extends SVGImage {
-
-		private boolean isMuted = false;
-		private boolean inLayer = false;
-
 		public PartMuteDisplay(OverlayLayout parent, VoiceGroup vg) {
 			super(parent, "mute-part-a.svg");
 
-			BasicParameterModel mute = EditBufferModel.get().getParameter(new ParameterId(395, vg));
-
-			mute.value.value.onChange(value -> {
-				isMuted = value > 0;
-				setVisible(inLayer && isMuted);
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
+			EditBufferPresenterProvider.get().onChange(ebp -> {
+				var isLayerOrSplit = ebp.soundType == SoundType.Split || ebp.soundType == SoundType.Layer;
+				if(vg == VoiceGroup.I)
+					setVisible(ebp.partIMuted && isLayerOrSplit);
+				else 
+					setVisible(ebp.partIIMuted && isLayerOrSplit);
 				return true;
 			});
-
-			EditBufferModel.get().soundType.onChange(v -> {
-				inLayer = v == SoundType.Layer;
-				setVisible(inLayer && isMuted);
-				invalidate(INVALIDATION_FLAG_UI_CHANGED);
-				return true;
-			});
-
-			setVisible(
-					mute.value.value.getValue() > 0 && EditBufferModel.get().soundType.getValue() == SoundType.Layer);
 		}
 
 		@Override
@@ -335,10 +318,22 @@ public class Overlay extends OverlayLayout {
 		double muteHeight = soundTypeDisplayPos.getHeight() / 3;
 		double muteYMargin = muteHeight / 2;
 
-		partMuteDisplayI.doLayout(soundTypeDisplayPos.getLeft() - Millimeter.toPixels(0.2),
-				soundTypeDisplayPos.getTop() + muteYMargin, soundTypeDisplayPos.getWidth(), muteHeight);
-		partMuteDisplayII.doLayout(soundTypeDisplayPos.getLeft() - Millimeter.toPixels(0.2),
-				soundTypeDisplayPos.getTop() + muteHeight + (muteYMargin), soundTypeDisplayPos.getWidth(), muteHeight);
+
+		SoundType type = EditBufferPresenterProvider.get().getValue().soundType;
+		if(type == SoundType.Layer)
+		{
+			partMuteDisplayI.doLayout(soundTypeDisplayPos.getLeft() - Millimeter.toPixels(0.2),
+					soundTypeDisplayPos.getTop() + muteYMargin, soundTypeDisplayPos.getWidth(), muteHeight);
+			partMuteDisplayII.doLayout(soundTypeDisplayPos.getLeft() - Millimeter.toPixels(0.2),
+					soundTypeDisplayPos.getTop() + muteHeight + (muteYMargin), soundTypeDisplayPos.getWidth(), muteHeight);			
+		}
+		else if(type == SoundType.Split)
+		{
+			partMuteDisplayI.doLayout(soundTypeDisplayPos.getCenterPoint().getX() - muteHeight,
+					soundTypeDisplayPos.getCenterPoint().getY() - muteYMargin, muteHeight, muteHeight);
+			partMuteDisplayII.doLayout(soundTypeDisplayPos.getCenterPoint().getX() - 1,
+					soundTypeDisplayPos.getCenterPoint().getY() - muteYMargin, muteHeight, muteHeight);			
+		}
 
 
 		Rect monoI = soundTypeDisplay.getSingleSoundFXRect(VoiceGroup.I);

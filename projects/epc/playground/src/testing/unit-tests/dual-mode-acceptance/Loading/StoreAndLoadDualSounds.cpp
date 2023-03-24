@@ -6,7 +6,7 @@
 #include <parameter_declarations.h>
 #include <use-cases/PresetUseCases.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store and Load Preset yields same editbuffer")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Store and Load Preset yields same editbuffer")
 {
   MockPresetStorage presets;
 
@@ -20,7 +20,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Store and Load Preset yields sa
 
   WHEN("Unison Voices Changed")
   {
-    useCase.setParameter({C15::PID::Unison_Voices, VoiceGroup::I}, 1);
+    useCase.setParameter({ C15::PID::Unison_Voices, VoiceGroup::I }, 1);
 
     THEN("Stored")
     {

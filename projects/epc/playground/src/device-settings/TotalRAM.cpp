@@ -2,29 +2,16 @@
 #include <tools/StringTools.h>
 #include "TotalRAM.h"
 #include "Settings.h"
-
-void TotalRAM::load(const Glib::ustring& text, Initiator initiator)
-{
-  m_display = text;
-}
-
-Glib::ustring TotalRAM::save() const
-{
-  return m_display;
-}
+#include "nltools/Assert.h"
+#include <xml/Writer.h>
 
 Glib::ustring TotalRAM::getDisplayString() const
 {
   return m_display;
 }
 
-bool TotalRAM::persistent() const
-{
-  return false;
-}
-
-TotalRAM::TotalRAM(Settings& s)
-    : Setting(s)
+TotalRAM::TotalRAM(DeviceInformation* s)
+    : DeviceInformationItem(s)
 {
   static SpawnCommandLine cmd("free --mega");
   const auto& out = cmd.getStdOutput();
@@ -32,6 +19,15 @@ TotalRAM::TotalRAM(Settings& s)
   auto memory = lines[1];
   auto memoryStats = StringTools::splitStringAtSpacesAndTrimSpaces(memory);
   auto total = memoryStats[1];
+  m_display = total;
+}
 
-  load(total, Initiator::EXPLICIT_LOAD);
+Glib::ustring TotalRAM::get() const
+{
+  return m_display;
+}
+
+void TotalRAM::writeDocument(Writer& writer, UpdateDocumentContributor::tUpdateID knownRevision) const
+{
+  writer.writeTextElement("total-ram", get());
 }

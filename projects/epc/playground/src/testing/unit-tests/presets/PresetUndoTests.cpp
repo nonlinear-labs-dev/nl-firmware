@@ -1,4 +1,5 @@
 #include "testing/TestHelper.h"
+#include "parameter_group.h"
 #include <presets/Bank.h>
 #include <presets/Preset.h>
 #include <presets/PresetParameter.h>
@@ -10,7 +11,7 @@
 #include <use-cases/PresetUseCases.h>
 #include <parameters/scale-converters/Linear100PercentScaleConverter.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Undo copyFrom")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Undo copyFrom")
 {
   auto pm = TestHelper::getPresetManager();
   auto eb = TestHelper::getEditBuffer();
@@ -146,14 +147,14 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Undo copyFrom")
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"PresetParameterGroup")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "PresetParameterGroup")
 {
   WHEN("VoiceGroup is assigned to PresetParameterGroup")
   {
     struct PGroup : public ParameterGroup
     {
       PGroup()
-          : ParameterGroup(TestHelper::getEditBuffer(), { "A", VoiceGroup::I }, "Foo", "Bar", "Baz")
+          : ParameterGroup(TestHelper::getEditBuffer(), C15::ParameterGroups[(int) 2], VoiceGroup::I)
       {
       }
 
@@ -209,4 +210,3 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"PresetParameterGroup")
     }
   }
 }
-

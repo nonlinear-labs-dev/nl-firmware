@@ -14,7 +14,7 @@ class AlsaFramesPerPeriod extends Setting {
 
 	@Override
 	public Control onValueButtonMouseDown(Position eventPoint) {
-		String v = Window.prompt("Frames per Period (0 = default, 1...512)", "0");
+		String v = Window.prompt("Frames per Period (16 = default, 1...512)", "16");
 		getNonMaps().getServerProxy().setSetting("AlsaFramesPerPeriod", v);
 		return this;
 	}

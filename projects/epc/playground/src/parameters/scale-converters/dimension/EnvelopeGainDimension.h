@@ -4,12 +4,12 @@
 
 class EnvelopeGainDimension : public Dimension
 {
-public:
- EnvelopeGainDimension();
- virtual ~EnvelopeGainDimension();
+ public:
+  EnvelopeGainDimension();
+  virtual ~EnvelopeGainDimension();
 
- static const EnvelopeGainDimension &get();
+  static const EnvelopeGainDimension &get();
 
- [[nodiscard]] Glib::ustring getStingizerJS() const override;
- [[nodiscard]] Glib::ustring stringize(const tDisplayValue &displayValue) const override;
+  [[nodiscard]] Glib::ustring getStingizerJS() const override;
+  [[nodiscard]] Glib::ustring stringize(const tDisplayValue &displayValue) const override;
 };

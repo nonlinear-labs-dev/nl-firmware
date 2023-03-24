@@ -41,7 +41,6 @@
 #include "WifiSetting.h"
 #include "SettingsActions.h"
 #include "CrashOnError.h"
-#include "LayoutMode.h"
 #include "TuneReference.h"
 #include "TotalRAM.h"
 #include "UsedRAM.h"
@@ -51,6 +50,7 @@
 #include "FocusAndModeSetting.h"
 #include "SelectedRibbonsSetting.h"
 #include "AftertouchLegacyMode.h"
+#include "BaseUnitUIDetail.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -81,6 +81,7 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, cons
   addSetting("SendPresetAsLPCWriteFallback", new SendPresetAsPlaycontrollerWriteFallback(*this));
   addSetting("PresetStoreModeSetting", new PresetStoreModeSetting(*this));
   addSetting("BaseUnitUIMode", new BaseUnitUIMode(*this));
+  addSetting("BaseUnitUIDetail", new BaseUnitUIDetail(*this));
   addSetting("PanelUnitFocusAndMode", new FocusAndModeSetting(*this));
   addSetting("NoteShift", new NoteShift(*this));
   addSetting("ParameterEditModeRibbonBehaviour", new ParameterEditModeRibbonBehaviour(*this));
@@ -96,15 +97,12 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, cons
   addSetting("Pedal3Type", new PedalType(*this, 3));
   addSetting("Pedal4Type", new PedalType(*this, 4));
   addSetting("EncoderAcceleration", new EncoderAcceleration(*this));
-  addSetting("LayoutVersionMode", new LayoutMode(this));
   addSetting("AftertouchCurve", new AftertouchCurve(*this));
   addSetting("BenderCurve", new BenderCurve(*this));
   addSetting("EditSmoothingTime", new EditSmoothingTime(*this));
 
-  auto localWifi = std::make_shared<EpcWifi>(hwFeatures);
-  addSetting("SSID", new SSID(*this, localWifi, hwFeatures));
-  addSetting("Passphrase", new Passphrase(*this, localWifi));
-  addSetting("WifiSetting", new WifiSetting(*this, localWifi));
+  addSetting("Passphrase", new Passphrase(*this));
+  addSetting("WifiSetting", new WifiSetting(*this));
 
   addSetting("PresetGlitchSuppression", new PresetGlitchSuppression(*this));
   addSetting("DateTimeAdjustment", new DateTimeAdjustment(*this));
@@ -114,8 +112,7 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, cons
   addSetting("ForceHighlightChangedParameters", new ForceHighlightChangedParametersSetting(*this));
   addSetting("CrashOnError", new CrashOnError(*this));
   addSetting("TuneReference", new TuneReference(*this));
-  addSetting("TotalRAM", new TotalRAM(*this));
-  addSetting("UsedRAM", new UsedRAM(*this));
+
   addSetting("SyncVoiceGroups", new SyncVoiceGroupsAcrossUIS(*this));
   addSetting("ScreenSaverTimeout", new ScreenSaverTimeoutSetting(*this));
   addSetting("SyncSplit", new SplitPointSyncParameters(*this));
@@ -259,15 +256,17 @@ void Settings::writeDocument(Writer &writer, tUpdateID knownRevision) const
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("settings", Attribute("changed", changed), [&]() {
-    if(changed)
-    {
-      for(auto &setting : m_settings)
-      {
-        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
-      }
-    }
-  });
+  writer.writeTag("settings", Attribute("changed", changed),
+                  [&]()
+                  {
+                    if(changed)
+                    {
+                      for(auto &setting : m_settings)
+                      {
+                        writer.writeTag(setting.first, [&]() { setting.second->writeDocument(writer, knownRevision); });
+                      }
+                    }
+                  });
 }
 
 bool Settings::isLoading() const

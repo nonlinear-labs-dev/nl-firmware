@@ -24,6 +24,8 @@ public class DeviceInfoUpdater extends Updater {
 		m.put("unique-hardware-id", DeviceInformation.get().uniqueHardwareID);
 		m.put("rt-software-version", DeviceInformation.get().uiRTVersion);
 		m.put("at-calibrated", DeviceInformation.get().aftertouchCalibrated);
+		m.put("total-ram", DeviceInformation.get().totalRam);
+		m.put("used-ram", DeviceInformation.get().usedRam);
 		return m;
 	}
 

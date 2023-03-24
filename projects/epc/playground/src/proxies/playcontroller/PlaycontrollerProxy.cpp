@@ -27,9 +27,10 @@
 #include <device-settings/Settings.h>
 #include <filesystem>
 #include <use-cases/IncrementalChangerUseCases.h>
+#include <playcontroller/EHC-pedal-presets.h>
 
 PlaycontrollerProxy::PlaycontrollerProxy()
-    : m_lastTouchedRibbon(HardwareSourcesGroup::getUpperRibbon1ParameterID().getNumber())
+    : m_lastTouchedRibbon(HardwareSourcesGroup::getLowerRibbon2ParameterID().getNumber())
     , m_throttledRelativeParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
     , m_throttledAbsoluteParameterChange(Application::get().getMainContext(), std::chrono::milliseconds(1))
 {
@@ -270,6 +271,7 @@ void PlaycontrollerProxy::notifyRibbonTouch(int ribbonsParameterID)
      || ribbonsParameterID == HardwareSourcesGroup::getUpperRibbon3ParameterID().getNumber())
   {
     m_lastTouchedRibbon = ribbonsParameterID;
+
     m_signalRibbonTouched.send(ribbonsParameterID);
   }
 }
@@ -449,7 +451,8 @@ int16_t PlaycontrollerProxy::ribbonCPValueToTCDValue(tControlPositionValue d, bo
   static ValueRange<tTcdValue> s_ribbonValueTcdRangeUnipolar { 0, 16000 };
 
   if(bipolar)
-    return scaleValueToRange<int16_t>(s_ribbonValueTcdRangeUnipolar, d, ValueRange<tControlPositionValue>(-1, 1), false);
+    return scaleValueToRange<int16_t>(s_ribbonValueTcdRangeUnipolar, d, ValueRange<tControlPositionValue>(-1, 1),
+                                      false);
   else
     return scaleValueToRange<int16_t>(s_ribbonValueTcdRangeUnipolar, d, ValueRange<tControlPositionValue>(0, 1), false);
 }
@@ -465,4 +468,9 @@ void PlaycontrollerProxy::onSelectedRibbonsChanged(const Setting *s)
   r2->sendModeToPlaycontroller();
   r3->sendModeToPlaycontroller();
   r4->sendModeToPlaycontroller();
+}
+
+sigc::connection PlaycontrollerProxy::onRibbonTouched(const sigc::slot<void, int> &s)
+{
+  return m_signalRibbonTouched.connectAndInit(s, m_lastTouchedRibbon);
 }

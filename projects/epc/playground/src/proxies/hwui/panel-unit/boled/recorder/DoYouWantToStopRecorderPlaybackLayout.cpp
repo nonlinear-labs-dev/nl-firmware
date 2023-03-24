@@ -11,13 +11,14 @@
 DoYouWantToStopRecorderPlaybackLayout::DoYouWantToStopRecorderPlaybackLayout()
     : Layout(Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled())
 {
-  LabelStyle headlineStyle{};
+  LabelStyle headlineStyle {};
   headlineStyle.size = FontSize::Size9;
   headlineStyle.decoration = FontDecoration::Bold;
 
-  auto headline = addControl(new LabelStyleable("Recorder still in playback!", {0, 0, 256, 16}, headlineStyle));
-  auto content = addControl(new MultiLineLabel({8, 16, 248, 48}, "All recorder tabs have been closed. Do you want to stop the playback?\n"
-                                                                   "It can also be stopped anytime in the Setup menu."));
+  auto headline = addControl(new LabelStyleable("Recorder still in playback!", { 0, 0, 256, 16 }, headlineStyle));
+  auto content = addControl(new MultiLineLabel({ 8, 16, 248, 48 },
+                                               "All recorder tabs have been closed. Do you want to stop the playback?\n"
+                                               "It can also be stopped anytime in the Setup menu."));
   auto nope = addControl(new Button("No", Buttons::BUTTON_A));
   auto okay = addControl(new Button("Yes", Buttons::BUTTON_D));
 }

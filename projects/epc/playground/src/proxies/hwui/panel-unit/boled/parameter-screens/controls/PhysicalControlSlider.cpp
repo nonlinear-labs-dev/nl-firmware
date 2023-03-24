@@ -10,18 +10,19 @@ PhysicalControlSlider::PhysicalControlSlider(const Rect &rect)
     : SelectedParameterDotSlider(rect)
 {
   auto settings = Application::get().getSettings();
-  settings->getSetting<GlobalLocalEnableSetting>()->onChange(sigc::hide(sigc::mem_fun(this, &PhysicalControlSlider::setDirty)));
+  settings->getSetting<GlobalLocalEnableSetting>()->onChange(
+      sigc::hide(sigc::mem_fun(this, &PhysicalControlSlider::setDirty)));
   settings->getSetting<RoutingSettings>()->onChange(sigc::hide(sigc::mem_fun(this, &PhysicalControlSlider::setDirty)));
 }
 
-PhysicalControlParameter* getPhysicalControlParameter(Parameter* p)
+PhysicalControlParameter *getPhysicalControlParameter(Parameter *p)
 {
-  return dynamic_cast<PhysicalControlParameter*>(p);
+  return dynamic_cast<PhysicalControlParameter *>(p);
 }
 
-HardwareSourceSendParameter* getSendParameter(Parameter* p)
+HardwareSourceSendParameter *getSendParameter(Parameter *p)
 {
-  return dynamic_cast<HardwareSourceSendParameter*>(p);
+  return dynamic_cast<HardwareSourceSendParameter *>(p);
 }
 
 void PhysicalControlSlider::setParameter(Parameter *param)
@@ -87,8 +88,8 @@ bool PhysicalControlSlider::redrawLocalDisabled(FrameBuffer &buffer)
 
   const auto pos = getPosition();
   const auto w = (pos.getWidth() / 2) - 2;
-  const auto left = Rect{pos.getLeft(), pos.getTop(), w, pos.getHeight()};
-  const auto right = Rect{pos.getCenter().getX() + 2, pos.getTop(), w, pos.getHeight()};
+  const auto left = Rect { pos.getLeft(), pos.getTop(), w, pos.getHeight() };
+  const auto right = Rect { pos.getCenter().getX() + 2, pos.getTop(), w, pos.getHeight() };
 
   DotSlider sliderSend(hwSnd, left);
   sliderSend.setValue(hwSnd->getValue().getQuantizedClipped(), hwSnd->isBiPolar());
@@ -103,11 +104,11 @@ bool PhysicalControlSlider::redrawLocalDisabled(FrameBuffer &buffer)
 
 bool PhysicalControlSlider::isLocalDisabledForThisParameter()
 {
-  if(auto hwParam = dynamic_cast<const PhysicalControlParameter*>(getParameter()))
+  if(auto hwParam = dynamic_cast<const PhysicalControlParameter *>(getParameter()))
   {
     return !hwParam->isLocalEnabled();
   }
-  else if(auto sendParam = dynamic_cast<const HardwareSourceSendParameter*>(getParameter()))
+  else if(auto sendParam = dynamic_cast<const HardwareSourceSendParameter *>(getParameter()))
   {
     return !sendParam->isLocalEnabled();
   }

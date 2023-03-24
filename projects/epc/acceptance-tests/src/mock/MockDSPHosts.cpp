@@ -64,9 +64,9 @@ void MockDSPHost::setType(SoundType type)
 }
 
 PassOnKeyDownHost::PassOnKeyDownHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
-    : m_note{ expectedNote }
-    , m_vel{ expectedVelo }
-    , m_part{ expectedPart }
+    : m_note { expectedNote }
+    , m_vel { expectedVelo }
+    , m_part { expectedPart }
 {
 }
 
@@ -101,9 +101,9 @@ VoiceGroup PassOnKeyDownHost::getSplitPartForKeyUp(int key, InputEventSource fro
 }
 
 PassOnKeyUpHost::PassOnKeyUpHost(const int expectedNote, float expectedVelo, VoiceGroup expectedPart)
-    : m_note{ expectedNote }
-    , m_vel{ expectedVelo }
-    , m_part{ expectedPart }
+    : m_note { expectedNote }
+    , m_vel { expectedVelo }
+    , m_part { expectedPart }
 {
 }
 
@@ -137,8 +137,8 @@ bool PassOnKeyUpHost::didReceiveKeyUp() const
 }
 
 PassOnHWReceived::PassOnHWReceived(HardwareSource expectedId, float expectedValue)
-    : m_id{ expectedId }
-    , m_value{ expectedValue }
+    : m_id { expectedId }
+    , m_value { expectedValue }
 {
 }
 

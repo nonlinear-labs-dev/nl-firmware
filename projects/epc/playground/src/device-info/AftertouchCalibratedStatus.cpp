@@ -1,11 +1,10 @@
 #include "AftertouchCalibratedStatus.h"
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 
-AftertouchCalibratedStatus::AftertouchCalibratedStatus(DeviceInformation *parent, PlaycontrollerProxy& pcp)
+AftertouchCalibratedStatus::AftertouchCalibratedStatus(DeviceInformation *parent, PlaycontrollerProxy &pcp)
     : DeviceInformationItem(parent)
 {
-  m_connection = pcp.onCalibrationStatusChanged(
-      sigc::mem_fun(this, &AftertouchCalibratedStatus::onCalibrationChanged));
+  m_connection = pcp.onCalibrationStatusChanged(sigc::mem_fun(this, &AftertouchCalibratedStatus::onCalibrationChanged));
 }
 
 void AftertouchCalibratedStatus::onCalibrationChanged(bool calibrated)

@@ -7,9 +7,9 @@ class ScaleParameter : public ModulateableParameter
   typedef ModulateableParameter super;
 
  public:
-  ScaleParameter(ParameterGroup *group, const ParameterId& id);
+  ScaleParameter(ParameterGroup* group, const ParameterId& id);
 
-  void writeDocProperties(Writer &writer, tUpdateID knownRevision) const override;
+  void writeDocProperties(Writer& writer, tUpdateID knownRevision) const override;
   Glib::ustring getLongName() const override;
   size_t getHash() const override;
 };

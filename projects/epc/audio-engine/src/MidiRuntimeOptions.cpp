@@ -1,6 +1,11 @@
 #include <synth/C15Synth.h>
 #include "MidiRuntimeOptions.h"
 
+MidiRuntimeOptions::MidiRuntimeOptions()
+{
+  m_routingMappings.fill({});
+}
+
 void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
 {
   m_lastMessage = msg;
@@ -117,7 +122,6 @@ bool MidiRuntimeOptions::shouldReceiveLocalNotes() const
 {
   return m_isSecondSetOfRibbonsEnabled;
 }
-
 
 std::optional<int> MidiRuntimeOptions::decodeEnumMSB(PedalCC cc)
 {

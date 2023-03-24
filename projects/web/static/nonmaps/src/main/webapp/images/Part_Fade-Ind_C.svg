@@ -1,16 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="25" height="13" viewBox="0 0 25 13">
-  <defs>
-    <style>
-      .a {
-        fill: #b3b3b3;
-      }
-
-      .b {
-        fill: #4d4d4d;
-      }
-    </style>
-  </defs>
-  <title>Part_Fade-Ind_C</title>
-  <polygon class="a" points="3.5 13 14.5 2 25 2 25 0 13.5 0 0.5 13 3.5 13"/>
-  <polygon class="b" points="3.5 13 25 13 25 2 14.5 2 3.5 13"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="25" height="13" viewBox="0 0 25 13"><title>Part_Fade-Ind_C</title><polygon points="3.5 13 14.5 2 25 2 25 0 13.5 0 0.5 13 3.5 13" fill="#b3b3b3"/><polygon points="3.5 13 25 13 25 2 14.5 2 3.5 13" fill="#4d4d4d"/></svg>

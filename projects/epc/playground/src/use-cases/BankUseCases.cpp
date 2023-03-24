@@ -114,12 +114,10 @@ void BankUseCases::dropBank(const Bank* source)
       auto transaction = scope->getTransaction();
       size_t i = 0;
 
-      source->forEachPreset(
-          [&](auto p)
-          {
-            m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p));
-            i++;
-          });
+      source->forEachPreset([&](auto p) {
+        m_bank->insertPreset(transaction, insertPos + i, std::make_unique<Preset>(m_bank, *p));
+        i++;
+      });
     }
   }
 }
@@ -259,9 +257,9 @@ void BankUseCases::insertBank(Bank* toInsert, size_t insertPosition)
                                                    m_bank->getName(true));
   auto transaction = scope->getTransaction();
 
-  toInsert->forEachPreset(
-      [&, i = 0](auto p) mutable
-      { m_bank->insertPreset(transaction, insertPosition + (i++), std::make_unique<Preset>(m_bank, *p)); });
+  toInsert->forEachPreset([&, i = 0](auto p) mutable {
+    m_bank->insertPreset(transaction, insertPosition + (i++), std::make_unique<Preset>(m_bank, *p));
+  });
 }
 
 Preset* BankUseCases::insertEditBufferAtPosition(int anchor)
@@ -378,4 +376,17 @@ void BankUseCases::selectFirstOrLastPreset(int inc)
       }
     }
   }
+}
+
+void BankUseCases::saveEditBufferIntoBank()
+{
+  auto presetManager = m_bank->getPresetManager();
+  EditBufferStorePreparation ebsp(*presetManager->getEditBuffer());
+  auto scope = m_bank->getUndoScope().startTransaction("Store Editbuffer into Bank '%0'", m_bank->getName(true));
+  auto transaction = scope->getTransaction();
+  auto preset = m_bank->appendPreset(transaction, std::make_unique<Preset>(m_bank, *presetManager->getEditBuffer()));
+  presetManager->selectBank(transaction, m_bank->getUuid());
+  m_bank->selectPreset(transaction, preset->getUuid());
+  presetManager->getEditBuffer()->undoableLoad(transaction, preset, false);
+  StoreUseCaseHelper::onStore(transaction, *preset, *presetManager, m_settings);
 }

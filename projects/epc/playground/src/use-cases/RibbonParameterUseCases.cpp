@@ -4,7 +4,7 @@
 #include <libundo/undo/Scope.h>
 
 RibbonParameterUseCases::RibbonParameterUseCases(RibbonParameter* p)
-    : PhysicalControlParameterUseCases{p}
+    : PhysicalControlParameterUseCases { p }
     , m_param { p }
 {
   nltools_assertAlways(m_param != nullptr);
@@ -48,4 +48,9 @@ void RibbonParameterUseCases::stepTouchBehaviour(int i)
   {
     m_param->undoableIncRibbonTouchBehaviour(scope->getTransaction());
   }
+}
+
+void RibbonParameterUseCases::toggleTouchBehaviour()
+{
+  stepTouchBehaviour(1);
 }

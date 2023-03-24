@@ -9,7 +9,6 @@
 #include <tools/ScopedGuard.h>
 #include <nltools/threading/Throttler.h>
 #include <tools/Uuid.h>
-#include <presets/SearchQuery.h>
 #include <tools/RecursionGuard.h>
 #include <http/ContentSection.h>
 #include <tools/Signal.h>
@@ -102,16 +101,14 @@ class PresetManager : public UpdateDocumentContributor, public SyncedItem
 
   // algorithms
   Glib::ustring createPresetNameBasedOn(const Glib::ustring &basedOn) const;
-  void searchPresets(Writer &writer, const Glib::ustring &q, const Glib::ustring &mode,
-                     std::vector<SearchQuery::Fields> &&fieldsToSearch) const;
 
   // signals
   sigc::connection onBankSelection(sigc::slot<void, Uuid> cb);
   sigc::connection onNumBanksChanged(sigc::slot<void, size_t> cb);
   sigc::connection onRestoreHappened(sigc::slot<void> cb);
-  sigc::connection onPresetStoreHappened(const sigc::slot<void>& cb);
+  sigc::connection onPresetStoreHappened(const sigc::slot<void> &cb);
   sigc::connection onMidiBankSelectionHappened(sigc::slot<void, Uuid> cb);
-  sigc::connection onLoadHappened(const sigc::slot<void>& cb);
+  sigc::connection onLoadHappened(const sigc::slot<void> &cb);
 
   const Preset *getSelectedPreset() const;
   Preset *getSelectedPreset();
@@ -168,6 +165,6 @@ class PresetManager : public UpdateDocumentContributor, public SyncedItem
   friend class PresetManagerSerializer;
   friend class PresetManagerUseCases;
 
-  const Options& m_options;
+  const Options &m_options;
   std::function<void(const std::string &)> getProgressDecorator();
 };

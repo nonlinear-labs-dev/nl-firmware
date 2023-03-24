@@ -10,7 +10,7 @@
 #include <mock/DspHostDualTester.h>
 #include <mock/TCDHelpers.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Midi Safe Mode disabled")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Midi Safe Mode disabled")
 {
   // prepare Configuration
   auto config = nltools::msg::getConfig();
@@ -24,7 +24,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Midi Safe Mode disabled")
 
   //Prepare Midi Settings
   DspHostDualTester tester { synth->getDsp() };
-  MockSettingsObject settings("", &SyncMasterMockRoot::get());
 
   // prepare Scenario
   constexpr int MeasureTimeMs = 100;
@@ -32,8 +31,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Midi Safe Mode disabled")
   constexpr int Notes[NumberOfNotes] = { 48, 52, 55 };
 
   //load preset
-  auto settingBasePtr = static_cast<Settings*>(&settings);
-  XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "SplitPlateau", *settingBasePtr);
+  XMLPresetLoader::loadFirstPresetOfBank(app.get(), "SplitPlateau.xml", synth.get());
   synth->measurePerformance(std::chrono::milliseconds(MeasureTimeMs));
 
   // prepare Midi Settings

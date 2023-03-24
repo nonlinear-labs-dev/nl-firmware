@@ -12,6 +12,7 @@ class VoiceGroupUseCases
   void setVoiceGroupSilent(VoiceGroup vg);
   void toggleVoiceGroupSelection();
   void toggleVoiceGroupSelectionSilent();
+
  private:
   VoiceGroupAndLoadToPartManager* m_manager;
   EditBuffer* m_editBuffer;

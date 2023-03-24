@@ -253,6 +253,8 @@ void InputEventStage::onMIDIEvent()
         onMIDIHWChanged(decoder);
       break;
 
+    case DecoderEventType::PollStart:
+    case DecoderEventType::PollStop:
     case DecoderEventType::UNKNOWN:
       nltools_detailedAssertAlways(false, "Decoded Event should not have UNKNOWN Type");
   }
@@ -271,6 +273,8 @@ void InputEventStage::convertToAndSendMIDI(TCDDecoder *pDecoder, const VoiceGrou
     case DecoderEventType::HardwareChange:
       sendHardwareChangeAsMidi(pDecoder->getHardwareSource(), pDecoder->getValue());
       break;
+    case DecoderEventType::PollStart:
+    case DecoderEventType::PollStop:
     case DecoderEventType::UNKNOWN:
       nltools_assertNotReached();
   }
@@ -755,7 +759,8 @@ void InputEventStage::onParameterChangedMessage(const nltools::msg::HardwareSour
   if(hwID != HardwareSource::NONE)
   {
     auto cp = static_cast<float>(message.m_controlPosition);
-    onHWChanged(hwID, cp, HWChangeSource::UI, false, false, didBehaviourChange);
+    onHWChanged(hwID, cp, message.m_shouldSendMidi ? HWChangeSource::UI : HWChangeSource::UI_MODULATION, false, false,
+                didBehaviourChange);
   }
 }
 
@@ -837,6 +842,8 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
       }
       case HWChangeSource::TCD:
         return m_options->shouldAllowLocal(routingIndex);
+      case HWChangeSource::UI_MODULATION:
+        return false;
       case HWChangeSource::UI:
         return true;
       default:
@@ -851,7 +858,7 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
     m_localDisabledPositions[static_cast<unsigned int>(hwID)] = { pos, source };
     m_hwChangedCB();
   }
-  else if(source != HWChangeSource::MIDI)
+  else if(source != HWChangeSource::MIDI && source != HWChangeSource::UI_MODULATION)
   {
     auto pedalPos = pos;
     const auto isPedal = hwID >= HardwareSource::PEDAL1 && hwID <= HardwareSource::PEDAL4;
@@ -860,6 +867,11 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
       pedalPos = pos >= 0.5f ? 1.0f : 0.0f;
     }
     m_localDisabledPositions[static_cast<unsigned int>(hwID)] = { pedalPos, source };
+    m_hwChangedCB();
+  }
+  else if(source == HWChangeSource::UI_MODULATION)
+  {
+    m_localDisabledPositions[static_cast<unsigned int>(hwID)] = { pos, source };
     m_hwChangedCB();
   }
 
@@ -874,9 +886,11 @@ void InputEventStage::onHWChanged(HardwareSource hwID, float pos, HWChangeSource
     if(source == HWChangeSource::UI)
     {
       if(m_options->isLocalEnabled(hwID))
+      {
         sendHardwareChangeAsMidi(hwID, pos);
+      }
     }
-    else
+    else if(source != HWChangeSource::UI_MODULATION)
     {
       sendHardwareChangeAsMidi(hwID, pos);
     }

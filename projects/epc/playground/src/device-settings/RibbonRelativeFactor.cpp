@@ -5,8 +5,6 @@
 #include <parameters/scale-converters/dimension/UnitlessDimension.h>
 #include <parameters/scale-converters/LinearScaleConverter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
-#include <parameters/value/RawValue.h>
-#include <parameters/ValueRange.h>
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
 #include <xml/Writer.h>
 
@@ -21,12 +19,18 @@ class RibbonRelFactorScaleConverter : public LinearScaleConverter
 
 RibbonRelativeFactor::RibbonRelativeFactor(Settings &parent)
     : super(parent)
-    , m_factor(nullptr, ScaleConverter::get<RibbonRelFactorScaleConverter>(), 1, 100, 1000)
+    , m_factor(nullptr, ScaleConverter::get<RibbonRelFactorScaleConverter>(), 1, 10, 100)
 {
 }
 
 RibbonRelativeFactor::~RibbonRelativeFactor()
 {
+}
+
+void RibbonRelativeFactor::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto f = std::get<float>(val);
+  set(static_cast<double>(f));
 }
 
 void RibbonRelativeFactor::load(const Glib::ustring &text, Initiator initiator)

@@ -15,7 +15,7 @@ PresetListContent::PresetListContent(const Rect &pos)
 
 PresetListContent::~PresetListContent() = default;
 
-bool PresetListContent::animateSomePreset(const Preset* p, std::function<void()> cb)
+bool PresetListContent::animateSomePreset(const Preset *p, std::function<void()> cb)
 {
   if(p)
   {

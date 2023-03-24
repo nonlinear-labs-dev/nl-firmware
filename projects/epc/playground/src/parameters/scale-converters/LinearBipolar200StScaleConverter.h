@@ -4,7 +4,7 @@
 
 class LinearBipolar200StScaleConverter : public LinearScaleConverter
 {
-public:
-    LinearBipolar200StScaleConverter();
-    ~LinearBipolar200StScaleConverter() override;
+ public:
+  LinearBipolar200StScaleConverter();
+  ~LinearBipolar200StScaleConverter() override;
 };

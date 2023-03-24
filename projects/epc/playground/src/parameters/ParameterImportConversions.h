@@ -9,7 +9,7 @@
 class ParameterImportConversions
 {
  public:
-  static ParameterImportConversions &get();
+  static ParameterImportConversions& get();
 
   typedef std::function<tControlPositionValue(tControlPositionValue, SoundType, VoiceGroup)> tConverter;
   typedef int tFileVersion;
@@ -21,7 +21,6 @@ class ParameterImportConversions
                                                       const tFileVersion inVersion) const;
 
   virtual ~ParameterImportConversions();
-
 
  private:
   explicit ParameterImportConversions(bool registerDefaults);
@@ -45,11 +44,11 @@ class ParameterImportConversions
 
   struct ConvertersBySourceFileVersion
   {
-    [[nodiscard]] tControlPositionValue convert(tControlPositionValue in, tFileVersion inVersion, SoundType type, VoiceGroup vg) const;
+    [[nodiscard]] tControlPositionValue convert(tControlPositionValue in, tFileVersion inVersion, SoundType type,
+                                                VoiceGroup vg) const;
     std::map<tFileVersion, tConverter> from;
   };
 
   std::map<tParameterNumber, ConvertersBySourceFileVersion> m_converters;
   std::map<tParameterNumber, ConvertersBySourceFileVersion> m_mcAmountConverters;
-
 };

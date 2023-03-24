@@ -5,9 +5,10 @@
 #include <Toolbox.h>
 #include <mock/DspHostDualTester.h>
 #include <sync/SyncMasterMockRoot.h>
-#include <mock/MockSettingsObject.h>
 #include <mock/XMLPresetLoader.h>
 #include <mock/TCDHelpers.h>
+#include "CompileTimeOptions.h"
+#include <presets/Bank.h>
 
 TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
 {
@@ -23,7 +24,6 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
 
   //Prepare Midi Settings
   DspHostDualTester tester { synth->getDsp() };
-  MockSettingsObject settings("", &SyncMasterMockRoot::get());
 
   // prepare Scenario
   constexpr int NumberOfNotes = 3;
@@ -35,13 +35,13 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
   TestHelper::updateMappingForHW(msg.routings, tMSG::RoutingIndex::Notes, tMSG::RoutingAspect::LOCAL, true);
   msg.localEnable = true;
   synth->onMidiSettingsMessage(msg);
+  auto eb = app->getPresetManager()->getEditBuffer();
 
-  // Prepare Preset
-  auto settingBasePtr = static_cast<Settings*>(&settings);
+  EditBufferUseCases ebUseCases(*eb);
 
   WHEN("Split is Loaded")
   {
-    XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "SplitPlateau", *settingBasePtr);
+    XMLPresetLoader::loadFirstPresetOfBank(app.get(), "SplitPlateau.xml", synth.get());
     synth->measurePerformance(std::chrono::milliseconds(10));
 
     THEN("Notes are held")
@@ -54,7 +54,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
 
       synth->measurePerformance(std::chrono::milliseconds(10));
       CHECK(tester.getActiveVoices(VoiceGroup::Global) == NumberOfNotes);
-      XMLPresetLoader::convertSoundTo(synth.get(), settingBasePtr, SoundType::Single);
+
+      ebUseCases.convertToSingle(VoiceGroup::I);
+      XMLPresetLoader::sendToAE(eb, synth.get());
 
       WHEN("Sound was converted")
       {
@@ -67,7 +69,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
 
   WHEN("Single is Loaded")
   {
-    XMLPresetLoader::loadTestPresetFromBank(synth.get(), "xml-banks", "InitWithAMix", *settingBasePtr);
+    XMLPresetLoader::loadFirstPresetOfBank(app.get(), "InitWithAMix.xml", synth.get());
     synth->measurePerformance(std::chrono::milliseconds(10));
 
     THEN("Notes are held")
@@ -80,7 +82,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Reset on convert")
 
       synth->measurePerformance(std::chrono::milliseconds(10));
       CHECK(tester.getActiveVoices(VoiceGroup::Global) == NumberOfNotes);
-      XMLPresetLoader::convertSoundTo(synth.get(), settingBasePtr, SoundType::Split);
+      ebUseCases.convertToSplit(VoiceGroup::I);
+      XMLPresetLoader::sendToAE(eb, synth.get());
 
       WHEN("Sound was converted")
       {

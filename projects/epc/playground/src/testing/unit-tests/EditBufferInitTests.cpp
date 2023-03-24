@@ -2,7 +2,7 @@
 #include "testing/TestHelper.h"
 #include "testing/unit-tests/mock/MockPresetStorage.h"
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Init Part Tests")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Init Part Tests")
 {
   auto editBuffer = TestHelper::getEditBuffer();
   EditBufferUseCases useCase(*editBuffer);

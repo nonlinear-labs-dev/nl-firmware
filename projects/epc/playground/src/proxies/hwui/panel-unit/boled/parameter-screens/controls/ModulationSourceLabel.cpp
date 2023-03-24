@@ -4,8 +4,8 @@
 #include "parameters/ModulateableParameter.h"
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
-#include "groups/MacroControlsGroup.h"
 #include "proxies/hwui/panel-unit/boled/BOLED.h"
+#include "parameters/ParameterFactory.h"
 #include <sigc++/sigc++.h>
 
 ModulationSourceLabel::ModulationSourceLabel(const Rect &r, Font::Justification justification)
@@ -39,7 +39,7 @@ void ModulationSourceLabel::onParamValueChanged(const Parameter *param)
 
     if(src != MacroControls::NONE && !modP->isDisabled())
     {
-      auto id = MacroControlsGroup::modSrcToParamId(src);
+      auto id = ParameterFactory::modSrcToParamId(src);
       if(auto mc = Application::get().getPresetManager()->getEditBuffer()->findParameterByID(id))
       {
         setText(StringAndSuffix { mc->getShortName() });

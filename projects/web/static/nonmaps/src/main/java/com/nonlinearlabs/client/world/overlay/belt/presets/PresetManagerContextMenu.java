@@ -94,13 +94,19 @@ public class PresetManagerContextMenu extends ContextMenu {
 
 								@Override
 								public void onChange(ChangeEvent event) {
-									loadBackupFile(event.getNativeEvent(), new ZipUploadedHandler() {
+									boolean isTar = upload.getFilename().endsWith(".tar");
+									boolean isTarGz = upload.getFilename().endsWith(".tar.gz");
+									if(!isTar && !isTarGz) {
+										Window.alert("Invalid file! Please select a correct xml.tar.gz backup file. Contact support if you need assistance.");
+									} else {
+										loadBackupFile(event.getNativeEvent(), new ZipUploadedHandler() {
 
-										@Override
-										public void onZipUploaded(JavaScriptObject buffer) {
-											NonMaps.theMaps.getServerProxy().importPresetManager(buffer);
-										}
-									});
+											@Override
+											public void onZipUploaded(JavaScriptObject buffer) {
+												NonMaps.theMaps.getServerProxy().importPresetManager(buffer);
+											}
+										});
+									}
 
 									RootPanel.get().remove(upload);
 								}

@@ -2,14 +2,14 @@
 #include <device-settings/Settings.h>
 #include <device-settings/SSID.h>
 #include <proxies/hwui/HardwareFeatures.h>
-#include <utility>
+#include <Application.h>
+#include <xml/Writer.h>
 
-SSID::SSID(Settings &parent, std::shared_ptr<EpcWifi> localWifi, const HardwareFeatures &hwFeatures)
-    : Setting(parent)
+SSID::SSID(DeviceInformation *parent, const HardwareFeatures &hwFeatures)
+    : DeviceInformationItem(parent)
     , m_hasEPCWifi(hwFeatures.hasEPCWiFi())
-    , m_localWifi(std::move(localWifi))
 {
-  parent.getSetting<DeviceName>()->onChange(
+  Application::get().getSettings()->getSetting<DeviceName>()->onChange(
       [=](const Setting *s)
       {
         static const std::string dict = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-_";
@@ -24,22 +24,17 @@ SSID::SSID(Settings &parent, std::shared_ptr<EpcWifi> localWifi, const HardwareF
       });
 }
 
-SSID::~SSID() = default;
-
-void SSID::load(const Glib::ustring &ssid, Initiator initiator)
+void SSID::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const
 {
-  updateSSID(ssid);
+  writer.writeTextElement("ssid", get());
 }
 
-Glib::ustring SSID::save() const
+Glib::ustring SSID::get() const
 {
   return m_ssid;
 }
 
-bool SSID::persistent() const
-{
-  return true;
-}
+SSID::~SSID() = default;
 
 Glib::ustring SSID::getDisplayString() const
 {
@@ -48,10 +43,12 @@ Glib::ustring SSID::getDisplayString() const
 
 void SSID::updateSSID(const Glib::ustring &str)
 {
-  m_ssid = str;
-  auto suffix = (m_hasEPCWifi ? "_BBB" : "");
-  auto ssidMsg = nltools::msg::WiFi::SetWiFiSSIDMessage(m_ssid + suffix);
-  nltools::msg::send(nltools::msg::EndPoint::BeagleBone, ssidMsg);
-  m_localWifi->setNewSSID(m_ssid);
-  notify();
+  if(m_ssid != str)
+  {
+    m_ssid = str;
+    auto suffix = (m_hasEPCWifi ? "_BBB" : "");
+    auto ssidMsg = nltools::msg::WiFi::SetWiFiSSIDMessage(m_ssid + suffix);
+    nltools::msg::send(nltools::msg::EndPoint::BeagleBone, ssidMsg);
+    DeviceInformationItem::onChange();
+  }
 }

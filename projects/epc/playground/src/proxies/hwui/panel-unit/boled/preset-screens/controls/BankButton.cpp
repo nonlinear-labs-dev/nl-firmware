@@ -35,8 +35,7 @@ void BankButton::installDefault(FocusAndMode focusAndMode)
 
   bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
 
-  auto toggleBankFocus = [this]
-  {
+  auto toggleBankFocus = [this] {
     SettingsUseCases useCases(*Application::get().getSettings());
 
     if(m_bankFocus)
@@ -45,8 +44,7 @@ void BankButton::installDefault(FocusAndMode focusAndMode)
       useCases.setFocusAndMode({ UIFocus::Banks, UIMode::Unchanged, UIDetail::Unchanged });
   };
 
-  auto toggleVoiceGroup = []
-  {
+  auto toggleVoiceGroup = [] {
     VoiceGroupUseCases vgUseCases(Application::get().getVGManager(),
                                   Application::get().getPresetManager()->getEditBuffer());
     vgUseCases.toggleVoiceGroupSelectionSilent();
@@ -60,8 +58,7 @@ void BankButton::installSmall(FocusAndMode focusAndMode)
   auto bankbutton = addControl(new Button("Bank", { 0, 15, 58, 11 }));
   bankbutton->setHighlight(focusAndMode.focus == UIFocus::Banks);
 
-  auto toggleBankFocus = [this]
-  {
+  auto toggleBankFocus = [this] {
     SettingsUseCases useCases(*Application::get().getSettings());
 
     if(m_bankFocus)

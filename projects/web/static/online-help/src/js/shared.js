@@ -53,7 +53,8 @@ const shared = (function() {
                 // macros
                 "mc-a": 0xE000, "mc-b": 0xE001, "mc-c": 0xE002, "mc-d": 0xE003, "mc-e": 0xE200, "mc-f": 0xE201,
                 // indicators
-                "ind-mono": 0xE040, "ind-unison": 0xE041, "ind-part-1": 0xE081, "ind-part-2": 0xE082,
+                "ind-mono": 0xE040, "ind-unison": 0xE041, "ind-scale": 0xE042,
+                "ind-part-1": 0xE081, "ind-part-2": 0xE082,
                 "ind-mute": 0xE0BA, "ind-midi": 0xE0C1, "ind-direct-load": 0xE0CA,
                 "ind-split": 0xE0F2, "ind-layer": 0xE0F5, "ind-lock": 0xE20A, "ind-active": 0xE177,
                 // highlight

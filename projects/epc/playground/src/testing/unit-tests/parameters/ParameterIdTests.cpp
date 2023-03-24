@@ -1,7 +1,7 @@
 #include <testing/TestHelper.h>
 #include <catch.hpp>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"ParameterId hashes")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "ParameterId hashes")
 {
   SECTION("different numbers and voice groups have different hashes")
   {

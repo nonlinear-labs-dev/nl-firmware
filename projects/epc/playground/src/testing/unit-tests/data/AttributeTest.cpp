@@ -47,7 +47,7 @@ class MockSerializer : public Serializer
   }
 };
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"XML Reader Test - Memory In Stream")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "XML Reader Test - Memory In Stream")
 {
   Glib::ustring testXML = "<a><b>Z1\nZ2</b></a>";
   MemoryInStream stream(testXML, false);
@@ -56,7 +56,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"XML Reader Test - Memory In Str
   reader.read<MockSerializer>();
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"XML Reader Test - File In Stream")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "XML Reader Test - File In Stream")
 {
   const auto testFilePath
       = "/tmp/" + std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) + ".xml";

@@ -15,8 +15,8 @@ class WiFiManager
   void disableAndStopAP();
   void startDEBUGWifi();
 
-  std::string m_lastSeenSSID{};
-  std::string m_lastSeenPassword{};
+  std::string m_lastSeenSSID {};
+  std::string m_lastSeenPassword {};
 
   SerializedAsyncCommands m_asyncCommands;
 

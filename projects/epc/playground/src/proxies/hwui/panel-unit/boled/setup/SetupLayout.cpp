@@ -1,15 +1,19 @@
 #include <Application.h>
-#include <device-info/DateTimeInfo.h>
-#include <device-info/SoftwareVersion.h>
-#include <device-info/BufferUnderruns.h>
-#include <device-settings/PedalType.h>
+#include <tools/StringTools.h>
+
+#include <bitset>
+#include <chrono>
+#include <list>
+#include <memory>
+#include <utility>
+
 #include <groups/HardwareSourcesGroup.h>
 #include <parameters/PedalParameter.h>
 #include <presets/EditBuffer.h>
+#include <presets/Bank.h>
+
 #include <proxies/hwui/FrameBuffer.h>
-#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/Oleds.h>
-#include <proxies/hwui/panel-unit/boled/BOLED.h>
 #include <proxies/hwui/panel-unit/boled/setup/AboutLayout.h>
 #include <proxies/hwui/panel-unit/boled/setup/AftertouchEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/AftertouchView.h>
@@ -18,10 +22,6 @@
 #include <proxies/hwui/panel-unit/boled/setup/DeviceInfoItemView.h>
 #include <proxies/hwui/panel-unit/boled/setup/DeviceNameView.h>
 #include <proxies/hwui/panel-unit/boled/setup/DateTimeEditor.h>
-#include <proxies/hwui/panel-unit/boled/setup/EditSmoothingTimeEditor.h>
-#include <proxies/hwui/panel-unit/boled/setup/EditSmoothingTimeView.h>
-#include <proxies/hwui/panel-unit/boled/setup/EncoderAccelerationEditor.h>
-#include <proxies/hwui/panel-unit/boled/setup/EncoderAccelerationView.h>
 #include <proxies/hwui/panel-unit/boled/setup/ExportBackupEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/FreeInternalMemoryView.h>
 #include <proxies/hwui/panel-unit/boled/setup/PassphraseEditor.h>
@@ -30,8 +30,6 @@
 #include <proxies/hwui/panel-unit/boled/setup/PedalSelectionControl.h>
 #include <proxies/hwui/panel-unit/boled/setup/PedalView.h>
 #include <proxies/hwui/panel-unit/boled/setup/RenameDeviceLayout.h>
-#include <proxies/hwui/panel-unit/boled/setup/RibbonRelativeFactorSettingEditor.h>
-#include <proxies/hwui/panel-unit/boled/setup/RibbonRelativeFactorSettingView.h>
 #include <proxies/hwui/panel-unit/boled/setup/SetupEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/SetupLayout.h>
 #include <proxies/hwui/panel-unit/boled/setup/SetupSelectionLabel.h>
@@ -49,31 +47,24 @@
 #include <proxies/hwui/panel-unit/boled/setup/SettingEditors.h>
 #include <proxies/hwui/panel-unit/boled/setup/NumericSettingEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/WiFiSettingView.h>
-#include <proxies/hwui/panel-unit/EditPanel.h>
-#include <proxies/hwui/panel-unit/PanelUnit.h>
 #include <proxies/hwui/TextEditUsageMode.h>
 #include <proxies/hwui/controls/LeftAlignedLabel.h>
+#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
+
 #include <proxies/playcontroller/PlaycontrollerProxy.h>
-#include <xml/FileOutStream.h>
-#include <bitset>
-#include <chrono>
-#include <list>
-#include <memory>
-#include <utility>
-#include <device-settings/TuneReference.h>
-#include <device-settings/TransitionTime.h>
-#include <tools/StringTools.h>
-#include <device-settings/SyncVoiceGroupsAcrossUIS.h>
+
 #include "UISoftwareVersionEditor.h"
 #include "ScreenSaverTimeControls.h"
 #include "RoutingsView.h"
 #include "RoutingsEditor.h"
 #include "OneShotEntryTypes.h"
-#include "device-info/AftertouchCalibratedStatus.h"
 #include "use-cases/SoundUseCases.h"
 #include "use-cases/PresetManagerUseCases.h"
+#include <use-cases/SettingsUseCases.h>
 
-#include <proxies/hwui/descriptive-layouts/concrete/menu/menu-items/AnimatedGenericItem.h>
+#include <device-settings/EditSmoothingTime.h>
+#include <device-settings/EncoderAcceleration.h>
+#include <device-settings/RibbonRelativeFactor.h>
 #include <device-settings/midi/MidiChannelSettings.h>
 #include <device-settings/midi/mappings/PedalCCMapping.h>
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
@@ -83,18 +74,23 @@
 #include <device-settings/midi/mappings/Enable14BitSupport.h>
 #include <device-settings/flac/AutoStartRecorderSetting.h>
 #include <device-settings/PresetGlitchSuppression.h>
-
-#include <presets/Bank.h>
-#include <use-cases/SettingsUseCases.h>
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 #include <device-settings/UsedRAM.h>
 #include <device-settings/TotalRAM.h>
 #include <device-settings/midi/RoutingSettings.h>
 #include <device-settings/SignalFlowIndicationSetting.h>
 #include <device-settings/GlobalLocalEnableSetting.h>
-#include <device-info/UniqueHardwareID.h>
-
 #include <device-settings/AftertouchLegacyMode.h>
+#include <device-settings/PedalType.h>
+#include <device-settings/TuneReference.h>
+#include <device-settings/TransitionTime.h>
+#include <device-settings/SyncVoiceGroupsAcrossUIS.h>
+
+#include <device-info/DateTimeInfo.h>
+#include <device-info/SoftwareVersion.h>
+#include <device-info/BufferUnderruns.h>
+#include <device-info/UniqueHardwareID.h>
+#include "device-info/AftertouchCalibratedStatus.h"
 
 namespace NavTree
 {
@@ -167,7 +163,7 @@ namespace NavTree
       return new SetupLabel("...", Rect(0, 0, 0, 0));
     }
 
-    std::list<std::unique_ptr<Node>> children;
+    std::list<std::unique_ptr<Node>> children {};
   };
 
   template <typename tSetting> struct EnumSettingItem : EditableLeaf
@@ -259,7 +255,7 @@ namespace NavTree
     {
       param = dynamic_cast<PedalParameter *>(
           Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ id, VoiceGroup::Global }));
-      name = param->getLongName();
+      name = param->getLongNameWithoutSuffix();
     }
 
     Control *createView() override
@@ -303,7 +299,7 @@ namespace NavTree
     struct Item : public AnimatedGenericItem
     {
       Item(const Rect &rect, OneShotTypes::StartCB startCB, OneShotTypes::FinishCB finishCB)
-          : AnimatedGenericItem("", rect, startCB, finishCB)
+          : AnimatedGenericItem("", rect, std::move(startCB), std::move(finishCB))
       {
       }
 
@@ -330,13 +326,6 @@ namespace NavTree
     {
     }
 
-    OneShotEntry(InnerNode *p, const std::string &name, OneShotTypes::StartCB sCB, OneShotTypes::FinishCB fCB)
-        : EditableLeaf(p, name)
-        , m_startCB(std::move(sCB))
-        , m_finishedCB(std::move(fCB))
-    {
-    }
-
     Control *createView() override
     {
       theItem = new Item(Rect(0, 0, 0, 0), m_startCB, m_finishedCB);
@@ -359,11 +348,14 @@ namespace NavTree
   struct StoreInitSound : OneShotEntry
   {
     explicit StoreInitSound(InnerNode *p)
-        : OneShotEntry(p, "Store Init Sound", OneShotTypes::StartCB([] {
-                         auto pm = Application::get().getPresetManager();
-                         SoundUseCases useCases(pm->getEditBuffer(), pm);
-                         useCases.storeInitSound();
-                       }))
+        : OneShotEntry(p, "Store Init Sound",
+                       OneShotTypes::StartCB(
+                           []
+                           {
+                             auto pm = Application::get().getPresetManager();
+                             SoundUseCases useCases(pm->getEditBuffer(), pm);
+                             useCases.storeInitSound();
+                           }))
     {
     }
   };
@@ -371,11 +363,14 @@ namespace NavTree
   struct ResetInitSound : OneShotEntry
   {
     explicit ResetInitSound(InnerNode *p)
-        : OneShotEntry(p, "Reset Init Sound", OneShotTypes::StartCB([] {
-                         auto pm = Application::get().getPresetManager();
-                         SoundUseCases useCases(pm->getEditBuffer(), pm);
-                         useCases.resetInitSound();
-                       }))
+        : OneShotEntry(p, "Reset Init Sound",
+                       OneShotTypes::StartCB(
+                           []
+                           {
+                             auto pm = Application::get().getPresetManager();
+                             SoundUseCases useCases(pm->getEditBuffer(), pm);
+                             useCases.resetInitSound();
+                           }))
     {
     }
   };
@@ -392,6 +387,7 @@ namespace NavTree
     SettingItem(InnerNode *parent, const char *name)
         : EditableLeaf(parent, name)
     {
+      static_assert(std::is_base_of_v<Setting, tSetting>);
     }
 
     Control *createView() override
@@ -412,24 +408,6 @@ namespace NavTree
     }
   };
 
-  struct EditSmoothingTime : EditableLeaf
-  {
-    explicit EditSmoothingTime(InnerNode *parent)
-        : EditableLeaf(parent, "Edit Smoothing Time")
-    {
-    }
-
-    Control *createView() override
-    {
-      return new EditSmoothingTimeView();
-    }
-
-    Control *createEditor() override
-    {
-      return new EditSmoothingTimeEditor();
-    }
-  };
-
   struct PedalSettings : InnerNode
   {
     explicit PedalSettings(InnerNode *parent)
@@ -447,7 +425,7 @@ namespace NavTree
     explicit DeviceSettings(InnerNode *parent)
         : InnerNode(parent, "Device Settings")
     {
-      children.emplace_back(new EditSmoothingTime(this));
+      children.emplace_back(new SettingItem<EditSmoothingTime>(this, "Edit Smoothing Time"));
       children.emplace_back(new SettingItem<TuneReference>(this, "Tune Reference"));
       children.emplace_back(new SettingItem<TransitionTime>(this, "Transition Time"));
       children.emplace_back(new Velocity(this));
@@ -634,16 +612,16 @@ namespace NavTree
       RamUsageLabel()
           : SetupLabel("", Rect(0, 0, 0, 0))
       {
-        Application::get().getSettings()->getSetting<UsedRAM>()->onChange(
-            sigc::mem_fun(this, &RamUsageLabel::onSettingChanged));
+        Application::get().getDeviceInformation()->getItem<UsedRAM>()->onChange(
+            sigc::mem_fun(this, &RamUsageLabel::onItemChanged));
       }
 
-      void onSettingChanged(const Setting *s)
+      void onItemChanged(const DeviceInformationItem *s)
       {
         if(auto used = dynamic_cast<const UsedRAM *>(s))
         {
-          auto settings = Application::get().getSettings();
-          auto total = settings->getSetting<TotalRAM>();
+          auto devInfo = Application::get().getDeviceInformation();
+          auto total = devInfo->getItem<TotalRAM>();
           StringAndSuffix str { used->getDisplayString() + " / " + total->getDisplayString() + " MB", 0 };
           setText(str);
         }
@@ -734,42 +712,6 @@ namespace NavTree
     }
   };
 
-  struct EncoderAcceleration : EditableLeaf
-  {
-    explicit EncoderAcceleration(InnerNode *parent)
-        : EditableLeaf(parent, "Encoder Acceleration")
-    {
-    }
-
-    Control *createView() override
-    {
-      return new EncoderAccelerationView();
-    }
-
-    Control *createEditor() override
-    {
-      return new EncoderAccelerationEditor();
-    }
-  };
-
-  struct RibbonRelativeFactorSetting : EditableLeaf
-  {
-    explicit RibbonRelativeFactorSetting(InnerNode *parent)
-        : EditableLeaf(parent, "Ribbon Relative Factor")
-    {
-    }
-
-    Control *createView() override
-    {
-      return new RibbonRelativeFactorSettingView();
-    }
-
-    Control *createEditor() override
-    {
-      return new RibbonRelativeFactorSettingEditor();
-    }
-  };
-
   struct ScreenSaverTime : EditableLeaf
   {
     explicit ScreenSaverTime(InnerNode *parent)
@@ -793,8 +735,8 @@ namespace NavTree
     explicit HardwareUI(InnerNode *parent)
         : InnerNode(parent, "Hardware UI")
     {
-      children.emplace_back(new EncoderAcceleration(this));
-      children.emplace_back(new RibbonRelativeFactorSetting(this));
+      children.emplace_back(new SettingItem<EncoderAcceleration>(this, "Encoder Acceleration"));
+      children.emplace_back(new SettingItem<RibbonRelativeFactor>(this, "Ribbon Relative Factor"));
       children.emplace_back(new EnumSettingItem<SignalFlowIndicationSetting>(this, "Signal Flow Indication"));
       children.emplace_back(new ScreenSaverTime(this));
     }
@@ -885,10 +827,13 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToHighRes(InnerNode *parent)
-        : OneShotEntry(parent, "Set to High-Res. Defaults", OneShotTypes::StartCB([]() {
-                         SettingsUseCases useCases(*Application::get().getSettings());
-                         useCases.setMappingsToHighRes();
-                       }))
+        : OneShotEntry(parent, "Set to High-Res. Defaults",
+                       OneShotTypes::StartCB(
+                           []()
+                           {
+                             SettingsUseCases useCases(*Application::get().getSettings());
+                             useCases.setMappingsToHighRes();
+                           }))
     {
     }
   };
@@ -897,10 +842,13 @@ namespace NavTree
   {
 
     explicit ResetMidiSettingsToClassic(InnerNode *parent)
-        : OneShotEntry(parent, "Set to Classic MIDI Defaults", OneShotTypes::StartCB([]() {
-                         SettingsUseCases useCases(*Application::get().getSettings());
-                         useCases.setMappingsToClassicMidi();
-                       }))
+        : OneShotEntry(parent, "Set to Classic MIDI Defaults",
+                       OneShotTypes::StartCB(
+                           []()
+                           {
+                             SettingsUseCases useCases(*Application::get().getSettings());
+                             useCases.setMappingsToClassicMidi();
+                           }))
     {
     }
   };
@@ -1057,8 +1005,8 @@ namespace NavTree
 
   struct RecorderStopButton : OneShotEntry
   {
-    explicit RecorderStopButton(InnerNode* p)
-    : OneShotEntry(p, "Stop Playback", OneShotTypes::StartCB([]{ RecorderManager::stopRecorderPlayback(); }))
+    explicit RecorderStopButton(InnerNode *p)
+        : OneShotEntry(p, "Stop Playback", OneShotTypes::StartCB([] { RecorderManager::stopRecorderPlayback(); }))
     {
     }
   };
@@ -1093,10 +1041,13 @@ namespace NavTree
   {
 
     explicit SetRoutingsTo(InnerNode *parent)
-        : OneShotEntry(parent, getName(), OneShotTypes::StartCB([]() {
-                         SettingsUseCases useCases(*Application::get().getSettings());
-                         useCases.setAllRoutingEntries(value);
-                       }))
+        : OneShotEntry(parent, getName(),
+                       OneShotTypes::StartCB(
+                           []()
+                           {
+                             SettingsUseCases useCases(*Application::get().getSettings());
+                             useCases.setAllRoutingEntries(value);
+                           }))
     {
     }
 
@@ -1133,7 +1084,8 @@ namespace NavTree
 
     Node *getDesiredFocusChangeOnEditModeExited() override
     {
-      auto at = [](auto &list, auto n) {
+      auto at = [](auto &list, auto n)
+      {
         auto it = list.begin();
         std::advance(it, n);
         return it->get();
@@ -1157,6 +1109,10 @@ namespace NavTree
           return at(children, 8);
         case tID::Ribbon2:
           return at(children, 9);
+        case tID::Ribbon3:
+          return at(children, 10);
+        case tID::Ribbon4:
+          return at(children, 11);
         case tID::ProgramChange:
           return at(children, 1);
         case tID::Notes:
@@ -1305,15 +1261,15 @@ class Breadcrumb : public Control
   {
     fb.setColor(FrameBufferColors::C103);
     fb.fillRect(getPosition());
-    drawNodeRecursivly(fb, m_node);
+    drawNodeRecursively(fb, m_node);
     return true;
   }
 
-  int drawNodeRecursivly(FrameBuffer &fb, NavTree::Node *node)
+  uint32_t drawNodeRecursively(FrameBuffer &fb, NavTree::Node *node)
   {
     if(node)
     {
-      auto left = drawNodeRecursivly(fb, node->parent);
+      auto left = drawNodeRecursively(fb, node->parent);
       auto isTip = node == m_node;
       auto title = node->getName();
 
@@ -1329,7 +1285,7 @@ class Breadcrumb : public Control
 
       auto font = Fonts::get().getFont("Emphase-9-Regular", 9);
       auto width = font->draw(fb, title, left, getPosition().getBottom() - 1);
-      return left + width;
+      return left + static_cast<uint32_t>(width);
     }
     return 5;
   }

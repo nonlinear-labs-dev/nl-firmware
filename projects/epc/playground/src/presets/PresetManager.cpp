@@ -85,6 +85,7 @@ void PresetManager::init(AudioEngineProxy *aeProxy, Settings &settings, Serializ
   }
 
   m_sigLoadHappened.send();
+  m_editBuffer->updateRibbonsFromBoundMacros();
   onChange();
 }
 
@@ -470,14 +471,14 @@ void PresetManager::sortBanks(UNDO::Transaction *transaction, const std::vector<
 const std::set<int> &getUnavailableParametersBySoundType(SoundType t)
 {
   static std::set<int> unavailableInSingleSound {
-    C15::PID::FB_Mix_Comb_Src,     C15::PID::FB_Mix_Osc_Src,       C15::PID::Split_Split_Point,
-    C15::PID::Voice_Grp_Fade_From, C15::PID::Voice_Grp_Tune,       C15::PID::FB_Mix_Osc,
-    C15::PID::FB_Mix_SVF_Src,      C15::PID::Voice_Grp_Fade_Range, C15::PID::Voice_Grp_Volume,
+    C15::PID::FB_Mix_Comb_Src, C15::PID::FB_Mix_Osc_Src,  C15::PID::Split_Split_Point,
+    C15::PID::Part_Fade_From,  C15::PID::Part_Tune,       C15::PID::FB_Mix_Osc,
+    C15::PID::FB_Mix_SVF_Src,  C15::PID::Part_Fade_Range, C15::PID::Part_Volume,
   };
 
   static std::set<int> unavailableInSplitSounds {
-    C15::PID::FB_Mix_Comb_Src,     C15::PID::FB_Mix_Osc_Src,       C15::PID::FB_Mix_SVF_Src,
-    C15::PID::Voice_Grp_Fade_From, C15::PID::Voice_Grp_Fade_Range, C15::PID::FB_Mix_Osc,
+    C15::PID::FB_Mix_Comb_Src, C15::PID::FB_Mix_Osc_Src,  C15::PID::FB_Mix_SVF_Src,
+    C15::PID::Part_Fade_From,  C15::PID::Part_Fade_Range, C15::PID::FB_Mix_Osc,
   };
 
   static std::set<int> unavailableInLayerSounds { C15::PID::Split_Split_Point };
@@ -596,17 +597,6 @@ Glib::ustring PresetManager::createPresetNameBasedOn(const Glib::ustring &basedO
     return base;
 
   return base + " " + to_string(highestPostfix + 1);
-}
-
-void PresetManager::searchPresets(Writer &writer, const Glib::ustring &q, const Glib::ustring &mode,
-                                  std::vector<SearchQuery::Fields> &&fieldsToSearch) const
-{
-  SearchQuery query(q, mode, std::move(fieldsToSearch));
-
-  writer.writeTag(
-      "preset-manager",
-      [&]()
-      { writer.writeTag("banks", [&]() { m_banks.forEach([&](auto b) { b->searchPresets(writer, query); }); }); });
 }
 
 Glib::ustring PresetManager::getBaseName(const Glib::ustring &basedOn) const

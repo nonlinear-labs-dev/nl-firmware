@@ -118,19 +118,19 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
     ssuc.addSplashScreenMessage("Restoring Backup from File!");
 
     PresetManagerUseCases useCase(*app.getPresetManager(), *settings);
-    auto& ae = *app.getAudioEngineProxy();
+    auto &ae = *app.getAudioEngineProxy();
 
-    auto start = [hwui, settings](){
+    auto start = [hwui, settings]() {
       SplashScreenUseCases ssuc(*hwui, *settings);
       ssuc.startSplashScreen();
     };
 
-    auto addStatus = [hwui, settings](auto str){
+    auto addStatus = [hwui, settings](auto str) {
       SplashScreenUseCases ssuc(*hwui, *settings);
       ssuc.addSplashScreenMessage(str);
     };
 
-    auto finish = [hwui, settings](){
+    auto finish = [hwui, settings]() {
       SplashScreenUseCases ssuc(*hwui, *settings);
       ssuc.finishSplashScreen();
     };
@@ -138,7 +138,7 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
     auto ret = useCase.importBackupFile(in, { start, addStatus, finish }, ae);
     SplashScreenUseCases splashUseCases(*hwui, *settings);
 
-    if(ret ==  PresetManagerUseCases::ImportExitCode::OK)
+    if(ret == PresetManagerUseCases::ImportExitCode::OK)
     {
       splashUseCases.setSplashScreenMessage("Restore Complete!");
       std::this_thread::sleep_for(0.7s);
@@ -151,7 +151,7 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
   }
 
   SettingsUseCases useCases(*Application::get().getSettings());
-  useCases.setFocusAndMode(FocusAndMode{ UIFocus::Presets, UIMode::Select });
+  useCases.setFocusAndMode(FocusAndMode { UIFocus::Presets, UIMode::Select });
 }
 
 void ImportBackupEditor::importBackup()

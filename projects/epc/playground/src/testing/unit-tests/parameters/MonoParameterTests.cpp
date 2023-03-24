@@ -1,9 +1,9 @@
 #include <testing/TestHelper.h>
 #include <catch.hpp>
-#include "groups/MonoGroup.h"
 #include "presets/EditBuffer.h"
+#include "parameters/ParameterFactory.h"
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Mono Parameter Helper")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Mono Parameter Helper")
 {
   auto eb = TestHelper::getEditBuffer();
   for(auto vg : { VoiceGroup::I, VoiceGroup::II })
@@ -12,7 +12,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Mono Parameter Helper")
     {
       for(auto& p : g->getParameters())
       {
-        CHECK(MonoGroup::isMonoParameter(p));
+        CHECK(ParameterFactory::isMonoParameter(p));
       }
     }
     else

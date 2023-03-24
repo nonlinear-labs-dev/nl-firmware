@@ -30,13 +30,11 @@ Recorder::Recorder(int sr)
                               sigc::mem_fun(this, &Recorder::checkAndSendNoClientsStatus), 1s)
 {
   m_in->setPaused(true);
-  m_settingConnection
-      = nltools::msg::receive<nltools::msg::Setting::FlacRecorderAutoStart>(nltools::msg::EndPoint::AudioEngine,
-                                                                            [this](const auto &msg)
-                                                                            {
-                                                                              if(msg.enabled)
-                                                                                m_in->setPaused(false);
-                                                                            });
+  m_settingConnection = nltools::msg::receive<nltools::msg::Setting::FlacRecorderAutoStart>(
+      nltools::msg::EndPoint::AudioEngine, [this](const auto &msg) {
+        if(msg.enabled)
+          m_in->setPaused(false);
+      });
 
   m_stopConnection = nltools::msg::receive<nltools::msg::Setting::FlacRecorderStopPlayback>(
       nltools::msg::EndPoint::AudioEngine, [this](const auto &msg) { m_out->pause(); });
@@ -138,14 +136,12 @@ nlohmann::json Recorder::prepareDownload(FrameId begin, FrameId end) const
 
   auto stream = m_storage->startStream(begin, end);
 
-  stream->getFirstAndLast(
-      [&](const auto &first, const auto &last)
-      {
-        ret["range"] = { { "from", first.recordTime.time_since_epoch().count() },
-                         { "to", last.recordTime.time_since_epoch().count() } };
+  stream->getFirstAndLast([&](const auto &first, const auto &last) {
+    ret["range"] = { { "from", first.recordTime.time_since_epoch().count() },
+                     { "to", last.recordTime.time_since_epoch().count() } };
 
-        numFlacBytes = last.summedUpFlacMemUsage - first.summedUpFlacMemUsage + first.buffer.size();
-      });
+    numFlacBytes = last.summedUpFlacMemUsage - first.summedUpFlacMemUsage + first.buffer.size();
+  });
 
   ret["flac"] = { { "size", numFlacBytes } };
   ret["wave"] = { { "size", numWaveBytes } };
@@ -167,8 +163,7 @@ nlohmann::json Recorder::queryFrames(FrameId begin, FrameId end) const
   system_clock::time_point recordTimeOfLastFrame = invalidTime;
   uint8_t maxOfLastFrame = 0;
 
-  auto cb = [&](const auto &f, auto isLast)
-  {
+  auto cb = [&](const auto &f, auto isLast) {
     bool skipFrame = false;
 
     if(!isLast && recordTimeOfLastFrame != invalidTime)

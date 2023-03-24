@@ -29,12 +29,12 @@
 //NonMember helperFunctions pre:
 IntrusiveList<EditBufferActions::tParameterPtr> getScaleParameters(EditBuffer& editBuffer);
 
-EditBufferActions::EditBufferActions(UpdateDocumentContributor* parent, EditBuffer& editBuffer, AudioEngineProxy& aeProxy, Settings& settings)
+EditBufferActions::EditBufferActions(UpdateDocumentContributor* parent, EditBuffer& editBuffer,
+                                     AudioEngineProxy& aeProxy, Settings& settings)
     : SectionAndActionManager(parent, "/param-editor/")
 {
-  addAction("sync-audioengine", [&aeProxy](const std::shared_ptr<NetworkRequest>& request) mutable {
-    aeProxy.sendEditBuffer();
-  });
+  addAction("sync-audioengine",
+            [&aeProxy](const std::shared_ptr<NetworkRequest>& request) mutable { aeProxy.sendEditBuffer(); });
 
   addAction("restore", [&editBuffer](const std::shared_ptr<NetworkRequest>& request) mutable {
     using namespace std::chrono;
@@ -69,7 +69,7 @@ EditBufferActions::EditBufferActions(UpdateDocumentContributor* parent, EditBuff
   addAction("set-param", [&editBuffer](const std::shared_ptr<NetworkRequest>& request) mutable {
     auto id = request->get("id");
     auto value = std::stod(request->get("value"));
-    EditBufferUseCases ebUseCases( editBuffer);
+    EditBufferUseCases ebUseCases(editBuffer);
     ebUseCases.setParameter(ParameterId(id), value);
   });
 
@@ -148,14 +148,14 @@ EditBufferActions::EditBufferActions(UpdateDocumentContributor* parent, EditBuff
   });
 
   addAction("set-ribbon-behaviour", [&editBuffer](const std::shared_ptr<NetworkRequest>& request) mutable {
-     auto id = request->get("id");
-     auto mode = request->get("mode");
+    auto id = request->get("id");
+    auto mode = request->get("mode");
 
-     if(auto param = dynamic_cast<RibbonParameter*>(editBuffer.findParameterByID(ParameterId(id))))
-     {
-       RibbonParameterUseCases useCases(param);
-       useCases.setTouchBehaviour(to<RibbonTouchBehaviour>(mode.uppercase()));
-     }
+    if(auto param = dynamic_cast<RibbonParameter*>(editBuffer.findParameterByID(ParameterId(id))))
+    {
+      RibbonParameterUseCases useCases(param);
+      useCases.setTouchBehaviour(to<RibbonTouchBehaviour>(mode.uppercase()));
+    }
   });
 
   addAction("set-pedal-mode", [&editBuffer](const std::shared_ptr<NetworkRequest>& request) mutable {
@@ -301,12 +301,12 @@ EditBufferActions::EditBufferActions(UpdateDocumentContributor* parent, EditBuff
   });
 
   addAction("convert-to-split-fx-I-only", [&editBuffer](auto request) {
-    EditBufferUseCases useCase{editBuffer};
+    EditBufferUseCases useCase { editBuffer };
     useCase.convertSingleToSplitFXIOnly();
   });
 
   addAction("convert-to-layer-fx-I-only", [&editBuffer](auto request) {
-    EditBufferUseCases useCase{editBuffer};
+    EditBufferUseCases useCase { editBuffer };
     useCase.convertSingleToLayerFXIOnly();
   });
 
@@ -341,5 +341,12 @@ EditBufferActions::EditBufferActions(UpdateDocumentContributor* parent, EditBuff
       ParameterUseCases useCase(p);
       useCase.toggleLoadDefault();
     }
+  });
+
+  addAction("copy-fx", [&editBuffer](auto request) {
+    auto from = to<VoiceGroup>(request->get("from"));
+    auto VGTo = to<VoiceGroup>(request->get("to"));
+    EditBufferUseCases ebUseCases(editBuffer);
+    ebUseCases.copyFX(from, VGTo);
   });
 }

@@ -38,7 +38,8 @@ namespace ExceptionTools
     return "";
   }
 
-  static void errorLogCurrentException() {
+  static void errorLogCurrentException()
+  {
     nltools::Log::error(handle_eptr(std::current_exception()));
   }
 

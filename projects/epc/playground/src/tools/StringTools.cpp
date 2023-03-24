@@ -58,7 +58,7 @@ namespace StringTools
     return ret;
   }
 
-  bool contains(const Glib::ustring& in, const Glib::ustring& pattern)
+  bool contains(const Glib::ustring &in, const Glib::ustring &pattern)
   {
     return in.find(pattern) != Glib::ustring::npos;
   }

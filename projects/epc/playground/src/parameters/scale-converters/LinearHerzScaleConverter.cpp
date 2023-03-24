@@ -1,7 +1,7 @@
-#include <parameters/scale-converters/dimension/FrequencyDimension.h>
+#include <parameters/scale-converters/dimension/TuneReferenceFrequencyDimension.h>
 #include "LinearHerzScaleConverter.h"
 
 LinearHerzScaleConverter::LinearHerzScaleConverter()
-    : LinearScaleConverter(tDisplayRange { 400, 480 }, FrequencyDimension::get())
+    : LinearScaleConverter(tDisplayRange { 400, 480 }, TuneReferenceFrequencyDimension::get())
 {
 }

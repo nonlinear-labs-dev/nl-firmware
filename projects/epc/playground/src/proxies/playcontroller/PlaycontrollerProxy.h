@@ -4,6 +4,7 @@
 #include "MessageParser.h"
 #include "MessageComposer.h"
 #include "parameters/ValueRange.h"
+#include "parameter_declarations.h"
 #include <parameters/value/QuantizedValue.h>
 #include <memory>
 #include <nltools/threading/Throttler.h>
@@ -39,6 +40,8 @@ class PlaycontrollerProxy
   sigc::connection onPlaycontrollerSoftwareVersionChanged(const sigc::slot<void, int> &s);
   sigc::connection onLastKeyChanged(sigc::slot<void> s);
   sigc::connection onUHIDChanged(const sigc::slot<void, uint64_t> &s);
+  sigc::connection onRibbonTouched(const sigc::slot<void, int> &s);
+
   int getLastTouchedRibbonParameterID() const;
   std::string getPlaycontrollerSoftwareVersion() const;
   uint64_t getUHID() const;
@@ -70,7 +73,7 @@ class PlaycontrollerProxy
 
   std::shared_ptr<MessageParser> m_msgParser;
 
-  int m_lastTouchedRibbon;
+  int m_lastTouchedRibbon = C15::PID::Ribbon_2;
   Signal<void, int> m_signalRibbonTouched;
   Signal<void, int> m_signalPlaycontrollerSoftwareVersionChanged;
   Signal<void, uint64_t> m_signalUHIDChanged;

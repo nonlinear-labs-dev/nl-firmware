@@ -8,11 +8,11 @@
 #include "SyncSplitSettingUseCases.h"
 
 SyncSplitSettingUseCases::SyncSplitSettingUseCases(SplitPointSyncParameters& setting, PresetManager& pm)
-    : m_setting{ setting }
-    , m_presetManager{ pm }
-    , m_splitI{ pm.getEditBuffer()->findAndCastParameterByID<SplitPointParameter>(
+    : m_setting { setting }
+    , m_presetManager { pm }
+    , m_splitI { pm.getEditBuffer()->findAndCastParameterByID<SplitPointParameter>(
           { C15::PID::Split_Split_Point, VoiceGroup::I }) }
-    , m_splitII{ pm.getEditBuffer()->findAndCastParameterByID<SplitPointParameter>(
+    , m_splitII { pm.getEditBuffer()->findAndCastParameterByID<SplitPointParameter>(
           { C15::PID::Split_Split_Point, VoiceGroup::II }) }
 {
 }

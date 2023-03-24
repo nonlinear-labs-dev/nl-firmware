@@ -15,6 +15,12 @@ EditSmoothingTime::EditSmoothingTime(Settings &parent)
 {
 }
 
+void EditSmoothingTime::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto f = std::get<float>(val);
+  set(static_cast<double>(f));
+}
+
 EditSmoothingTime::~EditSmoothingTime()
 {
 }

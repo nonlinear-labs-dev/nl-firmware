@@ -19,6 +19,8 @@ class PedalEditor : public MenuEditor
   const std::vector<Glib::ustring>& getDisplayStrings() const override;
   int getSelectedIndex() const override;
 
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
+
  private:
   PedalType* m_mode;
 };

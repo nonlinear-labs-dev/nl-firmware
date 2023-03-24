@@ -6,9 +6,19 @@
 #include "parameters/ModulationRoutingParameter.h"
 #include "parameters/MacroControlParameter.h"
 #include "parameters/scale-converters/LinearBipolar100PercentScaleConverter.h"
+#include "parameter_group.h"
+
+namespace
+{
+  auto getDesc()
+  {
+    return C15::ParameterGroups[static_cast<int>(C15::Descriptors::ParameterGroup::Mod_HA)];
+  }
+
+}
 
 MacroControlMappingGroup::MacroControlMappingGroup(ParameterGroupSet *parent, ParameterGroup *hw, ParameterGroup *mc)
-    : ParameterGroup(parent, { "MCM", VoiceGroup::Global }, "HW Amount", "Hardware Amount", "Hardware Amount")
+    : ParameterGroup(parent, getDesc(), VoiceGroup::Global)
     , m_mc(mc)
     , m_hw(hw)
 {
@@ -139,15 +149,4 @@ ModulationRoutingParameter *
         return routingParam;
 
   return nullptr;
-}
-
-MacroControlMappingGroup::tPhysicalControlParameters MacroControlMappingGroup::getPhysicalControlParameters()
-{
-  tPhysicalControlParameters ret;
-
-  for(auto param : getParameters())
-    if(auto physicalParam = dynamic_cast<PhysicalControlParameter *>(param))
-      ret.push_back(physicalParam);
-
-  return ret;
 }

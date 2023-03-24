@@ -35,80 +35,64 @@ void PresetParameterSerializer::writeTagContent(Writer &writer) const
 
 void PresetParameterSerializer::readTagContent(Reader &reader) const
 {
-  reader.onTextElement("value",
-                       [&](const Glib::ustring &text, const Attributes &attr) mutable
-                       {
-                         auto v = std::stod(text);
-                         for(auto &p : m_param)
-                         {
-                           auto &conversion = ParameterImportConversions::get();
-                           auto converted = conversion.convert(p->m_id, v, reader.getFileVersion(), m_type);
-                           p->setValue(reader.getTransaction(), converted);
-                         }
-                       });
+  reader.onTextElement("value", [&](const Glib::ustring &text, const Attributes &attr) mutable {
+    auto v = std::stod(text);
+    for(auto &p : m_param)
+    {
+      auto &conversion = ParameterImportConversions::get();
+      auto converted = conversion.convert(p->m_id, v, reader.getFileVersion(), m_type);
+      p->setValue(reader.getTransaction(), converted);
+    }
+  });
 
-  reader.onTextElement("modAmount",
-                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
-                       {
-                         auto v = std::stod(text);
-                         for(auto &p : m_param)
-                         {
-                           v = ParameterImportConversions::get().convertMCAmount(p->m_id, v, reader.getFileVersion());
-                           p->setField(reader.getTransaction(), PresetParameter::Fields::ModAmount, to_string(v));
-                         }
-                       });
+  reader.onTextElement("modAmount", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
+    auto v = std::stod(text);
+    for(auto &p : m_param)
+    {
+      v = ParameterImportConversions::get().convertMCAmount(p->m_id, v, reader.getFileVersion());
+      p->setField(reader.getTransaction(), PresetParameter::Fields::ModAmount, to_string(v));
+    }
+  });
 
-  reader.onTextElement("modSrc",
-                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
-                       {
-                         for(auto &p : m_param)
-                         {
-                           p->setField(reader.getTransaction(), PresetParameter::Fields::ModSource, text);
-                         }
-                       });
+  reader.onTextElement("modSrc", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
+    for(auto &p : m_param)
+    {
+      p->setField(reader.getTransaction(), PresetParameter::Fields::ModSource, text);
+    }
+  });
 
-  reader.onTextElement("givenName",
-                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
-                       {
-                         for(auto &p : m_param)
-                         {
-                           p->setField(reader.getTransaction(), PresetParameter::Fields::GivenName, text);
-                         }
-                       });
+  reader.onTextElement("givenName", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
+    for(auto &p : m_param)
+    {
+      p->setField(reader.getTransaction(), PresetParameter::Fields::GivenName, text);
+    }
+  });
 
-  reader.onTextElement("info",
-                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
-                       {
-                         for(auto &p : m_param)
-                         {
-                           p->setField(reader.getTransaction(), PresetParameter::Fields::Info, text);
-                         }
-                       });
+  reader.onTextElement("info", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
+    for(auto &p : m_param)
+    {
+      p->setField(reader.getTransaction(), PresetParameter::Fields::Info, text);
+    }
+  });
 
-  reader.onTextElement("ribbon-touch-behaviour",
-                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
-                       {
-                         for(auto &p : m_param)
-                         {
-                           p->setField(reader.getTransaction(), PresetParameter::Fields::RibbonTouchBehaviour, text);
-                         }
-                       });
+  reader.onTextElement("ribbon-touch-behaviour", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
+    for(auto &p : m_param)
+    {
+      p->setField(reader.getTransaction(), PresetParameter::Fields::RibbonTouchBehaviour, text);
+    }
+  });
 
-  reader.onTextElement("ribbon-return-mode",
-                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
-                       {
-                         for(auto &p : m_param)
-                         {
-                           p->setField(reader.getTransaction(), PresetParameter::Fields::RibbonReturnMode, text);
-                         }
-                       });
+  reader.onTextElement("ribbon-return-mode", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
+    for(auto &p : m_param)
+    {
+      p->setField(reader.getTransaction(), PresetParameter::Fields::RibbonReturnMode, text);
+    }
+  });
 
-  reader.onTextElement("pedalMode",
-                       [=, &reader](const Glib::ustring &text, const Attributes &attr)
-                       {
-                         for(auto &p : m_param)
-                         {
-                           p->setField(reader.getTransaction(), PresetParameter::Fields::PedalMode, text);
-                         }
-                       });
+  reader.onTextElement("pedalMode", [=, &reader](const Glib::ustring &text, const Attributes &attr) {
+    for(auto &p : m_param)
+    {
+      p->setField(reader.getTransaction(), PresetParameter::Fields::PedalMode, text);
+    }
+  });
 }

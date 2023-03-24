@@ -82,11 +82,12 @@ public class LayerSoundLayout extends SoundLayout {
 			layerToFXArrows4.doLayout(0, 0, layerToFXWidth, h);
 
 			double fxIWidth = fxI.getPictureWidth();
+			double fxIIWidth = fxII.getPictureWidth();
 			fxI.doLayout(layerToFXWidth, 0, fxIWidth, h/2);
-			fxII.doLayout(layerToFXWidth, h/2, fxIWidth, h/2);
-			serial.doLayout(layerToFXWidth, 0, fxIWidth, h);
+			fxII.doLayout(layerToFXWidth, h/2, fxIIWidth, h/2);
+			serial.doLayout(layerToFXWidth, 0, getMaxWidth(fxI, fxII), h);
 
-			double xPos = layerToFXWidth + fxIWidth;
+			double xPos = layerToFXWidth + getMaxWidth(fxI, fxII);
 			double toOutArrowWidth = layerFXToOutArrows.getPictureWidth(); 
 			layerFXToOutArrows.doLayout(xPos, 0, toOutArrowWidth, h);
 		}

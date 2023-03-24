@@ -22,6 +22,7 @@
 #include <device-settings/Settings.h>
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 #include "BOLEDScreenSaver.h"
+#include <device-info/AftertouchCalibratedStatus.h>
 
 BOLED::BOLED(Oleds& oleds, LayoutFolderMonitor* mon)
     : OLEDProxy(Rect(0, 0, 256, 64), oleds)
@@ -37,6 +38,21 @@ void BOLED::init()
 
   Application::get().getSettings()->getSetting<ScreenSaverTimeoutSetting>()->onScreenSaverStateChanged(
       sigc::mem_fun(this, &BOLED::toggleScreenSaver));
+
+  Application::get().getDeviceInformation()->getItem<AftertouchCalibratedStatus>()->onChange(
+      sigc::mem_fun(this, &BOLED::onAftertouchCalibrationChanged));
+}
+
+void BOLED::onAftertouchCalibrationChanged(const DeviceInformationItem* item)
+{
+  //this method will be called right after the start when the calibration is received,
+  //we have a check in the SetupLayout::DeviceInformation::buildPage whether the aftertouch is calibrated
+  //as the setup might be already open when this info changes we need to rebuild the screens
+  auto fam = Application::get().getSettings()->getSetting<FocusAndModeSetting>()->getState();
+  if(fam.focus == UIFocus::Setup)
+  {
+    setupFocusAndMode(fam);
+  }
 }
 
 void BOLED::toggleScreenSaver(bool enabled)

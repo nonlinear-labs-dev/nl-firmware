@@ -4,6 +4,7 @@ import com.nonlinearlabs.client.NonMaps;
 import com.nonlinearlabs.client.Renameable;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
 import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.SoundType;
+import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel.VoiceGroup;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.presenters.EditBufferPresenterProvider;
 import com.nonlinearlabs.client.useCases.EditBufferUseCases;
@@ -26,6 +27,8 @@ public class SoundSettingsButton extends SVGImage {
 
 			EditBufferModel.SoundType currentSetting = EditBufferModel.get().soundType.getValue();
 
+			addCopyFXButtons();
+
 			if (currentSetting == EditBufferModel.SoundType.Single) {
 				addChild(new ContextMenuItem(this, "Init") {
 					@Override
@@ -42,7 +45,7 @@ public class SoundSettingsButton extends SVGImage {
 						return super.click(eventPoint);
 					}
 				});
-			} else {
+			} else {				
 				addChild(new ContextMenuItem(this, "Rename Part") {
 					@Override
 					public Control click(Position eventPoint) {
@@ -107,6 +110,24 @@ public class SoundSettingsButton extends SVGImage {
 					});
 				}
 			}
+		}
+
+		private void addCopyFXButtons() {
+			addChild(new ContextMenuItem(this, "Copy FX I into FX II") {
+				@Override
+				public Control click(Position eventPoint) {
+					EditBufferUseCases.get().copyFX(VoiceGroup.I, VoiceGroup.II);
+					return super.click(eventPoint);
+				}
+			});
+
+			addChild(new ContextMenuItem(this, "Copy FX II into FX I") {
+				@Override
+				public Control click(Position eventPoint) {
+					EditBufferUseCases.get().copyFX(VoiceGroup.II, VoiceGroup.I);
+					return super.click(eventPoint);
+				}
+			});
 		}
 	}
 

@@ -25,7 +25,6 @@
 #include <tools/PerformanceTimer.h>
 #include <proxies/hwui/descriptive-layouts/LayoutFolderMonitor.h>
 #include <nltools/messaging/Message.h>
-#include <device-settings/LayoutMode.h>
 #include <xml/StandardOutStream.h>
 #include <serialization/EditBufferSerializer.h>
 #include <iostream>
@@ -106,7 +105,7 @@ void HWUI::init()
 
 void HWUI::onRotaryChanged()
 {
-  m_inputSignal.send();
+  m_rotaryTurned.deferedSend();
 }
 
 void HWUI::indicateBlockingMainThread()
@@ -361,6 +360,7 @@ void HWUI::onButtonPressed(Buttons buttonID, bool state)
   m_buttonStates[(int) buttonID] = state;
 
   setModifiers(buttonID, state);
+  m_buttonPressed.deferedSend(buttonID, state);
 
   if(!detectAffengriff(buttonID, state))
   {
@@ -383,8 +383,6 @@ void HWUI::onButtonPressed(Buttons buttonID, bool state)
       }
     }
   }
-
-  m_inputSignal.send();
 }
 
 void HWUI::setModifiers(Buttons buttonID, bool state)
@@ -417,14 +415,13 @@ void HWUI::setModifiers(Buttons buttonID, bool state)
   {
     removeModifier(ButtonModifier::FINE);
   }
-
-  m_inputSignal.send();
 }
 
 bool HWUI::isFineAllowed()
 {
   auto uiFocus = m_famSetting.getState().focus;
-  return (uiFocus == UIFocus::Parameters || uiFocus == UIFocus::Sound) && m_currentParameterIsFineAllowed;
+  return ((uiFocus == UIFocus::Parameters || uiFocus == UIFocus::Sound) && m_currentParameterIsFineAllowed)
+      || uiFocus == UIFocus::Setup;
 }
 
 bool HWUI::detectAffengriff(Buttons buttonID, bool state)
@@ -613,4 +610,26 @@ void HWUI::onParameterSelection(Parameter *oldParameter, Parameter *newParameter
 Oleds &HWUI::getOleds()
 {
   return m_oleds;
+}
+
+sigc::connection HWUI::onButtonPressed(const sigc::slot<void, Buttons, bool> &cb)
+{
+  return m_buttonPressed.connect(cb);
+}
+
+sigc::connection HWUI::onRotaryTurned(const sigc::slot<void> &cb)
+{
+  return m_rotaryTurned.connect(cb);
+}
+
+void HWUI::toggleFine()
+{
+  if(getButtonModifiers()[ButtonModifier::FINE])
+  {
+    removeModifier(ButtonModifier::FINE);
+  }
+  else
+  {
+    addModifier(ButtonModifier::FINE);
+  }
 }

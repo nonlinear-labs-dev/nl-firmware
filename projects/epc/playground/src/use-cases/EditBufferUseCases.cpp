@@ -1,5 +1,6 @@
 #include "EditBufferUseCases.h"
 #include "presets/SendEditBufferScopeGuard.h"
+#include "presets/EditBufferConverter.h"
 #include <presets/EditBuffer.h>
 #include <presets/Preset.h>
 #include <presets/PresetManager.h>
@@ -193,20 +194,20 @@ void EditBufferUseCases::setSplits(const ParameterId& id, tControlPositionValue 
 void EditBufferUseCases::mutePart(VoiceGroup part)
 {
   auto scope = m_editBuffer.getUndoScope().startTransaction("Mute " + toString(part));
-  m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Mute, part })->setCPFromWebUI(scope->getTransaction(), 1);
+  m_editBuffer.findParameterByID({ C15::PID::Part_Mute, part })->setCPFromWebUI(scope->getTransaction(), 1);
 }
 
 void EditBufferUseCases::unmutePart(VoiceGroup part)
 {
   auto scope = m_editBuffer.getUndoScope().startTransaction("Unmute " + toString(part));
-  m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Mute, part })->setCPFromWebUI(scope->getTransaction(), 0);
+  m_editBuffer.findParameterByID({ C15::PID::Part_Mute, part })->setCPFromWebUI(scope->getTransaction(), 0);
 }
 
 void EditBufferUseCases::mutePartUnmuteOtherPart(VoiceGroup part)
 {
   auto scope = m_editBuffer.getUndoScope().startTransaction("Mute " + toString(part));
-  auto p = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Mute, part });
-  auto other = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Mute, invert(part) });
+  auto p = m_editBuffer.findParameterByID({ C15::PID::Part_Mute, part });
+  auto other = m_editBuffer.findParameterByID({ C15::PID::Part_Mute, invert(part) });
 
   p->setCPFromWebUI(scope->getTransaction(), 1);
   other->setCPFromWebUI(scope->getTransaction(), 0);
@@ -261,7 +262,7 @@ void EditBufferUseCases::toggleMute(VoiceGroup part)
 {
   auto scope = m_editBuffer.getUndoScope().startTransaction("Toggle Mute " + toString(part));
   auto transaction = scope->getTransaction();
-  if(auto mute = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Mute, part }))
+  if(auto mute = m_editBuffer.findParameterByID({ C15::PID::Part_Mute, part }))
   {
     if(mute->getControlPositionValue() >= 0.5)
     {
@@ -277,8 +278,8 @@ void EditBufferUseCases::toggleMute(VoiceGroup part)
 void EditBufferUseCases::unmuteBothPartsWithTransactionNameForPart(VoiceGroup part)
 {
   auto scope = m_editBuffer.getParent()->getUndoScope().startTransaction("Unmute Part " + toString(part));
-  auto mute = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Mute, part });
-  auto muteOther = m_editBuffer.findParameterByID({ C15::PID::Voice_Grp_Mute, invert(part) });
+  auto mute = m_editBuffer.findParameterByID({ C15::PID::Part_Mute, part });
+  auto muteOther = m_editBuffer.findParameterByID({ C15::PID::Part_Mute, invert(part) });
   mute->setCPFromHwui(scope->getTransaction(), 0);
   muteOther->setCPFromHwui(scope->getTransaction(), 0);
 }
@@ -478,12 +479,14 @@ void EditBufferUseCases::convertSingleToSplitFXIOnly()
 {
   auto scope = m_editBuffer.getUndoScope().startTransaction("Convert Single to Split (FX I Only)");
   auto transaction = scope->getTransaction();
-  m_editBuffer.undoableConvertSingleToDualWithFXIOnly(transaction, SoundType::Split);
+  EditBufferConverter ebConverter(m_editBuffer);
+  ebConverter.undoableConvertSingleToDualWithFXIOnly(transaction, SoundType::Split);
 }
 
 void EditBufferUseCases::convertSingleToLayerFXIOnly()
 {
   auto scope = m_editBuffer.getUndoScope().startTransaction("Convert Single to Layer (FX I Only)");
   auto transaction = scope->getTransaction();
-  m_editBuffer.undoableConvertSingleToDualWithFXIOnly(transaction, SoundType::Layer);
+  EditBufferConverter ebConverter(m_editBuffer);
+  ebConverter.undoableConvertSingleToDualWithFXIOnly(transaction, SoundType::Layer);
 }

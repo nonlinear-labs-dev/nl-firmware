@@ -58,9 +58,9 @@ nlohmann::json SyncMaster::api(const ClientPtr &client, const nlohmann::json &in
         std::string topic = args;
         m_subscribers[topic].push_back(client);
 
-        auto it = std::find_if(m_items.begin(), m_items.end(), [&](auto &a) { return a->getTopic() == topic; });
-        if(it != m_items.end())
-          return *it;
+        auto mapIt = std::find_if(m_items.begin(), m_items.end(), [&](auto &a) { return a->getTopic() == topic; });
+        if(mapIt != m_items.end())
+          return *mapIt;
       }
       catch(...)
       {
@@ -72,18 +72,17 @@ nlohmann::json SyncMaster::api(const ClientPtr &client, const nlohmann::json &in
 
 void SyncMaster::add(SyncedItem *item)
 {
-  m_items.push_back(item);
+  m_items.insert(item);
   item->setDirty();
 }
 
 void SyncMaster::remove(SyncedItem *i)
 {
-  m_items.erase(std::remove(m_items.begin(), m_items.end(), i), m_items.end());
-
+  m_items.erase(i);
   i->resetDirty();
-  nlohmann::json r;
+
   auto topic = i->getTopic();
-  r.push_back({ { "topic", topic }, { "state", nullptr } });
+  nlohmann::json r = { { "topic", topic }, { "state", nullptr } };
 
   if(auto it = m_subscribers.find(topic); it != m_subscribers.end())
   {
@@ -121,7 +120,8 @@ void SyncMaster::handleDirty()
       auto &clients = it->second;
 
       clients.erase(std::remove_if(clients.begin(), clients.end(),
-                                   [&](auto &client) {
+                                   [&](auto &client)
+                                   {
                                      if(auto p = client.lock())
                                      {
                                        m_api->send(p.get(), dirtyItem);

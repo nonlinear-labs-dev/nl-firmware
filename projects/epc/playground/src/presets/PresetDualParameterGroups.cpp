@@ -146,14 +146,13 @@ void PresetDualParameterGroups::writeGroups(Writer &writer, const Preset *other,
 
   static std::vector<std::string> parameterGroupsThatAreTreatedAsGlobalForLayerSounds = { "Unison", "Mono" };
 
-  auto isParameterGroupPresentInVGII = [&](const GroupId& id) {
+  auto isParameterGroupPresentInVGII = [&](const GroupId &id) {
     auto &v = parameterGroupsThatAreTreatedAsGlobalForLayerSounds;
     auto it = std::find(v.begin(), v.end(), id.getName());
     return it != v.end();
   };
 
-  auto isPolyphonicGroup = [](const GroupId& id)
-  {
+  auto isPolyphonicGroup = [](const GroupId &id) {
     if(auto group = Application::get().getPresetManager()->getEditBuffer()->getParameterGroupByID(id))
       return group->isPolyphonic();
     return false;

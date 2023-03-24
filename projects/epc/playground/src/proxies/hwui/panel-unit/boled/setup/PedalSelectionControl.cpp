@@ -7,6 +7,7 @@
 #include "SmallerParameterValueLabel.h"
 #include "SetupLayout.h"
 #include "PedalEditor.h"
+#include "parameters/PedalParameter.h"
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/HWUI.h>
 #include <Application.h>
@@ -65,19 +66,17 @@ namespace detail
 
 }
 
-PedalSelectionControl::PedalSelectionControl(Parameter *param)
+PedalSelectionControl::PedalSelectionControl(PedalParameter *param)
     : super(Rect(0, 0, 0, 0))
 {
   const int h = 12;
   const int sliderHeight = 4;
-  addControl(new detail::PedalSetupLabel(param->getLongName(), Rect(0, 0, 42, h)));
+  addControl(new detail::PedalSetupLabel(param->getLongNameWithoutSuffix(), Rect(0, 0, 42, h)));
   addControl(new DotSlider(param, Rect(42, (h - sliderHeight) / 2, 35, sliderHeight)));
   addControl(new detail::PedalSmallerParamValueLabel(param, Rect(80, 0, 50, h)));
 }
 
-PedalSelectionControl::~PedalSelectionControl()
-{
-}
+PedalSelectionControl::~PedalSelectionControl() = default;
 
 void PedalSelectionControl::setPosition(const Rect &rect)
 {

@@ -42,6 +42,8 @@ class BankUseCases
   Preset* appendEditBufferAsPresetWithUUID(Uuid uuid);
   Preset* insertEditBufferAsPresetWithUUID(size_t pos, Uuid uuid);
 
+  void saveEditBufferIntoBank();
+
  private:
   [[nodiscard]] bool isDirectLoadActive() const;
   [[nodiscard]] PresetManager* getPresetManager() const;

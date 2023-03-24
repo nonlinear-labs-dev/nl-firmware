@@ -1,0 +1,66 @@
+#pragma once
+
+/******************************************************************************/
+/** @file       setting_list.h
+    @date       ${timestamp}
+    @version    ${config.milestone}-${config.version}
+    @author     M. Seeber
+    @brief      complete list of settings (and their describable properties)
+    @todo       
+*******************************************************************************/
+
+#include "parameter_declarations.h"
+#include <nltools/Types.h>
+#include <optional>
+#include <variant>
+
+namespace C15
+{
+    namespace Settings
+    {
+        struct SettingDescriptor
+        {
+            struct DisplayDescriptor
+            {
+                const Properties::DisplayScalingType m_display_scaling_type;
+                const unsigned m_coarse;
+                const unsigned m_fine;
+            };
+            using ValueType = std::variant<
+                float, const char * const,
+                MidiReceiveChannel, MidiReceiveChannelSplit,
+                MidiSendChannel, MidiSendChannelSplit,
+                PedalCC, BenderCC, AftertouchCC, RibbonCC,
+                BenderCurves, AftertouchCurves, VelocityCurves,
+                PresetStoreModeSettings, BaseUnitUIModes, BaseUnitUIDetails,
+                ParameterEditModeRibbonBehaviours, DebugLevels,
+                PedalTypes, WifiSettings, SelectedRibbons, BooleanSettings
+            >;
+            const char * const m_key;
+            const std::optional<ValueType> m_default_value;
+            const std::optional<DisplayDescriptor> m_display;
+            constexpr SettingDescriptor(
+                const char * const _key
+            )   : m_key{ _key }
+                , m_default_value{ std::nullopt }
+                , m_display{ std::nullopt }
+            {}
+            constexpr SettingDescriptor(
+                const char * const _key, const ValueType &_default_value
+            )   : m_key{ _key }
+                , m_default_value{ _default_value }
+                , m_display{ std::nullopt }
+            {}
+            constexpr SettingDescriptor(
+                const char * const _key, const ValueType &_default_value,
+                const DisplayDescriptor &_display
+            )   : m_key{ _key }
+                , m_default_value{ _default_value }
+                , m_display{ _display }
+            {}
+        };
+    } // namespace C15::Settings
+    constexpr Settings::SettingDescriptor SettingList[] = {
+        ${setting_list}
+    };
+} // namespace C15

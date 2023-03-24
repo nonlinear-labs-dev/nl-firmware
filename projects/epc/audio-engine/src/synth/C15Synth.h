@@ -16,7 +16,7 @@ namespace nltools
 {
   namespace msg
   {
-//    struct ParameterChangedMessage; // wtf is this?
+    //    struct ParameterChangedMessage; // wtf is this?
     struct SetPresetMessage;
   }
 }
@@ -47,10 +47,8 @@ class C15Synth : public Synth, public sigc::trackable
   // new ParameterChanged protocol
   void onHardwareSourceParameterChangedMessage(const nltools::msg::HardwareSourceParameterChangedMessage& _msg);
   void onHardwareSourceSendParameterChangedMessage(const nltools::msg::HardwareSourceSendParameterChangedMessage& _msg);
-  template<typename T>
-  void onParameterChangedMessage(const T& _msg);
-  template<typename T>
-  void onResettingParameterChangedMessage(const T& _msg);
+  template <typename T> void onParameterChangedMessage(const T& _msg);
+  template <typename T> void onResettingParameterChangedMessage(const T& _msg);
 
   void onNoteShiftMessage(const nltools::msg::Setting::NoteShiftMessage& msg);
   void onPresetGlitchMessage(const nltools::msg::Setting::PresetGlitchMessage& msg);
@@ -74,12 +72,13 @@ class C15Synth : public Synth, public sigc::trackable
   void doChannelModeMessageFunctions();
 
   std::unique_ptr<dsp_host_dual> m_dsp;
-  AudioEngineOptions* m_options;
+  AudioEngineOptions* m_options = nullptr;
   MidiRuntimeOptions m_midiOptions;
 
   //Latch-Filters, Queues
   constexpr static auto tNUM_HW = static_cast<int>(C15::Parameters::Hardware_Sources::_LENGTH_);
-  std::array<std::array<float, 3>, tNUM_HW> m_playgroundHwSourceKnownValues {};
+  constexpr static auto tNUM_HW_SOURCES = static_cast<int>(HWChangeSource::LENGTH);
+  std::array<std::array<float, tNUM_HW_SOURCES>, tNUM_HW> m_playgroundHwSourceKnownValues {};
   RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
   RingBuffer<MidiChannelModeMessages> m_queuedChannelModeMessages;
 

@@ -67,3 +67,13 @@ void SyncedItem::resetDirty()
   if(std::exchange(m_dirty, false))
     m_master.removeDirty(this);
 }
+
+void SyncedItem::suspend()
+{
+  m_master.remove(this);
+}
+
+void SyncedItem::resume()
+{
+  m_master.add(this);
+}

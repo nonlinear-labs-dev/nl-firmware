@@ -20,13 +20,21 @@ void SplitPointSyncParameters::init()
   }
 }
 
+void SplitPointSyncParameters::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto c_str = std::get<const char* const>(val);
+  setState(strcmp(c_str, "on") == 0);
+}
+
 void SplitPointSyncParameters::undoableSet(UNDO::Transaction* transaction, bool newState)
 {
   auto swap = UNDO::createSwapData(newState);
-  transaction->addSimpleCommand([this, swap](auto) {
-    swap->swapWith(m_state);
-    notify();
-  });
+  transaction->addSimpleCommand(
+      [this, swap](auto)
+      {
+        swap->swapWith(m_state);
+        notify();
+      });
 }
 
 void SplitPointSyncParameters::load(const Glib::ustring& text, Initiator initiator)

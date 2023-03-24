@@ -2,12 +2,7 @@
 #include "ModuleCaption.h"
 #include "Application.h"
 #include <proxies/hwui/HWUI.h>
-#include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
-#include <parameters/mono-mode-parameters/UnmodulateableMonoParameter.h>
-#include <groups/MonoGroup.h>
-#include <parameters/mono-mode-parameters/MonoGlideTimeParameter.h>
 #include <parameters/UnisonVoicesParameter.h>
-#include <groups/SplitParameterGroups.h>
 #include "presets/PresetManager.h"
 #include "presets/EditBuffer.h"
 #include "parameters/Parameter.h"
@@ -51,7 +46,10 @@ void ModuleCaption::updateText(Parameter *newOne)
   {
     auto group = newOne->getParentGroup();
     auto groupName = group->getShortName();
-    setText(StringAndSuffix { groupName });
+    if(group->isMonophonic() && Application::get().getPresetManager()->getEditBuffer()->getType() == SoundType::Single)
+      setText(StringAndSuffix { groupName + " " + toString(group->getVoiceGroup()) });
+    else
+      setText(StringAndSuffix { groupName });
   }
 }
 

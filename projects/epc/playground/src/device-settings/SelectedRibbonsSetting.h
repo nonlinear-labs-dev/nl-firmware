@@ -1,8 +1,7 @@
 #pragma once
 #include <device-settings/EnumSetting.h>
 #include <nltools/enums/EnumTools.h>
-
-ENUM(SelectedRibbons, int, Ribbon1_2,  Ribbon3_4);
+#include <nltools/Types.h>
 
 class SelectedRibbonsSetting : public EnumSetting<SelectedRibbons>
 {

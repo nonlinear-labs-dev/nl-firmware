@@ -181,13 +181,13 @@ void DescriptiveLayouts::CurrentVoiceGroupText::onChange(VoiceGroup newSelection
 
 void DescriptiveLayouts::VGIMuted::onChange(const EditBuffer *eb)
 {
-  auto muteI = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I })->getControlPositionValue() != 0;
+  auto muteI = eb->findParameterByID({ C15::PID::Part_Mute, VoiceGroup::I })->getControlPositionValue() != 0;
   setValue({ muteI ? "\uE0BA" : "", 0 });
 }
 
 void DescriptiveLayouts::VGIIMuted::onChange(const EditBuffer *eb)
 {
-  auto muteII = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->getControlPositionValue() != 0;
+  auto muteII = eb->findParameterByID({ C15::PID::Part_Mute, VoiceGroup::II })->getControlPositionValue() != 0;
   setValue({ muteII ? "\uE0BA" : "", 0 });
 }
 
@@ -401,12 +401,12 @@ void DescriptiveLayouts::SplitPointBehaviourIsDefaultWithoutSync::onSettingChang
 
 void DescriptiveLayouts::VGIIsMuted::onChange(const EditBuffer *eb)
 {
-  setValue(eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I })->isValueDifferentFrom(0));
+  setValue(eb->findParameterByID({ C15::PID::Part_Mute, VoiceGroup::I })->isValueDifferentFrom(0));
 }
 
 void DescriptiveLayouts::VGIIIsMuted::onChange(const EditBuffer *eb)
 {
-  setValue(eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II })->isValueDifferentFrom(0));
+  setValue(eb->findParameterByID({ C15::PID::Part_Mute, VoiceGroup::II })->isValueDifferentFrom(0));
 }
 
 void DescriptiveLayouts::SoundFxMixMasterButtonText::onChange(const EditBuffer *eb)
@@ -447,8 +447,7 @@ void DescriptiveLayouts::LayerToFXPath::onChange(const EditBuffer *eb)
   const auto I_OutMixer_Level = outmixer_lvl_I->getControlPositionValue();
   const auto II_OutMixer_Level = outmixer_lvl_II->getControlPositionValue();
 
-  auto setResult = [this](const std::string &c)
-  {
+  auto setResult = [this](const std::string &c) {
     if(c == "ERROR")
     {
       setValue(c);
@@ -528,13 +527,12 @@ void DescriptiveLayouts::Serial_FX_Imagestate::onChange(const EditBuffer *eb)
     setValue("Layer_To_FX_Empty.png");
 }
 
-
 void DescriptiveLayouts::Layer_FX_TO_OUT_Visibility::onChange(const EditBuffer *eb)
 {
-  auto partVolumeI = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
-  auto partVolumeII = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
-  auto partMuteI = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I });
-  auto partMuteII = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II });
+  auto partVolumeI = eb->findParameterByID({ C15::PID::Part_Volume, VoiceGroup::I });
+  auto partVolumeII = eb->findParameterByID({ C15::PID::Part_Volume, VoiceGroup::II });
+  auto partMuteI = eb->findParameterByID({ C15::PID::Part_Mute, VoiceGroup::I });
+  auto partMuteII = eb->findParameterByID({ C15::PID::Part_Mute, VoiceGroup::II });
 
   nltools_assertAlways(partVolumeI->isBiPolar() == false);
   nltools_assertAlways(partVolumeII->isBiPolar() == false);
@@ -547,11 +545,9 @@ void DescriptiveLayouts::Layer_FX_TO_OUT_Visibility::onChange(const EditBuffer *
     setValue(true);
 }
 
-
 void DescriptiveLayouts::Layer_FX_TO_OUT_Imagestate::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string base_string = "Layer_FX_To_Out_";
     const std::string base_suffix = ".png";
     if(s == "empty")
@@ -560,10 +556,10 @@ void DescriptiveLayouts::Layer_FX_TO_OUT_Imagestate::onChange(const EditBuffer *
       setValue(base_string + s + base_suffix);
   };
 
-  auto partVolumeI = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
-  auto partVolumeII = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
-  auto partMuteI = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::I });
-  auto partMuteII = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, VoiceGroup::II });
+  auto partVolumeI = eb->findParameterByID({ C15::PID::Part_Volume, VoiceGroup::I });
+  auto partVolumeII = eb->findParameterByID({ C15::PID::Part_Volume, VoiceGroup::II });
+  auto partMuteI = eb->findParameterByID({ C15::PID::Part_Mute, VoiceGroup::I });
+  auto partMuteII = eb->findParameterByID({ C15::PID::Part_Mute, VoiceGroup::II });
 
   nltools_assertAlways(partVolumeI->isBiPolar() == false);
   nltools_assertAlways(partVolumeII->isBiPolar() == false);
@@ -584,8 +580,7 @@ void DescriptiveLayouts::Layer_FX_TO_OUT_Imagestate::onChange(const EditBuffer *
 
 void DescriptiveLayouts::Split_FX_TO_OUT_Imagestate::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string base_string = "Layer_FX_To_Out_";
     const std::string base_suffix = ".png";
     if(s == "empty")
@@ -594,8 +589,8 @@ void DescriptiveLayouts::Split_FX_TO_OUT_Imagestate::onChange(const EditBuffer *
       setValue(base_string + s + base_suffix);
   };
 
-  auto partVolumeI = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
-  auto partVolumeII = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
+  auto partVolumeI = eb->findParameterByID({ C15::PID::Part_Volume, VoiceGroup::I });
+  auto partVolumeII = eb->findParameterByID({ C15::PID::Part_Volume, VoiceGroup::II });
 
   nltools_assertAlways(partVolumeI->isBiPolar() == false);
   nltools_assertAlways(partVolumeII->isBiPolar() == false);
@@ -612,8 +607,7 @@ void DescriptiveLayouts::Split_FX_TO_OUT_Imagestate::onChange(const EditBuffer *
 
 void DescriptiveLayouts::Split_FX_TO_OUT_Imagestate_flipped::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string base_string = "Layer_FX_To_Out_";
     const std::string base_suffix = "_flipped.png";
     if(s == "empty")
@@ -622,8 +616,8 @@ void DescriptiveLayouts::Split_FX_TO_OUT_Imagestate_flipped::onChange(const Edit
       setValue(base_string + s + base_suffix);
   };
 
-  auto partVolumeI = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::I });
-  auto partVolumeII = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, VoiceGroup::II });
+  auto partVolumeI = eb->findParameterByID({ C15::PID::Part_Volume, VoiceGroup::I });
+  auto partVolumeII = eb->findParameterByID({ C15::PID::Part_Volume, VoiceGroup::II });
 
   nltools_assertAlways(partVolumeI->isBiPolar() == false);
   nltools_assertAlways(partVolumeII->isBiPolar() == false);
@@ -640,8 +634,7 @@ void DescriptiveLayouts::Split_FX_TO_OUT_Imagestate_flipped::onChange(const Edit
 
 void DescriptiveLayouts::Split_Arrows_To_FX_L_TO_R_I::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string texture = "Split_FX_FB_L_TO_R.png";
     if(s == "empty")
       setValue("Split_FX_FB_Empty.png");
@@ -679,8 +672,7 @@ void DescriptiveLayouts::Split_Arrows_To_FX_L_TO_R_I::onChange(const EditBuffer 
 
 void DescriptiveLayouts::Split_Arrows_To_FX_L_TO_R_II::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string texture = "Split_FX_FB_L_TO_R.png";
     if(s == "empty")
       setValue("Split_FX_FB_Empty.png");
@@ -718,8 +710,7 @@ void DescriptiveLayouts::Split_Arrows_To_FX_L_TO_R_II::onChange(const EditBuffer
 
 void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_I::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string texture = "Split_FX_FB_R_TO_L.png";
     if(s == "empty")
       setValue("Split_FX_FB_Empty.png");
@@ -757,8 +748,7 @@ void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_I::onChange(const EditBuffer 
 
 void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_II::onChange(const EditBuffer *eb)
 {
-  auto setResult = [this](const std::string &s)
-  {
+  auto setResult = [this](const std::string &s) {
     const std::string texture = "Split_FX_FB_R_TO_L.png";
     if(s == "empty")
       setValue("Split_FX_FB_Empty.png");
@@ -797,5 +787,5 @@ void DescriptiveLayouts::Split_Arrows_To_FX_R_TO_L_II::onChange(const EditBuffer
 void DescriptiveLayouts::InitCurrentVoiceText::onChange(VoiceGroup newSelection)
 {
   auto str = nltools::string::concat("Part ", toString(newSelection));
-  setValue({str, 0});
+  setValue({ str, 0 });
 }

@@ -12,7 +12,7 @@
 #include <parameters/RibbonParameter.h>
 #include <parameters/ModulationRoutingParameter.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Ribbon Return Mode")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Ribbon Return Mode")
 {
   auto eb = TestHelper::getEditBuffer();
   auto ribbon
@@ -56,15 +56,16 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Ribbon Return Mode")
   }
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Local Enable - Disable BiDi Modulation")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Local Enable - Disable BiDi Modulation")
 {
   auto eb = TestHelper::getEditBuffer();
 
-  auto ribbon = dynamic_cast<RibbonParameter*>(eb->findParameterByID(HardwareSourcesGroup::getUpperRibbon1ParameterID()));
+  auto ribbon
+      = dynamic_cast<RibbonParameter*>(eb->findParameterByID(HardwareSourcesGroup::getUpperRibbon1ParameterID()));
   auto pedal1 = dynamic_cast<PedalParameter*>(eb->findParameterByID(HardwareSourcesGroup::getPedal1ParameterID()));
-  auto ribbonA = eb->findParameterByID({C15::PID::Ribbon_1_to_MC_A, VoiceGroup::Global});
-  auto pedalA = eb->findParameterByID({C15::PID::Pedal_1_to_MC_A, VoiceGroup::Global});
-  auto mcA = eb->findParameterByID({C15::PID::MC_A, VoiceGroup::Global});
+  auto ribbonA = eb->findParameterByID({ C15::PID::Ribbon_1_to_MC_A, VoiceGroup::Global });
+  auto pedalA = eb->findParameterByID({ C15::PID::Pedal_1_to_MC_A, VoiceGroup::Global });
+  auto mcA = eb->findParameterByID({ C15::PID::MC_A, VoiceGroup::Global });
 
   REQUIRE(ribbon);
   REQUIRE(pedal1);
@@ -92,7 +93,7 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Local Enable - Disable BiDi Mod
     useCases.setAllRoutingEntries(true);
 
     auto to = [](auto x) { return static_cast<int>(x); };
-    auto initPos = [&](){
+    auto initPos = [&]() {
       auto scope = TestHelper::createTestScope();
       auto trans = scope->getTransaction();
       ribbon->setCPFromHwui(trans, 0);
@@ -106,7 +107,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Local Enable - Disable BiDi Mod
 
     WHEN("Ribbon 1 Local enabled")
     {
-      useCases.updateRoutingAspect(to(RoutingSettings::tRoutingIndex::Ribbon1), to(RoutingSettings::tAspectIndex::LOCAL), true);
+      useCases.updateRoutingAspect(to(RoutingSettings::tRoutingIndex::Ribbon1),
+                                   to(RoutingSettings::tAspectIndex::LOCAL), true);
       initPos();
 
       WHEN("Pedal1 is set to 0.5")
@@ -128,7 +130,8 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Local Enable - Disable BiDi Mod
 
     WHEN("Ribbon 1 Local disabled")
     {
-      useCases.updateRoutingAspect(to(RoutingSettings::tRoutingIndex::Ribbon1), to(RoutingSettings::tAspectIndex::LOCAL), false);
+      useCases.updateRoutingAspect(to(RoutingSettings::tRoutingIndex::Ribbon1),
+                                   to(RoutingSettings::tAspectIndex::LOCAL), false);
       initPos();
 
       WHEN("Pedal1 is set to 0.5")

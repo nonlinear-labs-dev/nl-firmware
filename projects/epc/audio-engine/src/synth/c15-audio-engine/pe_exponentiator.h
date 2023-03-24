@@ -41,12 +41,13 @@ struct exponentiator
   static constexpr float s_loop_factor_base = 0.25f;
   /* conversion tables (constructed on initialization) */  // (note: the additional table element (size + 1) prevents interpolation issues)
   float m_linear_pitch_table[dsp_expon_lin_pitch_range + 1] = {};  // linear pitch table: [-150, 150] semitones
-  float m_oscillator_pitch_table[dsp_expon_osc_pitch_range
-                                 + 1] = {};  // nonlinear pitch table for oscillators: [-20, 130] semitones
-  float
-      m_level_table[dsp_expon_level_range + 1] = {};  // level conversion table: [-300, 100] decibel (first element is zero)
-  float m_time_table[dsp_expon_time_range + 1] = {};  // time conversion table: [-20, 90] decibel (first element is zero)
-  float m_loopFactor_table[env_loop_factor_range + 1] = {}; // loopFactor conversion table [0, 100]
+  float m_oscillator_pitch_table[dsp_expon_osc_pitch_range + 1]
+      = {};  // nonlinear pitch table for oscillators: [-20, 130] semitones
+  float m_level_table[dsp_expon_level_range + 1]
+      = {};  // level conversion table: [-300, 100] decibel (first element is zero)
+  float m_time_table[dsp_expon_time_range + 1]
+      = {};  // time conversion table: [-20, 90] decibel (first element is zero)
+  float m_loopFactor_table[env_loop_factor_range + 1] = {};  // loopFactor conversion table [0, 100]
 
   /* proper init */
   void init();  // perform construction of all four conversion tables
@@ -57,10 +58,10 @@ struct exponentiator
   /* run-time conversion methods (using table interpolation) */
   float eval_lin_pitch(
       float _value);  // linear pitch conversion (into frequency factor - multiples of 440 Hz - or different reference)
-  float eval_osc_pitch(float _value);  // oscillator pitch conversion (into frequency factor)
-  float eval_level(float _value);      // gain/level conversion (into amplitude factor)
-  float eval_time(float _value);       // time conversion (into milliseconds)
-  float eval_loopFactor(float _value); // loopFactor conversion
+  float eval_osc_pitch(float _value);   // oscillator pitch conversion (into frequency factor)
+  float eval_level(float _value);       // gain/level conversion (into amplitude factor)
+  float eval_time(float _value);        // time conversion (into milliseconds)
+  float eval_loopFactor(float _value);  // loopFactor conversion
 };
 
 inline float eval(float _value, float from, float to, float* table)
@@ -95,5 +96,5 @@ inline float exponentiator::eval_time(float _value)
 
 inline float exponentiator::eval_loopFactor(float _value)
 {
-    return eval(_value, s_loop_factor_from, s_loop_factor_to, m_loopFactor_table);
+  return eval(_value, s_loop_factor_from, s_loop_factor_to, m_loopFactor_table);
 }

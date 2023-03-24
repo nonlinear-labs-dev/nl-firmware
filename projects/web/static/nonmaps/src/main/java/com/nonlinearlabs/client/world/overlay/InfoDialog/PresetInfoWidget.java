@@ -2,9 +2,11 @@ package com.nonlinearlabs.client.world.overlay.InfoDialog;
 
 import java.util.Date;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -23,6 +25,7 @@ import com.nonlinearlabs.client.world.maps.presets.bank.preset.Preset;
 public class PresetInfoWidget {
 
 	private static PresetInfoWidget instance;
+	private PresetPropertiesLabels hashTags = new PresetPropertiesLabels();
 	private TextArea comment;
 	private Label deviceName;
 	private Label softwareVersion;
@@ -67,20 +70,17 @@ public class PresetInfoWidget {
 		}
 
 		if (preset != null) {
+
 			String presetName = preset.getCurrentName();
 			deviceName.setText(preset.getAttribute("DeviceName"));
+			hashTags.updateFromPreset(preset.getHashtags());
 			softwareVersion.setText(preset.getAttribute("SoftwareVersion"));
 			storeTime.setText(localizeTime(preset.getAttribute("StoreTime")));
 			String commentText = preset.getAttribute("Comment");
 
 			if (force || haveFocus != comment) {
 				comment.setText(commentText);
-
-				if (comment.getElement().getScrollHeight() > 0) {
-					comment.setHeight("1em");
-					int height = comment.getElement().getScrollHeight() + 5;
-					comment.setHeight(height + "px");
-				}
+				updateCommentFieldHeight();
 			}
 
 			if (force || haveFocus != name) {
@@ -111,6 +111,7 @@ public class PresetInfoWidget {
 		FlexTable panel = new FlexTable();
 		addRow(panel, "Bank", bankName = new Label());
 		addRow(panel, "Position/Name", presetNameAndPositionBox);
+		addRow(panel, "Properties", hashTags.getHTML());
 		addRow(panel, "Comment", comment = new TextArea());
 		addRow(panel, "Color Tag", colorBox.getHTML());
 		addRow(panel, "Last Change", storeTime = new Label(""));
@@ -133,6 +134,10 @@ public class PresetInfoWidget {
 							comment.getText());
 				}
 			}
+		});
+
+		comment.addKeyUpHandler(event -> {
+			updateCommentFieldHeight();
 		});
 
 		name.addFocusHandler(event -> haveFocus = name);
@@ -197,6 +202,16 @@ public class PresetInfoWidget {
 		this.panel = panel;
 
 		updateInfo(NonMaps.get().getNonLinearWorld().getPresetManager().getSelectedPreset(), false);
+
+
+		//for some reason we can't properly initialize the height of the comment section on the first open so we have to recalculate it here after some time
+		Timer t = new Timer() {
+			@Override
+			public void run() {
+				updateCommentFieldHeight();
+			}
+		};
+		t.schedule(15);
 	}
 
 	private void addRow(FlexTable panel, String name, Widget content) {
@@ -208,6 +223,14 @@ public class PresetInfoWidget {
 	private void saveContent() {
 		if (haveFocus != null && m_currentShownPreset != null) {
 			haveFocus.setFocus(false);
+		}
+	}
+
+	private void updateCommentFieldHeight()	{
+		if (comment.getElement().getScrollHeight() > 0) {
+			comment.setHeight("1em");
+			int height = comment.getElement().getScrollHeight() + 10;
+			comment.setHeight(height + "px");
 		}
 	}
 }

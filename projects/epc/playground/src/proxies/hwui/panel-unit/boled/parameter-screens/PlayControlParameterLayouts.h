@@ -26,7 +26,7 @@ class PlayControlParameterLayout2 : public virtual ParameterLayout2
     ValueEdit = 0,
     Select = 1,
     Behaviour = 2,
-    Mode = 3
+    Touch = 3
   };
 
   virtual void toggleMode(uint8_t desiredMode);
@@ -43,7 +43,6 @@ class PlayControlParameterLayout2 : public virtual ParameterLayout2
   static uint8_t s_mode;
   static int s_instanceCount;
 
-  PhysicalControlSlider* m_hwSourceSlider = nullptr;
   Control* m_currentValueDisplay = nullptr;
 };
 
@@ -56,6 +55,6 @@ class PlayControlParameterEditLayout2 : public ParameterEditLayout2, public Unmo
   void init() override;
 
  protected:
-  ButtonMenu *createMenu(const Rect &rect) override;
+  ButtonMenu* createMenu(const Rect& rect) override;
   bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
 };

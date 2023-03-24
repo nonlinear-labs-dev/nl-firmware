@@ -24,6 +24,7 @@ class EncoderAcceleration : public Setting
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   QuantizedValue m_acceleration;
 
   void syncExternals(SendReason reason) const override;

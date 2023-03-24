@@ -1,14 +1,17 @@
 #pragma once
 #include "Setting.h"
+#include <device-info/DeviceInformationItem.h>
 
-class TotalRAM : public Setting
+class DeviceInformation;
+
+class TotalRAM : public DeviceInformationItem
 {
  public:
-  explicit TotalRAM(Settings& s);
-  bool persistent() const override;
-  void load(const Glib::ustring& text, Initiator initiator) override;
-  Glib::ustring save() const override;
+  explicit TotalRAM(DeviceInformation* s);
+
   Glib::ustring getDisplayString() const override;
+  Glib::ustring get() const override;
+  void writeDocument(Writer& writer, tUpdateID knownRevision) const override;
 
  private:
   Glib::ustring m_display;

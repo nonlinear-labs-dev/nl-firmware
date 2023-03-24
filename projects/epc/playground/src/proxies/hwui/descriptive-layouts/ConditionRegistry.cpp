@@ -6,7 +6,6 @@
 #include "ConditionRegistry.h"
 #include "conditions/ParameterConditions.h"
 #include "conditions/SoundConditions.h"
-#include <device-settings/LayoutMode.h>
 #include <proxies/hwui/descriptive-layouts/conditions/HWUIConditions.h>
 
 ConditionRegistry::tCondition ConditionRegistry::getCondition(const std::string& key)
@@ -45,8 +44,7 @@ sigc::connection ConditionRegistry::onChange(const std::function<void()>& cb)
 void ConditionRegistry::onConditionChanged()
 {
   if(!isLocked())
-    if(Application::get().getSettings()->getSetting<LayoutMode>()->get() != LayoutVersionMode::Old)
-      m_signal.deferedSend();
+    m_signal.deferedSend();
 }
 
 bool ConditionRegistry::isLocked()
@@ -62,7 +60,8 @@ void ConditionRegistry::lock()
 void ConditionRegistry::unlock()
 {
   locks--;
-  if(locks == 0) {
+  if(locks == 0)
+  {
     onConditionChanged();
   }
 }

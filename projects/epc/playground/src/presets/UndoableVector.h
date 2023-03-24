@@ -182,17 +182,22 @@ template <typename Owner, typename Element> class UndoableVector : private Undoa
     pos = std::min(pos, size());
 
     transaction->addSimpleCommand(
-        [=](auto) {
+        [=](auto)
+        {
           Checker checker(this);
           auto it = std::next(m_elements.begin(), pos);
+          swapData->template get<0>()->resume();
           it = m_elements.insert(it, ElementPtr());
           swapData->swapWith(*it);
+
           invalidateAllChildren();
         },
-        [=](auto) {
+        [=](auto)
+        {
           Checker checker(this);
           auto it = std::next(m_elements.begin(), pos);
           swapData->swapWith(*it);
+          swapData->template get<0>()->suspend();
           m_elements.erase(it);
           invalidateAllChildren();
         });
@@ -229,7 +234,8 @@ template <typename Owner, typename Element> class UndoableVector : private Undoa
       auto swapData = UNDO::createSwapData(ElementPtr(nullptr));
 
       transaction->addSimpleCommand(
-          [=](auto) {
+          [=](auto)
+          {
             Checker checker(this);
             auto it = std::next(m_elements.begin(), pos);
             ElementPtr e = std::move(*it);
@@ -239,11 +245,14 @@ template <typename Owner, typename Element> class UndoableVector : private Undoa
               e->invalidate();
 
             swapData->swapWith(e);
+            swapData->template get<0>()->suspend();
             invalidateAllChildren();
           },
-          [=](auto) {
+          [=](auto)
+          {
             Checker checker(this);
             ElementPtr e;
+            swapData->template get<0>()->resume();
             swapData->swapWith(e);
             auto it = std::next(m_elements.begin(), pos);
             m_elements.insert(it, std::move(e));
@@ -300,13 +309,15 @@ template <typename Owner, typename Element> class UndoableVector : private Undoa
       }
 
       transaction->addSimpleCommand(
-          [=](auto) {
+          [=](auto)
+          {
             auto it = std::next(m_elements.begin(), pos);
             auto ptr = it->release();
             m_elements.erase(it);
             invalidateAllChildren();
           },
-          [=](auto) {
+          [=](auto)
+          {
             auto it = std::next(m_elements.begin(), pos);
             m_elements.insert(it, ElementPtr(theElement));
             invalidateAllChildren();
@@ -323,12 +334,14 @@ template <typename Owner, typename Element> class UndoableVector : private Undoa
     pos = std::min(pos, size());
 
     transaction->addSimpleCommand(
-        [=](auto) {
+        [=](auto)
+        {
           auto it = std::next(m_elements.begin(), pos);
           m_elements.insert(it, ElementPtr(p));
           invalidateAllChildren();
         },
-        [=](auto) {
+        [=](auto)
+        {
           auto it = std::next(m_elements.begin(), pos);
           it->release();
           m_elements.erase(it);
@@ -352,20 +365,22 @@ template <typename Owner, typename Element> class UndoableVector : private Undoa
 
     auto swap = UNDO::createSwapData(order);
 
-    transaction->addSimpleCommand([=](auto) {
-      std::vector<Element *> newOrder;
-      std::transform(m_elements.begin(), m_elements.end(), std::back_inserter(newOrder),
-                     [&](auto &e) { return e.get(); });
-      swap->swapWith(newOrder);
+    transaction->addSimpleCommand(
+        [=](auto)
+        {
+          std::vector<Element *> newOrder;
+          std::transform(m_elements.begin(), m_elements.end(), std::back_inserter(newOrder),
+                         [&](auto &e) { return e.get(); });
+          swap->swapWith(newOrder);
 
-      for(size_t i = 0; i < newOrder.size(); i++)
-      {
-        m_elements[i].release();
-        m_elements[i].reset(newOrder[i]);
-      }
+          for(size_t i = 0; i < newOrder.size(); i++)
+          {
+            m_elements[i].release();
+            m_elements[i].reset(newOrder[i]);
+          }
 
-      invalidateAllChildren();
-    });
+          invalidateAllChildren();
+        });
   }
 
   const std::vector<ElementPtr> &getElements() const

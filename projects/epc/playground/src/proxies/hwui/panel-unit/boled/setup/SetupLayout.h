@@ -6,7 +6,7 @@
 
 namespace NavTree
 {
-  class Setup;
+  struct Setup;
 }
 
 class SetupEditor;
@@ -44,5 +44,5 @@ class SetupLayout : public Layout
 
   std::unique_ptr<NavTree::Setup> m_tree;
   FocusAndMode m_focusAndMode;
-  SetupEditor *m_editor{};
+  SetupEditor *m_editor {};
 };

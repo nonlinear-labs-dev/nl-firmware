@@ -1,5 +1,4 @@
 #include <Application.h>
-#include <groups/MacroControlsGroup.h>
 #include <libundo/undo/Scope.h>
 #include <parameters/MacroControlParameter.h>
 #include <parameters/ModulateableParameter.h>

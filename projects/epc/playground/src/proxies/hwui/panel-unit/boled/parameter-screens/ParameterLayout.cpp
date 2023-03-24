@@ -5,7 +5,8 @@
 #include "use-cases/ParameterUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
 #include "groups/ScaleGroup.h"
-#include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MCAmountButton.h"
+#include "parameters/ParameterFactory.h"
+#include "parameters/presenter-rules/ParameterPresenterRules.h"
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModuleCaption.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNameLabel.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterCarousel.h>
@@ -14,25 +15,19 @@
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/ButtonMenu.h>
 #include <Application.h>
-#include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <presets/PresetParameter.h>
 #include <proxies/hwui/panel-unit/boled/undo/UndoIndicator.h>
 #include <proxies/hwui/controls/Button.h>
 #include <device-settings/HighlightChangedParametersSetting.h>
 #include <parameters/ModulateableParameter.h>
-#include <parameters/MacroControlParameter.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 #include <presets/recall/RecallParameter.h>
 #include <parameters/scale-converters/ScaleConverter.h>
-#include <libundo/undo/Scope.h>
 #include <device-settings/Settings.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/MuteIndicator.h>
 #include <sigc++/adaptors/hide.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterNotAvailableInSoundInfo.h>
-#include <glibmm/main.h>
-#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/controls/SelectedParameterValue.h>
 #include <parameter_declarations.h>
 
@@ -54,7 +49,7 @@ ModuleCaption *ParameterLayout2::createModuleCaption() const
   return new ModuleCaption(Rect(0, 0, 64, 13));
 }
 
-Control* ParameterLayout2::createParameterNameLabel() const
+Control *ParameterLayout2::createParameterNameLabel() const
 {
   return new ParameterNameLabel(Rect(BIG_SLIDER_X - 2, 8, BIG_SLIDER_WIDTH + 4, 11));
 }
@@ -198,7 +193,7 @@ void ParameterSelectLayout2::init()
 Carousel *ParameterSelectLayout2::createCarousel(const Rect &rect)
 {
   auto parameter = getCurrentParameter();
-  if(!ScaleGroup::isScaleParameter(parameter))
+  if(!ParameterFactory::isScaleParameter(parameter))
   {
     return new ParameterCarousel(rect);
   }
@@ -231,8 +226,8 @@ bool ParameterSelectLayout2::onButton(Buttons i, bool down, ButtonModifiers modi
         if(auto button = findControlOfType<SwitchVoiceGroupButton>())
         {
           EditBufferUseCases ebUseCases(*getCurrentEditParameter()->getParentEditBuffer());
-          if(SwitchVoiceGroupButton::allowToggling(getCurrentParameter(),
-                                                   Application::get().getPresetManager()->getEditBuffer()))
+          if(ParameterPresenterRules::allowToggling(getCurrentParameter(),
+                                                    Application::get().getPresetManager()->getEditBuffer()))
             Application::get().getVGManager()->toggleCurrentVoiceGroupAndUpdateParameterSelection();
           else if(button->getText().text == "back..")
             ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global });
@@ -354,11 +349,12 @@ ParameterRecallLayout2::ParameterRecallLayout2()
         break;
     }
 
-    m_leftValue = addControl(new Label(StringAndSuffix { p->getDisplayString() }, Rect(67, 35, 58, 11)));
+    auto currentValue = p->getControlPositionValue();
+    auto leftText = p->getDisplayString(currentValue);
+    m_leftValue = addControl(new Label(StringAndSuffix { leftText }, Rect(67, 35, 58, 11)));
 
-    auto displayString = p->getDisplayString(originalValue);
-
-    m_rightValue = addControl(new Label(StringAndSuffix { displayString }, Rect(131, 35, 58, 11)));
+    auto rightText = p->getDisplayString(originalValue);
+    m_rightValue = addControl(new Label(StringAndSuffix { rightText }, Rect(131, 35, 58, 11)));
   }
 
   m_recallValue = getCurrentParameter()->getControlPositionValue();
@@ -477,10 +473,11 @@ void ParameterRecallLayout2::updateUI(bool paramLikeInPreset)
     {
       auto originalParam = p->getOriginalParameter();
       auto originalValue = originalParam ? originalParam->getRecallValue() : p->getDefaultValue();
-      auto displayString = p->getDisplayString(originalValue);
+      auto displayStringRecall = p->getDisplayString(originalValue);
+      auto currentDisplayString = p->getDisplayString(p->getControlPositionValue());
 
-      m_leftValue->setText(StringAndSuffix { displayString });
-      m_rightValue->setText(StringAndSuffix { p->getDisplayString() });
+      m_leftValue->setText(StringAndSuffix { displayStringRecall });
+      m_rightValue->setText(StringAndSuffix { currentDisplayString });
       m_slider->setValue(m_recallValue, p->isBiPolar());
       m_leftValue->setHighlight(false);
       m_rightValue->setHighlight(true);
@@ -506,7 +503,7 @@ void ParameterRecallLayout2::onParameterChanged(const Parameter *)
 PartMasterRecallLayout2::PartMasterRecallLayout2()
     : ParameterRecallLayout2()
     , m_muteParameter { Application::get().getPresetManager()->getEditBuffer()->findParameterByID(
-          { C15::PID::Voice_Grp_Mute, Application::get().getVGManager()->getCurrentVoiceGroup() }) }
+          { C15::PID::Part_Mute, Application::get().getVGManager()->getCurrentVoiceGroup() }) }
 {
   m_muteParameterConnection
       = m_muteParameter->onParameterChanged(sigc::hide(sigc::mem_fun(this, &PartMasterRecallLayout2::onMuteChanged)));

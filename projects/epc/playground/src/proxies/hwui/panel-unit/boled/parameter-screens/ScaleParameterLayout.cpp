@@ -45,19 +45,12 @@ Carousel* ScaleParameterSelectLayout::createCarousel(const Rect& rect)
 
 void ScaleParameterSelectLayout::selectParameter(int inc)
 {
-  static const auto ids = std::vector<int> { C15::PID::Scale_Base_Key,
-                                             C15::PID::Scale_Offset_0,
-                                             C15::PID::Scale_Offset_1,
-                                             C15::PID::Scale_Offset_2,
-                                             C15::PID::Scale_Offset_3,
-                                             C15::PID::Scale_Offset_4,
-                                             C15::PID::Scale_Offset_5,
-                                             C15::PID::Scale_Offset_6,
-                                             C15::PID::Scale_Offset_7,
-                                             C15::PID::Scale_Offset_8,
-                                             C15::PID::Scale_Offset_9,
-                                             C15::PID::Scale_Offset_10,
-                                             C15::PID::Scale_Offset_11 };
+  static const auto ids
+      = std::vector<int> { C15::PID::Scale_Base_Key, C15::PID::Scale_Offset_0, C15::PID::Scale_Offset_1,
+                           C15::PID::Scale_Offset_2, C15::PID::Scale_Offset_3, C15::PID::Scale_Offset_4,
+                           C15::PID::Scale_Offset_5, C15::PID::Scale_Offset_6, C15::PID::Scale_Offset_7,
+                           C15::PID::Scale_Offset_8, C15::PID::Scale_Offset_9, C15::PID::Scale_Offset_10,
+                           C15::PID::Scale_Offset_11 };
   auto eb = Application::get().getPresetManager()->getEditBuffer();
   EditBufferUseCases ebUseCases { *eb };
   auto id = eb->getSelectedParameterNumber();

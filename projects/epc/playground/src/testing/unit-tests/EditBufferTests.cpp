@@ -12,6 +12,7 @@
 #include <presets/PresetParameter.h>
 #include <device-settings/RandomizeAmount.h>
 #include "mock/MockPresetStorage.h"
+#include "presets/EditBufferToPartLoader.h"
 #include <Application.h>
 #include <device-settings/Settings.h>
 #include <parameter_declarations.h>
@@ -265,26 +266,28 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Editbuffer Contents loaded")
   SECTION("Load Single Into I")
   {
     auto scope = TestHelper::createTestScope();
-    editBuffer->undoableLoadSinglePresetIntoDualSound(scope->getTransaction(), presets.getSinglePreset(),
-                                                      VoiceGroup::I);
+    EditBufferToPartLoader loader(*editBuffer);
+    loader.undoableLoadPresetPartIntoPart(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::I,
+                                          VoiceGroup::I);
 
     REQUIRE(editBuffer->getVoiceGroupName(VoiceGroup::I) == presets.getSinglePreset()->getName());
     REQUIRE(editBuffer->getType() == SoundType::Layer);
     REQUIRE_FALSE(editBuffer->isModified());
-    REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
   }
 
   SECTION("Load Single Into II")
   {
     auto scope = TestHelper::createTestScope();
-    editBuffer->undoableLoadSinglePresetIntoDualSound(scope->getTransaction(), presets.getSinglePreset(),
-                                                      VoiceGroup::II);
+    EditBufferToPartLoader loader(*editBuffer);
+    loader.undoableLoadPresetPartIntoPart(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::II,
+                                          VoiceGroup::II);
     editBuffer->TEST_doDeferredJobs();
 
     REQUIRE(editBuffer->getVoiceGroupName(VoiceGroup::II) == presets.getSinglePreset()->getName());
     REQUIRE(editBuffer->getType() == SoundType::Layer);
     REQUIRE(editBuffer->isModified());
-    REQUIRE_FALSE(editBuffer->findAnyParameterChanged());
+    //we used to call initRecallValues in the function above but this function was never executed outside of tests
+    REQUIRE(editBuffer->findAnyParameterChanged());
   }
 }
 
@@ -479,7 +482,9 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Part Label")
   {
     auto scope = TestHelper::createTestScope();
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == "\uE071");
-    eb->undoableLoadSinglePresetIntoDualSound(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::I);
+    EditBufferToPartLoader loader(*eb);
+    loader.undoableLoadPresetPartIntoPart(scope->getTransaction(), presets.getSinglePreset(), VoiceGroup::I,
+                                          VoiceGroup::I);
     REQUIRE(eb->getVoiceGroupName(VoiceGroup::I) == presets.getSinglePreset()->getName());
   }
 
@@ -517,9 +522,9 @@ void randomizeRequireChangedAndInitSoundTest(const Preset *preset)
 
   for(auto &vg : { VoiceGroup::I, VoiceGroup::II })
   {
-    auto vgVolume = eb->findParameterByID({ C15::PID::Voice_Grp_Volume, vg });
+    auto vgVolume = eb->findParameterByID({ C15::PID::Part_Volume, vg });
     REQUIRE(!vgVolume->isValueDifferentFrom(vgVolume->getFactoryDefaultValue()));
-    auto vgTune = eb->findParameterByID({ C15::PID::Voice_Grp_Tune, vg });
+    auto vgTune = eb->findParameterByID({ C15::PID::Part_Tune, vg });
     REQUIRE(!vgTune->isValueDifferentFrom(vgTune->getFactoryDefaultValue()));
   }
 }

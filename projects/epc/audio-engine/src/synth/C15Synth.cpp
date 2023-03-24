@@ -19,7 +19,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
 {
   constexpr auto maxV = std::numeric_limits<float>::max();
-  m_playgroundHwSourceKnownValues.fill({ maxV, maxV, maxV });
+  m_playgroundHwSourceKnownValues.fill({ maxV, maxV, maxV, maxV });
 
   m_dsp->init(options->getSampleRate(), options->getPolyphony());
 
@@ -336,8 +336,9 @@ void C15Synth::onHardwareSourceParameterChangedMessage(const nltools::msg::Hardw
   {
     auto element = m_dsp->getParameter(_msg.m_id);
     const auto didBehaviorChange = m_dsp->updateBehaviour(element, _msg.m_returnMode);
-    m_playgroundHwSourceKnownValues[static_cast<int>(latchIndex)][static_cast<int>(HWChangeSource::UI)]
-        = static_cast<float>(_msg.m_controlPosition);
+    auto latchIdx = static_cast<int>(latchIndex);
+    auto src = static_cast<int>(_msg.m_shouldSendMidi ? HWChangeSource::UI : HWChangeSource::UI_MODULATION);
+    m_playgroundHwSourceKnownValues[latchIdx][src] = static_cast<float>(_msg.m_controlPosition);
     m_inputEventStage.onParameterChangedMessage(_msg, didBehaviorChange);
     return;
   }

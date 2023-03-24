@@ -3,22 +3,21 @@
 #include <mock/MockDSPHosts.h>
 #include <testing/TestHelper.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Pitchbend Mappings", "[MIDI][TCD]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Pitchbend Mappings", "[MIDI][TCD]")
 {
   bool receivedHW = false;
   ConfigureableDSPHost host {};
   host.setType(SoundType::Single);
-  host.setOnHWChangedCB(
-      [&](auto hwID, float hwPos, auto)
-      {
-        CHECK(hwID == HardwareSource::BENDER);
-        CHECK(hwPos == 1.0f);
-        receivedHW = true;
-      });
+  host.setOnHWChangedCB([&](auto hwID, float hwPos, auto) {
+    CHECK(hwID == HardwareSource::BENDER);
+    CHECK(hwPos == 1.0f);
+    receivedHW = true;
+  });
 
   std::vector<nltools::msg::Midi::SimpleMessage> sendMidiMessages;
   MidiRuntimeOptions settings;
-  InputEventStage eventStage(&host, &settings, [](){}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto){});
+  InputEventStage eventStage(
+      &host, &settings, []() {}, [&](auto msg) { sendMidiMessages.push_back(msg); }, [](auto) {});
 
   //set settings to not interfere with CC01
   {
@@ -42,13 +41,13 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Pitchbend Mappings", "[MIDI][TC
 
     WHEN("Send MIDI Channel Pitchbend")
     {
-      eventStage.onMIDIMessage({ {0xE0, 127, 127} });
+      eventStage.onMIDIMessage({ { 0xE0, 127, 127 } });
       CHECK(receivedHW);
     }
 
     WHEN("Send CC01")
     {
-      eventStage.onMIDIMessage({ {0xB0, 0x01, 127} });
+      eventStage.onMIDIMessage({ { 0xB0, 0x01, 127 } });
       CHECK_FALSE(receivedHW);
     }
   }
@@ -59,13 +58,13 @@ TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Pitchbend Mappings", "[MIDI][TC
 
     WHEN("Send MIDI Channel Pitchbend")
     {
-      eventStage.onMIDIMessage({ {0xE0, 127, 127} });
+      eventStage.onMIDIMessage({ { 0xE0, 127, 127 } });
       CHECK_FALSE(receivedHW);
     }
 
     WHEN("Send CC01")
     {
-      eventStage.onMIDIMessage({ {0xB0, 0x01, 127} });
+      eventStage.onMIDIMessage({ { 0xB0, 0x01, 127 } });
       CHECK(receivedHW);
     }
   }

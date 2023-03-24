@@ -11,7 +11,7 @@ class EditBuffer;
 class VoiceGroupAndLoadToPartManager : public sigc::trackable
 {
  public:
-  explicit VoiceGroupAndLoadToPartManager(EditBuffer& eb);
+  explicit VoiceGroupAndLoadToPartManager(EditBuffer &eb);
   void init();
   void toggleLoadToPart();
   void setLoadToPart(bool state);
@@ -29,11 +29,12 @@ class VoiceGroupAndLoadToPartManager : public sigc::trackable
   sigc::connection onLoadToPartModeChanged(const sigc::slot<void, bool> &cb);
 
   PresetPartSelection *getPresetPartSelection(VoiceGroup vg);
+
  private:
   void onPresetLoaded();
   void onEditBufferSoundTypeChanged(SoundType type);
 
-  EditBuffer& m_editBuffer;
+  EditBuffer &m_editBuffer;
 
   Signal<void, VoiceGroup> m_voiceGroupSignal;
   Signal<void, bool> m_loadToPartSignal;

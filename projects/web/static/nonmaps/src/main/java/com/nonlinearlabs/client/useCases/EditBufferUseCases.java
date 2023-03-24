@@ -2,7 +2,6 @@ package com.nonlinearlabs.client.useCases;
 
 import java.util.Arrays;
 
-import com.google.gwt.core.client.GWT;
 import com.nonlinearlabs.client.LoadToPartMode.LoadToPartModeData;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
@@ -582,6 +581,11 @@ public class EditBufferUseCases {
 		}
 	}
 
+	public void defaultSetting(String key)
+	{
+		NonMaps.theMaps.getServerProxy().defaultSetting(key);
+	}
+
 	public void loadPreset(String uuid) {
 		NonMaps.theMaps.getServerProxy().loadPreset(uuid);
 	}
@@ -635,6 +639,10 @@ public class EditBufferUseCases {
 	public void selectMidiBank(Bank bank) {
 		NonMaps.get().getNonLinearWorld().getPresetManager().setMidiBank(bank);
 		NonMaps.get().getServerProxy().selectMidiBank(bank);
+	}
+
+	public void copyFX(VoiceGroup from, VoiceGroup to) {
+		NonMaps.get().getServerProxy().copyFX(from, to);
 	}
 
 }

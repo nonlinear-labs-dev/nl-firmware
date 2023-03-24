@@ -1,7 +1,6 @@
 #include <Application.h>
 #include <glibconfig.h>
 #include <glibmm/ustring.h>
-#include <groups/MacroControlsGroup.h>
 #include <libundo/undo/Scope.h>
 #include <libundo/undo/Transaction.h>
 #include <libundo/undo/TransactionCreationScope.h>
@@ -32,22 +31,17 @@
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ParameterEditButtonMenu.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallButton.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallModulationSourceLabel.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCPositionLabel.h>
-#include <proxies/hwui/panel-unit/boled/parameter-screens/controls/ModulateableParameterRecallControls/RecallMCAmountLabel.h>
-#include <proxies/hwui/HWUI.h>
-#include <parameters/MacroControlParameter.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/controls/VoiceGroupIndicator.h>
-#include "ModulateableParameterLayouts.h"
 #include "ModAspectRecallOverlay.h"
 #include "use-cases/ModParameterUseCases.h"
 #include "groups/ScaleGroup.h"
 #include "use-cases/EditBufferUseCases.h"
-#include "groups/MasterGroup.h"
 #include "parameter_declarations.h"
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/VoiceGroupUseCases.h"
+#include "parameters/ParameterFactory.h"
+#include "parameters/presenter-rules/ParameterPresenterRules.h"
 
 ModulateableParameterLayout2::ModulateableParameterLayout2()
 {
@@ -93,7 +87,7 @@ void ModulateableParameterSelectLayout2::onSelectedParameterChanged(Parameter *,
   {
     m_paramConnection = newParam->onParameterChanged(
         sigc::mem_fun(this, &ModulateableParameterSelectLayout2::onCurrentParameterChanged));
-    m_isScaleParameter = ScaleGroup::isScaleParameter(newParam);
+    m_isScaleParameter = ParameterFactory::isScaleParameter(newParam);
   }
 }
 
@@ -229,17 +223,17 @@ bool ModulateableParameterSelectLayout2::onButton(Buttons i, bool down, ButtonMo
       case Buttons::BUTTON_A:
         if(m_mode == Mode::ParameterValue && !isCurrentParameterDisabled())
         {
-          if(MasterGroup::isMasterParameter(modParam) && modParam->getID().getNumber() != C15::PID::Master_FX_Mix)
+          if(ParameterFactory::isMasterParameter(modParam) && modParam->getID().getNumber() != C15::PID::Master_FX_Mix)
           {
             EditBufferUseCases ebUseCases(*modParam->getParentEditBuffer());
             ebUseCases.selectParameter({ C15::PID::Scale_Base_Key, VoiceGroup::Global }, true);
           }
-          else if(ScaleGroup::isScaleParameter(modParam))
+          else if(ParameterFactory::isScaleParameter(modParam))
           {
             EditBufferUseCases ebUseCases(*modParam->getParentEditBuffer());
             ebUseCases.selectParameter({ C15::PID::Master_Volume, VoiceGroup::Global }, true);
           }
-          else if(SwitchVoiceGroupButton::allowToggling(modParam, modParam->getParentEditBuffer()))
+          else if(ParameterPresenterRules::allowToggling(modParam, modParam->getParentEditBuffer()))
           {
             VoiceGroupUseCases vgUseCases(Application::get().getVGManager(),
                                           getCurrentEditParameter()->getParentEditBuffer());
@@ -314,7 +308,7 @@ Parameter *ModulateableParameterSelectLayout2::getCurrentEditParameter() const
     if(auto p = dynamic_cast<ModulateableParameter *>(getCurrentParameter()))
     {
       auto src = p->getModulationSource();
-      auto srcParamID = MacroControlsGroup::modSrcToParamId(src);
+      auto srcParamID = ParameterFactory::modSrcToParamId(src);
       return Application::get().getPresetManager()->getEditBuffer()->findParameterByID(srcParamID);
     }
   }

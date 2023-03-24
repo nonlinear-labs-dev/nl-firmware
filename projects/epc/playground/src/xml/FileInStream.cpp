@@ -15,6 +15,7 @@ static bool doesGzFileExist(const Glib::ustring &fileName)
 }
 
 FileInStream::FileInStream(const Glib::ustring &fileName, bool tryZip)
+    : m_fileName(fileName)
 {
   auto file = Gio::File::create_for_path(fileName);
 
@@ -141,4 +142,9 @@ std::vector<uint8_t> FileInStream::readAll()
 bool FileInStream::eof() const
 {
   return m_eof;
+}
+
+const Glib::ustring &FileInStream::getFileName() const
+{
+  return m_fileName;
 }

@@ -18,7 +18,8 @@ void StoreUseCaseHelper::onStore(UNDO::Transaction* transaction, Preset& preset,
   pm.onPresetStored();
 }
 
-void StoreUseCaseHelper::updateSyncSettingOnPresetStore(UNDO::Transaction* transaction, PresetManager& pm, Settings& settings)
+void StoreUseCaseHelper::updateSyncSettingOnPresetStore(UNDO::Transaction* transaction, PresetManager& pm,
+                                                        Settings& settings)
 {
   auto eb = pm.getEditBuffer();
   if(auto s = eb->findAndCastParameterByID<SplitPointParameter>({ C15::PID::Split_Split_Point, VoiceGroup::I }))

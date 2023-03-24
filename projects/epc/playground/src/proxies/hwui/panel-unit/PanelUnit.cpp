@@ -15,10 +15,11 @@
 #include <parameters/ModulationRoutingParameter.h>
 #include <parameters/PhysicalControlParameter.h>
 #include <parameters/MacroControlParameter.h>
-#include <groups/MacroControlsGroup.h>
 #include <http/UndoScope.h>
 #include <nltools/messaging/Message.h>
-#include "use-cases/EditBufferUseCases.h"
+#include <use-cases/EditBufferUseCases.h>
+#include <parameters/ParameterFactory.h>
+#include <parameters/ModulateableParameter.h>
 
 PanelUnit::PanelUnit(Settings &settings, Oleds &oleds, LayoutFolderMonitor *mon)
     : super(settings)
@@ -31,73 +32,64 @@ PanelUnit::PanelUnit(Settings &settings, Oleds &oleds, LayoutFolderMonitor *mon)
   for(int i = 0; i < numLEDs; i++)
     m_leds.emplace_back(new TwoStateLED(i));
 
-  m_macroControlAssignmentStateMachine.registerHandler(
-      MacroControlAssignmentStates::Selected,
-      [=]()
+  m_macroControlAssignmentStateMachine.registerHandler(MacroControlAssignmentStates::Selected, [=]() {
+    auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+    EditBufferUseCases ebUseCases { *editBuffer };
+
+    auto p = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
+
+    if(auto mrp = dynamic_cast<ModulationRoutingParameter *>(p))
+    {
+      mrp->getSourceParameter()->setUiSelectedModulationRouter(p->getID());
+    }
+
+    auto currentMc = m_macroControlAssignmentStateMachine.getCurrentMCParameter();
+    ebUseCases.selectParameter({ currentMc, VoiceGroup::Global }, true);
+    return true;
+  });
+
+  m_macroControlAssignmentStateMachine.registerHandler(MacroControlAssignmentStates::Assign, [=]() {
+    auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+    auto selParam = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
+    auto mc = ParameterFactory::paramIDToModSrc(selParam->getID());
+
+    //select other parameter as we could be on MacroControl but VG II focus, we only want to assign to non-monophonics in part II
+    auto targetId = m_macroControlAssignmentStateMachine.getCurrentModulateableParameter();
+    auto target = editBuffer->findParameterByID(targetId);
+    if(editBuffer->getType() == SoundType::Single && target && target->isPolyphonic())
+      targetId = ParameterId(targetId.getNumber(), VoiceGroup::I);
+
+    target = editBuffer->findParameterByID(targetId);
+
+    if(auto modParam = dynamic_cast<ModulateableParameter *>(target))
+    {
+      ModParameterUseCases useCase(modParam);
+      if(modParam->getModulationSource() == mc)
       {
-        auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-        EditBufferUseCases ebUseCases { *editBuffer };
-
-        auto p = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
-
-        if(auto mrp = dynamic_cast<ModulationRoutingParameter *>(p))
-        {
-          mrp->getSourceParameter()->setUiSelectedModulationRouter(p->getID());
-        }
-
-        auto currentMc = m_macroControlAssignmentStateMachine.getCurrentMCParameter();
-        ebUseCases.selectParameter({ currentMc, VoiceGroup::Global }, true);
-        return true;
-      });
-
-  m_macroControlAssignmentStateMachine.registerHandler(
-      MacroControlAssignmentStates::Assign,
-      [=]()
+        useCase.removeModSource();
+      }
+      else
       {
-        auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-        auto selParam = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
-        auto mc = MacroControlsGroup::paramIDToModSrc(selParam->getID());
+        auto hwui = Application::get().getHWUI();
+        auto &boled = hwui->getPanelUnit().getEditPanel().getBoled();
+        m_signalInitializeInstalledLayoutOnce
+            = boled.onLayoutInstalled(sigc::mem_fun(this, &PanelUnit::initModulateableParameterLayout));
 
-        //select other parameter as we could be on MacroControl but VG II focus, we only want to assign to non-monophonics in part II
-        auto targetId = m_macroControlAssignmentStateMachine.getCurrentModulateableParameter();
-        auto target = editBuffer->findParameterByID(targetId);
-        if(editBuffer->getType() == SoundType::Single && target && target->isPolyphonic())
-          targetId = ParameterId(targetId.getNumber(), VoiceGroup::I);
+        useCase.selectModSourceAndSelectTargetParameter(mc);
+      }
+    }
+    return true;
+  });
 
-        target = editBuffer->findParameterByID(targetId);
-
-        if(auto modParam = dynamic_cast<ModulateableParameter *>(target))
-        {
-          ModParameterUseCases useCase(modParam);
-          if(modParam->getModulationSource() == mc)
-          {
-            useCase.removeModSource();
-          }
-          else
-          {
-            auto hwui = Application::get().getHWUI();
-            auto &boled = hwui->getPanelUnit().getEditPanel().getBoled();
-            m_signalInitializeInstalledLayoutOnce
-                = boled.onLayoutInstalled(sigc::mem_fun(this, &PanelUnit::initModulateableParameterLayout));
-
-            useCase.selectModSourceAndSelectTargetParameter(mc);
-          }
-        }
-        return true;
-      });
-
-  m_macroControlAssignmentStateMachine.registerHandler(
-      MacroControlAssignmentStates::SelectSource,
-      [=]()
-      {
-        auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
-        EditBufferUseCases ebUseCases { *editBuffer };
-        auto p = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
-        auto currentSource = choseHWBestSourceForMC(p->getID());
-        ebUseCases.selectParameter(currentSource, true);
-        m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
-        return true;
-      });
+  m_macroControlAssignmentStateMachine.registerHandler(MacroControlAssignmentStates::SelectSource, [=]() {
+    auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+    EditBufferUseCases ebUseCases { *editBuffer };
+    auto p = editBuffer->getSelected(Application::get().getVGManager()->getCurrentVoiceGroup());
+    auto currentSource = choseHWBestSourceForMC(p->getID());
+    ebUseCases.selectParameter(currentSource, true);
+    m_macroControlAssignmentStateMachine.setState(MacroControlAssignmentStates::Initial);
+    return true;
+  });
 
   nltools::msg::onConnectionEstablished(nltools::msg::EndPoint::PanelLed,
                                         sigc::mem_fun(this, &PanelUnit::onBBBBConnected));

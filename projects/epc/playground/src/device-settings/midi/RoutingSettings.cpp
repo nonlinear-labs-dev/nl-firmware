@@ -14,6 +14,12 @@ RoutingSettings::RoutingSettings(Settings& s)
   }
 }
 
+void RoutingSettings::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto c_str = std::get<const char* const>(val);
+  load(c_str, Initiator::EXPLICIT_USECASE);
+}
+
 bool RoutingSettings::getState(RoutingSettings::tRoutingIndex hwIdx, RoutingSettings::tAspectIndex settingIdx) const
 {
   return m_data[static_cast<size_t>(hwIdx)][static_cast<size_t>(settingIdx)];
@@ -32,7 +38,7 @@ void RoutingSettings::load(const Glib::ustring& text, Initiator initiator)
       {
         try
         {
-          m_data.at(idx).at(settingIdx) = map.at(settingIdx) == "1";
+          setState(static_cast<tRoutingIndex>(idx), static_cast<tAspectIndex>(settingIdx), map.at(settingIdx) == "1");
         }
         catch(...)
         {
@@ -46,7 +52,7 @@ void RoutingSettings::load(const Glib::ustring& text, Initiator initiator)
     }
   }
 
-  if(initiator == Initiator::EXPLICIT_LOAD)
+  if(initiator == Initiator::EXPLICIT_LOAD || initiator == Initiator::EXPLICIT_USECASE)
   {
     sanitizeReceiveHWSourcesAndPC();
   }

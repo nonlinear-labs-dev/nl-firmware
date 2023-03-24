@@ -7,7 +7,7 @@
 #include <proxies/hwui/HWUI.h>
 #include <parameters/ModulateableParameter.h>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture,"Single sound with modulation aspects on mod-param")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Single sound with modulation aspects on mod-param")
 {
   MockPresetStorage storage;
   auto single = storage.getSinglePreset();

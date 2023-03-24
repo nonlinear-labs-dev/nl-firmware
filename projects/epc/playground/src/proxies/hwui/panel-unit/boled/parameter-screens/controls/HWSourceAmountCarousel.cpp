@@ -111,14 +111,12 @@ void HWSourceAmountCarousel::onMacroControlChanged(const Parameter *param)
 {
   if(auto mc = dynamic_cast<const MacroControlParameter *>(param))
   {
-    forEach(
-        [=](const tControlPtr &c)
-        {
-          if(auto miniSlider = std::dynamic_pointer_cast<MiniParameterBarSlider>(c))
-            if(auto p = dynamic_cast<ModulationRoutingParameter *>(miniSlider->getParameter()))
-              miniSlider->setHighlight(isHighlight()
-                                       || (mc->getUiSelectedHardwareSource() == p->getSourceParameter()->getID()));
-        });
+    forEach([=](const tControlPtr &c) {
+      if(auto miniSlider = std::dynamic_pointer_cast<MiniParameterBarSlider>(c))
+        if(auto p = dynamic_cast<ModulationRoutingParameter *>(miniSlider->getParameter()))
+          miniSlider->setHighlight(isHighlight()
+                                   || (mc->getUiSelectedHardwareSource() == p->getSourceParameter()->getID()));
+    });
   }
 }
 
@@ -130,13 +128,11 @@ void HWSourceAmountCarousel::setHighlight(bool isHighlight)
 bool HWSourceAmountCarousel::isSelectedHighlighted() const
 {
   auto ret = false;
-  forEach(
-      [&](const tControlPtr &c)
-      {
-        if(auto miniSlider = std::dynamic_pointer_cast<MiniParameterBarSlider>(c))
-        {
-          ret |= miniSlider->isHighlight();
-        }
-      });
+  forEach([&](const tControlPtr &c) {
+    if(auto miniSlider = std::dynamic_pointer_cast<MiniParameterBarSlider>(c))
+    {
+      ret |= miniSlider->isHighlight();
+    }
+  });
   return ret;
 }

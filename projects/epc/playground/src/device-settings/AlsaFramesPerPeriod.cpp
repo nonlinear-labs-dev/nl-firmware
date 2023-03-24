@@ -24,6 +24,12 @@ void AlsaFramesPerPeriod::load(const Glib::ustring &text, Initiator initiator)
   }
 }
 
+void AlsaFramesPerPeriod::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto f = std::get<float>(val);
+  set(static_cast<int>(f));
+}
+
 Glib::ustring AlsaFramesPerPeriod::save() const
 {
   return to_string(m_framesPerPeriod);
@@ -31,7 +37,7 @@ Glib::ustring AlsaFramesPerPeriod::save() const
 
 void AlsaFramesPerPeriod::set(int fpp)
 {
-  fpp = std::clamp(fpp, 0, 512);
+  fpp = std::clamp(fpp, 1, 512);
 
   if(std::exchange(m_framesPerPeriod, fpp) != fpp)
     notify();

@@ -58,21 +58,19 @@ void PedalParameter::undoableSetPedalMode(UNDO::Transaction *transaction, PedalM
   {
     auto swapData = UNDO::createSwapData(mode);
 
-    transaction->addSimpleCommand(
-        [=](UNDO::Command::State) mutable
-        {
-          swapData->swapWith(m_mode);
-          getValue().setScaleConverter(createScaleConverter());
-          getValue().setDefaultValue(getDefValueAccordingToMode());
-          if(m_mode != PedalModes::STAY && initiator == Initiator::EXPLICIT_USECASE)
-            getValue().setToDefault(Initiator::INDIRECT);
+    transaction->addSimpleCommand([=](UNDO::Command::State) mutable {
+      swapData->swapWith(m_mode);
+      getValue().setScaleConverter(createScaleConverter());
+      getValue().setDefaultValue(getDefValueAccordingToMode());
+      if(m_mode != PedalModes::STAY && initiator == Initiator::EXPLICIT_USECASE)
+        getValue().setToDefault(Initiator::INDIRECT);
 
-          setRoutersModeAccordingToReturnMode();
+      setRoutersModeAccordingToReturnMode();
 
-          invalidate();
-          sendModeToPlaycontroller();
-          m_updateIdWhenModeChanged = getUpdateIDOfLastChange();
-        });
+      invalidate();
+      sendModeToPlaycontroller();
+      m_updateIdWhenModeChanged = getUpdateIDOfLastChange();
+    });
   }
   else
   {
@@ -315,6 +313,16 @@ Glib::ustring PedalParameter::getShortName() const
   return Parameter::getShortName();
 }
 
+Glib::ustring PedalParameter::getLongNameWithoutSuffix() const
+{
+  return Parameter::getLongName();
+}
+
+Glib::ustring PedalParameter::getShortNameWithoutSuffix() const
+{
+  return Parameter::getShortName();
+}
+
 void PedalParameter::onPedalTypeChanged(const Setting *s)
 {
   if(auto pedalType = dynamic_cast<const PedalType *>(s))
@@ -328,16 +336,16 @@ void PedalParameter::init(Settings &settings)
   switch(getID().getNumber())
   {
     case C15::PID::Pedal_1:
-      m_setting = dynamic_cast<PedalType*>(settings.getSetting("Pedal1Type"));
+      m_setting = dynamic_cast<PedalType *>(settings.getSetting("Pedal1Type"));
       break;
     case C15::PID::Pedal_2:
-      m_setting = dynamic_cast<PedalType*>(settings.getSetting("Pedal2Type"));
+      m_setting = dynamic_cast<PedalType *>(settings.getSetting("Pedal2Type"));
       break;
     case C15::PID::Pedal_3:
-      m_setting = dynamic_cast<PedalType*>(settings.getSetting("Pedal3Type"));
+      m_setting = dynamic_cast<PedalType *>(settings.getSetting("Pedal3Type"));
       break;
     case C15::PID::Pedal_4:
-      m_setting = dynamic_cast<PedalType*>(settings.getSetting("Pedal4Type"));
+      m_setting = dynamic_cast<PedalType *>(settings.getSetting("Pedal4Type"));
       break;
   }
 

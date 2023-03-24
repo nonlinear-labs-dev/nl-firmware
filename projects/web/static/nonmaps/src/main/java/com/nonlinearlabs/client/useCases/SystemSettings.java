@@ -268,4 +268,8 @@ public class SystemSettings {
 		SetupModel.get().systemSettings.legacyAftertouch.setValue(on);
 		NonMaps.theMaps.getServerProxy().setSetting("AftertouchLegacyMode", netify(on.name()));
     }
+
+	public void setDefaultEditSmoothingTime(){
+		NonMaps.theMaps.getServerProxy().defaultSetting("EditSmoothingTime");
+	}
 }

@@ -15,4 +15,6 @@ class WiFiSettingEditor : public MenuEditor
   void incSetting(int inc) override;
   const std::vector<Glib::ustring> &getDisplayStrings() const override;
   int getSelectedIndex() const override;
+
+  bool onButton(Buttons i, bool down, ButtonModifiers modifiers) override;
 };

@@ -7,6 +7,7 @@
 #include "sync/SyncedItem.h"
 #include "tools/Signal.h"
 #include "ParameterId.h"
+#include "parameter_descriptor.h"
 
 namespace UNDO
 {
@@ -23,11 +24,10 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   typedef UpdateDocumentContributor super;
 
  public:
-  ParameterGroup(ParameterGroupSet *parent, GroupId id, const char *shortName, const char *longName,
-                 const char *webUIName);
+  ParameterGroup(ParameterGroupSet *parent, C15::ParameterGroupDescriptor desc, VoiceGroup vg);
   ~ParameterGroup() override;
 
-  virtual void init() = 0;
+  virtual void init();
 
   Glib::ustring getShortName() const;
   Glib::ustring getLongName() const;
@@ -77,9 +77,9 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   VoiceGroup getVoiceGroup() const;
 
   void undoableLoadDefault(UNDO::Transaction *transaction, Defaults mode);
-  void validateParameterTypes() const;
 
   bool isPolyphonic() const;
+  bool isMonophonic() const;
 
  protected:
   template <typename T> inline T *appendParameter(T *p)
@@ -95,6 +95,7 @@ class ParameterGroup : public UpdateDocumentContributor, public IntrusiveListIte
   const char *m_shortName;
   const char *m_longName;
   const char *m_webUIName;
+  const C15::ParameterGroupDescriptor m_groupDescriptor;
   IntrusiveList<tParameterPtr> m_parameters;
   Signal<void> m_signalGroupChanged;
 };

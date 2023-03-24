@@ -217,38 +217,38 @@ stop_services() {
 }
 
 does_update_exist_on_epc_tmp() {
-  executeAsRoot "ls /tmp/nonlinear-c15-update.tar"
-  return $?
+    executeAsRoot "ls /tmp/nonlinear-c15-update.tar"
+    return $?
 }
 
 is_any_install_from_epc_service_oneshot() {
-  serviceFile='/usr/lib/systemd/system/install-update-from-epc.service'
-  serviceFileOneshot='/usr/lib/systemd/system/install-update-from-epc-oneshot.service'
+    serviceFile='/usr/lib/systemd/system/install-update-from-epc.service'
+    serviceFileOneshot='/usr/lib/systemd/system/install-update-from-epc-oneshot.service'
 
-  if [[ -f $serviceFile ]]; then
-    cat $serviceFile | grep oneshot
-    ret=$?
-    if ret -eq 0; then
-      return ret
+    if [[ -f $serviceFile ]]; then
+        cat $serviceFile | grep oneshot
+        ret=$?
+        if ret -eq 0; then
+            return ret
+        fi
     fi
-  fi
 
-  if [[ -f $serviceFileOneshot ]]; then
-      cat $serviceFileOneshot | grep oneshot
-      return $?
-  fi
+    if [[ -f $serviceFileOneshot ]]; then
+        cat $serviceFileOneshot | grep oneshot
+        return $?
+    fi
 
-  return 1
+    return 1
 }
 
 abort_if_started_from_dangerous_webui_service() {
-  if does_update_exist_on_epc_tmp -eq 0; then
-    if is_any_install_from_epc_service_oneshot -eq 0; then
-      pretty "" "$MSG_UPDATE_PREVENTED_1" "$MSG_UPDATE_PREVENTED_2" "$MSG_UPDATE_PREVENTED_1" "$MSG_UPDATE_PREVENTED_2"
-      sleep 5
-      determine_termination
+    if does_update_exist_on_epc_tmp -eq 0; then
+        if is_any_install_from_epc_service_oneshot -eq 0; then
+            pretty "" "$MSG_UPDATE_PREVENTED_1" "$MSG_UPDATE_PREVENTED_2" "$MSG_UPDATE_PREVENTED_1" "$MSG_UPDATE_PREVENTED_2"
+            sleep 5
+            determine_termination
+        fi
     fi
-  fi
 }
 
 main() {
@@ -281,6 +281,15 @@ main() {
         sleep 2
         executeAsRoot "systemctl --force --force reboot"
         reboot
+    fi
+
+    if [ -e /mnt/usb-stick/nonlinear-c15-update.tar ]; then
+        mv /mnt/usb-stick/nonlinear-c15-update.tar /mnt/usb-stick/nonlinear-c15-update.tar-copied && sync
+        return_code=$?
+        if $return_code -ne 0 ; then
+            pretty "Warning:" "Failed to rename update file!"
+            sleep 2
+        fi
     fi
 
     pretty "" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_MAN" "$MSG_UPDATING_C15 $MSG_DONE" "$MSG_RESTART_MAN"

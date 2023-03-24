@@ -5,10 +5,16 @@
 #include <optional>
 #include "proxies/hwui/HardwareFeatures.h"
 
+class SSID;
+class Passphrase;
+class WifiSetting;
+class Setting;
+class DeviceInformationItem;
+
 class EpcWifi : public sigc::trackable
 {
  public:
-  EpcWifi(const HardwareFeatures& hw);
+  EpcWifi(const HardwareFeatures& hw, SSID& ssid, Passphrase& password, WifiSetting& wifiEnable);
   ~EpcWifi();
 
   void setNewPassphrase(const Glib::ustring& _newPassphrase);
@@ -28,6 +34,10 @@ class EpcWifi : public sigc::trackable
 
   void updateWifiSwitch();
   void updateCredentials(bool _reload);
+
+  void onPassphraseChanged(const Setting* s);
+  void onSSIDChanged(const DeviceInformationItem* s);
+  void onWifiEnabledChanged(const Setting* s);
 
   Glib::ustring m_currentPassphrase, m_newPassphrase;
   Glib::ustring m_currentSSID, m_newSSID;

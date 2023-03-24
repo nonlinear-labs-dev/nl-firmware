@@ -1,14 +1,13 @@
 #pragma once
 #include <string>
 #include <device-settings/Settings.h>
-
-class C15Synth;
+#include <presets/EditBuffer.h>
+#include <synth/C15Synth.h>
+#include <proxies/audio-engine/AudioEngineProxy.h>
 
 class XMLPresetLoader
 {
  public:
-  static void loadTestPreset(C15Synth *synth, const std::string &subDir, const std::string &uuid);
-  static void loadTestPresetFromBank(C15Synth* synth, const std::string& subDir, const std::string& bankFileName,
-                                     Settings& settings);
-  static void convertSoundTo(C15Synth* pSynth, Settings* settings, SoundType type);
+  static void loadFirstPresetOfBank(Application *app, const std::string &fileName, C15Synth *synth);
+  static void sendToAE(EditBuffer *eb, C15Synth *synth);
 };

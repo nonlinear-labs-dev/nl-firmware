@@ -3,20 +3,36 @@
 #include "parameters/Parameter.h"
 #include "presets/ParameterGroupSet.h"
 #include "presets/PresetParameterGroup.h"
+#include "parameter_group.h"
+#include "parameters/ModulateableParameter.h"
+#include "parameter_list.h"
+#include "parameters/ParameterFactory.h"
+#include "parameters/UnisonVoicesParameter.h"
+#include "parameters/SplitPointParameter.h"
+#include "ScaleGroup.h"
+#include "parameters/ScaleParameter.h"
 #include <libundo/undo/Scope.h>
 #include <xml/Attribute.h>
 #include <nltools/logging/Log.h>
 #include <http/UpdateDocumentMaster.h>
 #include <sync/JsonAdlSerializers.h>
 
-ParameterGroup::ParameterGroup(ParameterGroupSet *parent, GroupId id, const char *shortName, const char *longName,
-                               const char *webUIName)
+namespace
+{
+  GroupId createId(const C15::ParameterGroupDescriptor &desc, VoiceGroup vg)
+  {
+    return { desc.m_identifier, vg };
+  }
+}
+
+ParameterGroup::ParameterGroup(ParameterGroupSet *parent, C15::ParameterGroupDescriptor desc, VoiceGroup vg)
     : UpdateDocumentContributor(parent)
-    , SyncedItem(parent->getRoot()->getSyncMaster(), "/parametergroup/" + id.toString())
-    , m_id(id)
-    , m_shortName(shortName)
-    , m_longName(longName)
-    , m_webUIName(webUIName ? webUIName : m_longName)
+    , SyncedItem(parent->getRoot()->getSyncMaster(), "/parametergroup/" + createId(desc, vg).toString())
+    , m_id(createId(desc, vg))
+    , m_shortName(desc.m_label_short)
+    , m_longName(desc.m_label_long)
+    , m_webUIName(desc.m_label_long)
+    , m_groupDescriptor(desc)
 {
 }
 
@@ -128,7 +144,9 @@ void ParameterGroup::writeDocument(Writer &writer, tUpdateID knownRevision) cons
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
   writer.writeTag("parameter-group", Attribute("id", getID()), Attribute("short-name", getShortName()),
-                  Attribute("long-name", m_webUIName), Attribute("changed", changed), [&]() {
+                  Attribute("long-name", m_webUIName), Attribute("changed", changed),
+                  [&]()
+                  {
                     if(changed)
                       for(const auto p : m_parameters)
                         p->writeDocument(writer, knownRevision);
@@ -236,12 +254,22 @@ nlohmann::json ParameterGroup::serialize() const
   return { { "id", getID() }, { "name", getLongName() }, { "parameters", m_parameters } };
 }
 
-void ParameterGroup::validateParameterTypes() const
-{
-
-}
-
 bool ParameterGroup::isPolyphonic() const
 {
+  nltools_detailedAssertAlways(m_parameters.begin() != m_parameters.end(), "group is empty");
   return m_parameters.begin()->isPolyphonic();
+}
+
+bool ParameterGroup::isMonophonic() const
+{
+  nltools_detailedAssertAlways(m_parameters.begin() != m_parameters.end(), "group is empty");
+  return m_parameters.begin()->isMonophonic();
+}
+
+void ParameterGroup::init()
+{
+  for(auto id : ParameterFactory::getParameterIDs(m_groupDescriptor.m_group))
+  {
+    appendParameter(ParameterFactory::createParameterByType(this, { id, getVoiceGroup() }));
+  }
 }

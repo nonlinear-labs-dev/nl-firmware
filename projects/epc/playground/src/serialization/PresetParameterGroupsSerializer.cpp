@@ -31,8 +31,7 @@ void PresetParameterGroupsSerializer::writeTagContent(Writer& writer) const
 void PresetParameterGroupsSerializer::readTagContent(Reader& reader) const
 {
   reader.onTag(PresetParameterGroupSerializer::getTagName(),
-               [&](const Attributes& attr) mutable -> PresetParameterGroupSerializer*
-               {
+               [&](const Attributes& attr) mutable -> PresetParameterGroupSerializer* {
                  auto groupID = GroupId(attr.get("id"));
 
                  if(groupID.getName() == "Split" && groupID.getVoiceGroup() == VoiceGroup::Global)

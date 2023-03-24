@@ -36,7 +36,8 @@ class ParameterDB : public sigc::trackable
   static double getDefaultValue(const ParameterId& id);
 
  private:
-  [[nodiscard]] Glib::ustring replaceInDynamicLabels(const Glib::ustring& name, const ParameterId& parameterID, SoundType type) const;
+  [[nodiscard]] Glib::ustring replaceInDynamicLabels(const Glib::ustring& name, const ParameterId& parameterID,
+                                                     SoundType type) const;
 
   EditBuffer& m_editBuffer;
 };

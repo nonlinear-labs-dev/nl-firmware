@@ -6,5 +6,5 @@ class UnmodulateableMonoParameter : public Parameter
 {
  public:
   UnmodulateableMonoParameter(ParameterGroup* group, const ParameterId& id);
-  Layout *createLayout(FocusAndMode focusAndMode) const override;
+  Layout* createLayout(FocusAndMode focusAndMode) const override;
 };

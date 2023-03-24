@@ -8,7 +8,6 @@ ENUM(UIFocus, uint8_t, Any, Sound, Parameters, Presets, Banks, Setup, Unchanged)
 ENUM(UIMode, uint8_t, Any, Select, Store, Edit, Info, Unchanged);
 ENUM(UIDetail, uint8_t, Any, Unchanged, Init, ButtonA, ButtonB, ButtonC, ButtonD, MCSelect, MCAmount, MCPosition,
      MCModRange, Voices, SoundParameters, InitSound);
-ENUM(LayoutVersionMode, uint8_t, Old, Mixed, New);
 
 enum ButtonModifier
 {
@@ -112,9 +111,9 @@ struct FocusAndMode
     return "UIFocus: " + ::toString(focus) + " UIMode: " + ::toString(mode) + " UIDetail: " + ::toString(detail);
   }
 
-  static FocusAndMode decode(const std::string& s)
+  static FocusAndMode decode(const std::string &s)
   {
-    FocusAndMode ret{};
+    FocusAndMode ret {};
     auto parts = StringTools::splitStringOnAnyDelimiter(s, '-');
 
     if(!parts.empty())
@@ -127,7 +126,8 @@ struct FocusAndMode
     return ret;
   }
 
-  [[nodiscard]] std::string encode() const {
+  [[nodiscard]] std::string encode() const
+  {
     return ::toString(focus) + "-" + ::toString(mode) + "-" + ::toString(detail);
   }
 };

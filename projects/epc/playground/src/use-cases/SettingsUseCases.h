@@ -15,9 +15,9 @@ class SettingsUseCases
 
   //Focus And Mode
   void setFocusAndMode(const FocusAndMode& focusAndMode);
-  void setUIFocus(const UIFocus &focus);
-  void setUIMode(const UIMode &mode);
-  void setUIDetail(const UIDetail &detail);
+  void setUIFocus(const UIFocus& focus);
+  void setUIMode(const UIMode& mode);
+  void setUIDetail(const UIDetail& detail);
   void freezeFocusAndMode();
   void thawFocusAndMode();
 
@@ -47,6 +47,8 @@ class SettingsUseCases
   //General
   void setSettingFromWebUI(const Glib::ustring& key, const Glib::ustring& value, PresetManager& pm);
 
+  void factoryDefault();
+  void factoryDefaultSetting(Setting* s);
 
  private:
   Settings& m_settings;

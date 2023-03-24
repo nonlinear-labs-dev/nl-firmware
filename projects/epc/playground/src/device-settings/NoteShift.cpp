@@ -13,6 +13,12 @@ NoteShift::NoteShift(Settings &parent)
 {
 }
 
+void NoteShift::loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val)
+{
+  auto f = std::get<float>(val);
+  set(static_cast<int>(f));
+}
+
 NoteShift::~NoteShift() = default;
 
 void NoteShift::load(const Glib::ustring &text, Initiator initiator)

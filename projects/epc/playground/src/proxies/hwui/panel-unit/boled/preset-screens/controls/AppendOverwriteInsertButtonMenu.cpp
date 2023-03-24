@@ -70,13 +70,10 @@ bool AppendOverwriteInsertButtonMenu::animateSelectedPreset()
 bool AppendOverwriteInsertButtonMenu::animatePreset(Preset* target)
 {
   auto hwuiPtr = Application::get().getHWUI();
-  return m_parent.animateSomePreset(
-      target,
-      []
-      {
-        SettingsUseCases useCases(*Application::get().getSettings());
-        useCases.setFocusAndMode(FocusAndMode { UIFocus::Presets, UIMode::Select });
-      });
+  return m_parent.animateSomePreset(target, [] {
+    SettingsUseCases useCases(*Application::get().getSettings());
+    useCases.setFocusAndMode(FocusAndMode { UIFocus::Presets, UIMode::Select });
+  });
 }
 
 void AppendOverwriteInsertButtonMenu::executeAction()
@@ -145,8 +142,7 @@ void AppendOverwriteInsertButtonMenu::executeAction()
 void AppendOverwriteInsertButtonMenu::pushRenameScreen(Preset* target)
 {
   Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().setOverlay(new RenamePresetLayout(
-      [=](const Glib::ustring& newName)
-      {
+      [=](const Glib::ustring& newName) {
         PresetUseCases useCases(*target, *Application::get().getSettings());
         useCases.rename(newName);
         animatePreset(target);

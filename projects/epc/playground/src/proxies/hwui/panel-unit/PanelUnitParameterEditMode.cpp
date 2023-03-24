@@ -1,5 +1,4 @@
 #include <Application.h>
-#include <device-settings/DebugLevel.h>
 #include <groups/MacroControlMappingGroup.h>
 #include <groups/ScaleGroup.h>
 #include <parameters/MacroControlParameter.h>
@@ -8,7 +7,6 @@
 #include <parameters/PhysicalControlParameter.h>
 #include <parameters/ScaleParameter.h>
 #include <presets/EditBuffer.h>
-#include <presets/PresetManager.h>
 #include <proxies/hwui/buttons.h>
 #include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/parameter-screens/ModulateableParameterLayouts.h>
@@ -18,11 +16,9 @@
 #include "PanelUnitParameterEditMode.h"
 #include "use-cases/SettingsUseCases.h"
 #include "use-cases/EditBufferUseCases.h"
-#include <device-settings/LayoutMode.h>
+#include "parameters/ParameterFactory.h"
 #include <proxies/hwui/descriptive-layouts/GenericLayout.h>
 #include <sigc++/sigc++.h>
-#include <glibmm/main.h>
-#include <groups/MacroControlsGroup.h>
 #include <parameters/MacroControlSmoothingParameter.h>
 
 class ParameterInfoLayout;
@@ -55,82 +51,99 @@ void PanelUnitParameterEditMode::setupFocusAndMode(FocusAndMode focusAndMode)
 
 void PanelUnitParameterEditMode::setup()
 {
-  m_mappings.forEachButton([=](Buttons buttonID, std::list<int> parameterIDs) {
-    std::vector<int> para { parameterIDs.begin(), parameterIDs.end() };
+  m_mappings.forEachButton(
+      [=](Buttons buttonID, std::list<int> parameterIDs)
+      {
+        std::vector<int> para { parameterIDs.begin(), parameterIDs.end() };
 
-    if(buttonID != Buttons::BUTTON_75 && buttonID != Buttons::BUTTON_79 && buttonID != Buttons::BUTTON_83
-       && buttonID != Buttons::BUTTON_87 && buttonID != Buttons::BUTTON_91 && buttonID != Buttons::BUTTON_95)
-      setupButtonConnection(buttonID, createParameterSelectAction(para));
-  });
+        if(buttonID != Buttons::BUTTON_75 && buttonID != Buttons::BUTTON_79 && buttonID != Buttons::BUTTON_83
+           && buttonID != Buttons::BUTTON_87 && buttonID != Buttons::BUTTON_91 && buttonID != Buttons::BUTTON_95)
+          setupButtonConnection(buttonID, createParameterSelectAction(para));
+      });
 
   using namespace C15::PID;
 
   setupButtonConnection(Buttons::BUTTON_75,
-                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_A); });
+                        [this](auto &&, auto &&, auto &&PH3)
+                        { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_A); });
   FOR_TESTS(assignedAudioIDs.insert(MC_A));
 
   setupButtonConnection(Buttons::BUTTON_79,
-                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_B); });
+                        [this](auto &&, auto &&, auto &&PH3)
+                        { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_B); });
   FOR_TESTS(assignedAudioIDs.insert(MC_B));
 
   setupButtonConnection(Buttons::BUTTON_83,
-                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_C); });
+                        [this](auto &&, auto &&, auto &&PH3)
+                        { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_C); });
   FOR_TESTS(assignedAudioIDs.insert(MC_C));
 
   setupButtonConnection(Buttons::BUTTON_87,
-                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_D); });
+                        [this](auto &&, auto &&, auto &&PH3)
+                        { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_D); });
   FOR_TESTS(assignedAudioIDs.insert(MC_D));
 
   setupButtonConnection(Buttons::BUTTON_91,
-                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_E); });
+                        [this](auto &&, auto &&, auto &&PH3)
+                        { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_E); });
   FOR_TESTS(assignedAudioIDs.insert(MC_E));
 
   setupButtonConnection(Buttons::BUTTON_95,
-                        [this](auto &&, auto &&, auto && PH3) { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_F); });
+                        [this](auto &&, auto &&, auto &&PH3)
+                        { return handleMacroControlButton(std::forward<decltype(PH3)>(PH3), MC_F); });
   FOR_TESTS(assignedAudioIDs.insert(MC_F));
 
-  setupButtonConnection(Buttons::BUTTON_UNDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
-    m_undoStateMachine.traverse(state ? UNDO_PRESSED : UNDO_RELEASED);
-    return false;
-  });
+  setupButtonConnection(Buttons::BUTTON_UNDO,
+                        [&](Buttons button, ButtonModifiers modifiers, bool state)
+                        {
+                          m_undoStateMachine.traverse(state ? UNDO_PRESSED : UNDO_RELEASED);
+                          return false;
+                        });
 
-  setupButtonConnection(Buttons::BUTTON_REDO, [&](Buttons button, ButtonModifiers modifiers, bool state) {
-    m_undoStateMachine.traverse(state ? REDO_PRESSED : REDO_RELEASED);
-    return false;
-  });
+  setupButtonConnection(Buttons::BUTTON_REDO,
+                        [&](Buttons button, ButtonModifiers modifiers, bool state)
+                        {
+                          m_undoStateMachine.traverse(state ? REDO_PRESSED : REDO_RELEASED);
+                          return false;
+                        });
 
-  setupButtonConnection(Buttons::BUTTON_SOUND, [&](Buttons button, ButtonModifiers modifiers, bool state) {
-    if(state)
-    {
-      SettingsUseCases useCases(*Application::get().getSettings());
-      auto focusAndMode = Application::get().getSettings()->getSetting<FocusAndModeSetting>()->getState();
-      if(focusAndMode.focus == UIFocus::Sound)
-        if(focusAndMode.mode == UIMode::Edit)
-          useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
-        else
-          useCases.setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
-      else
-        useCases.setFocusAndMode(FocusAndMode { UIFocus::Sound });
-    }
+  setupButtonConnection(Buttons::BUTTON_SOUND,
+                        [&](Buttons button, ButtonModifiers modifiers, bool state)
+                        {
+                          if(state)
+                          {
+                            SettingsUseCases useCases(*Application::get().getSettings());
+                            auto focusAndMode
+                                = Application::get().getSettings()->getSetting<FocusAndModeSetting>()->getState();
+                            if(focusAndMode.focus == UIFocus::Sound)
+                              if(focusAndMode.mode == UIMode::Edit)
+                                useCases.setFocusAndMode({ UIFocus::Sound, UIMode::Select, UIDetail::Init });
+                              else
+                                useCases.setFocusAndMode({ UIFocus::Parameters, UIMode::Select });
+                            else
+                              useCases.setFocusAndMode(FocusAndMode { UIFocus::Sound });
+                          }
 
-    return true;
-  });
+                          return true;
+                        });
 
   Application::get().getPresetManager()->getEditBuffer()->onSelectionChanged(
       sigc::mem_fun(this, &PanelUnitParameterEditMode::onParamSelectionChanged),
       Application::get().getVGManager()->getCurrentVoiceGroup());
 
-  Application::get().getMainContext()->signal_idle().connect_once([=]() {
-    auto hwui = Application::get().getHWUI();
-    auto &panelUnit = hwui->getPanelUnit();
-    auto &famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
+  Application::get().getMainContext()->signal_idle().connect_once(
+      [=]()
+      {
+        auto hwui = Application::get().getHWUI();
+        auto &panelUnit = hwui->getPanelUnit();
+        auto &famSetting = *Application::get().getSettings()->getSetting<FocusAndModeSetting>();
 
-    if(panelUnit.getUsageMode().get() == this)
-    {
-      panelUnit.getEditPanel().getBoled().setupFocusAndMode(famSetting.getState());
-      bruteForceUpdateLeds();
-    }
-  });
+        if(panelUnit.getUsageMode().get() == this)
+        {
+          panelUnit.getEditPanel().getBoled().setupFocusAndMode(famSetting.getState());
+          bruteForceUpdateLeds();
+        }
+      });
 }
 
 bool PanelUnitParameterEditMode::handleMacroControlButton(bool state, int mcParamId)
@@ -213,7 +226,7 @@ std::list<int> PanelUnitParameterEditMode::getButtonAssignments(Buttons button, 
   return ret;
 }
 
-UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(const std::vector<gint32>& toggleAudioIDs)
+UsageMode::tAction PanelUnitParameterEditMode::createParameterSelectAction(const std::vector<gint32> &toggleAudioIDs)
 {
   return std::bind(&PanelUnitParameterEditMode::toggleParameterSelection, this, toggleAudioIDs, std::placeholders::_3);
 }
@@ -237,7 +250,7 @@ OutContainer cleanParameterIDSForType(const InContainer &ids, SoundType type)
   return ret;
 }
 
-bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint32>& ids, bool state)
+bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint32> &ids, bool state)
 {
   if(ids.empty())
     return true;
@@ -291,7 +304,7 @@ bool PanelUnitParameterEditMode::toggleParameterSelection(const std::vector<gint
           if(next == cleanedParameterIdForType.end())
             next = cleanedParameterIdForType.begin();
 
-          if(auto newP = editBuffer->findParameterByID({*next, selParamID.getVoiceGroup()}))
+          if(auto newP = editBuffer->findParameterByID({ *next, selParamID.getVoiceGroup() }))
           {
             if(!newP->isDisabled())
               setParameterSelection({ *next, selParamID.getVoiceGroup() }, state);
@@ -344,7 +357,7 @@ bool PanelUnitParameterEditMode::switchToNormalModeInCurrentParameterLayout()
   return false;
 }
 
-bool PanelUnitParameterEditMode::tryParameterToggleOnMacroControl(const std::vector<gint32>& ids, Parameter *selParam)
+bool PanelUnitParameterEditMode::tryParameterToggleOnMacroControl(const std::vector<gint32> &ids, Parameter *selParam)
 {
   if(auto mc = dynamic_cast<MacroControlParameter *>(selParam))
   {
@@ -352,12 +365,12 @@ bool PanelUnitParameterEditMode::tryParameterToggleOnMacroControl(const std::vec
     for(auto x : ids)
     {
       auto mcVg = mc->getVoiceGroup();
-      a.emplace_back( x, mcVg );
+      a.emplace_back(x, mcVg);
     }
 
     if(mc->isSourceOfTargetIn(a))
     {
-      for(const auto& targetId : a)
+      for(const auto &targetId : a)
       {
         if(mc->isSourceOf(targetId))
         {
@@ -388,35 +401,23 @@ bool PanelUnitParameterEditMode::setParameterSelection(const ParameterId &audioI
 
 bool PanelUnitParameterEditMode::isShowingParameterScreen() const
 {
-  auto settingValue = Application::get().getSettings()->getSetting<LayoutMode>()->get();
   auto currentLayout = Application::get().getHWUI()->getPanelUnit().getEditPanel().getBoled().getLayout().get();
 
-  if(settingValue == LayoutVersionMode::Old)
+  if(auto genericLayout = dynamic_cast<DescriptiveLayouts::GenericLayout *>(currentLayout))
+  {
+    auto &prototype = genericLayout->getPrototype();
+    if(prototype.getDesiredFocusAndMode().focus == UIFocus::Parameters)
+    {
+      return prototype.getDesiredFocusAndMode().mode == UIMode::Select;
+    }
+  }
+  else
   {
     if(dynamic_cast<ParameterLayout2 *>(currentLayout))
       return true;
 
     if(dynamic_cast<ParameterInfoLayout *>(currentLayout))
       return true;
-  }
-  else if(settingValue == LayoutVersionMode::New || settingValue == LayoutVersionMode::Mixed)
-  {
-    if(auto genericLayout = dynamic_cast<DescriptiveLayouts::GenericLayout *>(currentLayout))
-    {
-      auto &prototype = genericLayout->getPrototype();
-      if(prototype.getDesiredFocusAndMode().focus == UIFocus::Parameters)
-      {
-        return prototype.getDesiredFocusAndMode().mode == UIMode::Select;
-      }
-    }
-    else
-    {
-      if(dynamic_cast<ParameterLayout2 *>(currentLayout))
-        return true;
-
-      if(dynamic_cast<ParameterInfoLayout *>(currentLayout))
-        return true;
-    }
   }
   return false;
 }
@@ -452,7 +453,7 @@ void PanelUnitParameterEditMode::bruteForceUpdateLeds()
         collectLedStates(states, tgt->getID());
     }
 
-    if(selParam->getParentGroup()->getID().getName() == "MCs" || MacroControlsGroup::isMacroTime(selParam->getID()))
+    if(selParam->getParentGroup()->getID().getName() == "MCs" || ParameterFactory::isMacroTime(selParam->getID()))
     {
       letMacroControlTargetsBlink(states);
     }
@@ -481,17 +482,20 @@ void PanelUnitParameterEditMode::letTargetsBlink(Parameter *selParam, tLedStates
   }
   else if(groupName == "Env C")
   {
-    letOtherTargetsBlink({ Osc_A_Pitch_Env_C, Osc_A_Fluct_Env_C, Osc_A_PM_FB_Env_C, Shp_A_FB_Env_C, Osc_B_Pitch_Env_C,
-                           Osc_B_Fluct_Env_C, Osc_B_PM_FB_Env_C, Shp_B_FB_Env_C, Comb_Flt_Pitch_Env_C, Comb_Flt_AP_Env_C,
-                           Comb_Flt_LP_Env_C, SV_Flt_Cut_Env_C, SV_Flt_Res_Env_C }, states);
+    letEnvCTargetsBlink({ Osc_A_Pitch_Env_C, Osc_A_Fluct_Env_C, Osc_A_PM_FB_Env_C, Shp_A_FB_Env_C, Osc_B_Pitch_Env_C,
+                          Osc_B_Fluct_Env_C, Osc_B_PM_FB_Env_C, Shp_B_FB_Env_C, Comb_Flt_Pitch_Env_C, Comb_Flt_AP_Env_C,
+                          Comb_Flt_LP_Env_C, SV_Flt_Cut_Env_C, SV_Flt_Res_Env_C },
+                        states);
   }
   else if(groupName == "Osc A" || groupName == "Sh A")
   {
-    letOscAShaperABlink({ Osc_B_PM_A, Shp_B_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_A_Lvl }, states);
+    letOscAShaperABlink(
+        { Osc_B_PM_A, Shp_B_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_A_Lvl }, states);
   }
   else if(groupName == "Osc B" || groupName == "Sh B")
   {
-    letOscBShaperBBlink({ Osc_A_PM_B, Shp_A_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_B_Lvl }, states);
+    letOscBShaperBBlink(
+        { Osc_A_PM_B, Shp_A_Ring_Mod, Comb_Flt_In_A_B, Comb_Flt_PM, SV_Flt_In_A_B, SV_Flt_FM, Out_Mix_B_Lvl }, states);
   }
   else if(groupName == "Comb")
   {
@@ -530,9 +534,9 @@ void PanelUnitParameterEditMode::collectLedStates(tLedStates &states, ParameterI
     selectedParameterID = ParameterId(ScaleGroup::getScaleBaseParameterNumber(), selectedParameterID.getVoiceGroup());
   }
 
-  if(MacroControlsGroup::isMacroTime(selectedParameterID))
+  if(ParameterFactory::isMacroTime(selectedParameterID))
   {
-    selectedParameterID = MacroControlsGroup::smoothingIdToMCId(selectedParameterID);
+    selectedParameterID = ParameterFactory::smoothingIdToMCId(selectedParameterID);
   }
 
   auto button = m_mappings.findButton(selectedParameterID.getNumber());
@@ -576,7 +580,8 @@ void PanelUnitParameterEditMode::letMacroControlTargetsBlink(tLedStates &states)
     {
       auto shouldHighlightDual = t->getID().getVoiceGroup() == currentVG;
       auto shouldHighlightSingle = t->isPolyphonic() || (t->isMonophonic() && t->getID().getVoiceGroup() == currentVG);
-      if((editBuffer->isDual() && shouldHighlightDual) || (editBuffer->getType() == SoundType::Single && shouldHighlightSingle))
+      if((editBuffer->isDual() && shouldHighlightDual)
+         || (editBuffer->getType() == SoundType::Single && shouldHighlightSingle))
       {
         auto buttonID = m_mappings.findButton(t->getID().getNumber());
         if(buttonID != Buttons::INVALID)
@@ -601,12 +606,13 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
 
     if(editBuffer->getType() == SoundType::Single)
     {
-      auto param = editBuffer->findParameterByID({targetID, vg});
+      auto param = editBuffer->findParameterByID({ targetID, vg });
       if(!param)
       {
-        param = editBuffer->findParameterByID({targetID, VoiceGroup::Global});
+        param = editBuffer->findParameterByID({ targetID, VoiceGroup::Global });
       }
-      isPolyphonic = param->getType() == C15::Descriptors::ParameterType::Polyphonic_Modulateable || param->getType() == C15::Descriptors::ParameterType::Polyphonic_Unmodulateable;
+      isPolyphonic = param->getType() == C15::Descriptors::ParameterType::Polyphonic_Modulateable
+          || param->getType() == C15::Descriptors::ParameterType::Polyphonic_Unmodulateable;
 
       if(isPolyphonic)
         vg = VoiceGroup::I;
@@ -616,8 +622,7 @@ void PanelUnitParameterEditMode::letOtherTargetsBlink(const std::vector<int> &ta
 
     if(isSignalFlowingThrough(currentParam))
     {
-      auto state = editBuffer->getSelected(vg) == currentParam ? TwoStateLED::ON
-                                                                                         : TwoStateLED::BLINK;
+      auto state = editBuffer->getSelected(vg) == currentParam ? TwoStateLED::ON : TwoStateLED::BLINK;
       auto button = m_mappings.findButton(currentParam->getID().getNumber());
       states[static_cast<size_t>(button)] = state;
     }
@@ -661,6 +666,30 @@ void PanelUnitParameterEditMode::letOscAShaperABlink(const std::vector<int> &tar
         break;
       case C15::PID::SV_Flt_FM:
         if(isSignalFlowingThrough(currentParam) && stateVariableFilterFMAB->getControlPositionValue() < 1)
+          states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
+        break;
+      default:
+        if(isSignalFlowingThrough(currentParam))
+          states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
+        break;
+    }
+  }
+}
+
+void PanelUnitParameterEditMode::letEnvCTargetsBlink(const std::vector<int> &targets, tLedStates &states)
+{
+  auto vg = Application::get().getVGManager()->getCurrentVoiceGroup();
+  auto editBuffer = Application::get().getPresetManager()->getEditBuffer();
+
+  for(auto targetID : targets)
+  {
+    auto currentParam = editBuffer->findParameterByID({ targetID, vg });
+    auto button = m_mappings.findButton(currentParam->getID().getNumber());
+    switch(targetID)
+    {
+      case C15::PID::Shp_A_FB_Env_C:
+      case C15::PID::Shp_B_FB_Env_C:
+        if(currentParam->getControlPositionValue() > 0)
           states[static_cast<size_t>(button)] = TwoStateLED::BLINK;
         break;
       default:

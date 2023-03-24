@@ -63,7 +63,7 @@ void RibbonLabel::onRibbonSelectionChanged(const Setting *s)
     {
       if(m_parameterID.getNumber() == C15::PID::Ribbon_1)
         m_parameterID = { C15::PID::Ribbon_3, VoiceGroup::Global };
-      else
+      else if(m_parameterID.getNumber() == C15::PID::Ribbon_2)
         m_parameterID = { C15::PID::Ribbon_4, VoiceGroup::Global };
     }
   }
@@ -151,8 +151,7 @@ std::shared_ptr<Font> RibbonLabel::getFont() const
 
 Glib::ustring RibbonLabel::crop(const Glib::ustring &text) const
 {
-  auto removeLastChar = [](const auto& s)
-  {
+  auto removeLastChar = [](const auto &s) {
     if(!s.empty())
       return s.substr(0, s.size() - 1);
     return s;

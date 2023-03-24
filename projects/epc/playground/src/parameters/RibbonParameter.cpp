@@ -212,7 +212,7 @@ ReturnMode RibbonParameter::getReturnMode() const
   return ReturnMode::None;
 }
 
-void RibbonParameter::ensureExclusiveRoutingIfNeeded(UNDO::Transaction* transaction)
+void RibbonParameter::ensureExclusiveRoutingIfNeeded(UNDO::Transaction *transaction)
 {
   if(getRibbonReturnMode() == RibbonReturnMode::STAY)
   {
@@ -291,10 +291,10 @@ void RibbonParameter::boundToMacroControl(tControlPositionValue v)
   getValue().setRawValue(Initiator::INDIRECT, v);
   onChange();
   invalidate();
-  sendToAudioEngine();
+  sendToAudioEngine(false);
 }
 
-RoutingSettings::tRoutingIndex indexFromID(const ParameterId& id)
+RoutingSettings::tRoutingIndex indexFromID(const ParameterId &id)
 {
   using tIndex = RoutingSettings::tRoutingIndex;
   switch(id.getNumber())
@@ -377,9 +377,9 @@ size_t RibbonParameter::getHash() const
   return hash;
 }
 
-void RibbonParameter::sendToAudioEngine() const
+void RibbonParameter::sendToAudioEngine(bool shouldSendMidi) const
 {
-  PhysicalControlParameter::sendToAudioEngine();
+  PhysicalControlParameter::sendToAudioEngine(shouldSendMidi);
 
   auto proxy = Application::get().getPlaycontrollerProxy();
   const auto id = getID().getNumber();

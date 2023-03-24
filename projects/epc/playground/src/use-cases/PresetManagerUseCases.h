@@ -122,9 +122,10 @@ class PresetManagerUseCases
 
   PresetManagerUseCases::ImportExitCode importBackupFile(FileInStream& in, const ProgressIndication& progress,
                                                          AudioEngineProxy& ae);
-  PresetManagerUseCases::ImportExitCode importBackupFile(SoupBuffer* buffer, ProgressIndication progress, AudioEngineProxy& ae);
-  PresetManagerUseCases::ImportExitCode importBackupFile(UNDO::Transaction* transaction, InStream& in, const ProgressIndication& progress,
-                        AudioEngineProxy& aeProxy);
+  PresetManagerUseCases::ImportExitCode importBackupFile(SoupBuffer* buffer, ProgressIndication progress,
+                                                         AudioEngineProxy& ae);
+  PresetManagerUseCases::ImportExitCode importBackupFile(UNDO::Transaction* transaction, InStream& in,
+                                                         const ProgressIndication& progress, AudioEngineProxy& aeProxy);
 
   bool loadPresetFromCompareXML(const Glib::ustring& xml);
 

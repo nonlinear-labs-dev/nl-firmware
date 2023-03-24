@@ -44,11 +44,11 @@ class PanelUnitParameterEditMode : public UsageMode
 
   void onParamSelectionChanged(Parameter *oldParam, Parameter *newParam);
 
-  bool tryParameterToggleOnMacroControl(const std::vector<gint32>& ids, Parameter *selParam);
+  bool tryParameterToggleOnMacroControl(const std::vector<gint32> &ids, Parameter *selParam);
 
-  tAction createParameterSelectAction(const std::vector<gint32>& toggleAudioIDs);
+  tAction createParameterSelectAction(const std::vector<gint32> &toggleAudioIDs);
 
-  bool toggleParameterSelection(const std::vector<gint32>& ids, bool state);
+  bool toggleParameterSelection(const std::vector<gint32> &ids, bool state);
   bool setParameterSelection(const ParameterId &audioID, bool state);
 
   bool isShowingParameterScreen() const;
@@ -59,6 +59,7 @@ class PanelUnitParameterEditMode : public UsageMode
   void letTargetsBlink(Parameter *selParam, tLedStates &states);
   void letMacroControlTargetsBlink(tLedStates &states);
   void letOscAShaperABlink(const std::vector<int> &targets, tLedStates &states);
+  void letEnvCTargetsBlink(const std::vector<int> &targets, tLedStates &states);
   void letOscBShaperBBlink(const std::vector<int> &targets, tLedStates &states);
   void letOtherTargetsBlink(const std::vector<int> &targets, tLedStates &states);
   void letReverbBlink(const std::vector<int> &targets, tLedStates &states);

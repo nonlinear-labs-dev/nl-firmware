@@ -9,7 +9,7 @@ Fine105PercentScaleConverter::Fine105PercentScaleConverter()
 Fine105PercentScaleConverter::~Fine105PercentScaleConverter() noexcept = default;
 
 Fine200PercentScaleConverter::Fine200PercentScaleConverter()
-  : LinearScaleConverter(tDisplayRange(0, 200), PercentageDimensionFine::get())
+    : LinearScaleConverter(tDisplayRange(0, 200), PercentageDimensionFine::get())
 {
 }
 

@@ -4,12 +4,12 @@
 #include <proxies/hwui/HWUI.h>
 #include "VoiceGroupIndicator.h"
 #include "parameters/presenter-rules/ParameterPresenterRules.h"
+#include "parameters/ParameterFactory.h"
 #include <proxies/hwui/FrameBuffer.h>
 #include <proxies/hwui/controls/SwitchVoiceGroupButton.h>
-#include <groups/MacroControlsGroup.h>
 #include <parameter_declarations.h>
-#include <proxies/hwui/HWUI.h>
 #include <proxies/hwui/panel-unit/boled/preset-screens/PresetManagerLayout.h>
+#include <parameters/Parameter.h>
 
 VoiceGroupIndicator::VoiceGroupIndicator(const Rect& r, bool allowLoadToPart, bool alwaysDraw)
     : Control(r)
@@ -53,6 +53,8 @@ bool VoiceGroupIndicator::redraw(FrameBuffer& fb)
 
 bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
 {
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
+
   auto absPos = getPosition();
   fb.setColor(m_selectedVoiceGroup == VoiceGroup::I ? FrameBufferColors::C255 : FrameBufferColors::C128);
   fb.fillRect(Rect(absPos.getLeft(), absPos.getTop(), 12, 5));
@@ -71,7 +73,7 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
     fb.drawHorizontalLine(startX + 2, startY + 2, 1);
   }
 
-  if(isLayerPartMuted(VoiceGroup::I))
+  if(ParameterPresenterRules::isDualPartMuted(VoiceGroup::I, eb))
   {
     fb.setColor(FrameBufferColors::C43);
 
@@ -80,7 +82,7 @@ bool VoiceGroupIndicator::drawLayer(FrameBuffer& fb)
     drawCrossForLayer(fb, centerX, centerY);
   }
 
-  if(isLayerPartMuted(VoiceGroup::II))
+  if(ParameterPresenterRules::isDualPartMuted(VoiceGroup::II, eb))
   {
     fb.setColor(FrameBufferColors::C43);
 
@@ -106,9 +108,25 @@ void VoiceGroupIndicator::drawCrossForLayer(FrameBuffer& fb, int centerX, int ce
   fb.setPixel(centerX + 2, centerY + 1);
 }
 
+namespace
+{
+  void drawCrossForSplit(FrameBuffer& fb, int centerX, int centerY)
+  {
+    fb.setPixel(centerX - 2, centerY - 2);
+    fb.setPixel(centerX - 2, centerY + 2);
+    fb.setPixel(centerX - 1, centerY - 1);
+    fb.setPixel(centerX - 1, centerY + 1);
+    fb.setPixel(centerX, centerY);
+    fb.setPixel(centerX + 2, centerY - 2);
+    fb.setPixel(centerX + 2, centerY + 2);
+    fb.setPixel(centerX + 1, centerY - 1);
+    fb.setPixel(centerX + 1, centerY + 1);
+  }
+}
+
 void VoiceGroupIndicator::drawCrossForSingle(FrameBuffer& fb, int centerX, int centerY)
 {
-  auto offset = fb.offset({(centerX - 2), (centerY - 2)});
+  auto offset = fb.offset({ (centerX - 2), (centerY - 2) });
   m_fxUnused.redraw(fb);
 }
 
@@ -158,6 +176,7 @@ bool VoiceGroupIndicator::drawSingle(FrameBuffer& fb)
 
 bool VoiceGroupIndicator::drawSplit(FrameBuffer& fb)
 {
+  auto eb = Application::get().getPresetManager()->getEditBuffer();
   auto absPos = getPosition();
   fb.setColor(m_selectedVoiceGroup == VoiceGroup::I ? FrameBufferColors::C255 : FrameBufferColors::C128);
   fb.fillRect(Rect(absPos.getLeft(), absPos.getTop(), 5, 12));
@@ -176,17 +195,19 @@ bool VoiceGroupIndicator::drawSplit(FrameBuffer& fb)
     fb.drawVerticalLine(startX + 2, startY + 2, 1);
   }
 
-  return true;
-}
-
-bool VoiceGroupIndicator::isLayerPartMuted(VoiceGroup vg) const
-{
-  auto eb = Application::get().getPresetManager()->getEditBuffer();
-  if(auto mute = eb->findParameterByID({ C15::PID::Voice_Grp_Mute, vg }))
+  if(ParameterPresenterRules::isDualPartMuted(VoiceGroup::I, eb))
   {
-    return mute->getControlPositionValue() > 0 && eb->getType() == SoundType::Layer;
+    fb.setColor(FrameBufferColors::C43);
+    drawCrossForSplit(fb, absPos.getLeft() + 2, absPos.getTop() + 6);
   }
-  return false;
+
+  if(ParameterPresenterRules::isDualPartMuted(VoiceGroup::II, eb))
+  {
+    fb.setColor(FrameBufferColors::C43);
+    drawCrossForSplit(fb, absPos.getLeft() + 9, absPos.getTop() + 6);
+  }
+
+  return true;
 }
 
 void VoiceGroupIndicator::onSoundTypeChanged(SoundType type)
@@ -199,7 +220,7 @@ void VoiceGroupIndicator::onParameterChanged(const Parameter* parameter)
 {
   const auto paramNum = parameter->getID().getNumber();
 
-  if(paramNum == C15::PID::Split_Split_Point || MacroControlsGroup::isMacroControl(paramNum))
+  if(paramNum == C15::PID::Split_Split_Point || ParameterFactory::isMacroControl(parameter->getID()))
     m_selectedVoiceGroup = Application::get().getVGManager()->getCurrentVoiceGroup();
 
   setDirty();
@@ -247,8 +268,8 @@ bool VoiceGroupIndicator::shouldDraw()
     auto id = m_param->getID();
     auto num = id.getNumber();
 
-    auto ret = SwitchVoiceGroupButton::allowToggling(m_param, Application::get().getPresetManager()->getEditBuffer());
-    ret |= MacroControlsGroup::isMacroControl(num);
+    auto ret = ParameterPresenterRules::allowToggling(m_param, Application::get().getPresetManager()->getEditBuffer());
+    ret |= ParameterFactory::isMacroControl({ num, VoiceGroup::Global });
     ret |= num == C15::PID::Split_Split_Point;
 
     return ret;
@@ -276,5 +297,6 @@ VoiceGroup VoiceGroupIndicator::getCurrentDisplayedVoiceGroup() const
 bool VoiceGroupIndicator::isSingleFXNotActive(VoiceGroup vg) const
 {
   auto& eb = *Application::get().getPresetManager()->getEditBuffer();
-  return vg == VoiceGroup::I ? ParameterPresenterRules::isSingleFXIUnused(eb) : ParameterPresenterRules::isSingleFXIIUnused(eb);
+  return vg == VoiceGroup::I ? ParameterPresenterRules::isSingleFXIUnused(eb)
+                             : ParameterPresenterRules::isSingleFXIIUnused(eb);
 }

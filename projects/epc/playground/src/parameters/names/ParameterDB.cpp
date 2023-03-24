@@ -9,10 +9,10 @@
 #include <placeholder.h>
 #include <cassert>
 #include <nltools/logging/Log.h>
-#include <groups/MacroControlsGroup.h>
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameters/MacroControlParameter.h>
+#include "parameters/ParameterFactory.h"
 
 namespace C15::Placeholder
 {
@@ -117,7 +117,7 @@ Glib::ustring ParameterDB::getDescription(const int num) const
   assert(num >= 0);
   assert(num < C15::Config::tcd_elements);
 
-  if(MacroControlsGroup::isMacroControl(num))
+  if(ParameterFactory::isMacroControl({ num, VoiceGroup::Global }))
   {
     auto param = Application::get().getPresetManager()->getEditBuffer()->findParameterByID({ num, VoiceGroup::Global });
     if(auto mcParam = dynamic_cast<const MacroControlParameter *>(param))
@@ -189,7 +189,7 @@ tControlPositionValue ParameterDB::getFineModulationDenominator(const ParameterI
 double ParameterDB::getDefaultValue(const ParameterId &id)
 {
   auto parameterNumber = id.getNumber();
-  if(parameterNumber == C15::PID::Voice_Grp_Fade_From)
+  if(parameterNumber == C15::PID::Part_Fade_From)
   {
     if(id.getVoiceGroup() == VoiceGroup::I)
       return 1;

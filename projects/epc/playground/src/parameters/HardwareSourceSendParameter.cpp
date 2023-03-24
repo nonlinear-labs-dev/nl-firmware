@@ -14,10 +14,10 @@
 #include <device-settings/midi/mappings/RibbonCCMapping.h>
 
 HardwareSourceSendParameter::HardwareSourceSendParameter(HardwareSourcesGroup* pGroup,
-                                                         PhysicalControlParameter& sibling,
-                                                         const ParameterId& id, Settings* settings)
+                                                         PhysicalControlParameter& sibling, const ParameterId& id,
+                                                         Settings* settings)
     : Parameter(pGroup, id)
-    , m_sibling{sibling}
+    , m_sibling { sibling }
     , m_settings(settings)
 {
   m_sibling.onParameterChanged(sigc::mem_fun(this, &HardwareSourceSendParameter::onSiblingChanged), true);

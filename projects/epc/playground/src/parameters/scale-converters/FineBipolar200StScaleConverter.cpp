@@ -2,7 +2,7 @@
 #include "parameters/scale-converters/dimension/PitchDimension.h"
 
 FineBipolar200StScaleConverter::FineBipolar200StScaleConverter()
-: LinearScaleConverter(tDisplayRange(-200, 200), PitchDimension::get())
+    : LinearScaleConverter(tDisplayRange(-200, 200), PitchDimension::get())
 {
 }
 

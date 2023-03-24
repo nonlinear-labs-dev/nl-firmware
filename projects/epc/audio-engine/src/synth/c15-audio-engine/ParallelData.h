@@ -31,7 +31,8 @@ void testParallelData();
 
 namespace parallel_data_detail
 {
-  template <typename T, size_t simdSize, size_t parallelism> union v128 {
+  template <typename T, size_t simdSize, size_t parallelism> union v128
+  {
     int32x4_t mmi[simdSize];
     uint32x4_t mmu[simdSize];
     float32x4_t mmf[simdSize];
@@ -200,11 +201,12 @@ template <typename T, size_t size> class ParallelData
 
 #define VECTOR_P_P_CMP_OPERATOR(operation, imm)                                                                        \
   template <typename T, size_t size>                                                                                   \
-  inline ParallelData<uint32_t, size> operator operation(                                                              \
-      const ParallelData<T, size> &l, const ParallelData<T, size> &r) {                                                \
+  inline ParallelData<uint32_t, size> operator operation(const ParallelData<T, size> &l,                               \
+                                                         const ParallelData<T, size> &r)                               \
+  {                                                                                                                    \
     ParallelData<uint32_t, size> ret;                                                                                  \
                                                                                                                        \
-    for (size_t i = 0; i < ParallelData<T, size>::simdSize; i++)                                                       \
+    for(size_t i = 0; i < ParallelData<T, size>::simdSize; i++)                                                        \
       ret.m_data.mmu[i] = imm(l.m_data.mmf[i], r.m_data.mmf[i]);                                                       \
                                                                                                                        \
     return ret;                                                                                                        \
@@ -227,11 +229,12 @@ template <typename T, size_t size> class ParallelData
 
 #define VECTOR_P_P_CMP_OPERATOR(operation, imm)                                                                        \
   template <typename T, size_t size>                                                                                   \
-  inline ParallelData<uint32_t, size> operator operation(                                                              \
-      const ParallelData<T, size> &l, const ParallelData<T, size> &r) {                                                \
+  inline ParallelData<uint32_t, size> operator operation(const ParallelData<T, size> &l,                               \
+                                                         const ParallelData<T, size> &r)                               \
+  {                                                                                                                    \
     ParallelData<uint32_t, size> ret;                                                                                  \
                                                                                                                        \
-    for (size_t i = 0; i < ParallelData<T, size>::simdSize; i++)                                                       \
+    for(size_t i = 0; i < ParallelData<T, size>::simdSize; i++)                                                        \
       ret.m_data.mmf[i] = _mm_cmp_ps(l.m_data.mmf[i], r.m_data.mmf[i], imm);                                           \
                                                                                                                        \
     return ret;                                                                                                        \

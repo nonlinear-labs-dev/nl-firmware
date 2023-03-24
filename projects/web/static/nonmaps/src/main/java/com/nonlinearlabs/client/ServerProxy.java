@@ -542,6 +542,12 @@ public class ServerProxy {
 		queueJob(uri, false);
 	}
 
+	public void factoryDefaults() {
+		StaticURI.Path path = new StaticURI.Path("settings", "factory-default");
+		StaticURI uri = new StaticURI(path);
+		queueJob(uri, false);
+	}
+
 	public static Node getChild(Node node, String... path) {
 		return getChild(node, 0, path);
 	}
@@ -1338,4 +1344,18 @@ public class ServerProxy {
 			}
 		});
 	}
+
+    public void copyFX(VoiceGroup from, VoiceGroup to) {
+		StaticURI.Path path = new StaticURI.Path("param-editor", "copy-fx");
+		StaticURI.KeyValue fromKV = new StaticURI.KeyValue("from", from.name());
+		StaticURI.KeyValue toKV = new StaticURI.KeyValue("to", to.name());
+		StaticURI uri = new StaticURI(path, fromKV, toKV);
+		queueJob(uri, false);
+    }
+
+    public void defaultSetting(String settingID) {
+		StaticURI.Path path = new StaticURI.Path("settings", "default-setting");
+		StaticURI uri = new StaticURI(path, new StaticURI.KeyValue("key", settingID));
+		queueJob(uri, false);
+    }
 }

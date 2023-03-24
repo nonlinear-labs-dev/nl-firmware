@@ -15,6 +15,7 @@
 #include "parameters/PhysicalControlParameter.h"
 #include "use-cases/EditBufferUseCases.h"
 #include "groups/ScaleGroup.h"
+#include "parameters/ParameterFactory.h"
 #include <parameters/ModulationRoutingParameter.h>
 
 int ParameterEditButtonMenu::s_lastAction = 0;
@@ -71,17 +72,15 @@ void ParameterEditButtonMenu::addActions()
         addButton("< Select",
                   [this, capture0 = hardwareParameter->getSendParameter()->getID()] { selectParameter(capture0); });
 
-    if(ScaleGroup::isScaleParameter(parameter))
+    if(ParameterFactory::isScaleParameter(parameter))
     {
       auto scaleGroup = dynamic_cast<ScaleGroup *>(eb->getParameterGroupByID({ "Scale", VoiceGroup::Global }));
       if(scaleGroup->isAnyOffsetChanged())
       {
-        addButton("Reset Scale",
-                  []()
-                  {
-                    EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
-                    ebUseCases.resetCustomScale();
-                  });
+        addButton("Reset Scale", []() {
+          EditBufferUseCases ebUseCases(*Application::get().getPresetManager()->getEditBuffer());
+          ebUseCases.resetCustomScale();
+        });
       }
     }
 

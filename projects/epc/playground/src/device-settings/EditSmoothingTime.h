@@ -28,6 +28,7 @@ class EditSmoothingTime : public Setting
   void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
  private:
+  void loadDefaultValue(C15::Settings::SettingDescriptor::ValueType val) override;
   void syncExternals(SendReason reason) const override;
 
   QuantizedValue m_time;

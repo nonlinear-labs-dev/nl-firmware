@@ -8,7 +8,8 @@ class EditBuffer;
 class Bank;
 class PresetManager;
 
-namespace UNDO {
+namespace UNDO
+{
   class Transaction;
 };
 

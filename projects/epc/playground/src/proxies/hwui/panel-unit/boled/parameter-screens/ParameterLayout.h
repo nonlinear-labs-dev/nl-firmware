@@ -23,7 +23,7 @@ class ParameterLayout2 : public Layout
   ParameterLayout2();
 
  protected:
-  virtual Control* createParameterNameLabel() const;
+  virtual Control *createParameterNameLabel() const;
   void init() override;
   constexpr static int BUTTON_VALUE_Y_POSITION = 34;
   constexpr static int BIG_SLIDER_X = 77;

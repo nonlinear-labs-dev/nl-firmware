@@ -1,12 +1,10 @@
 #include "MCAmountButton.h"
 #include "parameters/ModulateableParameter.h"
 #include "groups/MasterGroup.h"
-#include "groups/VoiceGroupMasterGroup.h"
-#include "groups/UnisonGroup.h"
-#include "groups/SplitParameterGroups.h"
 #include "parameters/unison-parameters/UnmodulateableUnisonParameter.h"
 #include <proxies/hwui/buttons.h>
 #include <parameters/mono-mode-parameters/ModulateableMonoParameter.h>
+#include <parameters/ParameterFactory.h>
 
 MCAmountButton::MCAmountButton(Buttons id)
     : super("MC Amt", id)
@@ -24,10 +22,12 @@ void MCAmountButton::update(const Parameter* parameter)
       return a;
     else if(param != nullptr)
     {
-      auto group = param->getParentGroup();
-      if(dynamic_cast<const MasterGroup*>(group) || dynamic_cast<const VoiceGroupMasterGroup*>(group)
-         || dynamic_cast<const UnisonGroup*>(group)
-         || dynamic_cast<const SplitParameterGroups*>(group) || dynamic_cast<const VoiceGroupMasterGroup*>(group))
+      const auto isMaster = ParameterFactory::isMasterParameter(param);
+      const auto isPartMaster = ParameterFactory::isVoiceGroupMasterParameter(param->getID());
+      const auto isUnison = ParameterFactory::isUnisonParameter(param);
+      const auto isSplitParameter = ParameterFactory::isSplitPoint(param);
+
+      if(isMaster || isPartMaster || isUnison || isSplitParameter)
         return dynamic_cast<const ModulateableParameter*>(param);
     }
     return nullptr;

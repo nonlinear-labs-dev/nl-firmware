@@ -4,6 +4,7 @@ import { generateOutputFile } from "./yaml";
 import { ConfigType, ConfigParser } from "./tasks/config";
 import { DeclarationsType, DeclarationsParser } from "./tasks/declarations";
 import { DefinitionsType, SignalType, ParameterType, DefinitionsParser } from "./tasks/definitions";
+import { Settings, SettingType, SettingParser } from "./tasks/settings";
 
 // yaml parsing result type
 type Result = ConfigType & DeclarationsType & {
@@ -19,8 +20,10 @@ type Result = ConfigType & DeclarationsType & {
     parameter_units: string;
     display_scaling_types: string;
     parameter_groups: string;
-    group_map: string;
+    get_parameter_ids: string;
     storage: string;
+    settings: Settings;
+    setting_list: string;
 };
 
 type ParamType = {
@@ -94,7 +97,7 @@ function processDefinitions(result: Result) {
     const
         processedGroups: Array<string> = [],
         parameterList: Array<string> = new Array<string>(result.config.params).fill("{None}"),
-        groupMap: GroupElementMap = {};
+        getParameterIds: GroupElementMap = {};
     // for every yaml resource of ./src/definitions, providing a parameter group
     result.definitions.sort((...defs) => {
         return defs.reduce((out, {filename, group}, index) => {
@@ -123,7 +126,7 @@ function processDefinitions(result: Result) {
             throw new Error(`${err}: group "${group.name}" is already defined`);
         }
         processedGroups.push(group.name);
-        groupMap[group.name] = new Array<string>();
+        getParameterIds[group.name] = new Array<string>();
         // for every parameter of the group
         definition.parameters.forEach((parameter, index) => {
             const
@@ -180,8 +183,8 @@ function processDefinitions(result: Result) {
             params.push(id, tokenStr);
             pid[id] = `${tokenStr} = ${id}`;
             parameterType[typeStr].push(tokenStr);
-            // feed group map
-            groupMap[group.name].push(tokenStr);
+            // feed getParameterIds
+            getParameterIds[group.name].push(tokenStr);
             // controlPosition properties
             const
                 { coarse, fine, scale, initial, inactive } = control_position,
@@ -350,15 +353,15 @@ function processDefinitions(result: Result) {
         return out;
     }, new Array<string>()).join(",\n");
     result.parameter_groups = Object.entries(result.declarations.parameter_group).reduce((out, [key, props]) => {
-        if(props === null) {
+        if(key === "None") {
             out.push(`{\n${indent}Descriptors::ParameterGroup::${key}\n}`)
-        } else {
+        } else if(props !== null) {
             out.push(`{\n${indent}${[
                 `Descriptors::ParameterGroup::${key}`,
                 `{${props.color.join(", ")}}`,
                 `"${props.label_long}"`,
                 `"${props.label_short}"`,
-                `"${props.token_java}"`,
+                `"${props.identifier}"`,
                 (props.global_group || false).toString()
             ].join(`,\n${indent}`)}\n}`);
         }
@@ -383,20 +386,24 @@ function processDefinitions(result: Result) {
         return out;
     }, []).join("\n");
     result.enums.pid = ["None = -1", ...pid.filter((id) => id !== undefined)].join(",\n");
-    result.group_map = Object.entries(groupMap).reduce((out: Array<string>, [key, entries]) => {
-        if(entries.length > 0)
-            out.push([
-                "template<>",
-                `struct ParameterGroupElementList<Descriptors::ParameterGroup::${key}>`,
-                "{",
-                `${indent}static constexpr uint32_t sSize = ${entries.length};`,
-                `${indent}static constexpr PID::ParameterID sElements[sSize] = {`,
-                `${indent.repeat(2)}${entries.map((entry) => `PID::${entry}`).join(`,\n${indent.repeat(2)}`)}`,
-                `${indent}};`,
-                "};"
-            ].join("\n"));
-        return out;
-    }, []).join("\n");
+    result.get_parameter_ids = [
+        "inline std::vector<PID::ParameterID> getParameterIds(const Descriptors::ParameterGroup &_group) {",
+        `${indent}switch(_group) {`,
+        Object.entries(getParameterIds).reduce((out: Array<string>, [key, entries]) => {
+            if(entries.length > 0)
+                out.push(
+                [
+                    `${indent}case Descriptors::ParameterGroup::${key}:\n${indent.repeat(2)}return {`,
+                    entries.map((entry) => `${indent.repeat(3)}PID::${entry}`).join(",\n"),
+                    `${indent.repeat(2)}};`
+                ].join("\n")
+                );
+            return out;
+        }, [`${indent}case Descriptors::ParameterGroup::None:\n${indent.repeat(2)}return {};`]).join("\n"),
+        `${indent}}`,
+        `${indent}return {};`,
+        "}"
+    ].join("\n");
     result.storage = Object.entries(result.declarations.parameter_type).filter(([key]) => key !== "None").map(([key, props]) => {
         return [
             "template<typename T>",
@@ -405,6 +412,43 @@ function processDefinitions(result: Result) {
             "};",
         ].join("\n");
     }).join("\n");
+}
+
+function processSettings(result: Result) {
+    const err = "processSettings error:";
+    result.setting_list = Object.entries(result.settings).reduce((out, [key, props]) => {
+        const ret = [`"${key}"`];
+        if(props.default !== undefined) {
+            const str = props.default.toString();
+            switch(props.default.constructor.name) {
+                case "Number":
+                    if(Number.isSafeInteger(props.default)) ret.push((props.default as number).toFixed(1) + "f");
+                    else ret.push(str + "f");
+                    break;
+                case "String":
+                    if(str.includes("::") || str.includes("/")) {
+                        // unquoted variants: enums or float divisions
+                        ret.push(str);
+                    } else {
+                        // real quoted strings
+                        ret.push(`"${str.trim().replace(/\n/g, "\\n")}"`);
+                    }
+                    break;
+                default: throw new Error(`${err} unknown DefaultValue type in Setting "${key}"`);
+            }
+            // a scaled setting should have a default value
+            if(props.display !== undefined) {
+                const { scale, coarse, fine } = props.display;
+                if(result.declarations.display_scaling_type[scale] === undefined)
+                    throw new Error(`${err} unknown DisplayScalingType "${scale}"`);
+                if(!ret[1].endsWith("f"))
+                    throw new Error(`${err} invalid default value type (${props.default.constructor.name}) for DisplayScalingType`);
+                ret.push(`{ Properties::DisplayScalingType::${scale}, ${coarse}, ${fine} }`);
+            }
+        }
+        out.push(`{ ${ret.join(", ")} }`);
+        return out;
+    }, []).join(",\n");
 }
 
 function generateOverview(result: Result, sourceDir: string, outDir: string) {
@@ -486,9 +530,10 @@ function main(outDir: string, sourceDir: string) {
         result: Result = {
             timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "",
             parameter_list: "", parameter_units: "", display_scaling_types: "", parameter_groups: "",
-            group_map: "", storage: "",
+            get_parameter_ids: "", storage: "", setting_list: "",
             ...ConfigParser.parse(sourceDir + "/src/c15_config.yaml"),
             ...DeclarationsParser.parse(sourceDir + "/src/parameter_declarations.yaml"),
+            settings: SettingParser.parse(sourceDir + "/src/settings.yaml"),
             definitions: DefinitionsParser.parseAll(...definitions).map((definition, index) => {
                 return { ...definition, filename: definitions[index] }
             })
@@ -510,8 +555,10 @@ function main(outDir: string, sourceDir: string) {
             Object.assign(result.declarations.parameter_group[groupName], {index});
         }
     });
-    // processing of parsed yaml (sanity checks, enum sorting/filtering, providing strings for replacements)
+    // processing of parsed yaml, parameters (sanity checks, enum sorting/filtering, providing strings for replacements)
     processDefinitions(result);
+    // processing of parsed yaml, settings
+    processSettings(result);
     // transformations of ./src/*.in.* files into usable resources in ./generated via string replacements
     replaceResultInFiles(
         result,
@@ -524,6 +571,7 @@ function main(outDir: string, sourceDir: string) {
         sourceDir + "/src/parameter_descriptor.h.in",
         sourceDir + "/src/display_scaling_type.h.in",
         sourceDir + "/src/parameter_group.h.in",
+        sourceDir + "/src/setting_list.h.in",
         sourceDir + "/src/main.cpp.in",
         // transformations not covered by g++ and therefore unsafe
         sourceDir + "/src/placeholder.h.in",
@@ -547,8 +595,8 @@ function createDirectorys(dir) {
 try {
     const myArgs = process.argv.slice(1)
     const sourceDirectoryParts = myArgs[0].split("/");
-    sourceDirectoryParts.pop()
-    sourceDirectoryParts.pop()
+    sourceDirectoryParts.pop();
+    sourceDirectoryParts.pop();
     const sourceDirectoryPath = "/" + sourceDirectoryParts.join("/");
     const outDirectory = myArgs[1]
     createDirectorys(outDirectory);
