@@ -3,6 +3,8 @@
 #include <http/ContentSection.h>
 #include <http/RPCActionManager.h>
 #include <tools/Signal.h>
+#include "tools/Uuid.h"
+#include <optional>
 
 class Uuid;
 
@@ -65,6 +67,7 @@ class Clipboard : public ContentSection
   RPCActionManager m_actions;
   std::unique_ptr<UpdateDocumentContributor> m_content;
   bool m_currentContentWasCut = false;
+  std::optional<Uuid> m_cutPresetUuid = std::nullopt;
 
   Signal<void> m_sigChanged;
 };

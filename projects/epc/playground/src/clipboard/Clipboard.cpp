@@ -16,60 +16,74 @@ Clipboard::Clipboard(UpdateDocumentContributor *parent)
     : ContentSection(parent)
     , m_actions("/clipboard/")
 {
-  m_actions.addAction("copy-bank", [=](std::shared_ptr<NetworkRequest> request) {
-    copyBank(Uuid { request->get("bank") });
-    request->okAndComplete();
-  });
+  m_actions.addAction("copy-bank",
+                      [=](std::shared_ptr<NetworkRequest> request)
+                      {
+                        copyBank(Uuid { request->get("bank") });
+                        request->okAndComplete();
+                      });
 
-  m_actions.addAction("cut-preset", [=](std::shared_ptr<NetworkRequest> request) {
-    cutPreset(Uuid { request->get("preset") });
-    request->okAndComplete();
-  });
+  m_actions.addAction("cut-preset",
+                      [=](std::shared_ptr<NetworkRequest> request)
+                      {
+                        cutPreset(Uuid { request->get("preset") });
+                        request->okAndComplete();
+                      });
 
-  m_actions.addAction("copy-preset", [=](std::shared_ptr<NetworkRequest> request) {
-    copyPreset(Uuid { request->get("preset") });
-    request->okAndComplete();
-  });
+  m_actions.addAction("copy-preset",
+                      [=](std::shared_ptr<NetworkRequest> request)
+                      {
+                        copyPreset(Uuid { request->get("preset") });
+                        request->okAndComplete();
+                      });
 
-  m_actions.addAction("copy-presets", [=](std::shared_ptr<NetworkRequest> request) {
-    copyPresets(request->get("presets-csv"));
-    request->okAndComplete();
-  });
+  m_actions.addAction("copy-presets",
+                      [=](std::shared_ptr<NetworkRequest> request)
+                      {
+                        copyPresets(request->get("presets-csv"));
+                        request->okAndComplete();
+                      });
 
-  m_actions.addAction("paste-on-background", [=](std::shared_ptr<NetworkRequest> request) {
-    auto x = request->get("x");
-    auto y = request->get("y");
+  m_actions.addAction("paste-on-background",
+                      [=](std::shared_ptr<NetworkRequest> request)
+                      {
+                        auto x = request->get("x");
+                        auto y = request->get("y");
 
-    if(containsBank())
-      pasteBankOnBackground("Paste Bank", x, y);
-    else if(containsPreset())
-      pastePresetOnBackground(x, y);
-    else if(containsMultiplePresets())
-      pasteMultiplePresetsOnBackground(x, y);
+                        if(containsBank())
+                          pasteBankOnBackground("Paste Bank", x, y);
+                        else if(containsPreset())
+                          pastePresetOnBackground(x, y);
+                        else if(containsMultiplePresets())
+                          pasteMultiplePresetsOnBackground(x, y);
 
-    request->okAndComplete();
-  });
+                        request->okAndComplete();
+                      });
 
-  m_actions.addAction("paste-on-bank", [=](std::shared_ptr<NetworkRequest> request) {
-    if(containsBank())
-      pasteBankOnBank("Paste Bank", Uuid { request->get("bank") });
-    else if(containsPreset())
-      pastePresetOnBank(Uuid { request->get("bank") });
-    else if(containsMultiplePresets())
-      pasteMultiplePresetsOnBank(Uuid { request->get("bank") });
+  m_actions.addAction("paste-on-bank",
+                      [=](std::shared_ptr<NetworkRequest> request)
+                      {
+                        if(containsBank())
+                          pasteBankOnBank("Paste Bank", Uuid { request->get("bank") });
+                        else if(containsPreset())
+                          pastePresetOnBank(Uuid { request->get("bank") });
+                        else if(containsMultiplePresets())
+                          pasteMultiplePresetsOnBank(Uuid { request->get("bank") });
 
-    request->okAndComplete();
-  });
+                        request->okAndComplete();
+                      });
 
-  m_actions.addAction("paste-on-preset", [=](std::shared_ptr<NetworkRequest> request) {
-    if(containsBank())
-      pasteBankOnPreset("Paste Bank", Uuid { request->get("preset") });
-    else if(containsPreset())
-      pastePresetOnPreset(Uuid { request->get("preset") });
-    else if(containsMultiplePresets())
-      pasteMultiplePresetsOnPreset(Uuid { request->get("preset") });
-    request->okAndComplete();
-  });
+  m_actions.addAction("paste-on-preset",
+                      [=](std::shared_ptr<NetworkRequest> request)
+                      {
+                        if(containsBank())
+                          pasteBankOnPreset("Paste Bank", Uuid { request->get("preset") });
+                        else if(containsPreset())
+                          pastePresetOnPreset(Uuid { request->get("preset") });
+                        else if(containsMultiplePresets())
+                          pasteMultiplePresetsOnPreset(Uuid { request->get("preset") });
+                        request->okAndComplete();
+                      });
 }
 
 Clipboard::~Clipboard()
@@ -115,14 +129,16 @@ void Clipboard::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdate
 {
   bool changed = knownRevision < getUpdateIDOfLastChange();
 
-  writer.writeTag("clipboard", Attribute("changed", changed), [&]() {
-    if(changed)
-    {
-      writer.writeTextElement("contains-bank", to_string(containsBank()));
-      writer.writeTextElement("contains-preset", to_string(containsPreset()));
-      writer.writeTextElement("contains-multiple-presets", to_string(containsMultiplePresets()));
-    }
-  });
+  writer.writeTag("clipboard", Attribute("changed", changed),
+                  [&]()
+                  {
+                    if(changed)
+                    {
+                      writer.writeTextElement("contains-bank", to_string(containsBank()));
+                      writer.writeTextElement("contains-preset", to_string(containsPreset()));
+                      writer.writeTextElement("contains-multiple-presets", to_string(containsMultiplePresets()));
+                    }
+                  });
 }
 
 void Clipboard::copyBank(const Uuid &bankUuid)
@@ -174,7 +190,10 @@ bool Clipboard::copyPreset(const Uuid &presetUuid)
 void Clipboard::cutPreset(const Uuid &presetUuid)
 {
   if(copyPreset(presetUuid))
+  {
+    m_cutPresetUuid = presetUuid;
     m_currentContentWasCut = true;
+  }
 }
 
 void Clipboard::pasteOnBank(const Uuid &bankUuid)
@@ -271,10 +290,12 @@ void Clipboard::pasteBankOnBank(const Glib::ustring &transactionName, const Uuid
   {
     auto transaction = scope->getTransaction();
     auto source = dynamic_cast<const Bank *>(content);
-    source->forEachPreset([&](auto preset) {
-      auto newPreset = std::make_unique<Preset>(target, *preset);
-      target->appendPreset(transaction, std::move(newPreset));
-    });
+    source->forEachPreset(
+        [&](auto preset)
+        {
+          auto newPreset = std::make_unique<Preset>(target, *preset);
+          target->appendPreset(transaction, std::move(newPreset));
+        });
 
     doCut(transaction);
   }
@@ -315,10 +336,12 @@ void Clipboard::pasteBankOnPreset(const Glib::ustring &transactionName, const Uu
       auto source = static_cast<const Bank *>(content);
       auto insertPos = targetBank->getPresetPosition(presetUuid) + 1;
 
-      source->forEachPreset([&](auto srcPreset) {
-        auto cp = std::make_unique<Preset>(targetBank, *srcPreset);
-        targetBank->insertPreset(transaction, insertPos++, std::move(cp));
-      });
+      source->forEachPreset(
+          [&](auto srcPreset)
+          {
+            auto cp = std::make_unique<Preset>(targetBank, *srcPreset);
+            targetBank->insertPreset(transaction, insertPos++, std::move(cp));
+          });
 
       doCut(transaction);
     }
@@ -340,18 +363,16 @@ void Clipboard::pastePresetOnPreset(const Uuid &presetUuid)
 
 void Clipboard::doCut(UNDO::Transaction *transaction)
 {
-  if(m_currentContentWasCut)
+  if(m_currentContentWasCut && m_cutPresetUuid.has_value())
   {
     m_currentContentWasCut = false;
 
-    if(auto p = dynamic_cast<const Preset *>(m_content.get()))
+    const auto oldPresetUUID = m_cutPresetUuid.value();
+    if(auto src = Application::get().getPresetManager()->findPreset(oldPresetUUID))
     {
-      if(auto src = Application::get().getPresetManager()->findPreset(p->getUuid()))
+      if(auto parentBank = dynamic_cast<Bank *>(src->getParent()))
       {
-        if(auto parentBank = dynamic_cast<Bank *>(src->getParent()))
-        {
-          parentBank->deletePreset(transaction, p->getUuid());
-        }
+        parentBank->deletePreset(transaction, oldPresetUUID);
       }
     }
   }
