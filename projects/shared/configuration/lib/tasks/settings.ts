@@ -1,4 +1,5 @@
 import { Type, Parser } from "../yaml";
+import { RenderScaling } from "./definitions";
 
 export type SettingType = {
     default?: number | string;
@@ -7,6 +8,7 @@ export type SettingType = {
         coarse: number;
         fine: number;
     };
+    renderScaling?: RenderScaling;
 };
 
 export type Settings = Record<string, SettingType>;

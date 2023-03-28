@@ -6,6 +6,7 @@ CMakeLists.txt.user
 *.war
 .idea
 .project
+.vscode
 projects/web/c16/src/.meteor
 projects/web/c16/src/node_modules
 node_modules
