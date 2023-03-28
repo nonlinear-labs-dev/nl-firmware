@@ -77,7 +77,7 @@ function doesPresetMatch(preset: any, searchOptions: SearchOptions, subquery: St
     if (searchOptions.searchInDeviceName && preset['attributes']['DeviceName'] && preset['attributes']['DeviceName'].toLowerCase().includes(subquery))
         return true;
 
-    if (searchOptions.searchInHashtags && preset['attributes']['Hashtags'] && preset['attributes']['Hashtags'].toLowerCase().includes(subquery))
+    if (searchOptions.searchInHashtags && preset['properties'] && preset['properties'].toLowerCase().includes(subquery))
         return true;
     return false;
 }
