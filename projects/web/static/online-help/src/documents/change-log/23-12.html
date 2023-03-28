@@ -56,8 +56,16 @@
             </div>
             <p>Depending on the preset's <span data-keyword="Sound">Type</span>, a <code>#Single</code>/<code>#Split</code>/<code>#Layer</code> hashtag is provided. A <code>#Poly</code>/<code>#Mono</code> hashtag is provided, depending on the <q>Mono Enable</q> parameter.</p>
             <p>A <code>#Unison</code>/<code>#1-voice</code> hashtag is provided, depending on the <q>Unison Voices</q> parameter. A <code>#Scale</code>/<code>#12-TET</code> <i>(12-Tone-Equal-Temperament)</i> hashtag is provided, depending on whether <q>Offset</q> parameters are used in the Scale group.</p>
+            <div data-columns="2">
+                <figure class="border maximize" data-label="Preset Info - Properties">
+                    <picture class="content" data-src="./images/web-ui/preset/web-ui-preset-search-options.png"></picture>
+                </figure>
+                <div data-highlight="note">
+                    <p>In order to be able to search for specific property hashtags, the <q>Properties</q> checkbox in the search options has to be enabled.</p>
+                </div>
+            </div>
         </div>
-        <div class="section" style="page-break-before: always;">
+        <div class="section">
             <h4>New: Preset Scale Indicator</h4>
             <div data-columns="2">
                 <figure class="border maximize" data-label="Scale Indicator">
@@ -84,7 +92,7 @@
             <p>The <span data-keyword="Default">Button</span> is now usable for most settings in the <span data-keyword="Setup">Menu</span>. In the <span data-keyword="Graphical">UI</span>, settings represented as sliders can be set to default by double-clicking.</p>
         </div>
     </section>
-    <section>
+    <section style="page-break-before: always;">
         <h3>Bugfixes and Improvements</h3>
         <ul>
             <li>
@@ -103,7 +111,7 @@
                 <header data-detail="Graphical UI">Single Sounds - Copy FX</header>
                 <p>In the <span data-keyword="Sound">Tab</span>, options for copying the FX chain into the other are now available as well.</p>
             </li>
-            <li style="page-break-before: always;">
+            <li>
                 <header data-detail="Graphical UI">Parameter Tab - defaultable Modulation Aspects</header>
                 <p>When a Modulation Aspect (Amount, Upper/Lower Limit) of a modulateable parameter is in focus, a double click will now set the modulation amount to its default value <i>(instead of defaulting the control position)</i>.</p>
             </li>
@@ -125,7 +133,7 @@
         <div data-highlight="warn">
             <p>MIDI Loopback is only recommended when having Local disabled for Notes and <span data-keyword="Hardware">Sources</span>. When having Local enabled, MIDI Loopback will lead to a Note being played twice <i>(internally and in addition from MIDI In)</i>.</p>
         </div>
-        <h4 style="page-break-before: always;">Further Improvements</h4>
+        <h4>Further Improvements</h4>
         <div data-columns="2">
             <ul>
                 <li>after booting, LEDs of a <span data-keyword="Ribbon">Touchstrip</span> will correspond to the associated <span data-keyword="Macro">Control</span>, if the linking is bidirectional</li>
