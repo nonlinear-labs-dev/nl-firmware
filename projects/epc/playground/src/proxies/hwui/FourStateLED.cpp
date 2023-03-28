@@ -11,27 +11,33 @@ FourStateLED::FourStateLED()
 
 FourStateLED::~FourStateLED()
 {
-  setState(State::Bright);
+  setState(State::Bright, false);
 }
 
-void FourStateLED::setState(State state)
+void FourStateLED::setState(State state, bool throttle)
 {
   if(m_state != state)
   {
     m_state = state;
-    syncHWUI();
+    syncHWUI(throttle);
   }
 }
 
-void FourStateLED::syncHWUI()
+void FourStateLED::syncHWUI(bool throttle)
 {
-  m_syncThrottler.doTask([this]() {
-    using namespace nltools::msg;
-    SetRibbonLEDMessage msg;
-    msg.id = static_cast<uint8_t>(getID());
-    msg.brightness = static_cast<uint8_t>(m_state & 0x03);
+  using namespace nltools::msg;
+  SetRibbonLEDMessage msg {};
+  msg.id = static_cast<uint8_t>(getID());
+  msg.brightness = static_cast<uint8_t>(m_state & 0x03);
+
+  if(throttle)
+  {
+    m_syncThrottler.doTask([msg]() { send(EndPoint::RibbonLed, msg); });
+  }
+  else
+  {
     send(EndPoint::RibbonLed, msg);
-  });
+  }
 }
 
 FourStateLED::State FourStateLED::getState() const
