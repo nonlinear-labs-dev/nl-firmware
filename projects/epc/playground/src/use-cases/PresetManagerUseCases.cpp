@@ -466,7 +466,8 @@ void PresetManagerUseCases::sortBankNumbers()
 void PresetManagerUseCases::dropPresets(const std::string& anchorUuid, PresetManagerUseCases::DropActions action,
                                         const Glib::ustring& csv)
 {
-  auto actionToOffset = [](DropActions action) {
+  auto actionToOffset = [](DropActions action)
+  {
     switch(action)
     {
       case DropActions::Above:
@@ -693,39 +694,43 @@ PresetManagerUseCases::ImportExitCode PresetManagerUseCases::importBackupFile(UN
 {
   auto swap = UNDO::createSwapData(std::vector<uint8_t> {});
 
-  transaction->addSimpleCommand([&pm = m_presetManager, pg = progress, &ae = aeProxy, swap](auto) {
-    pg.start();
-    ZippedMemoryOutStream stream;
-    XmlWriter writer(stream);
-    PresetManagerSerializer serializer(&pm, pg._update);
-    serializer.write(writer, VersionAttribute::get());
-    std::vector<uint8_t> zippedPresetManagerXml = stream.exhaust();
-    swap->swapWith(zippedPresetManagerXml);
+  transaction->addSimpleCommand(
+      [&pm = m_presetManager, pg = progress, &ae = aeProxy, swap](auto)
+      {
+        pg.start();
+        ZippedMemoryOutStream stream;
+        XmlWriter writer(stream);
+        PresetManagerSerializer serializer(&pm, pg._update);
+        serializer.write(writer, VersionAttribute::get());
+        std::vector<uint8_t> zippedPresetManagerXml = stream.exhaust();
+        swap->swapWith(zippedPresetManagerXml);
 
-    if(!zippedPresetManagerXml.empty())
-    {
-      auto trash = UNDO::Scope::startTrashTransaction();
-      MemoryInStream inStream(zippedPresetManagerXml, true);
-      XmlReader reader(inStream, trash->getTransaction());
-      pm.clear(trash->getTransaction());
-      reader.read<PresetManagerSerializer>(&pm, pg._update);
-      ae.sendEditBuffer();
-    }
+        if(!zippedPresetManagerXml.empty())
+        {
+          auto trash = UNDO::Scope::startTrashTransaction();
+          MemoryInStream inStream(zippedPresetManagerXml, true);
+          XmlReader reader(inStream, trash->getTransaction());
+          pm.clear(trash->getTransaction());
+          reader.read<PresetManagerSerializer>(&pm, pg._update);
+          ae.sendEditBuffer();
+        }
 
-    if(pg._finish)
-      pg.finish();
-  });
+        if(pg._finish)
+          pg.finish();
+      });
 
   // fill preset manager with trash transaction, as snapshot above will
   // care about undo
   auto trash = UNDO::Scope::startTrashTransaction();
   XmlReader reader(in, trash->getTransaction());
 
-  reader.onFileVersionRead([&](int version) {
-    if(version > VersionAttribute::getCurrentFileVersion())
-      return Reader::FileVersionCheckResult::Unsupported;
-    return Reader::FileVersionCheckResult::OK;
-  });
+  reader.onFileVersionRead(
+      [&](int version)
+      {
+        if(version > VersionAttribute::getCurrentFileVersion())
+          return Reader::FileVersionCheckResult::Unsupported;
+        return Reader::FileVersionCheckResult::OK;
+      });
 
   try
   {
@@ -884,7 +889,8 @@ void PresetManagerUseCases::selectNextPreset()
 
 void PresetManagerUseCases::pastePresetOnBank(Bank* bank, const Preset* preset, Clipboard* pClipboard)
 {
-  auto scope = m_presetManager.getUndoScope().startTransaction("Paste Preset");
+  auto name = pClipboard->hasCutPresetContent() ? "Paste Cut Preset" : "Paste Preset";
+  auto scope = m_presetManager.getUndoScope().startTransaction(name);
   auto transaction = scope->getTransaction();
   bank->appendPreset(transaction, std::make_unique<Preset>(bank, *preset));
   pClipboard->doCut(transaction);
@@ -894,7 +900,8 @@ void PresetManagerUseCases::pastePresetOnPreset(Preset* target, Preset* source, 
 {
   if(auto targetBank = dynamic_cast<Bank*>(target->getParent()))
   {
-    auto scope = m_presetManager.getUndoScope().startTransaction("Paste Preset");
+    auto name = clipboard->hasCutPresetContent() ? "Paste Cut Preset" : "Paste Preset";
+    auto scope = m_presetManager.getUndoScope().startTransaction(name);
     auto transaction = scope->getTransaction();
     auto insertPos = targetBank->getPresetPosition(target->getUuid()) + 1;
     auto newPreset = std::make_unique<Preset>(targetBank, *source);
@@ -919,7 +926,8 @@ void PresetManagerUseCases::pasteBankOnBackground(const Glib::ustring& name, con
 void PresetManagerUseCases::pastePresetOnBackground(const Glib::ustring& x, const Glib::ustring& y, Preset* source,
                                                     Clipboard* clipboard)
 {
-  auto scope = m_presetManager.getUndoScope().startTransaction("Paste Preset");
+  auto name = clipboard->hasCutPresetContent() ? "Paste Cut Preset" : "Paste Preset";
+  auto scope = m_presetManager.getUndoScope().startTransaction(name);
   auto transaction = scope->getTransaction();
   auto newBank = m_presetManager.addBank(transaction);
   newBank->setX(transaction, x);
