@@ -146,7 +146,7 @@ void Clipboard::copyBank(const Uuid &bankUuid)
   auto pm = Application::get().getPresetManager();
   if(auto bank = pm->findBank(bankUuid))
   {
-    m_currentContentWasCut = false;
+    m_cutPresetUuid = std::nullopt;
     auto scope = getUndoScope().startTrashTransaction();
     m_content = std::make_unique<Bank>(this, *bank);
     onChange(UpdateDocumentContributor::ChangeFlags::Generic);
@@ -157,7 +157,7 @@ void Clipboard::copyPresets(const Glib::ustring &csv)
 {
   auto pm = Application::get().getPresetManager();
   auto scope = getUndoScope().startTrashTransaction();
-  m_currentContentWasCut = false;
+  m_cutPresetUuid = std::nullopt;
   m_content.reset(new MultiplePresetSelection(getParent()));
 
   auto mulPresetSelection = static_cast<MultiplePresetSelection *>(m_content.get());
@@ -178,7 +178,7 @@ bool Clipboard::copyPreset(const Uuid &presetUuid)
 
   if(auto preset = pm->findPreset(presetUuid))
   {
-    m_currentContentWasCut = false;
+    m_cutPresetUuid = std::nullopt;
     auto scope = getUndoScope().startTrashTransaction();
     m_content = std::make_unique<Preset>(this, *preset);
     onChange(UpdateDocumentContributor::ChangeFlags::Generic);
@@ -192,7 +192,6 @@ void Clipboard::cutPreset(const Uuid &presetUuid)
   if(copyPreset(presetUuid))
   {
     m_cutPresetUuid = presetUuid;
-    m_currentContentWasCut = true;
   }
 }
 
@@ -363,10 +362,8 @@ void Clipboard::pastePresetOnPreset(const Uuid &presetUuid)
 
 void Clipboard::doCut(UNDO::Transaction *transaction)
 {
-  if(m_currentContentWasCut && m_cutPresetUuid.has_value())
+  if(m_cutPresetUuid.has_value())
   {
-    m_currentContentWasCut = false;
-
     const auto oldPresetUUID = m_cutPresetUuid.value();
     if(auto src = Application::get().getPresetManager()->findPreset(oldPresetUUID))
     {
@@ -375,6 +372,7 @@ void Clipboard::doCut(UNDO::Transaction *transaction)
         parentBank->deletePreset(transaction, oldPresetUUID);
       }
     }
+    m_cutPresetUuid = std::nullopt;
   }
 }
 
@@ -388,4 +386,9 @@ UpdateDocumentContributor::tUpdateID Clipboard::onChange(uint64_t flags)
 sigc::connection Clipboard::onClipboardChanged(sigc::slot<void> cb)
 {
   return m_sigChanged.connectAndInit(cb);
+}
+
+bool Clipboard::hasCutPresetContent() const
+{
+  return m_cutPresetUuid.has_value();
 }
