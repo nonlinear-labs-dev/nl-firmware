@@ -66,6 +66,7 @@ class C15Synth : public Synth, public sigc::trackable
   void queueChannelModeMessage(MidiChannelModeMessages function);
 
   void syncExternalsLoop();
+  void sendActiveSensing();
 
   void doSyncExternalMidiBridge();
   void doSyncPlayground();
@@ -89,4 +90,5 @@ class C15Synth : public Synth, public sigc::trackable
   std::mutex m_syncExternalsMutex;
   std::atomic<bool> m_quit { false };
   std::future<void> m_syncExternalsTask;
+  std::future<void> m_activeSensing;
 };

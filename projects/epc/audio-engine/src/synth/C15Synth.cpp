@@ -17,6 +17,7 @@ C15Synth::C15Synth(AudioEngineOptions* options)
                           [this](auto msg) { queueExternalMidiOut(msg); },
                           [this](MidiChannelModeMessages func) { queueChannelModeMessage(func); } }
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
+    , m_activeSensing(std::async(std::launch::async, [this] { sendActiveSensing(); }))
 {
   constexpr auto maxV = std::numeric_limits<float>::max();
   m_playgroundHwSourceKnownValues.fill({ maxV, maxV, maxV, maxV });
@@ -191,6 +192,21 @@ void C15Synth::syncExternalsLoop()
   }
 }
 
+void C15Synth::sendActiveSensing()
+{
+  using namespace std::chrono_literals;
+  const auto active_sensing = nltools::msg::Midi::SimpleMessage { 254, 0, 0 };
+
+  while(!m_quit)
+  {
+    if(m_midiOptions.shouldSendActiveSensing())
+    {
+      queueExternalMidiOut(active_sensing);
+    }
+    std::this_thread::sleep_for(250ms);
+  }
+}
+
 void C15Synth::doChannelModeMessageFunctions()
 {
   //TODO implement remaining special MIDI functions here
@@ -220,7 +236,7 @@ void C15Synth::doChannelModeMessageFunctions()
         break;
       case PollEnd:
       {
-        nltools::msg::HardwareSourcePollEnd msg;
+        nltools::msg::HardwareSourcePollEnd msg {};
         msg.m_data = m_inputEventStage.getPolledHWSourcePositions();
         nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
         break;

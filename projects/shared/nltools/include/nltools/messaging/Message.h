@@ -367,6 +367,7 @@ namespace nltools
 
         bool localEnable = true;
         bool isSecondSetOfRibbonsEnabled = false;
+        bool shouldSendActiveSensing = true;
         tRoutingMappings routings = {};
       };
 
