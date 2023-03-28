@@ -530,9 +530,9 @@
 						</div>
 						<div class="w40p mw-fit-content">
 							<g:RadioButton ui:field="sendActiveSensingOn"
-								name="rad_lat" value="true"></g:RadioButton>
+								name="rad_activeSensing" value="true"></g:RadioButton>
 							<g:RadioButton ui:field="sendActiveSensingOff"
-								name="rad_lat" value="false"></g:RadioButton>
+								name="rad_activeSensing" value="false"></g:RadioButton>
 						</div>
 					</div>
 					<div class="eins-he">

@@ -243,6 +243,7 @@ public class Setup extends Composite {
 		fillRadioButtons(globalLocalOn, globalLocalOff, MidiSettings.OnOffOption.options);
 
 		fillRadioButtons(legacyAftertouchOn, legacyAftertouchOff, MidiSettings.OnOffOption.options);
+		fillRadioButtons(sendActiveSensingOn, sendActiveSensingOff, MidiSettings.OnOffOption.options);
 	}
 
 	private void setupMappings(boolean showLSB)
