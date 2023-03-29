@@ -21,6 +21,12 @@ namespace nltools
 
         SimpleMessage() = default;
 
+        explicit SimpleMessage(uint8_t status)
+        {
+          rawBytes[0] = status;
+          numBytesUsed = 1;
+        }
+
         SimpleMessage(uint8_t status, uint8_t data)
         {
           rawBytes[0] = status;

@@ -195,7 +195,7 @@ void C15Synth::syncExternalsLoop()
 void C15Synth::sendActiveSensing()
 {
   using namespace std::chrono_literals;
-  const auto active_sensing = nltools::msg::Midi::SimpleMessage { 254, 0, 0 };
+  const auto active_sensing = nltools::msg::Midi::SimpleMessage { 254 };
 
   while(!m_quit)
   {
