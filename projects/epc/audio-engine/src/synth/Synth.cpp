@@ -33,10 +33,10 @@ void Synth::resetDSP()
 {
 }
 
-template <typename T> void pushEvent(T &buffer, const MidiEvent &event, std::chrono::nanoseconds addDelay)
+template <typename T> void pushEvent(T &buffer, MidiEvent event, std::chrono::nanoseconds addDelay)
 {
-  auto &c = buffer.push(event);
-  c.timestamp = std::chrono::high_resolution_clock::now() + addDelay;
+  event.timestamp = std::chrono::high_resolution_clock::now() + addDelay;
+  buffer.push(event);
 }
 
 void Synth::pushMidiEvent(const MidiEvent &event)

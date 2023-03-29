@@ -195,7 +195,7 @@ void C15Synth::syncExternalsLoop()
 void C15Synth::sendActiveSensing()
 {
   using namespace std::chrono_literals;
-  const auto active_sensing = nltools::msg::Midi::SimpleMessage { 254 };
+  const auto active_sensing = nltools::msg::Midi::SimpleMessage { 0xFE };
 
   while(!m_quit)
   {
@@ -252,9 +252,7 @@ void C15Synth::doSyncExternalMidiBridge()
 {
   while(!m_externalMidiOutBuffer.empty())
   {
-    auto msg = m_externalMidiOutBuffer.pop();
-    auto copy = msg;
-    send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, copy);
+    send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, m_externalMidiOutBuffer.pop());
   }
 }
 

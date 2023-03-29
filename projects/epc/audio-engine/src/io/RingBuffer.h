@@ -5,31 +5,42 @@
 #include <mutex>
 #include <atomic>
 
-template <typename T> class RingBuffer
+class DummyMutex
 {
  public:
-  RingBuffer(size_t numElements)
+  void lock()
+  {
+  }
+  void unlock()
+  {
+  }
+};
+
+template <typename T, typename tPushMutex> class RingBuffer
+{
+ public:
+  explicit RingBuffer(size_t numElements)
       : m_buffer(numElements)
   {
   }
 
-  T& push(const T& e)
+  void push(const T& e)
   {
-    std::lock_guard<std::mutex> guard(m_writeMutex);
-    T& ret = m_buffer[m_writeHead % m_buffer.size()];
-    ret = e;
-    m_writeHead++;
-    return ret;
+    std::lock_guard<tPushMutex> guard(m_pushMutex);
+    m_buffer[m_writeHead++ % m_buffer.size()] = e;
   }
 
   void push(const T* e, size_t numFrames)
   {
-    std::lock_guard<std::mutex> guard(m_writeMutex);
-    auto idx = m_writeHead % m_buffer.size();
-    auto cap = m_buffer.size() - idx;
-    auto todoNow = std::min<size_t>(cap, numFrames);
-    std::copy(e, e + todoNow, m_buffer.data() + idx);
-    m_writeHead += todoNow;
+    size_t todoNow = 0;
+    {
+      std::lock_guard<tPushMutex> guard(m_pushMutex);
+      auto idx = m_writeHead % m_buffer.size();
+      auto cap = m_buffer.size() - idx;
+      todoNow = std::min<size_t>(cap, numFrames);
+      std::copy(e, e + todoNow, m_buffer.data() + idx);
+      m_writeHead += todoNow;
+    }
 
     if(auto rest = numFrames - todoNow)
       push(e + todoNow, rest);
@@ -43,27 +54,16 @@ template <typename T> class RingBuffer
     return nullptr;
   }
 
-  const T& pop()
+  T pop()
   {
-    return m_buffer[m_readHead++ % m_buffer.size()];
-  }
-
-  size_t pop(T* target, size_t targetSize, uint64_t readHead) const
-  {
-    auto content = m_writeHead - readHead;
-    auto idx = readHead % m_buffer.size();
-    auto chunkSize = m_buffer.size() - idx;
-    if(auto todo = std::min<size_t>(std::min<size_t>(chunkSize, content), targetSize))
-    {
-      std::copy(m_buffer.data() + idx, m_buffer.data() + idx + todo, target);
-      return todo;
-    }
-    return 0;
+    auto ret = m_buffer[m_readHead % m_buffer.size()];
+    m_readHead++;
+    return ret;
   }
 
   size_t pop(T* target, size_t targetSize)
   {
-    auto r = pop(target, targetSize, m_readHead);
+    auto r = peek(target, targetSize, m_readHead);
     m_readHead += r;
     return r;
   }
@@ -99,9 +99,22 @@ template <typename T> class RingBuffer
   }
 
  private:
+  size_t peek(T* target, size_t targetSize, uint64_t readHead) const
+  {
+    auto content = m_writeHead - readHead;
+    auto idx = readHead % m_buffer.size();
+    auto chunkSize = m_buffer.size() - idx;
+    if(auto todo = std::min<size_t>(std::min<size_t>(chunkSize, content), targetSize))
+    {
+      std::copy(m_buffer.data() + idx, m_buffer.data() + idx + todo, target);
+      return todo;
+    }
+    return 0;
+  }
+
   std::vector<T> m_buffer;
   std::atomic<uint64_t> m_readHead = 0;
   std::atomic<uint64_t> m_writeHead = 0;
 
-  std::mutex m_writeMutex;
+  tPushMutex m_pushMutex;
 };

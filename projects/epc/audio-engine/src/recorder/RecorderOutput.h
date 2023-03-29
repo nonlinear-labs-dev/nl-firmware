@@ -32,7 +32,7 @@ class RecorderOutput
   FlacFrameStorage *m_storage;
   size_t m_sampleRate;
 
-  RingBuffer<SampleFrame> m_ring;
+  RingBuffer<SampleFrame, DummyMutex> m_ring;
   std::unique_ptr<FlacDecoder> m_decoder;
 
   std::condition_variable m_cond;
