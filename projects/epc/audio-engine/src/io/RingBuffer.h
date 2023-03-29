@@ -2,6 +2,8 @@
 
 #include "Types.h"
 #include <vector>
+#include <mutex>
+#include <atomic>
 
 template <typename T> class RingBuffer
 {
@@ -13,6 +15,7 @@ template <typename T> class RingBuffer
 
   T& push(const T& e)
   {
+    std::lock_guard<std::mutex> guard(m_writeMutex);
     T& ret = m_buffer[m_writeHead % m_buffer.size()];
     ret = e;
     m_writeHead++;
@@ -21,6 +24,7 @@ template <typename T> class RingBuffer
 
   void push(const T* e, size_t numFrames)
   {
+    std::lock_guard<std::mutex> guard(m_writeMutex);
     auto idx = m_writeHead % m_buffer.size();
     auto cap = m_buffer.size() - idx;
     auto todoNow = std::min<size_t>(cap, numFrames);
@@ -96,6 +100,8 @@ template <typename T> class RingBuffer
 
  private:
   std::vector<T> m_buffer;
-  uint64_t m_readHead = 0;
-  uint64_t m_writeHead = 0;
+  std::atomic<uint64_t> m_readHead = 0;
+  std::atomic<uint64_t> m_writeHead = 0;
+
+  std::mutex m_writeMutex;
 };
