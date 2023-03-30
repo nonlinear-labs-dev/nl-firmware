@@ -159,7 +159,7 @@ void DateTimeEditor::setTimeValues()
   m_controls[Selection::Month]->setText(format(tm->tm_mon + 1, 2));
   m_controls[Selection::Day]->setText(format(tm->tm_mday, 2));
   m_controls[Selection::Year]->setText(format(tm->tm_year + 1900, 4));
-  m_controls[Selection::Hour]->setText(format(std::max(tm->tm_hour - 1, 0), 2));
+  m_controls[Selection::Hour]->setText(format(std::max(tm->tm_hour - 2, 0), 2));
   m_controls[Selection::Minute]->setText(format(tm->tm_min, 2));
   ControlWithChildren::setDirty();
 }
