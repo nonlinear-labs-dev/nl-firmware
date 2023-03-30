@@ -146,8 +146,7 @@ function prepareSearchQuery(query: string[], opt: SearchOptions): PresetMatchCbA
                 ] : [])
             ]);
         }
-        // if no option checkbox is enabled, it should be considered a match (similar to empty query)
-        if(queryCbs.length === 0) return _ => true;
+        // if no option checkbox is enabled, it is decided that no result should match
         // when any provided function returns a match, the search is successful
         return preset => queryCbs.some(cb => cb(preset));
     });
@@ -157,7 +156,7 @@ function prepareSearchFilter(colors: StringArray, opt: SearchOptions, query: Pre
     // prepare one filter callback, omitting unnecessary filterings
     const filterCbs: PresetMatchCbArray = [
         // preset has to be valid (?)
-        preset => (preset && preset['name']) ? true : false,
+        preset => preset && ('name' in preset),
         // if search includes colors, color filter is applied
         ...(colors.length > 0 ? [
             preset => preset!['attributes']['color'] && colors.includes(preset!['attributes']['color'])
