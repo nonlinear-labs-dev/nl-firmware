@@ -159,9 +159,9 @@ function prepareSearchFilter(colors: StringArray, opt: SearchOptions, query: Pre
         // preset has to be valid (?)
         preset => (preset && preset['name']) ? true : false,
         // if search includes colors, color filter is applied
-        ...(colors.length === 0 ? [] : [
+        ...(colors.length > 0 ? [
             preset => preset!['attributes']['color'] && colors.includes(preset!['attributes']['color'])
-        ]),
+        ] : []),
         // depending on the search operator, every or any item of the search sequence has to match
         // note on empty queries: array.prototype.every([]) returns true, array.prototype.some([]) returns false
         // (empty queries do not need to perform search at all)
