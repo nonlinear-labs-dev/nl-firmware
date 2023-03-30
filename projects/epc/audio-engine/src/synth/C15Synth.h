@@ -11,6 +11,7 @@
 #include <MidiRuntimeOptions.h>
 #include <synth/input/InputEventStage.h>
 #include <synth/input/MidiChannelModeMessages.h>
+#include <nltools/threading/Expiration.h>
 
 namespace nltools
 {
@@ -90,5 +91,5 @@ class C15Synth : public Synth, public sigc::trackable
   std::mutex m_syncExternalsMutex;
   std::atomic<bool> m_quit { false };
   std::future<void> m_syncExternalsTask;
-  std::future<void> m_activeSensing;
+  Expiration m_activeSensingExpiration;
 };
