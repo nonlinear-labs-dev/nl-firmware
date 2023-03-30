@@ -80,6 +80,12 @@ bool DateTimeEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
     return true;
   }
 
+  if(down && (i == Buttons::BUTTON_B || i == Buttons::BUTTON_ENTER))
+  {
+    diveUp();
+    return true;
+  }
+
   if(down)
   {
     m_labels[m_selection]->setHighlight(false);
