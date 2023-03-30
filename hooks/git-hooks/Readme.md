@@ -1,1 +1,1 @@
-- the  pre-commit file into .git/hooks and make sure the file is executable
+- to install the hook: copy the pre-commit file into .git/hooks and make sure the file is executable
