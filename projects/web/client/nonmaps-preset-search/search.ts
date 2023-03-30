@@ -146,6 +146,8 @@ function prepareSearchQuery(query: string[], opt: SearchOptions): PresetMatchCbA
                 ] : [])
             ]);
         }
+        // if no option checkbox is enabled, it should be considered a match (similar to empty query)
+        if(queryCbs.length === 0) return _ => true;
         // when any provided function returns a match, the search is successful
         return preset => queryCbs.some(cb => cb(preset));
     });
