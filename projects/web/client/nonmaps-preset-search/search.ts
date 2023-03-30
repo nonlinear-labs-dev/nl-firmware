@@ -10,7 +10,8 @@ type StringArray = Array<String>;
 enum SearchOperator { And, Or }
 enum SortBy { Number, Name, Time }
 enum SortDirection { Asc, Desc }
-type PresetMatchCbs = ((preset: any) => boolean)[];
+type PresetMatchCb = (preset: any) => boolean;
+type PresetMatchCbArray = Array<PresetMatchCb>;
 
 class SearchOptions {
     operator: SearchOperator = SearchOperator.And;
@@ -28,7 +29,9 @@ class SearchOptions {
 
 const syncedDatabase = globals.syncedDatabase;
 const playgroundProxy = globals.playgroundProxy;
-const hashtagRegex = /^#\w+/;
+
+const hashtagRegex = /^#\S+/; // hashtags begin with '#' and consist of at least one more non-whitespace char
+const whitespaceRegex = /\s+/;
 
 var searchBanks = new ReactiveVar<StringArray>(new Array<String>());
 var searchQuery = new ReactiveVar<String>("");
@@ -100,7 +103,8 @@ function getPresetSortResultFor(lhs: any, rhs: any, by: SortBy, dir: SortDirecti
 }
 
 function getPresetSortResult(lhs: any, rhs: any): number {
-    for (const s of searchOptions.get().sorting) {
+    for (const s of searchOptions.get
+        ().sorting) {
         const sortKey = getPresetSortResultFor(lhs, rhs, s.by, s.direction);
         if (sortKey != 0)
             return sortKey;
@@ -108,59 +112,81 @@ function getPresetSortResult(lhs: any, rhs: any): number {
     return 0;
 }
 
-function performSearch() {
-    const query = searchQuery.get().trim().toLowerCase().split(" ").filter(v => v.length > 0);
-    const banks: Array<String> = searchBanks.get().length != 0 ? searchBanks.get() : syncedDatabase.queryItem("/preset-manager")?.['banks'];
-    const colors = searchColors.get();
-    const opt = searchOptions.get();
-
-    // prepare query callback, omitting unset options
-    const queryCbs: PresetMatchCbs = query.map(v => {
+function prepareSearchQuery(query: string[], opt: SearchOptions): PresetMatchCbArray {
+    // prepare the search query for each word of the input, omitting unnecessary searches
+    return query.map(v => {
         // any word can potentially match in both name fields
-        const resultCbs: PresetMatchCbs = [
+        const queryCbs: PresetMatchCbArray = [
             ...(opt.searchInName ? [
                 preset => preset['name'].toLowerCase().includes(v)
             ] : []),
             ...(opt.searchInDeviceName ? [
-                preset => preset['attributes']['DeviceName'] && preset['attributes']['DeviceName'].toLowerCase().includes(v)
+                preset => preset['attributes']['DeviceName']
+                    && preset['attributes']['DeviceName'].toLowerCase().includes(v)
             ] : [])
         ];
         if(hashtagRegex.test(v)) {
-            // hashtags
-            resultCbs.push(...[
+            // hashtags (can be found in properties or comment fields)
+            queryCbs.push(...[
                 ...(opt.searchInHashtags ? [
-                    preset => preset['properties'] && preset['properties'].toLowerCase().includes(v)
+                    preset => preset['properties']
+                        && preset['properties'].toLowerCase().includes(v)
                 ] : []),
                 ...(opt.searchInComment ? [
-                    preset => preset['attributes']['Comment'] && preset['attributes']['Comment'].toLowerCase().includes(v)
+                    preset => preset['attributes']['Comment']
+                        && preset['attributes']['Comment'].toLowerCase().includes(v)
                 ] : []),
             ]);
         } else {
-            // ordinary words
-            resultCbs.push(...[
+            // ordinary words (can be found in comment fields - comment hashtags will be ignored)
+            queryCbs.push(...[
                 ...(opt.searchInComment ? [
-                    preset => preset['attributes']['Comment'] && preset['attributes']['Comment'].toLowerCase().split(" ")
-                        .some(word => hashtagRegex.test(word) ? false : word.includes(v))
+                    preset => preset['attributes']['Comment']
+                        && preset['attributes']['Comment'].toLowerCase().split(whitespaceRegex)
+                            .some(word => hashtagRegex.test(word) ? false : word.includes(v))
                 ] : [])
             ]);
         }
-        return preset => resultCbs.some(cb => cb(preset));
+        // when any provided function returns a match, the search is successful
+        return preset => queryCbs.some(cb => cb(preset));
     });
+}
 
+function prepareSearchFilter(colors: StringArray, opt: SearchOptions, query: PresetMatchCbArray): PresetMatchCb {
     // prepare one filter callback, omitting unnecessary filterings
-    const filterCbs: PresetMatchCbs = [
+    const filterCbs: PresetMatchCbArray = [
+        // preset has to be valid (?)
         preset => (preset && preset['name']) ? true : false,
+        // if search includes colors, color filter is applied
         ...(colors.length === 0 ? [] : [
             preset => preset!['attributes']['color'] && colors.includes(preset!['attributes']['color'])
         ]),
-        ...(opt.operator === SearchOperator.And ? [preset => queryCbs.every(cb => cb(preset))] : []),
-        ...(opt.operator === SearchOperator.Or ? [preset => queryCbs.some(cb => cb(preset))] : [])
+        // depending on the search operator, every or any item of the search sequence has to match
+        // note on empty queries: array.prototype.every([]) returns true, array.prototype.some([]) returns false
+        // (empty queries do not need to perform search at all)
+        ...(query.length > 0 && opt.operator === SearchOperator.And ? [
+            preset => query.every(cb => cb(preset))
+        ] : []),
+        ...(query.length > 0 && opt.operator === SearchOperator.Or ? [
+            preset => query.some(cb => cb(preset))
+        ] : [])
     ];
+    // every provided filter rule has to be matched
+    return (preset: any) => filterCbs.every(cb => cb(preset));
+}
+
+function performSearch() {
+    const query = searchQuery.get().trim().toLowerCase().split(whitespaceRegex);
+    const banks: Array<String> = searchBanks.get().length != 0 ? searchBanks.get() : syncedDatabase.queryItem("/preset-manager")?.['banks'];
+    const colors = searchColors.get();
+    const opt = searchOptions.get();
+    // generates a filter function, omitting unnecessary checks
+    const searchFilter = prepareSearchFilter(colors, opt, prepareSearchQuery(query, opt));
 
     var ret = banks?.map(bankId => syncedDatabase.queryItem("/bank/" + bankId))?.
         map(bank => bank?.['presets']).flat()?.
         map(presetId => syncedDatabase.queryItem("/preset/" + presetId))?.
-        filter(preset => filterCbs.every(cb => cb(preset)))?.
+        filter(searchFilter)?.
         sort((lhs, rhs) => getPresetSortResult(lhs, rhs))?.
         map(preset => preset!['uuid']);
 
