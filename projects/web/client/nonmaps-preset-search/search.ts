@@ -19,8 +19,6 @@ class SearchOptions {
     searchInComment: boolean = true;
     searchInDeviceName: boolean = false;
 
-    searchInHashtags: boolean = false;
-
     sorting = [
         { by: SortBy.Number, direction: SortDirection.Asc },
         { by: SortBy.Name, direction: SortDirection.Asc },
@@ -478,8 +476,7 @@ glue("searchSettings",
             operatorOr: searchOptions.get().operator == SearchOperator.Or,
             searchInName: searchOptions.get().searchInName,
             searchInComment: searchOptions.get().searchInComment,
-            searchInDeviceName: searchOptions.get().searchInDeviceName,
-            searchInHastags: searchOptions.get().searchInHashtags
+            searchInDeviceName: searchOptions.get().searchInDeviceName
         }
     }, null, null, {
     "change #op-and"() {
@@ -505,11 +502,6 @@ glue("searchSettings",
     "change #search-in-devicename"(event) {
         var op = searchOptions.get();
         op.searchInDeviceName = (event as JQuery.ClickEvent).target.checked;
-        searchOptions.set(op);
-    },
-    "change #search-in-hashtags"(event) {
-        var op = searchOptions.get();
-        op.searchInHashtags = (event as JQuery.ClickEvent).target.checked;
         searchOptions.set(op);
     }
 });
