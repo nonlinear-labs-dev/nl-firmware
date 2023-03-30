@@ -103,8 +103,7 @@ function getPresetSortResultFor(lhs: any, rhs: any, by: SortBy, dir: SortDirecti
 }
 
 function getPresetSortResult(lhs: any, rhs: any): number {
-    for (const s of searchOptions.get
-        ().sorting) {
+    for (const s of searchOptions.get().sorting) {
         const sortKey = getPresetSortResultFor(lhs, rhs, s.by, s.direction);
         if (sortKey != 0)
             return sortKey;
