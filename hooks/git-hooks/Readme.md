@@ -1,0 +1,1 @@
+- the  pre-commit file into .git/hooks and make sure the file is executable
