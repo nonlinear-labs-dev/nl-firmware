@@ -127,10 +127,8 @@ function prepareSearchQuery(query: string[], opt: SearchOptions): PresetMatchCbA
         if(hashtagRegex.test(v)) {
             // hashtags (can be found in properties or comment fields)
             queryCbs.push(...[
-                ...(opt.searchInHashtags ? [
-                    preset => preset['properties']
-                        && preset['properties'].toLowerCase().includes(v)
-                ] : []),
+                // property hashtags now do not require an option
+                preset => preset['properties'] && preset['properties'].toLowerCase().includes(v),
                 ...(opt.searchInComment ? [
                     preset => preset['attributes']['Comment']
                         && preset['attributes']['Comment'].toLowerCase().includes(v)
