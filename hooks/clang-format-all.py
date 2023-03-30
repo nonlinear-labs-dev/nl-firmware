@@ -18,7 +18,13 @@ def do_shell_action(commands):
 do_shell_action(["git", "config", "--global", "--add", "safe.directory", "/workdir"])
 
 work_dir=do_shell_action(["git", "rev-parse", "--show-toplevel"])[0]
-changed_files=do_shell_action(["find", f"{work_dir}", "-iname", "*.h", "-o", "-iname", "*.cpp", "-o", "-iname", "*.c", "-o", "-iname", "*.hpp"])
+all_files=do_shell_action(["find", f"{work_dir}", "-iname", "*.h", "-o", "-iname", "*.cpp", "-o", "-iname", "*.c", "-o", "-iname", "*.hpp"])
+black_list = ["cmake-build-", "json.hpp"]
+
+for b in black_list:
+  all_files = list(filter(lambda k: b not in k, all_files))
+
+print(f"found {len(all_files)} files to be formatted")
 
 def exists_clang_format_in_dir(dir):
   for file in os.listdir(dir):
@@ -33,7 +39,7 @@ def find_clang_format_for_file(file):
     directory_name = os.path.dirname(directory_name)
   return os.path.join(directory_name, ".clang-format")
 
-for file in changed_files:
-  if file.endswith(".cpp") or file.endswith(".c") or file.endswith(".h") or file.endswith(".hpp"):
-    clang_format_file = find_clang_format_for_file(file)
-    do_shell_action(["clang-format-14", "-i", f"-style=file:{clang_format_file}", file])
+for idx, file in enumerate(all_files):
+  print(f"formatting file [{idx}/{len(all_files)}] {file}")
+  clang_format_file = find_clang_format_for_file(file)
+  do_shell_action(["clang-format-14", "-i", f"-style=file:{clang_format_file}", file])
