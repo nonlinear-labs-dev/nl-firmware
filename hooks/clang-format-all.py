@@ -17,5 +17,4 @@ print(f"found {len(all_files)} files to be formatted")
 for idx, file in enumerate(all_files):
   print(f"formatting file [{idx}/{len(all_files)}] {file}")
   file = os.path.join(work_dir, file)
-  clang_format_file = reformat.find_clang_format_for_file(file)
-  reformat.do_shell_action(["clang-format-14", "-i", f"-style=file:{clang_format_file}", file])
+  reformat.do_shell_action(["clang-format-14", "-i", file])
