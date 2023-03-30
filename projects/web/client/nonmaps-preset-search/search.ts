@@ -69,21 +69,6 @@ function generateBankButtonTitle(): String {
     return "Multiple Banks";
 }
 
-function doesPresetMatch(preset: any, searchOptions: SearchOptions, subquery: String) {
-    if (searchOptions.searchInName && preset['name'].toLowerCase().includes(subquery))
-        return true;
-
-    if (searchOptions.searchInComment && preset['attributes']['Comment'] && preset['attributes']['Comment'].toLowerCase().includes(subquery))
-        return true;
-
-    if (searchOptions.searchInDeviceName && preset['attributes']['DeviceName'] && preset['attributes']['DeviceName'].toLowerCase().includes(subquery))
-        return true;
-
-    if (searchOptions.searchInHashtags && preset['properties'] && preset['properties'].toLowerCase().includes(subquery))
-        return true;
-    return false;
-}
-
 function getPresetSortKey(lhs: any, rhs: any, by: SortBy): number {
     switch (by) {
         case SortBy.Number:
@@ -130,37 +115,37 @@ function performSearch() {
     const opt = searchOptions.get();
 
     // prepare query callback, omitting unset options
-    // const queryCbs: PresetMatchCbs = query.map(v => {
-    //     // any word can potentially match in both name fields
-    //     const resultCbs: PresetMatchCbs = [
-    //         ...(opt.searchInName ? [
-    //             preset => preset['name'].toLowerCase().includes(v)
-    //         ] : []),
-    //         ...(opt.searchInDeviceName ? [
-    //             preset => preset['attributes']['DeviceName'] && preset['attributes']['DeviceName'].toLowerCase().includes(v)
-    //         ] : [])
-    //     ];
-    //     if(hashtagRegex.test(v)) {
-    //         // hashtags
-    //         resultCbs.push(...[
-    //             ...(opt.searchInHashtags ? [
-    //                 preset => preset['properties'] && preset['properties'].toLowerCase().includes(v)
-    //             ] : []),
-    //             ...(opt.searchInComment ? [
-    //                 preset => preset['attributes']['Comment'] && preset['attributes']['Comment'].toLowerCase().includes(v)
-    //             ] : []),
-    //         ]);
-    //     } else {
-    //         // ordinary words
-    //         resultCbs.push(...[
-    //             ...(opt.searchInComment ? [
-    //                 preset => preset['attributes']['Comment'] && preset['attributes']['Comment'].toLowerCase().split(" ")
-    //                     .some(word => hashtagRegex.test(word) ? false : word.includes(v))
-    //             ] : [])
-    //         ]);
-    //     }
-    //     return preset => resultCbs.some(cb => cb(preset));
-    // });
+    const queryCbs: PresetMatchCbs = query.map(v => {
+        // any word can potentially match in both name fields
+        const resultCbs: PresetMatchCbs = [
+            ...(opt.searchInName ? [
+                preset => preset['name'].toLowerCase().includes(v)
+            ] : []),
+            ...(opt.searchInDeviceName ? [
+                preset => preset['attributes']['DeviceName'] && preset['attributes']['DeviceName'].toLowerCase().includes(v)
+            ] : [])
+        ];
+        if(hashtagRegex.test(v)) {
+            // hashtags
+            resultCbs.push(...[
+                ...(opt.searchInHashtags ? [
+                    preset => preset['properties'] && preset['properties'].toLowerCase().includes(v)
+                ] : []),
+                ...(opt.searchInComment ? [
+                    preset => preset['attributes']['Comment'] && preset['attributes']['Comment'].toLowerCase().includes(v)
+                ] : []),
+            ]);
+        } else {
+            // ordinary words
+            resultCbs.push(...[
+                ...(opt.searchInComment ? [
+                    preset => preset['attributes']['Comment'] && preset['attributes']['Comment'].toLowerCase().split(" ")
+                        .some(word => hashtagRegex.test(word) ? false : word.includes(v))
+                ] : [])
+            ]);
+        }
+        return preset => resultCbs.some(cb => cb(preset));
+    });
 
     // prepare one filter callback, omitting unnecessary filterings
     const filterCbs: PresetMatchCbs = [
@@ -168,10 +153,8 @@ function performSearch() {
         ...(colors.length === 0 ? [] : [
             preset => preset!['attributes']['color'] && colors.includes(preset!['attributes']['color'])
         ]),
-        ...(opt.operator === SearchOperator.And ? [preset => query.every(v => doesPresetMatch(preset, opt, v))] : []),
-        ...(opt.operator === SearchOperator.Or ? [preset => query.some(v => doesPresetMatch(preset, opt, v))] : [])
-        // ...(opt.operator === SearchOperator.And ? [preset => queryCbs.every(cb => cb(preset))] : []),
-        // ...(opt.operator === SearchOperator.Or ? [preset => queryCbs.some(cb => cb(preset))] : [])
+        ...(opt.operator === SearchOperator.And ? [preset => queryCbs.every(cb => cb(preset))] : []),
+        ...(opt.operator === SearchOperator.Or ? [preset => queryCbs.some(cb => cb(preset))] : [])
     ];
 
     var ret = banks?.map(bankId => syncedDatabase.queryItem("/bank/" + bankId))?.
