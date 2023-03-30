@@ -33,6 +33,7 @@ void MidiRuntimeOptions::update(const tMidiSettingMessage& msg)
   m_routingMappings = msg.routings;
   m_localEnable = msg.localEnable;
   m_isSecondSetOfRibbonsEnabled = msg.isSecondSetOfRibbonsEnabled;
+  m_shouldSendActiveSensing = msg.shouldSendActiveSensing;
 }
 
 MidiReceiveChannel MidiRuntimeOptions::getMIDIPrimaryReceiveChannel() const
@@ -390,7 +391,8 @@ AftertouchCC MidiRuntimeOptions::getAftertouchSetting() const
 
 bool MidiRuntimeOptions::isSwitchingCC(HardwareSource hwid) const
 {
-  auto enumIsInSwitching = [](PedalCC cc) -> bool {
+  auto enumIsInSwitching = [](PedalCC cc) -> bool
+  {
     switch(cc)
     {
       case PedalCC::CC64:
@@ -629,4 +631,9 @@ bool MidiRuntimeOptions::isGlobalLocalEnabled()
 const nltools::msg::Setting::MidiSettingsMessage& MidiRuntimeOptions::getLastReceivedMessage() const
 {
   return m_lastMessage;
+}
+
+bool MidiRuntimeOptions::shouldSendActiveSensing() const
+{
+  return m_shouldSendActiveSensing;
 }

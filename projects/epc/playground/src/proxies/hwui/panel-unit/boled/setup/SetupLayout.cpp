@@ -91,6 +91,7 @@
 #include <device-info/BufferUnderruns.h>
 #include <device-info/UniqueHardwareID.h>
 #include "device-info/AftertouchCalibratedStatus.h"
+#include "device-settings/SendActiveSensingSetting.h"
 
 namespace NavTree
 {
@@ -870,6 +871,7 @@ namespace NavTree
       children.emplace_back(new EnumSettingItem<AftertouchCCMapping>(this, "Aftertouch"));
       children.emplace_back(new EnumSettingItem<Enable14BitSupport>(this, "High-Res. CCs (use LSB)"));
       children.emplace_back(new EnumSettingItem<EnableHighVelocityCC>(this, "High-Res. Velocity (CC 88)"));
+      children.emplace_back(new EnumSettingItem<SendActiveSensingSetting>(this, "Send Active Sensing"));
       children.emplace_back(new ResetMidiSettingsToClassic(this));
       children.emplace_back(new ResetMidiSettingsToHighRes(this));
     }
