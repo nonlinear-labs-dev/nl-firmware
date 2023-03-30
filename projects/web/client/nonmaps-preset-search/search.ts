@@ -10,6 +10,7 @@ type StringArray = Array<String>;
 enum SearchOperator { And, Or }
 enum SortBy { Number, Name, Time }
 enum SortDirection { Asc, Desc }
+type PresetMatchCbs = ((preset: any) => boolean)[];
 
 class SearchOptions {
     operator: SearchOperator = SearchOperator.And;
@@ -27,6 +28,7 @@ class SearchOptions {
 
 const syncedDatabase = globals.syncedDatabase;
 const playgroundProxy = globals.playgroundProxy;
+const hashtagRegex = /^#\w+/;
 
 var searchBanks = new ReactiveVar<StringArray>(new Array<String>());
 var searchQuery = new ReactiveVar<String>("");
@@ -122,18 +124,60 @@ function getPresetSortResult(lhs: any, rhs: any): number {
 }
 
 function performSearch() {
-    const query = searchQuery.get().trim().toLowerCase().split(" ");
+    const query = searchQuery.get().trim().toLowerCase().split(" ").filter(v => v.length > 0);
     const banks: Array<String> = searchBanks.get().length != 0 ? searchBanks.get() : syncedDatabase.queryItem("/preset-manager")?.['banks'];
     const colors = searchColors.get();
     const opt = searchOptions.get();
 
+    // prepare query callback, omitting unset options
+    // const queryCbs: PresetMatchCbs = query.map(v => {
+    //     // any word can potentially match in both name fields
+    //     const resultCbs: PresetMatchCbs = [
+    //         ...(opt.searchInName ? [
+    //             preset => preset['name'].toLowerCase().includes(v)
+    //         ] : []),
+    //         ...(opt.searchInDeviceName ? [
+    //             preset => preset['attributes']['DeviceName'] && preset['attributes']['DeviceName'].toLowerCase().includes(v)
+    //         ] : [])
+    //     ];
+    //     if(hashtagRegex.test(v)) {
+    //         // hashtags
+    //         resultCbs.push(...[
+    //             ...(opt.searchInHashtags ? [
+    //                 preset => preset['properties'] && preset['properties'].toLowerCase().includes(v)
+    //             ] : []),
+    //             ...(opt.searchInComment ? [
+    //                 preset => preset['attributes']['Comment'] && preset['attributes']['Comment'].toLowerCase().includes(v)
+    //             ] : []),
+    //         ]);
+    //     } else {
+    //         // ordinary words
+    //         resultCbs.push(...[
+    //             ...(opt.searchInComment ? [
+    //                 preset => preset['attributes']['Comment'] && preset['attributes']['Comment'].toLowerCase().split(" ")
+    //                     .some(word => hashtagRegex.test(word) ? false : word.includes(v))
+    //             ] : [])
+    //         ]);
+    //     }
+    //     return preset => resultCbs.some(cb => cb(preset));
+    // });
+
+    // prepare one filter callback, omitting unnecessary filterings
+    const filterCbs: PresetMatchCbs = [
+        preset => (preset && preset['name']) ? true : false,
+        ...(colors.length === 0 ? [] : [
+            preset => preset!['attributes']['color'] && colors.includes(preset!['attributes']['color'])
+        ]),
+        ...(opt.operator === SearchOperator.And ? [preset => query.every(v => doesPresetMatch(preset, opt, v))] : []),
+        ...(opt.operator === SearchOperator.Or ? [preset => query.some(v => doesPresetMatch(preset, opt, v))] : [])
+        // ...(opt.operator === SearchOperator.And ? [preset => queryCbs.every(cb => cb(preset))] : []),
+        // ...(opt.operator === SearchOperator.Or ? [preset => queryCbs.some(cb => cb(preset))] : [])
+    ];
+
     var ret = banks?.map(bankId => syncedDatabase.queryItem("/bank/" + bankId))?.
         map(bank => bank?.['presets']).flat()?.
         map(presetId => syncedDatabase.queryItem("/preset/" + presetId))?.
-        filter(preset => (preset && preset['name']) ? true : false)?.
-        filter(preset => colors.length == 0 || (preset!['attributes']['color'] && colors.includes(preset!['attributes']['color'])))?.
-        filter(preset => opt.operator == SearchOperator.Or || query.every(v => doesPresetMatch(preset, opt, v)))?.
-        filter(preset => opt.operator == SearchOperator.And || query.some(v => doesPresetMatch(preset, opt, v)))?.
+        filter(preset => filterCbs.every(cb => cb(preset)))?.
         sort((lhs, rhs) => getPresetSortResult(lhs, rhs))?.
         map(preset => preset!['uuid']);
 
