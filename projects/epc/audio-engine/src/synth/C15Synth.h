@@ -67,7 +67,6 @@ class C15Synth : public Synth, public sigc::trackable
   void queueChannelModeMessage(MidiChannelModeMessages function);
 
   void syncExternalsLoop();
-  void sendActiveSensing();
 
   void doSyncExternalMidiBridge();
   void doSyncPlayground();

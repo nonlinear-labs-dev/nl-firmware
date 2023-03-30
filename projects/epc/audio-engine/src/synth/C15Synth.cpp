@@ -198,21 +198,6 @@ void C15Synth::syncExternalsLoop()
   }
 }
 
-void C15Synth::sendActiveSensing()
-{
-  using namespace std::chrono_literals;
-  const auto active_sensing = nltools::msg::Midi::SimpleMessage { 0xFE };
-
-  while(!m_quit)
-  {
-    if(m_midiOptions.shouldSendActiveSensing())
-    {
-      queueExternalMidiOut(active_sensing);
-    }
-    std::this_thread::sleep_for(250ms);
-  }
-}
-
 void C15Synth::doChannelModeMessageFunctions()
 {
   //TODO implement remaining special MIDI functions here
