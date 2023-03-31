@@ -78,7 +78,7 @@ TEST_CASE("Recorder FlacDecoder In=Out")
 
 TEST_CASE("Recorder Ring")
 {
-  RingBuffer<int> ring(50);
+  RingBuffer<int, DummyMutex> ring(50);
 
   int inVal = 0;
   int outVal = 0;
@@ -241,16 +241,18 @@ TEST_CASE("Recorder Bitstream on FlacHeader")
 TEST_CASE("Recorder Bitstream utf8 numbers reading")
 {
   uint64_t expectedFrameNumber = 0;
-  FlacEncoder encoder(48000, [&](auto frame, bool isHeader) {
-    if(isHeader)
-      return;
+  FlacEncoder encoder(48000,
+                      [&](auto frame, bool isHeader)
+                      {
+                        if(isHeader)
+                          return;
 
-    Bitstream s(frame->buffer);
-    uint64_t pos = 32;
+                        Bitstream s(frame->buffer);
+                        uint64_t pos = 32;
 
-    REQUIRE(s.readUtf8(pos) == expectedFrameNumber);
-    expectedFrameNumber++;
-  });
+                        REQUIRE(s.readUtf8(pos) == expectedFrameNumber);
+                        expectedFrameNumber++;
+                      });
 
   SampleFrame v[48000];
 
@@ -282,32 +284,34 @@ TEST_CASE("Recorder Bitstream utf8 numbers writing")
 
 TEST_CASE("Recorder CRC8")
 {
-  FlacEncoder encoder(48000, [&](auto frame, bool isHeader) {
-    if(isHeader)
-      return;
+  FlacEncoder encoder(48000,
+                      [&](auto frame, bool isHeader)
+                      {
+                        if(isHeader)
+                          return;
 
-    Bitstream s(frame->buffer);
+                        Bitstream s(frame->buffer);
 
-    uint64_t blocksizeBitsPos = 16;
-    auto blockSizeBits = s.read(blocksizeBitsPos, 4);
-    REQUIRE(blockSizeBits == 0x0C);
+                        uint64_t blocksizeBitsPos = 16;
+                        auto blockSizeBits = s.read(blocksizeBitsPos, 4);
+                        REQUIRE(blockSizeBits == 0x0C);
 
-    uint64_t samplerateBitsPos = 20;
-    auto samplerateBits = s.read(samplerateBitsPos, 4);
-    REQUIRE(samplerateBits == 0x0A);
+                        uint64_t samplerateBitsPos = 20;
+                        auto samplerateBits = s.read(samplerateBitsPos, 4);
+                        REQUIRE(samplerateBits == 0x0A);
 
-    uint64_t frameNumberPos = 32;
-    auto frameNumberLength = s.readLengthOfUtf8EncodedField(frameNumberPos);
+                        uint64_t frameNumberPos = 32;
+                        auto frameNumberLength = s.readLengthOfUtf8EncodedField(frameNumberPos);
 
-    if(frameNumberLength == 0)
-      frameNumberLength = s.readLengthOfUtf8EncodedField(frameNumberPos);
+                        if(frameNumberLength == 0)
+                          frameNumberLength = s.readLengthOfUtf8EncodedField(frameNumberPos);
 
-    REQUIRE(frameNumberLength >= 1);
-    s.readUtf8(frameNumberPos);  // skip the frame number
-    auto crc8 = s.read(frameNumberPos, 8);
+                        REQUIRE(frameNumberLength >= 1);
+                        s.readUtf8(frameNumberPos);  // skip the frame number
+                        auto crc8 = s.read(frameNumberPos, 8);
 
-    REQUIRE(crc8 == s.crc8(0, 4 + frameNumberLength));
-  });
+                        REQUIRE(crc8 == s.crc8(0, 4 + frameNumberLength));
+                      });
 
   SampleFrame v[48000];
 
@@ -317,16 +321,18 @@ TEST_CASE("Recorder CRC8")
 
 TEST_CASE("Recorder CRC16")
 {
-  FlacEncoder encoder(48000, [&](auto frame, bool isHeader) {
-    if(isHeader)
-      return;
+  FlacEncoder encoder(48000,
+                      [&](auto frame, bool isHeader)
+                      {
+                        if(isHeader)
+                          return;
 
-    Bitstream s(frame->buffer);
-    auto footerBytePos = frame->buffer.size() - 2;
-    uint64_t footerBitPos = footerBytePos * 8;
-    auto crc16 = s.read(footerBitPos, 16);
-    REQUIRE(crc16 == s.crc16(0, footerBytePos));
-  });
+                        Bitstream s(frame->buffer);
+                        auto footerBytePos = frame->buffer.size() - 2;
+                        uint64_t footerBitPos = footerBytePos * 8;
+                        auto crc16 = s.read(footerBitPos, 16);
+                        REQUIRE(crc16 == s.crc16(0, footerBytePos));
+                      });
 
   SampleFrame v[48000];
 

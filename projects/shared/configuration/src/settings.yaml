@@ -205,3 +205,6 @@ FlacRecorderVirgin:
 
 AftertouchLegacyMode:
     default: BooleanSettings::BOOLEAN_SETTING_FALSE
+
+SendActiveSensing:
+    default: BooleanSettings::BOOLEAN_SETTING_TRUE
