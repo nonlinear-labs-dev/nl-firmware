@@ -7,16 +7,17 @@
  *  basic elements
  *******************************************************************************/
 
-html, body {
+html {
     height: 100vh;
     height: 100svh; /* prefer small viewport height, do not clip headers on mobile? */
-    height: -webkit-fill-available; /* mobile viewport bugfix? */
 }
 
 body {
     display: grid;
     grid-template-rows: auto var(--unit-menu);
     width: 100vw;
+    height: 100vh;
+    height: 100svh; /* prefer small viewport height, do not clip headers on mobile? */
     overflow: hidden;
     user-select: none;
 }
