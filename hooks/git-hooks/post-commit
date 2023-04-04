@@ -19,7 +19,6 @@ then
 
 
     if [ $numChangedFiles -gt 0 ]; then
-        echo $numChangedFiles "files will be reformatted!" 
         /bin/bash $work_dir/hooks/create_clang_format_container.sh $work_dir
         
         podman run --rm -v $work_dir:/workdir -w /workdir clang-format:14 clang-format-14 -i $in_container_changed
