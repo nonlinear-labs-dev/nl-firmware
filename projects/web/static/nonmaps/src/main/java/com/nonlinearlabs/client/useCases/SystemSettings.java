@@ -269,6 +269,11 @@ public class SystemSettings {
 		NonMaps.theMaps.getServerProxy().setSetting("AftertouchLegacyMode", netify(on.name()));
     }
 
+	public void setActiveSensing(BooleanValues on) {
+		SetupModel.get().systemSettings.sendActiveSensing.setValue(on);
+		NonMaps.theMaps.getServerProxy().setSetting("SendActiveSensing", netify(on.name()));
+	}
+
 	public void setDefaultEditSmoothingTime(){
 		NonMaps.theMaps.getServerProxy().defaultSetting("EditSmoothingTime");
 	}

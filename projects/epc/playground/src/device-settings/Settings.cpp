@@ -51,6 +51,7 @@
 #include "SelectedRibbonsSetting.h"
 #include "AftertouchLegacyMode.h"
 #include "BaseUnitUIDetail.h"
+#include "SendActiveSensingSetting.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
@@ -150,6 +151,8 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, cons
   addSetting("FlacRecorderVirgin", new FlacRecorderVirgin(*this));
   addSetting("SelectedRibbons", new SelectedRibbonsSetting(*this));
   addSetting("AftertouchLegacyMode", new AftertouchLegacyMode(*this));
+
+  addSetting("SendActiveSensing", new SendActiveSensingSetting(*this));
 }
 
 Settings::~Settings()

@@ -61,7 +61,7 @@ class MidiRuntimeOptions
   static int channelEnumToInt(MidiReceiveChannelSplit channel);
   static MidiReceiveChannelSplit normalToSplitChannel(MidiReceiveChannel ch);
 
-  template <Midi::LSB::HWSourceMidiCC tLSB>[[nodiscard]] int getCCFor() const
+  template <Midi::LSB::HWSourceMidiCC tLSB> [[nodiscard]] int getCCFor() const
   {
     if constexpr(tLSB == Midi::LSB::Ped1)
       return MidiRuntimeOptions::decodeEnumLSB(pedal1CC).value_or(-1);
@@ -83,7 +83,7 @@ class MidiRuntimeOptions
       nltools_assertNotReached();
   }
 
-  template <Midi::MSB::HWSourceMidiCC tMSB>[[nodiscard]] int getCCFor() const
+  template <Midi::MSB::HWSourceMidiCC tMSB> [[nodiscard]] int getCCFor() const
   {
     if constexpr(tMSB == Midi::MSB::Ped1)
       return MidiRuntimeOptions::decodeEnumMSB(pedal1CC).value_or(-1);
@@ -141,6 +141,7 @@ class MidiRuntimeOptions
   bool isGlobalLocalEnabled();
   void setGlobalLocalEnabled(bool b);
   bool isLocalEnabled(HardwareSource source);
+  bool shouldSendActiveSensing() const;
 
   //Mappings
   static std::optional<int> decodeEnumMSB(PedalCC);
@@ -180,6 +181,7 @@ class MidiRuntimeOptions
   nltools::msg::Setting::MidiSettingsMessage m_lastMessage = {};
 
   bool m_isSecondSetOfRibbonsEnabled = false;
+  bool m_shouldSendActiveSensing = true;
 
   friend class MidiRuntimeOptionsTester;
 };

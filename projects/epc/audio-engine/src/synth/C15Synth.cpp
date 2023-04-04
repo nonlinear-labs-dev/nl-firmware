@@ -17,6 +17,13 @@ C15Synth::C15Synth(AudioEngineOptions* options)
                           [this](auto msg) { queueExternalMidiOut(msg); },
                           [this](MidiChannelModeMessages func) { queueChannelModeMessage(func); } }
     , m_syncExternalsTask(std::async(std::launch::async, [this] { syncExternalsLoop(); }))
+    , m_activeSensingExpiration { Glib::MainContext::get_default(),
+                                  [this]
+                                  {
+                                    nltools::msg::Midi::SimpleMessage msg { 0xFE };
+                                    queueExternalMidiOut(msg);
+                                  },
+                                  Expiration::Duration(std::chrono::milliseconds(250)) }
 {
   constexpr auto maxV = std::numeric_limits<float>::max();
   m_playgroundHwSourceKnownValues.fill({ maxV, maxV, maxV, maxV });
@@ -220,7 +227,7 @@ void C15Synth::doChannelModeMessageFunctions()
         break;
       case PollEnd:
       {
-        nltools::msg::HardwareSourcePollEnd msg;
+        nltools::msg::HardwareSourcePollEnd msg {};
         msg.m_data = m_inputEventStage.getPolledHWSourcePositions();
         nltools::msg::send(nltools::msg::EndPoint::Playground, msg);
         break;
@@ -236,9 +243,7 @@ void C15Synth::doSyncExternalMidiBridge()
 {
   while(!m_externalMidiOutBuffer.empty())
   {
-    auto msg = m_externalMidiOutBuffer.pop();
-    auto copy = msg;
-    send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, copy);
+    send(nltools::msg::EndPoint::ExternalMidiOverIPBridge, m_externalMidiOutBuffer.pop());
   }
 }
 
@@ -373,6 +378,7 @@ void C15Synth::queueChannelModeMessage(MidiChannelModeMessages function)
 void C15Synth::queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m)
 {
   m_externalMidiOutBuffer.push(m);
+  m_activeSensingExpiration.refresh(std::chrono::milliseconds(250));
   m_syncExternalsWaiter.notify_all();
 }
 
