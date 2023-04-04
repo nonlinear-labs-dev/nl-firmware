@@ -154,7 +154,6 @@ html {
     --c15-svf: rgb(171, 216, 222);
     --c15-effects: rgb(191, 202, 255);
     --c15-other: rgb(195, 199, 203);
-    -webkit-text-size-adjust: none; /* Never autoresize text */
 }
 
 /*******************************************************************************
