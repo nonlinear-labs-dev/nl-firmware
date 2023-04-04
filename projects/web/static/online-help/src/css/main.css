@@ -483,10 +483,14 @@ svg.image-container a {
 @media screen {
 
     /* */
-    body {
-        width: 100vw;
+    html, body  {
         height: 100vh;
         height: 100svh; /* prefer small viewport height, do not clip headers on mobile? */
+        height: -webkit-fill-available; /* mobile viewport bugfix? */
+    }
+
+    body {
+        width: 100vw;
         overflow: hidden;
     }
 

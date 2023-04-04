@@ -1,16 +1,20 @@
 // shared state and methods
 const shared = (function() {
     // #3694: "iPhone Viewport Bug" fix - overwriting viewport min=1/max=1 -scale (disabling zoom capabilities)
+    // seems not effective
     const iPhoneViewportFix = ((apply) => {
         if(!apply) return _ => {}; // should only affect iphone browsers
         const
             gestureScaleMin = 0.25, gestureScaleMax = 1.6,
             viewportMeta = document.head.querySelector("meta[name=viewport]");
-        viewportMeta.content = "width=device-width, minimum-scale=1.0, maximum-scale=1.0";
+        viewportMeta.content = "width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0";
         // on first gesture, sensible min/max are set (providing zoom capabilities)
-        return body => body.addEventListener("gesturestart", () => {
-            viewportMeta.content = `width=device-width, minimum-scale=${gestureScaleMin}, maximum-scale=${gestureScaleMax}`;
-        }, false);
+        return body => {
+            console.log("trying iPhone Viewport Fix"); // verifying fix execution
+            body.addEventListener("gesturestart", () => {
+                viewportMeta.content = `width=device-width, initial-scale=1.0, minimum-scale=${gestureScaleMin}, maximum-scale=${gestureScaleMax}`;
+            }, false)
+        };
     })(/iPhone/i.test(navigator.userAgent));
     // start phase - minimal handle
     const
@@ -123,6 +127,7 @@ const shared = (function() {
     });
     // main init phase (load event)
     window.addEventListener("load", () => {
+        // not sure if this is helping or even executed...
         iPhoneViewportFix(document.body);
         // prepare and apply color theme
         colorThemeQuery.addEventListener("change", () => handle.applyColorTheme());
