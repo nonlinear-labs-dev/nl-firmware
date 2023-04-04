@@ -379,8 +379,13 @@ void C15Synth::queueChannelModeMessage(MidiChannelModeMessages function)
 void C15Synth::queueExternalMidiOut(const dsp_host_dual::SimpleRawMidiMessage& m)
 {
   m_externalMidiOutBuffer.push(m);
-  m_activeSensingExpiration.refresh(std::chrono::milliseconds(250));
+  rescheduleActiveSensing();
   m_syncExternalsWaiter.notify_all();
+}
+
+void C15Synth::rescheduleActiveSensing()
+{
+  m_activeSensingExpiration.refresh(std::chrono::milliseconds(250));
 }
 
 void C15Synth::onSplitPresetMessage(const nltools::msg::SplitPresetMessage& msg)
@@ -431,6 +436,9 @@ void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMe
   auto oldMsg = m_midiOptions.getLastReceivedMessage();
   m_midiOptions.update(msg);
   m_inputEventStage.onMidiSettingsMessageWasReceived(msg, oldMsg);
+
+  if(msg.shouldSendActiveSensing && !m_activeSensingExpiration.isPending())
+    rescheduleActiveSensing();
 }
 
 void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&)
