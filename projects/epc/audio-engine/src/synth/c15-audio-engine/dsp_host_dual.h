@@ -42,7 +42,7 @@ inline constexpr bool LOG_MIDI_OUT = false;
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = false;
 inline constexpr bool LOG_TIMES = false;
-inline constexpr bool LOG_SETTINGS = false;
+inline constexpr bool LOG_SETTINGS = true;
 inline constexpr bool LOG_RECALL = false;
 inline constexpr bool LOG_RECALL_DETAILS = false;
 inline constexpr bool LOG_RECALL_LEVELS = false;
@@ -50,12 +50,12 @@ inline constexpr bool LOG_KEYS = false;
 inline constexpr bool LOG_KEYS_POLY = false;
 inline constexpr bool LOG_TRANSITIONS = false;
 inline constexpr bool LOG_RESET = false;
-inline constexpr bool LOG_HW = false;
+inline constexpr bool LOG_HW = true;
 inline constexpr bool LOG_MOD_CHAIN = false;
 // more detailed logging of specific parameters
 inline constexpr bool LOG_ENGINE_STATUS = false;
 inline constexpr bool LOG_ENGINE_EDITS = false;
-inline constexpr bool LOG_INPUT_EVENT_STAGE = false;
+inline constexpr bool LOG_INPUT_EVENT_STAGE = true;
 inline constexpr C15::PID::ParameterID LOG_PARAMETERS[] = {};
 
 class MidiRuntimeOptions;
