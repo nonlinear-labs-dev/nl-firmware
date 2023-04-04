@@ -21,7 +21,8 @@ C15Synth::C15Synth(AudioEngineOptions* options)
                                   [this]
                                   {
                                     nltools::msg::Midi::SimpleMessage msg { 0xFE };
-                                    queueExternalMidiOut(msg);
+                                    if(m_midiOptions.shouldSendActiveSensing())
+                                      queueExternalMidiOut(msg);
                                   },
                                   Expiration::Duration(std::chrono::milliseconds(250)) }
 {
