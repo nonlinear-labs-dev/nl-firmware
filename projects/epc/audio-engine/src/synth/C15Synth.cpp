@@ -20,9 +20,11 @@ C15Synth::C15Synth(AudioEngineOptions* options)
     , m_activeSensingExpiration { Glib::MainContext::get_default(),
                                   [this]
                                   {
-                                    nltools::msg::Midi::SimpleMessage msg { 0xFE };
-                                    if(m_midiOptions.shouldSendActiveSensing())
+                                    if(m_midiOptions.shouldSendActiveSensing() && m_didReceiveMidiSettings)
+                                    {
+                                      nltools::msg::Midi::SimpleMessage msg { 0xFE };
                                       queueExternalMidiOut(msg);
+                                    }
                                   },
                                   Expiration::Duration(std::chrono::milliseconds(250)) }
 {
@@ -431,6 +433,7 @@ void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMe
   auto oldMsg = m_midiOptions.getLastReceivedMessage();
   m_midiOptions.update(msg);
   m_inputEventStage.onMidiSettingsMessageWasReceived(msg, oldMsg);
+  m_didReceiveMidiSettings = true;
 }
 
 void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&)
