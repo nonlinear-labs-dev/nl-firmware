@@ -71,6 +71,7 @@ class C15Synth : public Synth, public sigc::trackable
   void doSyncExternalMidiBridge();
   void doSyncPlayground();
   void doChannelModeMessageFunctions();
+  void rescheduleActiveSensing();
 
   std::unique_ptr<dsp_host_dual> m_dsp;
   AudioEngineOptions* m_options = nullptr;
