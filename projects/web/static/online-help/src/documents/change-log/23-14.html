@@ -46,7 +46,7 @@
         <h3>Enhancements</h3>
         <div class="section">
             <h4>New: MIDI - Active Sensing</h4>
-            <p>Some USB-to-MIDI adapters can flexibly change their MIDI ports and switch from <q>Send</q> to <q>Receive</q> automatically, when no MIDI was been sent for a while. Currently, ESI products <i>(MIDIMATE)</i> are known to do this. The switching results in glitchy behavior, but can be avoided by repeatedly sending <q>Active Sensing</q> messages <i>(which should otherwise have no effect)</i>.</p>
+            <p>Some USB-to-MIDI adapters can flexibly change their MIDI ports and switch from <q>Send</q> to <q>Receive</q> automatically, when no MIDI has been sent for a while. Currently, ESI <i>(MIDIMATE)</i> and Swissonic <i>(MidiConnect2)</i> products are known to do this. The switching results in glitchy behavior, but can be avoided by repeatedly sending <q>Active Sensing</q> messages <i>(which should otherwise have no effect)</i>.</p>
             <p>Therefore, a new option has been added to the <span data-keyword="MIDI">Assignments</span> section. If enabled, active sensing messages will be permanently emitted, preventing the connected MIDI device from switching its ports. As this causes more traffic <i>(which may not be wanted)</i>, the option can be disabled.</p>
         </div>
     </section>
