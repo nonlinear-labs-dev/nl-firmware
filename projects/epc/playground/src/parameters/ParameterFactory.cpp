@@ -52,6 +52,13 @@ Parameter* ParameterFactory::createParameterByType(ParameterGroup* parent, const
     else
       return new VoiceGroupMasterUnmodulateableParameter(parent, id);
   }
+  else if(ParameterFactory::isUnisonParameter(id))
+  {
+    if(isModulateable(id.getNumber()))
+      return new ModulateableUnisonParameter(parent, id);
+    else
+      return new UnmodulateableUnisonParameter(parent, id);
+  }
   else if(ParameterFactory::isMonoParameter(id))
   {
     if(isModulateable(id.getNumber()))

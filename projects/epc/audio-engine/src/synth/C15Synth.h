@@ -92,4 +92,5 @@ class C15Synth : public Synth, public sigc::trackable
   std::atomic<bool> m_quit { false };
   std::future<void> m_syncExternalsTask;
   Expiration m_activeSensingExpiration;
+  bool m_didReceiveMidiSettings = false;
 };

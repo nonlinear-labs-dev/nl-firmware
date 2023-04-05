@@ -1,0 +1,33 @@
+#!/bin/bash
+
+lockfile=/tmp/in_commit.lock
+
+function finish {
+    rm $lockfile; sync
+}
+
+if [ ! -e $lockfile ]
+then
+    touch $lockfile; sync
+    trap finish EXIT
+
+    changed_files=$(git log -1 --name-only --pretty='' | grep '.*\.cpp$\|.*\.h$\|.*\.c$\|.*\.hpp$')
+    work_dir=$(git rev-parse --show-toplevel)
+
+    changed_filtered_files=()
+    for val in "${changed_files[@]}"; do
+        [[ $val ]] && changed_filtered_files+=( "$val" )
+    done
+
+    in_container_changed=("${changed_filtered_files[@]/#/'/workdir/'}")
+    numChangedFiles=${#in_container_changed[@]}
+
+
+    if [ $numChangedFiles -gt 0 ]; then
+        /bin/bash $work_dir/hooks/create_clang_format_container.sh $work_dir
+        
+        podman run --rm -v $work_dir:/workdir -w /workdir clang-format:14 clang-format-14 -i $in_container_changed
+        git add $changed_filtered_files > /dev/null
+        git commit --amend --no-edit --allow-empty > /dev/null
+    fi
+fi
