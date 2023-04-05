@@ -38,8 +38,44 @@
     <section>
         <h2 class="heading secondary"><span class="sw-version">23-14</span> Spring Update Improvements 2</h2>
         <div data-highlight="note">
-            <p>...</p>
+            <p>This update further refines newly introduced features and provides additional bug fixes and enhancements.</p>
         </div>
+    </section>
+    <section>
+        <!-- features -->
+        <h3>Enhancements</h3>
+        <div class="section">
+            <h4>New: MIDI - Active Sensing</h4>
+            <p>Some USB-to-MIDI adapters can flexibly change their MIDI ports and switch from <q>Send</q> to <q>Receive</q> automatically, when no MIDI was been sent for a while. Currently, ESI products <i>(MIDIMATE)</i> are known to do this. The switching results in glitchy behavior, but can be avoided by repeatedly sending <q>Active Sensing</q> messages <i>(which should otherwise have no effect)</i>.</p>
+            <p>Therefore, a new option has been added to the <span data-keyword="MIDI">Assignments</span> section. If enabled, active sensing messages will be permanently emitted, preventing the connected MIDI device from switching its ports. As this causes more traffic <i>(which may not be wanted)</i>, the option can be disabled.</p>
+        </div>
+    </section>
+    <section>
+        <!-- bugfixes, improvements -->
+        <h3>Bugfixes and Improvements</h3>
+        <ul>
+            <li>
+                <header data-detail="Graphical UI">Preset Search - Hashtags</header>
+                <p>The search algorithim has been improved and now distinguishes ordinary search terms from hashtags <i>(hashtags can now only be found when a search term starts with the <code>#</code> symbol)</i>. With this distinction, the <q>Properties</q> search option seemed redundant and has been removed.</p>
+            </li>
+            <li>
+                <header data-detail="Graphical UI">Presets - cut and paste</header>
+                <p>After pasting a cut preset, the original preset will now be removed, as it should be.</p>
+            </li>
+            <li>
+                <header data-detail="Panel Unit">Unison - parameter selection</header>
+                <p>In <span data-keyword="Layer">Sounds</span> with <span data-keyword="Part">&#xE082;</span> in focus, parameters of the <span data-keyword="Unison">Group</span> now show correct values when traversing the parameter stack with <span data-keyword="Soft Button">4</span>.</p>
+            </li>
+            <li>
+                <!-- potential -->
+                <header>MIDI - Local On/Off after booting</header>
+                <p>After booting the C15 and then immediately changing the <q>Local Enable</q> option <i>(or specific Local options in the <q>Routings</q> section)</i>, <span data-keyword="Hardware">Sources</span> wrongfully changed their values. This has been fixed and the values now remain in sync.</p>
+            </li>
+            <li>
+                <header>Documentation - mobile layout</header>
+                <p>On mobile devices, the appearance of the <a href="./index.html">C15 Documentation</a> was compromised when viewing in portrait mode. The additional menu bar of the mobile browser overshadowed the internal navigation and menu, effectively disabling navigation alltogether. This has been fixed and the navigation and menu should now be permanently visible in portrait mode <i>(except for iPhones, in which case we recommend to fall back to viewing in landscape mode)</i>.</p>
+            </li>
+        </ul>
     </section>
 </main>
 </div>
