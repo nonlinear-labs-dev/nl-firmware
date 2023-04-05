@@ -1974,8 +1974,7 @@ we have to use !important here as the styles get set from within the GWTDialog
 }
 
 .preset-property-label {
-  width: 25%;
-
+  /*width: 25%;*/
 }
 
 .preset-property-label-lowlight {

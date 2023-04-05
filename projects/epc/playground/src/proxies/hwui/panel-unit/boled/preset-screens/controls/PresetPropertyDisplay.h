@@ -10,6 +10,7 @@ class PresetPropertyDisplay : public ControlWithChildren
   PresetPropertyDisplay();
   void updateFrom(const Glib::ustring& text);
   void setPosition(const Rect& rect) override;
+  void repositionLabels();
 
  private:
   Label* m_type;
