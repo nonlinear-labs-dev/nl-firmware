@@ -2,9 +2,14 @@
 
 lockfile=/tmp/in_commit.lock
 
+function finish {
+    rm $lockfile; sync
+}
+
 if [ ! -e $lockfile ]
 then
     touch $lockfile; sync
+    trap finish EXIT
 
     changed_files=$(git log -1 --name-only --pretty='' | grep '.*\.cpp$\|.*\.h$\|.*\.c$\|.*\.hpp$')
     work_dir=$(git rev-parse --show-toplevel)
@@ -25,6 +30,4 @@ then
         git add $changed_filtered_files > /dev/null
         git commit --amend --no-edit --allow-empty > /dev/null
     fi
-
-    rm $lockfile; sync
 fi
