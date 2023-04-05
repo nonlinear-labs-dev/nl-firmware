@@ -16,7 +16,7 @@ then
 
     changed_filtered_files=()
     for val in "${changed_files[@]}"; do
-        [[ $val ]] && changed_filtered_files+=( "$val" )
+        [[ $val ]] && [[ -e $val ]] && changed_filtered_files+=( "$val" )
     done
 
     in_container_changed=("${changed_filtered_files[@]/#/'/workdir/'}")
