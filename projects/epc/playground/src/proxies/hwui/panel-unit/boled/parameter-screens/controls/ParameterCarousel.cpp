@@ -16,6 +16,7 @@
 #include "proxies/hwui/panel-unit/boled/parameter-screens/controls/MiniParameterLabel.h"
 #include "MiniParameterBarSlider.h"
 #include "parameters/ParameterFactory.h"
+#include "ScaleGroupMiniParameterBarSlider.h"
 
 ParameterCarousel::ParameterCarousel(const Rect& pos)
     : super(pos)
@@ -336,6 +337,10 @@ void ScaleParameterCarousel::setup(Parameter* selectedParameter)
   auto baseParam = new MiniParameter(baseParameter, Rect(0, yPos, miniParamWidth, miniParamHeight));
   addControl(baseParam);
   baseParam->setSelected(selectedParameter == baseParameter);
+  if(auto slider = baseParam->findControlOfType<ScaleGroupMiniParameterBarSlider>())
+  {
+    slider->setHighlight(selectedParameter == baseParameter);
+  }
   yPos += miniParamHeight + 5;
   const auto labelHeight = 8;
   auto offsetLabel = addControl(new LabelRegular8({ "Offsets" }, Rect { 0, yPos, miniParamWidth, labelHeight }));
