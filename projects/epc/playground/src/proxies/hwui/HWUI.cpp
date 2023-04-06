@@ -100,6 +100,10 @@ void HWUI::init()
 
   m_rotaryChangedConnection = getPanelUnit().getEditPanel().getKnob().onRotaryChanged(
       sigc::hide(sigc::mem_fun(this, &HWUI::onRotaryChanged)));
+
+  Application::get().getSettings()->getSetting<FocusAndModeSetting>()->onChange(
+      sigc::mem_fun(this, &HWUI::onFocusAndModeChanged));
+
   m_oleds.syncRedraw();
 }
 
@@ -631,5 +635,19 @@ void HWUI::toggleFine()
   else
   {
     addModifier(ButtonModifier::FINE);
+  }
+}
+
+void HWUI::onFocusAndModeChanged(const Setting *s)
+{
+  if(auto famSetting = dynamic_cast<const FocusAndModeSetting *>(s))
+  {
+    auto old = famSetting->getOldState();
+    auto curr = famSetting->getState();
+
+    if(old.focus != curr.focus)
+    {
+      unsetFineMode();
+    }
   }
 }
