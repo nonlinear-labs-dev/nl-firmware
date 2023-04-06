@@ -1973,11 +1973,6 @@ we have to use !important here as the styles get set from within the GWTDialog
   display: flex;
 }
 
-.preset-property-label {
-  width: 25%;
-
-}
-
 .preset-property-label-lowlight {
   color: #939393;
 }

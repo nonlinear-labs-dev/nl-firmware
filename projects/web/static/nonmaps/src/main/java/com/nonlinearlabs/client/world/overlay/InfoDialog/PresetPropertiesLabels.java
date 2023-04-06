@@ -19,10 +19,6 @@ public class PresetPropertiesLabels {
         panel.add(mono = new Label());
         panel.add(scale = new Label());
 		panel.getElement().addClassName("hashtag-div");
-
-        for (Label label: new Label[]{type, unison, mono, scale}) {
-            label.getElement().addClassName("preset-property-label");
-        }
 	}
 
 	public HTMLPanel getHTML() {
