@@ -69,9 +69,6 @@ class HWUI : public sigc::trackable
   void exportOled(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const std::string &fileName) const;
 
   void onFocusAndModeChanged(const Setting *s);
-  void onPresetLoaded();
-  void onEditBufferSoundTypeChanged(SoundType type);
-  void undoableUpdateParameterSelection(UNDO::Transaction *transaction);
   void onButtonMessage(const nltools::msg::ButtonChangedMessage &msg);
   void onButtonPressed(Buttons buttonID, bool state);
 
