@@ -19,7 +19,7 @@ TEST_CASE("File in Stream")
   CHECK(StringTools::hasEnding("", ".zip") == false);
 }
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "3343 - Can't Load Backup")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "3343 - Can't Load Backup", "[slow]")
 {
   const auto backupFileNotBroken
       = getSourceDir() + "/projects/epc/playground/test-resources/2022-10-04-15-30-nonlinear-c15-banks.xml.tar.gz";
