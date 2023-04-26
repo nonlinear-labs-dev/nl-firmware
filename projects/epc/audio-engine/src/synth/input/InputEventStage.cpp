@@ -184,6 +184,7 @@ void InputEventStage::onTCDEvent()
       {
         auto hwId = static_cast<int>(decoder->getHardwareSource());
         m_polledHWPositions[hwId] = decoder->getValue();
+        m_localDisabledPositions[hwId] = { decoder->getValue(), HWChangeSource::TCD };
       }
       break;
     }

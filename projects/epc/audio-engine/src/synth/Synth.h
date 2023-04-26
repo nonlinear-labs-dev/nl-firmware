@@ -48,7 +48,7 @@ class Synth
   void processAudioWithTimestampedEvents(SampleFrame *target, size_t numFrames, Buffer &buffer, const AudioCB &onAudio,
                                          const EventCB &onEvent);
 
-  RingBuffer<MidiEvent> m_midiRingBuffer;
-  RingBuffer<MidiEvent> m_tcdRingBuffer;
+  RingBuffer<MidiEvent, std::recursive_mutex> m_midiRingBuffer;
+  RingBuffer<MidiEvent, DummyMutex> m_tcdRingBuffer;
   const AudioEngineOptions *m_options;
 };

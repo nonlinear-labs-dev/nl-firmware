@@ -163,8 +163,8 @@ parameters:
     modulation_aspects: { coarse: 200, fine: 2000, scale: LINEAR_BIPOLAR_200_PERCENT }
     rendering_args: { scaling: Linear, factor: 5.0f, offset: 0.0f, section: Poly, clock: Slow, signal: None }
     info: >
-      Amount of (phase) modulation of the comb filter pitch (delay time) by the output signals of
-      Oscillator & Shaper A and B, with the PM A-B knob determining their mix.
+      Amount of modulation of the cutoff frequencies by the output signals of
+      Oscillator & Shaper A and B, with the FM A-B knob determining their mix.
   - <<: *MODULATEABLE
     id: 155
     token: FM_A_B

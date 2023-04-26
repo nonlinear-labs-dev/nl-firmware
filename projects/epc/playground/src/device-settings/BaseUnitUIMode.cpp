@@ -25,6 +25,11 @@ const std::vector<Glib::ustring> &BaseUnitUIMode::enumToDisplayString() const
   return s_modeNames;
 }
 
+bool BaseUnitUIMode::persistent() const
+{
+  return false;
+}
+
 void BaseUnitUIMode::syncExternals(SendReason reason) const
 {
   auto m = get();

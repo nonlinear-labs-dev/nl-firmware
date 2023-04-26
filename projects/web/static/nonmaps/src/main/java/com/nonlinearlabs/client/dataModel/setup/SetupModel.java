@@ -384,6 +384,7 @@ public class SetupModel {
 		public BooleanDataModelEntity localEnabled = new BooleanDataModelEntity();
 
 		public BooleanDataModelEntity legacyAftertouch = new BooleanDataModelEntity();
+		public BooleanDataModelEntity sendActiveSensing = new BooleanDataModelEntity();
 	};
 
 	public class LocalSettings {

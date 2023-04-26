@@ -1,0 +1,1 @@
+- to install the hook: copy the post-commit file into .git/hooks and make sure the file is executable

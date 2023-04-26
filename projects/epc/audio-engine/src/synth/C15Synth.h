@@ -11,6 +11,7 @@
 #include <MidiRuntimeOptions.h>
 #include <synth/input/InputEventStage.h>
 #include <synth/input/MidiChannelModeMessages.h>
+#include <nltools/threading/Expiration.h>
 
 namespace nltools
 {
@@ -70,6 +71,7 @@ class C15Synth : public Synth, public sigc::trackable
   void doSyncExternalMidiBridge();
   void doSyncPlayground();
   void doChannelModeMessageFunctions();
+  void rescheduleActiveSensing();
 
   std::unique_ptr<dsp_host_dual> m_dsp;
   AudioEngineOptions* m_options = nullptr;
@@ -79,8 +81,8 @@ class C15Synth : public Synth, public sigc::trackable
   constexpr static auto tNUM_HW = static_cast<int>(C15::Parameters::Hardware_Sources::_LENGTH_);
   constexpr static auto tNUM_HW_SOURCES = static_cast<int>(HWChangeSource::LENGTH);
   std::array<std::array<float, tNUM_HW_SOURCES>, tNUM_HW> m_playgroundHwSourceKnownValues {};
-  RingBuffer<nltools::msg::Midi::SimpleMessage> m_externalMidiOutBuffer;
-  RingBuffer<MidiChannelModeMessages> m_queuedChannelModeMessages;
+  RingBuffer<nltools::msg::Midi::SimpleMessage, std::mutex> m_externalMidiOutBuffer;
+  RingBuffer<MidiChannelModeMessages, DummyMutex> m_queuedChannelModeMessages;
 
   InputEventStage m_inputEventStage;
 
@@ -89,4 +91,6 @@ class C15Synth : public Synth, public sigc::trackable
   std::mutex m_syncExternalsMutex;
   std::atomic<bool> m_quit { false };
   std::future<void> m_syncExternalsTask;
+  Expiration m_activeSensingExpiration;
+  bool m_didReceiveMidiSettings = false;
 };

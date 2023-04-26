@@ -14,7 +14,9 @@ class BaseUnitUIMode : public EnumSetting<BaseUnitUIModes>
 
   void syncExternals(SendReason reason) const override;
 
- private:
+    bool persistent() const override;
+
+private:
   BaseUnitUIMode(const BaseUnitUIMode &other);
   BaseUnitUIMode &operator=(const BaseUnitUIMode &);
 

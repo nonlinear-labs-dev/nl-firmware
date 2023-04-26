@@ -3,7 +3,7 @@
 #include "CompileTimeOptions.h"
 #include <iostream>
 
-TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Sort Bank Numbers deletes Banks!", "[2905]")
+TEST_CASE_METHOD(TestHelper::ApplicationFixture, "Sort Bank Numbers deletes Banks!", "[2905][slow]")
 {
   Application::get().stopWatchDog();
 

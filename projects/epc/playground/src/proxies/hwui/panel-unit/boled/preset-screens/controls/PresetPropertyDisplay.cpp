@@ -1,5 +1,6 @@
 #include "PresetPropertyDisplay.h"
 #include "proxies/hwui/controls/Label.h"
+#include <proxies/hwui/Font.h>
 
 PresetPropertyDisplay::PresetPropertyDisplay()
     : ControlWithChildren({ 0, 0, 0, 0 })
@@ -18,12 +19,32 @@ PresetPropertyDisplay::PresetPropertyDisplay()
 void PresetPropertyDisplay::setPosition(const Rect &rect)
 {
   Control::setPosition(rect);
-  auto totalWidth = rect.getWidth() - 5;
-  auto oneQuarter = totalWidth / 4;
-  m_type->setPosition({ 0, 0, oneQuarter, rect.getHeight() });
-  m_unison->setPosition({ 0 + oneQuarter, 0, oneQuarter, rect.getHeight() });
-  m_mono->setPosition({ 0 + oneQuarter * 2, 0, oneQuarter, rect.getHeight() });
-  m_scale->setPosition({ 0 + oneQuarter * 3, 0, oneQuarter, rect.getHeight() });
+  repositionLabels();
+}
+
+void PresetPropertyDisplay::repositionLabels()
+{
+  auto rect = getPosition();
+
+  auto margin = 2;
+
+  auto to_int = [](auto v) { return static_cast<int>(v); };
+
+  auto fontW = to_int(m_type->getFont()->getStringWidth(m_type->getText().text));
+  auto unisonW = to_int(m_unison->getFont()->getStringWidth(m_unison->getText().text));
+  auto monoW = to_int(m_mono->getFont()->getStringWidth(m_mono->getText().text));
+  auto scaleW = to_int(m_scale->getFont()->getStringWidth(m_scale->getText().text));
+
+  int xPos = 0;
+  auto height = rect.getHeight();
+
+  m_type->setPosition({ xPos, 0, fontW, height });
+  xPos += (fontW + margin);
+  m_unison->setPosition({ xPos, 0, unisonW, height });
+  xPos += (unisonW + margin);
+  m_mono->setPosition({ xPos, 0, monoW, height });
+  xPos += (monoW + margin);
+  m_scale->setPosition({ xPos, 0, scaleW, height });
 }
 
 void PresetPropertyDisplay::updateFrom(const Glib::ustring &text)
@@ -61,4 +82,6 @@ void PresetPropertyDisplay::updateFrom(const Glib::ustring &text)
     m_mono->setFontColor(highlightColor);
     m_scale->setFontColor(highlightColor);
   }
+
+  repositionLabels();
 }

@@ -378,7 +378,7 @@ nlohmann::json Preset::serialize() const
            { "part-I-name", getVoiceGroupName(VoiceGroup::I) },
            { "part-II-name", getVoiceGroupName(VoiceGroup::II) },
            { "attributes", AttributesOwner::toJson() },
-           { "Hashtags", getHashtags() } };
+           { "properties", getHashtags() } };
 }
 
 Glib::ustring Preset::getTypeUnicode() const

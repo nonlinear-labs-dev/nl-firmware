@@ -24,6 +24,7 @@ type Result = ConfigType & DeclarationsType & {
     storage: string;
     settings: Settings;
     setting_list: string;
+    setting_id: string;
 };
 
 type ParamType = {
@@ -416,8 +417,9 @@ function processDefinitions(result: Result) {
 
 function processSettings(result: Result) {
     const err = "processSettings error:";
+    result.setting_id = Object.keys(result.settings).join(",\n");
     result.setting_list = Object.entries(result.settings).reduce((out, [key, props]) => {
-        const ret = [`"${key}"`];
+        const ret = [`Settings::${key}`, `"${key}"`];
         if(props.default !== undefined) {
             const str = props.default.toString();
             switch(props.default.constructor.name) {
@@ -441,12 +443,17 @@ function processSettings(result: Result) {
                 const { scale, coarse, fine } = props.display;
                 if(result.declarations.display_scaling_type[scale] === undefined)
                     throw new Error(`${err} unknown DisplayScalingType "${scale}"`);
-                if(!ret[1].endsWith("f"))
+                if(!ret[2].endsWith("f"))
                     throw new Error(`${err} invalid default value type (${props.default.constructor.name}) for DisplayScalingType`);
                 ret.push(`{ Properties::DisplayScalingType::${scale}, ${coarse}, ${fine} }`);
+                // a few settings also initialize in the audio-engine
+                if(props.renderScaling !== undefined) {
+                    const { scaling, factor, offset } = props.renderScaling;
+                    ret.push(`{ Properties::SmootherScale::${scaling}, ${factor}, ${offset} }`);
+                }
             }
         }
-        out.push(`{ ${ret.join(", ")} }`);
+        out.push(`{\n${indent}${ret.join(`,\n${indent}`)}\n}`);
         return out;
     }, []).join(",\n");
 }
@@ -530,7 +537,7 @@ function main(outDir: string, sourceDir: string) {
         result: Result = {
             timestamp: new Date(), parameters: "", smoothers: "", signals: "", pid: "",
             parameter_list: "", parameter_units: "", display_scaling_types: "", parameter_groups: "",
-            get_parameter_ids: "", storage: "", setting_list: "",
+            get_parameter_ids: "", storage: "", setting_list: "", setting_id: "",
             ...ConfigParser.parse(sourceDir + "/src/c15_config.yaml"),
             ...DeclarationsParser.parse(sourceDir + "/src/parameter_declarations.yaml"),
             settings: SettingParser.parse(sourceDir + "/src/settings.yaml"),

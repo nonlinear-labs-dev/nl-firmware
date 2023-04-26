@@ -15,7 +15,14 @@ ScaleGroupMiniParameterBarSlider::ScaleGroupMiniParameterBarSlider(Parameter *pa
 
 void ScaleGroupMiniParameterBarSlider::drawBackground(FrameBuffer &fb)
 {
-  fb.setColor(FrameBufferColors::C179);
+  if(isHighlight())
+  {
+    fb.setColor(FrameBufferColors::C179);
+  }
+  else
+  {
+    fb.setColor(FrameBufferColors::C77);
+  }
   Slider::drawBackground(fb);
 }
 
@@ -43,7 +50,10 @@ void ScaleGroupMiniParameterBarSlider::setSliderColor(FrameBuffer &fb)
 bool ScaleGroupMiniParameterBarSlider::redraw(FrameBuffer &fb)
 {
   auto r = getPosition();
-  fb.setColor(FrameBufferColors::C128);
+  if(isHighlight())
+    fb.setColor(FrameBufferColors::C128);
+  else
+    fb.setColor(FrameBufferColors::C77);
   fb.fillRect(r.getX(), r.getTop(), r.getWidth(), r.getHeight());
   return BarSlider::redraw(fb);
 }

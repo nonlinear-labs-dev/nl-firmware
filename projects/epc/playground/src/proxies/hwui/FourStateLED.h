@@ -18,9 +18,9 @@ class FourStateLED : public LED
     Bright = 3
   };
 
-  void setState(State state);
+  void setState(State state, bool throttle = true);
   [[nodiscard]] State getState() const;
-  void syncHWUI();
+  void syncHWUI(bool throttle = true);
 
  private:
   Throttler m_syncThrottler;

@@ -6,6 +6,12 @@ type ValueType = {
     scale: string;
 };
 
+export type RenderScaling = {
+    scaling: string;
+    factor: string;
+    offset: string;
+};
+
 export type ParameterType = {
     token: string;
     label_long: string;
@@ -26,10 +32,7 @@ export type ParameterType = {
     };
     return_behavior?: Array<string>;
     modulation_aspects?: ValueType;
-    rendering_args?: {
-        scaling: string;
-        factor: string;
-        offset: string;
+    rendering_args?: RenderScaling & {
         section: string;
         clock: string;
         signal: string;

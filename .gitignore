@@ -6,6 +6,7 @@ CMakeLists.txt.user
 *.war
 .idea
 .project
+.vscode
 projects/web/c16/src/.meteor
 projects/web/c16/src/node_modules
 node_modules
@@ -70,3 +71,4 @@ projects/shared/configuration/generated
 projects/shared/configuration/lib/*.js
 projects/shared/configuration/lib/tasks/*.js
 projects/shared/configuration/.vscode
+hooks/__pycache__/
