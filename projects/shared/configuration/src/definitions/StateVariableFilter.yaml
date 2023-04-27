@@ -165,6 +165,7 @@ parameters:
     info: >
       Amount of modulation of the cutoff frequencies by the output signals of
       Oscillator & Shaper A and B, with the FM A-B knob determining their mix.
+      The amount is relative to the cutoff frequency.
   - <<: *MODULATEABLE
     id: 155
     token: FM_A_B
