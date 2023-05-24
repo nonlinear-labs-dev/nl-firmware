@@ -17,6 +17,7 @@ nano
 syslinux
 " > /archlive/packages.x86_64
 
+sed -i 's/^SigLevel.*/SigLevel = Optional TrustAll/g' /archlive/pacman.conf
 mkdir -p /archlive/airootfs/packages
 
 add_package() {
