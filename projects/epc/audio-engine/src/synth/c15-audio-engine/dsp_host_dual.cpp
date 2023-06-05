@@ -1106,24 +1106,47 @@ uint32_t dsp_host_dual::getLayerId(const VoiceGroup _vg)
   }
 }
 
-void dsp_host_dual::keyDownTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId)
+void dsp_host_dual::keyDownTraversal(const AllocatorId _alloc, const uint32_t _note, const float _vel,
+                                     const AllocatorId _retrigger_mono)
 {
-  if constexpr(LOG_KEYS)
+  // context-aware preparation of elevation, retrigger hardness
+  switch(_alloc)
   {
-    nltools::Log::info("key_down(src:", _inputSourceId, ", pos:", _note, ", vel:", _vel, ", unison:", m_alloc.m_unison,
-                       ")");
+    case AllocatorId::Local_I:
+      m_poly[0].onBeforeKeyDown();
+      break;
+    case AllocatorId::Local_II:
+      m_poly[1].onBeforeKeyDown();
+      break;
+    case AllocatorId::Global:
+    case AllocatorId::Local_Both:
+      m_poly[0].onBeforeKeyDown();
+      m_poly[1].onBeforeKeyDown();
+      break;
+    default:
+      break;
   }
-  // prepares elevation, retrigger hardness
-  // (would be nice to only execute in relevant part(s))
-  m_poly[0].onBeforeKeyDown();
-  m_poly[1].onBeforeKeyDown();
+  // context-aware retrigger of mono section (#3780)
+  switch(_retrigger_mono)
+  {
+    case AllocatorId::Local_I:
+      m_mono[0].keyDown(_vel);
+      break;
+    case AllocatorId::Local_II:
+      m_mono[1].keyDown(_vel);
+      break;
+    case AllocatorId::Global:
+    case AllocatorId::Local_Both:
+      m_mono[0].keyDown(_vel);
+      m_mono[1].keyDown(_vel);
+      break;
+    default:
+      break;
+  }
+  // traversal
   for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
   {
-    if(m_poly[event->m_localIndex].keyDown(event))
-    {
-      // mono legato
-      m_mono[event->m_localIndex].keyDown(event);
-    }
+    m_poly[event->m_localIndex].keyDown(event);
     if constexpr(LOG_KEYS_POLY)
     {
       nltools::Log::info("key_down_poly(group:", event->m_localIndex, "voice:", event->m_voiceId,
@@ -1135,13 +1158,8 @@ void dsp_host_dual::keyDownTraversal(const uint32_t _note, const float _vel, con
   }
 }
 
-void dsp_host_dual::keyUpTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId)
+void dsp_host_dual::keyUpTraversal(const uint32_t _note, const float _vel)
 {
-  if constexpr(LOG_KEYS)
-  {
-    nltools::Log::info("key_up(src:", _inputSourceId, ", pos:", _note, ", vel:", _vel, ", unison:", m_alloc.m_unison,
-                       ")");
-  }
   for(auto event = m_alloc.m_traversal.first(); m_alloc.m_traversal.running(); event = m_alloc.m_traversal.next())
   {
     m_poly[event->m_localIndex].keyUp(event);
@@ -2157,19 +2175,31 @@ void dsp_host_dual::onKeyDown(const int note, float velocity, InputEventSource f
   const uint32_t inputSourceId = from == InputEventSource::Internal ? 0 : 1;
 
   bool valid = false;
+  AllocatorId retrigger_mono = AllocatorId::None;
   switch(m_layer_mode)
   {
     case LayerMode::Single:
       valid = m_alloc.onSingleKeyDown(note, velocity, inputSourceId);
+      if((m_poly[0].m_key_active + m_poly[1].m_key_active) == 0)
+        retrigger_mono = AllocatorId::Global;
       break;
     case LayerMode::Layer:
       valid = m_alloc.onLayerKeyDown(note, velocity, inputSourceId);
+      if(m_poly[0].m_key_active == 0)
+        retrigger_mono = AllocatorId::Global;
       break;
     default:
       break;
   }
   if(valid)
-    keyDownTraversal(note, velocity, inputSourceId);
+  {
+    if constexpr(LOG_KEYS)
+    {
+      nltools::Log::info("key_down(src:", inputSourceId, ", pos:", note, ", vel:", velocity,
+                         ", unison:", m_alloc.m_unison, ")");
+    }
+    keyDownTraversal(AllocatorId::Global, note, velocity, retrigger_mono);
+  }
   else if constexpr(LOG_FAIL)
     nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(src:", inputSourceId, ", pos:", note, ") failed!");
 }
@@ -2194,7 +2224,14 @@ void dsp_host_dual::onKeyUp(const int note, float velocity, InputEventSource fro
       break;
   }
   if(valid)
-    keyUpTraversal(note, velocity, inputSourceId);
+  {
+    if constexpr(LOG_KEYS)
+    {
+      nltools::Log::info("key_up(src:", inputSourceId, ", pos:", note, ", vel:", velocity,
+                         ", unison:", m_alloc.m_unison, ")");
+    }
+    keyUpTraversal(note, velocity);
+  }
   else if constexpr(LOG_FAIL)
     nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(src:", inputSourceId, ", pos:", note, ") failed!");
 }
@@ -2203,18 +2240,39 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
 {
   const uint32_t inputSourceId = getInputSourceId(from);
   bool valid = false;
+  AllocatorId retrigger_mono = AllocatorId::None;
+  AllocatorId alloc = AllocatorId::None;
   if(m_layer_mode == LayerMode::Split)
   {
     switch(part)
     {
       case VoiceGroup::I:  // applies to Part I only
-        valid = m_alloc.onSplitKeyDown(note, velocity, inputSourceId, AllocatorId::Local_I);
+        alloc = AllocatorId::Local_I;
+        valid = m_alloc.onSplitKeyDown(note, velocity, inputSourceId, alloc);
+        if(m_poly[0].m_key_active == 0)
+          retrigger_mono = alloc;
         break;
       case VoiceGroup::II:  // applies to Part II only
-        valid = m_alloc.onSplitKeyDown(note, velocity, inputSourceId, AllocatorId::Local_II);
+        alloc = AllocatorId::Local_II;
+        valid = m_alloc.onSplitKeyDown(note, velocity, inputSourceId, alloc);
+        if(m_poly[1].m_key_active == 0)
+          retrigger_mono = alloc;
         break;
       case VoiceGroup::Global:  // applies to both Parts I, II at once
-        valid = m_alloc.onSplitKeyDown(note, velocity, inputSourceId, AllocatorId::Local_Both);
+        alloc = AllocatorId::Local_Both;
+        valid = m_alloc.onSplitKeyDown(note, velocity, inputSourceId, alloc);
+        switch((m_poly[0].m_key_active == 0) + (2 * (m_poly[1].m_key_active == 0)))
+        {
+          case 1:
+            retrigger_mono = AllocatorId::Local_I;
+            break;
+          case 2:
+            retrigger_mono = AllocatorId::Local_II;
+            break;
+          case 3:
+            retrigger_mono = alloc;
+            break;
+        }
         break;
       default:
       case VoiceGroup::NumGroups:
@@ -2224,7 +2282,14 @@ void dsp_host_dual::onKeyDownSplit(const int note, float velocity, VoiceGroup pa
     }
   }
   if(valid)
-    keyDownTraversal(note, velocity, inputSourceId);
+  {
+    if constexpr(LOG_KEYS)
+    {
+      nltools::Log::info("key_down(src:", inputSourceId, ", pos:", note, ", vel:", velocity,
+                         ", unison:", m_alloc.m_unison, ")");
+    }
+    keyDownTraversal(alloc, note, velocity, retrigger_mono);
+  }
   else if constexpr(LOG_FAIL)
     nltools::Log::warning(__PRETTY_FUNCTION__, "keyDown(src:", inputSourceId, ", pos:", note, ") failed!");
 }
@@ -2254,7 +2319,14 @@ void dsp_host_dual::onKeyUpSplit(const int note, float velocity, VoiceGroup part
     }
   }
   if(valid)
-    keyUpTraversal(note, velocity, inputSourceId);
+  {
+    if constexpr(LOG_KEYS)
+    {
+      nltools::Log::info("key_up(src:", inputSourceId, ", pos:", note, ", vel:", velocity,
+                         ", unison:", m_alloc.m_unison, ")");
+    }
+    keyUpTraversal(note, velocity);
+  }
   else if constexpr(LOG_FAIL)
     nltools::Log::warning(__PRETTY_FUNCTION__, "keyUp(src:", inputSourceId, ", pos:", note, ") failed!");
 }

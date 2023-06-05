@@ -218,11 +218,10 @@ namespace Engine
     m_env_c.setRetriggerHardness(m_smoothers.get(C15::Smoothers::Poly_Sync::Env_C_Retr_H));
   }
 
-  bool PolySection::keyDown(PolyKeyEvent *_event)
+  void PolySection::keyDown(PolyKeyEvent *_event)
   {
-    const bool retrigger_mono
-        = (m_key_active == 0),
-        rstA = _event->m_trigger_env && static_cast<bool>(m_signals.get(C15::Signals::Quasipoly_Signals::Osc_A_Reset)),
+    const bool rstA
+        = _event->m_trigger_env && static_cast<bool>(m_signals.get(C15::Signals::Quasipoly_Signals::Osc_A_Reset)),
         rstB = _event->m_trigger_env && static_cast<bool>(m_signals.get(C15::Signals::Quasipoly_Signals::Osc_B_Reset));
     m_unison_index[_event->m_voiceId] = _event->m_unisonIndex;
     m_last_key_tune[_event->m_voiceId] = m_base_pitch[_event->m_voiceId];
@@ -270,7 +269,6 @@ namespace Engine
       m_combfilter.setDelaySmoother(_event->m_voiceId);
     }
     m_key_active++;
-    return retrigger_mono;
   }
 
   void PolySection::keyUp(PolyKeyEvent *_event)
@@ -1080,7 +1078,7 @@ namespace Engine
         * m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Decay2];
     m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Decay2, 1.0f / (time + 1.0f));
     time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_A_Rel);
-    inf = (PolyValue)(-1 * PolyInt(time <= env_highest_finite_time));
+    inf = (PolyValue) (-1 * PolyInt(time <= env_highest_finite_time));
     time *= m_env_a.mTimeFactor[ElevatingEnv::SegmentId::Release];
     m_env_a.setSegmentDx(ElevatingEnv::SegmentId::Release, inf / (time + 1.0f));
     m_env_a.setElevation(m_smoothers.get(C15::Smoothers::Poly_Fast::Env_A_Elevate));
@@ -1094,7 +1092,7 @@ namespace Engine
         * m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Decay2];
     m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Decay2, 1.0f / (time + 1.0f));
     time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_B_Rel);
-    inf = (PolyValue)(-1 * PolyInt(time <= env_highest_finite_time));
+    inf = (PolyValue) (-1 * PolyInt(time <= env_highest_finite_time));
     time *= m_env_b.mTimeFactor[ElevatingEnv::SegmentId::Release];
     m_env_b.setSegmentDx(ElevatingEnv::SegmentId::Release, inf / (time + 1.0f));
     m_env_b.setElevation(m_smoothers.get(C15::Smoothers::Poly_Fast::Env_B_Elevate));
@@ -1108,7 +1106,7 @@ namespace Engine
         = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Dec_2) * m_env_c.mTimeFactor[LoopableEnv::SegmentId::Decay2];
     m_env_c.setSegmentDx(LoopableEnv::SegmentId::Decay2, 1.0f / (time + 1.0f));
     time = m_smoothers.get(C15::Smoothers::Poly_Slow::Env_C_Rel);
-    inf = (PolyValue)(-1 * PolyInt(time <= env_highest_finite_time));
+    inf = (PolyValue) (-1 * PolyInt(time <= env_highest_finite_time));
     time *= m_env_c.mTimeFactor[LoopableEnv::SegmentId::Release];
     m_env_c.setSegmentDx(LoopableEnv::SegmentId::Release, inf / (time + 1.0f));
   }

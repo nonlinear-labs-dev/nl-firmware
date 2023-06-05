@@ -43,7 +43,7 @@ namespace Engine
     void render_audio(const float _left, const float _right, const float _vol, const float _to_other);
     void render_fast();
     void render_slow();
-    void keyDown(PolyKeyEvent *_event);
+    void keyDown(float _velocity);
     void flushDSP();
     void resetDSP();
 

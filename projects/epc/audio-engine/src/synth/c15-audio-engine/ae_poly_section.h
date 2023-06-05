@@ -51,7 +51,7 @@ namespace Engine
     void render_fast();
     void render_slow();
     void onBeforeKeyDown();
-    bool keyDown(PolyKeyEvent *_event);
+    void keyDown(PolyKeyEvent *_event);
     void keyUp(PolyKeyEvent *_event);
     void resetEnvelopes();
     void flushDSP();
