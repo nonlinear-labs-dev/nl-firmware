@@ -18,4 +18,9 @@ public class FadeIndicator extends SVGImage {
             return true;
         });
     }
+
+    @Override
+    protected boolean hasMouseOver() {
+        return false;
+    }
 }
