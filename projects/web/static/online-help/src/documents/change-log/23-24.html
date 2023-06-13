@@ -38,9 +38,26 @@
     <section>
         <h2 class="heading secondary"><span class="sw-version">23-24</span> Spring Update Improvements 3</h2>
         <div data-highlight="note">
-            <!-- todo: flanger env, fade indicators, 05-2 subchapters links -->
-            <p>...</p>
+            <p>This update provides a few additional bug fixes.</p>
         </div>
+    </section>
+    <section>
+        <!-- bugfixes, improvements -->
+        <h3>Bugfixes and Improvements</h3>
+        <ul>
+            <li>
+                <header data-detail="Graphical UI">Layer Sound - Fade Indicators</header>
+                <p>In the <span data-keyword="Sound">Tab</span> of a <span data-keyword="Layer">Sound</span>, the Fade indicators incorrectly reacted on mouse clicks, which has been removed.</p>
+            </li>
+            <li>
+                <header>Flanger - Envelope</header>
+                <p>In <span data-keyword="Single">Sounds</span>, the envelope of the Flanger had inconsistent behavior: only when no keys are priorly pressed, the next pressed key should always start the envelope. The mechanism now reworks reliably for both FX groups. In <span data-keyword="Split">Sounds</span>, pressed keys are counted for each <span data-keyword="Part"></span> individually.</p>
+            </li>
+            <li>
+                <header>Documentation - broken links</header>
+                <p>Sub chapters within chapter <a href="./documents/man-user/05-synth-engine/05-02-0-sig-flow-components.html" data-number="5.2">Signal Flow and Components</a> of the User Manual had broken navigation links, which has been fixed.</p>
+            </li>
+        </ul>
     </section>
 </main>
 </div>
