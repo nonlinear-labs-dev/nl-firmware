@@ -312,8 +312,8 @@ class dsp_host_dual : public DSPInterface
   uint32_t getLayerId(const VoiceGroup _vg);
 
   // key events
-  void keyDownTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId);
-  void keyUpTraversal(const uint32_t _note, const float _vel, const uint32_t _inputSourceId);
+  void keyDownTraversal(const AllocatorId _alloc, const uint32_t _note, const float _vel, const AllocatorId _retrigger_mono);
+  void keyUpTraversal(const uint32_t _note, const float _vel);
 
   // scaling, times
   float scale(const Engine::Parameters::Aspects::ScaleAspect::Scaling& _scl, float _value);

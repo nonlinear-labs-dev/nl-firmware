@@ -124,9 +124,9 @@ namespace Engine
     m_reverb.set(m_signals);
   }
 
-  void MonoSection::keyDown(PolyKeyEvent *_event)
+  void MonoSection::keyDown(float _velocity)
   {
-    m_flanger_env.start(_event->m_velocity);
+    m_flanger_env.start(_velocity);
   }
 
   void MonoSection::flushDSP()
