@@ -2,7 +2,6 @@
 
 sourceDir=$1
 binaryDir=$2
-isDevPC=$3
 
 cd "$sourceDir" || exit 6
 
