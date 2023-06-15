@@ -6,4 +6,8 @@ ENV TZ=Europe/Berlin
 RUN apt-get update
 RUN apt-get install -y nodejs npm gcc build-essential
 RUN npm install -g typescript@4.7.4
-RUN npm install js-yaml @types/node @types/js-yaml
+
+COPY package-lock.json /package-lock.json
+COPY package.json /package.json
+COPY tsconfig.json /tsconfig.json
+RUN npm install
