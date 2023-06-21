@@ -25,6 +25,7 @@ public class DeveloperSettings extends LayoutResizingVertical {
 		addChild(new ExportBoled(this));
 		addChild(new ExportSoled(this));
 		addChild(new ShowOleds(this));
+		addChild(new PopoutOleds(this));
 		addChild(new StartBBBWiFiForEPC2(this));
 		addChild(new AlertOnBufferUnderruns(this));
 		addChild(new AlsaFramesPerPeriod(this));
