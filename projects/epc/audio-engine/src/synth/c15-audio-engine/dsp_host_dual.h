@@ -38,7 +38,7 @@ inline constexpr bool LOG_INIT = false;
 inline constexpr bool LOG_MIDI_TCD = false;
 inline constexpr bool LOG_MIDI_RAW = false;
 inline constexpr bool LOG_MIDI_DETAIL = false;
-inline constexpr bool LOG_MIDI_OUT = false;
+inline constexpr bool LOG_MIDI_OUT = false; // unused
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = false;
 inline constexpr bool LOG_TIMES = false;
@@ -100,8 +100,13 @@ class DSPInterface
   virtual void resetReturningHWSource(HardwareSource hwui)
   {
   }
-  // areKeysPressed
-  virtual bool areKeysPressed(SoundType _current)
+  // areInternalKeysPressed (local on or off)
+  virtual bool areInternalKeysPressed(SoundType _current)
+  {
+    return true;
+  }
+  // areExternalKeysPressed (midi - primary or secondary)
+  virtual bool areExternalKeysPressed(SoundType _current)
   {
     return true;
   }
@@ -181,7 +186,8 @@ class dsp_host_dual : public DSPInterface
   using SimpleRawMidiMessage = nltools::msg::Midi::SimpleMessage;
   float getReturnValueFor(HardwareSource hwid) override;
   void resetReturningHWSource(HardwareSource hwui) override;
-  bool areKeysPressed(SoundType _current) override;
+  bool areInternalKeysPressed(SoundType _current) override;
+  bool areExternalKeysPressed(SoundType _current) override;
   using MidiOut = std::function<void(const SimpleRawMidiMessage&)>;
   void onHWChanged(HardwareSource id, float value, bool didBehaviourChange) override;
   void onKeyDown(const int note, float velocity, InputEventSource from) override;
@@ -303,13 +309,14 @@ class dsp_host_dual : public DSPInterface
   inline void initSmoothing(const C15::ParameterDescriptor& _desc);
   inline void initSmoothing(const uint32_t& _layer, const C15::ParameterDescriptor& _desc);
 
-  // handles for inconvenient stuff
+  // handles for inconvenient stuff, abstractions
   C15::Properties::HW_Return_Behavior getBehavior(const ReturnMode _mode);
   C15::Properties::HW_Return_Behavior getBehavior(const RibbonReturnMode _mode);
   C15::Parameters::Macro_Controls getMacro(const MacroControls _mc);
   uint32_t getMacroId(const MacroControls _mc);
   C15::Properties::LayerId getLayer(const VoiceGroup _vg);
   uint32_t getLayerId(const VoiceGroup _vg);
+  bool areKeysPressedImpl(SoundType _current, const AssignedKeyCount &_counter);
 
   // key events
   void keyDownTraversal(const AllocatorId _alloc, const uint32_t _note, const float _vel, const AllocatorId _retrigger_mono);

@@ -1135,7 +1135,12 @@ bool InputEventStage::didRelevantSectionsChange(const InputEventStage::tMSG &msg
 
 void InputEventStage::onMidiSettingsMessageWasReceived(const tMSG &msg, const tMSG &oldmsg)
 {
-  if(didRelevantSectionsChange(msg, oldmsg) && m_dspHost->areKeysPressed(m_dspHost->getType()))
+  // "broad and lazy" approach: if any internal OR external key is pressed ...
+  const bool internal_keys_are_pressed = m_dspHost->areInternalKeysPressed(m_dspHost->getType());
+  const bool external_keys_are_pressed = m_dspHost->areExternalKeysPressed(m_dspHost->getType());
+  const bool keys_are_pressed = internal_keys_are_pressed || external_keys_are_pressed;
+  // ... an internal (Envelopes, VoiceAllocation) AND external (AllNotesOff) reset occurs
+  if(didRelevantSectionsChange(msg, oldmsg) && keys_are_pressed)
   {
     doInternalReset();
     doExternalReset(msg, oldmsg);

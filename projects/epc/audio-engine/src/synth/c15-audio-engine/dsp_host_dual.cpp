@@ -697,7 +697,7 @@ inline DSPInterface::OutputResetEventSource dsp_host_dual::onUnisonVoicesChanged
                                                                                  const float &_pos)
 {
   const OutputResetEventSource outputEvent
-      = determineOutputEventSource(areKeysPressed(fromType(m_layer_mode)), m_layer_mode);
+      = determineOutputEventSource(areInternalKeysPressed(fromType(m_layer_mode)), m_layer_mode);
   // application now via fade point
   m_fade.muteAndDo(
       [&]
@@ -748,7 +748,7 @@ inline DSPInterface::OutputResetEventSource dsp_host_dual::onMonoEnableChanged(c
                                                                                const float &_pos)
 {
   const OutputResetEventSource outputEvent
-      = determineOutputEventSource(areKeysPressed(fromType(m_layer_mode)), m_layer_mode);
+      = determineOutputEventSource(areInternalKeysPressed(fromType(m_layer_mode)), m_layer_mode);
   // application now via fade point
   m_fade.muteAndDo(
       [&]
@@ -1709,7 +1709,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSingle(const nltools::
                          _msg.m_polyphonicUnmodulateables[IndexOfMonoEnable]);
   // reset detection
   const bool internalReset = layerChanged || polyChanged;
-  const bool externalReset = internalReset && areKeysPressed(fromType(oldLayerMode));
+  const bool externalReset = internalReset && areInternalKeysPressed(fromType(oldLayerMode));
   const OutputResetEventSource outputEvent = determineOutputEventSource(externalReset, oldLayerMode);
   if(internalReset)
   {
@@ -1779,7 +1779,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallSplit(const nltools::m
     nltools::Log::info(__PRETTY_FUNCTION__, "(@", m_clock.m_index, ")");
   // #3009: prepare reset detection with pressed local keys
   bool internalReset[2] = { m_alloc.m_internal_keys.pressedLocalKeys(0), m_alloc.m_internal_keys.pressedLocalKeys(1) };
-  const bool externalReset = layerChanged && areKeysPressed(fromType(oldLayerMode));
+  const bool externalReset = layerChanged && areInternalKeysPressed(fromType(oldLayerMode));
   for(uint32_t layerId = 0; layerId < C15::Properties::num_of_VoiceGroups; layerId++)
   {
     const auto layer = static_cast<C15::Properties::LayerId>(layerId);
@@ -1862,7 +1862,7 @@ DSPInterface::OutputResetEventSource dsp_host_dual::recallLayer(const nltools::m
                          _msg.m_polyphonicUnmodulateables[0][IndexOfMonoEnable]);
   // reset detection
   const bool internalReset = layerChanged || polyChanged;
-  const bool externalReset = internalReset && areKeysPressed(fromType(oldLayerMode));
+  const bool externalReset = internalReset && areInternalKeysPressed(fromType(oldLayerMode));
   const OutputResetEventSource outputEvent = determineOutputEventSource(externalReset, oldLayerMode);
   if(internalReset)
   {
@@ -2362,17 +2362,27 @@ void dsp_host_dual::resetReturningHWSource(HardwareSource hwui)
   DSPInterface::resetReturningHWSource(hwui);
 }
 
-bool dsp_host_dual::areKeysPressed(SoundType _current)
+inline bool dsp_host_dual::areKeysPressedImpl(SoundType _current, const AssignedKeyCount &_counter)
 {
   switch(_current)
   {
     case SoundType::Layer:
     case SoundType::Single:
-      return m_alloc.m_internal_keys.m_global > 0;
+      return _counter.m_global > 0;
     case SoundType::Split:
-      return (m_alloc.m_internal_keys.m_local[0] + m_alloc.m_internal_keys.m_local[1]) > 0;
+      return (_counter.m_local[0] + _counter.m_local[1]) > 0;
     default:
       break;
   }
   return false;
+}
+
+bool dsp_host_dual::areInternalKeysPressed(SoundType _current)
+{
+  return areKeysPressedImpl(_current, m_alloc.m_internal_keys);
+}
+
+bool dsp_host_dual::areExternalKeysPressed(SoundType _current)
+{
+  return areKeysPressedImpl(_current, m_alloc.m_external_keys);
 }
