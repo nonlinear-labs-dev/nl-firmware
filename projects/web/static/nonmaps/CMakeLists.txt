@@ -19,6 +19,8 @@ add_custom_command(
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/main/webapp/NonMaps.js.in ${CMAKE_CURRENT_BINARY_DIR}/NonMaps.js @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/main/webapp/mirror-oleds.html.in ${CMAKE_CURRENT_BINARY_DIR}/mirror-oleds.html @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/main/webapp/MirrorOleds.js.in ${CMAKE_CURRENT_BINARY_DIR}/MirrorOleds.js @ONLY)
 
 add_custom_command(
   COMMENT "Download gwt"
@@ -47,6 +49,8 @@ add_custom_command(
   COMMAND cp -r ${CMAKE_CURRENT_BINARY_DIR}/war/nonmaps/* ${CMAKE_CURRENT_BINARY_DIR}/bundle
   COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/src/main/webapp/* ${CMAKE_CURRENT_BINARY_DIR}/bundle/
   COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/NonMaps.js ${CMAKE_CURRENT_BINARY_DIR}/bundle/
+  COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/MirrorOleds.js ${CMAKE_CURRENT_BINARY_DIR}/bundle/
+  COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/mirror-oleds.html ${CMAKE_CURRENT_BINARY_DIR}/bundle/
   COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/nonmaps-version.txt ${CMAKE_CURRENT_BINARY_DIR}/bundle/
   COMMAND touch ${CMAKE_CURRENT_BINARY_DIR}/.staging
 )
