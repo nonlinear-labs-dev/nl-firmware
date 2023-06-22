@@ -14,19 +14,40 @@
 </head>
 
 <body>
-    <div id="oleds">
-        <svg viewBox="0 0 260 102">
-            <foreignObject x="2" y="2" width="256" height="64">
+    <div id="oleds" style="width: 256px; height: 97px;">
+        <svg viewBox="0 0 256 97">
+            <foreignObject x="0" y="0" width="256" height="64">
                 <canvas id="boled" width="256" height="64" style="image-rendering: pixelated;"></canvas>
             </foreignObject>
-            <foreignObject x="66" y="68" width="128" height="32">
+            <foreignObject x="64" y="65" width="128" height="32">
                 <canvas id="soled" width="128" height="32" style="image-rendering: pixelated;"></canvas>
             </foreignObject>
         </svg>
     </div>
+    <button id="zoomin" onclick="zoom(2)">+</button>
+    <button id="zoomout" onclick="zoom(0.5)" disabled>-</button>
 </body>
 
 <script>
+function zoom(z) {
+  let oleds_div = document.getElementById("oleds");
+
+  let old_w = oleds_div.clientWidth;
+  let old_h = oleds_div.clientHeight;
+
+  let new_w = Math.max(old_w * z, 256);
+  let new_h = Math.max(old_h * z, 97);
+
+  oleds_div.style.width = new_w + "px";
+  oleds_div.style.height = new_h + "px";
+
+  if(new_w == 256) {
+    document.getElementById("zoomout").disabled = true;
+  } else {
+    document.getElementById("zoomout").disabled = false;
+  }
+}
+
 function showOleds() {
     const hostName = location.hostname.length == 0 ? "localhost" : location.hostname;
     var refreshTimer = null;
