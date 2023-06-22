@@ -11,9 +11,22 @@
   <meta name="viewport"
     content="initial-scale=1, user-scalable=no, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
   <title>C15 - Mirror OLEDs</title>
+  <style>
+  html {
+    background-color: #333333;
+  }
+
+  .zoom_container {
+    margin-bottom: 3px;
+  }
+  </style>
 </head>
 
 <body>
+    <div class="zoom_container">
+      <button id="zoomin" onclick="zoomOledsTab(2.0)">+</button>
+      <button id="zoomout" onclick="zoomOledsTab(0.5)" disabled>-</button>
+    </div>
     <div id="oleds" style="width: 256px; height: 97px;">
         <svg viewBox="0 0 256 97">
             <foreignObject x="0" y="0" width="256" height="64">
@@ -24,8 +37,6 @@
             </foreignObject>
         </svg>
     </div>
-    <button id="zoomin" onclick="zoomOledsTab(2.0)">+</button>
-    <button id="zoomout" onclick="zoomOledsTab(0.5)" disabled>-</button>
 </body>
 
 <script type="text/javascript" language="javascript" src="MirrorOleds.js"></script>

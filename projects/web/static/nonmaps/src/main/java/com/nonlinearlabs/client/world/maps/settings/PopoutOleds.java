@@ -14,7 +14,7 @@ public class PopoutOleds extends Setting {
 
     @Override
     public Control onValueButtonMouseDown(Position eventPoint) {
-        Window.open("nonmaps/mirror-oleds.html", "_blank", "");;
+        Window.open("/nonmaps/mirror-oleds.html", "", "");;
         return this;
     }
 
