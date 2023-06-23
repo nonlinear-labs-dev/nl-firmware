@@ -661,7 +661,8 @@ PresetManagerUseCases::ImportExitCode
 {
   auto isTarGz = StringTools::hasEnding(in.getFileName(), ".tar.gz");
   auto isTar = StringTools::hasEnding(in.getFileName(), ".tar");
-  if((!isTarGz && !isTar) or in.eof())
+  auto isNlBak = StringTools::hasEnding(in.getFileName(), ".nlbackup");
+  if((!isTarGz && !isTar && !isNlBak) or in.eof())
   {
     return ImportExitCode::InvalidFile;
   }
