@@ -218,8 +218,8 @@ bool PresetManagerActions::handleRequest(const Glib::ustring& path, std::shared_
       auto disposition = "attachment; filename=\"" + timeSanitized + "-nonlinear-c15-banks.nlbackup\"";
       ZippedMemoryOutStream stream;
       ExportBackupEditor::writeBackupToStream(stream);
-      httpRequest->respondComplete(SOUP_STATUS_OK, "application/zip", { { "Content-Disposition", disposition } },
-                                   stream.exhaust());
+      httpRequest->respondComplete(SOUP_STATUS_OK, "application/octet-stream",
+                                   { { "Content-Disposition", disposition } }, stream.exhaust());
       ssuc.finishSplashScreen();
       return true;
     }
