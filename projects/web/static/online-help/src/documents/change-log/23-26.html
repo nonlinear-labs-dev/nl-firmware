@@ -46,6 +46,10 @@
         <h3>Bugfixes and Improvements</h3>
         <ul>
             <li>
+                <header>Backups - new file format</header>
+                <p>The file format of backup files has been reworked in order to prevent download issues <i>(as some browsers will automatically unpack downloaded archives)</i>. So, instead of <code>.xml.tar.gz</code>, downloaded backups will now be provided in a custom <code>.nlbackup</code> format. <i>(The former tarball format is still supported when restoring backups, so existing backup files are still restorable without a file conversion.)</i></p>
+            </li>
+            <li>
                 <header data-detail="Graphical UI">Layer Sound - Fade Indicators</header>
                 <p>In the <span data-keyword="Sound">Tab</span> of a <span data-keyword="Layer">Sound</span>, the Fade indicators incorrectly reacted on mouse clicks, which has been removed.</p>
             </li>
@@ -58,7 +62,7 @@
                 <p>In order to avoid hanging notes, changing Midi settings <i>(like Send or Receive channels)</i> require that the system resets all notes internally and also propagates the reset externally when Midi send is used.</p>
                 <p>However, this only worked internally and hanging Midi notes were still possible. With this fix, changing Midi settings will lead to an internal and external reset as soon as any <i>(internal or external)</i> note is active.</p>
             </li>
-            <li>
+            <li style="page-break-before: always;">
                 <header>Documentation - broken links</header>
                 <p>Sub chapters within chapter <a href="./documents/man-user/05-synth-engine/05-02-0-sig-flow-components.html" data-number="5.2">Signal Flow and Components</a> of the User Manual had broken navigation links, which has been fixed.</p>
             </li>
