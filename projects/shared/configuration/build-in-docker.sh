@@ -14,4 +14,3 @@ else
   echo "building configuration with native tools (Build Update)"
   /bin/bash "$sourceDir"/process.sh "$sourceDir" "$binaryDir"
 fi
-

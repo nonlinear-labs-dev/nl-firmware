@@ -17,8 +17,8 @@ add_custom_command(
         DEPENDS package.json
         DEPENDS tsconfig.json
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated/.done
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/build-in-docker.sh ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${DEV_PC}
-        COMMAND touch ${CMAKE_CURRENT_BINARY_DIR}/generated/.done
+		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/build-in-docker.sh ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${DEV_PC}
+		COMMAND touch ${CMAKE_CURRENT_BINARY_DIR}/generated/.done
 )
 
 add_custom_target(
