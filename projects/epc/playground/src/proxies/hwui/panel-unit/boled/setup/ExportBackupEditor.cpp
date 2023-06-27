@@ -24,7 +24,7 @@
 
 static const Rect c_fullRightSidePosition(129, 16, 126, 48);
 static constexpr const char c_tempBackupFile[] = "/tmp/nonlinear-c15-banks.nlbackup";
-static constexpr const char c_backupTargetFile[] = "-c15-banks.nlbackup";
+static constexpr const char c_backupTargetFile[] = "-nonlinear-c15-banks.nlbackup";
 
 ExportBackupEditor::ExportBackupEditor()
     : ControlWithChildren(Rect(0, 0, 0, 0))
@@ -77,7 +77,8 @@ void ExportBackupEditor::writeBackupToStream(OutStream &stream)
 {
   XmlWriter writer(stream);
   auto pm = Application::get().getPresetManager();
-  auto addStatus = [](auto str) {
+  auto addStatus = [](auto str)
+  {
     auto hwui = Application::get().getHWUI();
     auto settings = Application::get().getSettings();
     SplashScreenUseCases uc(*hwui, *settings);
