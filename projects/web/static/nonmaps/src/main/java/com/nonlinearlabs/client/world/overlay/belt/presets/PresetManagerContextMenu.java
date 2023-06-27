@@ -88,7 +88,7 @@ public class PresetManagerContextMenu extends ContextMenu {
 							upload.setName("uploadFormElement");
 
 							if (!Navigator.getPlatform().toLowerCase().contains("mac"))
-								upload.getElement().setAttribute("accept", ".xml.tar.gz, .nlbackup");
+								upload.getElement().setAttribute("accept", ".xml.tar.gz, .nlbackup, .xml.zip");
 
 							upload.addChangeHandler(new ChangeHandler() {
 
