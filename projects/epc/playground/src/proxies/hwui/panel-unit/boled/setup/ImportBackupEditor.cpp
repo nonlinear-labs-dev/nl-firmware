@@ -113,10 +113,13 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
   if(file != std::filesystem::directory_entry())
   {
     Glib::ustring path;
-    if (file.path().extension() != ".nlbackup") {
-        path = generateFileDialogCompliantNameFromPath(file);
-    } else {
-        path = file.path();
+    if(file.path().extension() != ".nlbackup" && file.path().extension() != ".zip")
+    {
+      path = generateFileDialogCompliantNameFromPath(file);
+    }
+    else
+    {
+      path = file.path();
     }
 
     FileInStream in(path, true);
@@ -128,17 +131,20 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
     PresetManagerUseCases useCase(*app.getPresetManager(), *settings);
     auto &ae = *app.getAudioEngineProxy();
 
-    auto start = [hwui, settings]() {
+    auto start = [hwui, settings]()
+    {
       SplashScreenUseCases ssuc(*hwui, *settings);
       ssuc.startSplashScreen();
     };
 
-    auto addStatus = [hwui, settings](auto str) {
+    auto addStatus = [hwui, settings](auto str)
+    {
       SplashScreenUseCases ssuc(*hwui, *settings);
       ssuc.addSplashScreenMessage(str);
     };
 
-    auto finish = [hwui, settings]() {
+    auto finish = [hwui, settings]()
+    {
       SplashScreenUseCases ssuc(*hwui, *settings);
       ssuc.finishSplashScreen();
     };

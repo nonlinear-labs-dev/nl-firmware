@@ -97,9 +97,10 @@ public class PresetManagerContextMenu extends ContextMenu {
 									boolean isTar = upload.getFilename().endsWith(".tar");
 									boolean isTarGz = upload.getFilename().endsWith(".tar.gz");
 									boolean isNonlinearBackup = upload.getFilename().endsWith(".nlbackup");
+									boolean isZip = upload.getFilename().endsWith(".zip");
 
-									if(!isTar && !isTarGz && !isNonlinearBackup) {
-										Window.alert("Invalid file! Please select a correct xml.tar.gz / or .nlbackup backup file. Contact support if you need assistance.");
+									if(!isTar && !isTarGz && !isNonlinearBackup && !isZip) {
+										Window.alert("Invalid file! Please select a correct xml.zip / xml.tar.gz / or .nlbackup backup file. Contact support if you need assistance.");
 									} else {
 										loadBackupFile(event.getNativeEvent(), new ZipUploadedHandler() {
 
