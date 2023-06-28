@@ -1009,8 +1009,7 @@ Glib::ustring PresetManagerUseCases::exitCodeToErrorMessage(PresetManagerUseCase
     case ImportExitCode::PresetManagerLocked:
       return "C15 is currently busy. Please try again. Contact support if you need assistance.";
     case ImportExitCode::InvalidFile:
-      return "Invalid file! Please select a correct xml.tar.gz backup or nlbackup file. Contact support if you need "
-             "assistance.";
+      return "Invalid file! Please select a valid C15 backup file (possible extensions: .xml.zip .xml.tar.gz .nlbackup). Contact support if you need assistance.";
     case ImportExitCode::UnsupportedVersion:
       return "Invalid version! Unsupported file version in uploaded backup file. Backup was created with a newer "
              "firmware. Please update the C15 to the latest software version.";
