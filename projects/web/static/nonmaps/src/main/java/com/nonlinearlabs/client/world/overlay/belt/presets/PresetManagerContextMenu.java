@@ -88,7 +88,7 @@ public class PresetManagerContextMenu extends ContextMenu {
 							upload.setName("uploadFormElement");
 
 							if (!Navigator.getPlatform().toLowerCase().contains("mac"))
-								upload.getElement().setAttribute("accept", ".xml.tar.gz");
+								upload.getElement().setAttribute("accept", ".xml.tar.gz, .nlbackup, .xml.zip");
 
 							upload.addChangeHandler(new ChangeHandler() {
 
@@ -96,8 +96,11 @@ public class PresetManagerContextMenu extends ContextMenu {
 								public void onChange(ChangeEvent event) {
 									boolean isTar = upload.getFilename().endsWith(".tar");
 									boolean isTarGz = upload.getFilename().endsWith(".tar.gz");
-									if(!isTar && !isTarGz) {
-										Window.alert("Invalid file! Please select a correct xml.tar.gz backup file. Contact support if you need assistance.");
+									boolean isNonlinearBackup = upload.getFilename().endsWith(".nlbackup");
+									boolean isZip = upload.getFilename().endsWith(".zip");
+
+									if(!isTar && !isTarGz && !isNonlinearBackup && !isZip) {
+										Window.alert("Invalid file! Please select a valid C15 backup file (possible extensions: .xml.zip .xml.tar.gz .nlbackup). Contact support if you need assistance.");
 									} else {
 										loadBackupFile(event.getNativeEvent(), new ZipUploadedHandler() {
 

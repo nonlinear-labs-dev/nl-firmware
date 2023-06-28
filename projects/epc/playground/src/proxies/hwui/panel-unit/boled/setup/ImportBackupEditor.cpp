@@ -95,8 +95,11 @@ bool ImportBackupEditor::filterApplicableFileNames(std::filesystem::directory_en
   auto fileName = term.path().filename().string();
   std::string endA = ".xml.zip";
   std::string endB = ".xml.tar.gz";
+  std::string endC = ".nlbackup";
+
   return !(std::equal(endA.rbegin(), endA.rend(), fileName.rbegin())
-           || std::equal(endB.rbegin(), endB.rend(), fileName.rbegin()));
+           || std::equal(endB.rbegin(), endB.rend(), fileName.rbegin())
+           || std::equal(endC.rbegin(), endC.rend(), fileName.rbegin()));
 }
 
 void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_entry file)
@@ -109,7 +112,15 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
 
   if(file != std::filesystem::directory_entry())
   {
-    auto path = generateFileDialogCompliantNameFromPath(file);
+    Glib::ustring path;
+    if(file.path().extension() != ".nlbackup" && file.path().extension() != ".zip")
+    {
+      path = generateFileDialogCompliantNameFromPath(file);
+    }
+    else
+    {
+      path = file.path();
+    }
 
     FileInStream in(path, true);
 
@@ -120,17 +131,20 @@ void ImportBackupEditor::importBackupFileFromPath(std::filesystem::directory_ent
     PresetManagerUseCases useCase(*app.getPresetManager(), *settings);
     auto &ae = *app.getAudioEngineProxy();
 
-    auto start = [hwui, settings]() {
+    auto start = [hwui, settings]()
+    {
       SplashScreenUseCases ssuc(*hwui, *settings);
       ssuc.startSplashScreen();
     };
 
-    auto addStatus = [hwui, settings](auto str) {
+    auto addStatus = [hwui, settings](auto str)
+    {
       SplashScreenUseCases ssuc(*hwui, *settings);
       ssuc.addSplashScreenMessage(str);
     };
 
-    auto finish = [hwui, settings]() {
+    auto finish = [hwui, settings]()
+    {
       SplashScreenUseCases ssuc(*hwui, *settings);
       ssuc.finishSplashScreen();
     };

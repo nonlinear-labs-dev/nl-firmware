@@ -23,14 +23,15 @@ FileInStream::FileInStream(const Glib::ustring &fileName, bool tryZip)
   {
     const auto isZip = StringTools::hasEnding(fileName, ".zip");
     const auto isGZ = StringTools::hasEnding(fileName, ".gz");
+    const auto isNonlinearBak = StringTools::hasEnding(fileName, ".nlbackup");
     const auto existsAsIs = FileSystem::doesFileExist(fileName);
-    const auto zipOrGZExists = existsAsIs && (isZip || isGZ);
+    const auto fileExists = existsAsIs && (isZip || isGZ || isNonlinearBak);
 
     if(doesZipFileExist(fileName))
       file = Gio::File::create_for_path(fileName + ".zip");
     else if(doesGzFileExist(fileName))
       file = Gio::File::create_for_path(fileName + ".gz");
-    else if(!zipOrGZExists)
+    else if(!fileExists)
       tryZip = false;
   }
 
