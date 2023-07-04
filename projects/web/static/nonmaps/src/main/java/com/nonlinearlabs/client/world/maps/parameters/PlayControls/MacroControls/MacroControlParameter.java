@@ -36,7 +36,7 @@ public abstract class MacroControlParameter extends Parameter implements Renamea
 
 			@Override
 			protected double getBasicWidth() {
-				return 80;
+				return 110;
 			}
 
 			@Override
