@@ -4,9 +4,6 @@ import com.google.gwt.canvas.dom.client.Context2d;
 import com.nonlinearlabs.client.Checksum;
 import com.nonlinearlabs.client.Millimeter;
 import com.nonlinearlabs.client.NonMaps;
-import com.nonlinearlabs.client.Tracer;
-import com.nonlinearlabs.client.dataModel.editBuffer.EditBufferModel;
-import com.nonlinearlabs.client.dataModel.editBuffer.ParameterId;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.BooleanValues;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.EditParameter;
@@ -49,6 +46,7 @@ public abstract class Parameter extends LayoutResizingVertical {
 
 	@Override
 	public void getStateHash(Checksum crc) {
+		super.getStateHash(crc);
 		presenter.getHash(crc);
 	}
 
