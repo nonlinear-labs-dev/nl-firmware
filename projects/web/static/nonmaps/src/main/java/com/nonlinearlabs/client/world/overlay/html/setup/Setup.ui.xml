@@ -529,10 +529,8 @@
 							<p>Send Active Sensing</p>
 						</div>
 						<div class="w40p mw-fit-content">
-							<g:RadioButton ui:field="sendActiveSensingOn"
-								name="rad_activeSensing" value="true"></g:RadioButton>
-							<g:RadioButton ui:field="sendActiveSensingOff"
-								name="rad_activeSensing" value="false"></g:RadioButton>
+							<g:RadioButton styleName="w50p gwt-RadioButton" ui:field="sendActiveSensingOn" name="rad_activeSensing" value="true"></g:RadioButton>
+							<g:RadioButton styleName="w50p gwt-RadioButton" ui:field="sendActiveSensingOff" name="rad_activeSensing" value="false"></g:RadioButton>
 						</div>
 					</div>
 					<div class="eins-he">
