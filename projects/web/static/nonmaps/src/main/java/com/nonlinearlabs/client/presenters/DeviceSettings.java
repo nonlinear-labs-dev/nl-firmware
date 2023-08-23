@@ -69,4 +69,6 @@ public class DeviceSettings {
 	public String tuneReferenceDisplayString = "";
 
 	public boolean syncSplitsEnabled = false;
+
+	public long dateTimeAdjustment = 0;
 }
