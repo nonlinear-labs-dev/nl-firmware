@@ -100,6 +100,16 @@ class ControlOwner : public Uncopyable
   void highlightButtonWithCaption(const Glib::ustring &caption);
   void highlightButtonWithCaption(const Glib::ustring &caption, bool desiredHighlight);
 
+  template <typename T, typename ... tArgs> T *addControl(tArgs &&...args)
+  {
+    auto ctrl = std::make_shared<T>(std::forward<tArgs>(args)...);
+    m_controls.push_back(ctrl);
+    if(this->isHighlight())
+      ctrl->setHighlight(true);
+    this->setDirty();
+    return ctrl.get();
+  }
+
   template <typename T> T *addControl(T *ctrl)
   {
     if(ctrl == nullptr)

@@ -277,4 +277,9 @@ public class SystemSettings {
 	public void setDefaultEditSmoothingTime(){
 		NonMaps.theMaps.getServerProxy().defaultSetting("EditSmoothingTime");
 	}
+
+	public void setDateTimeAdjustment(long newDateTimeAdjustment) {
+		SetupModel.get().systemSettings.datetimeAdjustment.setValue(newDateTimeAdjustment);
+		NonMaps.theMaps.getServerProxy().setSetting("DateTimeAdjustment", String.valueOf(newDateTimeAdjustment), false);
+	}
 }

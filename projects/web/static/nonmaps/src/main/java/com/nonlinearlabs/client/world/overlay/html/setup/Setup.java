@@ -72,7 +72,7 @@ public class Setup extends Composite {
 	private static SetupUiBinder ourUiBinder = GWT.create(SetupUiBinder.class);
 
 	@UiField
-	Button deviceSettingsButton, uiSettingsButton, uiMidiButton, uiFlacButton, systemInfoButton, aboutButton, chooseFileButton;
+	Button deviceSettingsButton, uiSettingsButton, uiMidiButton, uiFlacButton, systemInfoButton, aboutButton, chooseFileButton, loadFactoryDefaults;
 
 	@UiField
 	FileUpload upload;
@@ -115,7 +115,7 @@ public class Setup extends Composite {
 	TextArea deviceName, passphrase;
 
 	@UiField
-	Button saveDeviceName, storeInitSound, resetInitSound, classicMidi, highResMidi, panicAE, stopRecorderPlayback, routingsOn, routingsOff, savePassphrase, dicePassphrase, defaultPassphrase;
+	Button saveDeviceName, storeInitSound, resetInitSound, classicMidi, highResMidi, panicAE, stopRecorderPlayback, routingsOn, routingsOff, savePassphrase, dicePassphrase, defaultPassphrase, editDateTime;
 
 	Range editSmoothingTimeRange;
 	Range pedal1Range, pedal2Range, pedal3Range, pedal4Range;
@@ -403,6 +403,10 @@ public class Setup extends Composite {
 			settings.setPassphrase(passphrase.getValue());
 		});
 
+		editDateTime.addClickHandler(e -> {
+			DateTimeAdjustmentDialog.showDialog();
+		});
+
 		dicePassphrase.addClickHandler(e -> NonMaps.theMaps.getServerProxy().dicePassphrase());
 		defaultPassphrase.addClickHandler(e -> NonMaps.theMaps.getServerProxy().defaultPassphrase());
 
@@ -522,6 +526,13 @@ public class Setup extends Composite {
 			}
 			entryIndex++;
 		}
+
+		loadFactoryDefaults.addClickHandler(e -> {
+			NonMaps.theMaps.getNonLinearWorld().getViewport().getOverlay().promptUser("Are you sure you want to load the Factory Defaults for the Setup? Attention! This action is not undoable!", () -> {
+				NonMaps.theMaps.getServerProxy().factoryDefaults();
+			}, () -> {
+			});
+		});
 	}
 
 	public interface UploadDoneReceiver {

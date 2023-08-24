@@ -13,20 +13,31 @@
 DateTimeInfo::DateTimeInfo(DeviceInformation *parent)
     : DeviceInformationItem(parent)
 {
-  onTimeChanged();
+  auto adj = Application::get().getSettings()->getSetting<DateTimeAdjustment>();
+  m_signalAdjustmentChanged
+      = adj->onChange(sigc::hide(sigc::mem_fun(this, &DateTimeInfo::onDateTimeAdjustmentChanged)));
+
   m_signalMinutePassed = Application::get().getMainContext()->signal_timeout().connect_seconds(
       sigc::mem_fun(this, &DateTimeInfo::onTimeChanged), 60);
+
+  onChange(UpdateDocumentContributor::ChangeFlags::Generic);
 }
 
 DateTimeInfo::~DateTimeInfo()
 {
   m_signalMinutePassed.disconnect();
+  m_signalAdjustmentChanged.disconnect();
 }
 
 bool DateTimeInfo::onTimeChanged()
 {
   onChange(UpdateDocumentContributor::ChangeFlags::Generic);
   return true;
+}
+
+void DateTimeInfo::onDateTimeAdjustmentChanged()
+{
+  onChange(UpdateDocumentContributor::ChangeFlags::Generic);
 }
 
 void DateTimeInfo::writeDocument(Writer &writer, UpdateDocumentContributor::tUpdateID knownRevision) const

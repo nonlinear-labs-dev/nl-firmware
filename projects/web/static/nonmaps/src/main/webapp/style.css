@@ -1812,3 +1812,8 @@ input[type="range"]::-moz-range-track {
     width: 0;
     height: unset;
 }
+
+.h4 {
+	font-size: 115%;
+    font-weight: 400;
+}
