@@ -6,6 +6,7 @@ class DateTimeInfo : public DeviceInformationItem
 {
  public:
   explicit DateTimeInfo(DeviceInformation *parent);
+  ~DateTimeInfo() override;
   virtual void writeDocument(Writer &writer, tUpdateID knownRevision) const override;
 
  private:

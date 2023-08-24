@@ -23,6 +23,12 @@ DateTimeInfo::DateTimeInfo(DeviceInformation *parent)
   onChange(UpdateDocumentContributor::ChangeFlags::Generic);
 }
 
+DateTimeInfo::~DateTimeInfo()
+{
+  m_signalMinutePassed.disconnect();
+  m_signalAdjustmentChanged.disconnect();
+}
+
 bool DateTimeInfo::onTimeChanged()
 {
   onChange(UpdateDocumentContributor::ChangeFlags::Generic);
