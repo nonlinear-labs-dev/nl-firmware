@@ -75,4 +75,5 @@ public class DeviceSettings {
 
 	public boolean syncSplitsEnabled = false;
 	public TestToneTypePresenter testToneType = new TestToneTypePresenter();
+	public long dateTimeAdjustment = 0;
 }

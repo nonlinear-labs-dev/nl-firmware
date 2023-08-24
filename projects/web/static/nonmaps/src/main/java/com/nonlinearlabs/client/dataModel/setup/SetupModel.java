@@ -4,6 +4,7 @@ import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.IntegerDataModelEntity;
+import com.nonlinearlabs.client.dataModel.LongDataModelEntity;
 import com.nonlinearlabs.client.dataModel.RoutingAspectsDataModelEntity;
 import com.nonlinearlabs.client.dataModel.StringDataModelEntity;
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
@@ -342,7 +343,7 @@ public class SetupModel {
 				BaseUnitUIMode.parameter_edit);
 		public EnumDataModelEntity<BenderCurve> benderCurve = createEnumDataModelEntity(BenderCurve.class,
 				BenderCurve.normal);
-		public IntegerDataModelEntity datetimeAdjustment = new IntegerDataModelEntity();
+		public LongDataModelEntity datetimeAdjustment = new LongDataModelEntity();
 		public EnumDataModelEntity<DebugLevel> debugLevel = createEnumDataModelEntity(DebugLevel.class,
 				DebugLevel.warning);
 		public StringDataModelEntity deviceName = new StringDataModelEntity();

@@ -283,4 +283,9 @@ public class SystemSettings {
 		SetupModel.get().systemSettings.testTone.setValue(value);
 		NonMaps.theMaps.getServerProxy().setSetting("TestToneTypeSetting", value.name());
     }
+
+    public void setDateTimeAdjustment(long newDateTimeAdjustment) {
+	SetupModel.get().systemSettings.datetimeAdjustment.setValue(newDateTimeAdjustment);
+	NonMaps.theMaps.getServerProxy().setSetting("DateTimeAdjustment", String.valueOf(newDateTimeAdjustment), false);
+    }
 }

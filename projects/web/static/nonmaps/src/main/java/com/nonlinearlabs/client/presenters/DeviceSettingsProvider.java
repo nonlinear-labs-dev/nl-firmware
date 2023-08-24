@@ -158,6 +158,12 @@ public class DeviceSettingsProvider {
 			notifyClients();
 			return true;
 		});
+
+		SetupModel.get().systemSettings.datetimeAdjustment.onChange(t -> {
+			settings.dateTimeAdjustment = t;
+			notifyClients();
+			return true;
+		});
 	}
 
 	public void connectToPedal(int id, Pedal target) {

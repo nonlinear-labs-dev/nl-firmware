@@ -1,0 +1,53 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	<g:HTMLPanel>
+		<div class="w36">
+            <div class="w100p">
+                <div class="w40p">
+                    <h4>Date/Time</h4>
+                </div>
+                <div class="w40p">
+                    <g:Label ui:field="dateTime" styleName="h4"></g:Label>
+                </div>
+            </div>
+            <div class="w100p fl-j-center">
+                <div class="w20p fl-j-center">
+                    <p>Year</p>
+                </div>
+                <div class="w20p fl-j-center">
+                    <p>Month</p>
+                </div>
+                <div class="w20p fl-j-center">
+                    <p>Day</p>
+                </div>
+                <div class="w20p fl-j-center">
+                    <p>Hour</p>
+                </div>
+                <div class="w20p fl-j-center">
+                    <p>Minute</p>
+                </div>
+            </div>
+            <div class="w100p fl-j-center">
+                <div class="w20p fl-j-center">
+                    <g:Button ui:field="incYear" text="+"></g:Button>
+                    <g:Button ui:field="decYear" text="-"></g:Button>
+                </div>
+                <div class="w20p fl-j-center">
+                    <g:Button ui:field="incMonth" text="+"></g:Button>
+                    <g:Button ui:field="decMonth" text="-"></g:Button>
+                </div>
+                <div class="w20p fl-j-center">
+                    <g:Button ui:field="incDay" text="+"></g:Button>
+                    <g:Button ui:field="decDay" text="-"></g:Button>
+                </div>
+                <div class="w20p fl-j-center">
+                    <g:Button ui:field="incHour" text="+"></g:Button>
+                    <g:Button ui:field="decHour" text="-"></g:Button>
+                </div>
+                <div class="w20p fl-j-center">
+                    <g:Button ui:field="incMinute" text="+"></g:Button>
+                    <g:Button ui:field="decMinute" text="-"></g:Button>
+                </div>
+            </div>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder>
