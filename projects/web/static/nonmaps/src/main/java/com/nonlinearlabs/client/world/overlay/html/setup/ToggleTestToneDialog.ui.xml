@@ -1,0 +1,12 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+	<g:HTMLPanel>
+		<div class="w36">
+            <div class="w100p fl-j-center">
+                <h4>Enable Test Tone</h4>
+            </div>
+            <div class="w100p fl-j-center">
+                <g:ListBox ui:field="list"></g:ListBox>
+            </div>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder>

@@ -216,6 +216,18 @@
 							<g:Button ui:field="resetInitSound" ui:text="Reset"></g:Button>
 						</div>
 					</div>
+
+					<div class="linie"></div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Test Tone Dialog</p>
+						</div>
+						<div class="w20p fl-j-center">
+							<g:Button ui:field="toggleTestTone" ui:text="Open"></g:Button>
+						</div>
+						<div class="w20p fl-j-center">
+						</div>
+					</div>
 				</div>
 			</div>
 

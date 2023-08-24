@@ -208,3 +208,6 @@ AftertouchLegacyMode:
 
 SendActiveSensing:
     default: BooleanSettings::BOOLEAN_SETTING_TRUE
+
+TestToneTypeSetting:
+    default: TestToneType::Off

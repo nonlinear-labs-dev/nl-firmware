@@ -75,6 +75,7 @@ public class SetupUpdater extends Updater {
 		m.put("GlobalLocalEnable", SetupModel.get().systemSettings.localEnabled);
 		m.put("AftertouchLegacyMode", SetupModel.get().systemSettings.legacyAftertouch);
 		m.put("SendActiveSensing", SetupModel.get().systemSettings.sendActiveSensing);
+		m.put("TestToneTypeSetting", SetupModel.get().systemSettings.testTone);
 		return m;
 	}
 

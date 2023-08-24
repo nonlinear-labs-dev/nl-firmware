@@ -15,6 +15,7 @@ import com.nonlinearlabs.client.dataModel.setup.SetupModel.MidiSendChannelSplit;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.PedalCCMapping;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.PedalType;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.RibbonCCMapping;
+import com.nonlinearlabs.client.dataModel.setup.SetupModel.TestToneType;
 import com.nonlinearlabs.client.dataModel.setup.SetupModel.VelocityCurve;
 
 public class SystemSettings {
@@ -277,4 +278,9 @@ public class SystemSettings {
 	public void setDefaultEditSmoothingTime(){
 		NonMaps.theMaps.getServerProxy().defaultSetting("EditSmoothingTime");
 	}
+
+    public void setTestTone(TestToneType value) {
+		SetupModel.get().systemSettings.testTone.setValue(value);
+		NonMaps.theMaps.getServerProxy().setSetting("TestToneTypeSetting", value.name());
+    }
 }

@@ -58,6 +58,8 @@ class C15Synth : public Synth, public sigc::trackable
   void onTuneReferenceMessage(const nltools::msg::Setting::TuneReference& msg);
 
   void onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMessage& msg);
+  void onTestToneTypeMessage(const nltools::msg::TestTone::TestToneTypeMessage& msg);
+  void onTestTonePanMessage(const nltools::msg::TestTone::TestTonePanMessage& msg);
   void onPanicNotificationReceived(const nltools::msg::PanicAudioEngine& msg);
 
   unsigned int getRenderedSamples();

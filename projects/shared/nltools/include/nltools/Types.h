@@ -68,6 +68,8 @@ ENUM(MidiHWChangeSpecialCases, uint16_t, ChannelPitchbend, Aftertouch, Pitchbend
 
 ENUM(EPC_MODEL, uint16_t, UNKNOWN, i3_5, i3_7, i3_10, i3_11, i5_7)
 
+ENUM(TestToneType, uint16_t, Off, Left, Right, Both);
+
 template <typename T> inline typename std::enable_if<std::is_floating_point<T>::value, bool>::type differs(T a, T b)
 {
   return std::abs(a - b) > std::numeric_limits<T>::epsilon();

@@ -82,7 +82,7 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
                                              });
 
   receive<Midi::ProgramChangeMessage>(EndPoint::Playground,
-                                      [=](const auto &msg)
+                                      [this](const auto &msg)
                                       {
                                         if(auto lock = m_programChangeRecursion.lock())
                                           if(auto bank = m_presetManager.findMidiSelectedBank())
@@ -94,7 +94,7 @@ AudioEngineProxy::AudioEngineProxy(PresetManager &pm, Settings &settings, Playco
                                       });
 
   receive<nltools::msg::Setting::SetGlobalLocalSetting>(EndPoint::Playground,
-                                                        [=](const auto &msg)
+                                                        [this](const auto &msg)
                                                         {
                                                           SettingsUseCases useCases(m_settings);
                                                           useCases.setGlobalLocal(msg.m_state);

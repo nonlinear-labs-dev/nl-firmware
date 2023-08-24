@@ -226,6 +226,30 @@ namespace nltools
       };
     }
 
+    namespace TestTone
+    {
+      struct TestToneTypeMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::TestToneTypeMessage;
+        }
+
+        bool testToneOn = false;
+      };
+
+      struct TestTonePanMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::TestTonePanMessage;
+        }
+
+        bool signalLeft = false;
+        bool signalRight = false;
+      };
+    }
+
     struct PanicAudioEngine
     {
       constexpr static MessageType getType()

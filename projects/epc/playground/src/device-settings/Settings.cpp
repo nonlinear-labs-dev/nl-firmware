@@ -52,12 +52,14 @@
 #include "AftertouchLegacyMode.h"
 #include "BaseUnitUIDetail.h"
 #include "SendActiveSensingSetting.h"
+#include "TestToneTypeSetting.h"
 #include <presets/PresetManager.h>
 #include <presets/EditBuffer.h>
 #include <parameter_declarations.h>
 #include <parameters/RibbonParameter.h>
 #include <device-settings/ScreenSaverTimeoutSetting.h>
 #include <iostream>
+#include <utility>
 #include <device-settings/midi/MidiChannelSettings.h>
 #include <device-settings/midi/receive/MidiReceiveAftertouchCurveSetting.h>
 #include <device-settings/midi/receive/MidiReceiveVelocityCurveSetting.h>
@@ -73,9 +75,9 @@
 #include <device-settings/AlsaFramesPerPeriod.h>
 #include <proxies/hwui/HardwareFeatures.h>
 
-Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, const HardwareFeatures &hwFeatures)
+Settings::Settings(Glib::ustring file, UpdateDocumentMaster *master, const HardwareFeatures &hwFeatures)
     : UpdateDocumentContributor(master)
-    , m_file(file)
+    , m_file(std::move(file))
     , m_saveJob(5000, [this] { save(); })
 {
   addSetting("DirectLoad", new DirectLoadSetting(*this));
@@ -153,6 +155,7 @@ Settings::Settings(const Glib::ustring &file, UpdateDocumentMaster *master, cons
   addSetting("AftertouchLegacyMode", new AftertouchLegacyMode(*this));
 
   addSetting("SendActiveSensing", new SendActiveSensingSetting(*this));
+  addSetting("TestToneTypeSetting", new TestToneTypeSetting(*this, TestToneType::Off));
 }
 
 Settings::~Settings()

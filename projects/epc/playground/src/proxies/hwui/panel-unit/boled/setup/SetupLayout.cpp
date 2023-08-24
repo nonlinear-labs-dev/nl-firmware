@@ -92,6 +92,7 @@
 #include <device-info/UniqueHardwareID.h>
 #include "device-info/AftertouchCalibratedStatus.h"
 #include "device-settings/SendActiveSensingSetting.h"
+#include "TestToneEditor.h"
 
 namespace NavTree
 {
@@ -421,6 +422,24 @@ namespace NavTree
     }
   };
 
+  struct TestTone : EditableLeaf
+  {
+      explicit TestTone(InnerNode *parent)
+      : EditableLeaf(parent, "Test Tone")
+      {
+      }
+
+      Control *createView() override
+      {
+        return new SetupLabel("...", {0, 0, 0, 0});
+      }
+
+      Control *createEditor() override
+      {
+        return new TestToneEditor();
+      }
+  };
+
   struct DeviceSettings : InnerNode
   {
     explicit DeviceSettings(InnerNode *parent)
@@ -442,6 +461,7 @@ namespace NavTree
       children.emplace_back(new WiFiSetting(this));
       children.emplace_back(new StoreInitSound(this));
       children.emplace_back(new ResetInitSound(this));
+      children.emplace_back(new TestTone(this));
     }
   };
 
