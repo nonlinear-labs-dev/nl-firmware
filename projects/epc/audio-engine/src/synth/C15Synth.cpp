@@ -169,7 +169,6 @@ C15Synth::C15Synth(AudioEngineOptions* options)
   receive<PanicAudioEngine>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onPanicNotificationReceived));
 
   receive<TestTone::TestToneTypeMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onTestToneTypeMessage));
-  receive<TestTone::TestTonePanMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onTestTonePanMessage));
 }
 
 C15Synth::~C15Synth()
@@ -328,15 +327,6 @@ void C15Synth::resetDSP()
   m_dsp->reset();
 }
 
-void C15Synth::toggleTestTone()
-{
-  //habe ich das richtig implementiert oder wolltest du hier nur zwischen 2 bestimmten modi wechseln?
-  auto current = m_dsp->getTestToneSignalIndex();
-  auto newInt = (static_cast<int>(current) + 1) % 3;
-  auto newState = static_cast<TestToneSignalIndex>(newInt);
-  m_dsp->setTestToneType(newState);
-}
-
 void C15Synth::onSettingInitialSinglePreset()
 {
   m_dsp->onSettingInitialSinglePreset();  // initial sound, out a mix: 100%
@@ -453,12 +443,7 @@ void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMe
 
 void C15Synth::onTestToneTypeMessage(const nltools::msg::TestTone::TestToneTypeMessage& msg)
 {
-  m_dsp->setTestToneType(msg.testToneOn ? TestToneSignalIndex::Both : TestToneSignalIndex::Synth);
-}
-
-void C15Synth::onTestTonePanMessage(const nltools::msg::TestTone::TestTonePanMessage& msg)
-{
-  m_dsp->setTestTonePan(msg.signalLeft, msg.signalRight);
+  m_dsp->setTestToneType(msg.m_type);
 }
 
 void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&)

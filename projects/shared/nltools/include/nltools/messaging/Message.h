@@ -235,18 +235,7 @@ namespace nltools
           return MessageType::TestToneTypeMessage;
         }
 
-        bool testToneOn = false;
-      };
-
-      struct TestTonePanMessage
-      {
-        constexpr static MessageType getType()
-        {
-          return MessageType::TestTonePanMessage;
-        }
-
-        bool signalLeft = false;
-        bool signalRight = false;
+        TestToneType m_type;
       };
     }
 

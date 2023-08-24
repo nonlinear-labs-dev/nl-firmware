@@ -111,11 +111,7 @@ class DSPInterface
     return true;
   }
   // ...
-  virtual void setTestToneType(const TestToneSignalIndex _setting)
-  {
-  }
-
-  virtual void setTestTonePan(bool l, bool r)
+  virtual void setTestToneType(const TestToneType _setting)
   {
   }
 
@@ -232,8 +228,7 @@ class dsp_host_dual : public DSPInterface
   void onSettingGlitchSuppr(const bool _enabled);
   void onSettingTuneReference(const float _position);
   OutputResetEventSource onSettingInitialSinglePreset() override;
-  void setTestToneType(const TestToneSignalIndex _setting) override;
-  void setTestTonePan(bool l, bool r) override;
+  void setTestToneType(const TestToneType type) override;
 
   // dsp-related
   void render();

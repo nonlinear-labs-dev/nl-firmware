@@ -14,16 +14,10 @@ const std::vector<Glib::ustring> &TestToneTypeSetting::enumToString() const
 
 void TestToneTypeSetting::syncExternals(SendReason reason) const
 {
-  nltools::msg::TestTone::TestToneTypeMessage type;
-  nltools::msg::TestTone::TestTonePanMessage pan;
-
-  pan.signalLeft = get() == TestToneType::Both || get() == TestToneType::Left;
-  pan.signalRight = get() == TestToneType::Both || get() == TestToneType::Right;
-  type.testToneOn = get() != TestToneType::Off;
-
-  constexpr auto endPoint = nltools::msg::EndPoint::AudioEngine;
-  nltools::msg::send(endPoint, type);
-  nltools::msg::send(endPoint, pan);
+  nltools::msg::TestTone::TestToneTypeMessage type {
+      .m_type = get()
+  };
+  nltools::msg::send(nltools::msg::EndPoint::AudioEngine, type);
 }
 
 const std::vector<Glib::ustring> &TestToneTypeSetting::enumToDisplayString() const

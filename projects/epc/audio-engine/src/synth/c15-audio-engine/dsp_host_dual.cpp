@@ -917,10 +917,32 @@ DSPInterface::OutputResetEventSource dsp_host_dual::onSettingInitialSinglePreset
   return onPresetMessage(msg);
 }
 
-void dsp_host_dual::setTestToneType(const TestToneSignalIndex _setting)
+namespace {
+    TestToneSignalIndex mapping(TestToneType t) {
+        switch(t) {
+          default:
+          case TestToneType::Off:
+            return TestToneSignalIndex::Synth;
+          case TestToneType::Left:
+          case TestToneType::Right:
+          case TestToneType::Both:
+            return TestToneSignalIndex::Both;
+        }
+    };
+
+}
+
+void dsp_host_dual::setTestToneType(const TestToneType type)
 {
-  m_tone_state = _setting;
-  m_fade.muteAndDo([&] { m_global.update_tone_mode(m_tone_state); });
+  m_tone_state = mapping(type);
+  auto left = type == TestToneType::Left || type == TestToneType::Both;
+  auto right = type == TestToneType::Right || type == TestToneType::Both;
+
+  m_fade.muteAndDo([&] {
+      m_global.update_tone_mode(m_tone_state);
+      m_global.set_test_tone_pan(left, right);
+  });
+
   // this is a crucial developer tool that should always produce logs!
   switch(m_tone_state)
   {
@@ -935,12 +957,6 @@ void dsp_host_dual::setTestToneType(const TestToneSignalIndex _setting)
       break;
   }
 }
-
-void dsp_host_dual::setTestTonePan(bool l, bool r)
-{
-  m_fade.muteAndDo([=] { m_global.set_test_tone_pan(l, r); });
-}
-
 
 TestToneSignalIndex dsp_host_dual::getTestToneSignalIndex()
 {
