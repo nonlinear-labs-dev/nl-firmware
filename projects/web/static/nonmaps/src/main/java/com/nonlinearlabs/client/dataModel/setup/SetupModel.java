@@ -112,6 +112,10 @@ public class SetupModel {
 		PitchbendDown
 	}
 
+	public enum TestToneType {
+		Off, Left, Right, Both
+	}
+
 	private <T extends Enum<T>> EnumDataModelEntity<T> createEnumDataModelEntity(Class<T> c, T def) {
 		return new EnumDataModelEntity<T>(c, def);
 	}
@@ -315,6 +319,22 @@ public class SetupModel {
 		}
 	}
 
+	public class TestToneTypeSetting extends EnumDataModelEntity<TestToneType> {
+		public TestToneTypeSetting() {
+			super(TestToneType.class, TestToneType.Off);
+		}
+
+		@Override
+		public void fromString(String str) {
+			try {
+				TestToneType p = TestToneType.valueOf(str);
+				setValue(p);
+			} catch (Exception e) {
+				Tracer.log("WARNING: Could not parse test tone value of " + str);
+			}
+		}
+	}
+
 	public class SystemSettings {
 		public BooleanDataModelEntity directLoad = new BooleanDataModelEntity();
 		public EnumDataModelEntity<AftertouchCurve> aftertouchCurve = createEnumDataModelEntity(AftertouchCurve.class,
@@ -386,6 +406,8 @@ public class SetupModel {
 
 		public BooleanDataModelEntity legacyAftertouch = new BooleanDataModelEntity();
 		public BooleanDataModelEntity sendActiveSensing = new BooleanDataModelEntity();
+
+		public TestToneTypeSetting testTone = new TestToneTypeSetting();
 	};
 
 	public class LocalSettings {

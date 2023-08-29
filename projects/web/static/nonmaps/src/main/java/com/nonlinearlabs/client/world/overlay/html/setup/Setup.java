@@ -72,7 +72,7 @@ public class Setup extends Composite {
 	private static SetupUiBinder ourUiBinder = GWT.create(SetupUiBinder.class);
 
 	@UiField
-	Button deviceSettingsButton, uiSettingsButton, uiMidiButton, uiFlacButton, systemInfoButton, aboutButton, chooseFileButton, loadFactoryDefaults;
+	Button deviceSettingsButton, uiSettingsButton, uiMidiButton, uiFlacButton, systemInfoButton, aboutButton, chooseFileButton, toggleTestTone, loadFactoryDefaults;
 
 	@UiField
 	FileUpload upload;
@@ -507,6 +507,10 @@ public class Setup extends Composite {
 					}
 				});
 			}
+		});
+
+		toggleTestTone.addClickHandler(e -> {
+			ToggleTestToneDialog.showDialog();
 		});
 
 		int entryIndex = 0;

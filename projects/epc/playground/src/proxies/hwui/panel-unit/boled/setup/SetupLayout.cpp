@@ -91,6 +91,7 @@
 #include <device-info/UniqueHardwareID.h>
 #include "device-info/AftertouchCalibratedStatus.h"
 #include "device-settings/SendActiveSensingSetting.h"
+#include "TestToneEditor.h"
 #include "FactoryDefaultEditor.h"
 
 namespace NavTree
@@ -376,10 +377,6 @@ namespace NavTree
     }
   };
 
-  struct FactoryDefault : OneShotEntry
-  {
-  };
-
   template <typename tSetting> struct SettingItem : EditableLeaf
   {
    private:
@@ -425,6 +422,24 @@ namespace NavTree
     }
   };
 
+  struct TestTone : EditableLeaf
+  {
+    explicit TestTone(InnerNode *parent)
+        : EditableLeaf(parent, "Test Tone")
+    {
+    }
+
+    Control *createView() override
+    {
+      return new SetupLabel("...", { 0, 0, 0, 0 });
+    }
+
+    Control *createEditor() override
+    {
+      return new TestToneEditor();
+    }
+  };
+
   struct FactoryDefaultSettings : EditableLeaf
   {
     explicit FactoryDefaultSettings(InnerNode *parent)
@@ -465,6 +480,7 @@ namespace NavTree
       children.emplace_back(new StoreInitSound(this));
       children.emplace_back(new ResetInitSound(this));
       children.emplace_back(new FactoryDefaultSettings(this));
+      children.emplace_back(new TestTone(this));
     }
   };
 

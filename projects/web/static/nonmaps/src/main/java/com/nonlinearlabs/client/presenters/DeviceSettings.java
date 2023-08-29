@@ -42,6 +42,11 @@ public class DeviceSettings {
 		public boolean value = false;
 	}
 
+	static public class TestToneTypePresenter {
+		static public String[] options = {"Off", "Left", "Right", "Both"};
+		public int selected = 0;
+	}
+
 	public VelocityCurve velocityCurve = new VelocityCurve();
 	public boolean legacyAftertouch = false;
 	public boolean sendActiveSensing = true;
@@ -69,6 +74,6 @@ public class DeviceSettings {
 	public String tuneReferenceDisplayString = "";
 
 	public boolean syncSplitsEnabled = false;
-
+	public TestToneTypePresenter testToneType = new TestToneTypePresenter();
 	public long dateTimeAdjustment = 0;
 }

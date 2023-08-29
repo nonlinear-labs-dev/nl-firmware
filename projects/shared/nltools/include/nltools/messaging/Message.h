@@ -226,6 +226,19 @@ namespace nltools
       };
     }
 
+    namespace TestTone
+    {
+      struct TestToneTypeMessage
+      {
+        constexpr static MessageType getType()
+        {
+          return MessageType::TestToneTypeMessage;
+        }
+
+        TestToneType m_type;
+      };
+    }
+
     struct PanicAudioEngine
     {
       constexpr static MessageType getType()

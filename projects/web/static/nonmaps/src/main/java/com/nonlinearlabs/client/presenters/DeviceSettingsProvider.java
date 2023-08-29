@@ -153,6 +153,12 @@ public class DeviceSettingsProvider {
 			return true;
 		});
 
+		SetupModel.get().systemSettings.testTone.onChange(t -> {
+			settings.testToneType.selected = t.ordinal();
+			notifyClients();
+			return true;
+		});
+
 		SetupModel.get().systemSettings.datetimeAdjustment.onChange(t -> {
 			settings.dateTimeAdjustment = t;
 			notifyClients();
