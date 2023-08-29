@@ -59,17 +59,20 @@ See CLI Options below for more info.
 
 When running the application, there are some key bindings:
 
-| Key | Description                                                                         |
-| --- | ----------------------------------------------------------------------------------- |
-| `c` | Prints some status information of the engine for the developer.                     |
-| `e` | Resets the Synth DSP (stopping Envelopes, flushing Buffers, invoking silence).      |
-| `t` | Test Tone[^4]: cycles between three combination modes: Synth-only, Tone-only, Both. |
-| `i` | Initialize the Synth with usable Settings and an audible initial Preset.            |
-| `a` | After initialization, press a key (note number 60, C3).                             |
-| `s` | After initialization, release a key (note number 60, C3).                           |
-| `r` | Reset performance measure.                                                          |
-| `q` | Quit the application.                                                               |
+|   Key   | Description                                                                              |
+| ------- | ---------------------------------------------------------------------------------------- |
+|   `c`   | Prints some status information of the engine for the developer.                          |
+|   `e`   | Resets the Synth DSP (stopping Envelopes, flushing Buffers, invoking silence).           |
+| ~~`t`~~ | ~~Test Tone[^4]: cycles between three combination modes: Synth-only, Tone-only, Both. ~~ |
+|   `i`   | Initialize the Synth with usable Settings and an audible initial Preset.                 |
+|   `a`   | After initialization, press a key (note number 60, C3).                                  |
+|   `s`   | After initialization, release a key (note number 60, C3).                                |
+|   `r`   | Reset performance measure.                                                               |
+|   `q`   | Quit the application.                                                                    |
 
 [^4]: The Test Tone is an additional sine tone that can be made audible for testing purposes.
 It is connected to the Tune Reference setting (defaulting to 440 Hz).
 The initial amplitude is currently hard-coded to -6 dB<sub>FS</sub>.
+
+> [!NOTE]
+> The Test Tone[^4] feature has become a proper Setting and is exposed in both UIs. Therefore, it has been deprecated as a CLI key binding.
