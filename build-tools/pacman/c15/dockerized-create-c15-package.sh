@@ -64,6 +64,7 @@ depends=(
 'util-linux-libs'
 'shared-mime-info'
 'sed'
+'stress'
 'sudo'
 'sshfs'
 'systemd'
