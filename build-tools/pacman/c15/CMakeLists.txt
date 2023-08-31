@@ -9,7 +9,7 @@ SET(ARCH_VERSION_YEAR 2022)
 SET(ARCH_VERSION_MONTH 04)
 SET(ARCH_VERSION_DAY 24)
 SET(ARCH_VERSION ${ARCH_VERSION_YEAR}${ARCH_VERSION_MONTH}${ARCH_VERSION_DAY}.0.54084)
-SET(C15_PACKAGES_VERSION "2022-11-30")
+SET(C15_PACKAGES_VERSION "2023-08-30")
 SET(BUILD_SETUP_VERSION "arch-${ARCH_VERSION}-packages-${C15_PACKAGES_VERSION}")
 SET(DOCKERNAME pacman-c15-fetch-${BUILD_SETUP_VERSION}-docker)
 SET(NL_DOWNLOAD_PATH /build-tools/pacman/c15) # used with http
@@ -19,7 +19,8 @@ SET(DOCKER_TAR c15-build-docker-${BUILD_SETUP_VERSION}.tar)
 SET(HOST_REQUIREMENTS binutils ccache cmake fakeroot gcc git linux make nano ninja pacman pacman-contrib pkgconfig sudo squashfs-tools xz npm nodejs npm rsync)
 STRING(REPLACE ";" " " HOST_REQUIREMENTS "${HOST_REQUIREMENTS}")
 
-SET(C15_REQUIREMENTS alsa alsa-tools alsa-utils arch-install-scripts base boost cpupower dnsmasq flac freetype2 glibmm linux-firmware libpng libsoup lm_sensors mc nano networkmanager png++ shared-mime-info sudo sshfs lsof systemd-sysvcompat vi)
+SET(C15_REQUIREMENTS  alsa alsa-tools alsa-utils arch-install-scripts base boost cpupower dnsmasq flac freetype2 glibmm linux-firmware libpng libsoup 
+                      lm_sensors mc nano networkmanager png++ shared-mime-info sudo sshfs lsof stress systemd-sysvcompat vi)
 STRING(REPLACE ";" " " C15_REQUIREMENTS "${C15_REQUIREMENTS}")
 
 configure_file(dockerized-create-c15-package.sh dockerized-create-c15-package.sh @ONLY)

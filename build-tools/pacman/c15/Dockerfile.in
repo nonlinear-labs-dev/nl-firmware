@@ -1,6 +1,7 @@
 FROM archlinux:base-@ARCH_VERSION@
 
 RUN echo "Server=https://archive.archlinux.org/repos/@ARCH_VERSION_YEAR@/@ARCH_VERSION_MONTH@/@ARCH_VERSION_DAY@/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
+RUN sed -i 's/^SigLevel.*/SigLevel = Never/g' /etc/pacman.conf
 RUN pacman --noconfirm -Sy
 RUN pacman --noconfirm -S @HOST_REQUIREMENTS@ @C15_REQUIREMENTS@
 

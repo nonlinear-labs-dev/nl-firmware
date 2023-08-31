@@ -4,6 +4,8 @@ file(GLOB_RECURSE EPC3_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*)
 # docker run -ti archlinux:base-20220424.0.54084 # <-- same as in dockerfile
 # echo "[realtime]" >> /etc/pacman.conf
 # echo "Server = https://pkgbuild.com/~dvzrv/repos/realtime/x86_64/" >> /etc/pacman.conf
+# echo "Server = https://archive.archlinux.org/repos/2022/04/24/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
+# sed -i 's/^SigLevel.*/SigLevel = Never/g' /etc/pacman.conf
 # pacman -Sy
 # pacman -S sudo glibmm libsoup freetype2 libpng png++ boost alsa cpupower linux-rt mc networkmanager nano mkinitcpio mkinitcpio-nfs-utils rsync grub openssh sshfs efibootmgr alsa-tools alsa-utils linux-firmware shared-mime-info vi mc arch-install-scripts
 # pacman -S <new packages go here>
