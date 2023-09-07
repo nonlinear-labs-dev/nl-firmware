@@ -425,7 +425,7 @@ namespace NavTree
   struct TestTone : EditableLeaf
   {
     explicit TestTone(InnerNode *parent)
-        : EditableLeaf(parent, "Test Tone")
+        : EditableLeaf(parent, "Test Tone (-6 dB)")
     {
     }
 

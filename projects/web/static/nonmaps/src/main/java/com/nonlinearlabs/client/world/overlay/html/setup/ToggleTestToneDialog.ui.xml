@@ -2,7 +2,7 @@
 	<g:HTMLPanel>
 		<div class="w36">
             <div class="w100p fl-j-center">
-                <h4>Enable Test Tone</h4>
+                <h4>Enable Test Tone (-6 dB)</h4>
             </div>
             <div class="w100p fl-j-center">
                 <g:ListBox ui:field="list"></g:ListBox>
