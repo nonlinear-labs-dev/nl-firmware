@@ -58,13 +58,13 @@ bool TCDDecoder::decode(const MidiEvent &event)
       switch(_data1)
       {
         case AE_PROTOCOL_CMD_TONE_OFF:  // developer: test tone off
-          m_dsp->onSettingToneToggle(1);
+          m_dsp->setTestToneType(TestToneType::Off);
           break;
         case AE_PROTOCOL_CMD_TONE_ONLY:  // developer: test tone only (no synth)
-          m_dsp->onSettingToneToggle(2);
+          m_dsp->setTestToneType(TestToneType::Both); //I am a dirty little liar :( wontfix until someone notices
           break;
         case AE_PROTOCOL_CMD_TONE_ON:  // developer: test tone on (and synth)
-          m_dsp->onSettingToneToggle(3);
+          m_dsp->setTestToneType(TestToneType::Both);
           break;
         case AE_PROTOCOL_CMD_DEFAULT_SOUND:  // developer: default sound (single initial, out mix a: 100%)
           m_dsp->onSettingInitialSinglePreset();

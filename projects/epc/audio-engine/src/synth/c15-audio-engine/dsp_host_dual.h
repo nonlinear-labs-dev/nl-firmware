@@ -38,7 +38,7 @@ inline constexpr bool LOG_INIT = false;
 inline constexpr bool LOG_MIDI_TCD = false;
 inline constexpr bool LOG_MIDI_RAW = false;
 inline constexpr bool LOG_MIDI_DETAIL = false;
-inline constexpr bool LOG_MIDI_OUT = false; // unused
+inline constexpr bool LOG_MIDI_OUT = false;  // unused
 inline constexpr bool LOG_DISPATCH = false;
 inline constexpr bool LOG_EDITS = false;
 inline constexpr bool LOG_TIMES = false;
@@ -111,12 +111,19 @@ class DSPInterface
     return true;
   }
   // ...
-  virtual void onSettingToneToggle(const uint16_t _setting)
+  virtual void setTestToneType(const TestToneType _setting)
   {
   }
+
   virtual OutputResetEventSource onSettingInitialSinglePreset()
   {
     return OutputResetEventSource::None;
+  }
+
+  virtual TestToneSignalIndex getTestToneSignalIndex()
+  {
+    nltools_detailedAssertAlways(false, "not implemented!");
+    return TestToneSignalIndex::Synth;
   }
   //
   static inline uint32_t getInputSourceId(const InputEventSource _inputSource)
@@ -221,7 +228,7 @@ class dsp_host_dual : public DSPInterface
   void onSettingGlitchSuppr(const bool _enabled);
   void onSettingTuneReference(const float _position);
   OutputResetEventSource onSettingInitialSinglePreset() override;
-  void onSettingToneToggle(const uint16_t _setting) override;
+  void setTestToneType(const TestToneType type) override;
 
   // dsp-related
   void render();
@@ -235,6 +242,8 @@ class dsp_host_dual : public DSPInterface
   VoiceGroup getNonLocalSplitKeyAssignmentForKeyUp(int key) override;
   void registerNonLocalKeyAssignment(const int note, VoiceGroup part) override;
   void unregisterNonLocalKeyAssignment(const int note) override;
+
+  TestToneSignalIndex getTestToneSignalIndex() override;
 
   using CC_Range_7_Bit = Midi::FullCCRange<Midi::Formats::_7_Bits_>;
   using CC_Range_14_Bit = Midi::clipped14BitCCRange;
@@ -301,7 +310,7 @@ class dsp_host_dual : public DSPInterface
   const float m_format_vel = 16383.0f / 127.0f, m_format_hw = 16000.0f / 127.0f, m_format_pb = 16000.0f / 16383.0f,
               m_norm_vel = 1.0f / 16383.0f, m_norm_hw = 1.0f / 16000.0f;
   int32_t m_key_pos = 0;
-  uint32_t m_tone_state = 0;
+  TestToneSignalIndex m_tone_state = TestToneSignalIndex::Synth;
   bool m_glitch_suppression = false;
 
   // initialization
@@ -316,10 +325,11 @@ class dsp_host_dual : public DSPInterface
   uint32_t getMacroId(const MacroControls _mc);
   C15::Properties::LayerId getLayer(const VoiceGroup _vg);
   uint32_t getLayerId(const VoiceGroup _vg);
-  bool areKeysPressedImpl(SoundType _current, const AssignedKeyCount &_counter);
+  bool areKeysPressedImpl(SoundType _current, const AssignedKeyCount& _counter);
 
   // key events
-  void keyDownTraversal(const AllocatorId _alloc, const uint32_t _note, const float _vel, const AllocatorId _retrigger_mono);
+  void keyDownTraversal(const AllocatorId _alloc, const uint32_t _note, const float _vel,
+                        const AllocatorId _retrigger_mono);
   void keyUpTraversal(const uint32_t _note, const float _vel);
 
   // scaling, times

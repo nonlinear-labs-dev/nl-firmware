@@ -15,38 +15,41 @@ DateTimeEditor::DateTimeEditor()
     : ControlWithChildren(Rect(0, 0, 0, 0))
     , m_originalTime(std::time(nullptr))
 {
-  auto margin = 5;
-  auto y = 12;
+  const auto margin = 5;
+  const auto yStart = 12;
+  auto y = yStart;
   auto w = 20;
 
-  m_labels[Selection::Year] = addControl(new Label("yyyy", Rect(margin, y, 2 * w, 10)));
-  m_labels[Selection::Month] = addControl(new Label("mm", Rect(margin + 2 * w, y, w, 10)));
-  m_labels[Selection::Day] = addControl(new Label("dd", Rect(margin + 3 * w, y, w, 10)));
+  const auto labelAndControlHeight = 10;
 
-  m_labels[Selection::Hour] = addControl(new Label("HH", Rect(margin + 4 * w, y, w, 10)));
-  m_labels[Selection::Minute] = addControl(new Label("MM", Rect(margin + 5 * w, y, w, 10)));
+  m_labels[Selection::Year] = addControl<Label>("yyyy", Rect(margin, y, 2 * w, labelAndControlHeight));
+  m_labels[Selection::Month] = addControl<Label>("mm", Rect(margin + 2 * w, y, w, labelAndControlHeight));
+  m_labels[Selection::Day] = addControl<Label>("dd", Rect(margin + 3 * w, y, w, labelAndControlHeight));
 
-  y = 24;
+  m_labels[Selection::Hour] = addControl<Label>("HH", Rect(margin + 4 * w, y, w, labelAndControlHeight));
+  m_labels[Selection::Minute] = addControl<Label>("MM", Rect(margin + 5 * w, y, w, labelAndControlHeight));
 
-  m_controls[Selection::Year] = addControl(new Label("", Rect(margin, y, 2 * w, 10)));
-  m_controls[Selection::Month] = addControl(new Label("", Rect(margin + 2 * w, y, w, 10)));
-  m_controls[Selection::Day] = addControl(new Label("", Rect(margin + 3 * w, y, w, 10)));
+  y = yStart * 2;
 
-  m_controls[Selection::Hour] = addControl(new Label("", Rect(margin + 4 * w, y, w, 10)));
-  m_controls[Selection::Minute] = addControl(new Label("", Rect(margin + 5 * w, y, w, 10)));
+  m_controls[Selection::Year] = addControl<Label>("", Rect(margin, y, 2 * w, labelAndControlHeight));
+  m_controls[Selection::Month] = addControl<Label>("", Rect(margin + 2 * w, y, w, labelAndControlHeight));
+  m_controls[Selection::Day] = addControl<Label>("", Rect(margin + 3 * w, y, w, labelAndControlHeight));
 
-  auto buttonHeight = 11;
-  auto buttonWidth = 58;
-  auto buttonMargin = 3;
+  m_controls[Selection::Hour] = addControl<Label>("", Rect(margin + 4 * w, y, w, labelAndControlHeight));
+  m_controls[Selection::Minute] = addControl<Label>("", Rect(margin + 5 * w, y, w, labelAndControlHeight));
 
-  addControl(new Button(
-      "<", Rect(buttonMargin, c_fullRightSidePosition.getHeight() - buttonHeight, buttonWidth, buttonHeight)));
-  addControl(new Button(">",
-                        Rect(buttonMargin + buttonWidth + 6, c_fullRightSidePosition.getHeight() - buttonHeight,
-                             buttonWidth, buttonHeight)));
+  const auto buttonHeight = 11;
+  const auto buttonWidth = 58;
+  const auto buttonMargin = 3;
 
-  m_labels[m_selection]->setHighlight(true);
-  m_controls[m_selection]->setHighlight(true);
+  addControl<Button>("<",
+                     Rect(buttonMargin, c_fullRightSidePosition.getHeight() - buttonHeight, buttonWidth, buttonHeight));
+  addControl<Button>(">",
+                     Rect(buttonMargin + buttonWidth + 6, c_fullRightSidePosition.getHeight() - buttonHeight,
+                          buttonWidth, buttonHeight));
+
+  m_labels.at(m_selection)->setHighlight(true);
+  m_controls.at(m_selection)->setHighlight(true);
 
   Application::get().getSettings()->getSetting<DateTimeAdjustment>()->onChange(
       sigc::mem_fun(this, &DateTimeEditor::onAdjustmentChanged));
@@ -88,8 +91,8 @@ bool DateTimeEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 
   if(down)
   {
-    m_labels[m_selection]->setHighlight(false);
-    m_controls[m_selection]->setHighlight(false);
+    m_labels.at(m_selection)->setHighlight(false);
+    m_controls.at(m_selection)->setHighlight(false);
 
     if(i == Buttons::BUTTON_C)
     {
@@ -101,8 +104,8 @@ bool DateTimeEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
       m_selection = step(m_selection, 1);
     }
 
-    m_labels[m_selection]->setHighlight(true);
-    m_controls[m_selection]->setHighlight(true);
+    m_labels.at(m_selection)->setHighlight(true);
+    m_controls.at(m_selection)->setHighlight(true);
     return true;
   }
   return false;
@@ -110,7 +113,7 @@ bool DateTimeEditor::onButton(Buttons i, bool down, ButtonModifiers modifiers)
 
 bool DateTimeEditor::onRotary(int inc, ButtonModifiers modifiers)
 {
-  std::time_t t = m_originalTime + m_diff;
+  std::time_t t = m_originalTime + static_cast<std::time_t>(m_diff);
   std::tm *tm = std::localtime(&t);
 
   switch(m_selection)
@@ -125,8 +128,6 @@ bool DateTimeEditor::onRotary(int inc, ButtonModifiers modifiers)
 
     case Year:
       tm->tm_year += inc;
-      tm->tm_year = std::min(tm->tm_year, 2050 - 1900);
-      tm->tm_year = std::max(tm->tm_year, 2017 - 1900);
       break;
 
     case Hour:
@@ -150,21 +151,22 @@ bool DateTimeEditor::onRotary(int inc, ButtonModifiers modifiers)
 
 Glib::ustring format(int v, int numDigits)
 {
-  char format[64];
-  sprintf(format, "%%0%dd", numDigits);
-  char txt[64];
-  sprintf(txt, format, v);
-  return txt;
+  std::array<char, 64> format {};
+  std::array<char, 64> txt {};
+  sprintf(format.data(), "%%0%dd", numDigits);
+  sprintf(txt.data(), format.data(), v);
+  return { txt.data() };
 }
 
 void DateTimeEditor::setTimeValues()
 {
-  std::time_t t = std::time(nullptr) + m_diff;
+  constexpr auto yearOffset = 1900;
+  std::time_t t = std::time(nullptr) + static_cast<std::time_t>(m_diff);
   std::tm *tm = std::localtime(&t);
 
   m_controls[Selection::Month]->setText(format(tm->tm_mon + 1, 2));
   m_controls[Selection::Day]->setText(format(tm->tm_mday, 2));
-  m_controls[Selection::Year]->setText(format(tm->tm_year + 1900, 4));
+  m_controls[Selection::Year]->setText(format(tm->tm_year + yearOffset, 4));
   m_controls[Selection::Hour]->setText(format(tm->tm_hour, 2));
   m_controls[Selection::Minute]->setText(format(tm->tm_min, 2));
   ControlWithChildren::setDirty();
@@ -176,7 +178,7 @@ const DateTimeEditor::Selection DateTimeEditor::step(Selection s, int inc) const
 
   if(inc > 0)
     currentRaw += inc;
-  else if(inc < 0)
+  else
     currentRaw += static_cast<int>(Selection::NumFields + inc);
 
   return static_cast<Selection>(currentRaw % Selection::NumFields);

@@ -12,6 +12,7 @@
 #include "smoother_handle.h"
 #include "ae_info.h"
 #include "nltoolbox.h"
+#include "Types.h"
 
 // specify if soft clipping should be applied
 constexpr bool APPLY_SOFT_CLIP = true;
@@ -40,7 +41,8 @@ namespace Engine
     void render_slow();
     void update_tone_amplitude(const float _db);
     void update_tone_frequency(const float _freq);
-    void update_tone_mode(const uint32_t _mode);
+    void update_tone_mode(TestToneSignalIndex _mode);
+    void set_test_tone_pan(bool l, bool r);
     void resetDSP();
 
    private:
@@ -80,9 +82,13 @@ namespace Engine
     SmootherHandle<C15::Smoothers::Global_Sync, C15::Smoothers::Global_Audio, C15::Smoothers::Global_Fast,
                    C15::Smoothers::Global_Slow>
         m_smoothers;
-    float m_signal[3] = {};
+
+    std::array<float, 3> m_signal = {};
     float m_sampleInc = 0.0f, m_tonePhase = 0.0f, m_toneAmp = 0.0f, m_toneFreq = 0.0f, m_baseKeyDiff = 0.0f;
-    uint32_t m_combinationMode = 0;
+    TestToneSignalIndex m_combinationMode = TestToneSignalIndex::Synth;
+    bool m_testToneLeftFactor = false;
+    bool m_testToneRightFactor = false;
+
     void render_stereo_audio(const float _left, const float _right);
     void postProcess_audio();
     void postProcess_fast();

@@ -72,7 +72,7 @@ void dsp_host_dual::init(const uint32_t _samplerate, const uint32_t _polyphony)
   m_global.init(m_time.m_sample_inc);
   m_global.update_tone_amplitude(-6.0f);
   m_global.update_tone_frequency(m_reference.m_scaled);
-  m_global.update_tone_mode(0);
+  m_global.update_tone_mode(TestToneSignalIndex::Synth);
 
   // voice fade stuff I (currently explicit)
   m_poly[0].m_fadeStart = C15::Config::virtual_key_from;
@@ -917,23 +917,50 @@ DSPInterface::OutputResetEventSource dsp_host_dual::onSettingInitialSinglePreset
   return onPresetMessage(msg);
 }
 
-void dsp_host_dual::onSettingToneToggle(const uint16_t _setting)
+namespace {
+    TestToneSignalIndex mapping(TestToneType t) {
+        switch(t) {
+          default:
+          case TestToneType::Off:
+            return TestToneSignalIndex::Synth;
+          case TestToneType::Left:
+          case TestToneType::Right:
+          case TestToneType::Both:
+            return TestToneSignalIndex::Both;
+        }
+    };
+
+}
+
+void dsp_host_dual::setTestToneType(const TestToneType type)
 {
-  m_tone_state = (_setting == 0 ? m_tone_state + 1 : _setting - 1) % 3;
-  m_fade.muteAndDo([&] { m_global.update_tone_mode(m_tone_state); });
+  m_tone_state = mapping(type);
+  auto left = type == TestToneType::Left || type == TestToneType::Both;
+  auto right = type == TestToneType::Right || type == TestToneType::Both;
+
+  m_fade.muteAndDo([&] {
+      m_global.update_tone_mode(m_tone_state);
+      m_global.set_test_tone_pan(left, right);
+  });
+
   // this is a crucial developer tool that should always produce logs!
   switch(m_tone_state)
   {
-    case 0:
+    case TestToneSignalIndex::Synth:
       nltools::Log::info("test tone - off (synth only)");
       break;
-    case 1:
+    case TestToneSignalIndex::TestTone:
       nltools::Log::info("test tone - only (synth off)");
       break;
-    case 2:
+    case TestToneSignalIndex::Both:
       nltools::Log::info("test tone - on (synth on)");
       break;
   }
+}
+
+TestToneSignalIndex dsp_host_dual::getTestToneSignalIndex()
+{
+  return m_tone_state;
 }
 
 void dsp_host_dual::render()

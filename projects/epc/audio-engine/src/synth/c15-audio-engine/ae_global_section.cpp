@@ -95,6 +95,14 @@ namespace Engine
                         StereoPanning::getChannel<StereoPanning::Right>(panned));
   }
 
+  namespace
+  {
+    constexpr unsigned idx(TestToneSignalIndex idx)
+    {
+      return static_cast<unsigned>(idx);
+    }
+  }
+
   void GlobalSection::render_stereo_audio(const float _left, const float _right)
   {
     // main dsp:
@@ -107,11 +115,15 @@ namespace Engine
     signal = m_toneAmp * NlToolbox::Math::sinP3_noWrap(phase);
     m_tonePhase += m_sampleInc * m_toneFreq;
     m_tonePhase -= NlToolbox::Conversion::float2int(m_tonePhase);
-    m_signal[1] = signal;
+
+    const auto test_tone_signal = signal;
+
+    m_signal[idx(TestToneSignalIndex::TestTone)] = test_tone_signal * (float)m_testToneLeftFactor;
     // left: volume and test tone combination
-    m_signal[0] = vol * _left;
-    m_signal[2] = m_signal[0] + m_signal[1];
-    signal = m_signal[m_combinationMode];
+    m_signal[idx(TestToneSignalIndex::Synth)] = vol * _left;
+    m_signal[idx(TestToneSignalIndex::Both)]
+        = m_signal[idx(TestToneSignalIndex::Synth)] + m_signal[idx(TestToneSignalIndex::TestTone)];
+    signal = m_signal[idx(m_combinationMode)];
     if(!APPLY_SOFT_CLIP)
     {
       m_out_l = signal;
@@ -128,9 +140,11 @@ namespace Engine
     }
 
     // right: volume and test tone combination
-    m_signal[0] = vol * _right;
-    m_signal[2] = m_signal[0] + m_signal[1];
-    signal = m_signal[m_combinationMode];
+    m_signal[idx(TestToneSignalIndex::TestTone)] = test_tone_signal * (float)m_testToneRightFactor;
+    m_signal[idx(TestToneSignalIndex::Synth)] = vol * _right;
+    m_signal[idx(TestToneSignalIndex::Both)]
+        = m_signal[idx(TestToneSignalIndex::Synth)] + m_signal[idx(TestToneSignalIndex::TestTone)];
+    signal = m_signal[idx(m_combinationMode)];
     if(!APPLY_SOFT_CLIP)
     {
       m_out_r = signal;
@@ -169,9 +183,15 @@ namespace Engine
     m_toneFreq = _freq;
   }
 
-  void GlobalSection::update_tone_mode(const uint32_t _mode)
+  void GlobalSection::update_tone_mode(TestToneSignalIndex _mode)
   {
     m_combinationMode = _mode;
+  }
+
+  void GlobalSection::set_test_tone_pan(bool l, bool r)
+  {
+    m_testToneLeftFactor = l;
+    m_testToneRightFactor = r;
   }
 
   void GlobalSection::resetDSP()

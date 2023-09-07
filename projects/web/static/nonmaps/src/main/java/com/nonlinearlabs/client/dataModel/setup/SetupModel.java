@@ -4,6 +4,7 @@ import com.nonlinearlabs.client.Tracer;
 import com.nonlinearlabs.client.dataModel.BooleanDataModelEntity;
 import com.nonlinearlabs.client.dataModel.EnumDataModelEntity;
 import com.nonlinearlabs.client.dataModel.IntegerDataModelEntity;
+import com.nonlinearlabs.client.dataModel.LongDataModelEntity;
 import com.nonlinearlabs.client.dataModel.RoutingAspectsDataModelEntity;
 import com.nonlinearlabs.client.dataModel.StringDataModelEntity;
 import com.nonlinearlabs.client.dataModel.ValueDataModelEntity;
@@ -109,6 +110,10 @@ public class SetupModel {
 		None, ChannelPressure, CC01, CC02, CC03, CC04, CC05, CC06, CC07, CC08, CC09, CC10, CC11, CC12, CC13, CC14, CC15,
 		CC16, CC17, CC18, CC19, CC20, CC21, CC22, CC23, CC24, CC25, CC26, CC27, CC28, CC29, CC30, CC31, PitchbendUp,
 		PitchbendDown
+	}
+
+	public enum TestToneType {
+		Off, Left, Right, Both
 	}
 
 	private <T extends Enum<T>> EnumDataModelEntity<T> createEnumDataModelEntity(Class<T> c, T def) {
@@ -314,6 +319,22 @@ public class SetupModel {
 		}
 	}
 
+	public class TestToneTypeSetting extends EnumDataModelEntity<TestToneType> {
+		public TestToneTypeSetting() {
+			super(TestToneType.class, TestToneType.Off);
+		}
+
+		@Override
+		public void fromString(String str) {
+			try {
+				TestToneType p = TestToneType.valueOf(str);
+				setValue(p);
+			} catch (Exception e) {
+				Tracer.log("WARNING: Could not parse test tone value of " + str);
+			}
+		}
+	}
+
 	public class SystemSettings {
 		public BooleanDataModelEntity directLoad = new BooleanDataModelEntity();
 		public EnumDataModelEntity<AftertouchCurve> aftertouchCurve = createEnumDataModelEntity(AftertouchCurve.class,
@@ -322,7 +343,7 @@ public class SetupModel {
 				BaseUnitUIMode.parameter_edit);
 		public EnumDataModelEntity<BenderCurve> benderCurve = createEnumDataModelEntity(BenderCurve.class,
 				BenderCurve.normal);
-		public IntegerDataModelEntity datetimeAdjustment = new IntegerDataModelEntity();
+		public LongDataModelEntity datetimeAdjustment = new LongDataModelEntity();
 		public EnumDataModelEntity<DebugLevel> debugLevel = createEnumDataModelEntity(DebugLevel.class,
 				DebugLevel.warning);
 		public StringDataModelEntity deviceName = new StringDataModelEntity();
@@ -385,6 +406,8 @@ public class SetupModel {
 
 		public BooleanDataModelEntity legacyAftertouch = new BooleanDataModelEntity();
 		public BooleanDataModelEntity sendActiveSensing = new BooleanDataModelEntity();
+
+		public TestToneTypeSetting testTone = new TestToneTypeSetting();
 	};
 
 	public class LocalSettings {

@@ -55,7 +55,10 @@ namespace nltools
          MacroControlParameterChanged, MacroTimeParameterChanged, GlobalModulateableParameterChanged,
          GlobalUnmodulateableParameterChanged, PolyphonicModulateableParameterChanged,
          PolyphonicUnmodulateableParameterChanged, MonophonicModulateableParameterChanged,
-         MonophonicUnmodulateableParameterChanged);
+         MonophonicUnmodulateableParameterChanged,
+
+         //Test Tone Protocol
+         TestToneTypeMessage, TestTonePanMessage);
 
     namespace detail
     {

@@ -40,7 +40,6 @@
 #include <proxies/hwui/panel-unit/boled/setup/VelocityView.h>
 #include <proxies/hwui/panel-unit/boled/setup/USBStickAvailableView.h>
 #include <proxies/hwui/panel-unit/boled/setup/ExportBackupView.h>
-#include <proxies/hwui/panel-unit/boled/setup/ImportBackupView.h>
 #include <proxies/hwui/panel-unit/boled/setup/ImportBackupEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/WiFiSettingEditor.h>
 #include <proxies/hwui/panel-unit/boled/setup/SettingView.h>
@@ -92,6 +91,8 @@
 #include <device-info/UniqueHardwareID.h>
 #include "device-info/AftertouchCalibratedStatus.h"
 #include "device-settings/SendActiveSensingSetting.h"
+#include "TestToneEditor.h"
+#include "FactoryDefaultEditor.h"
 
 namespace NavTree
 {
@@ -421,6 +422,42 @@ namespace NavTree
     }
   };
 
+  struct TestTone : EditableLeaf
+  {
+    explicit TestTone(InnerNode *parent)
+        : EditableLeaf(parent, "Test Tone (-6 dB)")
+    {
+    }
+
+    Control *createView() override
+    {
+      return new SetupLabel("...", { 0, 0, 0, 0 });
+    }
+
+    Control *createEditor() override
+    {
+      return new TestToneEditor();
+    }
+  };
+
+  struct FactoryDefaultSettings : EditableLeaf
+  {
+    explicit FactoryDefaultSettings(InnerNode *parent)
+        : EditableLeaf(parent, "Factory Default Settings")
+    {
+    }
+
+    Control *createView() override
+    {
+      return new SetupLabel("...", Rect(0, 0, 0, 0));
+    }
+
+    Control *createEditor() override
+    {
+      return new FactoryDefaultEditor();
+    }
+  };
+
   struct DeviceSettings : InnerNode
   {
     explicit DeviceSettings(InnerNode *parent)
@@ -442,6 +479,8 @@ namespace NavTree
       children.emplace_back(new WiFiSetting(this));
       children.emplace_back(new StoreInitSound(this));
       children.emplace_back(new ResetInitSound(this));
+      children.emplace_back(new FactoryDefaultSettings(this));
+      children.emplace_back(new TestTone(this));
     }
   };
 
@@ -783,7 +822,7 @@ namespace NavTree
 
     Control *createView() override
     {
-      return new ImportBackupView();
+      return new SetupLabel("...", Rect(0, 0, 0, 0));
     }
 
     Control *createEditor() override

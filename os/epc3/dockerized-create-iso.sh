@@ -14,10 +14,12 @@ linux
 mkinitcpio
 mkinitcpio-archiso
 nano
+stress
 syslinux
 " > /archlive/packages.x86_64
 
-sed -i 's/^SigLevel.*/SigLevel = Optional TrustAll/g' /archlive/pacman.conf
+sed -i 's/^SigLevel.*/SigLevel = Never/g' /archlive/pacman.conf
+
 mkdir -p /archlive/airootfs/packages
 
 add_package() {
@@ -100,7 +102,7 @@ ENDOFHERE
   
   echo "[epc3-base]" > /etc/pacman.conf
   echo "Server = file:///packages/" >> /etc/pacman.conf
-  echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
+  echo "SigLevel = Never" >> /etc/pacman.conf
   pacman -Sy
   
   rm -rf /var/cache/pacman/pkg

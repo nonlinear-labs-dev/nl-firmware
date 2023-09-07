@@ -45,7 +45,8 @@ namespace C15
                 BenderCurves, AftertouchCurves, VelocityCurves,
                 PresetStoreModeSettings, BaseUnitUIModes, BaseUnitUIDetails,
                 ParameterEditModeRibbonBehaviours, DebugLevels,
-                PedalTypes, WifiSettings, SelectedRibbons, BooleanSettings
+                PedalTypes, WifiSettings, SelectedRibbons, BooleanSettings,
+                TestToneType
             >;
             const SettingId m_id;
             const char * const m_key;

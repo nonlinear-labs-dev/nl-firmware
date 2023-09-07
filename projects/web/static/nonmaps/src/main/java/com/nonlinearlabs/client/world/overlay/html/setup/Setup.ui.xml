@@ -216,6 +216,28 @@
 							<g:Button ui:field="resetInitSound" ui:text="Reset"></g:Button>
 						</div>
 					</div>
+					<div class="linie"></div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Load Factory Defaults</p>
+						</div>
+						<div class="w20p fl-j-center">
+						</div>
+						<div class="w20p fl-j-center">
+							<g:Button ui:field="loadFactoryDefaults" ui:text="Reset"></g:Button>
+						</div>
+					</div>
+					<div class="linie"></div>
+					<div class="eins-he">
+						<div class="w60p">
+							<p>Test Tone Dialog</p>
+						</div>
+						<div class="w20p fl-j-center">
+						</div>
+						<div class="w20p fl-j-center">
+							<g:Button ui:field="toggleTestTone" ui:text="Open"></g:Button>
+						</div>
+					</div>
 				</div>
 			</div>
 
@@ -963,8 +985,11 @@
 						<div class="w40p">
 							<p>Date/Time</p>
 						</div>
-						<div class="w60p">
+						<div class="w30p fl-j-left">
 							<g:Label ui:field="dateTime"></g:Label>
+						</div>
+						<div class="w30p fl-j-left">
+							<g:Button ui:field="editDateTime" text="Edit"></g:Button>
 						</div>
 					</div>
 

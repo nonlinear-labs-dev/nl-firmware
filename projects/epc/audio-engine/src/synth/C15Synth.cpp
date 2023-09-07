@@ -167,6 +167,8 @@ C15Synth::C15Synth(AudioEngineOptions* options)
 
   receive<Setting::MidiSettingsMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onMidiSettingsMessage));
   receive<PanicAudioEngine>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onPanicNotificationReceived));
+
+  receive<TestTone::TestToneTypeMessage>(EndPoint::AudioEngine, sigc::mem_fun(this, &C15Synth::onTestToneTypeMessage));
 }
 
 C15Synth::~C15Synth()
@@ -325,11 +327,6 @@ void C15Synth::resetDSP()
   m_dsp->reset();
 }
 
-void C15Synth::toggleTestTone()
-{
-  m_dsp->onSettingToneToggle(0);  // 0 - switches modes
-}
-
 void C15Synth::onSettingInitialSinglePreset()
 {
   m_dsp->onSettingInitialSinglePreset();  // initial sound, out a mix: 100%
@@ -442,6 +439,11 @@ void C15Synth::onMidiSettingsMessage(const nltools::msg::Setting::MidiSettingsMe
 
   if(msg.shouldSendActiveSensing && !m_activeSensingExpiration.isPending())
     rescheduleActiveSensing();
+}
+
+void C15Synth::onTestToneTypeMessage(const nltools::msg::TestTone::TestToneTypeMessage& msg)
+{
+  m_dsp->setTestToneType(msg.m_type);
 }
 
 void C15Synth::onPanicNotificationReceived(const nltools::msg::PanicAudioEngine&)

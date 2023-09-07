@@ -10,7 +10,6 @@ C15_CLI::C15_CLI(C15Synth *synth, AudioOutput *audioOut)
 
   m_commands['c'] = [=] { synth->logStatus(); };
   m_commands['e'] = [=] { synth->resetDSP(); };
-  m_commands['t'] = [=] { synth->toggleTestTone(); };
   m_commands['i'] = [=] {
     // setup settings so tcd and midi are enabled
     nltools::msg::Setting::MidiSettingsMessage msg {};

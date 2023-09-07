@@ -40,6 +40,13 @@ enum class HardwareSource : int8_t
   NONE = -1
 };
 
+enum class TestToneSignalIndex : uint8_t
+{
+  Synth = 0,
+  TestTone = 1,
+  Both = 2
+};
+
 inline std::string toString(HardwareSource s)
 {
   switch(s)
