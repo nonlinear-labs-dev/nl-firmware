@@ -202,6 +202,8 @@ int main(int const argc, char const* const argv[])
         if (!(ribfile = fopen(buf, "r")))
         {
           printf("FATAL: Cannot open ribbon file \"%s\"\n", buf);
+          fclose(outfile);
+          remove(outFname);
           return 3;  // --> exit
         }
 
@@ -229,6 +231,8 @@ int main(int const argc, char const* const argv[])
                 if (sscanf(buf, "%hu", &(ribbon[select].X[i])) != 1)
                 {
                   printf("FATAL: Cannot read 34 X values ribbon file\n");
+                  fclose(outfile);
+                  remove(outFname);
                   return 3;  // --> exit
                 }
 #warning : ToDo check monotony of X values
@@ -256,6 +260,8 @@ int main(int const argc, char const* const argv[])
                 if (sscanf(buf, "%hu", &(ribbon[select].Y[i])) != 1)
                 {
                   printf("FATAL: Cannot read 33 Y values ribbon file\n");
+                  fclose(outfile);
+                  remove(outFname);
                   return 3;  // --> exit
                 }
 #warning : ToDo check monotony of Y values
