@@ -99,6 +99,7 @@ int main(int const argc, char const* const argv[])
           remove(outFname);
           return 3;  // --> exit
         }
+        printf("Processing \"%s\"...\n", buf);
         {
           char  buffer[1024];
           char* buf = buffer;
@@ -206,6 +207,7 @@ int main(int const argc, char const* const argv[])
           remove(outFname);
           return 3;  // --> exit
         }
+        printf("Processing \"%s\"...\n", buf);
 
         {
           char  buffer[1024];
@@ -230,16 +232,33 @@ int main(int const argc, char const* const argv[])
               {
                 if (sscanf(buf, "%hu", &(ribbon[select].X[i])) != 1)
                 {
-                  printf("FATAL: Cannot read 34 X values ribbon file\n");
+                  printf("FATAL: Cannot read 34 X values from ribbon file\n");
                   fclose(outfile);
                   remove(outFname);
                   return 3;  // --> exit
                 }
-#warning : ToDo check monotony of X values
                 while (*buf != ' ' && *buf != 0)
                   buf++;
                 if (*buf == ' ')
                   buf++;
+              }
+
+              for (int i = 0; i < 34; i++)
+              {
+                if ((ribbon[select].X[i] < 100)
+                    || (ribbon[select].X[i] > 4095))
+                {
+                  printf("FATAL: Invalid X values (must be in [100;4095])\n");
+                  return 3;  // --> exit
+                }
+                if (i > 0)
+                {
+                  if (ribbon[select].X[i] < ribbon[select].X[i - 1])
+                  {
+                    printf("FATAL: X values are not monotonic\n");
+                    return 3;  // --> exit
+                  }
+                }
               }
 
               ribbon[select].valid++;
@@ -259,16 +278,32 @@ int main(int const argc, char const* const argv[])
               {
                 if (sscanf(buf, "%hu", &(ribbon[select].Y[i])) != 1)
                 {
-                  printf("FATAL: Cannot read 33 Y values ribbon file\n");
+                  printf("FATAL: Cannot read 33 Y values from ribbon file\n");
                   fclose(outfile);
                   remove(outFname);
                   return 3;  // --> exit
                 }
-#warning : ToDo check monotony of Y values
                 while (*buf != ' ' && *buf != 0)
                   buf++;
                 if (*buf == ' ')
                   buf++;
+              }
+
+              for (int i = 0; i < 33; i++)
+              {
+                if (ribbon[select].Y[i] > 16000)
+                {
+                  printf("FATAL: Invalid Y values (must be in [0;16000])\n");
+                  return 3;  // --> exit
+                }
+                if (i > 0)
+                {
+                  if (ribbon[select].Y[i] < ribbon[select].Y[i - 1])
+                  {
+                    printf("FATAL: Y values are not monotonic\n");
+                    return 3;  // --> exit
+                  }
+                }
               }
 
               ribbon[select].valid++;
