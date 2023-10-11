@@ -249,6 +249,8 @@ int main(int const argc, char const* const argv[])
                     || (ribbon[select].X[i] > 4095))
                 {
                   printf("FATAL: Invalid X values (must be in [100;4095])\n");
+                  fclose(outfile);
+                  remove(outFname);
                   return 3;  // --> exit
                 }
                 if (i > 0)
@@ -256,6 +258,8 @@ int main(int const argc, char const* const argv[])
                   if (ribbon[select].X[i] < ribbon[select].X[i - 1])
                   {
                     printf("FATAL: X values are not monotonic\n");
+                    fclose(outfile);
+                    remove(outFname);
                     return 3;  // --> exit
                   }
                 }
@@ -294,6 +298,8 @@ int main(int const argc, char const* const argv[])
                 if (ribbon[select].Y[i] > 16000)
                 {
                   printf("FATAL: Invalid Y values (must be in [0;16000])\n");
+                  fclose(outfile);
+                  remove(outFname);
                   return 3;  // --> exit
                 }
                 if (i > 0)
@@ -301,6 +307,8 @@ int main(int const argc, char const* const argv[])
                   if (ribbon[select].Y[i] < ribbon[select].Y[i - 1])
                   {
                     printf("FATAL: Y values are not monotonic\n");
+                    fclose(outfile);
+                    remove(outFname);
                     return 3;  // --> exit
                   }
                 }
