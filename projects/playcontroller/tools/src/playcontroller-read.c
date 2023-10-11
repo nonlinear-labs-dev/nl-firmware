@@ -170,6 +170,7 @@ void Usage(char const *const string, int const exitCode)
   puts("            by either a + or -, turning the display on or off");
   puts("  default is +a -d -i -q -o");
   puts(" a   All options");
+  puts(" b   Bender offset adjustment (use \"LPC set sensors on\")");
   puts(" c   diagnostiC status data");
   puts(" d   additional hex Dump, forces -r");
   puts(" e   EHC data");
@@ -241,6 +242,11 @@ int main(int argc, char *argv[])
       displayFlags |= NO_OVERLAY;
     else if (strncmp(argv[1], "+o", 2) == 0)
       displayFlags &= ~NO_OVERLAY;
+
+    else if (strncmp(argv[1], "-b", 2) == 0)
+      displayFlags |= NO_BENDER_ADJUST;
+    else if (strncmp(argv[1], "+b", 2) == 0)
+      displayFlags &= ~NO_BENDER_ADJUST;
 
     else if (strncmp(argv[1], "-c", 2) == 0)
       displayFlags |= NO_STATDATA;

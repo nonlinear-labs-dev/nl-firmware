@@ -1,17 +1,20 @@
 #!/bin/sh
-# set -x
 
 SSH_OPTIONS="-o LogLevel=quiet -o ServerAliveInterval=1 -o ConnectTimeout=1 -o StrictHostKeyChecking=no"
 EPC_IP="192.168.10.10"
 LOG_FILE=""
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
 executeAsRoot() {
     if echo "sscl" | sshpass -p 'sscl' ssh ${SSH_OPTIONS} sscl@$EPC_IP "sudo -S /bin/bash -c '$2'" &> /dev/null; then
-        echo "$1 Yes!" | tee -a $LOG_FILE
+        echo -e "$1 ${GREEN}Yes!${NC}" | tee -a $LOG_FILE
         return 0
     fi
 
-    echo "$1 No!" | tee -a $LOG_FILE
+    echo -e "$1 ${RED}No!${NC}" | tee -a $LOG_FILE
     return 1
 }
 
@@ -58,7 +61,7 @@ check_overlay() {
 
 check_usb_stick() {
     while ! mount | grep /mnt/usb-stick > /dev/null; do
-        echo "Please connect a USB stick to the BBB!"
+        echo "${RED}Please connect a USB stick to the BBB!${NC}"
         sleep 2
     done
 
@@ -73,9 +76,9 @@ check_usb_stick() {
     sleep 5
 
     if [ "$(cat /mnt/usb-stick/test-file)" = "1" ]; then
-        echo "Could access file on usb stick that has been written by epc via sshfs? Yes!"
+        echo -e "Could access file on usb stick that has been written by epc via sshfs? ${GREEN}Yes!${NC}"
     else
-        echo "Could access file on usb stick that has been written by epc via sshfs? No!"
+        echo -e "Could access file on usb stick that has been written by epc via sshfs? ${RED}No!${NC}"
     fi
 
    echo '2' > /mnt/usb-stick/test-file
@@ -91,19 +94,19 @@ check_usb_stick() {
 check_BBB_AP() {
     if executeAsRoot "Is EPC1?" "cat /proc/cpuinfo | grep -e \"i3-5010\" -e \"i3-7100\""; then
         if iw wlan0 info | grep ssid | grep -v "_BBB" > /dev/null; then
-            echo "BBB Accesspoint is active and is correctly missing the _BBB suffix? Yes!"
+            echo -e "BBB Accesspoint is active and is correctly missing the _BBB suffix? ${GREEN}Yes!${NC}"
             return 0
         fi
 
-        echo "BBB Accesspoint is active and is correctly missing the _BBB suffix? No!"
+        echo -e "BBB Accesspoint is active and is correctly missing the _BBB suffix? ${RED}No!${NC}"
         return 1
     fi
 
     if iw wlan0 info | grep ssid | grep "_BBB" > /dev/null; then
-        echo "BBB Accesspoint is active and has correct _BBB suffix? Yes!"
+        echo -e "BBB Accesspoint is active and has correct _BBB suffix? ${GREEN}Yes!${NC}"
         return 0
     else
-        echo "BBB Accesspoint is active and has correct _BBB suffix? No!"
+        echo -e "BBB Accesspoint is active and has correct _BBB suffix? ${RED}No!${NC}"
         return 1
     fi
 
@@ -113,11 +116,11 @@ check_EPC_AP() {
     if ! executeAsRoot "Is EPC1?" "cat /proc/cpuinfo | grep -e \"i3-5010\" -e \"i3-7100\""; then
         if executeAsRoot "Has Wifi device?" "ip a | grep wlan"; then
             if executeAsRoot "Is AP active on epc?" "nmcli con show --active | grep C15"; then
-                echo "EPC has AP enabled? Yes!"
+                echo -e "EPC has AP enabled? ${GREEN}Yes!${NC}"
                 return 0
             fi
         fi
-        echo "EPC has AP enabled? No!"
+        echo -e "EPC has AP enabled? ${RED}No!${NC}"
         return 1
     fi
 }
@@ -153,13 +156,13 @@ get_journal_dmesg() {
 
     getInfoAsRoot 'journalctl -b -p "emerg".."warning"' >> /tmp/epc_journal.log \
         && getInfoAsRoot 'dmesg --level=err,warn' >> /tmp/epc_dmesg.log \
-        && printf "\nGot journal and dmesg from ePC: Yes!\n" | tee -a $LOG_FILE \
-        || printf "\nGot journal and dmesg from ePC: No!\n" | tee -a $LOG_FILE
+        && printf "\nGot journal and dmesg from ePC: ${GREEN}Yes!${NC}\n" | tee -a $LOG_FILE \
+        || printf "\nGot journal and dmesg from ePC: ${RED}No!${NC}\n" | tee -a $LOG_FILE
 
     journalctl -b -p "emerg".."warning" >> /tmp/bbb_journal.log \
         && dmesg --level=err,warn >> /tmp/bbb_dmesg.log \
-        && printf "Got journal and dmesg from BBB: Yes!\n" | tee -a $LOG_FILE \
-        || printf "Got journal and dmesg from BBB: No!\n" | tee -a $LOG_FILE
+        && printf "Got journal and dmesg from BBB: ${GREEN}Yes!${NC}\n" | tee -a $LOG_FILE \
+        || printf "Got journal and dmesg from BBB: ${RED}No!${NC}\n" | tee -a $LOG_FILE
 
     return 0
 }
@@ -211,22 +214,22 @@ get_update_script_vers() {
 check_for_present_tools() {
     for i in sshpass rsync socat thttpd playcontroller mke2fs; do
         if command -V "$i" &> /dev/null; then
-            printf "$i installed: Yes\n" | tee -a $LOG_FILE
+            printf "$i installed: ${GREEN}Yes!${NC}\n" | tee -a $LOG_FILE
         else
-            printf "$i installed: No\n" | tee -a $LOG_FILE
+            printf "$i installed: ${RED}No!${NC}\n" | tee -a $LOG_FILE
         fi
     done
 
     if [[ -x /usr/C15/text2soled/text2soled ]]; then
-        printf "text2soled installed: Yes\n" | tee -a $LOG_FILE
+        printf "text2soled installed: ${GREEN}Yes!${NC}\n" | tee -a $LOG_FILE
     else
-        printf "text2soled installed: No\n" | tee -a $LOG_FILE
+        printf "text2soled installed: ${RED}No!${NC}\n" | tee -a $LOG_FILE
     fi
 
     if [[ -x /nonlinear/scripts/mxli ]]; then
-        printf "mxli installed: Yes\n" | tee -a $LOG_FILE
+        printf "mxli installed: ${GREEN}Yes!${NC}\n" | tee -a $LOG_FILE
     else
-        printf "mxli installed: No\n" | tee -a $LOG_FILE
+        printf "mxli installed: ${RED}No!${NC}\n" | tee -a $LOG_FILE
     fi
 
     printf "\n" | tee -a $LOG_FILE
@@ -235,14 +238,14 @@ check_for_present_tools() {
 
 check_lpc() {
     systemctl stop bbbb
-    lpc reset && printf "LPC reset: Yes\n" | tee -a $LOG_FILE \
-        || printf "LPC reset: No\n" | tee -a $LOG_FILE
+    lpc reset && printf "LPC reset: ${GREEN}Yes!${NC}\n" | tee -a $LOG_FILE \
+        || printf "LPC reset: ${RED}No!${NC}\n" | tee -a $LOG_FILE
 
     printf "LPC version: $(lpc req sw-version; lpc-read +q -h) \n" | tee -a $LOG_FILE \
-        || printf "Can not get LPC version!\n" | tee -a $LOG_FILE
+        || printf "${RED}Can not get LPC version!${NC}\n" | tee -a $LOG_FILE
 
     printf "HW ID: $(lpc req uhid64; lpc-read +q -h) \n" | tee -a $LOG_FILE \
-        || printf "Can not get HW ID!\n" | tee -a $LOG_FILE
+        || printf "${RED}Can not get HW ID!${NC}\n" | tee -a $LOG_FILE
 
     systemctl restart bbbb
     return 0
@@ -254,11 +257,11 @@ run_epc_stress_test() {
         executeAsRoot "Created /tmp/usb?" "mkdir /tmp/usb"
         executeAsRoot "Unmounted USB Stick?" "umount /dev/sdb"
         executeAsRoot "Mounted USB Stick?" "mount /dev/sdb /tmp/usb" \
-            || read -p "Can not find USB stick! Try again!"
+            || read -p "${RED}Can not find USB stick! Try again!${NC}"
     done
 
     if ( ! getInfoAsRoot "[ -x /tmp/usb/Diagnosis_Tools/Benchmarks/Prime95_Linux_19/mprime ]" ); then
-        read -p "Wrong USB stick! Try again!" && exit 1
+        read -p "${RED}Wrong USB stick! Try again!${NC}" && exit 1
     fi
 
     TEST_DURATION=$1
@@ -300,7 +303,7 @@ check_buffer_underruns() {
 
     for COUNTER in $(seq 0 $CHECK_FREQ $TEST_DURATION); do
         if ( $(getInfoAsRoot "journalctl -u audio-engine -S \"${DATE}\" | grep -q x-run") ); then
-            printf "Bufferunderun detected! " | tee -a $LOG_FILE \
+            printf "${RED}Bufferunderun detected!${NC} " | tee -a $LOG_FILE \
                 && getInfoAsRoot 'date "+%y-%m-%d %T"' | tee -a $LOG_FILE && return 1
         fi
         sleep $CHECK_FREQ;

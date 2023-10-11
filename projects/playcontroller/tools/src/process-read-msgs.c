@@ -43,6 +43,7 @@ typedef enum
 {
   RED,
   GREEN,
+  INV_GREEN,
   DEFAULT
 } color_t;
 
@@ -55,6 +56,9 @@ void setColor(color_t color)
       break;
     case GREEN:
       printf("\033[0;32m");
+      break;
+    case INV_GREEN:
+      printf("\033[0;42;39m");
       break;
     case DEFAULT:
       printf("\033[0m");
@@ -540,7 +544,7 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
       return 0;
 
     case PLAYCONTROLLER_BB_MSG_TYPE_SENSORS_RAW:
-      if ((flags & NO_SENSORSRAW) && (flags & NO_RIBBONS))
+      if ((flags & NO_SENSORSRAW) && (flags & NO_RIBBONS) && (flags & NO_BENDER_ADJUST))
         return 0;
       dump(cmd, len, data, flags);
       if (len != 13)
@@ -565,38 +569,70 @@ int processReadMsgs(uint16_t const cmd, uint16_t const len, uint16_t *const data
         }
         printf("\n");
       }
+      else if (!(flags & NO_BENDER_ADJUST))
+      {
+#define BND_ARY_SIZE (16)
+#define BND_ARY_MASK (BND_ARY_SIZE - 1)
+        static uint16_t lastB = 0xFFFF, bnd[BND_ARY_SIZE];
+        static uint16_t idx;
+        bnd[idx] = data[9];
+        idx      = (idx + 1) & BND_ARY_MASK;
+
+        uint16_t b = 0;
+        for (uint16_t i = idx; i < idx + 8; i++)
+          b += bnd[i & BND_ARY_MASK];
+        b /= 8;
+
+        if (b != lastB)
+        {
+          lastB = b;
+          if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
+            cursorUp(1);
+          greenNotRed(b < 23 || b > 4010 || (b > 2048 - 12 && b < 2048 + 12));
+          if (b > 2048 - 4 && b < 2048 + 4)
+            setColor(INV_GREEN);
+          printf("\n%+05d", b - 2048);
+          setColor(DEFAULT);
+        }
+      }
       else
       {
 #define RIB_ARY_SIZE (16)
 #define RIB_ARY_MASK (RIB_ARY_SIZE - 1)
-        static uint16_t lower[RIB_ARY_SIZE], upper[RIB_ARY_SIZE];
+        static uint16_t lastL, lastU, lower[RIB_ARY_SIZE], upper[RIB_ARY_SIZE];
         static uint16_t idx;
         static int      armed;
 
-        lower[idx] = data[12];
-        upper[idx] = data[11];
+        uint32_t u, l;
+        u          = data[11];
+        l          = data[12];
+        upper[idx] = u > 110 ? data[11] : lastU;
+        lower[idx] = l > 110 ? data[12] : lastL;
         idx        = (idx + 1) & RIB_ARY_MASK;
 
-        if (data[12] > 90 || data[11] > 90)
+        if (u > 110 || l > 110)
         {
           armed = 1;
-          if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
-            cursorUp(1);
-          displayCounter();
-          uint32_t u = 0, l = 0;
+          u     = 0;
+          l     = 0;
           for (uint16_t i = idx; i < idx + 8; i++)
           {
             u += upper[i & RIB_ARY_MASK];
             l += lower[i & RIB_ARY_MASK];
           }
-          printf("RAW RIBBONS: ");
-          printf("%5hu  %5hu\n", u / 8, l / 8);
+          u /= 8;
+          l /= 8;
+          if (l != lastL || u != lastU)
+          {
+            if (!(flags & NO_OVERLAY) && (lastMessage == ((uint32_t) cmd << 16)))
+              cursorUp(1);
+            printf("\n%04hu, %04hu", u, l);
+          }
+          lastU = u;
+          lastL = l;
         }
         else if (armed)
-        {
           armed = 0;
-          printf("\n");
-        }
       }
       lastMessage = cmd << 16;
       return 1;

@@ -13,10 +13,11 @@ int_trap() {
 }
 
 echo 'Instructions:'
-echo ' Run "readout-ribbon-adcs.sh" and collect values.'
-echo ' Enter "calibration" folder and edit X-values in ribbon calibration input files (use templates).'
-echo ' Run "make-cal-bin" in that folder to create LPC message.'
-echo ' Copy results with scp to epc::/persistent.'
+echo ' Press test point at LED on both ribbons for a value pair at that point.'
+echo ' After each point, press [ENTER] for a new line.'
+echo ' When all 20 points have been completed, copy values into spreadsheet'
+echo ' and create calibration data.'
+echo ' Press [CTRL-C] to exit.'
 echo
 read -p "Press [Enter] to start calibration readout or [CTRL+c] to abort:" dummy
 echo
@@ -25,7 +26,7 @@ systemctl stop bbbb
 lpc set sensors on
 leds "\3"
 trap int_trap INT
-lpc-read -a +r +i
+lpc-read -a  +i +o
 lpc set sensors off
 leds "\0"
 echo "Note: bbbb is stopped"

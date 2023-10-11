@@ -11,8 +11,9 @@
 #include "sys/nl_stdlib.h"
 #include "playcontroller/lpc_lib.h"
 
-#define AT_RAMP_TIME  (3000ul)                 // ramp time in ms (maximum)
-#define AT_RAMP_COUNT (2 * AT_RAMP_TIME / 25)  // ramp count, based on a 12.5ms time-slice, make sure it is not zero
+#define AT_RAMP_TIME     (3000ul)                 // ramp time in ms (maximum)
+#define AT_RAMP_COUNT    (2 * AT_RAMP_TIME / 25)  // ramp count, based on a 12.5ms time-slice, make sure it is not zero
+#define AT_MIN_ADC_VALUE (0)                      // minimum ADC value to be considered a value worth for calibration, 0=disable check)
 
 // --------------
 static uint32_t AT_lastAftertouch;
@@ -172,7 +173,7 @@ static void collectCalibrationData(int16_t const adcValue)
   else
     AT_adcPerKey[61] = -1;
 
-  if (adcValue == 0)
+  if (adcValue <= AT_MIN_ADC_VALUE)
   {
     state = 0;
     return;
