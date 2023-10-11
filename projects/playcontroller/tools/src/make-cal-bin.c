@@ -48,7 +48,8 @@ int main(int const argc, char const* const argv[])
     return 3;  // --> exit
   }
   FILE* outfile;
-  if (!(outfile = fopen(argv[2], "wb")))
+  char* outFname = argv[2];
+  if (!(outfile = fopen(outFname, "wb")))
   {
     printf("FATAL: Cannot create output file \"%s\"\n", argv[2]);
     return 3;  // --> exit
@@ -94,6 +95,8 @@ int main(int const argc, char const* const argv[])
         if (!(atfile = fopen(buf, "r")))
         {
           printf("FATAL: Cannot open aftertouch file \"%s\"\n", buf);
+          fclose(outfile);
+          remove(outFname);
           return 3;  // --> exit
         }
         {
@@ -118,11 +121,15 @@ int main(int const argc, char const* const argv[])
               if (sscanf(buf, "%hu", &(ATData.keybedId)) != 1)
               {
                 printf("FATAL: Cannot read keybed id\n");
+                fclose(outfile);
+                remove(outFname);
                 return 3;  // --> exit
               }
               if (ATData.keybedId == 0)
               {
                 printf("FATAL: keybed id must not be zero\n");
+                fclose(outfile);
+                remove(outFname);
                 return 3;  // --> exit
               }
 
@@ -134,12 +141,16 @@ int main(int const argc, char const* const argv[])
               if (sscanf(buf, "%hu", &(ATData.adcTarget)) != 1)
               {
                 printf("FATAL: Cannot read aftertouch test force\n");
+                fclose(outfile);
+                remove(outFname);
                 return 3;  // --> exit
               }
 
               if (ATData.adcTarget < 8000 || ATData.adcTarget > 20000)
               {
                 printf("FATAL: aftertouch test force must be within 8000 and 20000 [mN]\n");
+                fclose(outfile);
+                remove(outFname);
                 return 3;  // --> exit
               }
               ATData.adcTarget = LIB_InterpolateValue(&AT_forceToAdc, ATData.adcTarget);
@@ -160,6 +171,8 @@ int main(int const argc, char const* const argv[])
                 if (sscanf(buf, "%hu", &(ATData.adcValues[i])) != 1)
                 {
                   printf("FATAL: Cannot read 61 aftertouch per key values\n");
+                  fclose(outfile);
+                  remove(outFname);
                   return 3;  // --> exit
                 }
                 while (*buf != ' ' && *buf != 0)
@@ -189,6 +202,8 @@ int main(int const argc, char const* const argv[])
         if (!(ribfile = fopen(buf, "r")))
         {
           printf("FATAL: Cannot open ribbon file \"%s\"\n", buf);
+          fclose(outfile);
+          remove(outFname);
           return 3;  // --> exit
         }
 
@@ -216,6 +231,8 @@ int main(int const argc, char const* const argv[])
                 if (sscanf(buf, "%hu", &(ribbon[select].X[i])) != 1)
                 {
                   printf("FATAL: Cannot read 34 X values ribbon file\n");
+                  fclose(outfile);
+                  remove(outFname);
                   return 3;  // --> exit
                 }
 #warning : ToDo check monotony of X values
@@ -243,6 +260,8 @@ int main(int const argc, char const* const argv[])
                 if (sscanf(buf, "%hu", &(ribbon[select].Y[i])) != 1)
                 {
                   printf("FATAL: Cannot read 33 Y values ribbon file\n");
+                  fclose(outfile);
+                  remove(outFname);
                   return 3;  // --> exit
                 }
 #warning : ToDo check monotony of Y values
@@ -276,26 +295,36 @@ int main(int const argc, char const* const argv[])
     if (fwrite(rbcal_header, 2, 2, outfile) != 2)
     {
       printf("FATAL: Error writing binary file\n");
+      fclose(outfile);
+      remove(outFname);
       return 3;  // --> exit
     }
     if (fwrite(ribbon[0].X, 2, 34, outfile) != 34)
     {
       printf("FATAL: Error writing binary file\n");
+      fclose(outfile);
+      remove(outFname);
       return 3;  // --> exit
     }
     if (fwrite(ribbon[0].Y, 2, 33, outfile) != 33)
     {
       printf("FATAL: Error writing binary file\n");
+      fclose(outfile);
+      remove(outFname);
       return 3;  // --> exit
     }
     if (fwrite(ribbon[1].X, 2, 34, outfile) != 34)
     {
       printf("FATAL: Error writing binary file\n");
+      fclose(outfile);
+      remove(outFname);
       return 3;  // --> exit
     }
     if (fwrite(ribbon[1].Y, 2, 33, outfile) != 33)
     {
       printf("FATAL: Error writing binary file\n");
+      fclose(outfile);
+      remove(outFname);
       return 3;  // --> exit
     }
   }
@@ -321,12 +350,16 @@ int main(int const argc, char const* const argv[])
     if (fwrite(atcal_header, 2, 2, outfile) != 2)
     {
       printf("FATAL: Error writing binary file\n");
+      fclose(outfile);
+      remove(outFname);
       return 3;  // --> exit
     }
 
     if (fwrite(&ATData, 64 * 2, 1, outfile) != 1)
     {
       printf("FATAL: Error writing binary file\n");
+      fclose(outfile);
+      remove(outFname);
       return 3;  // --> exit
     }
   }
