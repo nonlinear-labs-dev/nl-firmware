@@ -184,14 +184,14 @@ check_persistent_integrity() {
     printf "\n" | tee -a $LOG_FILE
     executeAsRoot \
         "" \
-        "systemctl stop playground | umount /persistent"
+        "systemctl stop playground ; umount /persistent"
     executeAsRoot \
         "file system on /persistent OK?" \
         "fsck -f -n /dev/sda4"
     getInfoAsRoot "fsck -f -n /dev/sda4"
     executeAsRoot \
         "" \
-        "mount /dev/sda4 /persistent | systemctl start playground"
+        "mount /dev/sda4 /persistent ; systemctl start playground"
     printf "\n" | tee -a $LOG_FILE
 }
 
