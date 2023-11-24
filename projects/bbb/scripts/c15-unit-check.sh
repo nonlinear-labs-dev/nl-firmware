@@ -10,11 +10,15 @@ NC='\033[0m' # No Color
 
 executeAsRoot() {
     if echo "sscl" | sshpass -p 'sscl' ssh ${SSH_OPTIONS} sscl@$EPC_IP "sudo -S /bin/bash -c '$2'" &> /dev/null; then
-        echo -e "$1 ${GREEN}Yes!${NC}" | tee -a $LOG_FILE
+        if ! [[ -z $1 ]]; then
+            echo -e "$1 ${GREEN}Yes!${NC}" | tee -a $LOG_FILE
+        fi
         return 0
     fi
 
-    echo -e "$1 ${RED}No!${NC}" | tee -a $LOG_FILE
+    if ! [[ -z $1 ]]; then
+        echo -e "$1 ${RED}No!${NC}" | tee -a $LOG_FILE
+    fi
     return 1
 }
 
@@ -61,7 +65,7 @@ check_overlay() {
 
 check_usb_stick() {
     while ! mount | grep /mnt/usb-stick > /dev/null; do
-        echo "${RED}Please connect a USB stick to the BBB!${NC}"
+        echo -e "${RED}Please connect a USB stick to the BBB!${NC}"
         sleep 2
     done
 
@@ -176,6 +180,21 @@ get_partition_info() {
     return 0
 }
 
+check_persistent_integrity() {
+    printf "\n" | tee -a $LOG_FILE
+    executeAsRoot \
+        "" \
+        "systemctl stop playground ; umount /persistent"
+    executeAsRoot \
+        "file system on /persistent OK?" \
+        "fsck -f -n /dev/sda4"
+    getInfoAsRoot "fsck -f -n /dev/sda4"
+    executeAsRoot \
+        "" \
+        "mount /dev/sda4 /persistent ; systemctl start playground"
+    printf "\n" | tee -a $LOG_FILE
+}
+
 check_persistent_files() {
     printf "\n" | tee -a $LOG_FILE
     executeAsRoot \
@@ -240,11 +259,12 @@ check_lpc() {
     systemctl stop bbbb
     lpc reset && printf "LPC reset: ${GREEN}Yes!${NC}\n" | tee -a $LOG_FILE \
         || printf "LPC reset: ${RED}No!${NC}\n" | tee -a $LOG_FILE
+    sleep 1
 
-    printf "LPC version: $(lpc req sw-version; lpc-read +q -h) \n" | tee -a $LOG_FILE \
+    printf "LPC version: $(lpc req sw-version; lpc-read -a +n +q) \n" | tee -a $LOG_FILE \
         || printf "${RED}Can not get LPC version!${NC}\n" | tee -a $LOG_FILE
 
-    printf "HW ID: $(lpc req uhid64; lpc-read +q -h) \n" | tee -a $LOG_FILE \
+    printf "HW ID: $(lpc req uhid64; lpc-read -a +6 +q) \n" | tee -a $LOG_FILE \
         || printf "${RED}Can not get HW ID!${NC}\n" | tee -a $LOG_FILE
 
     systemctl restart bbbb
@@ -343,6 +363,7 @@ general_check() {
         get_journal_dmesg
         get_partition_info
 
+        check_persistent_integrity
         check_persistent_files
         check_alsa_settings
 
